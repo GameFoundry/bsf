@@ -6,7 +6,7 @@
 
 namespace bs
 {
-	const Matrix3 Matrix3::ZERO;
+	const Matrix3 Matrix3::ZERO{BS_ZERO()};
 	const Matrix3 Matrix3::IDENTITY{BS_IDENTITY()};
 
 	Vector3 Matrix3::getColumn(UINT32 col) const

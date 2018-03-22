@@ -25,11 +25,15 @@ namespace bs
 		};
 
 	public:
-		constexpr Matrix3() = default;
+		Matrix3() = default;
 		constexpr Matrix3(const Matrix3&) = default;
 		constexpr Matrix3& operator=(const Matrix3&) = default;
 
-		constexpr Matrix3(BS_ZERO) { }
+		constexpr Matrix3(BS_ZERO)
+			:m{ { 0.0f, 0.0f, 0.0f},
+				{ 0.0f, 0.0f, 0.0f},
+				{ 0.0f, 0.0f, 0.0f} }
+		{ }
 
 		constexpr Matrix3(BS_IDENTITY)
 			:m{ {1.0f, 0.0f, 0.0f},
@@ -284,9 +288,7 @@ namespace bs
 		{ { 0, 1, 2, 1.0f}, { 0, 2, 1, -1.0f}, { 1, 0, 2, -1.0f},
 		  { 1, 2, 0, 1.0f}, { 2, 0, 1,  1.0f}, { 2, 1, 0, -1.0f} };
 
-		float m[3][3] = { {0.0f, 0.0f, 0.0f},
-						  {0.0f, 0.0f, 0.0f},
-						  {0.0f, 0.0f, 0.0f} };
+		float m[3][3];
 	};
 
 	/** @} */

@@ -8,7 +8,7 @@
 
 namespace bs 
 {
-	const Quaternion Quaternion::ZERO;
+	const Quaternion Quaternion::ZERO{BS_ZERO()};
 	const Quaternion Quaternion::IDENTITY{BS_IDENTITY()};
 
 	void Quaternion::fromRotationMatrix(const Matrix3& mat)

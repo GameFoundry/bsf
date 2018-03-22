@@ -26,9 +26,13 @@ namespace bs
 		Quaternion(const Quaternion&) = default;
 		Quaternion& operator=(const Quaternion&) = default;
 
-		Quaternion(BS_ZERO zero) { }
+		Quaternion(BS_ZERO zero) 
+			: x(0.0f), y(0.0f), z(0.0f), w(0.0f) 
+		{ }
 
-		Quaternion(BS_IDENTITY) :w(1.0f) { }
+		Quaternion(BS_IDENTITY) 
+			: x(0.0f), y(0.0f), z(0.0f), w(1.0f) 
+		{ }
 
 		Quaternion(float w, float x, float y, float z)
 			:x(x), y(y), z(z), w(w)
@@ -353,10 +357,7 @@ namespace bs
 		static const Quaternion ZERO;
 		static const Quaternion IDENTITY;
 
-		float x = 0.0f;
-		float y = 0.0f;
-		float z = 0.0f;
-		float w = 0.0f; // Note: Order is relevant, don't break it
+		float x, y, z, w; // Note: Order is relevant, don't break it
 
 	private:
 		static constexpr const EulerAngleOrderData EA_LOOKUP[6] = { { 0, 1, 2}, { 0, 2, 1}, { 1, 0, 2},

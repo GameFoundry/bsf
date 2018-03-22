@@ -15,15 +15,14 @@ namespace bs
 	class BS_UTILITY_EXPORT Vector4
 	{
 	public:
-		float x = 0.0f;
-		float y = 0.0f;
-		float z = 0.0f;
-		float w = 0.0f;
+		float x, y, z, w;
 
 	public:
-		constexpr Vector4() = default;
+		Vector4() = default;
 
-		constexpr Vector4(BS_ZERO) { }
+		constexpr Vector4(BS_ZERO) 
+			:x(0.0f), y(0.0f), z(0.0f), w(0.0f)
+		{ }
 
 		constexpr Vector4(float x, float y, float z, float w)
 			:x(x), y(y), z(z), w(w)

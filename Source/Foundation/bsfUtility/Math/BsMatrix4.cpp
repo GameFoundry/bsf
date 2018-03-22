@@ -8,8 +8,7 @@
 
 namespace bs
 {
-	const Matrix4 Matrix4::ZERO;
-
+	const Matrix4 Matrix4::ZERO{BS_ZERO()};
 	const Matrix4 Matrix4::IDENTITY{BS_IDENTITY()};
 
 	static float MINOR(const Matrix4& m, const UINT32 r0, const UINT32 r1, const UINT32 r2, 

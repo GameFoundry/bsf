@@ -19,11 +19,16 @@ namespace bs
 	class BS_UTILITY_EXPORT Matrix4
 	{
 	public:
-		constexpr Matrix4() = default;
+		Matrix4() = default;
 		constexpr Matrix4(const Matrix4&) = default;
 		constexpr Matrix4& operator=(const Matrix4&) = default;
 
-		constexpr Matrix4(BS_ZERO) { }
+		constexpr Matrix4(BS_ZERO) 
+			:m{ {0.0f, 0.0f, 0.0f, 0.0f},
+				{0.0f, 0.0f, 0.0f, 0.0f},
+				{0.0f, 0.0f, 0.0f, 0.0f},
+				{0.0f, 0.0f, 0.0f, 0.0f} }
+		{ }
 
 		constexpr Matrix4(BS_IDENTITY)
 			:m{ {1.0f, 0.0f, 0.0f, 0.0f},
@@ -486,10 +491,7 @@ namespace bs
 		static const Matrix4 IDENTITY;
 
 	private:
-		float m[4][4] = { {0.0f, 0.0f, 0.0f, 0.0f},
-						  {0.0f, 0.0f, 0.0f, 0.0f},
-						  {0.0f, 0.0f, 0.0f, 0.0f},
-						  {0.0f, 0.0f, 0.0f, 0.0f} };
+		float m[4][4];
 	};
 
 	/** @} */

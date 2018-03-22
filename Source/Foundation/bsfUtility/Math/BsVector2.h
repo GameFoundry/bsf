@@ -12,16 +12,17 @@ namespace bs
 	 */
 
 	/** A two dimensional vector. */
-    class BS_UTILITY_EXPORT Vector2
-    {
-    public:
-        float x = 0.0f;
-		float y = 0.0f;
+	class BS_UTILITY_EXPORT Vector2
+	{
+	public:
+		float x, y;
 
-    public:
-		constexpr Vector2() = default;
+	public:
+		Vector2() = default;
 
-		constexpr Vector2(BS_ZERO) { }
+		constexpr Vector2(BS_ZERO) 
+			:x(0.0f), y(0.0f)
+		{ }
 
 		constexpr Vector2(float x, float y)
 			:x(x), y(y)
@@ -35,18 +36,18 @@ namespace bs
 		}
 
 		float operator[] (UINT32 i) const
-        {
-            assert(i < 2);
+		{
+			assert(i < 2);
 
-            return *(&x+i);
-        }
+			return *(&x+i);
+		}
 
 		float& operator[] (UINT32 i)
-        {
-            assert(i < 2);
+		{
+			assert(i < 2);
 
-            return *(&x+i);
-        }
+			return *(&x+i);
+		}
 		
 		/** Pointer accessor for direct copying. */
 		float* ptr()
@@ -60,13 +61,13 @@ namespace bs
 			return &x;
 		}
 
-        Vector2& operator= (const Vector2& rhs)
-        {
-            x = rhs.x;
-            y = rhs.y;
+		Vector2& operator= (const Vector2& rhs)
+		{
+			x = rhs.x;
+			y = rhs.y;
 
-            return *this;
-        }
+			return *this;
+		}
 
 		Vector2& operator= (float rhs)
 		{
@@ -76,245 +77,245 @@ namespace bs
 			return *this;
 		}
 
-        bool operator== (const Vector2& rhs) const
-        {
-            return (x == rhs.x && y == rhs.y);
-        }
+		bool operator== (const Vector2& rhs) const
+		{
+			return (x == rhs.x && y == rhs.y);
+		}
 
-        bool operator!= (const Vector2& rhs) const
-        {
-            return (x != rhs.x || y != rhs.y);
-        }
+		bool operator!= (const Vector2& rhs) const
+		{
+			return (x != rhs.x || y != rhs.y);
+		}
 
-        Vector2 operator+ (const Vector2& rhs) const
-        {
-            return Vector2(x + rhs.x, y + rhs.y);
-        }
+		Vector2 operator+ (const Vector2& rhs) const
+		{
+			return Vector2(x + rhs.x, y + rhs.y);
+		}
 
-        Vector2 operator- (const Vector2& rhs) const
-        {
-            return Vector2(x - rhs.x, y - rhs.y);
-        }
+		Vector2 operator- (const Vector2& rhs) const
+		{
+			return Vector2(x - rhs.x, y - rhs.y);
+		}
 
-        Vector2 operator* (const float rhs) const
-        {
-            return Vector2(x * rhs, y * rhs);
-        }
+		Vector2 operator* (const float rhs) const
+		{
+			return Vector2(x * rhs, y * rhs);
+		}
 
-        Vector2 operator* (const Vector2& rhs) const
-        {
-            return Vector2(x * rhs.x, y * rhs.y);
-        }
+		Vector2 operator* (const Vector2& rhs) const
+		{
+			return Vector2(x * rhs.x, y * rhs.y);
+		}
 
-        Vector2 operator/ (const float rhs) const
-        {
-            assert(rhs != 0.0);
+		Vector2 operator/ (const float rhs) const
+		{
+			assert(rhs != 0.0);
 
-            float fInv = 1.0f / rhs;
+			float fInv = 1.0f / rhs;
 
-            return Vector2(x * fInv, y * fInv);
-        }
+			return Vector2(x * fInv, y * fInv);
+		}
 
-        Vector2 operator/ (const Vector2& rhs) const
-        {
-            return Vector2(x / rhs.x, y / rhs.y);
-        }
+		Vector2 operator/ (const Vector2& rhs) const
+		{
+			return Vector2(x / rhs.x, y / rhs.y);
+		}
 
-        const Vector2& operator+ () const
-        {
-            return *this;
-        }
+		const Vector2& operator+ () const
+		{
+			return *this;
+		}
 
-        Vector2 operator- () const
-        {
-            return Vector2(-x, -y);
-        }
+		Vector2 operator- () const
+		{
+			return Vector2(-x, -y);
+		}
 
-        friend Vector2 operator* (float lhs, const Vector2& rhs)
-        {
-            return Vector2(lhs * rhs.x, lhs * rhs.y);
-        }
+		friend Vector2 operator* (float lhs, const Vector2& rhs)
+		{
+			return Vector2(lhs * rhs.x, lhs * rhs.y);
+		}
 
-        friend Vector2 operator/ (float lhs, const Vector2& rhs)
-        {
-            return Vector2(lhs / rhs.x, lhs / rhs.y);
-        }
+		friend Vector2 operator/ (float lhs, const Vector2& rhs)
+		{
+			return Vector2(lhs / rhs.x, lhs / rhs.y);
+		}
 
-        friend Vector2 operator+ (Vector2& lhs, float rhs)
-        {
-            return Vector2(lhs.x + rhs, lhs.y + rhs);
-        }
+		friend Vector2 operator+ (Vector2& lhs, float rhs)
+		{
+			return Vector2(lhs.x + rhs, lhs.y + rhs);
+		}
 
-        friend Vector2 operator+ (float lhs, const Vector2& rhs)
-        {
-            return Vector2(lhs + rhs.x, lhs + rhs.y);
-        }
+		friend Vector2 operator+ (float lhs, const Vector2& rhs)
+		{
+			return Vector2(lhs + rhs.x, lhs + rhs.y);
+		}
 
-        friend Vector2 operator- (const Vector2& lhs, float rhs)
-        {
-            return Vector2(lhs.x - rhs, lhs.y - rhs);
-        }
+		friend Vector2 operator- (const Vector2& lhs, float rhs)
+		{
+			return Vector2(lhs.x - rhs, lhs.y - rhs);
+		}
 
-        friend Vector2 operator- (const float lhs, const Vector2& rhs)
-        {
-            return Vector2(lhs - rhs.x, lhs - rhs.y);
-        }
+		friend Vector2 operator- (const float lhs, const Vector2& rhs)
+		{
+			return Vector2(lhs - rhs.x, lhs - rhs.y);
+		}
 
-        Vector2& operator+= (const Vector2& rhs)
-        {
-            x += rhs.x;
-            y += rhs.y;
+		Vector2& operator+= (const Vector2& rhs)
+		{
+			x += rhs.x;
+			y += rhs.y;
 
-            return *this;
-        }
+			return *this;
+		}
 
-        Vector2& operator+= (float rhs)
-        {
-            x += rhs;
-            y += rhs;
+		Vector2& operator+= (float rhs)
+		{
+			x += rhs;
+			y += rhs;
 
-            return *this;
-        }
+			return *this;
+		}
 
-        Vector2& operator-= (const Vector2& rhs)
-        {
-            x -= rhs.x;
-            y -= rhs.y;
+		Vector2& operator-= (const Vector2& rhs)
+		{
+			x -= rhs.x;
+			y -= rhs.y;
 
-            return *this;
-        }
+			return *this;
+		}
 
-        Vector2& operator-= (float rhs)
-        {
-            x -= rhs;
-            y -= rhs;
+		Vector2& operator-= (float rhs)
+		{
+			x -= rhs;
+			y -= rhs;
 
-            return *this;
-        }
+			return *this;
+		}
 
-        Vector2& operator*= (float rhs)
-        {
-            x *= rhs;
-            y *= rhs;
+		Vector2& operator*= (float rhs)
+		{
+			x *= rhs;
+			y *= rhs;
 
-            return *this;
-        }
+			return *this;
+		}
 
-        Vector2& operator*= (const Vector2& rhs)
-        {
-            x *= rhs.x;
-            y *= rhs.y;
+		Vector2& operator*= (const Vector2& rhs)
+		{
+			x *= rhs.x;
+			y *= rhs.y;
 
-            return *this;
-        }
+			return *this;
+		}
 
-        Vector2& operator/= (float rhs)
-        {
-            assert(rhs != 0.0f);
+		Vector2& operator/= (float rhs)
+		{
+			assert(rhs != 0.0f);
 
-            float inv = 1.0f / rhs;
+			float inv = 1.0f / rhs;
 
-            x *= inv;
-            y *= inv;
+			x *= inv;
+			y *= inv;
 
-            return *this;
-        }
+			return *this;
+		}
 
-        Vector2& operator/= (const Vector2& rhs)
-        {
-            x /= rhs.x;
-            y /= rhs.y;
+		Vector2& operator/= (const Vector2& rhs)
+		{
+			x /= rhs.x;
+			y /= rhs.y;
 
-            return *this;
-        }
+			return *this;
+		}
 
-        /** Returns the length (magnitude) of the vector. */
-        float length() const
-        {
-            return Math::sqrt(x * x + y * y);
-        }
+		/** Returns the length (magnitude) of the vector. */
+		float length() const
+		{
+			return Math::sqrt(x * x + y * y);
+		}
 
-        /** Returns the square of the length(magnitude) of the vector. */
-        float squaredLength() const
-        {
-            return x * x + y * y;
-        }
+		/** Returns the square of the length(magnitude) of the vector. */
+		float squaredLength() const
+		{
+			return x * x + y * y;
+		}
 
-        /** Returns the distance to another vector. */
-        float distance(const Vector2& rhs) const
-        {
-            return (*this - rhs).length();
-        }
+		/** Returns the distance to another vector. */
+		float distance(const Vector2& rhs) const
+		{
+			return (*this - rhs).length();
+		}
 
-        /** Returns the square of the distance to another vector. */
-        float sqrdDistance(const Vector2& rhs) const
-        {
-            return (*this - rhs).squaredLength();
-        }
+		/** Returns the square of the distance to another vector. */
+		float sqrdDistance(const Vector2& rhs) const
+		{
+			return (*this - rhs).squaredLength();
+		}
 
-        /** Calculates the dot (scalar) product of this vector with another. */
-        float dot(const Vector2& vec) const
-        {
-            return x * vec.x + y * vec.y;
-        }
+		/** Calculates the dot (scalar) product of this vector with another. */
+		float dot(const Vector2& vec) const
+		{
+			return x * vec.x + y * vec.y;
+		}
 
-        /** Normalizes the vector. */
-        float normalize()
-        {
-            float len = Math::sqrt(x * x + y * y);
+		/** Normalizes the vector. */
+		float normalize()
+		{
+			float len = Math::sqrt(x * x + y * y);
 
-            // Will also work for zero-sized vectors, but will change nothing
-            if (len > 1e-08)
-            {
-                float invLen = 1.0f / len;
-                x *= invLen;
-                y *= invLen;
-            }
+			// Will also work for zero-sized vectors, but will change nothing
+			if (len > 1e-08)
+			{
+				float invLen = 1.0f / len;
+				x *= invLen;
+				y *= invLen;
+			}
 
-            return len;
-        }
+			return len;
+		}
 
-        /** Generates a vector perpendicular to this vector. */
-        Vector2 perpendicular() const
-        {
-            return Vector2 (-y, x);
-        }
+		/** Generates a vector perpendicular to this vector. */
+		Vector2 perpendicular() const
+		{
+			return Vector2 (-y, x);
+		}
 
-        /**
+		/**
 		 * Calculates the 2 dimensional cross-product of 2 vectors, which results in a single floating point value which 
 		 * is 2 times the area of the triangle.
-         */
-        float cross(const Vector2& other) const
-        {
-            return x * other.y - y * other.x;
-        }
+		 */
+		float cross(const Vector2& other) const
+		{
+			return x * other.y - y * other.x;
+		}
 
-        /** Sets this vector's components to the minimum of its own and the ones of the passed in vector. */
-        void floor(const Vector2& cmp)
-        {
-            if(cmp.x < x) x = cmp.x;
-            if(cmp.y < y) y = cmp.y;
-        }
+		/** Sets this vector's components to the minimum of its own and the ones of the passed in vector. */
+		void floor(const Vector2& cmp)
+		{
+			if(cmp.x < x) x = cmp.x;
+			if(cmp.y < y) y = cmp.y;
+		}
 
-        /** Sets this vector's components to the maximum of its own and the ones of the passed in vector. */
-        void ceil(const Vector2& cmp)
-        {
-            if(cmp.x > x) x = cmp.x;
-            if(cmp.y > y) y = cmp.y;
-        }
+		/** Sets this vector's components to the maximum of its own and the ones of the passed in vector. */
+		void ceil(const Vector2& cmp)
+		{
+			if(cmp.x > x) x = cmp.x;
+			if(cmp.y > y) y = cmp.y;
+		}
 
-        /** Returns true if this vector is zero length. */
-        bool isZeroLength() const
-        {
-            float sqlen = (x * x) + (y * y);
-            return (sqlen < (1e-06 * 1e-06));
-        }
+		/** Returns true if this vector is zero length. */
+		bool isZeroLength() const
+		{
+			float sqlen = (x * x) + (y * y);
+			return (sqlen < (1e-06 * 1e-06));
+		}
 
-        /** Calculates a reflection vector to the plane with the given normal. */
-        Vector2 reflect(const Vector2& normal) const
-        {
-            return Vector2(*this - (2 * this->dot(normal) * normal));
-        }
+		/** Calculates a reflection vector to the plane with the given normal. */
+		Vector2 reflect(const Vector2& normal) const
+		{
+			return Vector2(*this - (2 * this->dot(normal) * normal));
+		}
 
 		/** Performs Gram-Schmidt orthonormalization. */
 		static void orthonormalize(Vector2& u, Vector2& v)
@@ -361,11 +362,11 @@ namespace bs
 			return Vector2(std::max(a.x, b.x), std::max(a.y, b.y));
 		}
 
-        static const Vector2 ZERO;
+		static const Vector2 ZERO;
 		static const Vector2 ONE;
 		static const Vector2 UNIT_X;
 		static const Vector2 UNIT_Y;
-    };
+	};
 
 	/** @} */
 

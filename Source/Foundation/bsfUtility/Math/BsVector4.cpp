@@ -5,7 +5,7 @@
 
 namespace bs
 {
-    const Vector4 Vector4::ZERO;
+	const Vector4 Vector4::ZERO{BS_ZERO()};
 
 	bool Vector4::isNaN() const
 	{
