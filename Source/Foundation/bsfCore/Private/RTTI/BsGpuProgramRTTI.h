@@ -22,6 +22,7 @@ namespace bs
 			BS_RTTI_MEMBER_REFLPTR(paramDesc, 1)
 			BS_RTTI_MEMBER_PLAIN(vertexInput, 2)
 			BS_RTTI_MEMBER_PLAIN(messages, 3)
+			BS_RTTI_MEMBER_PLAIN(compilerId, 4)
 		BS_END_RTTI_MEMBERS
 
 	public:
@@ -89,13 +90,26 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mEntryPoint, 4)
 			BS_RTTI_MEMBER_PLAIN(mSource, 6)
 			BS_RTTI_MEMBER_PLAIN(mLanguage, 7)
-			BS_RTTI_MEMBER_REFLPTR(mCachedBytecode, 8)
 		BS_END_RTTI_MEMBERS
+
+
+		SPtr<GpuProgramBytecode> getCachedBytecode(GpuProgram* obj) 
+		{ 
+			return obj->getCore()->mCachedBytecode;
+		}
+
+		void setCachedBytecode(GpuProgram* obj, SPtr<GpuProgramBytecode> val)
+		{
+			obj->mCachedBytecode = val;
+		}
 
 	public:
 		GpuProgramRTTI()
 			:mInitMembers(this)
-		{ }
+		{
+			addReflectablePtrField("mCachedBytecode", 8, 
+				&GpuProgramRTTI::getCachedBytecode, &GpuProgramRTTI::setCachedBytecode);
+		}
 
 		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{

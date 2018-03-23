@@ -61,6 +61,7 @@ namespace bs
 		desc.language = mLanguage;
 		desc.type = mType;
 		desc.requiresAdjacency = mNeedsAdjacencyInfo;
+		desc.bytecode = mCachedBytecode;
 
 		return ct::GpuProgramManager::instance().createInternal(desc);
 	}

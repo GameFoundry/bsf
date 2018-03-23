@@ -50,6 +50,10 @@ namespace bs { namespace ct
 
 			mCachedBytecode = compileBytecode(desc);
 		}
+		else
+		{
+			int a =5;
+		}
 
 		mCompileMessages = mCachedBytecode->messages;
 		mIsCompiled = mCachedBytecode->instructions.data != nullptr;
