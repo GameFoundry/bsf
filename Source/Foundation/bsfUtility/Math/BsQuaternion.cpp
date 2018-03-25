@@ -6,7 +6,7 @@
 #include "Math/BsMatrix3.h"
 #include "Math/BsVector3.h"
 
-namespace bs 
+namespace bs
 {
 	const Quaternion Quaternion::ZERO{BS_ZERO()};
 	const Quaternion Quaternion::IDENTITY{BS_IDENTITY()};
@@ -112,6 +112,8 @@ namespace bs
 
 	void Quaternion::fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order)
 	{
+		static constexpr const EulerAngleOrderData EA_LOOKUP[6] = { { 0, 1, 2}, { 0, 2, 1}, { 1, 0, 2},
+									    { 1, 2, 0}, { 2, 0, 1}, { 2, 1, 0} };
 		const EulerAngleOrderData& l = EA_LOOKUP[(int)order];
 
 		Radian halfXAngle = xAngle * 0.5f;

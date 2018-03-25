@@ -11,9 +11,9 @@ namespace bs
 	 *  @{
 	 */
 
-	/** 
+	/**
 	 * A 3x3 matrix. Can be used for non-homogenous transformations of three dimensional vectors and points. In row major
-	 * format. 
+	 * format.
 	 */
 	class BS_UTILITY_EXPORT Matrix3
 	{
@@ -57,7 +57,7 @@ namespace bs
 		explicit Matrix3(const Quaternion& rotation, const Vector3& scale)
 		{
 			fromQuaternion(rotation);
-			
+
 			for (int row = 0; row < 3; row++)
 			{
 				for (int col = 0; col < 3; col++)
@@ -77,9 +77,9 @@ namespace bs
 			fromAxes(xaxis, yaxis, zaxis);
 		}
 
-		/** 
+		/**
 		 * Construct a matrix from euler angles, YXZ ordering.
-		 * 			
+		 *
 		 * @see		Matrix3::fromEulerAngles
 		 */
 		explicit Matrix3(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle)
@@ -89,7 +89,7 @@ namespace bs
 
 		/**
 		 * Construct a matrix from euler angles, custom ordering.
-		 * 			
+		 *
 		 * @see		Matrix3::fromEulerAngles
 		 */
 		explicit Matrix3(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order)
@@ -225,7 +225,7 @@ namespace bs
 		 * @param[in,out]	yAngle  Rotation about y axis. (AKA Yaw)
 		 * @param[in,out]	zAngle 	Rotation about z axis. (AKA Roll)
 		 * @return					True if unique solution was found, false otherwise.
-		 * 			
+		 *
 		 * @note	Matrix must be orthonormal.
 		 */
 		bool toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle) const;
@@ -249,7 +249,7 @@ namespace bs
 		 * @param[in]	xAngle	Rotation about x axis. (AKA Pitch)
 		 * @param[in]	yAngle	Rotation about y axis. (AKA Yaw)
 		 * @param[in]	zAngle	Rotation about z axis. (AKA Roll)
-		 * @param[in]	order 	The order in which rotations will be applied. 
+		 * @param[in]	order 	The order in which rotations will be applied.
 		 *						Different rotations can be created depending on the order.
 		 *
 		 * @note	Matrix must be orthonormal.
@@ -259,9 +259,9 @@ namespace bs
 		/**
 		 * Eigensolver, matrix must be symmetric.
 		 *
-		 * @note	
-		 * Eigenvectors are vectors which when transformed by the matrix, only change in magnitude, but not in direction. 
-		 * Eigenvalue is that magnitude. In other words you will get the same result whether you multiply the vector by the 
+		 * @note
+		 * Eigenvectors are vectors which when transformed by the matrix, only change in magnitude, but not in direction.
+		 * Eigenvalue is that magnitude. In other words you will get the same result whether you multiply the vector by the
 		 * matrix or by its eigenvalue.
 		 */
 		void eigenSolveSymmetric(float eigenValues[3], Vector3 eigenVectors[3]) const;
@@ -282,11 +282,6 @@ namespace bs
 		static constexpr const unsigned int SVD_MAX_ITERS = 32;
 		static void bidiagonalize (Matrix3& matA, Matrix3& matL, Matrix3& matR);
 		static void golubKahanStep (Matrix3& matA, Matrix3& matL, Matrix3& matR);
-
-		// Euler angle conversions
-		static constexpr const EulerAngleOrderData EA_LOOKUP[6] = 
-		{ { 0, 1, 2, 1.0f}, { 0, 2, 1, -1.0f}, { 1, 0, 2, -1.0f},
-		  { 1, 2, 0, 1.0f}, { 2, 0, 1,  1.0f}, { 2, 1, 0, -1.0f} };
 
 		float m[3][3];
 	};
