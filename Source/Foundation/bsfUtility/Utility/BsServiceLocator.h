@@ -5,6 +5,8 @@
 #include "Prerequisites/BsPrerequisitesUtil.h"
 #include "Error/BsException.h"
 
+#include <atomic>
+
 namespace bs
 {
 	/** @addtogroup General
@@ -14,8 +16,8 @@ namespace bs
 	/**
 	 * A locator system that allows you to quickly find a service of a specific type.
 	 *
-	 * @note	
-	 * This is similar to a singleton pattern but unlike singleton the active instance is not required to be available and 
+	 * @note
+	 * This is similar to a singleton pattern but unlike singleton the active instance is not required to be available and
 	 * can be replaced with another system during runtime, or completely removed.
 	 */
 	template <class T>
@@ -29,7 +31,7 @@ namespace bs
 		 */
 		static T* instance() { return mService; }
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 
@@ -40,25 +42,22 @@ namespace bs
 		}
 
 		/**
-		 * Stops providing a service when "instance()" is called. Ignored if the current service doesn't match the 
+		 * Stops providing a service when "instance()" is called. Ignored if the current service doesn't match the
 		 * provided service.
 		 */
 		static void _remove(T* service)
 		{
-			if (mService != service)
-				return;
-
-			mService = nullptr;
+			mService.compare_exchange_strong(service, nullptr);
 		}
 
 		/** @} */
 
 	private:
-		static T* mService;
+		static std::atomic<T*> mService;
 	};
 
 	template <class T>
-	T* ServiceLocator<T>::mService = nullptr;
+	T* ServiceLocator<T>::mService{nullptr};
 
 	/** @} */
 }
