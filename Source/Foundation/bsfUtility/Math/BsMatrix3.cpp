@@ -12,7 +12,7 @@ namespace bs
 	Vector3 Matrix3::getColumn(UINT32 col) const
 	{
 		assert(col < 3);
-		
+
 		return Vector3(m[0][col],m[1][col], m[2][col]);
 	}
 
@@ -815,6 +815,11 @@ namespace bs
 
 	void Matrix3::fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order)
 	{
+		// Euler angle conversions
+		static constexpr const EulerAngleOrderData EA_LOOKUP[6] =
+		{ { 0, 1, 2, 1.0f}, { 0, 2, 1, -1.0f}, { 1, 0, 2, -1.0f},
+		  { 1, 2, 0, 1.0f}, { 2, 0, 1,  1.0f}, { 2, 1, 0, -1.0f} };
+
 		const EulerAngleOrderData& l = EA_LOOKUP[(int)order];
 
 		Matrix3 mats[3];
@@ -838,7 +843,7 @@ namespace bs
 			cz, -sz, 0.0f,
 			sz, cz, 0.0f,
 			0.0f, 0.0f, 1.0f);
-	
+
 		*this = mats[l.c]*(mats[l.b]*mats[l.a]);
 	}
 
