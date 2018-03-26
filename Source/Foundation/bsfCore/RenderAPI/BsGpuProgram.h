@@ -96,7 +96,7 @@ namespace bs
 		String mEntryPoint;
 		String mSource;
 
-		SPtr<GpuProgramBytecode> mCachedBytecode;
+		SPtr<GpuProgramBytecode> mBytecode;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
@@ -189,6 +189,9 @@ namespace bs
 		/**	Returns GPU program input declaration. Only relevant for vertex programs. */
 		SPtr<VertexDeclaration> getInputDeclaration() const { return mInputDeclaration; }
 
+		/** Returns the compiled bytecode of this program. */
+		SPtr<GpuProgramBytecode> getBytecode() const { return mBytecode; }
+
 		/** 
 		 * @copydoc bs::GpuProgram::create(const GPU_PROGRAM_DESC&, GpuDeviceFlags)
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
@@ -218,7 +221,7 @@ namespace bs
 		String mEntryPoint;
 		String mSource;
 
-		SPtr<GpuProgramBytecode> mCachedBytecode;
+		SPtr<GpuProgramBytecode> mBytecode;
 	};
 
 	/** @} */

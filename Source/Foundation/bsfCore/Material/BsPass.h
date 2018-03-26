@@ -4,8 +4,13 @@
 
 #include "BsCorePrerequisites.h"
 #include "Image/BsColor.h"
+#include "RenderAPI/BsBlendState.h"
+#include "RenderAPI/BsRasterizerState.h"
+#include "RenderAPI/BsDepthStencilState.h"
+#include "RenderAPI/BsGpuProgram.h"
 #include "Reflection/BsIReflectable.h"
 #include "CoreThread/BsCoreObject.h"
+#include "RenderAPI/BsGpuPipelineState.h"
 
 namespace bs
 {
@@ -16,45 +21,20 @@ namespace bs
 	/** Descriptor structure used for initializing a shader pass. */
 	struct PASS_DESC
 	{
-		SPtr<BlendState> blendState;
-		SPtr<RasterizerState> rasterizerState;
-		SPtr<DepthStencilState> depthStencilState;
+		BLEND_STATE_DESC blendStateDesc;
+		RASTERIZER_STATE_DESC rasterizerStateDesc;
+		DEPTH_STENCIL_STATE_DESC depthStencilStateDesc;
 		UINT32 stencilRefValue;
 
-		SPtr<GpuProgram> vertexProgram;
-		SPtr<GpuProgram> fragmentProgram;
-		SPtr<GpuProgram> geometryProgram;
-		SPtr<GpuProgram> hullProgram;
-		SPtr<GpuProgram> domainProgram;
-		SPtr<GpuProgram> computeProgram;
+		GPU_PROGRAM_DESC vertexProgramDesc;
+		GPU_PROGRAM_DESC fragmentProgramDesc;
+		GPU_PROGRAM_DESC geometryProgramDesc;
+		GPU_PROGRAM_DESC hullProgramDesc;
+		GPU_PROGRAM_DESC domainProgramDesc;
+		GPU_PROGRAM_DESC computeProgramDesc;
 	};
 
 	/** @} */
-
-	namespace ct
-	{
-	/** @addtogroup Material-Internal
-	 *  @{
-	 */
-
-	/** Descriptor structure used for initializing a core thread variant of a shader pass. */
-	struct PASS_DESC
-	{
-		SPtr<BlendState> blendState;
-		SPtr<RasterizerState> rasterizerState;
-		SPtr<DepthStencilState> depthStencilState;
-		UINT32 stencilRefValue;
-
-		SPtr<GpuProgram> vertexProgram;
-		SPtr<GpuProgram> fragmentProgram;
-		SPtr<GpuProgram> geometryProgram;
-		SPtr<GpuProgram> hullProgram;
-		SPtr<GpuProgram> domainProgram;
-		SPtr<GpuProgram> computeProgram;
-	};
-
-	/** @} */
-	}
 
 	/** @addtogroup Implementation
 	 *  @{
@@ -68,35 +48,26 @@ namespace bs
 	template<>
 	struct TPassTypes < false >
 	{
-		typedef SPtr<BlendState> BlendStateType;
-		typedef SPtr<RasterizerState> RasterizerStateType;
-		typedef SPtr<DepthStencilState> DepthStencilStateType;
-		typedef SPtr<GpuProgram> GpuProgramType;
-		typedef SPtr<GraphicsPipelineState> GraphicsPipelineStateType;
-		typedef SPtr<ComputePipelineState> ComputePipelineStateType;
-		typedef PASS_DESC PassDescType;
+		typedef BlendState BlendStateType;
+		typedef RasterizerState RasterizerStateType;
+		typedef DepthStencilState DepthStencilStateType;
+		typedef GpuProgram GpuProgramType;
+		typedef GraphicsPipelineState GraphicsPipelineStateType;
+		typedef ComputePipelineState ComputePipelineStateType;
 	};
 
 	template<>
 	struct TPassTypes < true >
 	{
-		typedef SPtr<ct::BlendState> BlendStateType;
-		typedef SPtr<ct::RasterizerState> RasterizerStateType;
-		typedef SPtr<ct::DepthStencilState> DepthStencilStateType;
-		typedef SPtr<ct::GpuProgram> GpuProgramType;
-		typedef SPtr<ct::GraphicsPipelineState> GraphicsPipelineStateType;
-		typedef SPtr<ct::ComputePipelineState> ComputePipelineStateType;
-		typedef ct::PASS_DESC PassDescType;
+		typedef ct::BlendState BlendStateType;
+		typedef ct::RasterizerState RasterizerStateType;
+		typedef ct::DepthStencilState DepthStencilStateType;
+		typedef ct::GpuProgram GpuProgramType;
+		typedef ct::GraphicsPipelineState GraphicsPipelineStateType;
+		typedef ct::ComputePipelineState ComputePipelineStateType;
 	};
 
-	/**
-	 * Class defining a single pass of a technique (of a material).
-	 *
-	 * Pass may contain multiple GPU programs (vertex, fragment, geometry, etc.), and a set of pipeline states (blend, 
-	 * rasterizer, etc.).
-	 *
-	 * @note	Templated so it can be used for both core and non-core versions of a pass.
-	 */
+	/** Contains common functionality used by both sim and core thread versions of Pass. */
 	template<bool Core>
 	class BS_CORE_EXPORT TPass
 	{
@@ -105,48 +76,42 @@ namespace bs
 		typedef typename TPassTypes<Core>::RasterizerStateType RasterizerStateType;
 		typedef typename TPassTypes<Core>::DepthStencilStateType DepthStencilStateType;
 		typedef typename TPassTypes<Core>::GpuProgramType GpuProgramType;
-		typedef typename TPassTypes<Core>::PassDescType PassDescType;
 		typedef typename TPassTypes<Core>::GraphicsPipelineStateType GraphicsPipelineStateType;
 		typedef typename TPassTypes<Core>::ComputePipelineStateType ComputePipelineStateType;
+		typedef typename TGpuPipelineStateTypes<Core>::StateDescType PipelineStateDescType;
 
 		virtual ~TPass() { }
-
-		bool hasVertexProgram() const { return mData.vertexProgram != nullptr; }
-		bool hasFragmentProgram() const { return mData.fragmentProgram != nullptr; }
-		bool hasGeometryProgram() const { return mData.geometryProgram != nullptr; }
-		bool hasHullProgram() const { return mData.hullProgram != nullptr; }
-		bool hasDomainProgram() const { return mData.domainProgram != nullptr; }
-		bool hasComputeProgram() const { return mData.computeProgram != nullptr; }
 
 		/**	Returns true if this pass has some element of transparency. */
 		bool hasBlending() const;
 
-		BlendStateType getBlendState() const { return mData.blendState; }
-		RasterizerStateType getRasterizerState() const { return mData.rasterizerState; }
-		DepthStencilStateType getDepthStencilState() const { return mData.depthStencilState; }
+		/** Returns true if the pass executes a compute program. */
+		bool isCompute() const { return !mData.computeProgramDesc.source.empty(); }
 
 		/** Gets the stencil reference value that is used when performing operations using the stencil buffer. */
 		UINT32 getStencilRefValue() const { return mData.stencilRefValue; }
 
-		const GpuProgramType& getVertexProgram() const { return mData.vertexProgram; }
-		const GpuProgramType& getFragmentProgram() const { return mData.fragmentProgram; }
-		const GpuProgramType& getGeometryProgram() const { return mData.geometryProgram; }
-		const GpuProgramType& getHullProgram() const { return mData.hullProgram; }
-		const GpuProgramType& getDomainProgram() const { return mData.domainProgram; }
-		const GpuProgramType& getComputeProgram() const { return mData.computeProgram; }
+		/** 
+		 * Returns the graphics pipeline state describing this pass, or null if its a compute pass.
+		 * Only valid after compile() has been called.
+		 */
+		const SPtr<GraphicsPipelineStateType>& getGraphicsPipelineState() const { return mGraphicsPipelineState; }
 
-		/** Returns the graphics pipeline state describing this pass, or null if its a compute pass. */
-		const GraphicsPipelineStateType& getGraphicsPipelineState() const { return mGraphicsPipelineState; }
-
-		/** Returns the compute pipeline state describing this pass, or null if its a graphics pass. */
-		const ComputePipelineStateType& getComputePipelineState() const { return mComputePipelineState; }
+		/** 
+		 * Returns the compute pipeline state describing this pass, or null if its a graphics pass. 
+		 * Only valid after compile has been called.
+		 */
+		const SPtr<ComputePipelineStateType>& getComputePipelineState() const { return mComputePipelineState; }
 	protected:
 		TPass();
-		TPass(const PassDescType& desc);
+		TPass(const PASS_DESC& desc);
 
-		PassDescType mData;
-		GraphicsPipelineStateType mGraphicsPipelineState;
-		ComputePipelineStateType mComputePipelineState;
+		/** Creates either the graphics or the compute pipeline state from the stored pass data. */
+		void createPipelineState();
+
+		PASS_DESC mData;
+		SPtr<GraphicsPipelineStateType> mGraphicsPipelineState;
+		SPtr<ComputePipelineStateType> mComputePipelineState;
 	};
 
 	/** @} */
@@ -156,7 +121,9 @@ namespace bs
 	 */
 
 	/**
-	 * @copydoc	TPass
+	 * Class defining a single pass of a technique (of a material). Pass may contain multiple GPU programs (vertex, 
+	 * fragment, geometry, etc.), and a set of pipeline states (blend, rasterizer, etc.). When initially created the pass
+	 * is in its uncompiled state. It needs to be explicitly compiled by calling compile() before use.
 	 *
 	 * @note	Sim thread.
 	 */
@@ -168,6 +135,13 @@ namespace bs
 		/** Retrieves an implementation of a pass usable only from the core thread. */
 		SPtr<ct::Pass> getCore() const;
 
+		/** 
+		 * Initializes the pass internals by compiling the GPU programs and creating the relevant pipeline state. This 
+		 * method must be called before pass pipelines can be retrieved. After initial compilation further calls do this
+		 * method will perform no operation.
+		 */
+		void compile();
+
 		/**	Creates a new empty pass. */
 		static SPtr<Pass> create(const PASS_DESC& desc);
 
@@ -177,17 +151,11 @@ namespace bs
 		Pass() { }
 		Pass(const PASS_DESC& desc);
 
-		/** @copydoc CoreObject::initialize */
-		void initialize() override;
-
 		/** @copydoc CoreObject::syncToCore */
 		CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
 		/** @copydoc CoreObject::createCore */
 		SPtr<ct::CoreObject> createCore() const override;
-
-		/** @copydoc CoreObject::syncToCore */
-		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 
 		/**	Creates a new empty pass but doesn't initialize it. */
 		static SPtr<Pass> createEmpty();
@@ -210,7 +178,7 @@ namespace bs
 	 */
 
 	/**
-	 * @copydoc	TPass
+	 * Core thread counterpart of bs::Pass.
 	 *
 	 * @note	Core thread.
 	 */
@@ -222,17 +190,15 @@ namespace bs
 		/**	Creates a new empty pass. */
 		static SPtr<Pass> create(const PASS_DESC& desc);
 
+		/** @copydoc bs::Pass::compile */
+		void compile();
+
 	protected:
 		friend class bs::Pass;
 		friend class Technique;
 
-		/** @copydoc CoreObject::initialize */
-		void initialize() override;
-
 		Pass() { }
 		Pass(const PASS_DESC& desc);
-		Pass(const PASS_DESC& desc, const SPtr<GraphicsPipelineState>& pipelineState);
-		Pass(const PASS_DESC& desc, const SPtr<ComputePipelineState>& pipelineState);
 
 		/** @copydoc CoreObject::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;

@@ -205,6 +205,9 @@ namespace bs
 			if (mTechniques.size() == 0)
 				return;
 
+			for(auto& entry : mTechniques)
+				entry->compile();
+
 			initDefaultParameters();
 		}
 		else

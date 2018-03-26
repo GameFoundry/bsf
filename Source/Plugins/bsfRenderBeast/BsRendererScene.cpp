@@ -313,8 +313,9 @@ namespace bs {	namespace ct
 					for (UINT32 j = 0; j < numPasses; j++)
 					{
 						SPtr<Pass> pass = renElement.material->getPass(j, techniqueIdx);
+						SPtr<GraphicsPipelineState> graphicsPipeline = pass->getGraphicsPipelineState();
 
-						SPtr<VertexDeclaration> shaderDecl = pass->getVertexProgram()->getInputDeclaration();
+						SPtr<VertexDeclaration> shaderDecl = graphicsPipeline->getVertexProgram()->getInputDeclaration();
 						if (!vertexDecl->isCompatible(shaderDecl))
 						{
 							Vector<VertexElement> missingElements = vertexDecl->getMissingElements(shaderDecl);

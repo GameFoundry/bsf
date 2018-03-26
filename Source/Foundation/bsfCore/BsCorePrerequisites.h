@@ -587,6 +587,10 @@ namespace bs
 		TID_GpuParamDataDesc = 1147,
 		TID_GpuParamObjectDesc = 1148,
 		TID_GpuParamDesc = 1149,
+		TID_BlendStateDesc = 1150,
+		TID_RasterizerStateDesc = 1151,
+		TID_DepthStencilStateDesc = 1152,
+		TID_SerializedGpuProgramData = 1153,
 
 		// Moved from Engine layer
 		TID_CCamera = 30000,

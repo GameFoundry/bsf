@@ -18,7 +18,7 @@ namespace bs { namespace ct
 		virtual ~D3D11GpuProgram();
 
 		/**	Returns compiled shader microcode. */
-		const DataBlob& getMicroCode() const { return mCachedBytecode->instructions; }
+		const DataBlob& getMicroCode() const { return mBytecode->instructions; }
 
 		/**	Returns unique GPU program ID. */
 		UINT32 getProgramId() const { return mProgramId; }

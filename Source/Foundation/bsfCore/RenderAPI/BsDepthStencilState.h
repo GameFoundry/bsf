@@ -19,23 +19,6 @@ namespace bs
 	 */
 	struct BS_CORE_EXPORT DEPTH_STENCIL_STATE_DESC
 	{
-		DEPTH_STENCIL_STATE_DESC()
-			: depthReadEnable(true)
-			, depthWriteEnable(true)
-			, depthComparisonFunc(CMPF_LESS)
-			, stencilEnable(false)
-			, stencilReadMask(0xFF)
-			, stencilWriteMask(0xFF)
-			, frontStencilFailOp(SOP_KEEP)
-			, frontStencilZFailOp(SOP_KEEP)
-			, frontStencilPassOp(SOP_KEEP)
-			, frontStencilComparisonFunc(CMPF_ALWAYS_PASS)
-			, backStencilFailOp(SOP_KEEP)
-			, backStencilZFailOp(SOP_KEEP)
-			, backStencilPassOp(SOP_KEEP)
-			, backStencilComparisonFunc(CMPF_ALWAYS_PASS)
-		{ }
-
 		bool operator==(const DEPTH_STENCIL_STATE_DESC& rhs) const;
 
 		/**
@@ -43,58 +26,58 @@ namespace bs
 		 * depth test passes (depending on the set valueand chosen depth comparison function), that pixel is written and 
 		 * depth is updated (if depth write is enabled).
 		 */
-		bool depthReadEnable;
+		bool depthReadEnable = true;
 
 		/** If enabled rendering pixels will update the depth buffer value. */
-		bool depthWriteEnable;
+		bool depthWriteEnable = true;
 
 		/**
 		 * Determines what operation should the renderer use when comparing previous and current depth value. If the 
 		 * operation passes, pixel with the current depth value will be considered visible.
 		 */
-		CompareFunction depthComparisonFunc;
+		CompareFunction depthComparisonFunc = CMPF_LESS;
 
 		/**
 		 * If true then stencil buffer will also be updated when a pixel is written, and pixels will be tested against 
 		 * the stencil buffer before rendering.
 		 */
-		bool stencilEnable;
+		bool stencilEnable = false;
 
 		/** Mask to apply to any value read from the stencil buffer, before applying the stencil comparison function. */
-		UINT8 stencilReadMask;
+		UINT8 stencilReadMask = 0xFF;
 
 		/**	Mask to apply to any value about to be written in the stencil buffer. */
-		UINT8 stencilWriteMask;
+		UINT8 stencilWriteMask = 0xFF;
 
 		/**	Operation that happens when stencil comparison function fails on a front facing polygon. */
-		StencilOperation frontStencilFailOp;
+		StencilOperation frontStencilFailOp = SOP_KEEP;
 
 		/** Operation that happens when stencil comparison function passes but depth test fails on a front facing polygon. */
-		StencilOperation frontStencilZFailOp;
+		StencilOperation frontStencilZFailOp = SOP_KEEP;
 
 		/**	Operation that happens when stencil comparison function passes on a front facing polygon. */
-		StencilOperation frontStencilPassOp;
+		StencilOperation frontStencilPassOp = SOP_KEEP;
 
 		/**
 		 * Stencil comparison function used for front facing polygons. Stencil buffer will be modified according to 
 		 * previously set stencil operations depending whether this comparison passes or fails.
 		 */
-		CompareFunction frontStencilComparisonFunc;
+		CompareFunction frontStencilComparisonFunc = CMPF_ALWAYS_PASS;
 
 		/** Operation that happens when stencil comparison function fails on a back facing polygon. */
-		StencilOperation backStencilFailOp;
+		StencilOperation backStencilFailOp = SOP_KEEP;
 
 		/** Operation that happens when stencil comparison function passes but depth test fails on a back facing polygon. */
-		StencilOperation backStencilZFailOp;
+		StencilOperation backStencilZFailOp = SOP_KEEP;
 
 		/**	Operation that happens when stencil comparison function passes on a back facing polygon. */
-		StencilOperation backStencilPassOp;
+		StencilOperation backStencilPassOp = SOP_KEEP;
 
 		/**
 		 * Stencil comparison function used for back facing polygons. Stencil buffer will be modified according	to 
 		 * previously set stencil operations depending whether this comparison passes or fails.
 		 */
-		CompareFunction backStencilComparisonFunc;
+		CompareFunction backStencilComparisonFunc = CMPF_ALWAYS_PASS;
 	};
 
 	/** @cond SPECIALIZATIONS */

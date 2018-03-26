@@ -78,46 +78,55 @@ namespace bs
 		{
 			SPtr<Pass> curPass = technique->getPass(i);
 
-			SPtr<GpuProgram> vertProgram = curPass->getVertexProgram();
-			if (vertProgram)
+			const SPtr<GraphicsPipelineState>& graphicsPipeline = curPass->getGraphicsPipelineState();
+			if(graphicsPipeline)
 			{
-				vertProgram->blockUntilCoreInitialized();
-				allParamDescs.push_back(vertProgram->getParamDesc());
+				SPtr<GpuProgram> vertProgram = graphicsPipeline->getVertexProgram();
+				if (vertProgram)
+				{
+					vertProgram->blockUntilCoreInitialized();
+					allParamDescs.push_back(vertProgram->getParamDesc());
+				}
+
+				SPtr<GpuProgram> fragProgram = graphicsPipeline->getFragmentProgram();
+				if (fragProgram)
+				{
+					fragProgram->blockUntilCoreInitialized();
+					allParamDescs.push_back(fragProgram->getParamDesc());
+				}
+
+				SPtr<GpuProgram> geomProgram = graphicsPipeline->getGeometryProgram();
+				if (geomProgram)
+				{
+					geomProgram->blockUntilCoreInitialized();
+					allParamDescs.push_back(geomProgram->getParamDesc());
+				}
+
+				SPtr<GpuProgram> hullProgram = graphicsPipeline->getHullProgram();
+				if (hullProgram)
+				{
+					hullProgram->blockUntilCoreInitialized();
+					allParamDescs.push_back(hullProgram->getParamDesc());
+				}
+
+				SPtr<GpuProgram> domainProgram = graphicsPipeline->getDomainProgram();
+				if (domainProgram)
+				{
+					domainProgram->blockUntilCoreInitialized();
+					allParamDescs.push_back(domainProgram->getParamDesc());
+				}
 			}
 
-			SPtr<GpuProgram> fragProgram = curPass->getFragmentProgram();
-			if (fragProgram)
+			const SPtr<ComputePipelineState>& computePipeline = curPass->getComputePipelineState();
+			if(computePipeline)
 			{
-				fragProgram->blockUntilCoreInitialized();
-				allParamDescs.push_back(fragProgram->getParamDesc());
-			}
-
-			SPtr<GpuProgram> geomProgram = curPass->getGeometryProgram();
-			if (geomProgram)
-			{
-				geomProgram->blockUntilCoreInitialized();
-				allParamDescs.push_back(geomProgram->getParamDesc());
-			}
-
-			SPtr<GpuProgram> hullProgram = curPass->getHullProgram();
-			if (hullProgram)
-			{
-				hullProgram->blockUntilCoreInitialized();
-				allParamDescs.push_back(hullProgram->getParamDesc());
-			}
-
-			SPtr<GpuProgram> domainProgram = curPass->getDomainProgram();
-			if (domainProgram)
-			{
-				domainProgram->blockUntilCoreInitialized();
-				allParamDescs.push_back(domainProgram->getParamDesc());
-			}
-
-			SPtr<GpuProgram> computeProgram = curPass->getComputeProgram();
-			if (computeProgram)
-			{
-				computeProgram->blockUntilCoreInitialized();
-				allParamDescs.push_back(computeProgram->getParamDesc());
+				SPtr<GpuProgram> computeProgram = computePipeline->getProgram();
+				if (computeProgram)
+				{
+					computeProgram->blockUntilCoreInitialized();
+					allParamDescs.push_back(computeProgram->getParamDesc());
+				}
+				
 			}
 		}
 
@@ -133,29 +142,38 @@ namespace bs
 		{
 			SPtr<ct::Pass> curPass = technique->getPass(i);
 
-			SPtr<ct::GpuProgram> vertProgram = curPass->getVertexProgram();
-			if (vertProgram)
-				allParamDescs.push_back(vertProgram->getParamDesc());
+			const SPtr<ct::GraphicsPipelineState>& graphicsPipeline = curPass->getGraphicsPipelineState();
+			if(graphicsPipeline)
+			{
+				SPtr<ct::GpuProgram> vertProgram = graphicsPipeline->getVertexProgram();
+				if (vertProgram)
+					allParamDescs.push_back(vertProgram->getParamDesc());
 
-			SPtr<ct::GpuProgram> fragProgram = curPass->getFragmentProgram();
-			if (fragProgram)
-				allParamDescs.push_back(fragProgram->getParamDesc());
+				SPtr<ct::GpuProgram> fragProgram = graphicsPipeline->getFragmentProgram();
+				if (fragProgram)
+					allParamDescs.push_back(fragProgram->getParamDesc());
 
-			SPtr<ct::GpuProgram> geomProgram = curPass->getGeometryProgram();
-			if (geomProgram)
-				allParamDescs.push_back(geomProgram->getParamDesc());
+				SPtr<ct::GpuProgram> geomProgram = graphicsPipeline->getGeometryProgram();
+				if (geomProgram)
+					allParamDescs.push_back(geomProgram->getParamDesc());
 
-			SPtr<ct::GpuProgram> hullProgram = curPass->getHullProgram();
-			if (hullProgram)
-				allParamDescs.push_back(hullProgram->getParamDesc());
+				SPtr<ct::GpuProgram> hullProgram = graphicsPipeline->getHullProgram();
+				if (hullProgram)
+					allParamDescs.push_back(hullProgram->getParamDesc());
 
-			SPtr<ct::GpuProgram> domainProgram = curPass->getDomainProgram();
-			if (domainProgram)
-				allParamDescs.push_back(domainProgram->getParamDesc());
+				SPtr<ct::GpuProgram> domainProgram = graphicsPipeline->getDomainProgram();
+				if (domainProgram)
+					allParamDescs.push_back(domainProgram->getParamDesc());
+			}
 
-			SPtr<ct::GpuProgram> computeProgram = curPass->getComputeProgram();
-			if (computeProgram)
-				allParamDescs.push_back(computeProgram->getParamDesc());
+			const SPtr<ct::ComputePipelineState>& computePipeline = curPass->getComputePipelineState();
+			if(computePipeline)
+			{
+				SPtr<ct::GpuProgram> computeProgram = computePipeline->getProgram();
+				if (computeProgram)
+					allParamDescs.push_back(computeProgram->getParamDesc());
+				
+			}
 		}
 
 		return allParamDescs;
@@ -464,12 +482,12 @@ namespace bs
 		{
 			SPtr<PassType> curPass = technique->getPass(i);
 
-			GraphicsPipelineStateType gfxPipeline = curPass->getGraphicsPipelineState();
+			SPtr<GraphicsPipelineStateType> gfxPipeline = curPass->getGraphicsPipelineState();
 			if(gfxPipeline != nullptr)
 				mPassParams[i] = GpuParamsType::create(gfxPipeline);
 			else
 			{
-				ComputePipelineStateType computePipeline = curPass->getComputePipelineState();
+				SPtr<ComputePipelineStateType> computePipeline = curPass->getComputePipelineState();
 				mPassParams[i] = GpuParamsType::create(computePipeline);
 			}
 		}

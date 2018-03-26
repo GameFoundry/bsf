@@ -61,7 +61,7 @@ namespace bs
 		desc.language = mLanguage;
 		desc.type = mType;
 		desc.requiresAdjacency = mNeedsAdjacencyInfo;
-		desc.bytecode = mCachedBytecode;
+		desc.bytecode = mBytecode;
 
 		return ct::GpuProgramManager::instance().createInternal(desc);
 	}
@@ -88,7 +88,7 @@ namespace bs
 	{
 	GpuProgram::GpuProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
 		: mNeedsAdjacencyInfo(desc.requiresAdjacency), mType(desc.type), mEntryPoint(desc.entryPoint), mSource(desc.source)
-		, mCachedBytecode(desc.bytecode)
+		, mBytecode(desc.bytecode)
 	{
 		mParametersDesc = bs_shared_ptr_new<GpuParamDesc>();
 	}

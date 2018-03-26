@@ -957,6 +957,7 @@ namespace bs
 				for (auto& technique : techniques)
 				{
 					UINT32 numPasses = technique->getNumPasses();
+					technique->compile();
 
 					for (UINT32 i = 0; i < numPasses; i++)
 					{
@@ -976,12 +977,19 @@ namespace bs
 							}
 						};
 
-						checkCompileStatus("Vertex program", pass->getVertexProgram());
-						checkCompileStatus("Fragment program", pass->getFragmentProgram());
-						checkCompileStatus("Geometry program", pass->getGeometryProgram());
-						checkCompileStatus("Hull program", pass->getHullProgram());
-						checkCompileStatus("Domain program", pass->getDomainProgram());
-						checkCompileStatus("Compute program", pass->getComputeProgram());
+						const SPtr<GraphicsPipelineState>& graphicsPipeline = pass->getGraphicsPipelineState();
+						if(graphicsPipeline)
+						{
+							checkCompileStatus("Vertex program", graphicsPipeline->getVertexProgram());
+							checkCompileStatus("Fragment program", graphicsPipeline->getFragmentProgram());
+							checkCompileStatus("Geometry program", graphicsPipeline->getGeometryProgram());
+							checkCompileStatus("Hull program", graphicsPipeline->getHullProgram());
+							checkCompileStatus("Domain program", graphicsPipeline->getDomainProgram());
+						}
+
+						const SPtr<ComputePipelineState>& computePipeline = pass->getComputePipelineState();
+						if(computePipeline)
+							checkCompileStatus("Compute program", computePipeline->getProgram());
 					}
 				}
 			}
@@ -2025,63 +2033,54 @@ namespace bs
 			for (auto& passData : entry.second.passes)
 			{
 				PASS_DESC passDesc;
-
-				if (!passData.blendIsDefault)
-					passDesc.blendState = BlendState::create(passData.blendDesc);
-
-				if (!passData.rasterizerIsDefault)
-					passDesc.rasterizerState = RasterizerState::create(passData.rasterizerDesc);
-
-				if (!passData.depthStencilIsDefault)
-					passDesc.depthStencilState = DepthStencilState::create(passData.depthStencilDesc);
+				passDesc.blendStateDesc = passData.blendDesc;
+				passDesc.rasterizerStateDesc = passData.rasterizerDesc;
+				passDesc.depthStencilStateDesc = passData.depthStencilDesc;
 
 				auto createProgram =
-					[](const String& language, const String& entry, const String& code, GpuProgramType type) -> SPtr<GpuProgram>
+					[](const String& language, const String& entry, const String& code, GpuProgramType type) -> GPU_PROGRAM_DESC
 				{
-					if (code.empty())
-						return nullptr;
-
 					GPU_PROGRAM_DESC desc;
 					desc.language = language;
 					desc.entryPoint = entry;
 					desc.source = code;
 					desc.type = type;
 
-					return GpuProgram::create(desc);
+					return desc;
 				};
 
 				bool isHLSL = metaData.language == "hlsl";
-				passDesc.vertexProgram = createProgram(
+				passDesc.vertexProgramDesc = createProgram(
 					metaData.language,
 					isHLSL ? "vsmain" : "main",
 					passData.vertexCode,
 					GPT_VERTEX_PROGRAM);
 
-				passDesc.fragmentProgram = createProgram(
+				passDesc.fragmentProgramDesc = createProgram(
 					metaData.language,
 					isHLSL ? "fsmain" : "main",
 					passData.fragmentCode,
 					GPT_FRAGMENT_PROGRAM);
 
-				passDesc.geometryProgram = createProgram(
+				passDesc.geometryProgramDesc = createProgram(
 					metaData.language,
 					isHLSL ? "gsmain" : "main",
 					passData.geometryCode,
 					GPT_GEOMETRY_PROGRAM);
 
-				passDesc.hullProgram = createProgram(
+				passDesc.hullProgramDesc = createProgram(
 					metaData.language,
 					isHLSL ? "hsmain" : "main",
 					passData.hullCode,
 					GPT_HULL_PROGRAM);
 
-				passDesc.domainProgram = createProgram(
+				passDesc.domainProgramDesc = createProgram(
 					metaData.language,
 					isHLSL ? "dsmain" : "main",
 					passData.domainCode,
 					GPT_DOMAIN_PROGRAM);
 
-				passDesc.computeProgram = createProgram(
+				passDesc.computeProgramDesc = createProgram(
 					metaData.language,
 					isHLSL ? "csmain" : "main",
 					passData.computeCode,

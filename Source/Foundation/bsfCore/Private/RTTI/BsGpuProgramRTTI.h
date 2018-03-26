@@ -5,6 +5,7 @@
 #include "BsCorePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
 #include "RenderAPI/BsGpuProgram.h"
+#include "RenderAPI/BsGpuParamDesc.h"
 #include "Managers/BsGpuProgramManager.h"
 
 namespace bs
@@ -92,24 +93,10 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mLanguage, 7)
 		BS_END_RTTI_MEMBERS
 
-
-		SPtr<GpuProgramBytecode> getCachedBytecode(GpuProgram* obj) 
-		{ 
-			return obj->getCore()->mCachedBytecode;
-		}
-
-		void setCachedBytecode(GpuProgram* obj, SPtr<GpuProgramBytecode> val)
-		{
-			obj->mCachedBytecode = val;
-		}
-
 	public:
 		GpuProgramRTTI()
 			:mInitMembers(this)
-		{
-			addReflectablePtrField("mCachedBytecode", 8, 
-				&GpuProgramRTTI::getCachedBytecode, &GpuProgramRTTI::setCachedBytecode);
-		}
+		{ }
 
 		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{

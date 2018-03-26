@@ -40,7 +40,7 @@ namespace bs { namespace ct
 			return;
 		}
 
-		if(!mCachedBytecode || mCachedBytecode->compilerId != DIRECTX_COMPILER_ID)
+		if(!mBytecode || mBytecode->compilerId != DIRECTX_COMPILER_ID)
 		{
 			GPU_PROGRAM_DESC desc;
 			desc.type = mType;
@@ -48,25 +48,25 @@ namespace bs { namespace ct
 			desc.source = mSource;
 			desc.language = "hlsl";
 
-			mCachedBytecode = compileBytecode(desc);
+			mBytecode = compileBytecode(desc);
 		}
 		else
 		{
 			int a =5;
 		}
 
-		mCompileMessages = mCachedBytecode->messages;
-		mIsCompiled = mCachedBytecode->instructions.data != nullptr;
+		mCompileMessages = mBytecode->messages;
+		mIsCompiled = mBytecode->instructions.data != nullptr;
 
 		if(mIsCompiled)
 		{
-			mParametersDesc = mCachedBytecode->paramDesc;
+			mParametersDesc = mBytecode->paramDesc;
 
 			D3D11RenderAPI* rapi = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
-			loadFromMicrocode(rapi->getPrimaryDevice(), mCachedBytecode->instructions);
+			loadFromMicrocode(rapi->getPrimaryDevice(), mBytecode->instructions);
 
 			if(mType == GPT_VERTEX_PROGRAM)
-				mInputDeclaration = HardwareBufferManager::instance().createVertexDeclaration(mCachedBytecode->vertexInput);
+				mInputDeclaration = HardwareBufferManager::instance().createVertexDeclaration(mBytecode->vertexInput);
 			
 		}
 

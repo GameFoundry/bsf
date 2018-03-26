@@ -65,6 +65,9 @@ namespace bs
 		/**	Returns total number of passes. */
 		UINT32 getNumPasses() const { return (UINT32)mPasses.size(); }
 
+		/** Compiles all the passes in a technique. @see Pass::compile. */
+		void compile();
+
 	protected:
 		Vector<SPtr<PassType>> mPasses;
 	};

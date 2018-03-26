@@ -20,60 +20,49 @@ namespace bs
 	 */
 	struct BS_CORE_EXPORT RENDER_TARGET_BLEND_STATE_DESC
 	{
-		RENDER_TARGET_BLEND_STATE_DESC()
-			: blendEnable(false)
-			, srcBlend(BF_ONE)
-			, dstBlend(BF_ZERO)
-			, blendOp(BO_ADD)
-			, srcBlendAlpha(BF_ONE)
-			, dstBlendAlpha(BF_ZERO)
-			, blendOpAlpha(BO_ADD)
-			, renderTargetWriteMask(0xFF)
-		{ }
-
 		bool operator==(const RENDER_TARGET_BLEND_STATE_DESC& rhs) const;
 
 		/**
 		 * Queries is blending enabled for the specified render target. Blending allows you to combine the color from 
 		 * current and previous pixel based on some value.
 		 */
-		bool blendEnable;
+		bool blendEnable = false;
 
 		/**
 		 * Determines what should the source blend factor be. This value determines what will the color being generated 
 		 * currently be multiplied by.
 		 */
-		BlendFactor srcBlend;
+		BlendFactor srcBlend = BF_ONE;
 
 		/**
 		 * Determines what should the destination blend factor be. This value determines what will the color already in 
 		 * render target be multiplied by.
 		 */
-		BlendFactor dstBlend;
+		BlendFactor dstBlend = BF_ZERO;
 
 		/**
 		 * Determines how are source and destination colors combined (after they are multiplied by their respective blend 
 		 * factors).
 		 */
-		BlendOperation blendOp;
+		BlendOperation blendOp = BO_ADD;
 
 		/**
 		 * Determines what should the alpha source blend factor be. This value determines what will the alpha value being 
 		 * generated currently be multiplied by.
 		 */
-		BlendFactor srcBlendAlpha;
+		BlendFactor srcBlendAlpha = BF_ONE;
 
 		/**
 		 * Determines what should the alpha destination blend factor be. This value determines what will the alpha value 
 		 * already in render target be multiplied by.
 		 */
-		BlendFactor dstBlendAlpha;
+		BlendFactor dstBlendAlpha = BF_ZERO;
 
 		/**
 		 * Determines how are source and destination alpha values combined (after they are multiplied by their respective
 		 * blend factors).
 		 */
-		BlendOperation blendOpAlpha;
+		BlendOperation blendOpAlpha = BO_ADD;
 
 		/**
 		 * Render target write mask allows to choose which pixel components should the pixel shader output.
@@ -81,17 +70,12 @@ namespace bs
 		 * Only the first four bits are used. First bit representing red, second green, third blue and fourth alpha value. 
 		 * Set bits means pixel shader will output those channels.
 		 */
-		UINT8 renderTargetWriteMask;
+		UINT8 renderTargetWriteMask = 0xFF;
 	};
 
 	/** Structure that describes render pipeline blend states. Used for initializing BlendState. */
 	struct BS_CORE_EXPORT BLEND_STATE_DESC
 	{
-		BLEND_STATE_DESC()
-			: alphaToCoverageEnable(false)
-			, independantBlendEnable(false)
-		{ }
-
 		bool operator==(const BLEND_STATE_DESC& rhs) const;
 
 		/**
@@ -105,13 +89,13 @@ namespace bs
 		 * Be aware this is a limited technique only useful for certain situations. Unless you are having performance 
 		 * problems use regular blending.
 		 */
-		bool alphaToCoverageEnable;
+		bool alphaToCoverageEnable = false;
 
 		/**
 		 * When not set, only the first render target blend descriptor will be used for all render targets. If set each 
 		 * render target will use its own blend descriptor.
 		 */
-		bool independantBlendEnable;
+		bool independantBlendEnable = false;
 
 		RENDER_TARGET_BLEND_STATE_DESC renderTargetDesc[BS_MAX_MULTIPLE_RENDER_TARGETS];
 	};
@@ -258,6 +242,55 @@ namespace bs
 
 	/** @} */
 	}
+
+	/** @cond SPECIALIZATIONS */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
+	template<> struct RTTIPlainType<BLEND_STATE_DESC>
+	{	
+		enum { id = TID_BLEND_STATE_DESC }; enum { hasDynamicSize = 1 };
+
+		static void toMemory(const BLEND_STATE_DESC& data, char* memory)
+		{ 
+			UINT32 size = getDynamicSize(data);
+
+			memcpy(memory, &size, sizeof(UINT32));
+			memory += sizeof(UINT32);
+			size -= sizeof(UINT32);
+			memcpy(memory, &data, size); 
+		}
+
+		static UINT32 fromMemory(BLEND_STATE_DESC& data, char* memory)
+		{ 
+			UINT32 size;
+			memcpy(&size, memory, sizeof(UINT32)); 
+			memory += sizeof(UINT32);
+
+			UINT32 dataSize = size - sizeof(UINT32);
+			memcpy((void*)&data, memory, dataSize); 
+
+			return size;
+		}
+
+		static UINT32 getDynamicSize(const BLEND_STATE_DESC& data)	
+		{ 
+			UINT64 dataSize = sizeof(data) + sizeof(UINT32);
+
+#if BS_DEBUG_MODE
+			if(dataSize > std::numeric_limits<UINT32>::max())
+			{
+				BS_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
+			}
+#endif
+
+			return (UINT32)dataSize;
+		}
+	};
+
+	/** @} */
+	/** @endcond */
 }
 
 /** @cond STDLIB */
