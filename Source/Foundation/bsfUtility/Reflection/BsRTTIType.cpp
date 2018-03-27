@@ -5,15 +5,10 @@
 
 namespace bs
 {
-	RTTITypeBase::RTTITypeBase()
-	{ }
-
 	RTTITypeBase::~RTTITypeBase() 
 	{
-		for(auto iter = mFields.begin(); iter != mFields.end(); ++iter)
-			bs_delete(*iter);
-
-		mFields.clear();
+		for(const auto& item : mFields)
+			bs_delete(item);
 	}
 
 	RTTIField* RTTITypeBase::findField(const String& name)

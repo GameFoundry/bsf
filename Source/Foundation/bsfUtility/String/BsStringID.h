@@ -23,10 +23,10 @@ namespace bs
 	 */
 	class BS_UTILITY_EXPORT StringID
 	{
-		static const int HASH_TABLE_SIZE = 4096;
-		static const int MAX_CHUNK_COUNT = 50;
-		static const int ELEMENTS_PER_CHUNK = 256;
-		static const int STRING_SIZE = 256;
+		static constexpr const int HASH_TABLE_SIZE = 4096;
+		static constexpr const int MAX_CHUNK_COUNT = 50;
+		static constexpr const int ELEMENTS_PER_CHUNK = 256;
+		static constexpr const int STRING_SIZE = 256;
 
 		/** Helper class that performs string actions on both null terminated character arrays and standard strings. */
 		template<class T>
@@ -53,23 +53,20 @@ namespace bs
 		};
 
 	public:
-		StringID();
+		StringID() = default;
 
 		StringID(const char* name)
-			:mData(nullptr)
 		{
 			construct(name);
 		}
 
 		StringID(const String& name)
-			:mData(nullptr)
 		{
 			construct(name);
 		}
 
 		template<int N>
 		StringID(const char name[N])
-			:mData(nullptr)
 		{
 			construct((const char*)name);
 		}
@@ -121,7 +118,7 @@ namespace bs
 		 */
 		InternalData* allocEntry();
 
-		InternalData* mData;
+		InternalData* mData = nullptr;
 
 		static volatile InitStatics mInitStatics;
 		static InternalData* mStringHashTable[HASH_TABLE_SIZE];

@@ -39,7 +39,6 @@ namespace bs
 	};
 
 	AABox::AABox() 
-		:mMinimum(Vector3::ZERO), mMaximum(Vector3::ONE)
 	{
 		// Default to a null box 
 		setMin(Vector3(-0.5f, -0.5f, -0.5f));
@@ -47,13 +46,11 @@ namespace bs
 	}
 
 	AABox::AABox(const AABox& copy)
-		:mMinimum(Vector3::ZERO), mMaximum(Vector3::ONE)
 	{
 		setExtents(copy.mMinimum, copy.mMaximum);
 	}
 
 	AABox::AABox(const Vector3& min, const Vector3& max)
-		:mMinimum(Vector3::ZERO), mMaximum(Vector3::ONE)
 	{
 		setExtents(min, max);
 	}

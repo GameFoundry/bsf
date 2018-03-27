@@ -18,18 +18,17 @@ namespace bs
 		float x, y, z, w;
 
 	public:
-		Vector4()
-		{ }
+		Vector4() = default;
 
-		Vector4(BS_ZERO zero)
+		constexpr Vector4(BS_ZERO) 
 			:x(0.0f), y(0.0f), z(0.0f), w(0.0f)
 		{ }
 
-		Vector4(float x, float y, float z, float w)
+		constexpr Vector4(float x, float y, float z, float w)
 			:x(x), y(y), z(z), w(w)
 		{ }
 
-		explicit Vector4(const Vector3& vec, float w = 0.0f)
+		constexpr explicit Vector4(const Vector3& vec, float w = 0.0f)
 			:x(vec.x), y(vec.y), z(vec.z), w(w)
 		{ }
 

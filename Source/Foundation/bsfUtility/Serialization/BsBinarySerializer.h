@@ -40,7 +40,7 @@ namespace bs
 	class BS_UTILITY_EXPORT BinarySerializer
 	{
 	public:
-		BinarySerializer();
+		BinarySerializer() = default;
 
 		/**
 		 * Encodes all serializable fields provided by @p object into a binary format. Data is written in chunks. Whenever a 
@@ -194,7 +194,7 @@ namespace bs
 		static bool isObjectMetaData(UINT32 encodedData);
 
 		UnorderedMap<void*, UINT32> mObjectAddrToId;
-		UINT32 mLastUsedObjectId;
+		UINT32 mLastUsedObjectId = 1;
 		Vector<ObjectToEncode> mObjectsToEncode;
 		UINT32 mTotalBytesWritten;
 
@@ -203,10 +203,10 @@ namespace bs
 
 		UnorderedMap<String, UINT64> mParams;
 
-		static const int META_SIZE = 4; // Meta field size
-		static const int NUM_ELEM_FIELD_SIZE = 4; // Size of the field storing number of array elements
-		static const int COMPLEX_TYPE_FIELD_SIZE = 4; // Size of the field storing the size of a child complex type
-		static const int DATA_BLOCK_TYPE_FIELD_SIZE = 4;
+		static constexpr const int META_SIZE = 4; // Meta field size
+		static constexpr const int NUM_ELEM_FIELD_SIZE = 4; // Size of the field storing number of array elements
+		static constexpr const int COMPLEX_TYPE_FIELD_SIZE = 4; // Size of the field storing the size of a child complex type
+		static constexpr const int DATA_BLOCK_TYPE_FIELD_SIZE = 4;
 	};
 
 	/** @} */

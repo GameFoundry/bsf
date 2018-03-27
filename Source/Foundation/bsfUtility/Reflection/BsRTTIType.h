@@ -299,7 +299,7 @@ namespace bs
 	class BS_UTILITY_EXPORT RTTITypeBase
 	{
 	public:
-		RTTITypeBase();
+		RTTITypeBase() = default;
 		virtual ~RTTITypeBase();
 
 		/** Returns RTTI type information for all classes that derive from the class that owns this RTTI type. */
@@ -782,7 +782,7 @@ namespace bs
 			// and our type won't get initialized on start (Actual behavior is a bit more random)
 			initOnStart.makeSureIAmInstantiated();
 		}
-		virtual ~RTTIType() {}
+		virtual ~RTTIType() = default;
 
 		/** Returns a singleton of this RTTI type. */
 		static MyRTTIType* instance()
@@ -820,9 +820,8 @@ namespace bs
 				if (currentType->getRTTIId() == getRTTIId())
 					return true;
 
-				const Vector<RTTITypeBase*>& derivedClasses = currentType->getDerivedClasses();
-				for (auto iter = derivedClasses.begin(); iter != derivedClasses.end(); ++iter)
-					todo.push(*iter);
+				for (const auto& item : currentType->getDerivedClasses())
+					todo.push(item);
 			}
 
 			return false;

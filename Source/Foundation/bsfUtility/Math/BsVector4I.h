@@ -18,10 +18,9 @@ namespace bs
 		INT32 z = 0;
 		INT32 w = 0;
 
-		Vector4I()
-		{ }
+		constexpr Vector4I() = default;
 
-		Vector4I(INT32 x, INT32 y, INT32 z, INT32 w)
+		constexpr Vector4I(INT32 x, INT32 y, INT32 z, INT32 w)
 			:x(x), y(y), z(z), w(w)
 		{ }
 

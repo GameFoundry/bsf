@@ -4,6 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
+#include "Private/RTTI/BsGpuProgramRTTI.h"
 #include "Material/BsPass.h"
 
 namespace bs
@@ -13,59 +14,228 @@ namespace bs
 	 *  @{
 	 */
 
+	/** Helper class used for serialization of GPU_PROGRAM_DESC. */
+	struct SerializedGpuProgramData : GPU_PROGRAM_DESC, IReflectable
+	{
+		const SerializedGpuProgramData& operator=(const GPU_PROGRAM_DESC& desc)
+		{
+			source = desc.source;
+			entryPoint = desc.entryPoint;
+			language = desc.language;
+			type = desc.type;
+			requiresAdjacency = desc.requiresAdjacency;
+			bytecode = desc.bytecode;
+
+			return *this;
+		}
+		
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class SerializedGpuProgramDataRTTI;
+		inline static RTTITypeBase* getRTTIStatic();
+		inline RTTITypeBase* getRTTI() const override;
+	};
+
+	class BS_CORE_EXPORT SerializedGpuProgramDataRTTI : public RTTIType<SerializedGpuProgramData, IReflectable, SerializedGpuProgramDataRTTI>
+	{
+	private:
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_PLAIN(source, 0)
+			BS_RTTI_MEMBER_PLAIN(entryPoint, 1)
+			BS_RTTI_MEMBER_PLAIN(language, 2)
+			BS_RTTI_MEMBER_PLAIN(type, 3)
+			BS_RTTI_MEMBER_PLAIN(requiresAdjacency, 4)
+			BS_RTTI_MEMBER_REFLPTR(bytecode, 5)
+		BS_END_RTTI_MEMBERS
+
+	public:
+		SerializedGpuProgramDataRTTI()
+			:mInitMembers(this)
+		{ }
+
+		const String& getRTTIName() override
+		{
+			static String name = "SerializedGpuProgramData";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_SerializedGpuProgramData;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			return bs_shared_ptr_new<SerializedGpuProgramData>();
+		}
+	};
+
+	RTTITypeBase* SerializedGpuProgramData::getRTTIStatic()
+	{
+		return SerializedGpuProgramDataRTTI::instance();
+	}
+
+	RTTITypeBase* SerializedGpuProgramData::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
 	class BS_CORE_EXPORT PassRTTI : public RTTIType<Pass, IReflectable, PassRTTI>
 	{
 	private:
-		SPtr<BlendState> getBlendState(Pass* obj) { return obj->mData.blendState; }
-		void setBlendState(Pass* obj, SPtr<BlendState> val) { obj->mData.blendState = val; }
+		struct GpuProgramInfo
+		{
+			SerializedGpuProgramData vertexProgramDesc;
+			SerializedGpuProgramData fragmentProgramDesc;
+			SerializedGpuProgramData geometryProgramDesc;
+			SerializedGpuProgramData hullProgramDesc;
+			SerializedGpuProgramData domainProgramDesc;
+			SerializedGpuProgramData computeProgramDesc;
+		};
 
-		SPtr<RasterizerState> getRasterizerState(Pass* obj) { return obj->mData.rasterizerState; }
-		void setRasterizerState(Pass* obj, SPtr<RasterizerState> val) { obj->mData.rasterizerState = val; }
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_PLAIN_NAMED(blendStateDesc, mData.blendStateDesc, 0)
+			BS_RTTI_MEMBER_PLAIN_NAMED(rasterizerStateDesc, mData.rasterizerStateDesc, 1)
+			BS_RTTI_MEMBER_PLAIN_NAMED(depthStencilState, mData.depthStencilStateDesc, 2)
 
-		SPtr<DepthStencilState> getDepthStencilState(Pass* obj) { return obj->mData.depthStencilState; }
-		void setDepthStencilState(Pass* obj, SPtr<DepthStencilState> val) { obj->mData.depthStencilState = val; }
+			BS_RTTI_MEMBER_PLAIN_NAMED(stencilRefValue, mData.stencilRefValue, 9)
+		BS_END_RTTI_MEMBERS
 
-		UINT32& getStencilRefValue(Pass* obj) { return obj->mData.stencilRefValue; }
-		void setStencilRefValue(Pass* obj, UINT32& val) { obj->mData.stencilRefValue = val; }
+		SerializedGpuProgramData& getVertexProgramDesc(Pass* obj)
+		{
+			GpuProgramInfo& info = any_cast_ref<GpuProgramInfo>(obj->mRTTIData);
+			return info.vertexProgramDesc;
+		}
 
-		SPtr<GpuProgram> getVertexProgram(Pass* obj) { return obj->mData.vertexProgram; }
-		void setVertexProgram(Pass* obj, SPtr<GpuProgram> val) { obj->mData.vertexProgram = val; }
+		void setVertexProgramDesc(Pass* obj, SerializedGpuProgramData& val)
+		{
+			obj->mData.vertexProgramDesc = val;
+		}
 
-		SPtr<GpuProgram> getFragmentProgram(Pass* obj) { return obj->mData.fragmentProgram; }
-		void setFragmentProgram(Pass* obj, SPtr<GpuProgram> val) { obj->mData.fragmentProgram = val; }
+		SerializedGpuProgramData& getFragmentProgramDesc(Pass* obj) 
+		{
+			GpuProgramInfo& info = any_cast_ref<GpuProgramInfo>(obj->mRTTIData);
+			return info.fragmentProgramDesc;
+		}
 
-		SPtr<GpuProgram> getGeometryProgram(Pass* obj) { return obj->mData.geometryProgram; }
-		void setGeometryProgram(Pass* obj, SPtr<GpuProgram> val) { obj->mData.geometryProgram = val; }
+		void setFragmentProgramDesc(Pass* obj, SerializedGpuProgramData& val)
+		{
+			obj->mData.fragmentProgramDesc = val;
+		}
 
-		SPtr<GpuProgram> getHullProgram(Pass* obj) { return obj->mData.hullProgram; }
-		void setHullProgram(Pass* obj, SPtr<GpuProgram> val) { obj->mData.hullProgram = val; }
+		SerializedGpuProgramData& getGeometryProgramDesc(Pass* obj)
+		{
+			GpuProgramInfo& info = any_cast_ref<GpuProgramInfo>(obj->mRTTIData);
+			return info.geometryProgramDesc;
+		}
 
-		SPtr<GpuProgram> getDomainProgram(Pass* obj) { return obj->mData.domainProgram; }
-		void setDomainProgram(Pass* obj, SPtr<GpuProgram> val) { obj->mData.domainProgram = val; }
+		void setGeometryProgramDesc(Pass* obj, SerializedGpuProgramData& val)
+		{
+			obj->mData.geometryProgramDesc = val;
+		}
 
-		SPtr<GpuProgram> getComputeProgram(Pass* obj) { return obj->mData.computeProgram; }
-		void setComputeProgram(Pass* obj, SPtr<GpuProgram> val) { obj->mData.computeProgram = val; }
+		SerializedGpuProgramData& getHullProgramDesc(Pass* obj)
+		{
+			GpuProgramInfo& info = any_cast_ref<GpuProgramInfo>(obj->mRTTIData);
+			return info.hullProgramDesc;
+		}
+
+		void setHullProgramDesc(Pass* obj, SerializedGpuProgramData& val)
+		{
+			obj->mData.hullProgramDesc = val;
+		}
+
+		SerializedGpuProgramData& getDomainProgramDesc(Pass* obj)
+		{
+			GpuProgramInfo& info = any_cast_ref<GpuProgramInfo>(obj->mRTTIData);
+			return info.domainProgramDesc;
+		}
+
+		void setDomainProgramDesc(Pass* obj, SerializedGpuProgramData& val)
+		{
+			obj->mData.domainProgramDesc = val;
+		}
+
+		SerializedGpuProgramData& getComputeProgramDesc(Pass* obj)
+		{
+			GpuProgramInfo& info = any_cast_ref<GpuProgramInfo>(obj->mRTTIData);
+			return info.computeProgramDesc;
+		}
+
+		void setComputeProgramDesc(Pass* obj, SerializedGpuProgramData& val)
+		{
+			obj->mData.computeProgramDesc = val;
+		}
 	public:
 		PassRTTI()
+			:mInitMembers(this)
 		{
-			addReflectablePtrField("mBlendState", 0, &PassRTTI::getBlendState, &PassRTTI::setBlendState);
-			addReflectablePtrField("mRasterizerState", 1, &PassRTTI::getRasterizerState, &PassRTTI::setRasterizerState);
-			addReflectablePtrField("mDepthStencilState", 2, &PassRTTI::getDepthStencilState, &PassRTTI::setDepthStencilState);
+			addReflectableField("mVertexProgramDesc", 3, &PassRTTI::getVertexProgramDesc, &PassRTTI::setVertexProgramDesc);
+			addReflectableField("mFragmentProgramDesc", 4, &PassRTTI::getFragmentProgramDesc, &PassRTTI::setFragmentProgramDesc);
+			addReflectableField("mGeometryProgramDesc", 5, &PassRTTI::getGeometryProgramDesc, &PassRTTI::setGeometryProgramDesc);
+			addReflectableField("mHullProgramDesc", 6, &PassRTTI::getHullProgramDesc, &PassRTTI::setHullProgramDesc);
+			addReflectableField("mDomainProgramDesc", 7, &PassRTTI::getDomainProgramDesc, &PassRTTI::setDomainProgramDesc);
+			addReflectableField("mComputeProgramDesc", 8, &PassRTTI::getComputeProgramDesc, &PassRTTI::setComputeProgramDesc);
+		}
 
-			addReflectablePtrField("mVertexProgram", 3, &PassRTTI::getVertexProgram, &PassRTTI::setVertexProgram);
-			addReflectablePtrField("mFragmentProgram", 4, &PassRTTI::getFragmentProgram, &PassRTTI::setFragmentProgram);
-			addReflectablePtrField("mGeometryProgram", 5, &PassRTTI::getGeometryProgram, &PassRTTI::setGeometryProgram);
-			addReflectablePtrField("mHullProgram", 6, &PassRTTI::getHullProgram, &PassRTTI::setHullProgram);
-			addReflectablePtrField("mDomainProgram", 7, &PassRTTI::getDomainProgram, &PassRTTI::setDomainProgram);
-			addReflectablePtrField("mComputeProgram", 8, &PassRTTI::getComputeProgram, &PassRTTI::setComputeProgram);
+		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		{
+			Pass* pass = static_cast<Pass*>(obj);
 
-			addPlainField("mStencilRefValue", 9, &PassRTTI::getStencilRefValue, &PassRTTI::setStencilRefValue);
+			GpuProgramInfo info;
+			info.vertexProgramDesc = pass->mData.vertexProgramDesc;
+			info.fragmentProgramDesc = pass->mData.fragmentProgramDesc;
+			info.geometryProgramDesc = pass->mData.geometryProgramDesc;
+			info.hullProgramDesc = pass->mData.hullProgramDesc;
+			info.domainProgramDesc = pass->mData.domainProgramDesc;
+			info.computeProgramDesc = pass->mData.computeProgramDesc;
+
+			auto initBytecode = [](const SPtr<GpuProgram>& prog, GPU_PROGRAM_DESC& desc)
+			{
+				if (prog)
+				{
+					prog->blockUntilCoreInitialized();
+					desc.bytecode = prog->getCore()->getBytecode();
+				}
+			};
+
+			const SPtr<GraphicsPipelineState>& graphicsPipeline = pass->getGraphicsPipelineState();
+			if(graphicsPipeline)
+			{
+				initBytecode(graphicsPipeline->getVertexProgram(), info.vertexProgramDesc);
+				initBytecode(graphicsPipeline->getFragmentProgram(), info.fragmentProgramDesc);
+				initBytecode(graphicsPipeline->getGeometryProgram(), info.geometryProgramDesc);
+				initBytecode(graphicsPipeline->getHullProgram(), info.hullProgramDesc);
+				initBytecode(graphicsPipeline->getDomainProgram(), info.domainProgramDesc);
+			}
+			
+			const SPtr<ComputePipelineState>& computePipeline = pass->getComputePipelineState();
+			if(computePipeline)
+				initBytecode(computePipeline->getProgram(), info.computeProgramDesc);
+
+			pass->mRTTIData = info;
+		}
+
+		void onSerializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		{
+			Pass* pass = static_cast<Pass*>(obj);
+			pass->mRTTIData = nullptr;
+		}
+
+		void onDeserializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		{
+			Pass* pass = static_cast<Pass*>(obj);
+			pass->mRTTIData = GpuProgramInfo();
 		}
 
 		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			Pass* pass = static_cast<Pass*>(obj);
 			pass->initialize();
+
+			pass->mRTTIData = nullptr;
 		}
 
 		const String& getRTTIName() override

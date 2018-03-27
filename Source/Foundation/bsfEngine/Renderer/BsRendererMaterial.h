@@ -176,6 +176,7 @@ namespace bs { namespace ct
 				if(entry->getVariation() == mVariation)
 				{
 					SPtr<Pass> pass = entry->getPass(0);
+					pass->compile();
 
 					mGfxPipeline = pass->getGraphicsPipelineState();
 					if (mGfxPipeline != nullptr)

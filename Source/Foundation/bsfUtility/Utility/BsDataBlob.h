@@ -31,7 +31,9 @@ namespace bs
 
 		static void toMemory(const DataBlob& data, char* memory)
 		{ 
-			memcpy(memory, &data.size, sizeof(UINT32));
+			UINT32 size = getDynamicSize(data);
+
+			memcpy(memory, &size, sizeof(UINT32));
 			memory += sizeof(UINT32);
 
 			memcpy(memory, data.data, data.size);
@@ -46,10 +48,11 @@ namespace bs
 			if(data.data != nullptr)
 				bs_free(data.data);
 
-			data.data = (UINT8*)bs_alloc(size);
-			memcpy(data.data, memory, size);
+			data.size = size - sizeof(UINT32);
+			data.data = (UINT8*)bs_alloc(data.size);
+			memcpy(data.data, memory, data.size);
 
-			return size + sizeof(UINT32);
+			return size;
 		}
 
 		static UINT32 getDynamicSize(const DataBlob& data)

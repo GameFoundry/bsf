@@ -5,13 +5,9 @@
 
 namespace bs
 {
-	LineSegment3::LineSegment3()
-		:mStart(BsZero), mEnd(BsZero)
-	{ }
-
 	LineSegment3::LineSegment3(const Vector3& start, const Vector3& end)
 		:mStart(start), mEnd(end)
-	{ 
+	{
 
 	}
 

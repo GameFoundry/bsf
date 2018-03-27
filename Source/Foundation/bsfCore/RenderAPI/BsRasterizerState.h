@@ -15,38 +15,26 @@ namespace bs
 	/** Structure that describes pipeline rasterizer state. Used for initializing a RasterizerState. */
 	struct BS_CORE_EXPORT RASTERIZER_STATE_DESC
 	{
-		RASTERIZER_STATE_DESC()
-			: polygonMode(PM_SOLID)
-			, cullMode(CULL_COUNTERCLOCKWISE)
-			, depthBias(0)
-			, depthBiasClamp(0.0f)
-			, slopeScaledDepthBias(0.0f)
-			, depthClipEnable(true)
-			, scissorEnable(false)
-			, multisampleEnable(true)
-			, antialiasedLineEnable(false)
-		{ }
-
 		bool operator==(const RASTERIZER_STATE_DESC& rhs) const;
 
 		/** Polygon mode allows you to draw polygons as solid objects or as wireframe by just drawing their edges. */
-		PolygonMode polygonMode;
+		PolygonMode polygonMode = PM_SOLID;
 
 		/**
 		 * Sets vertex winding order. Faces that contain vertices with this order will be culled and not rasterized. Used 
 		 * primarily for saving cycles by not rendering backfacing faces.
 		 */
-		CullingMode cullMode;
+		CullingMode cullMode = CULL_COUNTERCLOCKWISE;
 
 		/**
 		 * Represents a constant depth bias that will offset the depth values of new pixels by the specified amount.
 		 *
 		 * @note		This is useful if you want to avoid z fighting for objects at the same or similar depth.
 		 */
-		float depthBias;
+		float depthBias = 0;
 
 		/**	Maximum depth bias value. */
-		float depthBiasClamp;
+		float depthBiasClamp = 0.0f;
 
 		/**
 		 * Represents a dynamic depth bias that increases as the slope of the rendered polygons surface increases. 
@@ -54,7 +42,7 @@ namespace bs
 		 *
 		 * @note	This is useful if you want to avoid z fighting for objects at the same or similar depth.
 		 */
-		float slopeScaledDepthBias;
+		float slopeScaledDepthBias = 0.0f;
 
 		/**
 		 * If true, clipping of polygons past the far Z plane is enabled. This ensures proper Z ordering for polygons 
@@ -62,14 +50,14 @@ namespace bs
 		 * performing stencil operations that count on objects having a front and a back (like stencil shadow) and don't 
 		 * want to clip the back.
 		 */
-		bool depthClipEnable;
+		bool depthClipEnable = true;
 
 		/**
 		 * Scissor rectangle allows you to cull all pixels outside of the scissor rectangle.
 		 *			
 		 * @see		ct::RenderAPI::setScissorRect
 		 */
-		bool scissorEnable;
+		bool scissorEnable = false;
 
 		/**
 		 * Determines how are samples in multi-sample render targets handled. If disabled all samples in the render target 
@@ -77,7 +65,7 @@ namespace bs
 		 *			
 		 * @note	In order to get an antialiased image you need to both enable this option and use a MSAA render target.
 		 */
-		bool multisampleEnable;
+		bool multisampleEnable = true;
 
 		/**
 		 * Determines should the lines be antialiased. This is separate from multi-sample antialiasing setting as lines can
@@ -85,7 +73,7 @@ namespace bs
 		 *
 		 * @note	This setting is usually ignored if MSAA is used, as that provides sufficient antialiasing.
 		 */
-		bool antialiasedLineEnable;
+		bool antialiasedLineEnable = false;
 	};
 
 	/** Properties of RasterizerState. Shared between sim and core thread versions of RasterizerState. */
@@ -226,7 +214,9 @@ namespace bs
 	};
 
 	/** @} */
-		}
+	}
+
+	BS_ALLOW_MEMCPY_SERIALIZATION(RASTERIZER_STATE_DESC);
 }
 
 /** @cond STDLIB */

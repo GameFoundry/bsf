@@ -22,7 +22,7 @@ namespace bs
 	class BS_UTILITY_EXPORT IReflectable
 	{
 	public:
-		virtual ~IReflectable() {}
+		virtual ~IReflectable() = default;
 
 		/**
 		 * Returns an interface you can use to access class' Run Time Type Information.

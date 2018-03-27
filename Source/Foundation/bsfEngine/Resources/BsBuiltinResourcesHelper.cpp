@@ -608,18 +608,28 @@ namespace bs
 		Vector<SPtr<Technique>> techniques = shader->getCompatibleTechniques();
 		for(auto& technique : techniques)
 		{
+			technique->compile();
+
 			UINT32 numPasses = technique->getNumPasses();
 			for(UINT32 i = 0; i < numPasses; i++)
 			{
 				SPtr<Pass> pass = technique->getPass(i);
 
 				std::array<SPtr<GpuProgram>, 6> gpuPrograms;
-				gpuPrograms[0] = pass->getVertexProgram();
-				gpuPrograms[1] = pass->getFragmentProgram();
-				gpuPrograms[2] = pass->getGeometryProgram();
-				gpuPrograms[3] = pass->getHullProgram();
-				gpuPrograms[4] = pass->getDomainProgram();
-				gpuPrograms[5] = pass->getComputeProgram();
+
+				const SPtr<GraphicsPipelineState>& graphicsPipeline = pass->getGraphicsPipelineState();
+				if (graphicsPipeline)
+				{
+					gpuPrograms[0] = graphicsPipeline->getVertexProgram();
+					gpuPrograms[1] = graphicsPipeline->getFragmentProgram();
+					gpuPrograms[2] = graphicsPipeline->getGeometryProgram();
+					gpuPrograms[3] = graphicsPipeline->getHullProgram();
+					gpuPrograms[4] = graphicsPipeline->getDomainProgram();
+				}
+
+				const SPtr<ComputePipelineState>& computePipeline = pass->getComputePipelineState();
+				if (computePipeline)
+					gpuPrograms[5] = computePipeline->getProgram();
 
 				for(auto& program : gpuPrograms)
 				{

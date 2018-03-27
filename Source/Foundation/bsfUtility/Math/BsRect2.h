@@ -14,10 +14,16 @@ namespace bs
 	class BS_UTILITY_EXPORT Rect2
 	{
 	public:
-		Rect2();
-		Rect2(float _x, float _y, float _width, float _height);
+		Rect2() = default;
 
-		float x, y, width, height;
+		Rect2(float _x, float _y, float _width, float _height)
+			:x(_x), y(_y), width(_width), height(_height)
+		{ }
+
+		float x = 0.0f;
+		float y = 0.0f;
+		float width = 0.0f;
+		float height = 0.0f;
 
 		/** Returns true if the rectangle contains the provided point. */
 		bool contains(const Vector2& point) const;

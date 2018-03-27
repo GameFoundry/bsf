@@ -20,14 +20,13 @@ namespace bs
 		float x, y, z;
 
 	public:
-		Vector3()
-		{ }
+		Vector3() = default;
 
-		Vector3(BS_ZERO zero)
+		constexpr Vector3(BS_ZERO)
 			:x(0.0f), y(0.0f), z(0.0f)
 		{ }
 
-		Vector3(float x, float y, float z)
+		constexpr Vector3(float x, float y, float z)
 			:x(x), y(y), z(z)
 		{ }
 

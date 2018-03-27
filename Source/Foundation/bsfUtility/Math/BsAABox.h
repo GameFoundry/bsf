@@ -45,7 +45,7 @@ namespace bs
 
 		AABox& operator=(const AABox& rhs);
 
-		~AABox() { }
+		~AABox() = default;
 		
 		/** Gets the corner of the box with minimum values (opposite to maximum corner). */
 		const Vector3& getMin() const { return mMinimum; }
@@ -146,8 +146,8 @@ namespace bs
 		static const UINT32 CUBE_INDICES[36];
 
 	protected:
-		Vector3 mMinimum;
-		Vector3 mMaximum;
+		Vector3 mMinimum{Vector3::ZERO};
+		Vector3 mMaximum{Vector3::ONE};
 	};
 
 	/** @} */

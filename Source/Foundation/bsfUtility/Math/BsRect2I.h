@@ -14,11 +14,16 @@ namespace bs
 	class BS_UTILITY_EXPORT Rect2I
 	{
 	public:
-		Rect2I();
-		Rect2I(INT32 x, INT32 y, UINT32 width, UINT32 height);
+		constexpr Rect2I() = default;
 
-		INT32 x, y;
-		UINT32 width, height;
+		constexpr Rect2I(INT32 x, INT32 y, UINT32 width, UINT32 height)
+			:x(x), y(y), width(width), height(height)
+		{ }
+
+		INT32 x = 0;
+		INT32 y = 0;
+		UINT32 width = 0;
+		UINT32 height = 0;
 
 		/** Returns true if the rectangle contains the provided point. */
 		bool contains(const Vector2I& point) const;

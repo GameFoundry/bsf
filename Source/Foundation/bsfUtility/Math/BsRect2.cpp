@@ -7,15 +7,7 @@
 
 namespace bs
 {
-	const Rect2 Rect2::EMPTY = Rect2();
-
-	Rect2::Rect2()
-		:x(0), y(0), width(0), height(0)
-	{ }
-
-	Rect2::Rect2(float _x, float _y, float _width, float _height)
-		:x(_x), y(_y), width(_width), height(_height)
-	{ }
+	const Rect2 Rect2::EMPTY;
 
 	bool Rect2::contains(const Vector2& point) const
 	{

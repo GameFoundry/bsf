@@ -13,18 +13,16 @@ namespace bs
 	/** A two dimensional vector with integer coordinates.*/
 	struct BS_UTILITY_EXPORT Vector2I
 	{
-		INT32 x;
-		INT32 y;
+		INT32 x = 0;
+		INT32 y = 0;
 
-		Vector2I()
-			:x(0), y(0)
-		{ }
+		constexpr Vector2I() = default;
 
-		inline Vector2I(INT32 _x, INT32 _y )
+		constexpr Vector2I(INT32 _x, INT32 _y )
 			:x(_x), y(_y)
 		{ }
 
-		explicit Vector2I(int val)
+		constexpr explicit Vector2I(int val)
 			:x(val), y(val)
 		{ }
 

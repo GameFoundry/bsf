@@ -582,6 +582,15 @@ namespace bs
 		TID_AudioSource = 1142,
 		TID_ShaderVariationParam = 1143,
 		TID_ShaderVariation = 1144,
+		TID_GpuProgramBytecode = 1145,
+		TID_GpuParamBlockDesc = 1146,
+		TID_GpuParamDataDesc = 1147,
+		TID_GpuParamObjectDesc = 1148,
+		TID_GpuParamDesc = 1149,
+		TID_BlendStateDesc = 1150,
+		TID_RasterizerStateDesc = 1151,
+		TID_DepthStencilStateDesc = 1152,
+		TID_SerializedGpuProgramData = 1153,
 
 		// Moved from Engine layer
 		TID_CCamera = 30000,

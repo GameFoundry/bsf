@@ -55,6 +55,12 @@ namespace bs
 
 		return mPasses[idx];
 	}
+	template<bool Core>
+	void TTechnique<Core>::compile()
+	{
+		for(auto& pass : mPasses)
+			pass->compile();
+	}
 
 	template class TTechnique < false > ;
 	template class TTechnique < true >;

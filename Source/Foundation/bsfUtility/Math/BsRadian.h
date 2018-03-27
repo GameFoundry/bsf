@@ -22,17 +22,21 @@ namespace bs
 	class BS_UTILITY_EXPORT Radian
 	{
 	public:
-		explicit Radian(float r = 0.0f) : mRad(r) {}
+		constexpr Radian() = default;
+		constexpr Radian(const Radian&) = default;
+		constexpr Radian& operator= (const Radian&) = default;
+
+		constexpr explicit Radian(float r) : mRad(r) {}
+		constexpr Radian& operator= (const float& f) { mRad = f; return *this; }
+
 		Radian(const Degree& d);
-		Radian& operator= (const float& f) { mRad = f; return *this; }
-		Radian& operator= (const Radian& r) { mRad = r.mRad; return *this; }
 		Radian& operator= (const Degree& d);
 
 		/** Returns the value of the angle in degrees. */
 		float valueDegrees() const;
 
 		/** Returns the value of the angle in radians. */
-		float valueRadians() const { return mRad; }
+		constexpr float valueRadians() const { return mRad; }
 
 		/** Wraps the angle in [0, 2 *  PI) range. */
 		Radian wrap();
@@ -68,7 +72,7 @@ namespace bs
 		bool operator>  (const Radian& r) const { return mRad >  r.mRad; }
 
 	private:
-		float mRad;
+		float mRad = 0.0f;
 	};
 
 	/** @} */

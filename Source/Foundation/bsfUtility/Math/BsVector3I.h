@@ -17,10 +17,9 @@ namespace bs
 		INT32 y = 0;
 		INT32 z = 0;
 
-		Vector3I()
-		{ }
+		constexpr Vector3I() = default;
 
-		Vector3I(INT32 x, INT32 y, INT32 z)
+		constexpr Vector3I(INT32 x, INT32 y, INT32 z)
 			:x(x), y(y), z(z)
 		{ }
 

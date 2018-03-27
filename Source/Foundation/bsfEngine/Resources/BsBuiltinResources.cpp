@@ -1351,13 +1351,7 @@ namespace bs
 		programPath.append(path);
 		programPath.setExtension(programPath.getExtension() + ".asset");
 
-		HShader shader = gResources().load<Shader>(programPath);
-
-#if BS_DEBUG_MODE
-		BuiltinResourcesHelper::verifyAndReportShader(shader);
-#endif
-
-		return shader;
+		return gResources().load<Shader>(programPath);
 	}
 
 	HTexture BuiltinResources::getCursorTexture(const WString& name)

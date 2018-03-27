@@ -16,7 +16,7 @@ namespace bs
 	class BS_UTILITY_EXPORT Capsule
 	{
 	public:
-		Capsule();
+		Capsule() = default;
 		Capsule(const LineSegment3& segment, float radius);
 
 		/**
@@ -46,7 +46,7 @@ namespace bs
 
 	private:
 		LineSegment3 mSegment;
-		float mRadius;
+		float mRadius = 0.0f;
 	};
 
 	/** @} */

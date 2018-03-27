@@ -15,7 +15,7 @@ namespace bs
 	class BS_UTILITY_EXPORT LineSegment3
 	{
 	public:
-		LineSegment3();
+		LineSegment3() = default;
 		LineSegment3(const Vector3& start, const Vector3& end);
 
 		/**
@@ -40,7 +40,8 @@ namespace bs
 		/** Returns the center point along the line segment. */
 		Vector3 getCenter() const { return mStart + (mEnd - mStart) * 0.5f; }
 	private:
-		Vector3 mStart, mEnd;
+		Vector3 mStart = BsZero;
+		Vector3 mEnd = BsZero;
 	};
 
 	/** @} */

@@ -18,9 +18,9 @@ namespace bs
 	class BS_UTILITY_EXPORT Bounds
 	{
 	public:
-		Bounds();
+		Bounds() = default;
 		Bounds(const AABox& box, const Sphere& sphere);
-		~Bounds() { }
+		~Bounds() = default;
 
 		/** Returns the axis aligned box representing the bounds. */
 		const AABox& getBox() const { return mBox; }

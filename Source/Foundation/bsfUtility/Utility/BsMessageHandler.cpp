@@ -70,7 +70,8 @@ namespace bs
 				[&](MessageHandlerData& x)
 				{
 					return x.id == handleId;
-				}));
+				}),
+				handlerData.end());
 		}
 
 		mHandlerIdToMessageMap.erase(handleId);

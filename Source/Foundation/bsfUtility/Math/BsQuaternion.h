@@ -6,7 +6,7 @@
 #include "Math/BsMath.h"
 #include "Math/BsVector3.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Math
 	 *  @{
@@ -22,15 +22,16 @@ namespace bs
 		};
 
 	public:
-		Quaternion()
-		{ }
+		Quaternion() = default;
+		Quaternion(const Quaternion&) = default;
+		Quaternion& operator=(const Quaternion&) = default;
 
 		Quaternion(BS_ZERO zero)
-			:x(0.0f), y(0.0f), z(0.0f), w(0.0f)
+			: x(0.0f), y(0.0f), z(0.0f), w(0.0f)
 		{ }
 
-		Quaternion(BS_IDENTITY identity)
-			:x(0.0f), y(0.0f), z(0.0f), w(1.0f)
+		Quaternion(BS_IDENTITY)
+			: x(0.0f), y(0.0f), z(0.0f), w(1.0f)
 		{ }
 
 		Quaternion(float w, float x, float y, float z)
@@ -57,7 +58,7 @@ namespace bs
 
 		/**
 		 * Construct a quaternion from euler angles, YXZ ordering.
-		 * 			
+		 *
 		 * @see		Quaternion::fromEulerAngles
 		 */
 		explicit Quaternion(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle)
@@ -67,7 +68,7 @@ namespace bs
 
 		/**
 		 * Construct a quaternion from euler angles, custom ordering.
-		 * 			
+		 *
 		 * @see		Quaternion::fromEulerAngles
 		 */
 		explicit Quaternion(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order)
@@ -100,25 +101,25 @@ namespace bs
 
 		/**
 		 * Initializes the quaternion from a 3x3 rotation matrix.
-		 * 			
+		 *
 		 * @note	It's up to the caller to ensure the matrix is orthonormal.
 		 */
 		void fromRotationMatrix(const Matrix3& mat);
 
 		/**
-		 * Initializes the quaternion from an angle axis pair. Quaternion will represent a rotation of "angle" radians 
+		 * Initializes the quaternion from an angle axis pair. Quaternion will represent a rotation of "angle" radians
 		 * around "axis".
 		 */
 		void fromAxisAngle(const Vector3& axis, const Radian& angle);
 
 		/**
-		 * Initializes the quaternion from orthonormal set of axes. Quaternion will represent a rotation from base axes 
+		 * Initializes the quaternion from orthonormal set of axes. Quaternion will represent a rotation from base axes
 		 * to the specified set of axes.
-		 * 			
+		 *
 		 * @note	It's up to the caller to ensure the axes are orthonormal.
 		 */
 		void fromAxes(const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis);
-		
+
 		/**
 		 * Creates a quaternion from the provided Pitch/Yaw/Roll angles.
 		 *
@@ -126,7 +127,7 @@ namespace bs
 		 * @param[in]	yAngle	Rotation about y axis. (AKA Yaw)
 		 * @param[in]	zAngle	Rotation about z axis. (AKA Roll)
 		 *
-		 * @note	
+		 * @note
 		 * Since different values will be produced depending in which order are the rotations applied, this method assumes
 		 * they are applied in YXZ order. If you need a specific order, use the overloaded fromEulerAngles() method instead.
 		 */
@@ -138,7 +139,7 @@ namespace bs
 		 * @param[in]	xAngle	Rotation about x axis. (AKA Pitch)
 		 * @param[in]	yAngle	Rotation about y axis. (AKA Yaw)
 		 * @param[in]	zAngle	Rotation about z axis. (AKA Roll)
-		 * @param[in]	order 	The order in which rotations will be extracted. Different values can be retrieved depending 
+		 * @param[in]	order 	The order in which rotations will be extracted. Different values can be retrieved depending
 		 *						on the order.
 		 */
 		void fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order);
@@ -185,17 +186,8 @@ namespace bs
 		/** Gets the positive z-axis of the coordinate system transformed by this quaternion. */
 		Vector3 zAxis() const;
 
-		Quaternion& operator= (const Quaternion& rhs)
-		{
-			w = rhs.w;
-			x = rhs.x;
-			y = rhs.y;
-			z = rhs.z;
 
-			return *this;
-		}
-
-		Quaternion operator+ (const Quaternion& rhs) const 
+		Quaternion operator+ (const Quaternion& rhs) const
 		{
 			return Quaternion(w + rhs.w, x + rhs.x, y + rhs.y, z + rhs.z);
 		}
@@ -339,20 +331,20 @@ namespace bs
 		}
 
 		/**
-		 * Performs spherical interpolation between two quaternions. Spherical interpolation neatly interpolates between 
+		 * Performs spherical interpolation between two quaternions. Spherical interpolation neatly interpolates between
 		 * two rotations without modifying the size of the vector it is applied to (unlike linear interpolation).
 		 */
 		static Quaternion slerp(float t, const Quaternion& p, const Quaternion& q, bool shortestPath = true);
 
-		/** 
-		 * Linearly interpolates between the two quaternions using @p t. t should be in [0, 1] range, where t = 0 
+		/**
+		 * Linearly interpolates between the two quaternions using @p t. t should be in [0, 1] range, where t = 0
 		 * corresponds to the left vector, while t = 1 corresponds to the right vector.
 		 */
 		static Quaternion lerp(float t, const Quaternion& a, const Quaternion& b)
 		{
 			float d = dot(a, b);
 			float flip = d >= 0.0f ? 1.0f : -1.0f;
-			
+
 			Quaternion output = flip * (1.0f - t) * a + t * b;
 			return normalize(output);
 		}
@@ -360,15 +352,12 @@ namespace bs
 		/** Gets the shortest arc quaternion to rotate this vector to the destination vector. */
 		static Quaternion getRotationFromTo(const Vector3& from, const Vector3& dest, const Vector3& fallbackAxis = Vector3::ZERO);
 
-		static const float EPSILON;
+		static constexpr const float EPSILON = 1e-03f;
 
 		static const Quaternion ZERO;
 		static const Quaternion IDENTITY;
 
 		float x, y, z, w; // Note: Order is relevant, don't break it
-
-		private:
-			static const EulerAngleOrderData EA_LOOKUP[6];
 	};
 
 	/** @} */

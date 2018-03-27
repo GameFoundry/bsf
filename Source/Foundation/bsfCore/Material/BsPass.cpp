@@ -12,47 +12,6 @@
 
 namespace bs
 {
-	/** Converts a sim thread pass descriptor to a core thread one. */
-	void convertPassDesc(const PASS_DESC& input, ct::PASS_DESC& output)
-	{
-		output.blendState = input.blendState != nullptr ? input.blendState->getCore() : nullptr;
-		output.rasterizerState = input.rasterizerState != nullptr ? input.rasterizerState->getCore() : nullptr;
-		output.depthStencilState = input.depthStencilState != nullptr ? input.depthStencilState->getCore() : nullptr;
-		output.stencilRefValue = input.stencilRefValue;
-		output.vertexProgram = input.vertexProgram != nullptr ? input.vertexProgram->getCore() : nullptr;
-		output.fragmentProgram = input.fragmentProgram != nullptr ? input.fragmentProgram->getCore() : nullptr;
-		output.geometryProgram = input.geometryProgram != nullptr ? input.geometryProgram->getCore() : nullptr;
-		output.hullProgram = input.hullProgram != nullptr ? input.hullProgram->getCore() : nullptr;
-		output.domainProgram = input.domainProgram != nullptr ? input.domainProgram->getCore() : nullptr;
-		output.computeProgram = input.computeProgram != nullptr ? input.computeProgram->getCore() : nullptr;
-	}
-
-	/** Converts a sim thread pass descriptor to a pipeline state descriptor. */
-	void convertPassDesc(const PASS_DESC& input, PIPELINE_STATE_DESC& output)
-	{
-		output.blendState = input.blendState ;
-		output.rasterizerState = input.rasterizerState;
-		output.depthStencilState = input.depthStencilState;
-		output.vertexProgram = input.vertexProgram;
-		output.fragmentProgram = input.fragmentProgram;
-		output.geometryProgram = input.geometryProgram;
-		output.hullProgram = input.hullProgram;
-		output.domainProgram = input.domainProgram;
-	}
-
-	/** Converts a sim thread pass descriptor to a core thread pipeline state descriptor. */
-	void convertPassDesc(const ct::PASS_DESC& input, ct::PIPELINE_STATE_DESC& output)
-	{
-		output.blendState = input.blendState;
-		output.rasterizerState = input.rasterizerState;
-		output.depthStencilState = input.depthStencilState;
-		output.vertexProgram = input.vertexProgram;
-		output.fragmentProgram = input.fragmentProgram;
-		output.geometryProgram = input.geometryProgram;
-		output.hullProgram = input.hullProgram;
-		output.domainProgram = input.domainProgram;
-	}
-
 	template<bool Core>
 	TPass<Core>::TPass()
 	{
@@ -60,7 +19,7 @@ namespace bs
 	}
 
 	template<bool Core>
-	TPass<Core>::TPass(const PassDescType& data)
+	TPass<Core>::TPass(const PASS_DESC& data)
 		:mData(data)
 	{
 
@@ -69,26 +28,57 @@ namespace bs
 	template<bool Core>
 	bool TPass<Core>::hasBlending() const 
 	{ 
-		if (!mData.blendState)
-			return false;
-
 		bool transparent = false;
 
-		const BlendProperties& bsProps = mData.blendState->getProperties();
 		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 		{
 			// Transparent if destination color is taken into account
-			if (bsProps.getDstBlend(i) != BF_ZERO ||
-				bsProps.getSrcBlend(i) == BF_DEST_COLOR ||
-				bsProps.getSrcBlend(i) == BF_INV_DEST_COLOR ||
-				bsProps.getSrcBlend(i) == BF_DEST_ALPHA ||
-				bsProps.getSrcBlend(i) == BF_INV_DEST_ALPHA)
+			if (mData.blendStateDesc.renderTargetDesc[i].dstBlend != BF_ZERO ||
+				mData.blendStateDesc.renderTargetDesc[i].srcBlend == BF_DEST_COLOR ||
+				mData.blendStateDesc.renderTargetDesc[i].srcBlend == BF_INV_DEST_COLOR ||
+				mData.blendStateDesc.renderTargetDesc[i].srcBlend == BF_DEST_ALPHA ||
+				mData.blendStateDesc.renderTargetDesc[i].srcBlend == BF_INV_DEST_ALPHA)
 			{
 				transparent = true;
 			}
 		}
 
 		return transparent;
+	}
+
+	template<bool Core>
+	void TPass<Core>::createPipelineState() 
+	{
+		if (isCompute())
+		{
+			SPtr<GpuProgramType> program = GpuProgramType::create(mData.computeProgramDesc);
+			mComputePipelineState = ComputePipelineStateType::create(program);
+		}
+		else
+		{
+			PipelineStateDescType desc;
+
+			if(!mData.vertexProgramDesc.source.empty())
+				desc.vertexProgram = GpuProgramType::create(mData.vertexProgramDesc);
+
+			if(!mData.fragmentProgramDesc.source.empty())
+				desc.fragmentProgram = GpuProgramType::create(mData.fragmentProgramDesc);
+
+			if(!mData.geometryProgramDesc.source.empty())
+				desc.geometryProgram = GpuProgramType::create(mData.geometryProgramDesc);
+
+			if(!mData.hullProgramDesc.source.empty())
+				desc.hullProgram = GpuProgramType::create(mData.hullProgramDesc);
+
+			if(!mData.domainProgramDesc.source.empty())
+				desc.domainProgram = GpuProgramType::create(mData.domainProgramDesc);
+
+			desc.blendState = BlendStateType::create(mData.blendStateDesc);
+			desc.rasterizerState = RasterizerStateType::create(mData.rasterizerStateDesc);
+			desc.depthStencilState = DepthStencilStateType::create(mData.depthStencilStateDesc);
+
+			mGraphicsPipelineState = GraphicsPipelineStateType::create(desc);
+		}
 	}
 
 	template class TPass < false > ;
@@ -105,87 +95,44 @@ namespace bs
 
 	SPtr<ct::CoreObject> Pass::createCore() const
 	{
-		ct::PASS_DESC desc;
-		convertPassDesc(mData, desc);
+		ct::Pass* pass = new (bs_alloc<ct::Pass>()) ct::Pass(mData);
 
-		ct::Pass* pass;
-		if(mComputePipelineState != nullptr)
-		{
-			SPtr<ct::ComputePipelineState> corePipeline = mComputePipelineState->getCore();
-			pass = new (bs_alloc<ct::Pass>()) ct::Pass(desc, corePipeline);
-		}
-		else
-		{
-			SPtr<ct::GraphicsPipelineState> corePipeline;
-			if (mGraphicsPipelineState != nullptr)
-				corePipeline = mGraphicsPipelineState->getCore();
-
-			pass = new (bs_alloc<ct::Pass>()) ct::Pass(desc, corePipeline);
-		}
-
-		SPtr<ct::Pass> passPtr = bs_shared_ptr<ct::Pass>(pass);
+		SPtr<ct::Pass> passPtr = bs_shared_ptr(pass);
 		passPtr->_setThisPtr(passPtr);
 
 		return passPtr;
 	}
 
-	void Pass::initialize()
+	void Pass::compile()
 	{
-		// Create pipeline state
-		if (hasComputeProgram())
-		{
-			mComputePipelineState = ComputePipelineState::create(getComputeProgram());
-		}
-		else
-		{
-			PIPELINE_STATE_DESC desc;
-			convertPassDesc(mData, desc);
+		if(mComputePipelineState || mGraphicsPipelineState)
+			return; // Already compiled
 
-			mGraphicsPipelineState = GraphicsPipelineState::create(desc);
-		}
+		createPipelineState();
 
-		CoreObject::initialize();
+		markCoreDirty();
+		CoreObject::syncToCore();
 	}
 
 	CoreSyncData Pass::syncToCore(FrameAlloc* allocator)
 	{
-		UINT32 size = sizeof(ct::PASS_DESC);
+		UINT32 size = sizeof(SPtr<ct::ComputePipelineState>) + sizeof(SPtr<ct::GraphicsPipelineState>);
 
 		UINT8* data = allocator->alloc(size);
-		ct::PASS_DESC* passDesc = new (data) ct::PASS_DESC();
-		convertPassDesc(mData, *passDesc);
+
+		char* dataPtr = (char*)data;
+		SPtr<ct::ComputePipelineState>* computePipelineState = new (dataPtr) SPtr<ct::ComputePipelineState>();
+
+		if(mComputePipelineState)
+			*computePipelineState = mComputePipelineState->getCore();
+
+		dataPtr += sizeof(SPtr<ct::ComputePipelineState>);
+		SPtr<ct::GraphicsPipelineState>* graphicsPipelineState = new (dataPtr) SPtr<ct::GraphicsPipelineState>();
+
+		if(mGraphicsPipelineState)
+			*graphicsPipelineState = mGraphicsPipelineState->getCore();
 
 		return CoreSyncData(data, size);
-	}
-
-	void Pass::getCoreDependencies(Vector<CoreObject*>& dependencies)
-	{
-		if (mData.blendState != nullptr)
-			dependencies.push_back(mData.blendState.get());
-
-		if (mData.rasterizerState != nullptr)
-			dependencies.push_back(mData.rasterizerState.get());
-
-		if (mData.depthStencilState != nullptr)
-			dependencies.push_back(mData.depthStencilState.get());
-
-		if (mData.vertexProgram != nullptr)
-			dependencies.push_back(mData.vertexProgram.get());
-
-		if (mData.fragmentProgram != nullptr)
-			dependencies.push_back(mData.fragmentProgram.get());
-
-		if (mData.geometryProgram != nullptr)
-			dependencies.push_back(mData.geometryProgram.get());
-
-		if (mData.hullProgram != nullptr)
-			dependencies.push_back(mData.hullProgram.get());
-
-		if (mData.domainProgram != nullptr)
-			dependencies.push_back(mData.domainProgram.get());
-
-		if (mData.computeProgram != nullptr)
-			dependencies.push_back(mData.computeProgram.get());
 	}
 
 	SPtr<Pass> Pass::create(const PASS_DESC& desc)
@@ -223,47 +170,25 @@ namespace bs
 		:TPass(desc)
 	{ }
 
-	Pass::Pass(const PASS_DESC& desc, const SPtr<GraphicsPipelineState>& pipelineState)
-		:TPass(desc)
+	void Pass::compile()
 	{
-		mGraphicsPipelineState = pipelineState;
-	}
+		if(mComputePipelineState || mGraphicsPipelineState)
+			return; // Already compiled
 
-
-	Pass::Pass(const PASS_DESC& desc, const SPtr<ComputePipelineState>& pipelineState)
-		:TPass(desc)
-	{
-		mComputePipelineState = pipelineState;
-	}
-
-	void Pass::initialize()
-	{
-		if(hasComputeProgram())
-		{
-			if(mComputePipelineState == nullptr)
-				mComputePipelineState = ComputePipelineState::create(getComputeProgram());
-		}
-		else
-		{
-			if (mGraphicsPipelineState == nullptr)
-			{
-				PIPELINE_STATE_DESC desc;
-				convertPassDesc(mData, desc);
-
-				mGraphicsPipelineState = GraphicsPipelineState::create(desc);
-			}
-		}
-
-		CoreObject::initialize();
+		createPipelineState();
 	}
 
 	void Pass::syncToCore(const CoreSyncData& data)
 	{
 		UINT8* dataPtr = data.getBuffer();
-		PASS_DESC* desc = (PASS_DESC*)dataPtr;
+		SPtr<ComputePipelineState>* computePipelineState = (SPtr<ComputePipelineState>*)dataPtr;
+		mComputePipelineState = *computePipelineState;
+		computePipelineState->~SPtr<ComputePipelineState>();
 
-		mData = *desc;
-		desc->~PASS_DESC();
+		dataPtr += sizeof(SPtr<ComputePipelineState>);
+		SPtr<GraphicsPipelineState>* graphicsPipelineState = (SPtr<GraphicsPipelineState>*)dataPtr;
+		mGraphicsPipelineState = *graphicsPipelineState;
+		graphicsPipelineState->~SPtr<GraphicsPipelineState>();
 	}
 
 	SPtr<Pass> Pass::create(const PASS_DESC& desc)
