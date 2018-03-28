@@ -1,0 +1,55 @@
+sudo: false
+language: cpp
+
+matrix:
+  include:
+    - os: linux
+      compiler:
+        - gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gcc-7
+            - g++-7
+            - binutils-2.26
+          update-alternatives:
+            - install /usr/bin/gcc gcc /usr/bin/gcc-7 50
+            - install /usr/bin/g++ g++ /usr/bin/g++-7 50
+      env:
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+
+before_install:
+  - eval "${MATRIX_EVAL}"
+  
+install:
+  - DEPS_DIR="${TRAVIS_BUILD_DIR}/Dependencies"
+  - mkdir ${DEPS_DIR} && cd ${DEPS_DIR}
+  
+  # Download CMake
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      CMAKE_URL="https://cmake.org/files/v3.9/cmake-3.9.6-Linux-x86_64.tar.gz"
+      mkdir cmake
+      travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+    fi
+
+  - cd ..
+
+script:
+  - INSTALL_DIR="${TRAVIS_BUILD_DIR}/Install"
+  - mkdir ${INSTALL_DIR}
+  - mkdir Build && cd Build
+  - cmake .. -DCMAKE_INSTALL_PREFIX:STRING=${INSTALL_DIR}
+  - make -j
+  - make install
+  
+after_success:
+  - cd ..
+  - today=`date +%Y-%m-%d.%H:%M:%S`
+  - filename=bsf_${TRAVIS_OS_NAME}_${today}.zip
+  - cd ${INSTALL_DIR}
+  - zip -rq ${filename} ./*
+  - curl --ftp-create-dirs -T ${filename} -u ${FTP_USER}:${FTP_PASSWORD} ${FTP_DESTINATION}
