@@ -22,8 +22,8 @@ build_script:
 
 after_build:
  - cmd: cd ..
- - cmd: 7z a bsf_Win64_$(APPVEYOR_BUILD_NUMBER).zip ./CI/* -xr!*pdb
- - cmd: 7z a bsf_Win64_Symbols_$(APPVEYOR_BUILD_NUMBER).zip ./CI/*pdb -r
+ - cmd: 7z a bsf_Win64_%APPVEYOR_BUILD_NUMBER%.zip ./CI/* -xr!*pdb
+ - cmd: 7z a bsf_Win64_Symbols_%APPVEYOR_BUILD_NUMBER%.zip ./CI/*pdb -r
 
 artifacts:
   - path: bsf_Win64_$(APPVEYOR_BUILD_NUMBER).zip
