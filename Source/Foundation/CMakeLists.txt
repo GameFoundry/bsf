@@ -105,6 +105,12 @@ install(
 )
 
 install(
+	FILES $<TARGET_PDB_FILE:bsf> 
+	DESTINATION bin 
+	OPTIONAL
+)
+
+install(
 	TARGETS bsf
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib

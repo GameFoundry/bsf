@@ -30,3 +30,9 @@ install(
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
 )
+
+install(
+	FILES $<TARGET_PDB_FILE:bsfFBXImporter> 
+	DESTINATION bin 
+	OPTIONAL
+)

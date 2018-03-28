@@ -24,3 +24,9 @@ install(
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
 )
+
+install(
+	FILES $<TARGET_PDB_FILE:bsfRenderBeast> 
+	DESTINATION bin 
+	OPTIONAL
+)

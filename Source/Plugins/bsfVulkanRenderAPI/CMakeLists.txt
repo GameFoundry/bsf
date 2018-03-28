@@ -35,4 +35,10 @@ if(RENDER_API_MODULE MATCHES "Vulkan")
 		LIBRARY DESTINATION lib
 		ARCHIVE DESTINATION lib
 	)
+	
+	install(
+		FILES $<TARGET_PDB_FILE:bsfVulkanRenderAPI> 
+		DESTINATION bin 
+		OPTIONAL
+	)	
 endif()
