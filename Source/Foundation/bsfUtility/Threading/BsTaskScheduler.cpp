@@ -5,27 +5,26 @@
 
 namespace bs
 {
-	Task::Task(const PrivatelyConstruct& dummy, const String& name, std::function<void()> taskWorker, 
+	Task::Task(const PrivatelyConstruct& dummy, String name, std::function<void()> taskWorker,
 		TaskPriority priority, SPtr<Task> dependency)
-		: mName(name), mPriority(priority), mTaskId(0), mTaskWorker(taskWorker), mTaskDependency(dependency), mState(0)
-		, mParent(nullptr)
+		: mName(std::move(name)), mPriority(priority), mTaskWorker(std::move(taskWorker)), mTaskDependency(std::move(dependency))
 	{
 
 	}
 
-	SPtr<Task> Task::create(const String& name, std::function<void()> taskWorker, TaskPriority priority, SPtr<Task> dependency)
+	SPtr<Task> Task::create(String name, std::function<void()> taskWorker, TaskPriority priority, SPtr<Task> dependency)
 	{
-		return bs_shared_ptr_new<Task>(PrivatelyConstruct(), name, taskWorker, priority, dependency);
+		return bs_shared_ptr_new<Task>(PrivatelyConstruct(), std::move(name), std::move(taskWorker), priority, std::move(dependency));
 	}
 
 	bool Task::isComplete() const
 	{
-		return mState.load() == 2;
+		return mState == 2;
 	}
 
 	bool Task::isCanceled() const
 	{
-		return mState.load() == 3;
+		return mState == 3;
 	}
 
 	void Task::wait()
@@ -36,11 +35,11 @@ namespace bs
 
 	void Task::cancel()
 	{
-		mState.store(3);
+		mState = 3;
 	}
 
 	TaskScheduler::TaskScheduler()
-		:mTaskQueue(&TaskScheduler::taskCompare), mMaxActiveTasks(0), mNextTaskId(0), mShutdown(false)
+		:mTaskQueue(&TaskScheduler::taskCompare)
 	{
 		mMaxActiveTasks = BS_THREAD_HARDWARE_CONCURRENCY;
 
@@ -75,7 +74,7 @@ namespace bs
 		mTaskSchedulerThread.blockUntilComplete();
 	}
 
-	void TaskScheduler::addTask(const SPtr<Task>& task)
+	void TaskScheduler::addTask(SPtr<Task> task)
 	{
 		Lock lock(mReadyMutex);
 
@@ -85,7 +84,7 @@ namespace bs
 		task->mTaskId = mNextTaskId++;
 		task->mState.store(0); // Reset state in case the task is getting re-queued
 
-		mTaskQueue.insert(task);
+		mTaskQueue.insert(std::move(task));
 
 		// Wake main scheduler thread
 		mTaskReadyCond.notify_one();
@@ -147,7 +146,7 @@ namespace bs
 		{
 			Lock lock(mReadyMutex);
 
-			auto findIter = std::find(mActiveTasks.begin(), mActiveTasks.end(), task);
+			const auto& findIter = std::find(mActiveTasks.begin(), mActiveTasks.end(), task);
 			if (findIter != mActiveTasks.end())
 				mActiveTasks.erase(findIter);
 		}
@@ -170,7 +169,7 @@ namespace bs
 
 		{
 			Lock lock(mCompleteMutex);
-			
+
 			while(!task->isComplete())
 			{
 				addWorker();
