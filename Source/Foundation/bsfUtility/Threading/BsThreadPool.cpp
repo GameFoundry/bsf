@@ -175,10 +175,10 @@ namespace bs
 	}
 
 	UINT32 PooledThread::getId() const
-	{ 
+	{
 		Lock lock(mMutex);
 
-		return mId; 
+		return mId;
 	}
 
 	ThreadPool::ThreadPool(UINT32 threadCapacity, UINT32 maxCapacity, UINT32 idleTimeout)

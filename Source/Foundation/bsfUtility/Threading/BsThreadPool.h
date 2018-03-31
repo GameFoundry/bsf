@@ -53,7 +53,7 @@ namespace bs
 		/**
 		 * Starts executing the given worker method.
 		 *
-		 * @note	
+		 * @note
 		 * Caller must ensure worker method is not null and that the thread is currently idle, otherwise undefined behavior
 		 * will occur.
 		 */
@@ -111,9 +111,9 @@ namespace bs
 
 	/**
 	 * @copydoc	PooledThread
-	 * 			
-	 * @tparam	ThreadPolicy Allows you specify a policy with methods that will get called whenever a new thread is created 
-	 *						 or when a thread is destroyed.
+	 *
+	 * @tparam	ThreadPolicy Allows you specify a policy with methods that will get called whenever a new thread is created
+	 *		or when a thread is destroyed.
 	 */
 	template<class ThreadPolicy>
 	class TPooledThread : public PooledThread
@@ -190,7 +190,7 @@ namespace bs
 		friend class HThread;
 
 		Vector<PooledThread*> mThreads;
-		
+
 		/**	Creates a new thread to be used by the pool. */
 		virtual PooledThread* createThread(const String& name) = 0;
 
@@ -210,7 +210,7 @@ namespace bs
 		UINT32 mMaxCapacity;
 		UINT32 mIdleTimeout;
 		UINT32 mAge = 0;
-		
+
 		std::atomic_uint mUniqueId;
 		mutable Mutex mMutex;
 	};
@@ -234,9 +234,9 @@ namespace bs
 
 	/**
 	 * @copydoc ThreadPool
-	 * 			
-	 * @tparam	ThreadPolicy Allows you specify a policy with methods that will get called whenever a new thread is created 
-	 *			or when a thread is destroyed.
+	 *
+	 * @tparam	ThreadPolicy Allows you specify a policy with methods that will get called whenever a new thread is created
+	 *		or when a thread is destroyed.
 	 */
 	template<class ThreadPolicy = ThreadNoPolicy>
 	class TThreadPool : public ThreadPool

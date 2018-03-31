@@ -25,7 +25,7 @@ namespace bs
 
 	/**
 	 * Represents a single task that may be queued in the TaskScheduler.
-	 * 			
+	 *
 	 * @note	Thread safe.
 	 */
 	class BS_UTILITY_EXPORT Task
@@ -33,7 +33,7 @@ namespace bs
 		struct PrivatelyConstruct {};
 
 	public:
-		Task(const PrivatelyConstruct& dummy, const String& name, std::function<void()> taskWorker, 
+		Task(const PrivatelyConstruct& dummy, String name, std::function<void()> taskWorker,
 			TaskPriority priority, SPtr<Task> dependency);
 
 		/**
@@ -45,7 +45,7 @@ namespace bs
 		 * @param[in]	dependency	(optional) Task dependency if one exists. If provided the task will
 		 * 							not be executed until its dependency is complete.
 		 */
-		static SPtr<Task> create(const String& name, std::function<void()> taskWorker, TaskPriority priority = TaskPriority::Normal, 
+		static SPtr<Task> create(String name, std::function<void()> taskWorker, TaskPriority priority = TaskPriority::Normal,
 			SPtr<Task> dependency = nullptr);
 
 		/** Returns true if the task has completed. */
@@ -55,8 +55,8 @@ namespace bs
 		bool isCanceled() const;
 
 		/**
-		 * Blocks the current thread until the task has completed. 
-		 * 
+		 * Blocks the current thread until the task has completed.
+		 *
 		 * @note	While waiting adds a new worker thread, so that the blocking threads core can be utilized.
 		 */
 		void wait();
@@ -69,23 +69,23 @@ namespace bs
 
 		String mName;
 		TaskPriority mPriority;
-		UINT32 mTaskId;
+		UINT32 mTaskId = 0;
 		std::function<void()> mTaskWorker;
 		SPtr<Task> mTaskDependency;
-		std::atomic<UINT32> mState; /**< 0 - Inactive, 1 - In progress, 2 - Completed, 3 - Canceled */
+		std::atomic<UINT32> mState{0}; /**< 0 - Inactive, 1 - In progress, 2 - Completed, 3 - Canceled */
 
-		TaskScheduler* mParent;
+		TaskScheduler* mParent = nullptr;
 	};
 
 	/**
 	 * Represents a task scheduler running on multiple threads. You may queue tasks on it from any thread and they will be
 	 * executed in user specified order on any available thread.
-	 * 			
-	 * @note	
+	 *
+	 * @note
 	 * Thread safe.
 	 * @note
-	 * This type of task scheduler uses a global queue and is best used for coarse granularity of tasks. (Number of tasks 
-	 * in the order of hundreds. Higher number of tasks might require different queuing and locking mechanism, potentially 
+	 * This type of task scheduler uses a global queue and is best used for coarse granularity of tasks. (Number of tasks
+	 * in the order of hundreds. Higher number of tasks might require different queuing and locking mechanism, potentially
 	 * at the cost of flexibility.)
 	 * @note
 	 * By default the task scheduler will create as many threads as there are physical CPU cores. You may add or remove
@@ -98,7 +98,7 @@ namespace bs
 		~TaskScheduler();
 
 		/** Queues a new task. */
-		void addTask(const SPtr<Task>& task);
+		void addTask(SPtr<Task> task);
 
 		/**	Adds a new worker thread which will be used for executing queued tasks. */
 		void addWorker();
@@ -126,9 +126,9 @@ namespace bs
 		HThread mTaskSchedulerThread;
 		Set<SPtr<Task>, std::function<bool(const SPtr<Task>&, const SPtr<Task>&)>> mTaskQueue;
 		Vector<SPtr<Task>> mActiveTasks;
-		UINT32 mMaxActiveTasks;
-		UINT32 mNextTaskId;
-		bool mShutdown;
+		UINT32 mMaxActiveTasks = 0;
+		UINT32 mNextTaskId = 0;
+		bool mShutdown = false;
 
 		Mutex mReadyMutex;
 		Mutex mCompleteMutex;
