@@ -4,8 +4,8 @@
 
 #include <assert.h>
 
-/** @defgroup Layers Layers 
- *	User facing API for the engine core, categorized per layer. 
+/** @defgroup Layers Layers
+ *	User facing API for the engine core, categorized per layer.
  *  @{
  */
 
@@ -79,7 +79,7 @@
 /** @} */
 /** @} */
 
-/** @defgroup Internals Internals 
+/** @defgroup Internals Internals
  *	Non-user-facing low-level classes and methods, useful primarily to those modifying the engine.
  *  @{
  */
@@ -157,10 +157,10 @@
 
 // disable: "<type> needs to have dll-interface to be used by clients'
 // Happens on STL member variables which are not public therefore is ok
-#   pragma warning (disable: 4251)
+#	pragma warning (disable: 4251)
 
 // disable: 'X' Function call with parameters that may be unsafe
-#	pragma warning(disable: 4996) 
+#	pragma warning(disable: 4996)
 
 // disable: decorated name length exceeded, name was truncated
 // Happens with really long type names. Even fairly standard use
@@ -211,19 +211,19 @@
 
 // Script binding defines
 
-/** 
+/**
  * @page scriptBindingMacro Script binding exports
- * 
+ *
  * Marks the specific type or a method to be exported to the scripting API. Supports a variety of options which can
  * be specified in the "option:value" format, where multiple options are separated by commas, with no whitespace.
  *
  * Supported options:
  *  - n - Specify a different name for the type in the scripting API (e.g. "n:MyName"). Usable on types and methods.
- *  - v - Specify a different visibility (default is public). Supported values are "public", "internal" and "private". 
+ *  - v - Specify a different visibility (default is public). Supported values are "public", "internal" and "private".
  *		  Usable on types and methods.
  *  - f - Specify the name of the output file(s) for the script object and its potential wrappers. If not specified
  *		  the name of the type will be used for the file. Usable on types only.
- *	- pl - Specify whether the type is plain or not (default is false). Supported values are "true" or "false". Plain 
+ *	- pl - Specify whether the type is plain or not (default is false). Supported values are "true" or "false". Plain
  *		  types don't have script interop objects generated, instead their are generated in script code as plain data
  *		  types. No methods are exposed, but all data members and constructors are copied. Usable on types only.
  *	- e - Specify that a method is external and is to be appended to some script class. Such methods must be static
@@ -253,7 +253,7 @@
 	#define BS_SCRIPT_EXPORT(...) __attribute__((annotate("se," #__VA_ARGS__)))
 #else
 	/** @ref scriptBindingMacro */
-	#define BS_SCRIPT_EXPORT(...) 
+	#define BS_SCRIPT_EXPORT(...)
 #endif
 
 // Short-hand names for various built-in types
