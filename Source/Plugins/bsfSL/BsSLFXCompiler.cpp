@@ -20,6 +20,8 @@
 
 extern "C" {
 #include "BsMMAlloc.h"
+
+#define YY_NO_UNISTD_H 1
 #include "BsParserFX.h"
 #include "BsLexerFX.h"
 }

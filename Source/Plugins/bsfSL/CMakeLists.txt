@@ -8,10 +8,6 @@ if(BUILD_BSL)
 	set(BS_FLEX_OPTIONS -L)
 	set(BS_BISON_OPTIONS -l)
 
-	if(WIN32)
-		list(APPEND BS_FLEX_OPTIONS --wincompat)
-	endif()
-
 	execute_process(
 			COMMAND ${flex_EXECUTABLE} ${BS_FLEX_OPTIONS} ${BSF_SOURCE_DIR}/Plugins/bsfSL/BsLexerFX.l
 			COMMAND ${bison_EXECUTABLE} ${BS_BISON_OPTIONS} ${BSF_SOURCE_DIR}/Plugins/bsfSL/BsParserFX.y

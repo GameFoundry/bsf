@@ -903,10 +903,13 @@ static yyconst flex_int32_t yy_rule_can_match_eol[163] =
 #define CONDITIONAL_ELIF 11
 #define CONDITIONAL_IGNORE 12
 
-/*windows compatibility case*/
-#include <io.h>
-#define isatty _isatty
-#define fileno _fileno
+#ifndef YY_NO_UNISTD_H
+/* Special case for "unistd.h", since it is non-ANSI. We include it way
+ * down here because we want the user's section 1 to have been scanned first.
+ * The user has a chance to override it with an option.
+ */
+#include <unistd.h>
+#endif
     
 #define YY_EXTRA_TYPE struct tagParseState *
 

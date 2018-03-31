@@ -46,6 +46,7 @@ extern int yydebug;
 #include "BsASTFX.h"
 #include "BsIncludeHandler.h"
 
+#define YY_NO_UNISTD_H 1
 #ifndef YY_TYPEDEF_YY_SCANNER_T
 #define YY_TYPEDEF_YY_SCANNER_T
 	typedef void* yyscan_t;
