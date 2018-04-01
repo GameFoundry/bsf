@@ -5,27 +5,29 @@
 
 namespace bs
 {
-	DynLib* DynLibManager::load(const String& name)
+	DynLib* DynLibManager::load(String filename)
 	{
 		// Add the extension (.dll, .so, ...) if necessary.
-		String filename = name;
-		const UINT32 length = (UINT32)filename.length();
+		// TODO: The string comparison here could be slightly more efficent
+		// Using a templatized string_concat function for the lower_bound call
+		// and/or a custom comparitor that does comparison by parts.
+		const String::size_type length = filename.length();
 		const String extension = String(".") + DynLib::EXTENSION;
-		const UINT32 extLength = (UINT32)extension.length();
+		const String::size_type extLength = extension.length();
 		if (length <= extLength || filename.substr(length - extLength) != extension)
-			filename += extension;
+			filename.append(extension);
 
 		if(DynLib::PREFIX != nullptr)
-			filename = DynLib::PREFIX + filename;
+			filename.insert(0, DynLib::PREFIX);
 
-		auto iterFind = mLoadedLibraries.find(filename);
+		const auto& iterFind = mLoadedLibraries.find(filename);
 		if (iterFind != mLoadedLibraries.end())
 		{
 			return iterFind->second;
 		}
 		else
 		{
-			DynLib* newLib = new (bs_alloc<DynLib>()) DynLib(filename);
+			DynLib* newLib = new (bs_alloc<DynLib>()) DynLib(std::move(filename));
 			mLoadedLibraries[filename] = newLib;
 
 			return newLib;
@@ -34,7 +36,7 @@ namespace bs
 
 	void DynLibManager::unload(DynLib* lib)
 	{
-		auto iterFind = mLoadedLibraries.find(lib->getName());
+		const auto& iterFind = mLoadedLibraries.find(lib->getName());
 		if (iterFind != mLoadedLibraries.end())
 		{
 			mLoadedLibraries.erase(iterFind);
