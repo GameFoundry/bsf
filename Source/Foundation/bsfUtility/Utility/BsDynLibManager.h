@@ -34,7 +34,7 @@ namespace bs
 		void unload(DynLib* lib);
 
 	protected:
-		Map<String, DynLib*> mLoadedLibraries;
+		Map<const String, DynLib*> mLoadedLibraries;
 	};
 
 	/** Easy way of accessing DynLibManager. */
