@@ -20,16 +20,15 @@ namespace bs
 		if(DynLib::PREFIX != nullptr)
 			filename.insert(0, DynLib::PREFIX);
 
-		const auto& iterFind = mLoadedLibraries.find(filename);
-		if (iterFind != mLoadedLibraries.end())
+		const auto& iterFind = mLoadedLibraries.lower_bound(filename);
+		if (iterFind != mLoadedLibraries.end() && iterFind->first == filename)
 		{
 			return iterFind->second;
 		}
 		else
 		{
-			DynLib* newLib = new (bs_alloc<DynLib>()) DynLib(std::move(filename));
-			mLoadedLibraries[filename] = newLib;
-
+			DynLib* newLib = new (bs_alloc<DynLib>()) DynLib(filename);
+			mLoadedLibraries.emplace_hint(iterFind, std::move(filename), newLib);
 			return newLib;
 		}
 	}
