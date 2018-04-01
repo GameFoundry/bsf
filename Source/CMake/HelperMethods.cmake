@@ -582,7 +582,7 @@ function(add_common_flags target)
 	elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "AppleClang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 		# Note: Optionally add -ffunction-sections, -fdata-sections, but with linker option --gc-sections
 		# TODO: Use link-time optimization -flto. Might require non-default linker.
-		set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS -Wall -Wextra -Wno-unused-parameter -fPIC -fno-strict-aliasing -msse4.1)
+		set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS -Wall -Wextra -Wno-unused-parameter -fPIC -fno-strict-aliasing -msse4.1 -fvisibility=hidden -fvisibility-inlines-hidden)
 
 		if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
 			set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS -fno-ms-compatibility)

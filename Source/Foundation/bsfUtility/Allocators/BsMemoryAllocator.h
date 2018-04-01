@@ -100,15 +100,15 @@ namespace bs
 	 * Thread safe class used for storing total number of memory allocations and deallocations, primarily for statistic
 	 * purposes.
 	 */
-	class MemoryCounter
+	class BS_UTILITY_EXPORT MemoryCounter
 	{
 	public:
-		static BS_UTILITY_EXPORT uint64_t getNumAllocs()
+		static uint64_t getNumAllocs()
 		{
 			return Allocs;
 		}
 
-		static BS_UTILITY_EXPORT uint64_t getNumFrees()
+		static uint64_t getNumFrees()
 		{
 			return Frees;
 		}
@@ -116,9 +116,8 @@ namespace bs
 	private:
 		friend class MemoryAllocatorBase;
 
-		// Threadlocal data can't be exported, so some magic to make it accessible from MemoryAllocator
-		static BS_UTILITY_EXPORT void incAllocCount() { ++Allocs; }
-		static BS_UTILITY_EXPORT void incFreeCount() { ++Frees; }
+		static void incAllocCount() { ++Allocs; }
+		static void incFreeCount() { ++Frees; }
 
 		static BS_THREADLOCAL uint64_t Allocs;
 		static BS_THREADLOCAL uint64_t Frees;
