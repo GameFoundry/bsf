@@ -5,6 +5,8 @@
 #include "Prerequisites/BsPrerequisitesUtil.h"
 #include "Utility/BsModule.h"
 
+#include "Utility/BsDynLib.h"
+
 namespace bs
 {
 	/** @addtogroup General
@@ -34,7 +36,7 @@ namespace bs
 		void unload(DynLib* lib);
 
 	protected:
-		Map<const String, DynLib*> mLoadedLibraries;
+		Set<NPtr<DynLib>, std::less<>> mLoadedLibraries;
 	};
 
 	/** Easy way of accessing DynLibManager. */

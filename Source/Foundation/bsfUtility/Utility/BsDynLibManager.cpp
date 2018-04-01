@@ -1,10 +1,24 @@
 //************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "Utility/BsDynLibManager.h"
-#include "Utility/BsDynLib.h"
 
 namespace bs
 {
+	static inline bool operator<(const NPtr<DynLib>& lhs, const NPtr<DynLib>& rhs)
+	{
+		return lhs->getName() < rhs->getName();
+	}
+
+	static inline bool operator<(const NPtr<DynLib>& lhs, const String & rhs)
+	{
+		return lhs->getName() < rhs;
+	}
+
+	static inline bool operator<(const String & lhs, const NPtr<DynLib>& rhs)
+	{
+		return lhs < rhs->getName();
+	}
+
 	DynLib* DynLibManager::load(String filename)
 	{
 		// Add the extension (.dll, .so, ...) if necessary.
@@ -21,14 +35,14 @@ namespace bs
 			filename.insert(0, DynLib::PREFIX);
 
 		const auto& iterFind = mLoadedLibraries.lower_bound(filename);
-		if (iterFind != mLoadedLibraries.end() && iterFind->first == filename)
+		if (iterFind != mLoadedLibraries.end() && (*iterFind)->getName() == filename)
 		{
-			return iterFind->second;
+			return iterFind->get();
 		}
 		else
 		{
-			DynLib* newLib = new (bs_alloc<DynLib>()) DynLib(filename);
-			mLoadedLibraries.emplace_hint(iterFind, std::move(filename), newLib);
+			DynLib* newLib = new (bs_alloc<DynLib>()) DynLib(std::move(filename));
+			mLoadedLibraries.emplace_hint(iterFind, newLib);
 			return newLib;
 		}
 	}
@@ -50,8 +64,8 @@ namespace bs
 		// Unload & delete resources in turn
 		for(auto& entry : mLoadedLibraries)
 		{
-			entry.second->unload();
-			bs_delete(entry.second);
+			entry->unload();
+			bs_delete(entry.get());
 		}
 
 		// Empty the list
