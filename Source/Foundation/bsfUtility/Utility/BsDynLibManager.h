@@ -5,16 +5,16 @@
 #include "Prerequisites/BsPrerequisitesUtil.h"
 #include "Utility/BsModule.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup General
 	 *  @{
 	 */
 
 	/**
-	 * This manager keeps a track of all the open dynamic-loading libraries, opens them and returns references to 
+	 * This manager keeps a track of all the open dynamic-loading libraries, opens them and returns references to
 	 * already-open libraries.
-	 *			
+	 *
 	 * @note	Not thread safe.
 	 */
 	class BS_UTILITY_EXPORT DynLibManager : public Module<DynLibManager>
@@ -28,7 +28,7 @@ namespace bs
 		 *
 		 * @param[in]	name	The name of the library. The extension can be omitted.
 		 */
-		DynLib* load(const String& name);
+		DynLib* load(String name);
 
 		/** Unloads the given library. */
 		void unload(DynLib* lib);
