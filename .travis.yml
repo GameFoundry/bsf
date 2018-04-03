@@ -51,7 +51,7 @@ script:
   - mkdir ${INSTALL_DIR}
   - mkdir Build && cd Build
   - cmake .. -DCMAKE_INSTALL_PREFIX:STRING=${INSTALL_DIR}
-  - make -j
+  - make
   - make install
   
 after_success:
