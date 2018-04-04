@@ -135,15 +135,17 @@ namespace bs
 		if(importer == nullptr)
 			return nullptr;
 
+		waitForAsync(importer);
 		return importer->import(inputFilePath, importOptions);
 	}
-	
+
 	Vector<SubResourceRaw> Importer::_importAll(const Path& inputFilePath, SPtr<const ImportOptions> importOptions) const
 	{
 		SpecificImporter* importer = prepareForImport(inputFilePath, importOptions);
 		if(!importer)
 			return Vector<SubResourceRaw>();
 
+		waitForAsync(importer);
 		return importer->importAll(inputFilePath, importOptions);
 	}
 
@@ -172,6 +174,24 @@ namespace bs
 		}
 
 		return importer;
+	}
+
+	void Importer::waitForAsync(SpecificImporter* importer) const
+	{
+		// Note: This doesn't account for the situation if sync. import gets called from different threads, therefore
+		// it is only allowed to be called from the main thread.
+		const ImporterAsyncMode asyncMode = importer->getAsyncMode();
+		if(asyncMode == ImporterAsyncMode::Single)
+		{
+			Lock lock(mLastTaskMutex);
+
+			while(true)
+			{
+				auto iterFind = mLastQueuedTask.find(importer);
+				if (iterFind != mLastQueuedTask.end())
+					mTaskCompleted.wait(lock);
+			}
+		}
 	}
 
 	void Importer::queueForImport(SpecificImporter* importer, const Path& inputFilePath, 
@@ -243,6 +263,8 @@ namespace bs
 			{
 				if(iterFind->second.id == taskId)
 					mLastQueuedTask.erase(iterFind);
+
+				mTaskCompleted.notify_one();
 			}
 
 		}, TaskPriority::Normal, dependency);

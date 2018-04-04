@@ -190,9 +190,16 @@ namespace bs
 		 */
 		SpecificImporter* prepareForImport(const Path& filePath, SPtr<const ImportOptions>& importOptions) const;
 
+		/**
+		 * Checks is the specific importer currently importing something asynchronously. If the importer doesn't support
+		 * multiple threads then the method will wait until async. import completes.
+		 */
+		void waitForAsync(SpecificImporter* importer) const;
+
 		Vector<SpecificImporter*> mAssetImporters;
 
-		Mutex mLastTaskMutex;
+		mutable Mutex mLastTaskMutex;
+		mutable Signal mTaskCompleted;
 		UINT64 mTaskId = 0;
 
 		/** Information about a task queued for a specific import operation. */

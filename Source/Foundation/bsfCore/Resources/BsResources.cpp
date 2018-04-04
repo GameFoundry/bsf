@@ -345,9 +345,7 @@ namespace bs
 
 	SPtr<Resource> Resources::loadFromDiskAndDeserialize(const Path& filePath, bool loadWithSaveData)
 	{
-		// Note: Called asynchronously over multiple resources this will cause performance issues on hard drives as they
-		// work best when they are reading one thing at a time, and it won't have benefits on an SSD either. Think about
-		// executing all file reads on a single thread, while decompression and similar operations can execute on multiple.
+		Lock fileLock = FileScheduler::getLock(filePath);
 
 		SPtr<DataStream> stream = FileSystem::openFile(filePath, true);
 		if (stream == nullptr)
@@ -620,6 +618,8 @@ namespace bs
 		else
 			savePath = filePath;
 		
+		Lock fileLock = FileScheduler::getLock(filePath);
+
 		std::ofstream stream;
 		stream.open(savePath.toPlatformString().c_str(), std::ios::out | std::ios::binary);
 		if (stream.fail())

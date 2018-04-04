@@ -37,7 +37,7 @@ namespace bs
 		WString magicNumToExtension(const UINT8* magic, UINT32 maxBytes) const;
 
 		/**	Imports an image from the provided data stream. */
-		SPtr<PixelData> importRawImage(const SPtr<DataStream>& fileData);
+		SPtr<PixelData> importRawImage(const Path& fileData);
 
 		/** 
 		 * Generates six cubemap faces from the provided source texture. *
