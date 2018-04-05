@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 3.9.0)
 project (bsf)
 
 set (BSF_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Source)
+set (APP_ROOT_DIR ${PROJECT_SOURCE_DIR})
 set (BS_IS_BANSHEE3D 0)
 
 # Default install dir

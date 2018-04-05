@@ -9,6 +9,7 @@
 #include "FileSystem/BsFileSystem.h"
 #include "Error/BsException.h"
 #include "BsApplication.h"
+#include "BsEngineConfig.h"
 
 #include "mono/jit/jit.h"
 #include <mono/metadata/assembly.h>
@@ -88,8 +89,8 @@ namespace bs
 	void monoPrintErrorCallback(const char* string, mono_bool isStdout)
 	{
 		LOGERR(StringUtil::format("Mono error: {0}", string));
-	}
-
+	}	
+	
 	MonoManager::MonoManager()
 		:mScriptDomain(nullptr), mRootDomain(nullptr), mCorlibAssembly(nullptr)
 	{

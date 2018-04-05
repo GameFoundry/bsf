@@ -213,7 +213,7 @@ namespace bs
 					}
 				}
 				// The resource is already being loaded, or is loaded, but we might still need to load some dependencies
-				else
+				else if(savedResourceData != nullptr)
 				{
 					const Vector<UUID>& dependencies = savedResourceData->getDependencies();
 					if (!dependencies.empty())
@@ -274,7 +274,9 @@ namespace bs
 				}
 
 				initiateLoad = !alreadyLoading && !filePath.isEmpty();
-				synchronous = synchronous & savedResourceData->allowAsyncLoading();
+
+				if(savedResourceData != nullptr)
+					synchronous = synchronous & savedResourceData->allowAsyncLoading();
 			}
 		}
 

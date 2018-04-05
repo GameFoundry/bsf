@@ -173,6 +173,12 @@ namespace bs
 		}
 
 		template<>
+		inline ScriptArray ScriptArray_create<char>(UINT32 size)
+		{
+			return ScriptArray(MonoUtil::getSByteClass(), size);
+		}
+
+		template<>
 		inline ScriptArray ScriptArray_create<UINT16>(UINT32 size)
 		{
 			return ScriptArray(MonoUtil::getUINT16Class(), size);
