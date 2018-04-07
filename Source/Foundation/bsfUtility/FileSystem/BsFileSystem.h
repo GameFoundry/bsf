@@ -138,7 +138,47 @@ namespace bs
 		static void removeFile(const Path& path);
 		/** Move a single file. Internal function used by move(). */
 		static void moveFile(const Path& oldPath, const Path& newPath);
+	};
 
+	/** 
+	 * Locks access to files on the same drive, allowing only one file to be read at a time, per drive. This prevents
+	 * multiple threads accessing multiple files on the same drive at once, ruining performance on mechanical drives.
+	 */
+	class BS_UTILITY_EXPORT FileScheduler final
+	{
+	public:
+		/** 
+		 * Locks access and doesn't allow other threads to get past this point until access is unlocked. Any scheduled
+		 * file access should happen past this point.
+		 */
+		static void lock(const Path& path)
+		{
+			// Note: File path should be analyzed and determined on which drive does the path belong to. Locks can then
+			// be issued on a per-drive basis, instead of having one global lock. This would allow multiple files to be
+			// accessed at the same time, as long as they're on different drives.
+			mMutex.lock();
+		}
+
+		/** 
+		 * Unlocks access and allows another thread to lock file access. Must be provided with the same file path as
+		 * lock().
+		 */
+		static void unlock(const Path& path)
+		{
+			mMutex.unlock();
+		}
+
+		/**
+		 * Returns a lock object that immediately locks access (same as lock()), and then calls unlock() when it goes
+		 * out of scope.
+		 */
+		static Lock getLock(const Path& path)
+		{
+			return Lock(mMutex);
+		}
+
+	private:
+		static Mutex mMutex;
 	};
 
 	/** @} */

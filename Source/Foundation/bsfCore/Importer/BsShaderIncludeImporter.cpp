@@ -33,8 +33,13 @@ namespace bs
 
 	SPtr<Resource> ShaderIncludeImporter::import(const Path& filePath, SPtr<const ImportOptions> importOptions)
 	{
-		SPtr<DataStream> stream = FileSystem::openFile(filePath);
-		String includeString = stream->getAsString();
+		String includeString;
+		{
+			Lock fileLock = FileScheduler::getLock(filePath);
+
+			SPtr<DataStream> stream = FileSystem::openFile(filePath);
+			includeString = stream->getAsString();
+		}
 
 		SPtr<ShaderInclude> gpuInclude = ShaderInclude::_createPtr(includeString);
 

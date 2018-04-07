@@ -39,4 +39,12 @@ if(AUDIO_MODULE MATCHES "OpenAudio")
 		LIBRARY DESTINATION lib
 		ARCHIVE DESTINATION lib
 	)
+	
+	if(WIN32)
+		install(
+			FILES $<TARGET_PDB_FILE:bsfOpenAudio> 
+			DESTINATION bin 
+			OPTIONAL
+		)
+	endif()
 endif()

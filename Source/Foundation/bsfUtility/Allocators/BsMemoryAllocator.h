@@ -98,7 +98,7 @@ namespace bs
 #endif
 
 	/**
-	 * Thread safe class used for storing total number of memory allocations and deallocations, primarily for statistic 
+	 * Thread safe class used for storing total number of memory allocations and deallocations, primarily for statistic
 	 * purposes.
 	 */
 	class MemoryCounter
@@ -113,7 +113,7 @@ namespace bs
 		{
 			return Frees;
 		}
-		
+
 	private:
 		friend class MemoryAllocatorBase;
 
@@ -135,7 +135,7 @@ namespace bs
 
 	/**
 	 * Memory allocator providing a generic implementation. Specialize for specific categories as needed.
-	 * 			
+	 *
 	 * @note	For example you might implement a pool allocator for specific types in order
 	 * 			to reduce allocation overhead. By default standard malloc/free are used.
 	 */
@@ -153,7 +153,7 @@ namespace bs
 			return malloc(bytes);
 		}
 
-		/** 
+		/**
 		 * Allocates @p bytes and aligns them to the specified boundary (in bytes). If the aligment is less or equal to
 		 * 16 it is more efficient to use the allocateAligned16() alternative of this method. Alignment must be power of two.
 		 */
@@ -208,7 +208,7 @@ namespace bs
 	};
 
 	/**
-	 * General allocator provided by the OS. Use for persistent long term allocations, and allocations that don't 
+	 * General allocator provided by the OS. Use for persistent long term allocations, and allocations that don't
 	 * happen often.
 	 */
 	class GenAlloc
@@ -222,21 +222,21 @@ namespace bs
 	 */
 
 	/** Allocates the specified number of bytes. */
-	template<class Alloc> 
+	template<class Alloc>
 	inline void* bs_alloc(UINT32 count)
 	{
 		return MemoryAllocator<Alloc>::allocate(count);
 	}
 
 	/** Allocates enough bytes to hold the specified type, but doesn't construct it. */
-	template<class T, class Alloc> 
+	template<class T, class Alloc>
 	inline T* bs_alloc()
 	{
 		return (T*)MemoryAllocator<Alloc>::allocate(sizeof(T));
 	}
 
 	/** Creates and constructs an array of @p count elements. */
-	template<class T, class Alloc> 
+	template<class T, class Alloc>
 	inline T* bs_newN(UINT32 count)
 	{
 		T* ptr = (T*)MemoryAllocator<Alloc>::allocate(sizeof(T) * count);
@@ -255,7 +255,7 @@ namespace bs
 	}
 
 	/** Frees all the bytes allocated at the specified location. */
-	template<class Alloc> 
+	template<class Alloc>
 	inline void bs_free(void* ptr)
 	{
 		MemoryAllocator<Alloc>::free(ptr);
@@ -291,14 +291,14 @@ namespace bs
 	}
 
 	/** Allocates enough bytes to hold the specified type, but doesn't construct it. */
-	template<class T> 
+	template<class T>
 	inline T* bs_alloc()
 	{
 		return (T*)MemoryAllocator<GenAlloc>::allocate(sizeof(T));
 	}
 
-	/** 
-	 * Allocates the specified number of bytes aligned to the provided boundary. Boundary is in bytes and must be a power 
+	/**
+	 * Allocates the specified number of bytes aligned to the provided boundary. Boundary is in bytes and must be a power
 	 * of two.
 	 */
 	inline void* bs_alloc_aligned(UINT32 count, UINT32 align)
@@ -314,14 +314,14 @@ namespace bs
 	}
 
 	/** Allocates enough bytes to hold an array of @p count elements the specified type, but doesn't construct them. */
-	template<class T> 
+	template<class T>
 	inline T* bs_allocN(UINT32 count)
 	{
 		return (T*)MemoryAllocator<GenAlloc>::allocate(count * sizeof(T));
 	}
 
 	/** Creates and constructs an array of @p count elements. */
-	template<class T> 
+	template<class T>
 	inline T* bs_newN(UINT32 count)
 	{
 		T* ptr = (T*)MemoryAllocator<GenAlloc>::allocate(count * sizeof(T));
@@ -382,25 +382,28 @@ namespace bs
 
 	/** Allocator for the standard library that internally uses Banshee memory allocator. */
 	template <class T, class Alloc = GenAlloc>
-	class StdAlloc 
+	class StdAlloc
 	{
 	public:
-		typedef T value_type;
-		typedef T* pointer;
-		typedef const T* const_pointer;
-		typedef T& reference;
-		typedef const T& const_reference;
-		typedef std::size_t size_type;
-		typedef std::ptrdiff_t difference_type;
+		using value_type = T;
+		using pointer = value_type*;
+		using const_pointer = const value_type*;
+		using reference = value_type&;
+		using const_reference = const value_type&;
+		using size_type = std::size_t;
+		using difference_type = std::ptrdiff_t;
 
-		StdAlloc() noexcept {}
-		template<class U, class Alloc2> StdAlloc(const StdAlloc<U, Alloc2>&) noexcept {}
-		template<class U, class Alloc2> bool operator==(const StdAlloc<U, Alloc2>&) const noexcept { return true; }
-		template<class U, class Alloc2> bool operator!=(const StdAlloc<U, Alloc2>&) const noexcept { return false; }
-		template<class U> class rebind { public: typedef StdAlloc<U, Alloc> other; };
+		constexpr StdAlloc() = default;
+		constexpr StdAlloc(StdAlloc&&) = default;
+		constexpr StdAlloc(const StdAlloc&) = default;
+		template<class U, class Alloc2> constexpr StdAlloc(const StdAlloc<U, Alloc2>&) { };
+		template<class U, class Alloc2> constexpr bool operator==(const StdAlloc<U, Alloc2>&) const noexcept { return true; }
+		template<class U, class Alloc2> constexpr bool operator!=(const StdAlloc<U, Alloc2>&) const noexcept { return false; }
+
+		template<class U> class rebind { public: using other = StdAlloc<U, Alloc>; };
 
 		/** Allocate but don't initialize number elements of type T. */
-		T* allocate(const size_t num) const
+		static T* allocate(const size_t num)
 		{
 			if (num == 0)
 				return nullptr;
@@ -416,20 +419,20 @@ namespace bs
 		}
 
 		/** Deallocate storage p of deleted elements. */
-		void deallocate(T* p, size_t num) const noexcept
+		static void deallocate(pointer p, size_type)
 		{
 			bs_free<Alloc>((void*)p);
 		}
 
-		size_t max_size() const { return std::numeric_limits<size_type>::max() / sizeof(T); }
-		void construct(pointer p, const_reference t) { new (p) T(t); }
-		void destroy(pointer p) { p->~T(); }
+		static constexpr size_t max_size() { return std::numeric_limits<size_type>::max() / sizeof(T); }
+		static void construct(pointer p, const_reference t) { new (p) T(t); }
+		static void destroy(pointer p) { p->~T(); }
 		/* This version of construct() (with a varying number of parameters)
 		 * seems necessary in order to use some STL data structures from
 		 * libstdc++-4.8, but compilation fails on OS X, hence the #if. */
 #if BS_PLATFORM == BS_PLATFORM_LINUX || BS_PLATFORM == BS_PLATFORM_WIN32
 		template<class U, class... Args>
-		void construct(U* p, Args&&... args) { new(p) U(std::forward<Args>(args)...); }
+		static void construct(U* p, Args&&... args) { new(p) U(std::forward<Args>(args)...); }
 #endif
 	};
 

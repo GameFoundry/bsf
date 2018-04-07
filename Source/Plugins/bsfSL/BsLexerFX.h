@@ -234,10 +234,13 @@ void yyfree (void * ,yyscan_t yyscanner );
 
 #endif
 
-/*windows compatibility case*/
-#include <io.h>
-#define isatty _isatty
-#define fileno _fileno
+#ifndef YY_NO_UNISTD_H
+/* Special case for "unistd.h", since it is non-ANSI. We include it way
+ * down here because we want the user's section 1 to have been scanned first.
+ * The user has a chance to override it with an option.
+ */
+#include <unistd.h>
+#endif
     
 #define YY_EXTRA_TYPE struct tagParseState *
 
@@ -347,6 +350,6 @@ extern int yylex \
 #undef YY_DECL
 #endif
 
-#line 351 "BsLexerFX.h"
+#line 354 "BsLexerFX.h"
 #undef yyIN_HEADER
 #endif /* yyHEADER_H */

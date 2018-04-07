@@ -22,6 +22,7 @@
 #include "Animation/BsSkeleton.h"
 #include "Animation/BsMorphShapes.h"
 #include "Physics/BsPhysics.h"
+#include "FileSystem/BsFileSystem.h"
 
 namespace bs
 {
@@ -498,6 +499,7 @@ namespace bs
 		int lSDKMajor,  lSDKMinor,  lSDKRevision;
 		FbxManager::GetFileFormatVersion(lSDKMajor, lSDKMinor, lSDKRevision);
 
+		Lock fileLock = FileScheduler::getLock(filePath);
 		FbxImporter* importer = FbxImporter::Create(mFBXManager, "");
 		bool importStatus = importer->Initialize(filePath.toString().c_str(), -1, mFBXManager->GetIOSettings());
 		

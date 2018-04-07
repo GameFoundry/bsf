@@ -52,11 +52,15 @@ namespace bs
 		AudioDataInfo info;
 
 		FMOD::Sound* sound;
-		String pathStr = filePath.toString();
-		if(gFMODAudio()._getFMOD()->createSound(pathStr.c_str(), FMOD_CREATESAMPLE, nullptr, &sound) != FMOD_OK)
 		{
-			LOGERR("Failed importing audio file: " + pathStr);
-			return nullptr;
+			Lock fileLock = FileScheduler::getLock(filePath);
+
+			String pathStr = filePath.toString();
+			if (gFMODAudio()._getFMOD()->createSound(pathStr.c_str(), FMOD_CREATESAMPLE, nullptr, &sound) != FMOD_OK)
+			{
+				LOGERR("Failed importing audio file: " + pathStr);
+				return nullptr;
+			}
 		}
 
 		FMOD_SOUND_FORMAT format;

@@ -1,0 +1,50 @@
+image: Visual Studio 2017
+platform: x64
+configuration: OptimizedDebug
+clone_folder: C:\Projects\bsf
+
+environment:
+  FTP_USER:
+    secure: 6/QO2m0slpHVIaSvCgshSQ==
+  FTP_PASSWORD:
+    secure: NZnU8rVuQ/CeRYWBRObDfQ==
+  FTP_HOST:
+    secure: vkR/qaZuHZ7k7iZQBfLlNYJzx/+rzkhRlOloJq7o0mk=
+
+build_script:
+  - cmd: set INSTALL_DIR=C:/Projects/bsf/CI
+  - cmd: mkdir "%INSTALL_DIR%"
+  - cmd: mkdir Build
+  - cmd: cd Build
+  - cmd: cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX:STRING=%INSTALL_DIR% ..
+  - cmd: cmake --build ./ --config OptimizedDebug
+  - cmd: cmake --build ./ --config OptimizedDebug --target INSTALL
+
+after_build:
+ - ps: cd ..
+ - ps: $buildName = "$(Get-Date -format dd.MM.yyyy)"
+ - ps: Set-AppveyorBuildVariable "BSF_BUILD_NAME" "$buildName"
+ - cmd: 7z a bsf_%BSF_BUILD_NAME%_win64.zip ./CI/* -xr!*pdb
+ - cmd: 7z a bsf_%BSF_BUILD_NAME%_win64_symbols.zip ./CI/*pdb -r
+
+artifacts:
+  - path: bsf_%BSF_BUILD_NAME%_win64.zip
+    name: bsf_%BSF_BUILD_NAME%_win64
+    type: zip
+  - path: bsf_%BSF_BUILD_NAME%_win64_symbols.zip
+    name: bsf_%BSF_BUILD_NAME%_win64_symbols
+    type: zip
+
+deploy:
+  - provider: FTP
+    protocol: ftp
+    host: $(FTP_HOST)
+    username: $(FTP_USER)
+    password: $(FTP_PASSWORD)
+    folder: bsfBuilds
+    application:
+    active_mode: false
+    beta: true
+    debug: true
+    on:
+      APPVEYOR_SCHEDULED_BUILD: true

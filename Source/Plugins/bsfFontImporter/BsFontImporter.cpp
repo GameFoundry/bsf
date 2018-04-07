@@ -11,6 +11,7 @@
 #include <ft2build.h>
 #include <freetype/freetype.h>
 #include FT_FREETYPE_H
+#include "FileSystem/BsFileSystem.h"
 
 using namespace std::placeholders;
 
@@ -58,7 +59,11 @@ namespace bs
 			BS_EXCEPT(InternalErrorException, "Error occurred during FreeType library initialization.");
 
 		FT_Face face;
-		error = FT_New_Face(library, filePath.toString().c_str(), 0, &face);
+
+		{
+			Lock fileLock = FileScheduler::getLock(filePath);
+			error = FT_New_Face(library, filePath.toString().c_str(), 0, &face);
+		}
 
 		if (error == FT_Err_Unknown_File_Format)
 		{

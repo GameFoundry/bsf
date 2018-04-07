@@ -133,9 +133,7 @@ namespace bs
 	{
 		const TextureImportOptions* textureImportOptions = static_cast<const TextureImportOptions*>(importOptions.get());
 
-		SPtr<DataStream> fileData = FileSystem::openFile(filePath, true);
-
-		SPtr<PixelData> imgData = importRawImage(fileData);
+		SPtr<PixelData> imgData = importRawImage(filePath);
 		if(imgData == nullptr || imgData->getData() == nullptr)
 			return nullptr;
 
@@ -216,43 +214,51 @@ namespace bs
 			}
 		}
 
-		fileData->close();
-
 		WString fileName = filePath.getWFilename(false);
 		newTexture->setName(fileName);
 
 		return newTexture;
 	}
 
-	SPtr<PixelData> FreeImgImporter::importRawImage(const SPtr<DataStream>& fileData)
+	SPtr<PixelData> FreeImgImporter::importRawImage(const Path& filePath)
 	{
-		if(fileData->size() > std::numeric_limits<UINT32>::max())
+		UPtr<MemoryDataStream> memStream(nullptr, nullptr);
+		FREE_IMAGE_FORMAT imageFormat;
 		{
-			BS_EXCEPT(InternalErrorException, "File size larger than supported!");
+			Lock lock = FileScheduler::getLock(filePath);
+
+			SPtr<DataStream> fileData = FileSystem::openFile(filePath, true);
+			if (fileData->size() > std::numeric_limits<UINT32>::max())
+			{
+				BS_EXCEPT(InternalErrorException, "File size larger than supported!");
+			}
+
+			UINT32 magicLen = std::min((UINT32)fileData->size(), 32u);
+			UINT8 magicBuf[32];
+			fileData->read(magicBuf, magicLen);
+			fileData->seek(0);
+
+			WString fileExtension = magicNumToExtension(magicBuf, magicLen);
+			auto findFormat = mExtensionToFID.find(fileExtension);
+			if (findFormat == mExtensionToFID.end())
+			{
+				BS_EXCEPT(InvalidParametersException, "Type of the file provided is not supported by this importer. File type: " + toString(fileExtension));
+			}
+
+			imageFormat = (FREE_IMAGE_FORMAT)findFormat->second;
+
+			// Set error handler
+			FreeImage_SetOutputMessage(FreeImageLoadErrorHandler);
+
+			// Buffer stream into memory (TODO: override IO functions instead?)
+			memStream = bs_unique_ptr_new<MemoryDataStream>(fileData);
+			fileData->close();
 		}
 
-		UINT32 magicLen = std::min((UINT32)fileData->size(), 32u);
-		UINT8 magicBuf[32];
-		fileData->read(magicBuf, magicLen);
-		fileData->seek(0);
+		if(!memStream)
+			return nullptr;
 
-		WString fileExtension = magicNumToExtension(magicBuf, magicLen);
-		auto findFormat = mExtensionToFID.find(fileExtension);
-		if(findFormat == mExtensionToFID.end())
-		{
-			BS_EXCEPT(InvalidParametersException, "Type of the file provided is not supported by this importer. File type: " + toString(fileExtension));
-		}
-
-		FREE_IMAGE_FORMAT imageFormat = (FREE_IMAGE_FORMAT)findFormat->second;
-
-		// Set error handler
-		FreeImage_SetOutputMessage(FreeImageLoadErrorHandler);
-
-		// Buffer stream into memory (TODO: override IO functions instead?)
-		MemoryDataStream memStream(fileData);
-		fileData->close();
-
-		FIMEMORY* fiMem = FreeImage_OpenMemory(memStream.getPtr(), static_cast<DWORD>(memStream.size()));
+		FIMEMORY* fiMem = FreeImage_OpenMemory(memStream->getPtr(), static_cast<DWORD>(memStream->size()));
 
 		FIBITMAP* fiBitmap = FreeImage_LoadFromMemory(
 			(FREE_IMAGE_FORMAT)imageFormat, fiMem);

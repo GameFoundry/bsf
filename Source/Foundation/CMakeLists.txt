@@ -104,6 +104,14 @@ install(
 	PATTERN "Private" EXCLUDE
 )
 
+if(WIN32)
+	install(
+		FILES $<TARGET_PDB_FILE:bsf> 
+		DESTINATION bin 
+		OPTIONAL
+	)
+endif()
+
 install(
 	TARGETS bsf
 	RUNTIME DESTINATION bin

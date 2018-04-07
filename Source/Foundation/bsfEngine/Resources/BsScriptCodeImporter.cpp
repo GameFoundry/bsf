@@ -34,8 +34,13 @@ namespace bs
 
 	SPtr<Resource> ScriptCodeImporter::import(const Path& filePath, SPtr<const ImportOptions> importOptions)
 	{
-		SPtr<DataStream> stream = FileSystem::openFile(filePath);
-		WString textData = stream->getAsWString();
+		WString textData;
+		{
+			Lock fileLock = FileScheduler::getLock(filePath);
+
+			SPtr<DataStream> stream = FileSystem::openFile(filePath);
+			textData = stream->getAsWString();
+		}
 
 		bool editorScript = false;
 		if (importOptions != nullptr)

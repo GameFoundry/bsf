@@ -25,7 +25,7 @@ namespace bs
 			if (FileSystem::exists(FRAMEWORK_DATA_PATH))
 				path = FileSystem::getWorkingDirectoryPath() + FRAMEWORK_DATA_PATH;
 			else
-				path = Path(RAW_APP_ROOT) + "Source/bsf/" + FRAMEWORK_DATA_PATH;
+				path = Path(RAW_APP_ROOT) + Path("Source/bsf") + FRAMEWORK_DATA_PATH;
 
 			initialized = true;
 		}

@@ -107,4 +107,5 @@ namespace bs
 		FileSystem::moveFile(oldPath, newPath);
 	}
 
+	Mutex FileScheduler::mMutex;
 }

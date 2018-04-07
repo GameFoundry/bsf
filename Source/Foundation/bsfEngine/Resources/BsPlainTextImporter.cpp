@@ -22,8 +22,13 @@ namespace bs
 
 	SPtr<Resource> PlainTextImporter::import(const Path& filePath, SPtr<const ImportOptions> importOptions)
 	{
-		SPtr<DataStream> stream = FileSystem::openFile(filePath);
-		WString textData = stream->getAsWString();
+		WString textData;
+		{
+			Lock fileLock = FileScheduler::getLock(filePath);
+
+			SPtr<DataStream> stream = FileSystem::openFile(filePath);
+			textData = stream->getAsWString();
+		}
 
 		SPtr<PlainText> plainText = PlainText::_createPtr(textData);
 

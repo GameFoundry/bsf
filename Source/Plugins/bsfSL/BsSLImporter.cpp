@@ -34,8 +34,13 @@ namespace bs
 
 	SPtr<Resource> SLImporter::import(const Path& filePath, SPtr<const ImportOptions> importOptions)
 	{
-		SPtr<DataStream> stream = FileSystem::openFile(filePath);
-		String source = stream->getAsString();
+		String source;
+		{
+			Lock fileLock = FileScheduler::getLock(filePath);
+
+			SPtr<DataStream> stream = FileSystem::openFile(filePath);
+			source = stream->getAsString();
+		}
 
 		SPtr<const ShaderImportOptions> io = std::static_pointer_cast<const ShaderImportOptions>(importOptions);
 		WString shaderName = filePath.getWFilename(false);

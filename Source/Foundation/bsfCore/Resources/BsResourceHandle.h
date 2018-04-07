@@ -14,14 +14,10 @@ namespace bs
 	/**	Data that is shared between all resource handles. */
 	struct BS_CORE_EXPORT ResourceHandleData
 	{
-		ResourceHandleData()
-			:mIsCreated(false), mRefCount(0)
-		{ }
-
 		SPtr<Resource> mPtr;
 		UUID mUUID;
-		bool mIsCreated;	
-		UINT32 mRefCount;
+		bool mIsCreated = false;
+		std::atomic<std::uint32_t> mRefCount{0};
 	};
 
 	/**
@@ -88,6 +84,12 @@ namespace bs
 		 */
 		void setHandleData(const SPtr<Resource>& ptr, const UUID& uuid);
 
+		/**
+		 * Clears the created flag and the resource pointer, making the handle invalid until the resource is loaded again
+		 * and assigned through setHandleData().
+		 */
+		void clearHandleData();
+
 		/** Increments the reference count of the handle. Only to be used by Resources for keeping internal references. */
 		void addInternalRef();
 
@@ -147,14 +149,19 @@ namespace bs
 		virtual ~TResourceHandleBase() { }
 
 	protected:
-		void addRef() { if (mData) mData->mRefCount++; };
+		void addRef()
+		{
+			if (mData) 
+				mData->mRefCount.fetch_add(1, std::memory_order_relaxed);
+		};
+
 		void releaseRef() 
 		{ 
 			if (mData)
 			{
-				mData->mRefCount--;
+				std::uint32_t refCount = mData->mRefCount.fetch_sub(1, std::memory_order_relaxed);
 
-				if (mData->mRefCount == 0)
+				if (refCount == 1)
 					destroy();
 			}
 		};

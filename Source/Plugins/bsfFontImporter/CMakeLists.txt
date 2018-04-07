@@ -30,3 +30,11 @@ install(
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
 )
+
+if(WIN32)
+	install(
+		FILES $<TARGET_PDB_FILE:bsfFontImporter> 
+		DESTINATION bin 
+		OPTIONAL
+	)
+endif()

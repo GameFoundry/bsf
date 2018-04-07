@@ -57,7 +57,7 @@ namespace bs
 	};
 
 	template <class T>
-	T* ServiceLocator<T>::mService{nullptr};
+	std::atomic<T*> ServiceLocator<T>::mService{nullptr};
 
 	/** @} */
 }

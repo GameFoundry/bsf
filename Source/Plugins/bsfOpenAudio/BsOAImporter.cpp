@@ -44,33 +44,40 @@ namespace bs
 
 	SPtr<Resource> OAImporter::import(const Path& filePath, SPtr<const ImportOptions> importOptions)
 	{
-		SPtr<DataStream> stream = FileSystem::openFile(filePath);
-
-		WString extension = filePath.getWExtension();
-		StringUtil::toLowerCase(extension);
-
-		UPtr<AudioDecoder> reader(nullptr, nullptr);
-		if(extension == L".wav")
-			reader = bs_unique_ptr<AudioDecoder>(bs_new<WaveDecoder>());
-		else if(extension == L".flac")
-			reader = bs_unique_ptr<AudioDecoder>(bs_new<FLACDecoder>());
-		else if(extension == L".ogg")
-			reader = bs_unique_ptr<AudioDecoder>(bs_new<OggVorbisDecoder>());
-
-		if (reader == nullptr)
-			return nullptr;
-
 		AudioDataInfo info;
-		if (!reader->isValid(stream))
-			return nullptr;
+		UINT32 bytesPerSample;
+		UINT32 bufferSize;
+		UINT8* sampleBuffer;
+		{
+			Lock fileLock = FileScheduler::getLock(filePath);
+			SPtr<DataStream> stream = FileSystem::openFile(filePath);
 
-		if (!reader->open(stream, info))
-			return nullptr;
+			WString extension = filePath.getWExtension();
+			StringUtil::toLowerCase(extension);
 
-		UINT32 bytesPerSample = info.bitDepth / 8;
-		UINT32 bufferSize = info.numSamples * bytesPerSample;
-		UINT8* sampleBuffer = (UINT8*)bs_alloc(bufferSize);
-		reader->read(sampleBuffer, info.numSamples);
+			UPtr<AudioDecoder> reader(nullptr, nullptr);
+			if (extension == L".wav")
+				reader = bs_unique_ptr<AudioDecoder>(bs_new<WaveDecoder>());
+			else if (extension == L".flac")
+				reader = bs_unique_ptr<AudioDecoder>(bs_new<FLACDecoder>());
+			else if (extension == L".ogg")
+				reader = bs_unique_ptr<AudioDecoder>(bs_new<OggVorbisDecoder>());
+
+			if (reader == nullptr)
+				return nullptr;
+
+			if (!reader->isValid(stream))
+				return nullptr;
+
+			if (!reader->open(stream, info))
+				return nullptr;
+
+			bytesPerSample = info.bitDepth / 8;
+			bufferSize = info.numSamples * bytesPerSample;
+			sampleBuffer = (UINT8*)bs_alloc(bufferSize);
+
+			reader->read(sampleBuffer, info.numSamples);
+		}
 
 		SPtr<const AudioClipImportOptions> clipIO = std::static_pointer_cast<const AudioClipImportOptions>(importOptions);
 
