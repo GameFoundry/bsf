@@ -358,10 +358,10 @@ namespace bs
 	}
 
 /************************************************************************/
-/* 							MACRO VERSIONS                      		*/
+/*			MACRO VERSIONS					*/
 /* You will almost always want to use the template versions but in some */
 /* cases (private destructor) it is not possible. In which case you may	*/
-/* use these instead.												    */
+/* use these instead.							*/
 /************************************************************************/
 #define BS_PVT_DELETE(T, ptr) \
 	(ptr)->~T(); \
@@ -408,7 +408,7 @@ namespace bs
 			if (num == 0)
 				return nullptr;
 
-			if (num > static_cast<size_t>(-1) / sizeof(T))
+			if (num > std::numeric_limits<size_t>::max() / sizeof(T))
 				return nullptr; // Error
 
 			void* const pv = bs_alloc<Alloc>((UINT32)(num * sizeof(T)));
@@ -425,14 +425,15 @@ namespace bs
 		}
 
 		static constexpr size_t max_size() { return std::numeric_limits<size_type>::max() / sizeof(T); }
-		static void construct(pointer p, const_reference t) { new (p) T(t); }
-		static void destroy(pointer p) { p->~T(); }
+		static constexpr void destroy(pointer p) { p->~T(); }
 		/* This version of construct() (with a varying number of parameters)
 		 * seems necessary in order to use some STL data structures from
 		 * libstdc++-4.8, but compilation fails on OS X, hence the #if. */
 #if BS_PLATFORM == BS_PLATFORM_LINUX || BS_PLATFORM == BS_PLATFORM_WIN32
-		template<class U, class... Args>
-		static void construct(U* p, Args&&... args) { new(p) U(std::forward<Args>(args)...); }
+		template<class... Args>
+		static void construct(pointer p, Args&&... args) { new(p) T(std::forward<Args>(args)...); }
+#else
+		static void construct(pointer p, const_reference t) { new (p) T(t); }
 #endif
 	};
 
