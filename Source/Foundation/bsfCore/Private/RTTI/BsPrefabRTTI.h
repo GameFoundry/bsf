@@ -29,7 +29,6 @@ namespace bs
 
 	public:
 		PrefabRTTI()
-			:mInitMembers(this)
 		{
 			addReflectablePtrField("mRoot", 0, &PrefabRTTI::getSceneObject, &PrefabRTTI::setSceneObject);
 		}

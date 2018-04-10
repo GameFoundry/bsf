@@ -24,10 +24,6 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mClearFlags, 4)
 		BS_END_RTTI_MEMBERS
 	public:
-		ViewportRTTI()
-			:mInitMembers(this)
-		{ }
-
 		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			Viewport* viewport = static_cast<Viewport*>(obj);

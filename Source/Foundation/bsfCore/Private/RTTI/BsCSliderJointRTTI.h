@@ -26,10 +26,6 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN_NAMED(mSpringStiffness, mDesc.limit.spring.stiffness, 6)
 		BS_END_RTTI_MEMBERS
 	public:
-		CSliderJointRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "CSliderJoint";

@@ -23,7 +23,7 @@ namespace bs
 
 	 /**
 	  * Starts definitions for member fields within a RTTI type. Follow this with calls to BS_RTTI_MEMBER* calls, and finish by
-	  * calling BS_END_RTTI_MEMBERS. You must also initialize mInitMembers field in the parent class' constructor.
+	  * calling BS_END_RTTI_MEMBERS.
 	  */
 #define BS_BEGIN_RTTI_MEMBERS																	\
 	struct META_FirstEntry {};																	\
@@ -274,7 +274,7 @@ namespace bs
 		}																						\
 	};																							\
 																								\
-	META_InitAllMembers mInitMembers;
+	META_InitAllMembers mInitMembers{this};
 
 	/** @} */
 

@@ -24,10 +24,6 @@ namespace bs
 			BS_RTTI_MEMBER_REFLPTR(mIrradiance, 3)
 		BS_END_RTTI_MEMBERS
 	public:
-		SkyboxRTTI()
-			:mInitMembers(this)
-		{ }
-
 		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			Skybox* skybox = static_cast<Skybox*>(obj);

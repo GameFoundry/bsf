@@ -84,7 +84,6 @@ namespace bs
 
 	public:
 		TextureRTTI()
-			:mInitMembers(this)
 		{
 			addPlainField("mUsage", 11, &TextureRTTI::getUsage, &TextureRTTI::setUsage);
 

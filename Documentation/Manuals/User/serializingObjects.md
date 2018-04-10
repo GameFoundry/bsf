@@ -145,15 +145,11 @@ public:
 		BS_RTTI_MEMBER_PLAIN(myString, 2)
 	BS_END_RTTI_MEMBERS
 
-	MyComponentRTTI()
-		:mInitMembers(this)
-	{ }
-	
 	// ... 
 };
 ~~~~~~~~~~~~~
 
-Field definition portion of the RTTI type always begins with the @ref bs::BS_BEGIN_RTTI_MEMBERS "BS_BEGIN_RTTI_MEMBERS" macro, and ends with the @ref bs::BS_END_RTTI_MEMBERS "BS_END_RTTI_MEMBERS". If field definition is provided you must also provide a constructor that initializes the *mInitMembers* with the *this* pointer.
+Field definition portion of the RTTI type always begins with the @ref bs::BS_BEGIN_RTTI_MEMBERS "BS_BEGIN_RTTI_MEMBERS" macro, and ends with the @ref bs::BS_END_RTTI_MEMBERS "BS_END_RTTI_MEMBERS".
 
 The field members themselves are defined by calling macros starting with BS_RTTI_MEMBER_*. The macro expects the name of the field it describes, as well as a unique ID of the field. The suffix of the BS_RTTI_MEMBER_* macro depends on the type of the field being added. There are three different types:
  - @ref bs::BS_RTTI_MEMBER_PLAIN "BS_RTTI_MEMBER_PLAIN" - Field containing basic data types like ints, floats, strings or other types that can be just trivially copied during serialization/deserialization.
@@ -191,10 +187,6 @@ public:
 		BS_RTTI_MEMBER_REFL(mesh, 6)
 	BS_END_RTTI_MEMBERS
 
-	MyComponentRTTI()
-		:mInitMembers(this)
-	{ }
-	
 	// ... 
 };
 ~~~~~~~~~~~~~
@@ -233,10 +225,6 @@ public:
 		BS_RTTI_MEMBER_REFL_ARRAY(meshes, 2)
 	BS_END_RTTI_MEMBERS
 
-	MyComponentRTTI()
-		:mInitMembers(this)
-	{ }
-	
 	// ... 
 };
 ~~~~~~~~~~~~~

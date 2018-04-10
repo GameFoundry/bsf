@@ -28,10 +28,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		FontBitmapRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "FontData";

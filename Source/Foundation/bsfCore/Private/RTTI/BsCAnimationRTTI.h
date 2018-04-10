@@ -25,10 +25,6 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mBounds, 5)
 		BS_END_RTTI_MEMBERS
 	public:
-		CAnimationRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "CAnimation";

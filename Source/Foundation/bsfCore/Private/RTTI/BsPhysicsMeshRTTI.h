@@ -22,10 +22,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		PhysicsMeshRTTI()
-			:mInitMembers(this)
-		{ }
-
 		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			PhysicsMesh* mesh = static_cast<PhysicsMesh*>(obj);
@@ -59,10 +55,6 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mType, 0)
 		BS_END_RTTI_MEMBERS
 	public:
-		FPhysicsMeshRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "FPhysicsMesh";

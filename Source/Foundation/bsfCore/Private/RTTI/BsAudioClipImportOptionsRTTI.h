@@ -23,10 +23,6 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mBitDepth, 3)
 		BS_END_RTTI_MEMBERS
 	public:
-		AudioClipImportOptionsRTTI()
-			:mInitMembers(this)
-		{ }
-
 		/** @copydoc RTTIType::getRTTIName */
 		const String& getRTTIName() override
 		{

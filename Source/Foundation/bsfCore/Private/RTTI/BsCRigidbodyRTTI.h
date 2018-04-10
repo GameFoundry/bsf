@@ -34,10 +34,6 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mCollisionReportMode, 14)
 		BS_END_RTTI_MEMBERS
 	public:
-		CRigidbodyRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "CRigidbody";

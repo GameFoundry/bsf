@@ -23,10 +23,6 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mHalfHeight, 2)
 		BS_END_RTTI_MEMBERS
 	public:
-		CCapsuleColliderRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "CCapsuleCollider";

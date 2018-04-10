@@ -24,10 +24,6 @@ namespace bs
 			BS_RTTI_MEMBER_REFLPTR(data, 1)
 		BS_END_RTTI_MEMBERS
 	public:
-		PrefabComponentDiffRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "PrefabComponentDiff";
@@ -67,10 +63,6 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(soFlags, 12)
 		BS_END_RTTI_MEMBERS
 	public:
-		PrefabObjectDiffRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "PrefabObjectDiff";
@@ -102,10 +94,6 @@ namespace bs
 			BS_RTTI_MEMBER_REFLPTR(mRoot, 0)
 		BS_END_RTTI_MEMBERS
 	public:
-		PrefabDiffRTTI()
-			:mInitMembers(this)
-		{ }
-
 		void onDeserializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			PrefabDiff* prefabDiff = static_cast<PrefabDiff*>(obj);

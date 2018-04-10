@@ -28,10 +28,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		AutoExposureSettingsRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "AutoExposureSettings";
@@ -63,10 +59,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		TonemappingSettingsRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "TonemappingSettings";
@@ -93,10 +85,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		WhiteBalanceSettingsRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "WhiteBalanceSettings";
@@ -125,10 +113,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		ColorGradingSettingsRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "ColorGradingSettings";
@@ -160,10 +144,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		DepthOfFieldSettingsRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "DepthOfFieldSettings";
@@ -196,10 +176,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		AmbientOcclusionSettingsRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "AmbientOcclusionSettings";
@@ -228,10 +204,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		ScreenSpaceReflectionsSettingsRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "ScreenSpaceReflectionsSettings";
@@ -260,10 +232,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		ShadowSettingsRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "ShadowSettings";
@@ -304,12 +272,8 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(enableIndirectLighting, 16)
 			BS_RTTI_MEMBER_REFL(shadowSettings, 17)
 		BS_END_RTTI_MEMBERS
-			
-	public:
-		RenderSettingsRTTI()
-			:mInitMembers(this)
-		{ }
 
+	public:
 		const String& getRTTIName() override
 		{
 			static String name = "RenderSettings";

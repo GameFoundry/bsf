@@ -28,9 +28,9 @@ namespace bs
 
 			return *this;
 		}
-		
+
 		/************************************************************************/
-		/* 								RTTI		                     		*/
+		/*									RTTI								*/
 		/************************************************************************/
 	public:
 		friend class SerializedGpuProgramDataRTTI;
@@ -51,10 +51,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		SerializedGpuProgramDataRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "SerializedGpuProgramData";
@@ -170,7 +166,6 @@ namespace bs
 		}
 	public:
 		PassRTTI()
-			:mInitMembers(this)
 		{
 			addReflectableField("mVertexProgramDesc", 3, &PassRTTI::getVertexProgramDesc, &PassRTTI::setVertexProgramDesc);
 			addReflectableField("mFragmentProgramDesc", 4, &PassRTTI::getFragmentProgramDesc, &PassRTTI::setFragmentProgramDesc);

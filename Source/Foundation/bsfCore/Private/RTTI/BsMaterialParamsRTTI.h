@@ -23,10 +23,6 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(isLoadStore, 1)
 			BS_RTTI_MEMBER_PLAIN(surface, 2)
 		BS_END_RTTI_MEMBERS
-		
-		MaterialParamTextureDataRTTI()
-			:mInitMembers(this)
-		{ }
 
 		const String& getRTTIName() override
 		{

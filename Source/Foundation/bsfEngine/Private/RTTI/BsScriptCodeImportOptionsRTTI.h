@@ -21,10 +21,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		ScriptCodeImportOptionsRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "ScriptCodeImportOptions";

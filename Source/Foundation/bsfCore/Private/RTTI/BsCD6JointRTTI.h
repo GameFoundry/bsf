@@ -65,17 +65,16 @@ namespace bs
 
 	public:
 		CD6JointRTTI()
-			:mInitMembers(this)
 		{
-			addPlainArrayField("mMotion", 0, &CD6JointRTTI::getMotion, &CD6JointRTTI::getMotionCount, 
+			addPlainArrayField("mMotion", 0, &CD6JointRTTI::getMotion, &CD6JointRTTI::getMotionCount,
 				&CD6JointRTTI::setMotion, &CD6JointRTTI::setMotionCount);
-			addPlainArrayField("mDriveStiffnes", 1, &CD6JointRTTI::getDriveStiffness, &CD6JointRTTI::getDriveCount, 
+			addPlainArrayField("mDriveStiffnes", 1, &CD6JointRTTI::getDriveStiffness, &CD6JointRTTI::getDriveCount,
 				&CD6JointRTTI::setDriveStiffness, &CD6JointRTTI::setDriveCount);
-			addPlainArrayField("mDriveDamping", 2, &CD6JointRTTI::getDriveDamping, &CD6JointRTTI::getDriveCount, 
+			addPlainArrayField("mDriveDamping", 2, &CD6JointRTTI::getDriveDamping, &CD6JointRTTI::getDriveCount,
 				&CD6JointRTTI::setDriveDamping, &CD6JointRTTI::setDriveCount);
-			addPlainArrayField("mDriveForceLimit", 3, &CD6JointRTTI::getDriveForceLimit, &CD6JointRTTI::getDriveCount, 
+			addPlainArrayField("mDriveForceLimit", 3, &CD6JointRTTI::getDriveForceLimit, &CD6JointRTTI::getDriveCount,
 				&CD6JointRTTI::setDriveForceLimit, &CD6JointRTTI::setDriveCount);
-			addPlainArrayField("mDriveAcceleartion", 4, &CD6JointRTTI::getDriveAcceleration, &CD6JointRTTI::getDriveCount, 
+			addPlainArrayField("mDriveAcceleartion", 4, &CD6JointRTTI::getDriveAcceleration, &CD6JointRTTI::getDriveCount,
 				&CD6JointRTTI::setDriveAcceleration, &CD6JointRTTI::setDriveCount);
 		}
 

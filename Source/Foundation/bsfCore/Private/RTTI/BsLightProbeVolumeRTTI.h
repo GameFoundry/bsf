@@ -26,11 +26,11 @@ namespace bs
 	};
 
 	template<> struct RTTIPlainType<SavedLightProbeInfo>
-	{	
+	{
 		enum { id = TID_SavedLightProbeInfo }; enum { hasDynamicSize = 1 };
 
 		static void toMemory(const SavedLightProbeInfo& data, char* memory)
-		{ 
+		{
 			UINT32 size = getDynamicSize(data);
 
 			UINT32 curSize = sizeof(UINT32);
@@ -45,9 +45,9 @@ namespace bs
 		}
 
 		static UINT32 fromMemory(SavedLightProbeInfo& data, char* memory)
-		{ 
+		{
 			UINT32 size;
-			memcpy(&size, memory, sizeof(UINT32)); 
+			memcpy(&size, memory, sizeof(UINT32));
 			memory += sizeof(UINT32);
 
 			UINT32 version;
@@ -67,8 +67,8 @@ namespace bs
 			return size;
 		}
 
-		static UINT32 getDynamicSize(const SavedLightProbeInfo& data)	
-		{ 
+		static UINT32 getDynamicSize(const SavedLightProbeInfo& data)
+		{
 			UINT64 dataSize = rttiGetElemSize(data.positions) + rttiGetElemSize(data.coefficients) + sizeof(UINT32) * 2;
 
 #if BS_DEBUG_MODE
@@ -79,8 +79,8 @@ namespace bs
 #endif
 
 			return (UINT32)dataSize;
-		}	
-	}; 
+		}
+	};
 
 	class BS_CORE_EXPORT LightProbeVolumeRTTI : public RTTIType <LightProbeVolume, IReflectable, LightProbeVolumeRTTI>
 	{
@@ -134,10 +134,8 @@ namespace bs
 		}
 	public:
 		LightProbeVolumeRTTI()
-			:mInitMembers(this)
 		{
-			
-			addPlainField("mProbeInfo", 5, &LightProbeVolumeRTTI::getProbeInfo, &LightProbeVolumeRTTI::setProbeInfo, 
+			addPlainField("mProbeInfo", 5, &LightProbeVolumeRTTI::getProbeInfo, &LightProbeVolumeRTTI::setProbeInfo,
 				RTTI_Flag_SkipInReferenceSearch);
 		}
 
@@ -152,7 +150,7 @@ namespace bs
 		{
 			// Note: Since this is a CoreObject I should call initialize() right after deserialization,
 			// but since this specific type is used in Components we delay initialization until Component
-			// itself does it. Keep this is mind in case this ever needs to be deserialized for non-Component 
+			// itself does it. Keep this is mind in case this ever needs to be deserialized for non-Component
 			// purposes (you'll need to call initialize manually).
 		}
 

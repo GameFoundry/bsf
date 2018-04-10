@@ -58,12 +58,8 @@ namespace bs
 
 			BS_RTTI_MEMBER_PLAIN(subStyles, 34)
 		BS_END_RTTI_MEMBERS
-			
-	public:
-		GUIElementStyleRTTI()
-			:mInitMembers(this)
-		{ }
 
+	public:
 		const String& getRTTIName() override
 		{
 			static String name = "GUIElementStyle";

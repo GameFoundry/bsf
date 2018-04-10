@@ -15,8 +15,6 @@ namespace bs
 	class BS_UTILITY_EXPORT IReflectableRTTI : public RTTIType <IReflectable, IReflectable, IReflectableRTTI>
 	{
 	public:
-		IReflectableRTTI() = default;
-
 		const String& getRTTIName() override
 		{
 			static String name = "IReflectable";

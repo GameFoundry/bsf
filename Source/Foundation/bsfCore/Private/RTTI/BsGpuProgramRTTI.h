@@ -27,10 +27,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		GpuProgramBytecodeRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "GpuProgramBytecode";
@@ -61,10 +57,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		GpuParamDescRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "GpuParamDesc";
@@ -94,10 +86,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		GpuProgramRTTI()
-			:mInitMembers(this)
-		{ }
-
 		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			// Need to ensure the core thread object is initialized

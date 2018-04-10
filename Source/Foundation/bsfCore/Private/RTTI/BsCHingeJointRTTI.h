@@ -31,10 +31,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		CHingeJointRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "CHingeJoint";

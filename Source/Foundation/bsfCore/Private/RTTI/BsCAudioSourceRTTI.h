@@ -28,10 +28,6 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mAttenuation, 8)
 		BS_END_RTTI_MEMBERS
 	public:
-		CAudioSourceRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "CAudioSource";

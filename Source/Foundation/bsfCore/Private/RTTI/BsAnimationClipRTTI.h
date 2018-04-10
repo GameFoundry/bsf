@@ -79,12 +79,6 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN_NAMED(rootMotionRot, mRootMotion->rotation, 9)
 		BS_END_RTTI_MEMBERS
 	public:
-		AnimationClipRTTI()
-			:mInitMembers(this)
-		{
-			
-		}
-
 		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			AnimationClip* clip = static_cast<AnimationClip*>(obj);

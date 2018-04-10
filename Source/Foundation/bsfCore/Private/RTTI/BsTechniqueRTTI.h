@@ -25,10 +25,6 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		TechniqueRTTI()
-			:mInitMembers(this)
-		{ }
-
 		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			Technique* technique = static_cast<Technique*>(obj);

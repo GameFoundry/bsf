@@ -22,10 +22,6 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mDistance, 1)
 		BS_END_RTTI_MEMBERS
 	public:
-		CPlaneColliderRTTI()
-			:mInitMembers(this)
-		{ }
-
 		const String& getRTTIName() override
 		{
 			static String name = "CPlaneCollider";
