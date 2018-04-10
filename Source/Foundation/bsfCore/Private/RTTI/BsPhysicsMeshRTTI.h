@@ -22,9 +22,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		PhysicsMeshRTTI()
-			:mInitMembers(this)
-		{ }
+		PhysicsMeshRTTI() = default;
 
 		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
@@ -59,9 +57,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mType, 0)
 		BS_END_RTTI_MEMBERS
 	public:
-		FPhysicsMeshRTTI()
-			:mInitMembers(this)
-		{ }
+		FPhysicsMeshRTTI() = default;
 
 		const String& getRTTIName() override
 		{

@@ -20,9 +20,7 @@ namespace bs
 			BS_RTTI_MEMBER_REFLPTR(mInternal, 0)
 		BS_END_RTTI_MEMBERS
 	public:
-		CAudioListenerRTTI()
-			:mInitMembers(this)
-		{ }
+		CAudioListenerRTTI() = default;
 
 		const String& getRTTIName() override
 		{

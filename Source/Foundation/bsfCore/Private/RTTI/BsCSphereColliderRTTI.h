@@ -21,9 +21,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mRadius, 0)
 		BS_END_RTTI_MEMBERS
 	public:
-		CSphereColliderRTTI()
-			:mInitMembers(this)
-		{ }
+		CSphereColliderRTTI() = default;
 
 		const String& getRTTIName() override
 		{

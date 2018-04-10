@@ -22,9 +22,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		ScriptCodeRTTI()
-			:mInitMembers(this)
-		{ }
+		ScriptCodeRTTI() = default;
 
 		const String& getRTTIName() override
 		{

@@ -27,9 +27,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		TextureImportOptionsRTTI()
-			:mInitMembers(this)
-		{ }
+		TextureImportOptionsRTTI() = default;
 
 		const String& getRTTIName() override
 		{

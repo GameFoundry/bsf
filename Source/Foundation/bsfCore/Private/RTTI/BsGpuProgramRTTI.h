@@ -27,9 +27,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		GpuProgramBytecodeRTTI()
-			:mInitMembers(this)
-		{ }
+		GpuProgramBytecodeRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -61,9 +59,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		GpuParamDescRTTI()
-			:mInitMembers(this)
-		{ }
+		GpuParamDescRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -94,9 +90,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		GpuProgramRTTI()
-			:mInitMembers(this)
-		{ }
+		GpuProgramRTTI() = default;
 
 		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{

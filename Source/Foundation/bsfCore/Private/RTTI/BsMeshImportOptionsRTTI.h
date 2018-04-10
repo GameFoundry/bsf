@@ -32,9 +32,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mImportRootMotion, 11)
 		BS_END_RTTI_MEMBERS
 	public:
-		MeshImportOptionsRTTI()
-			:mInitMembers(this)
-		{ }
+		MeshImportOptionsRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -61,9 +59,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(events, 1)
 		BS_END_RTTI_MEMBERS
 	public:
-		ImportedAnimationEventsRTTI()
-			:mInitMembers(this)
-		{ }
+		ImportedAnimationEventsRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -92,9 +88,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(isAdditive, 3)
 			BS_END_RTTI_MEMBERS
 	public:
-		AnimationSplitInfoRTTI()
-			:mInitMembers(this)
-		{ }
+		AnimationSplitInfoRTTI() = default;
 
 		const String& getRTTIName() override
 		{

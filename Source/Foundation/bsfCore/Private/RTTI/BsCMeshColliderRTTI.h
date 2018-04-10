@@ -21,9 +21,7 @@ namespace bs
 			BS_RTTI_MEMBER_REFL(mMesh, 0)
 		BS_END_RTTI_MEMBERS
 	public:
-		CMeshColliderRTTI()
-			:mInitMembers(this)
-		{ }
+		CMeshColliderRTTI() = default;
 
 		const String& getRTTIName() override
 		{

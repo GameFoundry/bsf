@@ -32,9 +32,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		CCharacterControllerRTTI()
-			:mInitMembers(this)
-		{ }
+		CCharacterControllerRTTI() = default;
 
 		const String& getRTTIName() override
 		{

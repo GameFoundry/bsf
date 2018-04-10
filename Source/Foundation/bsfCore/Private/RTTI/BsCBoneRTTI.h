@@ -20,9 +20,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mBoneName, 0)
 		BS_END_RTTI_MEMBERS
 	public:
-		CBoneRTTI()
-			:mInitMembers(this)
-		{ }
+		CBoneRTTI() = default;
 
 		const String& getRTTIName() override
 		{

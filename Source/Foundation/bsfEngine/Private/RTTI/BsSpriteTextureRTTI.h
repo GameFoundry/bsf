@@ -23,9 +23,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		SpriteTextureRTTI()
-			:mInitMembers(this)
-		{ }
+		SpriteTextureRTTI() = default;
 
 		const String& getRTTIName() override
 		{

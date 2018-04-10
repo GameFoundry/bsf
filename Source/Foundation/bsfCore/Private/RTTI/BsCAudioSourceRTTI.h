@@ -28,9 +28,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mAttenuation, 8)
 		BS_END_RTTI_MEMBERS
 	public:
-		CAudioSourceRTTI()
-			:mInitMembers(this)
-		{ }
+		CAudioSourceRTTI() = default;
 
 		const String& getRTTIName() override
 		{

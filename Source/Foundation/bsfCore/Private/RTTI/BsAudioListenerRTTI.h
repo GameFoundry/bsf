@@ -24,9 +24,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		AudioListenerRTTI()
-			:mInitMembers(this)
-		{ }
+		AudioListenerRTTI() = default;
 
 		const String& getRTTIName() override
 		{

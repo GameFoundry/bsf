@@ -44,7 +44,6 @@ namespace bs
 
 	public:
 		MeshRTTI()
-			:mInitMembers(this)
 		{
 			addReflectablePtrField("mMeshData", 3, &MeshRTTI::getMeshData, &MeshRTTI::setMeshData);
 		}

@@ -28,9 +28,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		FontBitmapRTTI()
-			:mInitMembers(this)
-		{ }
+		FontBitmapRTTI() = default;
 
 		const String& getRTTIName() override
 		{

@@ -43,17 +43,15 @@ namespace bs
 			BS_RTTI_MEMBER_REFLPTR(mRenderSettings, 23)
 			BS_RTTI_MEMBER_PLAIN(mMain, 24)
 		BS_END_RTTI_MEMBERS
-			
+
 	public:
-		CameraRTTI()
-			:mInitMembers(this)
-		{ }
+		CameraRTTI() = default;
 
 		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			// Note: Since this is a CoreObject I should call initialize() right after deserialization,
 			// but since this specific type is used in Components we delay initialization until Component
-			// itself does it. Keep this is mind in case this ever needs to be deserialized for non-Component 
+			// itself does it. Keep this is mind in case this ever needs to be deserialized for non-Component
 			// purposes (you'll need to call initialize manually).
 		}
 

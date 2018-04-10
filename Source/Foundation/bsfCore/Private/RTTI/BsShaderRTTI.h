@@ -177,9 +177,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 		
 	public:
-		SubShaderRTTI()
-			:mInitMembers(this)
-		{ }
+		SubShaderRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -279,7 +277,6 @@ namespace bs
 
 	public:
 		ShaderRTTI()
-			:mInitMembers(this)
 		{
 			addPlainArrayField("mDataParams", 2, &ShaderRTTI::getDataParam, &ShaderRTTI::getDataParamsArraySize, 
 				&ShaderRTTI::setDataParam, &ShaderRTTI::setDataParamsArraySize);

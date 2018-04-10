@@ -21,9 +21,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mExtents, 0)
 		BS_END_RTTI_MEMBERS
 	public:
-		CBoxColliderRTTI()
-			:mInitMembers(this)
-		{ }
+		CBoxColliderRTTI() = default;
 
 		const String& getRTTIName() override
 		{

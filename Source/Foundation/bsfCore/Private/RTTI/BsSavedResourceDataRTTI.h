@@ -23,9 +23,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		SavedResourceDataRTTI()
-			:mInitMembers(this)
-		{ }
+		SavedResourceDataRTTI() = default;
 
 		const String& getRTTIName() override
 		{

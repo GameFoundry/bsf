@@ -22,12 +22,12 @@ namespace bs
 	 */
 
 	 /**
-	  * Starts definitions for member fields within a RTTI type. Follow this with calls to BS_RTTI_MEMBER* calls, and finish by
-	  * calling BS_END_RTTI_MEMBERS. You must also initialize mInitMembers field in the parent class' constructor.
+	  * Starts definitions for member fields within a RTTI type. Follow this with calls to BS_RTTI_MEMBER* calls,
+	  *  and finish by calling BS_END_RTTI_MEMBERS.
 	  */
-#define BS_BEGIN_RTTI_MEMBERS																	\
-	struct META_FirstEntry {};																	\
-	void META_InitPrevEntry(META_FirstEntry typeId) { }											\
+#define BS_BEGIN_RTTI_MEMBERS																					\
+	struct META_FirstEntry {};																				\
+	void META_InitPrevEntry(META_FirstEntry typeId) { }																	\
 																								\
 	typedef META_FirstEntry
 
@@ -35,33 +35,33 @@ namespace bs
 	   * Registers a new member field in the RTTI type. The field references the @p name member in the owner class.
 	   * The type of the member must be a valid plain type. Each field must specify a unique ID for @p id.
 	   */
-#define BS_RTTI_MEMBER_PLAIN(name, id)															\
-	META_Entry_##name;																			\
+#define BS_RTTI_MEMBER_PLAIN(name, id)																				\
+	META_Entry_##name;																					\
 																								\
-	decltype(OwnerType::name)& get##name(OwnerType* obj) { return obj->name; }					\
-	void set##name(OwnerType* obj, decltype(OwnerType::name)& val) { obj->name = val; }			\
+	decltype(OwnerType::name)& get##name(OwnerType* obj) { return obj->name; }														\
+	void set##name(OwnerType* obj, decltype(OwnerType::name)& val) { obj->name = val; }													\
 																								\
-	struct META_NextEntry_##name{};																\
-	void META_InitPrevEntry(META_NextEntry_##name typeId)										\
+	struct META_NextEntry_##name{};																				\
+	void META_InitPrevEntry(META_NextEntry_##name typeId)																	\
 	{																							\
-		addPlainField(#name, id, &MyType::get##name, &MyType::set##name);						\
-		META_InitPrevEntry(META_Entry_##name());												\
+		addPlainField(#name, id, &MyType::get##name, &MyType::set##name);														\
+		META_InitPrevEntry(META_Entry_##name());																	\
 	}																							\
 																								\
 	typedef META_NextEntry_##name
 
 	   /** Same as BS_RTTI_MEMBER_PLAIN, but allows you to specify separate names for the field name and the member variable. */
-#define BS_RTTI_MEMBER_PLAIN_NAMED(name, field, id)												\
-	META_Entry_##name;																			\
+#define BS_RTTI_MEMBER_PLAIN_NAMED(name, field, id)																		\
+	META_Entry_##name;																					\
 																								\
-	decltype(OwnerType::field)& get##name(OwnerType* obj) { return obj->field; }				\
-	void set##name(OwnerType* obj, decltype(OwnerType::field)& val) { obj->field = val; }		\
+	decltype(OwnerType::field)& get##name(OwnerType* obj) { return obj->field; }														\
+	void set##name(OwnerType* obj, decltype(OwnerType::field)& val) { obj->field = val; }													\
 																								\
-	struct META_NextEntry_##name{};																\
-	void META_InitPrevEntry(META_NextEntry_##name typeId)										\
+	struct META_NextEntry_##name{};																				\
+	void META_InitPrevEntry(META_NextEntry_##name typeId)																	\
 	{																							\
-		addPlainField(#name, id, &MyType::get##name, &MyType::set##name);						\
-		META_InitPrevEntry(META_Entry_##name());												\
+		addPlainField(#name, id, &MyType::get##name, &MyType::set##name);														\
+		META_InitPrevEntry(META_Entry_##name());																	\
 	}																							\
 																								\
 	typedef META_NextEntry_##name
@@ -70,211 +70,211 @@ namespace bs
  * Registers a new member field in the RTTI type. The field references the @p name member in the owner class.
  * The type of the member must be an array of valid plain types. Each field must specify a unique ID for @p id.
  */
-#define BS_RTTI_MEMBER_PLAIN_ARRAY(name, id)													\
-	META_Entry_##name;																			\
+#define BS_RTTI_MEMBER_PLAIN_ARRAY(name, id)																			\
+	META_Entry_##name;																					\
 																								\
-	std::common_type<decltype(OwnerType::name)>::type::value_type& get##name(OwnerType* obj, UINT32 idx) { return obj->name[idx]; }					\
-	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::name)>::type::value_type& val) { obj->name[idx] = val; }		\
-	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->name.size(); }																		\
-	void setSize##name(OwnerType* obj, UINT32 val) { obj->name.resize(val); }																		\
+	std::common_type<decltype(OwnerType::name)>::type::value_type& get##name(OwnerType* obj, UINT32 idx) { return obj->name[idx]; }								\
+	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::name)>::type::value_type& val) { obj->name[idx] = val; }						\
+	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->name.size(); }														\
+	void setSize##name(OwnerType* obj, UINT32 val) { obj->name.resize(val); }														\
 																								\
-	struct META_NextEntry_##name{};																\
-	void META_InitPrevEntry(META_NextEntry_##name typeId)										\
+	struct META_NextEntry_##name{};																				\
+	void META_InitPrevEntry(META_NextEntry_##name typeId)																	\
 	{																							\
-		addPlainArrayField(#name, id, &MyType::get##name, &MyType::getSize##name, &MyType::set##name, &MyType::setSize##name);						\
-		META_InitPrevEntry(META_Entry_##name());												\
-	}																							\
-																								\
-	typedef META_NextEntry_##name
-
- /** 
-  * Same as BS_RTTI_MEMBER_PLAIN_ARRAY, but allows you to specify separate names for the field name and the member variable.
-  */
-#define BS_RTTI_MEMBER_PLAIN_ARRAY_NAMED(name, field, id)													\
-	META_Entry_##name;																			\
-																								\
-	std::common_type<decltype(OwnerType::field)>::type::value_type& get##name(OwnerType* obj, UINT32 idx) { return obj->field[idx]; }					\
-	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::field)>::type::value_type& val) { obj->field[idx] = val; }		\
-	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->field.size(); }																		\
-	void setSize##name(OwnerType* obj, UINT32 val) { obj->field.resize(val); }																		\
-																								\
-	struct META_NextEntry_##name{};																\
-	void META_InitPrevEntry(META_NextEntry_##name typeId)										\
-	{																							\
-		addPlainArrayField(#name, id, &MyType::get##name, &MyType::getSize##name, &MyType::set##name, &MyType::setSize##name);						\
-		META_InitPrevEntry(META_Entry_##name());												\
-	}																							\
-																								\
-	typedef META_NextEntry_##name
-
-/**
- * Registers a new member field in the RTTI type. The field references the @p name member in the owner class. 
- * The type of the member must be a valid reflectable (non-pointer) type. Each field must specify a unique ID for @p id.
- */
-#define BS_RTTI_MEMBER_REFL(name, id)															\
-	META_Entry_##name;																			\
-																								\
-	decltype(OwnerType::name)& get##name(OwnerType* obj) { return obj->name; }					\
-	void set##name(OwnerType* obj, decltype(OwnerType::name)& val) { obj->name = val; }			\
-																								\
-	struct META_NextEntry_##name{};																\
-	void META_InitPrevEntry(META_NextEntry_##name typeId)										\
-	{																							\
-		addReflectableField(#name, id, &MyType::get##name, &MyType::set##name);					\
-		META_InitPrevEntry(META_Entry_##name());												\
-	}																							\
-																								\
-	typedef META_NextEntry_##name
-
-/** Same as BS_RTTI_MEMBER_REFL, but allows you to specify separate names for the field name and the member variable. */
-#define BS_RTTI_MEMBER_REFL_NAMED(name, field, id)												\
-	META_Entry_##name;																			\
-																								\
-	decltype(OwnerType::field)& get##name(OwnerType* obj) { return obj->field; }				\
-	void set##name(OwnerType* obj, decltype(OwnerType::field)& val) { obj->field = val; }		\
-																								\
-	struct META_NextEntry_##name{};																\
-	void META_InitPrevEntry(META_NextEntry_##name typeId)										\
-	{																							\
-		addReflectableField(#name, id, &MyType::get##name, &MyType::set##name);					\
-		META_InitPrevEntry(META_Entry_##name());												\
-	}																							\
-																								\
-	typedef META_NextEntry_##name
-
-/**
- * Registers a new member field in the RTTI type. The field references the @p name member in the owner class. 
- * The type of the member must be an array of valid reflectable (non-pointer) types. Each field must specify a unique ID for
- * @p id.
- */
-#define BS_RTTI_MEMBER_REFL_ARRAY(name, id)														\
-	META_Entry_##name;																			\
-																								\
-	std::common_type<decltype(OwnerType::name)>::type::value_type& get##name(OwnerType* obj, UINT32 idx) { return obj->name[idx]; }					\
-	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::name)>::type::value_type& val) { obj->name[idx] = val; }		\
-	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->name.size(); }					\
-	void setSize##name(OwnerType* obj, UINT32 val) { obj->name.resize(val); }					\
-																								\
-	struct META_NextEntry_##name{};																\
-	void META_InitPrevEntry(META_NextEntry_##name typeId)										\
-	{																							\
-		addReflectableArrayField(#name, id, &MyType::get##name, &MyType::getSize##name, &MyType::set##name, &MyType::setSize##name);				\
-		META_InitPrevEntry(META_Entry_##name());												\
-	}																							\
-																								\
-	typedef META_NextEntry_##name
-
-
-/** 
- * Same as BS_RTTI_MEMBER_REFL_ARRAY, but allows you to specify separate names for the field name and the member variable. 
- */
-#define BS_RTTI_MEMBER_REFL_ARRAY_NAMED(name, field, id)										\
-	META_Entry_##name;																			\
-																								\
-	std::common_type<decltype(OwnerType::field)>::type::value_type& get##name(OwnerType* obj, UINT32 idx) { return obj->field[idx]; }				\
-	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::field)>::type::value_type& val) { obj->field[idx] = val; }		\
-	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->field.size(); }					\
-	void setSize##name(OwnerType* obj, UINT32 val) { obj->field.resize(val); }					\
-																								\
-	struct META_NextEntry_##name{};																\
-	void META_InitPrevEntry(META_NextEntry_##name typeId)										\
-	{																							\
-		addReflectableArrayField(#name, id, &MyType::get##name, &MyType::getSize##name, &MyType::set##name, &MyType::setSize##name);				\
-		META_InitPrevEntry(META_Entry_##name());												\
-	}																							\
-																								\
-	typedef META_NextEntry_##name
-
-/**
- * Registers a new member field in the RTTI type. The field references the @p name member in the owner class. 
- * The type of the member must be a valid reflectable pointer type. Each field must specify a unique ID for @p id.
- */
-#define BS_RTTI_MEMBER_REFLPTR(name, id)														\
-	META_Entry_##name;																			\
-																								\
-	decltype(OwnerType::name) get##name(OwnerType* obj) { return obj->name; }					\
-	void set##name(OwnerType* obj, decltype(OwnerType::name) val) { obj->name = val; }			\
-																								\
-	struct META_NextEntry_##name{};																\
-	void META_InitPrevEntry(META_NextEntry_##name typeId)										\
-	{																							\
-		addReflectablePtrField(#name, id, &MyType::get##name, &MyType::set##name);				\
-		META_InitPrevEntry(META_Entry_##name());												\
-	}																							\
-																								\
-	typedef META_NextEntry_##name
-
-/** Same as BS_RTTI_MEMBER_REFLPTR, but allows you to specify separate names for the field name and the member variable. */
-#define BS_RTTI_MEMBER_REFLPTR_NAMED(name, field, id)											\
-	META_Entry_##name;																			\
-																								\
-	decltype(OwnerType::field) get##name(OwnerType* obj) { return obj->field; }					\
-	void set##name(OwnerType* obj, decltype(OwnerType::field) val) { obj->field = val; }		\
-																								\
-	struct META_NextEntry_##name{};																\
-	void META_InitPrevEntry(META_NextEntry_##name typeId)										\
-	{																							\
-		addReflectablePtrField(#name, id, &MyType::get##name, &MyType::set##name);				\
-		META_InitPrevEntry(META_Entry_##name());												\
-	}																							\
-																								\
-	typedef META_NextEntry_##name
-
-/**
- * Registers a new member field in the RTTI type. The field references the @p name member in the owner class. 
- * The type of the member must be a valid reflectable pointer type. Each field must specify a unique ID for @p id.
- */
-#define BS_RTTI_MEMBER_REFLPTR_ARRAY(name, id)													\
-	META_Entry_##name;																			\
-																								\
-	std::common_type<decltype(OwnerType::name)>::type::value_type get##name(OwnerType* obj, UINT32 idx) { return obj->name[idx]; }				\
-	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::name)>::type::value_type val) { obj->name[idx] = val; }		\
-	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->name.size(); }					\
-	void setSize##name(OwnerType* obj, UINT32 val) { obj->name.resize(val); }					\
-																								\
-	struct META_NextEntry_##name{};																\
-	void META_InitPrevEntry(META_NextEntry_##name typeId)										\
-	{																							\
-		addReflectablePtrArrayField(#name, id, &MyType::get##name, &MyType::getSize##name, &MyType::set##name, &MyType::setSize##name);			\
-		META_InitPrevEntry(META_Entry_##name());												\
+		addPlainArrayField(#name, id, &MyType::get##name, &MyType::getSize##name, &MyType::set##name, &MyType::setSize##name);								\
+		META_InitPrevEntry(META_Entry_##name());																	\
 	}																							\
 																								\
 	typedef META_NextEntry_##name
 
  /**
-  * Same as BS_RTTI_MEMBER_REFLPTR_ARRAY, but allows you to specify separate names for the field name and the member 
-  * variable. 
+  * Same as BS_RTTI_MEMBER_PLAIN_ARRAY, but allows you to specify separate names for the field name and the member variable.
   */
-#define BS_RTTI_MEMBER_REFLPTR_ARRAY_NAMED(name, field, id)										\
-	META_Entry_##name;																			\
+#define BS_RTTI_MEMBER_PLAIN_ARRAY_NAMED(name, field, id)																	\
+	META_Entry_##name;																					\
 																								\
-	std::common_type<decltype(OwnerType::field)>::type::value_type get##name(OwnerType* obj, UINT32 idx) { return obj->field[idx]; }				\
-	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::field)>::type::value_type val) { obj->field[idx] = val; }		\
-	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->field.size(); }					\
-	void setSize##name(OwnerType* obj, UINT32 val) { obj->field.resize(val); }					\
+	std::common_type<decltype(OwnerType::field)>::type::value_type& get##name(OwnerType* obj, UINT32 idx) { return obj->field[idx]; }							\
+	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::field)>::type::value_type& val) { obj->field[idx] = val; }						\
+	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->field.size(); }														\
+	void setSize##name(OwnerType* obj, UINT32 val) { obj->field.resize(val); }														\
 																								\
-	struct META_NextEntry_##name{};																\
-	void META_InitPrevEntry(META_NextEntry_##name typeId)										\
+	struct META_NextEntry_##name{};																				\
+	void META_InitPrevEntry(META_NextEntry_##name typeId)																	\
 	{																							\
-		addReflectablePtrArrayField(#name, id, &MyType::get##name, &MyType::getSize##name, &MyType::set##name, &MyType::setSize##name);			\
-		META_InitPrevEntry(META_Entry_##name());												\
+		addPlainArrayField(#name, id, &MyType::get##name, &MyType::getSize##name, &MyType::set##name, &MyType::setSize##name);								\
+		META_InitPrevEntry(META_Entry_##name());																	\
+	}																							\
+																								\
+	typedef META_NextEntry_##name
+
+/**
+ * Registers a new member field in the RTTI type. The field references the @p name member in the owner class.
+ * The type of the member must be a valid reflectable (non-pointer) type. Each field must specify a unique ID for @p id.
+ */
+#define BS_RTTI_MEMBER_REFL(name, id)																				\
+	META_Entry_##name;																					\
+																								\
+	decltype(OwnerType::name)& get##name(OwnerType* obj) { return obj->name; }														\
+	void set##name(OwnerType* obj, decltype(OwnerType::name)& val) { obj->name = val; }													\
+																								\
+	struct META_NextEntry_##name{};																				\
+	void META_InitPrevEntry(META_NextEntry_##name typeId)																	\
+	{																							\
+		addReflectableField(#name, id, &MyType::get##name, &MyType::set##name);														\
+		META_InitPrevEntry(META_Entry_##name());																	\
+	}																							\
+																								\
+	typedef META_NextEntry_##name
+
+/** Same as BS_RTTI_MEMBER_REFL, but allows you to specify separate names for the field name and the member variable. */
+#define BS_RTTI_MEMBER_REFL_NAMED(name, field, id)																		\
+	META_Entry_##name;																					\
+																								\
+	decltype(OwnerType::field)& get##name(OwnerType* obj) { return obj->field; }														\
+	void set##name(OwnerType* obj, decltype(OwnerType::field)& val) { obj->field = val; }													\
+																								\
+	struct META_NextEntry_##name{};																				\
+	void META_InitPrevEntry(META_NextEntry_##name typeId)																	\
+	{																							\
+		addReflectableField(#name, id, &MyType::get##name, &MyType::set##name);														\
+		META_InitPrevEntry(META_Entry_##name());																	\
+	}																							\
+																								\
+	typedef META_NextEntry_##name
+
+/**
+ * Registers a new member field in the RTTI type. The field references the @p name member in the owner class.
+ * The type of the member must be an array of valid reflectable (non-pointer) types. Each field must specify a unique ID for
+ * @p id.
+ */
+#define BS_RTTI_MEMBER_REFL_ARRAY(name, id)																			\
+	META_Entry_##name;																					\
+																								\
+	std::common_type<decltype(OwnerType::name)>::type::value_type& get##name(OwnerType* obj, UINT32 idx) { return obj->name[idx]; }								\
+	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::name)>::type::value_type& val) { obj->name[idx] = val; }						\
+	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->name.size(); }														\
+	void setSize##name(OwnerType* obj, UINT32 val) { obj->name.resize(val); }														\
+																								\
+	struct META_NextEntry_##name{};																				\
+	void META_InitPrevEntry(META_NextEntry_##name typeId)																	\
+	{																							\
+		addReflectableArrayField(#name, id, &MyType::get##name, &MyType::getSize##name, &MyType::set##name, &MyType::setSize##name);							\
+		META_InitPrevEntry(META_Entry_##name());																	\
+	}																							\
+																								\
+	typedef META_NextEntry_##name
+
+
+/**
+ * Same as BS_RTTI_MEMBER_REFL_ARRAY, but allows you to specify separate names for the field name and the member variable.
+ */
+#define BS_RTTI_MEMBER_REFL_ARRAY_NAMED(name, field, id)																	\
+	META_Entry_##name;																					\
+																								\
+	std::common_type<decltype(OwnerType::field)>::type::value_type& get##name(OwnerType* obj, UINT32 idx) { return obj->field[idx]; }							\
+	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::field)>::type::value_type& val) { obj->field[idx] = val; }						\
+	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->field.size(); }														\
+	void setSize##name(OwnerType* obj, UINT32 val) { obj->field.resize(val); }														\
+																								\
+	struct META_NextEntry_##name{};																				\
+	void META_InitPrevEntry(META_NextEntry_##name typeId)																	\
+	{																							\
+		addReflectableArrayField(#name, id, &MyType::get##name, &MyType::getSize##name, &MyType::set##name, &MyType::setSize##name);							\
+		META_InitPrevEntry(META_Entry_##name());																	\
+	}																							\
+																								\
+	typedef META_NextEntry_##name
+
+/**
+ * Registers a new member field in the RTTI type. The field references the @p name member in the owner class.
+ * The type of the member must be a valid reflectable pointer type. Each field must specify a unique ID for @p id.
+ */
+#define BS_RTTI_MEMBER_REFLPTR(name, id)																			\
+	META_Entry_##name;																					\
+																								\
+	decltype(OwnerType::name) get##name(OwnerType* obj) { return obj->name; }														\
+	void set##name(OwnerType* obj, decltype(OwnerType::name) val) { obj->name = val; }													\
+																								\
+	struct META_NextEntry_##name{};																				\
+	void META_InitPrevEntry(META_NextEntry_##name typeId)																	\
+	{																							\
+		addReflectablePtrField(#name, id, &MyType::get##name, &MyType::set##name);													\
+		META_InitPrevEntry(META_Entry_##name());																	\
+	}																							\
+																								\
+	typedef META_NextEntry_##name
+
+/** Same as BS_RTTI_MEMBER_REFLPTR, but allows you to specify separate names for the field name and the member variable. */
+#define BS_RTTI_MEMBER_REFLPTR_NAMED(name, field, id)																		\
+	META_Entry_##name;																					\
+																								\
+	decltype(OwnerType::field) get##name(OwnerType* obj) { return obj->field; }														\
+	void set##name(OwnerType* obj, decltype(OwnerType::field) val) { obj->field = val; }													\
+																								\
+	struct META_NextEntry_##name{};																				\
+	void META_InitPrevEntry(META_NextEntry_##name typeId)																	\
+	{																							\
+		addReflectablePtrField(#name, id, &MyType::get##name, &MyType::set##name);													\
+		META_InitPrevEntry(META_Entry_##name());																	\
+	}																							\
+																								\
+	typedef META_NextEntry_##name
+
+/**
+ * Registers a new member field in the RTTI type. The field references the @p name member in the owner class.
+ * The type of the member must be a valid reflectable pointer type. Each field must specify a unique ID for @p id.
+ */
+#define BS_RTTI_MEMBER_REFLPTR_ARRAY(name, id)																			\
+	META_Entry_##name;																					\
+																								\
+	std::common_type<decltype(OwnerType::name)>::type::value_type get##name(OwnerType* obj, UINT32 idx) { return obj->name[idx]; }								\
+	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::name)>::type::value_type val) { obj->name[idx] = val; }							\
+	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->name.size(); }														\
+	void setSize##name(OwnerType* obj, UINT32 val) { obj->name.resize(val); }														\
+																								\
+	struct META_NextEntry_##name{};																				\
+	void META_InitPrevEntry(META_NextEntry_##name typeId)																	\
+	{																							\
+		addReflectablePtrArrayField(#name, id, &MyType::get##name, &MyType::getSize##name, &MyType::set##name, &MyType::setSize##name);							\
+		META_InitPrevEntry(META_Entry_##name());																	\
+	}																							\
+																								\
+	typedef META_NextEntry_##name
+
+ /**
+  * Same as BS_RTTI_MEMBER_REFLPTR_ARRAY, but allows you to specify separate names for the field name and the member
+  * variable.
+  */
+#define BS_RTTI_MEMBER_REFLPTR_ARRAY_NAMED(name, field, id)																	\
+	META_Entry_##name;																					\
+																								\
+	std::common_type<decltype(OwnerType::field)>::type::value_type get##name(OwnerType* obj, UINT32 idx) { return obj->field[idx]; }							\
+	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::field)>::type::value_type val) { obj->field[idx] = val; }						\
+	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->field.size(); }														\
+	void setSize##name(OwnerType* obj, UINT32 val) { obj->field.resize(val); }														\
+																								\
+	struct META_NextEntry_##name{};																				\
+	void META_InitPrevEntry(META_NextEntry_##name typeId)																	\
+	{																							\
+		addReflectablePtrArrayField(#name, id, &MyType::get##name, &MyType::getSize##name, &MyType::set##name, &MyType::setSize##name);							\
+		META_InitPrevEntry(META_Entry_##name());																	\
 	}																							\
 																								\
 	typedef META_NextEntry_##name
 
 /** Ends definitions for member fields with a RTTI type. Must follow BS_BEGIN_RTTI_MEMBERS. */
-#define BS_END_RTTI_MEMBERS																		\
-	META_LastEntry;																				\
+#define BS_END_RTTI_MEMBERS																					\
+	META_LastEntry;																						\
 																								\
-	struct META_InitAllMembers																	\
+	struct META_InitAllMembers																				\
 	{																							\
-		META_InitAllMembers(MyType* owner)														\
+		META_InitAllMembers(MyType* owner)																		\
 		{																						\
-			owner->META_InitPrevEntry(META_LastEntry());										\
+			owner->META_InitPrevEntry(META_LastEntry());																\
 		}																						\
 	};																							\
 																								\
-	META_InitAllMembers mInitMembers;
+	META_InitAllMembers mInitMembers{this};
 
 	/** @} */
 
@@ -288,9 +288,9 @@ namespace bs
 	/**
 	 * Provides an interface for accessing fields of a certain class.
 	 * Data can be easily accessed by getter and setter methods.
-	 * 			
+	 *
 	 * Supported data types:
-	 *	- Plain types - All types defined in BsRTTIField.h, mostly native types and POD (plain old data) structs. Data is parsed byte by byte.  
+	 *	- Plain types - All types defined in BsRTTIField.h, mostly native types and POD (plain old data) structs. Data is parsed byte by byte.
 	 *	                No pointers to plain types are supported. Data is passed around by value.
 	 *	- Reflectable types - Any class deriving from IReflectable. Data is parsed based on fields in its RTTI class. Can be pointer or value type.
 	 *	- Arrays of both plain and reflectable types are supported
@@ -306,7 +306,7 @@ namespace bs
 		virtual Vector<RTTITypeBase*>& getDerivedClasses() = 0;
 
 		/**
-		 * Returns RTTI type information for the class that owns this RTTI type. If the class has not base type, null is 
+		 * Returns RTTI type information for the class that owns this RTTI type. If the class has not base type, null is
 		 * returned instead.
 		 */
 		virtual RTTITypeBase* getBaseClass() = 0;
@@ -324,35 +324,35 @@ namespace bs
 		virtual UINT32 getRTTIId() = 0;
 
 		/**
-		 * Called by the serializers when serialization for this object has started. Use this to do any preprocessing on 
+		 * Called by the serializers when serialization for this object has started. Use this to do any preprocessing on
 		 * data you might need during serialization itself.
 		 */
 		virtual void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) {}
 
 		/**
-		 * Called by the serializers when serialization for this object has ended. After serialization has ended you can 
+		 * Called by the serializers when serialization for this object has ended. After serialization has ended you can
 		 * be sure that the type has been fully serialized, and you may clean up any temporary data.
 		 */
 		virtual void onSerializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) {}
 
 		/**
-		 * Called by the serializers when deserialization for this object has started. Use this to do any preprocessing 
+		 * Called by the serializers when deserialization for this object has started. Use this to do any preprocessing
 		 * on data you might need during deserialization itself.
 		 */
 		virtual void onDeserializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) {}
 
 		/**
-		 * Called by the serializers when deserialization for this object has ended. At this point you can be sure the 
+		 * Called by the serializers when deserialization for this object has ended. At this point you can be sure the
 		 * instance has been fully deserialized and you may safely use it.
 		 *
-		 * One exception being are fields you marked with RTTI_Flag_WeakRef, as they might be resolved only after 
+		 * One exception being are fields you marked with RTTI_Flag_WeakRef, as they might be resolved only after
 		 * deserialization has fully completed for all objects.
 		 */
 		virtual void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) {}
 
 		/**
-		 * Returns a handler that determines how are "diffs" generated and applied when it comes to objects of this RTTI 
-		 * type. A "diff" is a list of differences between two objects that may be saved, viewed or applied to another 
+		 * Returns a handler that determines how are "diffs" generated and applied when it comes to objects of this RTTI
+		 * type. A "diff" is a list of differences between two objects that may be saved, viewed or applied to another
 		 * object to transform it.
 		 */
 		virtual IDiff& getDiffHandler() const
@@ -382,7 +382,7 @@ namespace bs
 
 			UINT8* tempBuffer = (UINT8*)bs_stack_alloc(typeSize);
 			RTTIPlainType<DataType>::toMemory(value, (char*)tempBuffer);
-			
+
 			field->fromBuffer(object, tempBuffer);
 
 			bs_stack_free(tempBuffer);
@@ -423,7 +423,7 @@ namespace bs
 		template <class ObjectType, class DataType>
 		void setReflectableValue(ObjectType* object, const String& name, DataType& value)
 		{
-			static_assert((std::is_base_of<bs::IReflectable, DataType>::value), 
+			static_assert((std::is_base_of<bs::IReflectable, DataType>::value),
 				"Invalid data type for complex field. It needs to derive from bs::IReflectable.");
 
 			RTTIField* genericField = findField(name);
@@ -434,7 +434,7 @@ namespace bs
 		}
 
 		/**
-		 * Allows you to assign a value to a reflectable field array element with the specified name and index on the 
+		 * Allows you to assign a value to a reflectable field array element with the specified name and index on the
 		 * provided instance.
 		 *
 		 * @note	Caller must ensure instance and value types are valid for this field.
@@ -442,7 +442,7 @@ namespace bs
 		template <class ObjectType, class DataType>
 		void setReflectableArrayValue(ObjectType* object, const String& name, UINT32 index, DataType& value)
 		{
-			static_assert((std::is_base_of<bs::IReflectable, DataType>::value), 
+			static_assert((std::is_base_of<bs::IReflectable, DataType>::value),
 				"Invalid data type for complex field. It needs to derive from bs::IReflectable.");
 
 			RTTIField* genericField = findField(name);
@@ -475,7 +475,7 @@ namespace bs
 		template <class ObjectType, class DataType>
 		void setReflectablePtrValue(ObjectType* object, const String& name, SPtr<DataType> value)
 		{
-			static_assert((std::is_base_of<bs::IReflectable, DataType>::value), 
+			static_assert((std::is_base_of<bs::IReflectable, DataType>::value),
 				"Invalid data type for complex field. It needs to derive from bs::IReflectable.");
 
 			RTTIField* genericField = findField(name);
@@ -486,7 +486,7 @@ namespace bs
 		}
 
 		/**
-		 * Allows you to assign a value to a reflectable pointer field array element with the specified name and index on 
+		 * Allows you to assign a value to a reflectable pointer field array element with the specified name and index on
 		 * the provided instance.
 		 *
 		 * @note	Caller must ensure instance and value types are valid for this field.
@@ -494,7 +494,7 @@ namespace bs
 		template <class ObjectType, class DataType>
 		void setReflectablePtrArrayValue(ObjectType* object, const String& name, UINT32 index, SPtr<DataType> value)
 		{
-			static_assert((std::is_base_of<bs::IReflectable, DataType>::value), 
+			static_assert((std::is_base_of<bs::IReflectable, DataType>::value),
 				"Invalid data type for complex field. It needs to derive from bs::IReflectable.");
 
 			RTTIField* genericField = findField(name);
@@ -556,7 +556,7 @@ namespace bs
 			RTTIPlainType<DataType>::fromMemory(value, (char*)tempBuffer);
 
 			bs_stack_free(tempBuffer);
-		}	
+		}
 
 		/**
 		 * Reads a value from a reflectable object field with the specified name from the provided instance.
@@ -648,8 +648,8 @@ namespace bs
 		/**
 		 * Sets the size of the array of the field with the specified name on the provided instance.
 		 *
-		 * @note	
-		 * Caller must ensure instance type is valid and that the field as an array. This might clear any existing data 
+		 * @note
+		 * Caller must ensure instance type is valid and that the field as an array. This might clear any existing data
 		 * from the array.
 		 */
 		template <class ObjectType>
@@ -657,7 +657,7 @@ namespace bs
 		{
 			RTTIField* field = findField(name);
 			field->setArraySize(object, size);
-		}	
+		}
 
 		/** Returns the total number of fields in this RTTI type. */
 		UINT32 getNumFields() const { return (UINT32)mFields.size(); }
@@ -673,8 +673,8 @@ namespace bs
 		RTTIField* findField(const String& name);
 
 		/**
-		 * Tries to find a field with the specified unique ID. Doesn't throw an exception if it can't find the field 
-		 * (Unlike findField(const String&)). 
+		 * Tries to find a field with the specified unique ID. Doesn't throw an exception if it can't find the field
+		 * (Unlike findField(const String&)).
 		 *
 		 * @param	uniqueFieldId	Unique identifier for the field.
 		 *
@@ -682,7 +682,7 @@ namespace bs
 		 */
 		RTTIField* findField(int uniqueFieldId);
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 
@@ -693,7 +693,7 @@ namespace bs
 
 	protected:
 		/**
-		 * Tries to add a new field to the fields array, and throws an exception if a field with the same name or id 
+		 * Tries to add a new field to the fields array, and throws an exception if a field with the same name or id
 		 * already exists.
 		 *
 		 * @param[in]	field	Field, must be non-null.
@@ -731,7 +731,7 @@ namespace bs
 	};
 
 	/**
-	 * Template that returns RTTI type of the specified type, unless the specified type is IReflectable in which case it 
+	 * Template that returns RTTI type of the specified type, unless the specified type is IReflectable in which case it
 	 * returns a null.
 	 */
 	template<typename Type>
@@ -755,13 +755,13 @@ namespace bs
 	 */
 
 	/**
-	 * Allows you to provide a run-time type information for a specific class, along with support for 
+	 * Allows you to provide a run-time type information for a specific class, along with support for
 	 * serialization/deserialization.
-	 * 			
-	 * Derive from this class and return the that class from IReflectable::getRTTI. This way you can separate serialization 
+	 *
+	 * Derive from this class and return the that class from IReflectable::getRTTI. This way you can separate serialization
 	 * logic from the actual class you're serializing.
 	 *
-	 * This class will provide a way to register individual fields in the class, together with ways to read and write them, 
+	 * This class will provide a way to register individual fields in the class, together with ways to read and write them,
 	 * as well a providing information about class hierarchy, and run-time type checking.
 	 */
 	template <typename Type, typename BaseType, typename MyRTTIType>
@@ -769,7 +769,7 @@ namespace bs
 	{
 	protected:
 		/************************************************************************/
-		/* 						RTTI CLASS META DATA							*/
+		/*			RTTI CLASS META DATA				*/
 		/************************************************************************/
 
 		static InitRTTIOnStart<Type, BaseType> initOnStart;
@@ -832,7 +832,7 @@ namespace bs
 		{
 			if(IReflectable::_isTypeIdDuplicate(derivedClass->getRTTIId()))
 			{
-				BS_EXCEPT(InternalErrorException, "RTTI type \"" + derivedClass->getRTTIName() + 
+				BS_EXCEPT(InternalErrorException, "RTTI type \"" + derivedClass->getRTTIName() +
 					"\" has a duplicate ID: " + toString(derivedClass->getRTTIId()));
 			}
 
@@ -840,27 +840,27 @@ namespace bs
 		}
 
 		/************************************************************************/
-		/* 			FIELDS OPERATING DIRECTLY ON SERIALIZABLE OBJECT            */
+		/*		FIELDS OPERATING DIRECTLY ON SERIALIZABLE OBJECT	*/
 		/************************************************************************/
 
 		/**
-		 * Registers a new plain field. This field can then be accessed dynamically from the RTTI system and used for 
+		 * Registers a new plain field. This field can then be accessed dynamically from the RTTI system and used for
 		 * automatic serialization. See RTTIField for more information about field types.
 		 *
 		 * @param[in]	name		Name of the field.
-		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
-		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a
+		 *							small data type that can be used for efficiently serializing data to disk and similar.
 		 *							It is primarily used for compatibility between different versions of serialized data.
 		 * @param[in]	getter  	Method used for retrieving the value of this field.
 		 * @param[in]	setter  	Method used for setting the value of this field.
 		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType, class DataType>
-		void addPlainField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), 
+		void addPlainField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(),
 			void (ObjectType::*setter)(DataType&) = nullptr, UINT64 flags = 0)
 		{
-			addPlainField<ObjectType, DataType>(name, uniqueId, 
-				std::function<DataType&(ObjectType*)>(getter), 
+			addPlainField<ObjectType, DataType>(name, uniqueId,
+				std::function<DataType&(ObjectType*)>(getter),
 				std::function<void(ObjectType*, DataType&)>(setter), flags);
 		}
 
@@ -869,116 +869,116 @@ namespace bs
 		 * used for automatic serialization. See RTTIField for more information about field types.
 		 *
 		 * @param[in]	name		Name of the field.
-		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
-		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a
+		 *							small data type that can be used for efficiently serializing data to disk and similar.
 		 *							It is primarily used for compatibility between different versions of serialized data.
 		 * @param[in]	getter  	Method used for retrieving the value of this field.
 		 * @param[in]	setter  	Method used for setting the value of this field.
 		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType, class DataType>
-		void addReflectableField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), 
+		void addReflectableField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(),
 			void (ObjectType::*setter)(DataType&) = nullptr, UINT64 flags = 0)
 		{
-			addReflectableField<ObjectType, DataType>(name, uniqueId, 
-				std::function<DataType&(ObjectType*)>(getter), 
+			addReflectableField<ObjectType, DataType>(name, uniqueId,
+				std::function<DataType&(ObjectType*)>(getter),
 				std::function<void(ObjectType*, DataType&)>(setter), flags);
 		}
 
 		/**
-		 * Registers a new reflectable object pointer field. This field can then be accessed dynamically from the RTTI 
+		 * Registers a new reflectable object pointer field. This field can then be accessed dynamically from the RTTI
 		 * system and used for automatic serialization. See RTTIField for more information about field types.
 		 *
 		 * @param[in]	name		Name of the field.
-		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
-		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a
+		 *							small data type that can be used for efficiently serializing data to disk and similar.
 		 *							It is primarily used for compatibility between different versions of serialized data.
 		 * @param[in]	getter  	Method used for retrieving the value of this field.
 		 * @param[in]	setter  	Method used for setting the value of this field.
 		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType, class DataType>
-		void addReflectablePtrField(const String& name, UINT32 uniqueId, SPtr<DataType> (ObjectType::*getter)(), 
+		void addReflectablePtrField(const String& name, UINT32 uniqueId, SPtr<DataType> (ObjectType::*getter)(),
 			void (ObjectType::*setter)(SPtr<DataType>) = nullptr, UINT64 flags = 0)
 		{
-			addReflectablePtrField<ObjectType, DataType>(name, uniqueId, 
-				std::function<SPtr<DataType>(ObjectType*)>(getter), 
+			addReflectablePtrField<ObjectType, DataType>(name, uniqueId,
+				std::function<SPtr<DataType>(ObjectType*)>(getter),
 				std::function<void(ObjectType*, SPtr<DataType>)>(setter), flags);
 		}
 
 		/**
-		 * Registers a new field containg an array of plain values. This field can then be accessed dynamically from the 
+		 * Registers a new field containg an array of plain values. This field can then be accessed dynamically from the
 		 * RTTI system and used for automatic serialization. See RTTIField for more information about field types.
 		 *
 		 * @param[in]	name		Name of the field.
-		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
-		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a
+		 *							small data type that can be used for efficiently serializing data to disk and similar.
 		 *							It is primarily used for compatibility between different versions of serialized data.
 		 * @param[in]	getter  	Method used for retrieving a single element of the array.
 		 * @param[in]	getSize 	Getter method that returns the size of the array.
 		 * @param[in]	setter  	Method used for setting the a single element of the field.
-		 * @param[in]	setSize 	Setter method that allows you to resize the array. 
+		 * @param[in]	setSize 	Setter method that allows you to resize the array.
 		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType, class DataType>
-		void addPlainArrayField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
+		void addPlainArrayField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(),
 			void (ObjectType::*setter)(UINT32, DataType&) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
 		{
-			addPlainArrayField<ObjectType, DataType>(name, uniqueId, 
-				std::function<DataType&(ObjectType*, UINT32)>(getter), 
-				std::function<UINT32(ObjectType*)>(getSize), 
-				std::function<void(ObjectType*, UINT32, DataType&)>(setter), 
+			addPlainArrayField<ObjectType, DataType>(name, uniqueId,
+				std::function<DataType&(ObjectType*, UINT32)>(getter),
+				std::function<UINT32(ObjectType*)>(getSize),
+				std::function<void(ObjectType*, UINT32, DataType&)>(setter),
 				std::function<void(ObjectType*, UINT32)>(setSize), flags);
-		}	
+		}
 
 		/**
 		 * Registers a new field containg an array of reflectable object values. This field can then be accessed dynamically
 		 * from the RTTI system and used for automatic serialization. See RTTIField for more information about field types.
 		 *
 		 * @param[in]	name		Name of the field.
-		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
-		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a
+		 *							small data type that can be used for efficiently serializing data to disk and similar.
 		 *							It is primarily used for compatibility between different versions of serialized data.
 		 * @param[in]	getter  	Method used for retrieving a single element of the array.
 		 * @param[in]	getSize 	Getter method that returns the size of the array.
 		 * @param[in]	setter  	Method used for setting the a single element of the field.
-		 * @param[in]	setSize 	Setter method that allows you to resize the array. 
+		 * @param[in]	setSize 	Setter method that allows you to resize the array.
 		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType, class DataType>
-		void addReflectableArrayField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
+		void addReflectableArrayField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(),
 			void (ObjectType::*setter)(UINT32, DataType&) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
 		{
-			addReflectableArrayField<ObjectType, DataType>(name, uniqueId, 
-				std::function<DataType&(ObjectType*, UINT32)>(getter), 
-				std::function<UINT32(ObjectType*)>(getSize), 
-				std::function<void(ObjectType*, UINT32, DataType&)>(setter), 
+			addReflectableArrayField<ObjectType, DataType>(name, uniqueId,
+				std::function<DataType&(ObjectType*, UINT32)>(getter),
+				std::function<UINT32(ObjectType*)>(getSize),
+				std::function<void(ObjectType*, UINT32, DataType&)>(setter),
 				std::function<void(ObjectType*, UINT32)>(setSize), flags);
 		}
 
 		/**
-		 * Registers a new field containg an array of reflectable obejct pointers. This field can then be accessed 
-		 * dynamically from the RTTI system and used for automatic serialization. See RTTIField for more information 
+		 * Registers a new field containg an array of reflectable obejct pointers. This field can then be accessed
+		 * dynamically from the RTTI system and used for automatic serialization. See RTTIField for more information
 		 * about field types.
 		 *
 		 * @param[in]	name		Name of the field.
-		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
-		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a
+		 *							small data type that can be used for efficiently serializing data to disk and similar.
 		 *							It is primarily used for compatibility between different versions of serialized data.
 		 * @param[in]	getter  	Method used for retrieving a single element of the array.
 		 * @param[in]	getSize 	Getter method that returns the size of the array.
 		 * @param[in]	setter  	Method used for setting the a single element of the field.
-		 * @param[in]	setSize 	Setter method that allows you to resize the array. 
+		 * @param[in]	setSize 	Setter method that allows you to resize the array.
 		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType, class DataType>
-		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId, SPtr<DataType> (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
+		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId, SPtr<DataType> (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(),
 			void (ObjectType::*setter)(UINT32, SPtr<DataType>) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
 		{
-			addReflectablePtrArrayField<ObjectType, DataType>(name, uniqueId, 
-				std::function<SPtr<DataType>(ObjectType*, UINT32)>(getter), 
-				std::function<UINT32(ObjectType*)>(getSize), 
-				std::function<void(ObjectType*, UINT32, SPtr<DataType>)>(setter), 
+			addReflectablePtrArrayField<ObjectType, DataType>(name, uniqueId,
+				std::function<SPtr<DataType>(ObjectType*, UINT32)>(getter),
+				std::function<UINT32(ObjectType*)>(getSize),
+				std::function<void(ObjectType*, UINT32, SPtr<DataType>)>(setter),
 				std::function<void(ObjectType*, UINT32)>(setSize), flags);
 		}
 
@@ -987,21 +987,21 @@ namespace bs
 		 * used for automatic serialization. See RTTIField for more information about field types.
 		 *
 		 * @param[in]	name		Name of the field.
-		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
-		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a
+		 *							small data type that can be used for efficiently serializing data to disk and similar.
 		 *							It is primarily used for compatibility between different versions of serialized data.
 		 * @param[in]	getter  	Method used for retrieving the value of this field.
 		 * @param[in]	setter  	Method used for setting the value of this field.
 		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType>
-		void addDataBlockField(const String& name, UINT32 uniqueId, SPtr<DataStream> (ObjectType::*getter)(UINT32&), 
+		void addDataBlockField(const String& name, UINT32 uniqueId, SPtr<DataStream> (ObjectType::*getter)(UINT32&),
 			void (ObjectType::*setter)(const SPtr<DataStream>&, UINT32) = nullptr, UINT64 flags = 0)
 		{
-			addDataBlockField<ObjectType>(name, uniqueId, 
+			addDataBlockField<ObjectType>(name, uniqueId,
 				std::function<SPtr<DataStream>(ObjectType*, UINT32&)>(getter),
 				std::function<void(ObjectType*, const SPtr<DataStream>&, UINT32)>(setter), flags);
-		}	
+		}
 
 	protected:
 		typedef Type OwnerType;
@@ -1014,129 +1014,129 @@ namespace bs
 		/*		(Needs an extra pointer to the actual object)					*/
 		/************************************************************************/
 		template<class InterfaceType, class ObjectType, class DataType>
-		void addPlainField(const String& name, UINT32 uniqueId, 
-			DataType& (InterfaceType::*getter)(ObjectType*), 
+		void addPlainField(const String& name, UINT32 uniqueId,
+			DataType& (InterfaceType::*getter)(ObjectType*),
 			void (InterfaceType::*setter)(ObjectType*, DataType&), UINT64 flags = 0)
 		{
 			using namespace std::placeholders;
 
-			static_assert((std::is_base_of<bs::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
+			static_assert((std::is_base_of<bs::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value),
 				"Class with the get/set methods must derive from bs::RTTIType.");
 
-			static_assert(!(std::is_base_of<bs::IReflectable, DataType>::value), 
+			static_assert(!(std::is_base_of<bs::IReflectable, DataType>::value),
 				"Data type derives from IReflectable but it is being added as a plain field.");
 
-			addPlainField<ObjectType, DataType>(name, uniqueId, 
-				std::function<DataType&(ObjectType*)>(std::bind(getter, static_cast<InterfaceType*>(this), _1)), 
+			addPlainField<ObjectType, DataType>(name, uniqueId,
+				std::function<DataType&(ObjectType*)>(std::bind(getter, static_cast<InterfaceType*>(this), _1)),
 				std::function<void(ObjectType*, DataType&)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
-		void addReflectableField(const String& name, UINT32 uniqueId, 
-			DataType& (InterfaceType::*getter)(ObjectType*), 
+		void addReflectableField(const String& name, UINT32 uniqueId,
+			DataType& (InterfaceType::*getter)(ObjectType*),
 			void (InterfaceType::*setter)(ObjectType*, DataType&), UINT64 flags = 0)
 		{
 			using namespace std::placeholders;
 
-			addReflectableField<ObjectType, DataType>(name, uniqueId, 
-				std::function<DataType&(ObjectType*)>(std::bind(getter, static_cast<InterfaceType*>(this), _1)), 
+			addReflectableField<ObjectType, DataType>(name, uniqueId,
+				std::function<DataType&(ObjectType*)>(std::bind(getter, static_cast<InterfaceType*>(this), _1)),
 				std::function<void(ObjectType*, DataType&)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
-		void addReflectablePtrField(const String& name, UINT32 uniqueId, 
-			SPtr<DataType> (InterfaceType::*getter)(ObjectType*), 
+		void addReflectablePtrField(const String& name, UINT32 uniqueId,
+			SPtr<DataType> (InterfaceType::*getter)(ObjectType*),
 			void (InterfaceType::*setter)(ObjectType*, SPtr<DataType>), UINT64 flags = 0)
 		{
 			using namespace std::placeholders;
 
-			addReflectablePtrField<ObjectType, DataType>(name, uniqueId, 
-				std::function<SPtr<DataType>(ObjectType*)>(std::bind(getter, static_cast<InterfaceType*>(this), _1)), 
+			addReflectablePtrField<ObjectType, DataType>(name, uniqueId,
+				std::function<SPtr<DataType>(ObjectType*)>(std::bind(getter, static_cast<InterfaceType*>(this), _1)),
 				std::function<void(ObjectType*, SPtr<DataType>)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
-		void addPlainArrayField(const String& name, UINT32 uniqueId, 
-			DataType& (InterfaceType::*getter)(ObjectType*, UINT32), 
-			UINT32 (InterfaceType::*getSize)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType&), 
+		void addPlainArrayField(const String& name, UINT32 uniqueId,
+			DataType& (InterfaceType::*getter)(ObjectType*, UINT32),
+			UINT32 (InterfaceType::*getSize)(ObjectType*),
+			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType&),
 			void(InterfaceType::*setSize)(ObjectType*, UINT32), UINT64 flags = 0)
 		{
 			using namespace std::placeholders;
 
-			static_assert((std::is_base_of<bs::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
+			static_assert((std::is_base_of<bs::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value),
 				"Class with the get/set methods must derive from bs::RTTIType.");
 
-			static_assert(!(std::is_base_of<bs::IReflectable, DataType>::value), 
+			static_assert(!(std::is_base_of<bs::IReflectable, DataType>::value),
 				"Data type derives from IReflectable but it is being added as a plain field.");
 
-			addPlainArrayField<ObjectType, DataType>(name, uniqueId, 
-				std::function<DataType&(ObjectType*, UINT32)>(std::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
-				std::function<UINT32(ObjectType*)>(std::bind(getSize, static_cast<InterfaceType*>(this), _1)), 
-				std::function<void(ObjectType*, UINT32, DataType&)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
-				std::function<void(ObjectType*, UINT32)>(std::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)), flags);
-		}	
-
-		template<class InterfaceType, class ObjectType, class DataType>
-		void addReflectableArrayField(const String& name, UINT32 uniqueId, 
-			DataType& (InterfaceType::*getter)(ObjectType*, UINT32), 
-			UINT32 (InterfaceType::*getSize)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType&), 
-			void(InterfaceType::*setSize)(ObjectType*, UINT32), UINT64 flags = 0)
-		{
-			using namespace std::placeholders;
-
-			addReflectableArrayField<ObjectType, DataType>(name, uniqueId, 
-				std::function<DataType&(ObjectType*, UINT32)>(std::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
-				std::function<UINT32(ObjectType*)>(std::bind(getSize, static_cast<InterfaceType*>(this), _1)), 
-				std::function<void(ObjectType*, UINT32, DataType&)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
+			addPlainArrayField<ObjectType, DataType>(name, uniqueId,
+				std::function<DataType&(ObjectType*, UINT32)>(std::bind(getter, static_cast<InterfaceType*>(this), _1, _2)),
+				std::function<UINT32(ObjectType*)>(std::bind(getSize, static_cast<InterfaceType*>(this), _1)),
+				std::function<void(ObjectType*, UINT32, DataType&)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)),
 				std::function<void(ObjectType*, UINT32)>(std::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
-		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId, 
-			SPtr<DataType> (InterfaceType::*getter)(ObjectType*, UINT32), 
-			UINT32 (InterfaceType::*getSize)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, UINT32, SPtr<DataType>), 
+		void addReflectableArrayField(const String& name, UINT32 uniqueId,
+			DataType& (InterfaceType::*getter)(ObjectType*, UINT32),
+			UINT32 (InterfaceType::*getSize)(ObjectType*),
+			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType&),
 			void(InterfaceType::*setSize)(ObjectType*, UINT32), UINT64 flags = 0)
 		{
 			using namespace std::placeholders;
 
-			addReflectablePtrArrayField<ObjectType, DataType>(name, uniqueId, 
-				std::function<SPtr<DataType>(ObjectType*, UINT32)>(std::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
-				std::function<UINT32(ObjectType*)>(std::bind(getSize, static_cast<InterfaceType*>(this), _1)), 
-				std::function<void(ObjectType*, UINT32, SPtr<DataType>)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
+			addReflectableArrayField<ObjectType, DataType>(name, uniqueId,
+				std::function<DataType&(ObjectType*, UINT32)>(std::bind(getter, static_cast<InterfaceType*>(this), _1, _2)),
+				std::function<UINT32(ObjectType*)>(std::bind(getSize, static_cast<InterfaceType*>(this), _1)),
+				std::function<void(ObjectType*, UINT32, DataType&)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)),
+				std::function<void(ObjectType*, UINT32)>(std::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)), flags);
+		}
+
+		template<class InterfaceType, class ObjectType, class DataType>
+		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId,
+			SPtr<DataType> (InterfaceType::*getter)(ObjectType*, UINT32),
+			UINT32 (InterfaceType::*getSize)(ObjectType*),
+			void (InterfaceType::*setter)(ObjectType*, UINT32, SPtr<DataType>),
+			void(InterfaceType::*setSize)(ObjectType*, UINT32), UINT64 flags = 0)
+		{
+			using namespace std::placeholders;
+
+			addReflectablePtrArrayField<ObjectType, DataType>(name, uniqueId,
+				std::function<SPtr<DataType>(ObjectType*, UINT32)>(std::bind(getter, static_cast<InterfaceType*>(this), _1, _2)),
+				std::function<UINT32(ObjectType*)>(std::bind(getSize, static_cast<InterfaceType*>(this), _1)),
+				std::function<void(ObjectType*, UINT32, SPtr<DataType>)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)),
 				std::function<void(ObjectType*, UINT32)>(std::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
 		template<class InterfaceType, class ObjectType>
-		void addDataBlockField(const String& name, UINT32 uniqueId, SPtr<DataStream> (InterfaceType::*getter)(ObjectType*, UINT32&), 
+		void addDataBlockField(const String& name, UINT32 uniqueId, SPtr<DataStream> (InterfaceType::*getter)(ObjectType*, UINT32&),
 			void (InterfaceType::*setter)(ObjectType*, const SPtr<DataStream>&, UINT32), UINT64 flags = 0)
 		{
 			using namespace std::placeholders;
 
-			addDataBlockField<ObjectType>(name, uniqueId, 
+			addDataBlockField<ObjectType>(name, uniqueId,
 				std::function<SPtr<DataStream>(ObjectType*, UINT32&)>(std::bind(getter, static_cast<InterfaceType*>(this), _1, _2)),
 				std::function<void(ObjectType*, const SPtr<DataStream>&, UINT32)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), flags);
-		}	
+		}
 
 	private:
 		template<class ObjectType, class DataType>
 		void addPlainField(const String& name, UINT32 uniqueId, Any getter, Any setter, UINT64 flags)
 		{
-			RTTIPlainField<DataType, ObjectType>* newField = 
+			RTTIPlainField<DataType, ObjectType>* newField =
 				bs_new<RTTIPlainField<DataType, ObjectType>>();
 			newField->initSingle(name, uniqueId, getter, setter, flags);
 			addNewField(newField);
 		}
-		
+
 		template<class ObjectType, class DataType>
 		void addReflectableField(const String& name, UINT32 uniqueId, Any getter, Any setter, UINT64 flags)
 		{
-			static_assert((std::is_base_of<bs::IReflectable, DataType>::value), 
+			static_assert((std::is_base_of<bs::IReflectable, DataType>::value),
 				"Invalid data type for complex field. It needs to derive from bs::IReflectable.");
 
-			RTTIReflectableField<DataType, ObjectType>* newField = 
+			RTTIReflectableField<DataType, ObjectType>* newField =
 				bs_new<RTTIReflectableField<DataType, ObjectType>>();
 			newField->initSingle(name, uniqueId, getter, setter, flags);
 			addNewField(newField);
@@ -1145,10 +1145,10 @@ namespace bs
 		template<class ObjectType, class DataType>
 		void addReflectablePtrField(const String& name, UINT32 uniqueId, Any getter, Any setter, UINT64 flags)
 		{
-			static_assert((std::is_base_of<bs::IReflectable, DataType>::value), 
+			static_assert((std::is_base_of<bs::IReflectable, DataType>::value),
 				"Invalid data type for complex field. It needs to derive from bs::IReflectable.");
 
-			RTTIReflectablePtrField<DataType, ObjectType>* newField = 
+			RTTIReflectablePtrField<DataType, ObjectType>* newField =
 				bs_new<RTTIReflectablePtrField<DataType, ObjectType>>();
 			newField->initSingle(name, uniqueId, getter, setter, flags);
 			addNewField(newField);
@@ -1158,20 +1158,20 @@ namespace bs
 		void addPlainArrayField(const String& name, UINT32 uniqueId, Any getter, Any getSize,
 			Any setter, Any setSize, UINT64 flags)
 		{
-			RTTIPlainField<DataType, ObjectType>* newField = 
+			RTTIPlainField<DataType, ObjectType>* newField =
 				bs_new<RTTIPlainField<DataType, ObjectType>>();
 			newField->initArray(name, uniqueId, getter, getSize, setter, setSize, flags);
 			addNewField(newField);
-		}	
+		}
 
 		template<class ObjectType, class DataType>
 		void addReflectableArrayField(const String& name, UINT32 uniqueId, Any getter, Any getSize,
 			Any setter, Any setSize, UINT64 flags)
 		{
-			static_assert((std::is_base_of<bs::IReflectable, DataType>::value), 
+			static_assert((std::is_base_of<bs::IReflectable, DataType>::value),
 				"Invalid data type for complex field. It needs to derive from bs::IReflectable.");
 
-			RTTIReflectableField<DataType, ObjectType>* newField = 
+			RTTIReflectableField<DataType, ObjectType>* newField =
 				bs_new<RTTIReflectableField<DataType, ObjectType>>();
 			newField->initArray(name, uniqueId, getter, getSize, setter, setSize, flags);
 			addNewField(newField);
@@ -1181,10 +1181,10 @@ namespace bs
 		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId, Any getter, Any getSize,
 			Any setter, Any setSize, UINT64 flags)
 		{
-			static_assert((std::is_base_of<bs::IReflectable, DataType>::value), 
+			static_assert((std::is_base_of<bs::IReflectable, DataType>::value),
 				"Invalid data type for complex field. It needs to derive from bs::IReflectable.");
 
-			RTTIReflectablePtrField<DataType, ObjectType>* newField = 
+			RTTIReflectablePtrField<DataType, ObjectType>* newField =
 				bs_new<RTTIReflectablePtrField<DataType, ObjectType>>();
 			newField->initArray(name, uniqueId, getter, getSize, setter, setSize, flags);
 			addNewField(newField);
@@ -1193,11 +1193,11 @@ namespace bs
 		template<class ObjectType>
 		void addDataBlockField(const String& name, UINT32 uniqueId, Any getter, Any setter, UINT64 flags)
 		{
-			RTTIManagedDataBlockField<UINT8*, ObjectType>* newField = 
+			RTTIManagedDataBlockField<UINT8*, ObjectType>* newField =
 				bs_new<RTTIManagedDataBlockField<UINT8*, ObjectType>>();
 			newField->initSingle(name, uniqueId, getter, setter, flags);
 			addNewField(newField);
-		}	
+		}
 	};
 
 	template <typename Type, typename BaseType, typename MyRTTIType>
@@ -1207,7 +1207,7 @@ namespace bs
 	template<class T>
 	bool rtti_is_of_type(IReflectable* object)
 	{
-		static_assert((std::is_base_of<bs::IReflectable, T>::value), 
+		static_assert((std::is_base_of<bs::IReflectable, T>::value),
 			"Invalid data type for type checking. It needs to derive from bs::IReflectable.");
 
 		return object->getTypeId() == T::getRTTIStatic()->getRTTIId();
@@ -1217,7 +1217,7 @@ namespace bs
 	template<class T>
 	bool rtti_is_of_type(SPtr<IReflectable> object)
 	{
-		static_assert((std::is_base_of<bs::IReflectable, T>::value), 
+		static_assert((std::is_base_of<bs::IReflectable, T>::value),
 			"Invalid data type for type checking. It needs to derive from bs::IReflectable.");
 
 		return object->getTypeId() == T::getRTTIStatic()->getRTTIId();
