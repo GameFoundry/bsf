@@ -32,7 +32,6 @@ namespace bs
 		Custom, 
 		/** Physically based shader used for opaque 3D geometry. */
 		Standard, 
-
 		/** Physically based shader used for transparent 3D geometry. */
 		Transparent
 	};

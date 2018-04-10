@@ -38,8 +38,8 @@ namespace bs
 	class BS_CORE_EXPORT GpuProgramFactory
 	{
 	public:
-		GpuProgramFactory() {}
-		virtual ~GpuProgramFactory() { }
+		GpuProgramFactory() = default;
+		virtual ~GpuProgramFactory() = default;
 
 		/** @copydoc GpuProgram::create */
 		virtual SPtr<GpuProgram> create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT) = 0;

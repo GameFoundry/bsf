@@ -9,7 +9,7 @@ bs::f supports plugins for the following systems:
  - Importers - Importers that handle conversion of some third party resource format into an engine-ready format.
  - Physics - Runs the physics simulation.
  - Renderer - Determines how is the scene displayed (lighting, shadows, post-processing, etc.). 
- - Rendering API - Wrappers for render APIs like DirectX, OpenGL or Vulkan.
+ - Rendering backend - Wrappers for render APIs like DirectX, OpenGL or Vulkan.
  
 You can choose which plugins are loaded on **Application** start-up, by filling out the @ref bs::START_UP_DESC "START_UP_DESC" structure.
 
@@ -17,17 +17,17 @@ You can choose which plugins are loaded on **Application** start-up, by filling 
 START_UP_DESC startUpDesc;
 
 // Required plugins
-startUpDesc.renderAPI = "BansheeD3D11RenderAPI";
-startUpDesc.renderer = "RenderBeast";
-startUpDesc.audio = "BansheeOpenAudio";
-startUpDesc.physics = "BansheePhysX";
-startUpDesc.input = "BansheeOISInput";
+startUpDesc.renderAPI = "bsfD3D11RenderAPI";
+startUpDesc.renderer = "bsfRenderBeast";
+startUpDesc.audio = "bsfOpenAudio";
+startUpDesc.physics = "bsfPhysX";
+startUpDesc.input = "bsfOISInput";
 
 // List of importer plugins we plan on using for importing various resources
-startUpDesc.importers.push_back("BansheeFreeImgImporter"); // For importing textures
-startUpDesc.importers.push_back("BansheeFBXImporter"); // For importing meshes
-startUpDesc.importers.push_back("BansheeFontImporter"); // For importing fonts
-startUpDesc.importers.push_back("BansheeSL"); // For importing shaders
+startUpDesc.importers.push_back("bsfFreeImgImporter"); // For importing textures
+startUpDesc.importers.push_back("bsfFBXImporter"); // For importing meshes
+startUpDesc.importers.push_back("bsfFontImporter"); // For importing fonts
+startUpDesc.importers.push_back("bsfSL"); // For importing shaders
 
 // ... also set up primary window in startUpDesc ...
 
@@ -39,46 +39,35 @@ Application::startUp(startUpDesc);
 In this manual we'll focus on general functionality common to all plugins, while we'll talk about how to implement plugins for specific systems in later manuals. 
 
 # Generating a CMake project {#plugins_a}
-Plugins are always created as their own projects/libraries. Banshee uses the CMake build system for managing its projects. Therefore the first step you need to take is to create your own CMake project. This involves creating a new folder in the /Source directory (e.g. Source/MyPlugin), with a CMakeLists.txt file inside it. CMakeLists.txt will contain references to needed header & source files, as well as dependencies to any other libraries. 
+Plugins are always created as their own projects/libraries. bs::f uses the CMake build system for managing its projects. Therefore the first step you need to take is to create your own CMake project. This involves creating a new folder in the /Source/Plugins directory (e.g. Source/Plugins/MyPlugin), with a CMakeLists.txt file inside it. CMakeLists.txt will contain references to needed header & source files, as well as dependencies to any other libraries. 
  
 An example CMakeLists.txt might look like so:
 ~~~~~~~~~~~~~
-# --Source files--
+# Source files
 set(SOURCE_FILES
 	"Include/MyHeader.h"
 	"Source/MyPlugin.cpp"	
 )
 
-# --Include directories--
-# This plugin depends on BansheeUtility, BansheeCore and BansheeEngine libraries, as well as a third party library named someThirdPartyLib, so we reference the folders where their header files are located. Paths are relative to the plugin folder.
-set(INCLUDE_DIRS
-	"Include" 
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include"
-	"../BansheeEngine/Include"
-	"../../Dependencies/someThirdPartyLib/include")
-
-include_directories(${INCLUDE_DIRS})	
-	
-# --Target--
-# Registers our plugin a specific name (MyPlugin) and with the relevant source files
+# Target
+## Registers our plugin a specific name (MyPlugin) and with the relevant source files
 add_library(MyPlugin SHARED ${SOURCE_FILES})
 
-# --Libraries--
-# Registers dependencies on any other libraries
-## Register dependency on an external library: someThirdPartyLib
-add_library_per_config(MyPlugin someThirdPartyLib Release/someThirdPartyLib Debug/someThirdPartyLib)
+# Include directories
+## Including just the current folder
+target_include_directories(MyPlugin PRIVATE "./")
 
-## Register dependencies on Banshee libraries
-target_link_libraries(MyPlugin PUBLIC BansheeUtility BansheeCore BansheeEngine)
+# Libraries
+## Link with bsf
+target_link_libraries(MyPlugin PUBLIC bsf)
 ~~~~~~~~~~~~~
 
 Note that we won't go into details about CMake syntax, it's complex and there are many other guides already written on it.
 
 After creating your project's CMake file, you need to register it with the main CMakeLists.txt present in the /Source directory. Simply append the following line:
 ~~~~~~~~~~~~~
-# Provided your plugin is located in Source/MyPlugin folder
-add_subdirectory(MyPlugin)
+# Provided your plugin is located in Source/Plugins/MyPlugin folder
+add_subdirectory(Plugins/MyPlugin)
 ~~~~~~~~~~~~~
 
 # Plugin interface {#customPlugins_b}

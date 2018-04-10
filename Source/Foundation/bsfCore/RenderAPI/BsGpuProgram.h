@@ -193,7 +193,7 @@ namespace bs
 		SPtr<GpuProgramBytecode> getBytecode() const { return mBytecode; }
 
 		/** 
-		 * @copydoc bs::GpuProgram::create(const GPU_PROGRAM_DESC&, GpuDeviceFlags)
+		 * @copydoc bs::GpuProgram::create(const GPU_PROGRAM_DESC&)
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
 		static SPtr<GpuProgram> create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);

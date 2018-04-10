@@ -176,7 +176,7 @@ namespace bs
 		virtual SPtr<GpuBuffer> createGpuBufferInternal(const GPU_BUFFER_DESC& desc, 
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) = 0;
 
-		/** @copydoc createVertexDeclaration(const List<VertexElement>&, GpuDeviceFlags) */
+		/** @copydoc createVertexDeclaration(const Vector<VertexElement>&, GpuDeviceFlags) */
 		virtual SPtr<VertexDeclaration> createVertexDeclarationInternal(const Vector<VertexElement>& elements,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 

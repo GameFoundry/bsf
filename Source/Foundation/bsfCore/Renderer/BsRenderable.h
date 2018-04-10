@@ -42,7 +42,7 @@ namespace bs
 		TRenderable();
 		virtual ~TRenderable();
 
-		/** @copydoc SceneActor::setTransform */
+		/** @copydoc bs::SceneActor::setTransform */
 		void setTransform(const Transform& transform) override;
 
 		/**

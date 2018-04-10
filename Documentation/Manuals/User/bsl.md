@@ -2,7 +2,7 @@ BSL syntax			{#bsl}
 ===============
 [TOC]
 
-All shaders in Banshee are written in BSL (Banshee Shading Language). The core of the language is based on HLSL (High Level Shading Language), with various extensions to make development easier. In this manual we will not cover HLSL syntax, nor talk about shaders in general, and will instead focus on the functionality specific to BSL. If you are not familiar with the concept of a shader, or HLSL syntax, it is suggested you learn about them before continuing.
+All shaders in bs::f are written in BSL (bs::f Shading Language). The core of the language is based on HLSL (High Level Shading Language), with various extensions to make development easier. In this manual we will not cover HLSL syntax, nor talk about shaders in general, and will instead focus on the functionality specific to BSL. If you are not familiar with the concept of a shader, or HLSL syntax, it is suggested you learn about them before continuing.
 
 # Basics 
 
@@ -297,7 +297,7 @@ Often you will want to define mixins in separate files. BSL files are normally s
 In order to include other files in BSL, use the \#include command. The paths are relative to the working folder, or if you are working in Banshee 3D editor, the paths are relative to your project folder. You can use the special variables $ENGINE$ and $EDITOR$ to access paths to the builtin engine and editor shaders.
 
 ~~~~~~~~~~~~~~
-// Include the code for accessing Banshee's GBuffer
+// Include the code for accessing the GBuffer
 #include "$ENGINE$/GBufferInput.bslinc"
 
 shader MyShader
