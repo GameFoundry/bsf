@@ -28,9 +28,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		AutoExposureSettingsRTTI()
-			:mInitMembers(this)
-		{ }
+		AutoExposureSettingsRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -63,9 +61,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		TonemappingSettingsRTTI()
-			:mInitMembers(this)
-		{ }
+		TonemappingSettingsRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -93,9 +89,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		WhiteBalanceSettingsRTTI()
-			:mInitMembers(this)
-		{ }
+		WhiteBalanceSettingsRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -125,9 +119,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		ColorGradingSettingsRTTI()
-			:mInitMembers(this)
-		{ }
+		ColorGradingSettingsRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -160,9 +152,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		DepthOfFieldSettingsRTTI()
-			:mInitMembers(this)
-		{ }
+		DepthOfFieldSettingsRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -196,9 +186,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		AmbientOcclusionSettingsRTTI()
-			:mInitMembers(this)
-		{ }
+		AmbientOcclusionSettingsRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -228,9 +216,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		ScreenSpaceReflectionsSettingsRTTI()
-			:mInitMembers(this)
-		{ }
+		ScreenSpaceReflectionsSettingsRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -260,9 +246,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		ShadowSettingsRTTI()
-			:mInitMembers(this)
-		{ }
+		ShadowSettingsRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -304,11 +288,9 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(enableIndirectLighting, 16)
 			BS_RTTI_MEMBER_REFL(shadowSettings, 17)
 		BS_END_RTTI_MEMBERS
-			
+
 	public:
-		RenderSettingsRTTI()
-			:mInitMembers(this)
-		{ }
+		RenderSettingsRTTI() = default;
 
 		const String& getRTTIName() override
 		{

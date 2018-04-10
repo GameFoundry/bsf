@@ -24,9 +24,7 @@ namespace bs
 			BS_RTTI_MEMBER_REFLPTR(data, 1)
 		BS_END_RTTI_MEMBERS
 	public:
-		PrefabComponentDiffRTTI()
-			:mInitMembers(this)
-		{ }
+		PrefabComponentDiffRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -67,9 +65,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(soFlags, 12)
 		BS_END_RTTI_MEMBERS
 	public:
-		PrefabObjectDiffRTTI()
-			:mInitMembers(this)
-		{ }
+		PrefabObjectDiffRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -102,9 +98,7 @@ namespace bs
 			BS_RTTI_MEMBER_REFLPTR(mRoot, 0)
 		BS_END_RTTI_MEMBERS
 	public:
-		PrefabDiffRTTI()
-			:mInitMembers(this)
-		{ }
+		PrefabDiffRTTI() = default;
 
 		void onDeserializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{

@@ -72,11 +72,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mParams, 0)
 		BS_END_RTTI_MEMBERS
 	public:
-		ShaderVariationRTTI()
-			:mInitMembers(this)
-		{
-			
-		}
+		ShaderVariationRTTI() = default;
 
 		const String& getRTTIName() override
 		{

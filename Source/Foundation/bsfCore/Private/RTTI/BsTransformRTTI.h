@@ -23,9 +23,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		TransformRTTI()
-			:mInitMembers(this)
-		{ }
+		TransformRTTI() = default;
 
 		const String& getRTTIName() override
 		{

@@ -26,7 +26,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN_NAMED(mRotationB, mRotations[1], 5)
 		BS_END_RTTI_MEMBERS
 
-		float& getBreakForce(OwnerType* obj) { return obj->mDesc.breakForce; }	
+		float& getBreakForce(OwnerType* obj) { return obj->mDesc.breakForce; }
 		void setBreakForce(OwnerType* obj, float& val) { obj->mDesc.breakForce = val; }
 
 		float& getBreakTorque(OwnerType* obj) { return obj->mDesc.breakTorque; }
@@ -37,7 +37,6 @@ namespace bs
 
 	public:
 		CJointRTTI()
-			:mInitMembers(this)
 		{
 			addPlainField("BreakForce", 6, &CJointRTTI::getBreakForce, &CJointRTTI::setBreakForce);
 			addPlainField("BreakTorque", 7, &CJointRTTI::getBreakTorque, &CJointRTTI::setBreakTorque);

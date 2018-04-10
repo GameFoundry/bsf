@@ -48,7 +48,6 @@ namespace bs
 
 	public:
 		AudioClipRTTI()
-			:mInitMembers(this)
 		{
 			addDataBlockField("mData", 6, &AudioClipRTTI::getData, &AudioClipRTTI::setData, 0);
 		}

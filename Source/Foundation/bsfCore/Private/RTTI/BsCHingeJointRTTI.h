@@ -31,9 +31,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		CHingeJointRTTI()
-			:mInitMembers(this)
-		{ }
+		CHingeJointRTTI() = default;
 
 		const String& getRTTIName() override
 		{

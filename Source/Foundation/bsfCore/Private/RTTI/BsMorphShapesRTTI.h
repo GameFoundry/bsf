@@ -21,11 +21,9 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mWeight, 1)
 			BS_RTTI_MEMBER_PLAIN_ARRAY(mVertices, 2)
 		BS_END_RTTI_MEMBERS
-		
+
 	public:
-		MorphShapeRTTI()
-			:mInitMembers(this)
-		{ }
+		MorphShapeRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -53,9 +51,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		MorphChannelRTTI()
-			:mInitMembers(this)
-		{ }
+		MorphChannelRTTI() = default;
 
 		const String& getRTTIName() override
 		{
@@ -83,9 +79,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		MorphShapesRTTI()
-			:mInitMembers(this)
-		{ }
+		MorphShapesRTTI() = default;
 
 		const String& getRTTIName() override
 		{

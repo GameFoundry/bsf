@@ -22,9 +22,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		CLightProbeVolumeRTTI()
-			:mInitMembers(this)
-		{ }
+		CLightProbeVolumeRTTI() = default;
 
 		const String& getRTTIName() override
 		{

@@ -21,9 +21,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		ResourceMappingRTTI()
-			:mInitMembers(this)
-		{ }
+		ResourceMappingRTTI() = default;
 
 		const String& getRTTIName() override
 		{
