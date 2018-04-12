@@ -58,6 +58,7 @@ OptionInfo OPTION_LOOKUP[] =
 	{ OT_Variations, ODT_Complex },
 	{ OT_Variation, ODT_Complex },
 	{ OT_VariationValue, ODT_Int },
+	{ OT_Forward, ODT_Bool },
 };
 
 NodeOptions* nodeOptionsCreate(void* context)
@@ -181,17 +182,17 @@ void nodePop(ParseState* parseState)
 	mmfree(toRemove);
 }
 
-void beginCodeBlock(ParseState* parseState)
+void beginCodeBlock(ParseState* parseState, RawCodeType type)
 {
-	CodeString* codeString = (CodeString*)mmalloc(parseState->memContext, sizeof(CodeString));
-	codeString->index = parseState->numCodeStrings;
-	codeString->size = 0;
-	codeString->capacity = 4096;
-	codeString->code = mmalloc(parseState->memContext, codeString->capacity);
-	codeString->next = parseState->codeStrings;
+	RawCode* rawCodeBlock = (RawCode*)mmalloc(parseState->memContext, sizeof(RawCode));
+	rawCodeBlock->index = parseState->numRawCodeBlocks[type];
+	rawCodeBlock->size = 0;
+	rawCodeBlock->capacity = 4096;
+	rawCodeBlock->code = mmalloc(parseState->memContext, rawCodeBlock->capacity);
+	rawCodeBlock->next = parseState->rawCodeBlock[type];
 
-	parseState->numCodeStrings++;
-	parseState->codeStrings = codeString;
+	parseState->numRawCodeBlocks[type]++;
+	parseState->rawCodeBlock[type] = rawCodeBlock;
 
 	// Insert defines for code-blocks as we don't perform pre-processing within code blocks but we still want outer defines
 	// to be recognized by them (Performing pre-processing for code blocks is problematic because it would require parsing
@@ -200,46 +201,46 @@ void beginCodeBlock(ParseState* parseState)
 	{
 		const char* define = "#define ";
 
-		appendCodeBlock(parseState, define, (int)strlen(define));
-		appendCodeBlock(parseState, parseState->defines[i].name, (int)strlen(parseState->defines[i].name));
+		appendCodeBlock(parseState, type, define, (int)strlen(define));
+		appendCodeBlock(parseState, type, parseState->defines[i].name, (int)strlen(parseState->defines[i].name));
 
 		if (parseState->defines[i].expr != 0)
 		{
-			appendCodeBlock(parseState, " ", 1);
-			appendCodeBlock(parseState, parseState->defines[i].expr, (int)strlen(parseState->defines[i].expr));
+			appendCodeBlock(parseState, type, " ", 1);
+			appendCodeBlock(parseState, type, parseState->defines[i].expr, (int)strlen(parseState->defines[i].expr));
 		}
 
-		appendCodeBlock(parseState, "\n", 1);
+		appendCodeBlock(parseState, type, "\n", 1);
 	}
 }
 
-void appendCodeBlock(ParseState* parseState, const char* value, int size)
+void appendCodeBlock(ParseState* parseState, RawCodeType type, const char* value, int size)
 {
-	CodeString* codeString = parseState->codeStrings;
+	RawCode* rawCode = parseState->rawCodeBlock[type];
 
-	if ((codeString->size + size) > codeString->capacity)
+	if ((rawCode->size + size) > rawCode->capacity)
 	{
-		int newCapacity = codeString->capacity;
+		int newCapacity = rawCode->capacity;
 		do 
 		{
 			newCapacity *= 2;
-		} while ((codeString->size + size) > newCapacity);
+		} while ((rawCode->size + size) > newCapacity);
 
 		char* newBuffer = mmalloc(parseState->memContext, newCapacity);
-		memcpy(newBuffer, codeString->code, codeString->size);
-		mmfree(codeString->code);
+		memcpy(newBuffer, rawCode->code, rawCode->size);
+		mmfree(rawCode->code);
 
-		codeString->code = newBuffer;
-		codeString->capacity = newCapacity;
+		rawCode->code = newBuffer;
+		rawCode->capacity = newCapacity;
 	}
 
-	memcpy(&codeString->code[codeString->size], value, size);
-	codeString->size += size;
+	memcpy(&rawCode->code[rawCode->size], value, size);
+	rawCode->size += size;
 }
 
-int getCodeBlockIndex(ParseState* parseState)
+int getCodeBlockIndex(ParseState* parseState, RawCodeType type)
 {
-	return parseState->codeStrings->index;
+	return parseState->rawCodeBlock[type]->index;
 }
 
 char* getCurrentFilename(ParseState* parseState)
@@ -384,8 +385,10 @@ ParseState* parseStateCreate()
 	parseState->nodeStack = 0;
 	parseState->includeStack = 0;
 	parseState->includes = 0;
-	parseState->codeStrings = 0;
-	parseState->numCodeStrings = 0;
+	parseState->rawCodeBlock[0] = 0;
+	parseState->rawCodeBlock[1] = 0;
+	parseState->numRawCodeBlocks[0] = 0;
+	parseState->numRawCodeBlocks[1] = 0;
 	parseState->numOpenBrackets = 0;
 
 	parseState->hasError = 0;

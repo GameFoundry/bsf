@@ -2,13 +2,13 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "BsPostProcessing.h"
 #include "RenderAPI/BsRenderTexture.h"
-#include "BsGpuResourcePool.h"
 #include "Renderer/BsRendererUtility.h"
 #include "Renderer/BsCamera.h"
 #include "Material/BsGpuParamsSet.h"
-#include "BsRendererView.h"
 #include "Image/BsPixelUtil.h"
 #include "Utility/BsBitwise.h"
+#include "Utility/BsGpuResourcePool.h"
+#include "BsRendererView.h"
 #include "BsRenderBeast.h"
 
 namespace bs { namespace ct

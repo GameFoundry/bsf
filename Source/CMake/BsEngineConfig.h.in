@@ -6,6 +6,9 @@
 /** Path to the framework root when files haven't been packaged yet (e.g. running from debugger). */
 static constexpr const char* RAW_APP_ROOT = "@APP_ROOT_DIR@/"; 
 
+/** Secondary search path to use when looking for built-in assets (after the RAW_APP_ROOT). */
+static constexpr const char* SECONDARY_APP_ROOT = "@SECONDARY_APP_ROOT_DIR@/"; 
+
 /** Path to the binaries when files haven't been packaged yet (e.g. running from debugger). */
 #if BS_CONFIG == BS_CONFIG_DEBUG
 static constexpr const char* BINARIES_PATH = "@CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG@";

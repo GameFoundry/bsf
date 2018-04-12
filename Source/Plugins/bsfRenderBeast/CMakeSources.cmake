@@ -1,51 +1,69 @@
 set(BS_RENDERBEAST_INC_NOFILTER
-	"BsGpuResourcePool.h"
 	"BsRenderBeastOptions.h"
-	"BsSamplerOverrides.h"
 	"BsRenderBeast.h"
 	"BsRenderBeastFactory.h"
 	"BsRenderBeastPrerequisites.h"
-	"BsObjectRendering.h"
-	"BsLightRendering.h"
-	"BsPostProcessing.h"
+	"BsRendererLight.h"
 	"BsRendererView.h"
 	"BsRendererObject.h"
-	"BsLightGrid.h"
-	"BsImageBasedLighting.h"
-	"BsShadowRendering.h"
+	"BsRendererReflectionProbe.h"
 	"BsRendererScene.h"
-	"BsStandardDeferredLighting.h"
-	"BsLightProbes.h"
 	"BsRenderCompositor.h"
-	"BsRendererTextures.h"
 	"BsRenderBeastIBLUtility.h"
 )
 
 set(BS_RENDERBEAST_SRC_NOFILTER
-	"BsGpuResourcePool.cpp"
-	"BsSamplerOverrides.cpp"
 	"BsRenderBeast.cpp"
 	"BsRenderBeastFactory.cpp"
 	"BsRenderBeastPlugin.cpp"
-	"BsObjectRendering.cpp"
-	"BsLightRendering.cpp"
-	"BsPostProcessing.cpp"
+	"BsRendererLight.cpp"
 	"BsRendererView.cpp"
 	"BsRendererObject.cpp"
-	"BsLightGrid.cpp"
-	"BsImageBasedLighting.cpp"
-	"BsShadowRendering.cpp"
+	"BsRendererReflectionProbe.cpp"
 	"BsRendererScene.cpp"
-	"BsStandardDeferredLighting.cpp"
-	"BsLightProbes.cpp"
 	"BsRenderCompositor.cpp"
-	"BsRendererTextures.cpp"
 	"BsRenderBeastIBLUtility.cpp"
 )
 
+set(BS_RENDERBEAST_INC_SHADING
+	"Shading/BsTiledDeferred.h"
+	"Shading/BsStandardDeferred.h"
+	"Shading/BsLightGrid.h"
+	"Shading/BsLightProbes.h"
+	"Shading/BsShadowRendering.h"
+	"Shading/BsPostProcessing.h"
+)
+
+set(BS_RENDERBEAST_SRC_SHADING
+	"Shading/BsTiledDeferred.cpp"
+	"Shading/BsStandardDeferred.cpp"
+	"Shading/BsLightGrid.cpp"
+	"Shading/BsLightProbes.cpp"
+	"Shading/BsShadowRendering.cpp"
+	"Shading/BsPostProcessing.cpp"
+)
+
+set(BS_RENDERBEAST_INC_UTILITY
+	"Utility/BsGpuResourcePool.h"
+	"Utility/BsSamplerOverrides.h"
+	"Utility/BsRendererTextures.h"
+)
+
+set(BS_RENDERBEAST_SRC_UTILITY
+	"Utility/BsGpuResourcePool.cpp"
+	"Utility/BsSamplerOverrides.cpp"
+	"Utility/BsRendererTextures.cpp"
+)
+
 source_group("" FILES ${BS_RENDERBEAST_INC_NOFILTER} ${BS_RENDERBEAST_SRC_NOFILTER})
+source_group("Shading" FILES ${BS_RENDERBEAST_INC_SHADING} ${BS_RENDERBEAST_SRC_SHADING})
+source_group("Utility" FILES ${BS_RENDERBEAST_INC_UTILITY} ${BS_RENDERBEAST_SRC_UTILITY})
 
 set(BS_RENDERBEAST_SRC
 	${BS_RENDERBEAST_INC_NOFILTER}
 	${BS_RENDERBEAST_SRC_NOFILTER}
+	${BS_RENDERBEAST_INC_SHADING}
+	${BS_RENDERBEAST_SRC_SHADING}
+	${BS_RENDERBEAST_INC_UTILITY}
+	${BS_RENDERBEAST_SRC_UTILITY}
 )

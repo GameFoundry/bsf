@@ -347,8 +347,13 @@ namespace bs
 		 * Allows the caller to override some built-in renderer functionality with a custom shader. The exact set of
 		 * overridable shaders can be retrieved through getShaderExtensionPointInfo().
 		 */
-		virtual void setGlobalShaderOverride(const String& name, const HShader& shader) { }
+		virtual void setGlobalShaderOverride(const String& name, const SPtr<bs::Shader>& shader) { }
 
+		/**
+		 * Provides the same functionality as setGlobalShaderOverride(const String&, const SPtr<bs::Shader>&), but it automatically
+		 * evaluates all sub-shaders of the provided shader and registers them as overrides.
+		 */
+		void setGlobalShaderOverride(const SPtr<bs::Shader>& shader);
 	protected:
 		friend class RendererTask;
 

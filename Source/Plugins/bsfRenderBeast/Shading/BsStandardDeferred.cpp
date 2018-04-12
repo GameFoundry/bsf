@@ -1,13 +1,13 @@
 //************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
-#include "BsStandardDeferredLighting.h"
-#include "Renderer/BsRendererUtility.h"
-#include "BsRendererView.h"
+#include "BsStandardDeferred.h"
 #include "Material/BsGpuParamsSet.h"
 #include "Mesh/BsMesh.h"
 #include "Renderer/BsSkybox.h"
-#include "BsRendererScene.h"
 #include "Renderer/BsReflectionProbe.h"
+#include "Renderer/BsRendererUtility.h"
+#include "BsRendererScene.h"
+#include "BsRendererView.h"
 
 namespace bs { namespace ct {
 	PerLightParamDef gPerLightParamDef;

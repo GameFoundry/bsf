@@ -53,6 +53,9 @@ namespace bs
 		/**	Inserts a GUI element before the element at the specified index. */
 		void insertElement(UINT32 idx, GUIElementBase* element);
 
+		/** Removes all child elements and destroys them. */
+		void clear();
+
 		/**	Returns number of child elements in the layout. */
 		UINT32 getNumChildren() const { return (UINT32)mChildren.size(); }
 
@@ -83,7 +86,7 @@ namespace bs
 		const RectOffset& _getPadding() const override;
 
 		/** @copydoc GUIElementBase::_getType */
-		virtual Type _getType() const override { return GUIElementBase::Type::Layout; }
+		Type _getType() const override { return GUIElementBase::Type::Layout; }
 
 		/** @} */
 

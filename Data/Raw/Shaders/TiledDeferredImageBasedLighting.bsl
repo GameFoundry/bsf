@@ -2,14 +2,14 @@
 #include "$ENGINE$\PerCameraData.bslinc"
 #include "$ENGINE$\ReflectionCubemapCommon.bslinc"
 #define USE_COMPUTE_INDICES 1
-#include "$ENGINE$\LightingCommon.bslinc"
+#include "$ENGINE$\DirectLighting.bslinc"
 #include "$ENGINE$\ImageBasedLighting.bslinc"
 
 shader TiledDeferredImageBasedLighting
 {
 	mixin GBufferInput;
 	mixin PerCameraData;
-	mixin LightingCommon;
+	mixin DirectLighting;
 	mixin ReflectionCubemapCommon;
 	mixin ImageBasedLighting;
 	mixin ReflProbeAccumulatorIndexed;

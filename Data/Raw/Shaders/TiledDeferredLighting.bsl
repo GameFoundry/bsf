@@ -1,7 +1,7 @@
 #include "$ENGINE$\GBufferInput.bslinc"
 #include "$ENGINE$\PerCameraData.bslinc"
 #define USE_COMPUTE_INDICES 1
-#include "$ENGINE$\LightingCommon.bslinc"
+#include "$ENGINE$\DirectLighting.bslinc"
 #include "$ENGINE$\ReflectionCubemapCommon.bslinc"
 #include "$ENGINE$\ImageBasedLighting.bslinc"
 
@@ -9,7 +9,7 @@ shader TiledDeferredLighting
 {
 	mixin GBufferInput;
 	mixin PerCameraData;
-	mixin LightingCommon;
+	mixin DirectLighting;
 	mixin LightAccumulatorIndexed;
 	mixin ReflectionCubemapCommon;
 	mixin ImageBasedLighting;

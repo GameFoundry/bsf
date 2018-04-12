@@ -1,23 +1,26 @@
 //************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "BsRenderCompositor.h"
-#include "BsGpuResourcePool.h"
-#include "BsRendererView.h"
-#include "Renderer/BsRendererUtility.h"
-#include "Mesh/BsMesh.h"
-#include "RenderAPI/BsGpuBuffer.h"
-#include "BsStandardDeferredLighting.h"
-#include "BsRenderBeastOptions.h"
-#include "Renderer/BsCamera.h"
-#include "BsRendererScene.h"
-#include "BsRenderBeast.h"
-#include "Utility/BsBitwise.h"
-#include "BsRendererTextures.h"
-#include "BsObjectRendering.h"
-#include "Material/BsGpuParamsSet.h"
 #include "Renderer/BsRendererExtension.h"
 #include "Renderer/BsSkybox.h"
-#include "BsLightProbes.h"
+#include "Renderer/BsCamera.h"
+#include "Renderer/BsRendererUtility.h"
+#include "RenderAPI/BsGpuBuffer.h"
+#include "Utility/BsBitwise.h"
+#include "Mesh/BsMesh.h"
+#include "Material/BsGpuParamsSet.h"
+#include "Utility/BsGpuResourcePool.h"
+#include "Utility/BsRendererTextures.h"
+#include "Shading/BsStandardDeferred.h"
+#include "Shading/BsTiledDeferred.h"
+#include "Shading/BsLightProbes.h"
+#include "Shading/BsPostProcessing.h"
+#include "Shading/BsShadowRendering.h"
+#include "Shading/BsLightGrid.h"
+#include "BsRendererView.h"
+#include "BsRenderBeastOptions.h"
+#include "BsRendererScene.h"
+#include "BsRenderBeast.h"
 
 namespace bs { namespace ct
 {
@@ -311,8 +314,8 @@ namespace bs { namespace ct
 			}
 		}
 
-		// Render all visible opaque elements
-		const Vector<RenderQueueElement>& opaqueElements = inputs.view.getOpaqueQueue()->getSortedElements();
+		// Render all visible opaque elements that use the deferred pipeline
+		const Vector<RenderQueueElement>& opaqueElements = inputs.view.getOpaqueQueue(false)->getSortedElements();
 		for (auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
 		{
 			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
@@ -1089,8 +1092,10 @@ namespace bs { namespace ct
 
 			for (auto& element : sceneInfo.renderables[i]->elements)
 			{
-				bool isTransparent = (element.material->getShader()->getFlags() & (UINT32)ShaderFlags::Transparent) != 0;
-				if (!isTransparent)
+				ShaderFlags shaderFlags = element.material->getShader()->getFlags();
+
+				bool useForwardRendering = shaderFlags.isSet(ShaderFlag::Forward) || shaderFlags.isSet(ShaderFlag::Transparent);
+				if (!useForwardRendering)
 					continue;
 
 				// Note: It would be nice to be able to set this once and keep it, only updating if the buffers actually
@@ -1184,25 +1189,67 @@ namespace bs { namespace ct
 			}
 		}
 
-		// TODO: Transparent objects cannot receive shadows. In order to support this I'd have to render the light occlusion
-		// for all lights affecting this object into a single (or a few) textures. I can likely use texture arrays for this,
-		// or to avoid sampling many textures, perhaps just jam it all in one or few texture channels. 
-		const Vector<RenderQueueElement>& transparentElements = inputs.view.getTransparentQueue()->getSortedElements();
-		for (auto iter = transparentElements.begin(); iter != transparentElements.end(); ++iter)
+		// TODO: Forward pipeline rendering doesn't support shadows. In order to support this I'd have to render the light
+		// occlusion for all lights affecting this object into a single (or a few) textures. I can likely use texture 
+		// arrays for this, or to avoid sampling many textures, perhaps just jam it all in one or few texture channels. 
+
+		// Render base pass
+		RCNodeSceneColor* sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[0]);
+		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[2]);
+
+		bool rebuildRT;
+		if (renderTarget != nullptr)
 		{
-			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
-			SPtr<Material> material = renderElem->material;
+			rebuildRT = renderTarget->getColorTexture(0) != sceneColorNode->sceneColorTex->texture;
+			rebuildRT |= renderTarget->getDepthStencilTexture() != sceneDepthNode->depthTex->texture;
+		}
+		else
+			rebuildRT = true;
 
-			if (iter->applyPass)
-				gRendererUtility().setPass(material, iter->passIdx, renderElem->techniqueIdx);
+		if (rebuildRT)
+		{
+			RENDER_TEXTURE_DESC rtDesc;
+			rtDesc.colorSurfaces[0].texture = sceneColorNode->sceneColorTex->texture;
+			rtDesc.colorSurfaces[0].face = 0;
+			rtDesc.colorSurfaces[0].numFaces = 1;
+			rtDesc.colorSurfaces[0].mipLevel = 0;
 
-			gRendererUtility().setPassParams(renderElem->params, iter->passIdx);
+			rtDesc.depthStencilSurface.texture = sceneDepthNode->depthTex->texture;
+			rtDesc.depthStencilSurface.face = 0;
+			rtDesc.depthStencilSurface.numFaces = 1;
+			rtDesc.depthStencilSurface.mipLevel = 0;
 
-			if(renderElem->morphVertexDeclaration == nullptr)
-				gRendererUtility().draw(renderElem->mesh, renderElem->subMesh);
-			else
-				gRendererUtility().drawMorph(renderElem->mesh, renderElem->subMesh, renderElem->morphShapeBuffer, 
-					renderElem->morphVertexDeclaration);
+			renderTarget = RenderTexture::create(rtDesc);
+		}
+
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(renderTarget, 0, RT_ALL);
+
+		RenderQueue* queues[] =
+		{
+			inputs.view.getOpaqueQueue(true).get(),
+			inputs.view.getTransparentQueue().get()
+		};
+
+		for(UINT32 i = 0; i < std::size(queues); i++)
+		{
+			const Vector<RenderQueueElement>& elements = queues[i]->getSortedElements();
+			for (auto iter = elements.begin(); iter != elements.end(); ++iter)
+			{
+				BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
+				SPtr<Material> material = renderElem->material;
+
+				if (iter->applyPass)
+					gRendererUtility().setPass(material, iter->passIdx, renderElem->techniqueIdx);
+
+				gRendererUtility().setPassParams(renderElem->params, iter->passIdx);
+
+				if (renderElem->morphVertexDeclaration == nullptr)
+					gRendererUtility().draw(renderElem->mesh, renderElem->subMesh);
+				else
+					gRendererUtility().drawMorph(renderElem->mesh, renderElem->subMesh, renderElem->morphShapeBuffer,
+						renderElem->morphVertexDeclaration);
+			}
 		}
 
 		// Trigger post-lighting callbacks
@@ -1224,7 +1271,7 @@ namespace bs { namespace ct
 
 	SmallVector<StringID, 4> RCNodeClusteredForward::getDependencies(const RendererView& view)
 	{
-		return { RCNodeSceneColor::getNodeId(), RCNodeSkybox::getNodeId() };
+		return { RCNodeSceneColor::getNodeId(), RCNodeSkybox::getNodeId(), RCNodeSceneDepth::getNodeId() };
 	}
 
 	void RCNodeSkybox::render(const RenderCompositorNodeInputs& inputs)

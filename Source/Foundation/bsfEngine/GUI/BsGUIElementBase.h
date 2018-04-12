@@ -318,6 +318,9 @@ namespace bs
 		 */
 		void setUpdateParent(GUIElementBase* updateParent);
 
+		/** Unregisters and destroys all child elements. */
+		void destroyChildElements();
+
 		GUIWidget* mParentWidget;
 		GUIPanel* mAnchorParent;
 		GUIElementBase* mUpdateParent;

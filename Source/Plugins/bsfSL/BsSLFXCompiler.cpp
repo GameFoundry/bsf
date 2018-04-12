@@ -670,7 +670,7 @@ namespace bs
 			}
 
 			// If no entry points found, and error occurred, report error
-			if(!compileSuccess && detectedTypes->size() == 0)
+			if(!compileSuccess && detectedTypes->empty())
 			{
 				StringStream logOutput;
 				log.getMessages(logOutput);
@@ -705,7 +705,7 @@ namespace bs
 		SHADER_DESC shaderDesc;
 		Vector<String> includes;
 		
-		BSLFXCompileResult output = compileShader(source, defines, SubShaderData(), shaderDesc, includes);
+		BSLFXCompileResult output = compileShader(source, defines, shaderDesc, includes);
 
 		// Generate a shader from the parsed information
 		output.shader = Shader::_createPtr(name, shaderDesc);
@@ -1530,13 +1530,8 @@ namespace bs
 			case OT_Identifier:
 				subShaderData.name = option->value.strValue;
 				break;
-			case OT_Shader:
-			{
-				ShaderMetaData metaData = parseShaderMetaData(option->value.nodePtr);
-				subShaderData.mixins.push_back(std::make_pair(option->value.nodePtr, metaData));
-
-				break;
-			}
+			case OT_Index:
+				subShaderData.codeBlockIndex = option->value.intValue;
 			default:
 				break;
 			}
@@ -1566,7 +1561,10 @@ namespace bs
 				shaderDesc.queuePriority = option->value.intValue;
 				break;
 			case OT_Transparent:
-				shaderDesc.flags |= (UINT32)ShaderFlags::Transparent;
+				shaderDesc.flags |= ShaderFlag::Transparent;
+				break;
+			case OT_Forward:
+				shaderDesc.flags |= ShaderFlag::Forward;
 				break;
 			default:
 				break;
@@ -1761,14 +1759,14 @@ namespace bs
 				else
 				{
 					Vector<String> codeBlocks;
-					CodeString* codeString = variationParseState->codeStrings;
-					while (codeString != nullptr)
+					RawCode* rawCode = variationParseState->rawCodeBlock[RCT_CodeBlock];
+					while (rawCode != nullptr)
 					{
-						while ((INT32)codeBlocks.size() <= codeString->index)
+						while ((INT32)codeBlocks.size() <= rawCode->index)
 							codeBlocks.push_back(String());
 
-						codeBlocks[codeString->index] = String(codeString->code, codeString->size);
-						codeString = codeString->next;
+						codeBlocks[rawCode->index] = String(rawCode->code, rawCode->size);
+						rawCode = rawCode->next;
 					}
 
 					output = compileTechniques(variationParseState, entry.second.name, codeBlocks, variation, includeSet, 
@@ -1840,8 +1838,10 @@ namespace bs
 	}
 
 	BSLFXCompileResult BSLFXCompiler::compileShader(String source, const UnorderedMap<String, String>& defines, 
-		const SubShaderData& parentSubShader, SHADER_DESC& shaderDesc, Vector<String>& includes)
+		SHADER_DESC& shaderDesc, Vector<String>& includes)
 	{
+		SPtr<ct::Renderer> renderer = RendererManager::instance().getActive();
+
 		// Run the lexer/parser and generate the AST
 		ParseState* parseState = parseStateCreate();
 		BSLFXCompileResult output = parseFX(parseState, source.c_str(), defines);
@@ -1863,18 +1863,22 @@ namespace bs
 			parseStateDelete(parseState);
 			return output;
 		}
-		// Append sub-shader overriden mixins
-		for (auto& mixin : parentSubShader.mixins)
-		{
-			ShaderMetaData metaData = parseShaderMetaData(mixin.first);
-			if (!metaData.isMixin)
-				continue;
 
-			shaderMetaData.push_back(std::make_pair(mixin.first, metaData));
+		// Parse sub-shader code blocks
+		Vector<String> subShaderCodeBlocks;
+		RawCode* rawCode = parseState->rawCodeBlock[RCT_SubShaderBlock];
+		while (rawCode != nullptr)
+		{
+			while ((INT32)subShaderCodeBlocks.size() <= rawCode->index)
+				subShaderCodeBlocks.push_back(String());
+
+			subShaderCodeBlocks[rawCode->index] = String(rawCode->code, rawCode->size);
+			rawCode = rawCode->next;
 		}
 
-		output = populateVariations(shaderMetaData);
 		parseStateDelete(parseState);
+
+		output = populateVariations(shaderMetaData);
 
 		if (!output.errorMessage.empty())
 			return output;
@@ -1885,33 +1889,49 @@ namespace bs
 			return output;
 
 		// Parse sub-shaders
-		SPtr<ct::Renderer> renderer = RendererManager::instance().getActive();
 		for (auto& entry : subShaderData)
 		{
-			ct::ShaderExtensionPointInfo extPointInfo = renderer->getShaderExtensionPointInfo(entry.name);
+			if(entry.codeBlockIndex > (UINT32)subShaderCodeBlocks.size())
+				continue;
 
+			const String& subShaderCode = subShaderCodeBlocks[entry.codeBlockIndex];
+
+			ct::ShaderExtensionPointInfo extPointInfo = renderer->getShaderExtensionPointInfo(entry.name);
 			for (auto& extPointShader : extPointInfo.shaders)
 			{
-				String subShaderSource;
+				Path path = gBuiltinResources().getRawShaderFolder();
+				path.append(extPointShader.path);
+				path.setExtension(path.getWExtension());
+
+				StringStream subShaderSource;
 				const UnorderedMap<String, String> subShaderDefines = extPointShader.defines.getAll();
 				{
-					Lock fileLock = FileScheduler::getLock(extPointShader.path);
+					Lock fileLock = FileScheduler::getLock(path);
 
-					SPtr<DataStream> stream = FileSystem::openFile(extPointShader.path);
-					subShaderSource = stream->getAsString();
+					SPtr<DataStream> stream = FileSystem::openFile(path);
+					if(stream)
+						subShaderSource << stream->getAsString();
 				}
+
+				subShaderSource << "\n";
+				subShaderSource << subShaderCode;
 
 				SHADER_DESC subShaderDesc;
 				Vector<String> subShaderIncludes;
-				BSLFXCompileResult subShaderOutput = compileShader(subShaderSource, subShaderDefines, entry,
-					subShaderDesc, subShaderIncludes);
+				BSLFXCompileResult subShaderOutput = compileShader(subShaderSource.str(), subShaderDefines, subShaderDesc, 
+					subShaderIncludes);
 
 				if (!subShaderOutput.errorMessage.empty())
 					return subShaderOutput;
 
+				// Clear the sub-shader descriptor of any data other than techniques
+				Vector<SPtr<Technique>> techniques = subShaderDesc.techniques;
+				subShaderDesc = SHADER_DESC();
+				subShaderDesc.techniques = techniques;
+
 				SubShader subShader;
 				subShader.name = extPointShader.name;
-				subShader.techniques = subShaderDesc.techniques;
+				subShader.shader = Shader::_createPtr(subShader.name, subShaderDesc);
 
 				shaderDesc.subShaders.push_back(subShader);
 			}

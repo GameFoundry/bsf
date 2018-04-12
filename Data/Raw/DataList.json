@@ -81,10 +81,6 @@
             "UUID": "6d0dfe4e-45ef-4fe1-9344-33b8b9e69048"
         },
         {
-            "Path": "LightingCommon.bslinc",
-            "UUID": "00fdff24-2c52-40ef-921b-0444286886d6"
-        },
-        {
             "Path": "SurfaceData.bslinc",
             "UUID": "3364cb35-9140-4571-8fae-d5648ae7386f"
         },
@@ -163,6 +159,14 @@
         {
             "Path": "ForwardLighting.bslinc",
             "UUID": "bf35f9b3-4c48-30bc-d480-4c48cb444517"
+        },
+        {
+            "Path": "DirectLighting.bslinc",
+            "UUID": "efdae4c9-40bd-5983-ada9-40bda7a45f55"
+        },
+        {
+            "Path": "PerFrameData.bslinc",
+            "UUID": "64225149-43b6-698e-809e-43b647d8d09d"
         }
     ],
     "Shaders": [

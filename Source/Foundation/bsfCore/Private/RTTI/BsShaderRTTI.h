@@ -173,7 +173,7 @@ namespace bs
 	private:
 		BS_BEGIN_RTTI_MEMBERS
 			BS_RTTI_MEMBER_PLAIN(name, 0)
-			BS_RTTI_MEMBER_REFLPTR_ARRAY(techniques, 1)
+			BS_RTTI_MEMBER_REFLPTR(shader, 1)
 		BS_END_RTTI_MEMBERS
 		
 	public:

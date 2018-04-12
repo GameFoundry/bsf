@@ -85,7 +85,7 @@ typedef struct YYLTYPE {
 %token TOKEN_OPTIONS TOKEN_SHADER TOKEN_SUBSHADER TOKEN_MIXIN
 
 	/* Options keywords */
-%token TOKEN_SEPARABLE TOKEN_SORT TOKEN_PRIORITY TOKEN_TRANSPARENT
+%token TOKEN_SEPARABLE TOKEN_SORT TOKEN_PRIORITY TOKEN_TRANSPARENT TOKEN_FORWARD
 	
 	/* Technique keywords */
 %token TOKEN_FEATURESET TOKEN_PASS TOKEN_TAGS TOKEN_VARIATIONS
@@ -127,7 +127,6 @@ typedef struct YYLTYPE {
 
 %type <nodePtr>		subshader;
 %type <nodePtr>		subshader_header;
-%type <nodeOption>	subshader_statement;
 
 %type <nodePtr>		pass;
 %type <nodePtr>		pass_header;
@@ -209,6 +208,7 @@ options_option
 	| TOKEN_SORT '=' TOKEN_CULLANDQUEUEVALUE ';'	{ $$.type = OT_Sort; $$.value.intValue = $3; }
 	| TOKEN_PRIORITY '=' TOKEN_INTEGER ';'			{ $$.type = OT_Priority; $$.value.intValue = $3; }
 	| TOKEN_TRANSPARENT '=' TOKEN_BOOLEAN ';'		{ $$.type = OT_Transparent; $$.value.intValue = $3; }
+	| TOKEN_FORWARD '=' TOKEN_BOOLEAN ';'			{ $$.type = OT_Forward; $$.value.intValue = $3; }
 	;
 
 	/* Shader */
@@ -285,7 +285,17 @@ tags_body
 	/* Subshader */
 
 subshader
-	: subshader_header '{' subshader_body '}' ';' { nodePop(parse_state); $$ = $1; }
+	: subshader_header '{' TOKEN_INDEX '=' TOKEN_INTEGER ';' '}' ';' 
+	{ 
+		NodeOption index;
+		index.type = OT_Index; 
+		index.value.intValue = $5;
+
+		nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &index);	
+	
+		nodePop(parse_state); 
+		$$ = $1; 
+	}
 	;
 
 subshader_header
@@ -297,15 +307,6 @@ subshader_header
 			NodeOption entry; entry.type = OT_Identifier; entry.value.strValue = $2;
 			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &entry); 
 		}
-	;
-
-subshader_body
-	: /* empty */
-	| subshader_statement subshader_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
-	;
-
-subshader_statement
-	: shader			{ $$.type = OT_Shader; $$.value.nodePtr = $1; }
 	;
 
 	/* Pass */

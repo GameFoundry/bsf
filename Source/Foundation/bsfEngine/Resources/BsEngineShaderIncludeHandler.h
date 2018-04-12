@@ -19,7 +19,7 @@ namespace bs
 	{
 	public:
 		/** @copydoc IShaderIncludeHandler::findInclude */
-		virtual HShaderInclude findInclude(const String& name) const override;
+		HShaderInclude findInclude(const String& name) const override;
 
 		/** Converts a shader include name or path to a path of the resource containing include data. */
 		static Path toResourcePath(const String& name);

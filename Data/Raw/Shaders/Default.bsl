@@ -1,8 +1,10 @@
 #include "$ENGINE$\BasePass.bslinc"
+#include "$ENGINE$\GBufferOutput.bslinc"
 
 shader Surface
 {
 	mixin BasePass;
+	mixin GBufferOutput;
 
 	code
 	{

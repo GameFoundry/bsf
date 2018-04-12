@@ -26,6 +26,9 @@ DEFINE_EXPR		[^\r\n]*
 %x CODEBLOCK_HEADER
 %x CODEBLOCK
 %x CODEBLOCK_END
+%x SUBSHADER_HEADER
+%x SUBSHADER_BODY
+%x SUBSHADER_END
 %x DEFINE_COND
 %x DEFINE_COND_EXPR
 %x UNDEF_COND
@@ -48,7 +51,6 @@ false			{ yylval->intValue = 0; return TOKEN_BOOLEAN; }
 	/* Shader keywords */
 options			{ return TOKEN_OPTIONS; }
 shader			{ return TOKEN_SHADER; }
-subshader		{ return TOKEN_SUBSHADER; }
 mixin			{ return TOKEN_MIXIN; }
 
 	/* Options keywords */
@@ -56,6 +58,7 @@ separable		{ return TOKEN_SEPARABLE; }
 sort			{ return TOKEN_SORT; }
 priority		{ return TOKEN_PRIORITY; }
 transparent		{ return TOKEN_TRANSPARENT; }
+forward			{ return TOKEN_FORWARD; }
 
 	/* Shader keywords */
 featureset		{ return TOKEN_FEATURESET; }
@@ -285,11 +288,11 @@ code			{ BEGIN(CODEBLOCK_HEADER); return TOKEN_CODE; }
 	/* Track when the code block begins, insert all code block characters into our own buffer, record a sequential index */
 	/* of all code blocks in the text, and track bracket open/closed state so we know when we're done with the code block. */
 	/* And finally output a sequential code block index to the parser (it shouldn't be aware of anything else in the block). */
-<CODEBLOCK_HEADER>\{	{ BEGIN(CODEBLOCK); beginCodeBlock(yyextra); yyextra->numOpenBrackets = 1; return yytext[0]; }
+<CODEBLOCK_HEADER>\{	{ BEGIN(CODEBLOCK); beginCodeBlock(yyextra, RCT_CodeBlock); yyextra->numOpenBrackets = 1; return yytext[0]; }
 <CODEBLOCK_HEADER>{WS}	{ /* Skip blank */ }
 <CODEBLOCK_HEADER>.		{ return yytext[0]; }
 
-<CODEBLOCK>\{			{ yyextra->numOpenBrackets++; appendCodeBlock(yyextra, yytext, 1); }
+<CODEBLOCK>\{			{ yyextra->numOpenBrackets++; appendCodeBlock(yyextra, RCT_CodeBlock, yytext, 1); }
 <CODEBLOCK>\}			{ 
 	yyextra->numOpenBrackets--; 
 
@@ -299,19 +302,54 @@ code			{ BEGIN(CODEBLOCK_HEADER); return TOKEN_CODE; }
 		unput('0');
 	}
 	else
-		appendCodeBlock(yyextra, yytext, 1);
+		appendCodeBlock(yyextra, RCT_CodeBlock, yytext, 1);
 }
-<CODEBLOCK>.|{SINGLEWS}		{ appendCodeBlock(yyextra, yytext, 1); }
+<CODEBLOCK>.|{SINGLEWS}		{ appendCodeBlock(yyextra, RCT_CodeBlock, yytext, 1); }
 
 	/* Logic for manually inserting "Index = codeBlockIndex;". We insert arbitrary numbers which allows us to sequentially */
 	/* output all the tokens we need. We use only single-character values so we don't override anything in the text buffer */
 	/* (since the starting value was also a single character "{"). */
 <CODEBLOCK_END>0	{ unput('1'); return TOKEN_INDEX; }
 <CODEBLOCK_END>1	{ unput('2'); return '='; }
-<CODEBLOCK_END>2	{ yylval->intValue = getCodeBlockIndex(yyextra); unput('3'); return TOKEN_INTEGER; }
+<CODEBLOCK_END>2	{ yylval->intValue = getCodeBlockIndex(yyextra, RCT_CodeBlock); unput('3'); return TOKEN_INTEGER; }
 <CODEBLOCK_END>3	{ unput('4'); return ';'; }
 <CODEBLOCK_END>4	{ BEGIN(INITIAL); return '}'; }
 <CODEBLOCK_END>.|{WS}	{ /* Never reached */ }
+
+	/* Subshader */
+subshader				{ BEGIN(SUBSHADER_HEADER); return TOKEN_SUBSHADER; }
+
+	/* Track when the subshader begins, insert all subshader characters into our own buffer, record a sequential index */
+	/* of all subshaders in the text, and track bracket open/closed state so we know when we're done with the subshader. */
+	/* And finally output a sequential subshader index to the parser (it shouldn't be aware of anything else in the block). */
+<SUBSHADER_HEADER>\{				{ BEGIN(SUBSHADER_BODY); beginCodeBlock(yyextra, RCT_SubShaderBlock); yyextra->numOpenBrackets = 1; return yytext[0]; }
+<SUBSHADER_HEADER>{WS}				{ /* Skip blank */ }
+<SUBSHADER_HEADER>{IDENTIFIER}		{ yylval->strValue = mmalloc_strdup(yyextra->memContext, yytext); return TOKEN_IDENTIFIER; }
+<SUBSHADER_HEADER>.					{ return yytext[0]; }
+
+<SUBSHADER_BODY>\{			{ yyextra->numOpenBrackets++; appendCodeBlock(yyextra, RCT_SubShaderBlock, yytext, 1); }
+<SUBSHADER_BODY>\}			{ 
+	yyextra->numOpenBrackets--; 
+
+	if(yyextra->numOpenBrackets == 0)
+	{
+		BEGIN(SUBSHADER_END);
+		unput('0');
+	}
+	else
+		appendCodeBlock(yyextra, RCT_SubShaderBlock, yytext, 1);
+}
+<SUBSHADER_BODY>.|{SINGLEWS}	{ appendCodeBlock(yyextra, RCT_SubShaderBlock, yytext, 1); }
+
+	/* Logic for manually inserting "Index = subshaderIndex;". We insert arbitrary numbers which allows us to sequentially */
+	/* output all the tokens we need. We use only single-character values so we don't override anything in the text buffer */
+	/* (since the starting value was also a single character "{"). */
+<SUBSHADER_END>0	{ unput('1'); return TOKEN_INDEX; }
+<SUBSHADER_END>1	{ unput('2'); return '='; }
+<SUBSHADER_END>2	{ yylval->intValue = getCodeBlockIndex(yyextra, RCT_SubShaderBlock); unput('3'); return TOKEN_INTEGER; }
+<SUBSHADER_END>3	{ unput('4'); return ';'; }
+<SUBSHADER_END>4	{ BEGIN(INITIAL); return '}'; }
+<SUBSHADER_END>.|{WS}	{ /* Never reached */ }
 
 	/* Catch all rules */
 {COMMENT}			{ }

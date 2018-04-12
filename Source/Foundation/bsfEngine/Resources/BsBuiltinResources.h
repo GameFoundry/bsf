@@ -122,6 +122,9 @@ namespace bs
 		/**	Retrieves one of the builtin textures. */
 		static HTexture getTexture(BuiltinTexture type);
 
+		/**	Returns absolute path to the builtin shader folder where raw shader files are located. */
+		static Path getRawShaderFolder();
+
 		/**	Returns absolute path to the builtin shader include folder. */
 		static Path getShaderIncludeFolder();
 
@@ -131,6 +134,7 @@ namespace bs
 		static const WString IconTextureName;
 
 		static const String MultiLineLabelStyle;
+
 	private:
 		/**
 		 * Imports all necessary resources and converts them to engine-ready format.
@@ -194,15 +198,16 @@ namespace bs
 
 		Path ResourceManifestPath;
 
+		static constexpr char* SHADER_FOLDER = "Shaders/";
+		static constexpr char* CURSOR_FOLDER = "Cursors/";
+		static constexpr char* ICON_FOLDER = "Icons/";
+		static constexpr char* SKIN_FOLDER = "Skin/"; 
+		static constexpr char* SHADER_INCLUDE_FOLDER = "Shaders/Includes/";
+		static constexpr char* MESH_FOLDER = "Meshes/";
+		static constexpr char* TEXTURE_FOLDER = "Textures/";
+		static constexpr char* SPRITE_FOLDER = "Sprites/";
+
 		static const char* DataListFile;
-		static const char* CursorFolder;
-		static const char* IconFolder;
-		static const char* ShaderFolder;
-		static const char* ShaderIncludeFolder;
-		static const char* SkinFolder;
-		static const char* MeshFolder;
-		static const char* TextureFolder;
-		static const char* SpriteSubFolder;
 
 		static const WString DefaultFontFilename;
 		static const UINT32 DefaultFontSize;
@@ -335,6 +340,9 @@ namespace bs
 		static const WString TextureBlackFile;
 		static const WString TextureNormalFile;
 	};
+
+	/**	Provides easy access to BuiltinResources. */
+	BS_EXPORT BuiltinResources& gBuiltinResources();
 
 	/** @} */
 }

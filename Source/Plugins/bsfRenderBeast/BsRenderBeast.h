@@ -5,10 +5,7 @@
 #include "BsRenderBeastPrerequisites.h"
 #include "Renderer/BsRenderer.h"
 #include "Renderer/BsRendererMaterial.h"
-#include "BsObjectRendering.h"
-#include "BsPostProcessing.h"
 #include "BsRendererView.h"
-#include "BsRendererObject.h"
 #include "BsRendererScene.h"
 
 namespace bs 
@@ -84,6 +81,12 @@ namespace bs
 		/** @copydoc Renderer::captureSceneCubeMap */
 		void captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position, 
 			const CaptureSettings& settings) override;
+
+		/** @copydoc Renderer::getShaderExtensionPointInfo */
+		ShaderExtensionPointInfo getShaderExtensionPointInfo(const String& name) override;
+
+		/** @copydoc Renderer::setGlobalShaderOverride */
+		void setGlobalShaderOverride(const String& name, const SPtr<bs::Shader>& shader) override;
 
 	private:
 		/** @copydoc Renderer::notifyCameraAdded */
@@ -189,9 +192,6 @@ namespace bs
 
 		// Scene data
 		SPtr<RendererScene> mScene;
-
-		//// Base pass
-		ObjectRenderer* mObjectRenderer = nullptr;
 
 		SPtr<RenderBeastOptions> mCoreOptions;
 

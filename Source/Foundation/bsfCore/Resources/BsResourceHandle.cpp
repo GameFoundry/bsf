@@ -73,7 +73,8 @@ namespace bs
 
 	void ResourceHandleBase::destroy()
 	{
-		gResources().destroy(*this);
+		if(mData->mPtr)
+			gResources().destroy(*this);
 	}
 
 	void ResourceHandleBase::setHandleData(const SPtr<Resource>& ptr, const UUID& uuid)

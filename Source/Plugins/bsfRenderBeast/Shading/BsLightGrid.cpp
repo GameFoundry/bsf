@@ -5,8 +5,8 @@
 #include "Material/BsGpuParamsSet.h"
 #include "Renderer/BsRendererUtility.h"
 #include "BsRendererView.h"
-#include "BsLightRendering.h"
-#include "BsImageBasedLighting.h"
+#include "BsRendererLight.h"
+#include "BsRendererReflectionProbe.h"
 
 namespace bs { namespace ct
 {

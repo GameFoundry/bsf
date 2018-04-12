@@ -3,11 +3,11 @@
 #include "BsRendererView.h"
 #include "Renderer/BsCamera.h"
 #include "Renderer/BsRenderable.h"
+#include "Renderer/BsRendererUtility.h"
 #include "Material/BsMaterial.h"
 #include "Material/BsShader.h"
-#include "Renderer/BsRendererUtility.h"
-#include "BsLightRendering.h"
 #include "Material/BsGpuParamsSet.h"
+#include "BsRendererLight.h"
 #include "BsRendererScene.h"
 #include "BsRenderBeast.h"
 
@@ -86,7 +86,8 @@ namespace bs { namespace ct
 
 	void RendererView::setStateReductionMode(StateReduction reductionMode)
 	{
-		mOpaqueQueue = bs_shared_ptr_new<RenderQueue>(reductionMode);
+		mDeferredOpaqueQueue = bs_shared_ptr_new<RenderQueue>(reductionMode);
+		mForwardOpaqueQueue = bs_shared_ptr_new<RenderQueue>(reductionMode);
 
 		StateReduction transparentStateReduction = reductionMode;
 		if (transparentStateReduction == StateReduction::Material)
@@ -151,7 +152,8 @@ namespace bs { namespace ct
 		// allows you to freeze the current rendering as is, without temporal artifacts.
 		mProperties.frameIdx++;
 
-		mOpaqueQueue->clear();
+		mDeferredOpaqueQueue->clear();
+		mForwardOpaqueQueue->clear();
 		mTransparentQueue->clear();
 	}
 
@@ -177,14 +179,15 @@ namespace bs { namespace ct
 
 			for (auto& renderElem : renderables[i]->elements)
 			{
-				// Note: I could keep opaque and transparent renderables in two separate arrays, so I don't need to do the
-				// check here
-				bool isTransparent = (renderElem.material->getShader()->getFlags() & (UINT32)ShaderFlags::Transparent) != 0;
+				// Note: I could keep renderables in multiple separate arrays, so I don't need to do the check here
+				ShaderFlags shaderFlags = renderElem.material->getShader()->getFlags();
 
-				if (isTransparent)
+				if (shaderFlags.isSet(ShaderFlag::Transparent))
 					mTransparentQueue->add(&renderElem, distanceToCamera);
+				else if (shaderFlags.isSet(ShaderFlag::Forward))
+					mForwardOpaqueQueue->add(&renderElem, distanceToCamera);
 				else
-					mOpaqueQueue->add(&renderElem, distanceToCamera);
+					mDeferredOpaqueQueue->add(&renderElem, distanceToCamera);
 			}
 		}
 
@@ -198,7 +201,8 @@ namespace bs { namespace ct
 			}
 		}
 
-		mOpaqueQueue->sort();
+		mForwardOpaqueQueue->sort();
+		mDeferredOpaqueQueue->sort();
 		mTransparentQueue->sort();
 	}
 

@@ -5,9 +5,9 @@
 #include "BsRenderBeastPrerequisites.h"
 #include "Renderer/BsRendererMaterial.h"
 #include "Renderer/BsParamBlocks.h"
-#include "BsGpuResourcePool.h"
-#include "BsLightRendering.h"
 #include "Renderer/BsRenderSettings.h"
+#include "Utility/BsGpuResourcePool.h"
+#include "BsRendererLight.h"
 
 namespace bs { namespace ct
 {

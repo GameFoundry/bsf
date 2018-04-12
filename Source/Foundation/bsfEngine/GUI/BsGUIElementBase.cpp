@@ -26,30 +26,7 @@ namespace bs
 
 	GUIElementBase::~GUIElementBase()
 	{
-		Vector<GUIElementBase*> childCopy = mChildren;
-		for (auto& child : childCopy)
-		{
-			if (child->_getType() == Type::Element)
-			{
-				GUIElement* element = static_cast<GUIElement*>(child);
-				GUIElement::destroy(element);
-			}
-			else if (child->_getType() == Type::Layout || child->_getType() == GUIElementBase::Type::Panel)
-			{
-				GUILayout* layout = static_cast<GUILayout*>(child);
-				GUILayout::destroy(layout);
-			}
-			else if (child->_getType() == Type::FixedSpace)
-			{
-				GUIFixedSpace* space = static_cast<GUIFixedSpace*>(child);
-				GUIFixedSpace::destroy(space);
-			}
-			else if (child->_getType() == Type::FlexibleSpace)
-			{
-				GUIFlexibleSpace* space = static_cast<GUIFlexibleSpace*>(child);
-				GUIFlexibleSpace::destroy(space);
-			}
-		}
+		destroyChildElements();
 	}
 
 	void GUIElementBase::setPosition(INT32 x, INT32 y)
@@ -494,6 +471,36 @@ namespace bs
 
 		if(!foundElem)
 			BS_EXCEPT(InvalidParametersException, "Provided element is not a part of this element.");
+	}
+
+	void GUIElementBase::destroyChildElements()
+	{
+		Vector<GUIElementBase*> childCopy = mChildren;
+		for (auto& child : childCopy)
+		{
+			if (child->_getType() == Type::Element)
+			{
+				GUIElement* element = static_cast<GUIElement*>(child);
+				GUIElement::destroy(element);
+			}
+			else if (child->_getType() == Type::Layout || child->_getType() == GUIElementBase::Type::Panel)
+			{
+				GUILayout* layout = static_cast<GUILayout*>(child);
+				GUILayout::destroy(layout);
+			}
+			else if (child->_getType() == Type::FixedSpace)
+			{
+				GUIFixedSpace* space = static_cast<GUIFixedSpace*>(child);
+				GUIFixedSpace::destroy(space);
+			}
+			else if (child->_getType() == Type::FlexibleSpace)
+			{
+				GUIFlexibleSpace* space = static_cast<GUIFlexibleSpace*>(child);
+				GUIFlexibleSpace::destroy(space);
+			}
+		}
+
+		assert(mChildren.empty());
 	}
 
 	void GUIElementBase::_changeParentWidget(GUIWidget* widget)

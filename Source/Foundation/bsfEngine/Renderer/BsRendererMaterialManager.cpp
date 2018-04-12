@@ -47,6 +47,7 @@ namespace bs
 		Vector<RendererMaterialData>& materials = getMaterials();
 		for (UINT32 i = 0; i < materials.size(); i++)
 		{
+			materials[i].metaData->shaderPath = materials[i].shaderPath;
 			materials[i].metaData->shader = shaders[i];
 
 			// Note: Making the assumption here that all the techniques are generated due to shader variations
@@ -80,6 +81,7 @@ namespace bs
 		for (UINT32 i = 0; i < materials.size(); i++)
 		{
 			materials[i].metaData->shader = nullptr;
+			materials[i].metaData->overrideShader = nullptr;
 
 			for (auto& entry : materials[i].metaData->instances)
 			{

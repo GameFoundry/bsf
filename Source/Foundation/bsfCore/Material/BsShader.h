@@ -14,14 +14,26 @@ namespace bs
 	 *  @{
 	 */
 
+	class Shader;
+
+	namespace ct
+	{
+		class Shader;
+	}
+
+	template<bool Core> struct TShaderPtrType {};
+	template<> struct TShaderPtrType < false > { typedef SPtr<Shader> Type; };
+	template<> struct TShaderPtrType < true > { typedef SPtr<ct::Shader> Type; };
+
 	/** Templated version of SubShader that can be used for both core and sim threads. */
 	template<bool Core>
 	struct TSubShader
 	{
 		typedef typename TTechniqueType<Core>::Type TechniqueType;
+		typedef typename TShaderPtrType<Core>::Type ShaderType;
 		
 		String name;
-		Vector<SPtr<TechniqueType>> techniques;
+		ShaderType shader;
 	};
 
 	/** @} */
@@ -238,7 +250,7 @@ namespace bs
 		bool separablePasses;
 
 		/** Flags that let the renderer know how should it interpret the shader. */
-		UINT32 flags;
+		ShaderFlags flags;
 
 		/** Techniques to initialize the shader with. */
 		Vector<SPtr<TechniqueType>> techniques;
@@ -322,7 +334,7 @@ namespace bs
 		 * Returns flags that control how the renderer interprets the shader. Actual interpretation of the flags depends on 
 		 * the active renderer.
 		 */
-		UINT32 getFlags() const { return mDesc.flags; }
+		ShaderFlags getFlags() const { return mDesc.flags; }
 
 		/** Returns type of the parameter with the specified name. Throws exception if the parameter doesn't exist. */
 		GpuParamType getParamType(const String& name) const;

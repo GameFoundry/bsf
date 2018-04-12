@@ -299,7 +299,7 @@ namespace bs
 		if(mSkin.isLoaded())
 			return *mSkin;
 		else
-			return *BuiltinResources::instance().getEmptyGUISkin();
+			return *BuiltinResources::instance().getGUISkin();
 	}
 
 	void GUIWidget::setCamera(const SPtr<Camera>& camera)

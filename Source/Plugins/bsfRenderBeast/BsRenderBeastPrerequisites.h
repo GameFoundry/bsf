@@ -29,7 +29,6 @@ namespace bs { namespace ct
 		DesktopMacOS
 	};
 
-	class ObjectRenderer;
 	struct RenderBeastOptions;
 	struct PooledRenderTexture;
 	class RenderTargets;

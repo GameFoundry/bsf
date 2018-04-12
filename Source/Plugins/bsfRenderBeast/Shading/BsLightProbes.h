@@ -7,9 +7,9 @@
 #include "Math/BsMatrix4.h"
 #include "Math/BsMatrixNxM.h"
 #include "Renderer/BsRendererMaterial.h"
-#include "BsGpuResourcePool.h"
+#include "Utility/BsGpuResourcePool.h"
 #include "Renderer/BsParamBlocks.h"
-#include "BsLightRendering.h"
+#include "BsRendererLight.h"
 
 namespace bs { namespace ct
 {

@@ -44,7 +44,7 @@ Material handles are very similar as **GpuParams** handles we talked about earli
  - **GpuParams** handles will only set the parameter value for a specific **GpuProgram**, while material handles will set the values for all **GpuProgram**%s that map to that handle.
  - **GpuProgram** parameters are retrieved directly from program source code, while **Material** parameters need to be explicitly defined in the **Shader** (shown below). **Material** parameters always map to one or multiple **GpuProgram** parameters. 
 
-# Creating a shader manaully {#advMaterials_b}
+# Creating a shader manually {#advMaterials_b}
 So far when we wanted to create a shader we would create a BSL file which would then be imported, creating a @ref bs::Shader "Shader". But you can also create shaders manually by explicitly providing HLSL/GLSL code for **GpuProgram**%s and non-programmable states. Most of the things outlined in this section are performed by BSL compiler internally when a **Shader** is imported.
 
 Each shader definition contains two things:

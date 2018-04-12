@@ -8,7 +8,7 @@
 #include "Renderer/BsParamBlocks.h"
 #include "Material/BsMaterialParam.h"
 #include "RenderAPI/BsGpuPipelineParamInfo.h"
-#include "BsImageBasedLighting.h"
+#include "BsRendererReflectionProbe.h"
 
 namespace bs { namespace ct
 {

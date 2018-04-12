@@ -173,5 +173,17 @@ mixin VertexInput
 			result.tangentToWorldZ = intermediate.worldNormal;
 			result.tangentToWorldX = intermediate.worldTangent;
 		}
+		
+		float3 calcWorldNormal(VStoFS input, float3 surfaceNormal)
+		{
+			float3 tangentToWorldX = input.tangentToWorldX.xyz;
+			float3 tangentToWorldZ = input.tangentToWorldZ;
+			float3 tangentToWorldY = cross(tangentToWorldZ, tangentToWorldX) * input.tangentToWorldX.w;
+			
+			float3x3 tangentToWorld = float3x3(tangentToWorldX, tangentToWorldY, tangentToWorldZ);
+			
+			// Multiplication order flipped because we stored basis vectors as rows
+			return normalize(mul(surfaceNormal, tangentToWorld));			
+		}		
 	};
 };

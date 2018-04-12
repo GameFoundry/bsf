@@ -5,8 +5,8 @@
 #include "BsRenderBeastPrerequisites.h"
 #include "Renderer/BsRendererMaterial.h"
 #include "Renderer/BsParamBlocks.h"
-#include "BsLightRendering.h"
 #include "RenderAPI/BsGpuPipelineParamInfo.h"
+#include "BsRendererLight.h"
 
 namespace bs { namespace ct
 {
@@ -87,12 +87,6 @@ namespace bs { namespace ct
 		mutable bool errorFlagged : 1;
 	};
 
-	BS_PARAM_BLOCK_BEGIN(TiledImageBasedLightingParamDef)
-		BS_PARAM_BLOCK_ENTRY(Vector2I, gFramebufferSize)
-	BS_PARAM_BLOCK_END
-
-	extern TiledImageBasedLightingParamDef gTiledImageBasedLightingParamDef;
-
 	/** Helper struct containing all parameters for binding image lighting related data to the GPU programs using them .*/
 	struct ImageBasedLightingParams
 	{
@@ -133,67 +127,6 @@ namespace bs { namespace ct
 			bool capturingReflections);
 
 		SPtr<GpuParamBlockBuffer> buffer;
-	};
-
-	/** Shader that performs a lighting pass over data stored in the Gbuffer. */
-	class TiledDeferredImageBasedLightingMat : public RendererMaterial<TiledDeferredImageBasedLightingMat>
-	{
-		RMAT_DEF_CUSTOMIZED("TiledDeferredImageBasedLighting.bsl");
-
-		/** Helper method used for initializing variations of this material. */
-		template<UINT32 msaa>
-		static const ShaderVariation& getVariation()
-		{
-			static ShaderVariation variation = ShaderVariation(
-			Vector<ShaderVariation::Param>{
-				ShaderVariation::Param("MSAA_COUNT", msaa)
-			});
-
-			return variation;
-		}
-	public:
-		/** Container for parameters to be passed to the execute() method. */
-		struct Inputs
-		{
-			GBufferTextures gbuffer;
-			SPtr<Texture> lightAccumulation;
-			SPtr<Texture> sceneColorTex;
-			SPtr<GpuBuffer> sceneColorBuffer;
-			SPtr<Texture> preIntegratedGF;
-			SPtr<Texture> ambientOcclusion;
-			SPtr<Texture> ssr;
-			SPtr<Texture> msaaCoverage;
-		};
-
-		TiledDeferredImageBasedLightingMat();
-
-		/** Binds the material for rendering, sets up parameters and executes it. */
-		void execute(const RendererView& view, const SceneInfo& sceneInfo, const VisibleReflProbeData& probeData, 
-			const Inputs& inputs);
-
-		/** Returns the material variation matching the provided parameters. */
-		static TiledDeferredImageBasedLightingMat* getVariation(UINT32 msaaCount);
-
-	private:
-		UINT32 mSampleCount;
-
-		GpuParamTexture mGBufferA;
-		GpuParamTexture mGBufferB;
-		GpuParamTexture mGBufferC;
-		GpuParamTexture mGBufferDepth;
-
-		GpuParamTexture mInColorTextureParam;
-		GpuParamTexture mMSAACoverageTexParam;
-
-		ImageBasedLightingParams mImageBasedParams;
-
-		GpuParamLoadStoreTexture mOutputTextureParam;
-		GpuParamBuffer mOutputBufferParam;
-
-		SPtr<GpuParamBlockBuffer> mParamBuffer;
-		ReflProbeParamBuffer mReflProbeParamBuffer;
-
-		static const UINT32 TILE_SIZE;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(ReflProbesParamDef)

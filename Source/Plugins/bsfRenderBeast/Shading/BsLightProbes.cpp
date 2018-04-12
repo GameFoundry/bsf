@@ -10,7 +10,7 @@
 #include "Material/BsGpuParamsSet.h"
 #include "Renderer/BsRendererUtility.h"
 #include "Renderer/BsSkybox.h"
-#include "BsRendererTextures.h"
+#include "Utility/BsRendererTextures.h"
 
 namespace bs { namespace ct 
 {

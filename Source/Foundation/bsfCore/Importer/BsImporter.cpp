@@ -190,6 +190,8 @@ namespace bs
 				auto iterFind = mLastQueuedTask.find(importer);
 				if (iterFind != mLastQueuedTask.end())
 					mTaskCompleted.wait(lock);
+				else
+					break;
 			}
 		}
 	}

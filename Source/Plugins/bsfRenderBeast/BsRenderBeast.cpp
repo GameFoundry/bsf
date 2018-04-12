@@ -1,36 +1,37 @@
 //************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "BsRenderBeast.h"
-#include "Components/BsCCamera.h"
-#include "Components/BsCRenderable.h"
-#include "Material/BsMaterial.h"
-#include "Material/BsPass.h"
 #include "BsCoreApplication.h"
+#include "CoreThread/BsCoreThread.h"
+#include "CoreThread/BsCoreObjectManager.h"
+#include "Material/BsMaterial.h"
+#include "Material/BsShader.h"
+#include "Material/BsPass.h"
 #include "RenderAPI/BsViewport.h"
 #include "RenderAPI/BsRenderTarget.h"
-#include "CoreThread/BsCoreThread.h"
+#include "RenderAPI/BsGpuParamBlockBuffer.h"
 #include "Profiling/BsProfilerCPU.h"
 #include "Profiling/BsProfilerGPU.h"
-#include "Material/BsShader.h"
-#include "RenderAPI/BsGpuParamBlockBuffer.h"
 #include "Utility/BsTime.h"
-#include "CoreThread/BsCoreObjectManager.h"
-#include "BsRenderBeastOptions.h"
-#include "Renderer/BsLight.h"
-#include "BsGpuResourcePool.h"
-#include "Renderer/BsRendererUtility.h"
 #include "Animation/BsAnimationManager.h"
 #include "Animation/BsSkeleton.h"
+#include "Renderer/BsLight.h"
 #include "Renderer/BsRendererExtension.h"
 #include "Renderer/BsReflectionProbe.h"
+#include "Renderer/BsRenderSettings.h"
 #include "Renderer/BsIBLUtility.h"
 #include "Renderer/BsSkybox.h"
-#include "BsStandardDeferredLighting.h"
-#include "BsShadowRendering.h"
-#include "BsRenderCompositor.h"
-#include "BsRendererTextures.h"
-#include "BsRenderBeastIBLUtility.h"
+#include "Renderer/BsCamera.h"
+#include "Renderer/BsRendererUtility.h"
+#include "Utility/BsRendererTextures.h"
+#include "Utility/BsGpuResourcePool.h"
 #include "Renderer/BsRendererManager.h"
+#include "Shading/BsShadowRendering.h"
+#include "Shading/BsStandardDeferred.h"
+#include "Shading/BsTiledDeferred.h"
+#include "BsRenderBeastOptions.h"
+#include "BsRenderBeastIBLUtility.h"
+#include "BsRenderCompositor.h"
 
 using namespace std::placeholders;
 
@@ -82,7 +83,6 @@ namespace bs { namespace ct
 
 		mCoreOptions = bs_shared_ptr_new<RenderBeastOptions>(); 
 		mScene = bs_shared_ptr_new<RendererScene>(mCoreOptions);
-		mObjectRenderer = bs_new<ObjectRenderer>();
 
 		mMainViewGroup = bs_new<RendererViewGroup>();
 
@@ -114,9 +114,6 @@ namespace bs { namespace ct
 		// Make sure all tasks finish first
 		processTasks(true);
 
-		if (mObjectRenderer != nullptr)
-			bs_delete(mObjectRenderer);
-
 		mScene = nullptr;
 
 		RenderCompositor::cleanUp();
@@ -134,12 +131,6 @@ namespace bs { namespace ct
 	void RenderBeast::notifyRenderableAdded(Renderable* renderable)
 	{
 		mScene->registerRenderable(renderable);
-
-		const SceneInfo& sceneInfo = mScene->getSceneInfo();
-		RendererObject* rendererObject = sceneInfo.renderables[renderable->getRendererId()];
-
-		for(auto& entry : rendererObject->elements)
-			mObjectRenderer->initElement(*rendererObject, entry);
 	}
 
 	void RenderBeast::notifyRenderableRemoved(Renderable* renderable)
@@ -250,6 +241,55 @@ namespace bs { namespace ct
 		shadowRenderer.setShadowMapSize(mCoreOptions->shadowMapSize);
 	}
 
+	ShaderExtensionPointInfo RenderBeast::getShaderExtensionPointInfo(const String& name)
+	{
+		if(name == "DeferredDirectLighting")
+		{
+			ShaderExtensionPointInfo info;
+			
+			ExtensionShaderInfo tiledDeferredInfo;
+			tiledDeferredInfo.name = "TiledDeferredDirectLighting";
+			tiledDeferredInfo.path = TiledDeferredLightingMat::getShaderPath();
+			tiledDeferredInfo.defines = TiledDeferredLightingMat::getShaderDefines();
+			info.shaders.push_back(tiledDeferredInfo);
+
+			ExtensionShaderInfo standardDeferredPointInfo;
+			standardDeferredPointInfo.name = "StandardDeferredPointDirectLighting";
+			standardDeferredPointInfo.path = DeferredPointLightMat::getShaderPath();
+			standardDeferredPointInfo.defines = DeferredPointLightMat::getShaderDefines();
+			info.shaders.push_back(standardDeferredPointInfo);
+
+			ExtensionShaderInfo standardDeferredDirInfo;
+			standardDeferredDirInfo.name = "StandardDeferredDirDirectLighting";
+			standardDeferredDirInfo.path = DeferredDirectionalLightMat::getShaderPath();
+			standardDeferredDirInfo.defines = DeferredDirectionalLightMat::getShaderDefines();
+			info.shaders.push_back(standardDeferredPointInfo);
+
+			return info;
+		}
+
+		return ShaderExtensionPointInfo();
+	}
+
+	void RenderBeast::setGlobalShaderOverride(const String& name, const SPtr<bs::Shader>& shader)
+	{
+		SPtr<ct::Shader> shaderCore;
+		if(shader)
+			shaderCore = shader->getCore();
+
+		auto setShaderOverride = [name, shaderCore]()
+		{
+			if (name == "TiledDeferredDirectLighting")
+				TiledDeferredLightingMat::setOverride(shaderCore);
+			else if(name == "StandardDeferredPointDirectLighting")
+				DeferredPointLightMat::setOverride(shaderCore);
+			else if(name == "StandardDeferredDirDirectLighting")
+				DeferredDirectionalLightMat::setOverride(shaderCore);
+		};
+	
+		gCoreThread().queueCommand(setShaderOverride);
+	}
+
 	void RenderBeast::renderAll(const EvaluatedAnimationData* animData) 
 	{
 		// Sync all dirty sim thread CoreObject data to core thread
@@ -284,7 +324,7 @@ namespace bs { namespace ct
 		mScene->refreshSamplerOverrides();
 
 		// Update global per-frame hardware buffers
-		mObjectRenderer->setParamFrameParams(timings.time);
+		mScene->setParamFrameParams(timings.time);
 
 		// Retrieve animation data
 		sceneInfo.renderableReady.resize(sceneInfo.renderables.size(), false);

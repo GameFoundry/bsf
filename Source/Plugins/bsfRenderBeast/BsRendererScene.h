@@ -3,12 +3,10 @@
 #pragma once
 
 #include "BsRenderBeastPrerequisites.h"
-#include "BsObjectRendering.h"
-#include "BsSamplerOverrides.h"
-#include "BsLightRendering.h"
+#include "BsRendererLight.h"
 #include "BsRendererView.h"
-#include "Renderer/BsLight.h"
-#include "BsLightProbes.h"
+#include "Shading/BsLightProbes.h"
+#include "Utility/BsSamplerOverrides.h"
 
 namespace bs 
 { 
@@ -142,6 +140,9 @@ namespace bs
 		 */
 		void refreshSamplerOverrides(bool force = false);
 
+		/** Updates global per frame parameter buffers with new values. To be called at the start of every frame. */
+		void setParamFrameParams(float time);
+
 		/**
 		 * Performs necessary steps to make a renderable ready for rendering. This must be called at least once every frame,
 		 * for every renderable that will be drawn. Multiple calls for the same renderable during a single frame will result
@@ -165,10 +166,20 @@ namespace bs
 		void updateCameraRenderTargets(Camera* camera, bool remove = false);
 
 		SceneInfo mInfo;
+		SPtr<GpuParamBlockBuffer> mPerFrameParamBuffer;
 		UnorderedMap<SamplerOverrideKey, MaterialSamplerOverrides*> mSamplerOverrides;
 
 		SPtr<RenderBeastOptions> mOptions;
 	};
+
+	BS_PARAM_BLOCK_BEGIN(PerFrameParamDef)
+		BS_PARAM_BLOCK_ENTRY(float, gTime)
+	BS_PARAM_BLOCK_END
+
+	extern PerFrameParamDef gPerFrameParamDef;
+
+	/** Basic shader that is used when no other is available. */
+	class DefaultMaterial : public RendererMaterial<DefaultMaterial> { RMAT_DEF("Default.bsl"); };
 
 	/** @} */
 }}

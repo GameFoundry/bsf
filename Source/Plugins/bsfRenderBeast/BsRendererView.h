@@ -3,15 +3,15 @@
 #pragma once
 
 #include "BsRenderBeastPrerequisites.h"
-#include "BsPostProcessing.h"
-#include "BsObjectRendering.h"
 #include "Renderer/BsRenderQueue.h"
-#include "BsRendererObject.h"
+#include "Renderer/BsLight.h"
+#include "Renderer/BsRenderSettings.h"
 #include "Math/BsBounds.h"
 #include "Math/BsConvexVolume.h"
-#include "Renderer/BsLight.h"
-#include "BsLightGrid.h"
-#include "BsShadowRendering.h"
+#include "Shading/BsLightGrid.h"
+#include "Shading/BsShadowRendering.h"
+#include "BsRendererView.h"
+#include "BsRendererObject.h"
 #include "BsRenderCompositor.h"
 
 namespace bs { namespace ct
@@ -246,10 +246,12 @@ namespace bs { namespace ct
 		void endFrame();
 
 		/** 
-		 * Returns a render queue containing all opaque objects. Make sure to call determineVisible() beforehand if view 
-		 * or object transforms changed since the last time it was called.
+		 * Returns a render queue containing all opaque objects for the specified pipeline. Make sure to call 
+		 * determineVisible() beforehand if view or object transforms changed since the last time it was called. If @p
+		 * forward is true then opaque objects using the forward pipeline are returned, otherwise deferred pipeline objects
+		 * are returned.
 		 */
-		const SPtr<RenderQueue>& getOpaqueQueue() const { return mOpaqueQueue; }
+		const SPtr<RenderQueue>& getOpaqueQueue(bool forward) const { return forward ? mForwardOpaqueQueue : mDeferredOpaqueQueue; }
 		
 		/** 
 		 * Returns a render queue containing all transparent objects. Make sure to call determineVisible() beforehand if 
@@ -384,7 +386,8 @@ namespace bs { namespace ct
 		RENDERER_VIEW_TARGET_DESC mTargetDesc;
 		Camera* mCamera;
 
-		SPtr<RenderQueue> mOpaqueQueue;
+		SPtr<RenderQueue> mDeferredOpaqueQueue;
+		SPtr<RenderQueue> mForwardOpaqueQueue;
 		SPtr<RenderQueue> mTransparentQueue;
 
 		RenderCompositor mCompositor;

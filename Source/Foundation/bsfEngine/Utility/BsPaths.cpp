@@ -101,9 +101,15 @@ namespace bs
 			return output;
 		}
 
-		// Finally, check the source distribution itself, in case we're running directly from the build directory
+		// Then, check the source distribution itself, in case we're running directly from the build directory
 		output.makeAbsolute(RAW_APP_ROOT);
 		if (FileSystem::exists(output))
+			return output;
+
+		// Also, check the secondary root (useful if actual project using bsf is in a different folder)
+		output = path;
+		output.makeAbsolute(SECONDARY_APP_ROOT);
+		if(FileSystem::exists(output))
 			return output;
 
 		// No path found, but return the initial value by default

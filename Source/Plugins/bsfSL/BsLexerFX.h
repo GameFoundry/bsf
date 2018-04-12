@@ -223,14 +223,17 @@ void yyfree (void * ,yyscan_t yyscanner );
 #define CODEBLOCK_HEADER 2
 #define CODEBLOCK 3
 #define CODEBLOCK_END 4
-#define DEFINE_COND 5
-#define DEFINE_COND_EXPR 6
-#define UNDEF_COND 7
-#define CONDITIONAL_IF 8
-#define CONDITIONAL_IFDEF 9
-#define CONDITIONAL_IFNDEF 10
-#define CONDITIONAL_ELIF 11
-#define CONDITIONAL_IGNORE 12
+#define SUBSHADER_HEADER 5
+#define SUBSHADER_BODY 6
+#define SUBSHADER_END 7
+#define DEFINE_COND 8
+#define DEFINE_COND_EXPR 9
+#define UNDEF_COND 10
+#define CONDITIONAL_IF 11
+#define CONDITIONAL_IFDEF 12
+#define CONDITIONAL_IFNDEF 13
+#define CONDITIONAL_ELIF 14
+#define CONDITIONAL_IGNORE 15
 
 #endif
 
@@ -350,6 +353,6 @@ extern int yylex \
 #undef YY_DECL
 #endif
 
-#line 354 "BsLexerFX.h"
+#line 357 "BsLexerFX.h"
 #undef yyIN_HEADER
 #endif /* yyHEADER_H */

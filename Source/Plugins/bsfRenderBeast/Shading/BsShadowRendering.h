@@ -8,9 +8,9 @@
 #include "Math/BsConvexVolume.h"
 #include "Renderer/BsParamBlocks.h"
 #include "Renderer/BsRendererMaterial.h"
-#include "Image/BsTextureAtlasLayout.h"
 #include "Renderer/BsLight.h"
-#include "BsLightRendering.h"
+#include "Image/BsTextureAtlasLayout.h"
+#include "BsRendererLight.h"
 
 namespace bs { namespace ct
 {

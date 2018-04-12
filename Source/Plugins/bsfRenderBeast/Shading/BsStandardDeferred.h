@@ -5,8 +5,8 @@
 #include "BsRenderBeastPrerequisites.h"
 #include "Utility/BsModule.h"
 #include "Renderer/BsRendererMaterial.h"
-#include "BsLightRendering.h"
-#include "BsImageBasedLighting.h"
+#include "BsRendererLight.h"
+#include "BsRendererReflectionProbe.h"
 
 namespace bs { namespace ct {
 	class RendererLight;

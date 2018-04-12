@@ -57,6 +57,11 @@ namespace bs
 		_markLayoutAsDirty();
 	}
 
+	void GUILayout::clear()
+	{
+		destroyChildElements();
+	}
+
 	void GUILayout::removeElementAt(UINT32 idx)
 	{
 		if(idx >= (UINT32)mChildren.size())

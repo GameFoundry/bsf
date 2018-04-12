@@ -43,7 +43,7 @@ shader MyShader
 };
 ~~~~~~~~~~~~~~
 
-As you can see, aside from the **shader** and **code** blocks, the shader code looks identical to HLSL. Each BSL shader must contain at least one **shader**. Inside the shader you can use a variety of options, but the minimum required is the **code** block, which allows you to specify programmable shader code. Using just this syntax you get the full power of HLSL, as if you were using it directly.
+As you can see, aside from the **shader** and **code** blocks, the shader code looks identical to HLSL. Inside the **shader** block you can use a variety of options, but the minimum required is the **code** block, which allows you to specify programmable shader code. Inside the **code** block you get to use the full power of HLSL, as if you were using it directly.
 
 There are a few restrictions compared to normal HLSL that you must be aware of:
  - All primitive (non-object) shader constants (uniforms in GLSL lingo) must be part of a **cbuffer**. Primitive types are any types that are not textures, buffers or samplers.
@@ -68,7 +68,7 @@ An example shader using a variety of these blocks is shown:
 ~~~~~~~~~~~~~~
 shader MyShader
 {
-	// No depth reads of writes
+	// No depth reads or writes
 	depth
 	{
 		read = false;
@@ -112,7 +112,7 @@ Let's cover all available options for each block type.
 ## raster
 
 Name                 | Valid values				   | Reference
----------------------|---------------------------- |-----------------------
+---------------------|---------------------------- |----------
 fill    	  	     | wire, solid (See @ref bs::PolygonMode "PolygonMode")			   | @ref bs::RASTERIZER_STATE_DESC::polygonMode "RASTERIZER_STATE_DESC::polygonMode"
 cull    	  	     | cw, ccw, none (See @ref bs::CullingMode "CullingMode")			   | @ref bs::RASTERIZER_STATE_DESC::cullMode "RASTERIZER_STATE_DESC::cullMode"
 scissor				 | true, false				   | @ref bs::RASTERIZER_STATE_DESC::scissorEnable "RASTERIZER_STATE_DESC::scissorEnable"
@@ -121,7 +121,7 @@ lineaa				 | true, false				   | @ref bs::RASTERIZER_STATE_DESC::antialiasedLine
 
 ## depth
 Name                 | Valid values				   | Reference
----------------------|---------------------------- |-----------------------
+---------------------|---------------------------- |----------
 read    	  	     | true, false				   | @ref bs::DEPTH_STENCIL_STATE_DESC::depthReadEnable "DEPTH_STENCIL_STATE_DESC::depthReadEnable"
 write    	  	     | true, false				   | @ref bs::DEPTH_STENCIL_STATE_DESC::depthWriteEnable "DEPTH_STENCIL_STATE_DESC::depthWriteEnable"
 compare    	  	     | never, always, lt, lte, eq, neq, gte, gt (See @ref bs::CompareFunction "CompareFunction")				   | @ref bs::DEPTH_STENCIL_STATE_DESC::depthComparisonFunc "DEPTH_STENCIL_STATE_DESC::depthComparisonFunc"
@@ -131,7 +131,7 @@ clip    	  	     | true, false				   | @ref bs::RASTERIZER_STATE_DESC::depthClip
 
 ## stencil
 Name                 | Valid values				   | Reference
----------------------|---------------------------- |-----------------------
+---------------------|---------------------------- |----------
 reference    	  	 | integer			           | Reference value to use for stencil compare operations.
 enabled    	  	     | true, false				   | @ref bs::DEPTH_STENCIL_STATE_DESC::stencilEnable "DEPTH_STENCIL_STATE_DESC::stencilEnable"
 readmask    	  	 | integer in [0, 255] range   | @ref bs::DEPTH_STENCIL_STATE_DESC::stencilReadMask "DEPTH_STENCIL_STATE_DESC::stencilReadMask"
@@ -141,7 +141,7 @@ back				 | StencilOp block			   | Stencil operations and compare function for ba
  
 **front** and **back** options are blocks themselves, and they accept the following options:
 Name                 | Valid values				   | Reference
----------------------|---------------------------- |-----------------------
+---------------------|---------------------------- |----------
 fail    	  	 	| keep, zero, replace, inc, dec, incwrap, decwrap, inverse (See @ref bs::StencilOperation "StencilOperation")			           | @ref bs::DEPTH_STENCIL_STATE_DESC::frontStencilFailOp "DEPTH_STENCIL_STATE_DESC::frontStencilFailOp" & @ref bs::DEPTH_STENCIL_STATE_DESC::backStencilFailOp "DEPTH_STENCIL_STATE_DESC::backStencilFailOp"
 zfail    	  	 	| keep, zero, replace, inc, dec, incwrap, decwrap, inverse (See @ref bs::StencilOperation "StencilOperation")			           | @ref bs::DEPTH_STENCIL_STATE_DESC::frontStencilZFailOp "DEPTH_STENCIL_STATE_DESC::frontStencilZFailOp" & @ref bs::DEPTH_STENCIL_STATE_DESC::backStencilZFailOp "DEPTH_STENCIL_STATE_DESC::backStencilZFailOp"
 pass    	  	 	| keep, zero, replace, inc, dec, incwrap, decwrap, inverse (See @ref bs::StencilOperation "StencilOperation")			           | @ref bs::DEPTH_STENCIL_STATE_DESC::frontStencilPassOp "DEPTH_STENCIL_STATE_DESC::frontStencilPassOp" & @ref bs::DEPTH_STENCIL_STATE_DESC::backStencilPassOp "DEPTH_STENCIL_STATE_DESC::backStencilPassOp"
@@ -180,14 +180,14 @@ shader MyShader
 
 ## blend
 Name                 | Valid values				   | Reference
----------------------|---------------------------- |-----------------------
+---------------------|---------------------------- |----------
 dither    	  	 | true, false			           | @ref bs::BLEND_STATE_DESC::alphaToCoverageEnable "BLEND_STATE_DESC::alphaToCoverageEnable"
 independant    	 | true, false			           | @ref bs::BLEND_STATE_DESC::independantBlendEnable "BLEND_STATE_DESC::independantBlendEnable"
 target			 | Target block					   | Blend operations for a specific render target. Multiple Target blocks can exist under a single blend block.
 
 **Target** block accepts the following options:
 Name                 | Valid values				   | Reference
----------------------|---------------------------- |-----------------------
+---------------------|---------------------------- |----------
 index    	  	     | positive integer		       | Index of the render target these options are applied to. If not specified the index is derived from the order in which Target blocks are defined.
 enabled				 | true, false				   | @ref bs::RENDER_TARGET_BLEND_STATE_DESC::blendEnable "RENDER_TARGET_BLEND_STATE_DESC::blendEnable"
 writemask		     | R, G, B, A or any combination (e.g. RG, RBA, RGBA). "empty" for zero mask.					   | @ref bs::RENDER_TARGET_BLEND_STATE_DESC::renderTargetWriteMask "RENDER_TARGET_BLEND_STATE_DESC::renderTargetWriteMask"
@@ -196,7 +196,7 @@ alpha				 | BlendOp block			   | Represents the blend operation to execute on th
 
 **BlendOp** block accepts the following options:
 Name                 | Valid values				   | Reference
----------------------|---------------------------- |-----------------------
+---------------------|---------------------------- |----------
 source    	  	     | one, zero, dstRGB, srcRGB, dstIRGB, srcIRGB, dstA, srcA, dstIA, srcIA (See @ref bs::BlendFactor "BlendFactor")		       | @ref bs::RENDER_TARGET_BLEND_STATE_DESC::srcBlend "RENDER_TARGET_BLEND_STATE_DESC::srcBlend", @ref bs::RENDER_TARGET_BLEND_STATE_DESC::srcBlendAlpha "RENDER_TARGET_BLEND_STATE_DESC::srcBlendAlpha"
 dest    	  	     | one, zero, dstRGB, srcRGB, dstIRGB, srcIRGB, dstA, srcA, dstIA, srcIA (See @ref bs::BlendFactor "BlendFactor")		       | @ref bs::RENDER_TARGET_BLEND_STATE_DESC::dstBlend "RENDER_TARGET_BLEND_STATE_DESC::dstBlend", @ref bs::RENDER_TARGET_BLEND_STATE_DESC::dstBlendAlpha "RENDER_TARGET_BLEND_STATE_DESC::dstBlendAlpha"
 op    	  	     | add, sub, rsub, min, max (See @ref bs::BlendOperation "BlendOperation")		       | @ref bs::RENDER_TARGET_BLEND_STATE_DESC::blendOp "RENDER_TARGET_BLEND_STATE_DESC::blendOp", @ref bs::RENDER_TARGET_BLEND_STATE_DESC::blendOpAlpha "RENDER_TARGET_BLEND_STATE_DESC::blendOpAlpha"
@@ -238,7 +238,7 @@ shader MyShader
 ~~~~~~~~~~~~~~
 
 # Mixins
-When writing complex shaders is it is often useful to break them up into components. This is where the concept of a **mixin** comes in. Any shader code or programmable states defined in a **mixin** can be included in any **shader**. Syntax within a **mixin** block is identical to syntax in a **shader** block, meaning you can define code and non-programmable state blocks as shown above.
+When writing complex shaders is it is often useful to break them up into components. This is where the concept of a **mixin** comes in. Any shader code or programmable states defined in a **mixin** can be included in any **shader**, or in another **mixin**. Syntax within a **mixin** block is identical to syntax in a **shader** block, meaning you can define code and non-programmable state blocks as shown above.
 
 ~~~~~~~~~~~~~~
 // Provides common functionality that might be useful for many different shaders
@@ -290,7 +290,7 @@ shader MyShader
 };
 ~~~~~~~~~~~~~~
 
-Included mixins will append their shader code and states to the shader they are included in. If mixin and shader define the same states, the value of the states present on the shader will be used. If multiple included mixins use the same state then the state from the last included mixin will be used. Shader code is included in the order in which mixins are defined, followed by shader code from the shader itself.
+Included mixins will append their shader code and states to the shader they are included in. If mixin and shader define the same states, the value of the states present on the shader will be used. If multiple included mixins use the same state then the state from the last included mixin will be used. Code is included in the order in which mixins are defined, followed by code from the shader itself.
 
 Often you will want to define mixins in separate files. BSL files are normally stored with the ".bsl" extension, but when writing include files you should use the ".bslinc" extension instead, in order to prevent the system trying to compile the shader code on its own.
 
@@ -309,7 +309,7 @@ shader MyShader
 ~~~~~~~~~~~~~~
 
 ## Mixin overrides
-Mixins can override each other if another mixin is defined with the same name. The last defined mixin is considered the override and will be used in the shader. Shaders can also reference mixins that haven't been declared yet. 
+Mixins can override each other if another mixin is defined with the same name. The last defined mixin is considered the override and will be used in the shader. Shaders can also reference mixins that haven't been declared yet. This concept of mixin overrides allows you to change functionality of complex shaders without having to be aware of any code other than the mixin you are overriding. This concept is heavily used when writing surface and lighting shaders, as described in a later manual.
 
 ~~~~~~~~~~~~~~
 // This mixin overrides the MyMixin behaviour we defined above
@@ -438,7 +438,7 @@ shader MyShader
 
 Valid values within the sampler state block are:
 Name                 | Valid values				   				  | Reference
----------------------|--------------------------------------------|------------------------
+---------------------|--------------------------------------------|----------
 AddressU			 | WRAP, MIRROR, CLAMP, BORDER, MIRROR_ONCE   | @ref bs::SAMPLER_STATE_DESC::addressMode "SAMPLER_STATE_DESC::addressMode"
 AddressV			 | WRAP, MIRROR, CLAMP, BORDER, MIRROR_ONCE   | @ref bs::SAMPLER_STATE_DESC::addressMode "SAMPLER_STATE_DESC::addressMode"
 AddressW			 | WRAP, MIRROR, CLAMP, BORDER, MIRROR_ONCE   | @ref bs::SAMPLER_STATE_DESC::addressMode "SAMPLER_STATE_DESC::addressMode"
@@ -509,7 +509,7 @@ shader MyShader
 
 Supported attribute types are:
 Name                 | Parameters			   | Usable on              | Description
----------------------|------------------------ |------------------------|------------------
+---------------------|------------------------ |------------------------|------------
 internal    	  	 | none					   | constants and cbuffers | Forces the constant (or all the constants in a buffer if applied to cbuffer) to be hidden from the materials public interface (editor UI or **Material** API). This is useful for constants that are set by the engine itself and shouldn't be touched by normal users. Additionaly internal cbuffers must be explicitly created and assigned by the low level rendering API, as they will not be created automatically.
 color				 | none					   | float3 or float4 constants	| Marks the floating point vector as a color. This ensures the constant is displayed as a color in the editor UI (with access to a color picker), and is represented by the **Color** structure in **Material** API.
 layout				 | See table below		   | RW texture or buffer constant | Used primarily as compatibility with OpenGL and Vulkan code, which require read-write objects (e.g. **RWTexture**) to have an explicit layout provided in shader. This is only required when READING from a read-write object AND when you will be using either OpenGL or Vulkan render backend.
@@ -614,7 +614,60 @@ Name                 | Valid values				   | Default value			| Description
 separable			 | true, false				   | false					| When true, tells the renderer that passes within the shader don't need to be renderered one straight after another. This allows the system to perform rendering more optimally, but can be unfeasible for most materials which will depend on exact rendering order. Only relevant if a shader has multiple passes.
 sort				 | none, backtofront, fronttoback | fronttoback			| Determines how does the renderer sort objects with this material before rendering. Most objects should be sorted front to back in order to avoid overdraw. Transparent (see below) objects will always be sorted back to front and this option is ignored. When no sorting is active the system will try to group objects based on the material alone, reducing material switching and potentially reducing CPU overhead, at the cost of overdraw.
 transparent			 | true, false				   | false					| Notifies the renderer that this object is see-through. This will force the renderer to the use back to front sorting mode, and likely employ a different rendering method. Attempting to render transparent geometry without this option set to true will likely result in graphical artifacts.
+forward				 | true, false				   | false					| Notifies the renderer that this object should be rendered using the forward rendering pipeline (as opposed to a deferred one).
 priority			 | integer					   | 0						| Allows you to force objects with this shader to render before others. Objects with higher priority will be rendered before those with lower priority. If sorting is enabled, objects will be sorted within their priority groups (i.e. priority takes precedence over sort mode).
+
+# Variations
+Sometimes you need a few versions of the same shader, that are mostly similar but have some minor differences between them. For example, when rendering objects you might need to support a vertex shader for static meshes, as well as those using skinned and/or morph animation. 
+
+This is where the **variation** block comes into play. It allows you to specify a set of permutations for which the shader will be compiled. During shader import every permutation of that shader will be parsed, enabling pre-processor #define blocks depending on the current permutation. The #defines take on the name of their variation, and one of the user provided values.
+
+~~~~~~~~~~~~~~
+// An example shader supporting different mesh animation modes
+shader VertexInput
+{
+	// This will be be compiled using 4 different variations:
+	// - Static (no animation) (SKINNED = false, MORPH = false)
+	// - Skinned animation (SKINNED = true, MORPH = false)
+	// - Morph animation (SKINNED = false, MORPH = true)
+	// - Skinned morph animation (SKINNED = true, MORPH = true)
+	variations
+	{
+		SKINNED = { false, true };
+		MORPH = { false, true };
+	};
+
+	code
+	{
+		struct VertexInput
+		{
+			float3 position : POSITION;
+			float3 normal : NORMAL; // Note: Half-precision could be used
+			float4 tangent : TANGENT; // Note: Half-precision could be used
+			float2 uv0 : TEXCOORD0;
+			
+			#if SKINNED
+				uint4 blendIndices : BLENDINDICES;
+				float4 blendWeights : BLENDWEIGHT;
+			#endif
+			
+			#if MORPH
+				float3 deltaPosition : POSITION1;
+				float4 deltaNormal : NORMAL1;
+			#endif				
+		};
+		
+		// Potentially more code...
+	};
+};
+~~~~~~~~~~~~~~
+
+The syntax within the **variation** block is as follows:
+ - `IDENTIFIER = { bool/int, bool/int, ... }`
+ 
+Each variation block can have one or multiple entries. Each must have a unique identifier. Each entry can take on two or more values, each representing a single variation. The values must be boolean (true/false), or integers. If there are multiple variation entries, a variation for each possible combination of their values will be created.
+
+Once a shader with variations is imported, those variations will be available on the shader in the form of **Technique** objects. In general variations are only required when working with the low level rendering API, therefore we discuss techniques in more details in the developer manuals.
 
 # Sub-shaders
 Each BSL file can contain an optional set of sub-shaders, alongside the main shader. Sub-shaders are recognized by the renderer and are meant to allow the user to override functionality of default shaders used by the renderer. They are specified using the **subshader** keyword, followed by an unique identifier. Sub-shaders are only allowed to contain **mixin** blocks, within which the same rules as for normal mixins apply.
@@ -638,7 +691,7 @@ The mixins you specify in a sub-shader will be used to override some existing mi
 
 Imagine for example that you wanted to implement a custom lighting model while using deferred rendering. Deferred rendering doesn't perform lighting when rendering the object, instead it does lighting in a single pass for all objects at once. The renderer will closely interact with that lighting shader, and if you wanted to change it you would need to rewrite it using the exact rules as the renderer expects. Worse yet, the renderer might support different forms of deferred rendering (e.g. standard vs. tiled), meaning you would need to write multiple shaders to fully support it. You would also need to keep your shader(s) updated whenever the renderer's internal change. For a normal user this is very difficult and requires detailed knowledge of how the renderer works.
 
-bsf's renderer instead provides a set of "extension points". Extension points match to a specific part of the renderer pipeline that can be overriden. For example an extension point named "DeferredDirectLighting" would let you override the BRDF and direct lighting calculations during deferred rendering. Sub-shaders are how you "link" with those extension points. The name of the sub-shader corresponds to the extension point name, and the mixins in the sub-shader override specific functionality of that extension point. For example you might override the "StandardBRDF" mixin to change the BRDF model for the standard material, or "SpotLightLuminance" to change how is luminance for spot lights calculated.
+bsf's renderer instead provides a set of "extension points". Extension points match to a specific part of the renderer pipeline that can be overriden. For example an extension point named "DeferredDirectLighting" would let you override the BRDF and direct lighting calculations during deferred rendering. Sub-shaders are how you "link" with those extension points. The name of the sub-shader corresponds to the extension point name, and the mixins in the sub-shader override specific functionality of that extension point. For example you might override the "StandardBRDF" mixin to change the BRDF model for the standard material, or "LuminanceSpot" to change how is luminance for spot lights calculated.
 
 This way you only override small parts of the renderer shader code, without having to rewrite all the complex shader code, while all the  implementation details are transparently handled by the renderer itself.
 
@@ -650,7 +703,7 @@ subshader DeferredDirectLighting // Name of the subshader specifies exactly what
 	mixin StandardBRDF
 	{
 		// Override the PBR BRDF with a simple Lambert BRDF
-		float3 getStandardBRDFShading(float3 V, float3 L, float specLobeEnergy, SurfaceData surfaceData)
+		float3 evaluateStandardBRDF(float3 V, float3 L, float specLobeEnergy, SurfaceData surfaceData)
 		{
 			return surfaceData.albedo.rgb / 3.14f;
 		}

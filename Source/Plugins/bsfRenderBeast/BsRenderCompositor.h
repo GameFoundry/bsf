@@ -382,6 +382,8 @@ namespace ct
 
 		/** @copydoc RenderCompositorNode::clear */
 		void clear() override;
+
+		SPtr<RenderTexture> renderTarget;
 	};
 
 	/**

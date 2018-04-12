@@ -1,13 +1,13 @@
 #include "$ENGINE$\PerCameraData.bslinc"
 #define USE_LIGHT_GRID_INDICES 1
-#include "$ENGINE$\LightingCommon.bslinc"
+#include "$ENGINE$\DirectLighting.bslinc"
 #include "$ENGINE$\ImageBasedLighting.bslinc"
 #include "$ENGINE$\LightGridCommon.bslinc"
 
 shader LightGridLLCreation
 {
 	mixin PerCameraData;
-	mixin LightingCommon;
+	mixin LightData;
 	mixin LightGridCommon;
 	mixin ImageBasedLighting;
 

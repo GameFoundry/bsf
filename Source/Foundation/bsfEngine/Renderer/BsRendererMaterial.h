@@ -47,7 +47,9 @@ namespace bs { namespace ct
 	/**	Contains data common to all render material instances of a specific type. */
 	struct RendererMaterialMetaData
 	{
+		Path shaderPath;
 		SPtr<Shader> shader;
+		SPtr<Shader> overrideShader;
 		SmallVector<RendererMaterialBase*, 4> instances;
 		ShaderVariations variations;
 		ShaderDefines defines;
@@ -57,8 +59,7 @@ namespace bs { namespace ct
 	class BS_EXPORT RendererMaterialBase
 	{
 	public:
-		RendererMaterialBase() { }
-		virtual ~RendererMaterialBase() { }
+		virtual ~RendererMaterialBase() = default;
 
 		/** Returns the shader used by the material. */
 		SPtr<Shader> getShader() const { return mShader; }
@@ -102,7 +103,7 @@ namespace bs { namespace ct
 	class RendererMaterial : public RendererMaterialBase
 	{
 	public:
-		virtual ~RendererMaterial() { }
+		virtual ~RendererMaterial() = default;
 
 		/** 
 		 * Retrieves an instance of this renderer material. If material has multiple variations the first available
@@ -142,6 +143,33 @@ namespace bs { namespace ct
 		}
 
 		/** 
+		 * Sets a shader that is to be used instead of the default shader for this material. Set to null to revert back
+		 * to using the default shader. All existing instances of the material will be invalidated (get() methods need to 
+		 * be called again).
+		 */
+		static void setOverride(const SPtr<Shader>& shader)
+		{
+			if(mMetaData.overrideShader == shader)
+				return;
+
+			for(size_t i = 0; i < mMetaData.instances.size(); i++)
+			{
+				if (mMetaData.instances[i] != nullptr)
+					bs_delete(mMetaData.instances[i]);
+
+				mMetaData.instances[i] = nullptr;
+			}
+
+			mMetaData.overrideShader = shader;
+		}
+
+		/** Returns the path to the built-in (non-overriden) shader used by this material. */
+		static Path getShaderPath() { return mMetaData.shaderPath; }
+
+		/** Returns a set of dynamically defined defines used when compiling this shader. */
+		static ShaderDefines getShaderDefines() { return mMetaData.defines; }
+
+		/** 
 		 * Binds the materials and its parameters to the pipeline. This material will be used for rendering any subsequent
 		 * draw calls, or executing dispatch calls.
 		 */
@@ -164,10 +192,15 @@ namespace bs { namespace ct
 		RendererMaterial()
 		{
 			mInitOnStart.instantiate();
-			mShader = mMetaData.shader;
+
+			if(mMetaData.overrideShader)
+				mShader = mMetaData.overrideShader;
+			else
+				mShader = mMetaData.shader;
+
 			mVariation = mMetaData.variations.get(_varIdx);
 
-			const Vector<SPtr<Technique>>& techniques = mMetaData.shader->getTechniques();
+			const Vector<SPtr<Technique>>& techniques = mShader->getTechniques();
 			for(auto& entry : techniques)
 			{
 				if(!entry->isSupported())
@@ -188,7 +221,7 @@ namespace bs { namespace ct
 					}
 
 					// Assign default values from the shader
-					const auto& textureParams = mMetaData.shader->getTextureParams();
+					const auto& textureParams = mShader->getTextureParams();
 					for(auto& param : textureParams)
 					{
 						UINT32 defaultValueIdx = param.second.defaultValueIdx;
@@ -203,14 +236,14 @@ namespace bs { namespace ct
 							{
 								if(mParams->hasTexture(progType, varName))
 								{
-									SPtr<Texture> texture = mMetaData.shader->getDefaultTexture(defaultValueIdx);
+									SPtr<Texture> texture = mShader->getDefaultTexture(defaultValueIdx);
 									mParams->setTexture(progType, varName, texture);
 								}
 							}
 						}
 					}
 
-					const auto& samplerParams = mMetaData.shader->getSamplerParams();
+					const auto& samplerParams = mShader->getSamplerParams();
 					for(auto& param : samplerParams)
 					{
 						UINT32 defaultValueIdx = param.second.defaultValueIdx;
@@ -225,7 +258,7 @@ namespace bs { namespace ct
 							{
 								if(mParams->hasSamplerState(progType, varName))
 								{
-									SPtr<SamplerState> samplerState = mMetaData.shader->getDefaultSampler(defaultValueIdx);
+									SPtr<SamplerState> samplerState = mShader->getDefaultSampler(defaultValueIdx);
 									mParams->setSamplerState(progType, varName, samplerState);
 								}
 							}

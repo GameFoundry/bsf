@@ -81,6 +81,7 @@ enum tagOptionType
 	OT_Variations,
 	OT_Variation,
 	OT_VariationValue,
+	OT_Forward,
 	OT_Count
 };
 
@@ -124,6 +125,13 @@ enum tagBlendOpValue
 	BOV_Min, BOV_Max 
 };
 
+enum tagRawCodeType
+{
+	RCT_CodeBlock,
+	RCT_SubShaderBlock,
+	RCT_Count
+};
+
 typedef enum tagNodeType NodeType;
 typedef enum tagOptionType OptionType;
 typedef enum tagOptionDataType OptionDataType;
@@ -137,13 +145,14 @@ typedef struct tagNodeLink NodeLink;
 typedef struct tagIncludeData IncludeData;
 typedef struct tagIncludeLink IncludeLink;
 typedef struct tagConditionalData ConditionalData;
-typedef struct tagCodeString CodeString;
+typedef struct tagRawCode RawCode;
 typedef struct tagDefineEntry DefineEntry;
 typedef enum tagFillModeValue FillModeValue;
 typedef enum tagCullAndSortModeValue CullAndSortModeValue;
 typedef enum tagCompFuncValue CompFuncValue;
 typedef enum tagOpValue OpValue;
 typedef enum tagBlendOpValue BlendOpValue;
+typedef enum tagRawCodeType RawCodeType;
 
 struct tagNodeLink
 {
@@ -171,14 +180,14 @@ struct tagConditionalData
 	ConditionalData* next;
 };
 
-struct tagCodeString
+struct tagRawCode
 {
 	char* code;
 	int index;
 	int size;
 	int capacity;
 
-	CodeString* next;
+	RawCode* next;
 };
 
 struct tagDefineEntry
@@ -202,8 +211,8 @@ struct tagParseState
 	NodeLink* nodeStack;
 	IncludeLink* includeStack;
 	IncludeLink* includes;
-	CodeString* codeStrings;
-	int numCodeStrings;
+	RawCode* rawCodeBlock[RCT_Count];
+	int numRawCodeBlocks[RCT_Count];
 	int numOpenBrackets;
 
 	DefineEntry* defines;
@@ -263,9 +272,9 @@ void nodeDelete(ASTFXNode* node);
 void nodePush(ParseState* parseState, ASTFXNode* node);
 void nodePop(ParseState* parseState);
 
-void beginCodeBlock(ParseState* parseState);
-void appendCodeBlock(ParseState* parseState, const char* value, int size);
-int getCodeBlockIndex(ParseState* parseState);
+void beginCodeBlock(ParseState* parseState, RawCodeType type);
+void appendCodeBlock(ParseState* parseState, RawCodeType type, const char* value, int size);
+int getCodeBlockIndex(ParseState* parseState, RawCodeType type);
 
 void addDefine(ParseState* parseState, const char* value);
 void addDefineExpr(ParseState* parseState, const char* value);

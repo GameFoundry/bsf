@@ -422,12 +422,9 @@ namespace bs
 		{
 			ct::SubShader subShader;
 			subShader.name = entry.name;
-
-			for(auto& technique : entry.techniques)
-			{
-				if(technique)
-					subShader.techniques.push_back(technique->getCore());
-			}
+			
+			if(entry.shader)
+				subShader.shader = entry.shader->getCore();
 
 			output.subShaders.push_back(subShader);
 		}

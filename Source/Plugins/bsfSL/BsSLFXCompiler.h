@@ -93,7 +93,7 @@ namespace bs
 		struct SubShaderData
 		{
 			String name;
-			Vector<std::pair<ASTFXNode*, ShaderMetaData>> mixins;
+			UINT32 codeBlockIndex;
 		};
 
 	public:
@@ -241,16 +241,13 @@ namespace bs
 		 * @param[in]	source				BSL source that needs to be parsed.
 		 * @param[in]	defines				An optional set of defines to set before parsing the source, that is to be
 		 *									applied to all variations.
-		 * @param[in]	parentSubShader		Information about an optional parent sub-shader. If present the sub-shader
-		 *									mixins will be appended to the parsed shader source, overriding any existing
-		 *									mixins with the same name.
 		 * @param[out]	shaderDesc			Shader descriptor that resulting techniques, sub-shaders, and parameters will be
 		 *									registered with.
 		 * @param[out]	includes			A list of all include files included by the BSL source.
 		 * @return							A result object containing an error message if not successful.
 		 */
 		static BSLFXCompileResult compileShader(String source, const UnorderedMap<String, String>& defines, 
-				const SubShaderData& parentSubShader, SHADER_DESC& shaderDesc, Vector<String>& includes);
+				SHADER_DESC& shaderDesc, Vector<String>& includes);
 
 		/**
 		 * Uses the provided list of shaders/mixins to generate a list of techniques. A technique is generated for

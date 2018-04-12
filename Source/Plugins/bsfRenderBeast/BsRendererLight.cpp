@@ -1,21 +1,18 @@
 //************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
-#include "BsLightRendering.h"
+#include "BsRendererLight.h"
 #include "Material/BsMaterial.h"
-#include "Material/BsShader.h"
-#include "BsRenderBeast.h"
-#include "RenderAPI/BsGpuParams.h"
 #include "Material/BsGpuParamsSet.h"
 #include "RenderAPI/BsGpuBuffer.h"
+#include "RenderAPI/BsGpuParams.h"
 #include "Renderer/BsLight.h"
 #include "Renderer/BsRendererUtility.h"
-#include "BsStandardDeferredLighting.h"
+#include "BsRenderBeast.h"
+#include "Shading/BsStandardDeferred.h"
 
 namespace bs { namespace ct
 {
 	static const UINT32 BUFFER_INCREMENT = 16 * sizeof(LightData);
-
-	TiledLightingParamDef gTiledLightingParamDef;
 
 	RendererLight::RendererLight(Light* light)
 		:internal(light)
@@ -352,158 +349,6 @@ namespace bs { namespace ct
 			output[outputIdx++] = &mVisibleLightData[outputIndices[i]];
 			counts.z += 1;
 		}
-	}
-
-	const UINT32 TiledDeferredLightingMat::TILE_SIZE = 16;
-
-	TiledDeferredLightingMat::TiledDeferredLightingMat()
-		:mGBufferParams(GPT_COMPUTE_PROGRAM, mParams)
-	{
-		mSampleCount = mVariation.getUInt("MSAA_COUNT");
-
-		mParams->getBufferParam(GPT_COMPUTE_PROGRAM, "gLights", mLightBufferParam);
-
-		if (mParams->hasLoadStoreTexture(GPT_COMPUTE_PROGRAM, "gOutput"))
-			mParams->getLoadStoreTextureParam(GPT_COMPUTE_PROGRAM, "gOutput", mOutputTextureParam);
-
-		if (mParams->hasBuffer(GPT_COMPUTE_PROGRAM, "gOutput"))
-			mParams->getBufferParam(GPT_COMPUTE_PROGRAM, "gOutput", mOutputBufferParam);
-
-		if (mSampleCount > 1)
-			mParams->getTextureParam(GPT_COMPUTE_PROGRAM, "gMSAACoverage", mMSAACoverageTexParam);
-
-		mParamBuffer = gTiledLightingParamDef.createBuffer();
-		mParams->setParamBlockBuffer("Params", mParamBuffer);
-	}
-
-	void TiledDeferredLightingMat::_initDefines(ShaderDefines& defines)
-	{
-		defines.set("TILE_SIZE", TILE_SIZE);
-	}
-
-	void TiledDeferredLightingMat::execute(const RendererView& view, const VisibleLightData& lightData, 
-		const GBufferTextures& gbuffer, const SPtr<Texture>& lightAccumTex, const SPtr<GpuBuffer>& lightAccumBuffer,
-		const SPtr<Texture>& msaaCoverage)
-	{
-		const RendererViewProperties& viewProps = view.getProperties();
-		const RenderSettings& settings = view.getRenderSettings();
-
-		mLightBufferParam.set(lightData.getLightBuffer());
-
-		UINT32 width = viewProps.viewRect.width;
-		UINT32 height = viewProps.viewRect.height;
-
-		Vector2I framebufferSize;
-		framebufferSize[0] = width;
-		framebufferSize[1] = height;
-		gTiledLightingParamDef.gFramebufferSize.set(mParamBuffer, framebufferSize);
-
-		if (!settings.enableLighting)
-		{
-			Vector4I lightCounts;
-			lightCounts[0] = 0;
-			lightCounts[1] = 0;
-			lightCounts[2] = 0;
-			lightCounts[3] = 0;
-
-			Vector2I lightStrides;
-			lightStrides[0] = 0;
-			lightStrides[1] = 0;
-
-			gTiledLightingParamDef.gLightCounts.set(mParamBuffer, lightCounts);
-			gTiledLightingParamDef.gLightStrides.set(mParamBuffer, lightStrides);
-		}
-		else
-		{
-			Vector4I unshadowedLightCounts;
-			unshadowedLightCounts[0] = lightData.getNumUnshadowedLights(LightType::Directional);
-			unshadowedLightCounts[1] = lightData.getNumUnshadowedLights(LightType::Radial);
-			unshadowedLightCounts[2] = lightData.getNumUnshadowedLights(LightType::Spot);
-			unshadowedLightCounts[3] = unshadowedLightCounts[0] + unshadowedLightCounts[1] + unshadowedLightCounts[2];
-
-			Vector4I lightCounts;
-			lightCounts[0] = lightData.getNumLights(LightType::Directional);
-			lightCounts[1] = lightData.getNumLights(LightType::Radial);
-			lightCounts[2] = lightData.getNumLights(LightType::Spot);
-			lightCounts[3] = lightCounts[0] + lightCounts[1] + lightCounts[2];
-
-			Vector2I lightStrides;
-			lightStrides[0] = lightCounts[0];
-			lightStrides[1] = lightStrides[0] + lightCounts[1];
-
-			if(!settings.enableShadows)
-				gTiledLightingParamDef.gLightCounts.set(mParamBuffer, lightCounts);
-			else
-				gTiledLightingParamDef.gLightCounts.set(mParamBuffer, unshadowedLightCounts);
-
-			gTiledLightingParamDef.gLightStrides.set(mParamBuffer, lightStrides);
-		}
-
-		mParamBuffer->flushToGPU();
-
-		mGBufferParams.bind(gbuffer);
-		mParams->setParamBlockBuffer("PerCamera", view.getPerViewBuffer());
-
-		if (mSampleCount > 1)
-		{
-			mOutputBufferParam.set(lightAccumBuffer);
-			mMSAACoverageTexParam.set(msaaCoverage);
-		}
-		else
-			mOutputTextureParam.set(lightAccumTex);
-
-		UINT32 numTilesX = (UINT32)Math::ceilToInt(width / (float)TILE_SIZE);
-		UINT32 numTilesY = (UINT32)Math::ceilToInt(height / (float)TILE_SIZE);
-
-		bind();
-		RenderAPI::instance().dispatchCompute(numTilesX, numTilesY);
-	}
-
-	TiledDeferredLightingMat* TiledDeferredLightingMat::getVariation(UINT32 msaaCount)
-	{
-		switch(msaaCount)
-		{
-		case 1:
-			return get(getVariation<1>());
-		case 2:
-			return get(getVariation<2>());
-		case 4:
-			return get(getVariation<4>());
-		case 8:
-		default:
-			return get(getVariation<8>());
-		}
-	}
-
-	FlatFramebufferToTextureParamDef gFlatFramebufferToTextureParamDef;
-
-	FlatFramebufferToTextureMat::FlatFramebufferToTextureMat()
-	{
-		mParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gInput", mInputParam);
-
-		mParamBuffer = gTiledLightingParamDef.createBuffer();
-		mParams->setParamBlockBuffer("Params", mParamBuffer);
-	}
-
-	void FlatFramebufferToTextureMat::execute(const SPtr<GpuBuffer>& flatFramebuffer, const SPtr<Texture>& target)
-	{
-		const TextureProperties& props = target->getProperties();
-
-		Vector2I framebufferSize;
-		framebufferSize[0] = props.getWidth();
-		framebufferSize[1] = props.getHeight();
-		gFlatFramebufferToTextureParamDef.gFramebufferSize.set(mParamBuffer, framebufferSize);
-
-		gFlatFramebufferToTextureParamDef.gSampleCount.set(mParamBuffer, props.getNumSamples());
-
-		mParamBuffer->flushToGPU();
-
-		mInputParam.set(flatFramebuffer);
-
-		bind();
-
-		Rect2 area(0.0f, 0.0f, (float)props.getWidth(), (float)props.getHeight());
-		gRendererUtility().drawScreenQuad(area);
 	}
 
 	LightsParamDef gLightsParamDef;

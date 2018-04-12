@@ -1,12 +1,12 @@
 #include "$ENGINE$\GBufferInput.bslinc"
 #include "$ENGINE$\PerCameraData.bslinc"
-#include "$ENGINE$\LightingCommon.bslinc"
+#include "$ENGINE$\DirectLighting.bslinc"
 
 mixin DeferredLightCommon
 {
 	mixin GBufferInput;
 	mixin PerCameraData;
-	mixin LightingCommon;
+	mixin DirectLighting;
 
 	depth
 	{

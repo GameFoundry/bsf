@@ -20,7 +20,8 @@ namespace bs
 				return static_resource_cast<ShaderInclude>(Resources::instance().load(path));
 		}
 
-		return Importer::instance().import<ShaderInclude>(name);
+		path = Paths::findPath(name);
+		return Importer::instance().import<ShaderInclude>(path);
 	}
 
 	Path EngineShaderIncludeHandler::toResourcePath(const String& name)

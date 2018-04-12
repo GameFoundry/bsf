@@ -3,20 +3,24 @@
 #include "BsRendererScene.h"
 #include "Renderer/BsCamera.h"
 #include "Renderer/BsLight.h"
+#include "Renderer/BsSkybox.h"
 #include "Renderer/BsReflectionProbe.h"
-#include "Mesh/BsMesh.h"
 #include "Renderer/BsRenderer.h"
+#include "Mesh/BsMesh.h"
 #include "Material/BsPass.h"
 #include "Material/BsGpuParamsSet.h"
+#include "Utility/BsSamplerOverrides.h"
 #include "BsRenderBeastOptions.h"
 #include "BsRenderBeast.h"
-#include "Renderer/BsSkybox.h"
 
 namespace bs {	namespace ct
 {
+	PerFrameParamDef gPerFrameParamDef;
+
 	RendererScene::RendererScene(const SPtr<RenderBeastOptions>& options)
 		:mOptions(options)
 	{
+		mPerFrameParamBuffer = gPerFrameParamDef.createBuffer();
 	}
 
 	RendererScene::~RendererScene()
@@ -261,13 +265,13 @@ namespace bs {	namespace ct
 				// Determine which technique to use
 				static_assert((UINT32)RenderableAnimType::Count == 4, "RenderableAnimType is expected to have four sequential entries.");
 
-				bool isTransparent = (renElement.material->getShader()->getFlags() & (UINT32)ShaderFlags::Transparent) != 0;
-				bool usesForwardRendering = isTransparent;
+				ShaderFlags shaderFlags = renElement.material->getShader()->getFlags();
+				bool useForwardRendering = shaderFlags.isSet(ShaderFlag::Forward) || shaderFlags.isSet(ShaderFlag::Transparent);
 				
 				RenderableAnimType animType = renderable->getAnimType();
 
 				static const ShaderVariation* VAR_LOOKUP[4];
-				if(usesForwardRendering)
+				if(useForwardRendering)
 				{
 					bool supportsClusteredForward = gRenderBeast()->getFeatureSet() == RenderBeastFeatureSet::Desktop;
 
@@ -371,6 +375,83 @@ namespace bs {	namespace ct
 					renElement.samplerOverrides = samplerOverrides;
 					samplerOverrides->refCount++;
 				}
+			}
+		}
+
+		// Prepare all parameter bindings
+		for(auto& element : rendererObject->elements)
+		{
+			SPtr<Shader> shader = element.material->getShader();
+			if (shader == nullptr)
+			{
+				LOGWRN("Missing shader on material.");
+				continue;
+			}
+
+			SPtr<GpuParams> gpuParams = element.params->getGpuParams();
+
+			// Note: Perhaps perform buffer validation to ensure expected buffer has the same size and layout as the 
+			// provided buffer, and show a warning otherwise. But this is perhaps better handled on a higher level.
+			gpuParams->setParamBlockBuffer("PerFrame", mPerFrameParamBuffer);
+			gpuParams->setParamBlockBuffer("PerObject", rendererObject->perObjectParamBuffer);
+			gpuParams->setParamBlockBuffer("PerCall", rendererObject->perCallParamBuffer);
+
+			gpuParams->getParamInfo()->getBindings(
+				GpuPipelineParamInfoBase::ParamType::ParamBlock,
+				"PerCamera",
+				element.perCameraBindings
+			);
+
+			if (gpuParams->hasBuffer(GPT_VERTEX_PROGRAM, "boneMatrices"))
+				gpuParams->setBuffer(GPT_VERTEX_PROGRAM, "boneMatrices", element.boneMatrixBuffer);
+
+			ShaderFlags shaderFlags = shader->getFlags();
+			bool useForwardRendering = shaderFlags.isSet(ShaderFlag::Forward) || shaderFlags.isSet(ShaderFlag::Transparent);
+
+			if (useForwardRendering)
+			{
+				const bool supportsClusteredForward = gRenderBeast()->getFeatureSet() == RenderBeastFeatureSet::Desktop;
+				if (supportsClusteredForward)
+				{
+					gpuParams->getParamInfo()->getBindings(
+						GpuPipelineParamInfoBase::ParamType::ParamBlock,
+						"GridParams",
+						element.gridParamsBindings
+					);
+
+					if (gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gLights"))
+						gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gLights", element.lightsBufferParam);
+
+					if (gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gGridLightOffsetsAndSize"))
+						gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gGridLightOffsetsAndSize",
+							element.gridLightOffsetsAndSizeParam);
+
+					if (gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gLightIndices"))
+						gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gLightIndices", element.gridLightIndicesParam);
+
+					if (gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gGridProbeOffsetsAndSize"))
+						gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gGridProbeOffsetsAndSize",
+							element.gridProbeOffsetsAndSizeParam);
+				}
+				else
+				{
+					gpuParams->getParamInfo()->getBinding(
+						GPT_FRAGMENT_PROGRAM,
+						GpuPipelineParamInfoBase::ParamType::ParamBlock,
+						"Lights",
+						element.lightsParamBlockBinding
+					);
+
+					gpuParams->getParamInfo()->getBinding(
+						GPT_FRAGMENT_PROGRAM,
+						GpuPipelineParamInfoBase::ParamType::ParamBlock,
+						"LightAndReflProbeParams",
+						element.lightAndReflProbeParamsParamBlockBinding
+					);
+				}
+
+				element.imageBasedParams.populate(gpuParams, GPT_FRAGMENT_PROGRAM, true, supportsClusteredForward,
+					supportsClusteredForward);
 			}
 		}
 	}
@@ -768,6 +849,11 @@ namespace bs {	namespace ct
 
 		for (auto& entry : mSamplerOverrides)
 			entry.second->isDirty = false;
+	}
+
+	void RendererScene::setParamFrameParams(float time)
+	{
+		gPerFrameParamDef.gTime.set(mPerFrameParamBuffer, time);
 	}
 
 	void RendererScene::prepareRenderable(UINT32 idx, const FrameInfo& frameInfo)

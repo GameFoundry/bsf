@@ -9,6 +9,7 @@
 #include "Renderer/BsRendererManager.h"
 #include "CoreThread/BsCoreObjectManager.h"
 #include "Scene/BsSceneManager.h"
+#include "Material/BsShader.h"
 
 namespace bs { namespace ct
 {
@@ -26,6 +27,14 @@ namespace bs { namespace ct
 	{
 		return bs_shared_ptr<RendererMeshData>(new (bs_alloc<RendererMeshData>())
 			RendererMeshData(meshData));
+	}
+
+	void Renderer::setGlobalShaderOverride(const SPtr<bs::Shader>& shader)
+	{
+		const Vector<bs::SubShader>& subShaders = shader->getSubShaders();
+		
+		for(auto& entry : subShaders)
+			setGlobalShaderOverride(entry.name, entry.shader);
 	}
 
 	bool Renderer::compareCallback(const RendererExtension* a, const RendererExtension* b)

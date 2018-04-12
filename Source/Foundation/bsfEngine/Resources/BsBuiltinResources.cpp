@@ -46,14 +46,6 @@ namespace bs
 	const WString BuiltinResources::GUISkinFile = L"GUISkin";
 
 	const char* BuiltinResources::DataListFile = "DataList.json";
-	const char* BuiltinResources::CursorFolder = "Cursors/";
-	const char* BuiltinResources::IconFolder = "Icons/";
-	const char* BuiltinResources::ShaderFolder = "Shaders/";
-	const char* BuiltinResources::SkinFolder = "Skin/";
-	const char* BuiltinResources::ShaderIncludeFolder = "Shaders/Includes/";
-	const char* BuiltinResources::MeshFolder = "Meshes/";
-	const char* BuiltinResources::TextureFolder = "Textures/";
-	const char* BuiltinResources::SpriteSubFolder = "Sprites/";
 
 	/************************************************************************/
 	/* 								GUI TEXTURES                      		*/
@@ -226,10 +218,10 @@ namespace bs
 		mBuiltinRawDataFolder = Paths::getDataPath() + L"Raw/";
 
 		mBuiltinDataFolder = Paths::getDataPath();
-		mEngineSkinSpritesFolder = mBuiltinDataFolder + SkinFolder + SpriteSubFolder;
-		mEngineShaderFolder = mBuiltinDataFolder + ShaderFolder;
-		mEngineMeshFolder = mBuiltinDataFolder + MeshFolder;
-		mEngineCursorFolder = mBuiltinDataFolder + CursorFolder;
+		mEngineSkinSpritesFolder = mBuiltinDataFolder + SKIN_FOLDER + SPRITE_FOLDER;
+		mEngineShaderFolder = mBuiltinDataFolder + SHADER_FOLDER;
+		mEngineMeshFolder = mBuiltinDataFolder + MESH_FOLDER;
+		mEngineCursorFolder = mBuiltinDataFolder + CURSOR_FOLDER;
 
 		ResourceManifestPath = mBuiltinDataFolder + "ResourceManifest.asset";
 
@@ -378,7 +370,7 @@ namespace bs
 		/* 								ICON		                     		*/
 		/************************************************************************/
 
-		Path iconPath = mBuiltinDataFolder + IconFolder;
+		Path iconPath = mBuiltinDataFolder + ICON_FOLDER;
 		iconPath.append(IconTextureName + L".asset");
 
 		HTexture iconTex = gResources().load<Texture>(iconPath);
@@ -404,11 +396,11 @@ namespace bs
 		json includesJSON = dataListJSON["Includes"];
 		json shadersJSON = dataListJSON["Shaders"];
 
-		Path rawSkinFolder = mBuiltinRawDataFolder + SkinFolder;
-		Path rawCursorFolder = mBuiltinRawDataFolder + CursorFolder;
-		Path rawIconFolder = mBuiltinRawDataFolder + IconFolder;
-		Path rawShaderFolder = mBuiltinRawDataFolder + ShaderFolder;
-		Path rawShaderIncludeFolder = mBuiltinRawDataFolder + ShaderIncludeFolder;
+		Path rawSkinFolder = mBuiltinRawDataFolder + SKIN_FOLDER;
+		Path rawCursorFolder = mBuiltinRawDataFolder + CURSOR_FOLDER;
+		Path rawIconFolder = mBuiltinRawDataFolder + ICON_FOLDER;
+		Path rawShaderFolder = mBuiltinRawDataFolder + SHADER_FOLDER;
+		Path rawShaderIncludeFolder = mBuiltinRawDataFolder + SHADER_INCLUDE_FOLDER;
 
 		// Update DataList.json if needed
 		bool updatedDataLists = false;
@@ -455,9 +447,9 @@ namespace bs
 			dataListStream->close();
 		}
 
-		Path skinFolder = mBuiltinDataFolder + SkinFolder;
-		Path iconFolder = mBuiltinDataFolder + IconFolder;
-		Path shaderIncludeFolder = mBuiltinDataFolder + ShaderIncludeFolder;
+		Path skinFolder = mBuiltinDataFolder + SKIN_FOLDER;
+		Path iconFolder = mBuiltinDataFolder + ICON_FOLDER;
+		Path shaderIncludeFolder = mBuiltinDataFolder + SHADER_INCLUDE_FOLDER;
 		Path shaderDependenciesFile = mBuiltinDataFolder + "ShaderDependencies.json";
 
 		// If forcing import, clear all data folders since everything will be recreated anyway
@@ -1261,7 +1253,7 @@ namespace bs
 		SPtr<Texture> normalTexture = Texture::_createPtr(normalPixelData);
 
 		// Save all textures
-		Path outputDir = mBuiltinDataFolder + TextureFolder;
+		Path outputDir = mBuiltinDataFolder + TEXTURE_FOLDER;
 
 		auto saveTexture = [&](const Path& path, const SPtr<Texture>& texture, const String& uuid)
 		{
@@ -1451,14 +1443,19 @@ namespace bs
 		return *mBansheeIcon.get();
 	}
 
+	Path BuiltinResources::getRawShaderFolder()
+	{
+		return Paths::getDataPath() + "Raw/" + SHADER_FOLDER;
+	}
+
 	Path BuiltinResources::getShaderIncludeFolder()
 	{
-		return Paths::getDataPath() + ShaderIncludeFolder;
+		return Paths::getDataPath() + SHADER_INCLUDE_FOLDER;
 	}
 
 	Path BuiltinResources::getIconFolder()
 	{
-		return Paths::getDataPath() + IconFolder;
+		return Paths::getDataPath() + ICON_FOLDER;
 	}
 
 	HMesh BuiltinResources::getMesh(BuiltinMesh mesh) const
@@ -1505,7 +1502,7 @@ namespace bs
 	HTexture BuiltinResources::getTexture(BuiltinTexture type)
 	{
 		Path texturePath = Paths::getDataPath();
-		texturePath.append(TextureFolder);
+		texturePath.append(TEXTURE_FOLDER);
 
 		switch (type)
 		{
@@ -1541,5 +1538,10 @@ namespace bs
 	HMaterial BuiltinResources::createSpriteLineMaterial() const
 	{
 		return Material::create(mShaderSpriteLine);
+	}
+
+	BuiltinResources& gBuiltinResources()
+	{
+		return BuiltinResources::instance();
 	}
 }
