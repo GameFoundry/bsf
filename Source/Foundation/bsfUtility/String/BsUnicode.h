@@ -96,7 +96,8 @@ namespace bs
 
 		/** 
 		 * Returns the byte at which the character with the specified index starts. The string is expected to be in UTF-8
-		 * encoding. If @p charIdx is out of range the method returns -1.
+		 * encoding. If @p charIdx is out of range the method returns the index past the last byte in the string (same
+		 * as the string length in bytes).
 		 */
 		static UINT32 charToByteIndex(const String& input, UINT32 charIdx);
 

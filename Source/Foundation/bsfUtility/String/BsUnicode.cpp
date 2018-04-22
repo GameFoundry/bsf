@@ -422,14 +422,12 @@ namespace bs
 			curByte++;
 		}
 
-		return (UINT32)-1;
+		return (UINT32)input.size();
 	}
 
 	UINT32 UTF8::charByteCount(const String& input, UINT32 charIdx)
 	{
-		UINT32 byteIdx = charToByteIndex(input, charIdx);
-		if(byteIdx == (UINT32)-1)
-			return 0;
+		const UINT32 byteIdx = charToByteIndex(input, charIdx);
 
 		UINT32 count = 1;
 		for(auto i = (size_t)byteIdx + 1; i < input.size(); i++)
