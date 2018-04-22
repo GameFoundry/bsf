@@ -69,7 +69,9 @@ namespace bs
 
 	OAAudio::~OAAudio()
 	{
-		assert(mListeners.size() == 0 && mSources.size() == 0); // Everything should be destroyed at this point
+		stopManualSources();
+
+		assert(mListeners.empty() && mSources.empty()); // Everything should be destroyed at this point
 		clearContexts();
 
 		if(mDevice != nullptr)

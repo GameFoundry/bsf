@@ -77,6 +77,10 @@ namespace bs
 		StringTableManager::shutDown();
 		Resources::shutDown();
 		GameObjectManager::shutDown();
+
+		// Audio manager must be released before the ResourceListenerManager, as any one-shot audio sources need to be
+		// destroyed since they implement the IResourceListener interface
+		AudioManager::shutDown();
 		ResourceListenerManager::shutDown();
 		RenderStateManager::shutDown();
 
@@ -84,7 +88,6 @@ namespace bs
 		// might be instances of types from that plugin.
 		AnimationManager::shutDown();
 		PhysicsManager::shutDown();
-		AudioManager::shutDown();
 
 		RendererManager::shutDown();
 

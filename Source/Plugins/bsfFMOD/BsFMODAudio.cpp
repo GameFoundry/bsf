@@ -82,7 +82,9 @@ namespace bs
 
 	FMODAudio::~FMODAudio()
 	{
-		assert(mListeners.size() == 0 && mSources.size() == 0); // Everything should be destroyed at this point
+		stopManualSources();
+
+		assert(mListeners.empty() && mSources.empty()); // Everything should be destroyed at this point
 		mFMOD->release();
 	}
 
