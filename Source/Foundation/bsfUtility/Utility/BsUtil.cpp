@@ -15,7 +15,7 @@ namespace bs
 		md5.decdigest(digest, sizeof(digest));
 
 		String buf;
-		buf.reserve(33);
+		buf.resize(32);
 		for (int i = 0; i < 16; i++)
 		{
 			//C++ 17 will allow for direct use of .data()
@@ -36,7 +36,7 @@ namespace bs
 		md5.decdigest(digest, sizeof(digest));
 
 		String buf;
-		buf.reserve(33);
+		buf.resize(32);
 		for (int i = 0; i < 16; i++)
 		{
 			//C++ 17 will allow for direct use of .data()
