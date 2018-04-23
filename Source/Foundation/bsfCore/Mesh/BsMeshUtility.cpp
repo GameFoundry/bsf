@@ -794,23 +794,22 @@ namespace bs
 			Vector3 q0 = p1 - p0;
 			Vector3 q1 = p2 - p0;
 
-			Vector2 s;
-			s.x = uv1.x - uv0.x;
-			s.y = uv2.x - uv0.x;
+			Vector2 st1 = uv1 - uv0;
+			Vector2 st2 = uv2 - uv0;
 
-			Vector2 t;
-			t.x = uv1.y - uv0.y;
-			t.y = uv2.y - uv0.y;
-
-			float denom = s.x*t.y - s.y * t.x;
+			float denom = st1.x * st2.y - st2.x * st1.y;
 			if (fabs(denom) >= 0e-8f)
 			{
 				float r = 1.0f / denom;
-				s *= r;
-				t *= r;
 
-				faceTangents[i] = t.y * q0 - t.x * q1;
-				faceBitangents[i] = s.x * q0 - s.y * q1;
+				faceTangents[i] = Vector3(
+					st2.y * q0.x - st1.y * q1.x,
+					st2.y * q0.y - st1.y * q1.y,
+					st2.y * q0.z - st1.y * q1.z
+				) * r;
+
+				faceTangents[i] = (st2.y * q0 - st1.y * q1) * r;
+				faceBitangents[i] = (st1.x * q1 - st2.x * q0) * r;
 
 				faceTangents[i].normalize();
 				faceBitangents[i].normalize();

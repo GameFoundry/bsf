@@ -104,8 +104,9 @@ mixin VertexInput
 				tangent = mul(blendMatrix, float4(tangent, 0.0f)).xyz;
 			#endif
 			
-			float3 bitangent = cross(normal, tangent) * input.tangent.w;
-			tangentSign = input.tangent.w * gWorldDeterminantSign;
+			tangentSign = input.tangent.w < 0.5f ? -1.0f : 1.0f;
+			float3 bitangent = cross(normal, tangent) * tangentSign;
+			tangentSign *= gWorldDeterminantSign;
 			
 			// Note: Maybe it's better to store everything in row vector format?
 			float3x3 result = float3x3(tangent, bitangent, normal);

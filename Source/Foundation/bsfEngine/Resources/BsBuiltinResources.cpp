@@ -1317,7 +1317,7 @@ namespace bs
 		ShapeMeshes3D::getNumElementsQuad(quadNumVertices, quadNumIndices);
 		SPtr<MeshData> quadMeshData = bs_shared_ptr_new<MeshData>(quadNumVertices, quadNumIndices, vertexDesc);
 
-		std::array<Vector3, 2> axes = {{ Vector3::UNIT_X, Vector3::UNIT_Y }};
+		std::array<Vector3, 2> axes = {{ Vector3::UNIT_X, Vector3::UNIT_Z }};
 		std::array<float, 2> sizes = {{ 1.0f, 1.0f }};
 		Rect3 rect(Vector3::ZERO, axes, sizes);
 		ShapeMeshes3D::solidQuad(rect, quadMeshData, 0, 0);

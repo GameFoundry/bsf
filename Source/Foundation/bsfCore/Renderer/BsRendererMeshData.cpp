@@ -412,7 +412,7 @@ namespace bs
 				packTangents = true;
 				type |= (INT32)VertexLayout::Tangent;
 			}
-			else if (normalElem->getType() == VET_UBYTE4_NORM)
+			else if (tanElem->getType() == VET_UBYTE4_NORM)
 				type |= (INT32)VertexLayout::Tangent;
 		}
 
