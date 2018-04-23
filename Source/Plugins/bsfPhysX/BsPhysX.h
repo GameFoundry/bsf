@@ -55,6 +55,9 @@ namespace bs
 		PhysX(const PHYSICS_INIT_DESC& input);
 		~PhysX();
 
+		/** @copydoc Physics::fixedUpdate */
+		void fixedUpdate(float step) override;
+
 		/** @copydoc Physics::update */
 		void update() override;
 
@@ -285,9 +288,6 @@ namespace bs
 		/** Helper method that checks if the provided geometry overlaps any physics object. */
 		inline bool overlapAny(const physx::PxGeometry& geometry, const physx::PxTransform& tfrm, UINT64 layer) const;
 
-		float mSimulationStep = 1.0f/60.0f;
-		float mSimulationTime = 0.0f;
-		float mFrameTime = 0.0f;
 		float mTesselationLength = 3.0f;
 		UINT32 mNextRegionIdx = 1;
 		bool mPaused = false;
@@ -307,8 +307,6 @@ namespace bs
 		physx::PxTolerancesScale mScale;
 
 		static const UINT32 SCRATCH_BUFFER_SIZE;
-		/** Determines how many physics updates per frame are allowed. Only relevant when framerate is low. */
-		static const UINT32 MAX_ITERATIONS_PER_FRAME;
 	};
 
 	/** Provides easier access to PhysX. */

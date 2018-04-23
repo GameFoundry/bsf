@@ -60,6 +60,13 @@ namespace bs
 		/** Called once per frame. Only called if the component is in Running state. */
 		virtual void update() { }
 
+		/** 
+		 * Called at fixed time intervals (e.g. 60 times per frame). Generally any physics-related functionality should
+		 * go in this method in order to ensure stability of calculations. Only called if the component is in Running 
+		 * state. 
+		 */
+		virtual void fixedUpdate() { }
+
 		/**
 		 * Calculates bounds of the visible contents represented by this component (for example a mesh for Renderable).
 		 * 

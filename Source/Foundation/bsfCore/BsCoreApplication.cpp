@@ -51,9 +51,11 @@
 
 namespace bs
 {
+	constexpr UINT32 CoreApplication::MAX_FIXED_UPDATES_PER_FRAME;
+
 	CoreApplication::CoreApplication(START_UP_DESC desc)
-		: mPrimaryWindow(nullptr), mStartUpDesc(desc), mFrameStep(16666), mLastFrameTime(0), mRendererPlugin(nullptr)
-		, mIsFrameRenderingFinished(true), mSimThreadId(BS_THREAD_CURRENT_ID), mRunMainLoop(false)
+		: mPrimaryWindow(nullptr), mStartUpDesc(desc), mRendererPlugin(nullptr), mIsFrameRenderingFinished(true)
+		, mSimThreadId(BS_THREAD_CURRENT_ID), mRunMainLoop(false)
 	{
 		// Ensure all errors are reported properly
 		CrashHandler::startUp();
@@ -226,7 +228,43 @@ namespace bs
 
 			preUpdate();
 
-			PROFILE_CALL(gSceneManager()._update(), "SceneManager");
+			// Trigger fixed updates if required
+			{
+				UINT64 currentTime = gTime().getTimePrecise();
+
+				// Skip fixed update first frame (time delta is zero, and no input received yet)
+				if(mFirstFrame)
+				{
+					mLastFixedUpdateTime = currentTime;
+					mFirstFrame = false;
+				}
+
+				UINT64 nextFrameTime = mLastFixedUpdateTime + mFixedStep;
+				if(nextFrameTime <= currentTime)
+				{
+					INT64 simulationAmount = (INT64)std::max(currentTime - mLastFixedUpdateTime, mFixedStep); // At least one step
+					UINT32 numIterations = (UINT32)Math::divideAndRoundUp(simulationAmount, (INT64)mFixedStep);
+
+					// If too many iterations are required, increase time step. This should only happen in extreme 
+					// situations (or when debugging).
+					INT64 step = (INT64)mFixedStep;
+					if (numIterations > (INT32)MAX_FIXED_UPDATES_PER_FRAME)
+						step = Math::divideAndRoundUp(simulationAmount, (INT64)MAX_FIXED_UPDATES_PER_FRAME);
+
+					while (simulationAmount >= step) // In case we're running really slow multiple updates might be needed
+					{
+						float stepSeconds = step / 1000000.0f;
+
+						PROFILE_CALL(gSceneManager()._fixedUpdate(), "Scene fixed update");
+						gPhysics().fixedUpdate(stepSeconds);
+
+						simulationAmount -= step;
+						mLastFixedUpdateTime += step;
+					}
+				}
+			}
+
+			PROFILE_CALL(gSceneManager()._update(), "Scene update");
 			gAudio()._update();
 			gPhysics().update();
 

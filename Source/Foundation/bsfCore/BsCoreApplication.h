@@ -54,6 +54,12 @@ namespace bs
 			/** Changes the maximum FPS the application is allowed to run in. Zero means unlimited. */
 			void setFPSLimit(UINT32 limit);
 
+			/** 
+			 * Returns the step (in seconds) between fixed frame updates. This value should be used as frame delta within
+			 * fixed update calls.
+			 */
+			float getFixedUpdateStep() const { return mFixedStep / 1000000.0f; }
+
 			/**
 			 * Issues a request for the application to close. Application may choose to ignore the request depending on the
 			 * circumstances and the implementation.
@@ -118,9 +124,14 @@ namespace bs
 		SPtr<RenderWindow> mPrimaryWindow;
 		START_UP_DESC mStartUpDesc;
 
-		UINT64 mFrameStep; // Microseconds
-		UINT64 mLastFrameTime; // Microseconds
+		// Frame limiting
+		UINT64 mFrameStep = 16666; // 60 times a second in microseconds
+		UINT64 mLastFrameTime = 0; // Microseconds
 
+		// Fixed update
+		UINT64 mFixedStep = 16666; // 60 times a second in microseconds
+		UINT64 mLastFixedUpdateTime = 0;
+		bool mFirstFrame = true;
 		DynLib* mRendererPlugin;
 
 		Map<DynLib*, UpdatePluginFunc> mPluginUpdateFunctions;
@@ -131,6 +142,10 @@ namespace bs
 		ThreadId mSimThreadId;
 
 		volatile bool mRunMainLoop;
+
+		/** Determines how many fixed updates per frame are allowed. Only relevant when framerate is low. */
+		static constexpr UINT32 MAX_FIXED_UPDATES_PER_FRAME = 4;
+
 	};
 
 	/**	Provides easy access to CoreApplication. */

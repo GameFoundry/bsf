@@ -205,7 +205,7 @@ namespace bs
 		float minMoveDistance = 0.0f;
 
 		/** Height between the centers of the two spheres of the controller capsule. */
-		float height = 0.0f; 
+		float height = 1.0f; 
 
 		/** Radius of the controller capsule. */
 		float radius = 1.0f;

@@ -70,6 +70,7 @@ namespace bs
 		PxCapsuleControllerDesc pxDesc = toPxDesc(desc);
 		pxDesc.reportCallback = this;
 		pxDesc.material = gPhysX().getDefaultMaterial();
+		pxDesc.height = pxDesc.height <= 0 ? 0.01f : pxDesc.height;
 
 		mController = static_cast<PxCapsuleController*>(manager->createController(pxDesc));
 		mController->setUserData(this);

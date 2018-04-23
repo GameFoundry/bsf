@@ -460,7 +460,6 @@ namespace bs
 
 	static const UINT32 SIZE_16K = 1 << 14;
 	const UINT32 PhysX::SCRATCH_BUFFER_SIZE = SIZE_16K * 64; // 1MB by default
-	const UINT32 PhysX::MAX_ITERATIONS_PER_FRAME = 4; // At 60 physics updates per second this would mean user is running at 15fps
 
 	PhysX::PhysX(const PHYSICS_INIT_DESC& input)
 		:Physics(input)
@@ -503,8 +502,6 @@ namespace bs
 		// Character controller
 		mCharManager = PxCreateControllerManager(*mScene);
 
-		mSimulationStep = input.timeStep;
-		mSimulationTime = -mSimulationStep * 1.01f; // Ensures simulation runs on the first frame
 		mDefaultMaterial = mPhysics->createMaterial(1.0f, 1.0f, 0.5f);
 	}
 
@@ -520,61 +517,26 @@ namespace bs
 		mFoundation->release();
 	}
 
-	void PhysX::update()
+	void PhysX::fixedUpdate(float step)
 	{
 		if (mPaused)
 			return;
 
 		mUpdateInProgress = true;
 
-		float nextFrameTime = mSimulationTime + mSimulationStep;
-		mFrameTime += gTime().getFrameDelta();
+		// Note: Consider delaying fetchResults one frame. This could improve performance because Physics update would be
+		//       able to run parallel to the simulation thread, but at a cost to input latency.
+		bs_frame_mark();
+		UINT8* scratchBuffer = bs_frame_alloc_aligned(SCRATCH_BUFFER_SIZE, 16);
 
-		if(mFrameTime < nextFrameTime)
-		{
-			// Note: Potentially interpolate (would mean a one frame delay needs to be introduced)
-			return;
-		}
+		mScene->simulate(step, nullptr, scratchBuffer, SCRATCH_BUFFER_SIZE);
 
-		float simulationAmount = std::max(mFrameTime - mSimulationTime, mSimulationStep); // At least one step
-		INT32 numIterations = Math::floorToInt(simulationAmount / mSimulationStep);
+		UINT32 errorState;
+		if (!mScene->fetchResults(true, &errorState))
+			LOGWRN("Physics simulation failed. Error code: " + toString(errorState));
 
-		// If too many iterations are required, increase time step. This should only happen in extreme situations (or when
-		// debugging).
-		float step = mSimulationStep;
-		if (numIterations > (INT32)MAX_ITERATIONS_PER_FRAME)
-			step = (simulationAmount / MAX_ITERATIONS_PER_FRAME) * 0.99f;
-
-		UINT32 iterationCount = 0;
-		while (simulationAmount >= step) // In case we're running really slow multiple updates might be needed
-		{
-			// Note: Consider delaying fetchResults one frame. This could improve performance because Physics update would be
-			//       able to run parallel to the simulation thread, but at a cost to input latency.
-
-			bs_frame_mark();
-			UINT8* scratchBuffer = bs_frame_alloc_aligned(SCRATCH_BUFFER_SIZE, 16);
-
-			mScene->simulate(step, nullptr, scratchBuffer, SCRATCH_BUFFER_SIZE);
-			simulationAmount -= step;
-			mSimulationTime += step;
-
-			UINT32 errorState;
-			if(!mScene->fetchResults(true, &errorState))
-			{
-				LOGWRN("Physics simulation failed. Error code: " + toString(errorState));
-
-				bs_frame_free_aligned(scratchBuffer);
-				bs_frame_clear();
-
-				iterationCount++;
-				continue;
-			}
-
-			bs_frame_free_aligned(scratchBuffer);
-			bs_frame_clear();
-
-			iterationCount++;
-		}
+		bs_frame_free_aligned(scratchBuffer);
+		bs_frame_clear();
 
 		// Update rigidbodies with new transforms
 		PxU32 numActiveTransforms;
@@ -601,6 +563,11 @@ namespace bs
 		mUpdateInProgress = false;
 
 		triggerEvents();
+	}
+
+	void PhysX::update()
+	{
+		// Note: Potentially interpolate (would mean a one frame delay needs to be introduced)
 	}
 
 	void PhysX::_reportContactEvent(const ContactEvent& event)

@@ -545,8 +545,18 @@ namespace bs
 		/** @copydoc CharacterController::create */
 		virtual SPtr<CharacterController> createCharacterController(const CHAR_CONTROLLER_DESC& desc) = 0;
 
-		/** Triggers physics simulation update as needed. Should be called once per frame. */
-		virtual void update() = 0;
+		/** 
+		 * Updates the physics simulation. In order to maintain stability of the physics calculations this method should
+		 * be called at fixed intervals (e.g. 60 times a second). 
+		 *
+		 * @param[in]	step	Time delta to advance the physics simulation by, in seconds.
+		 */
+		virtual void fixedUpdate(float step) = 0;
+
+		/** 
+		 * Performs any physics operations that arent tied to the fixed update interval. Should be called once per frame. 
+		 */
+		virtual void update() { }
 
 		/** @copydoc Physics::boxOverlap() */
 		virtual Vector<Collider*> _boxOverlap(const AABox& box, const Quaternion& rotation,
@@ -603,7 +613,6 @@ namespace bs
 		float typicalSpeed = 9.81f; /**< Typical speed of an object in the scene. */
 		Vector3 gravity = Vector3(0.0f, -9.81f, 0.0f); /**< Initial gravity. */
 		bool initCooking = true; /**< Determines should the cooking library be initialized. */
-		float timeStep = 1.0f / 60.0f; /**< Determines using what interval should the physics update happen. */
 		/** Flags that control global physics option. */
 		PhysicsFlags flags = PhysicsFlag::CCT_OverlapRecovery | PhysicsFlag::CCT_PreciseSweeps | PhysicsFlag::CCD_Enable;
 	};

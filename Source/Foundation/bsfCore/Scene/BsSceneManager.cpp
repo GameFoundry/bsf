@@ -499,6 +499,12 @@ namespace bs
 		GameObjectManager::instance().destroyQueuedObjects();
 	}
 
+	void SceneManager::_fixedUpdate()
+	{
+		for (auto& entry : mActiveComponents)
+			entry->fixedUpdate();
+	}
+
 	void SceneManager::registerNewSO(const HSceneObject& node)
 	{ 
 		if(mRootNode)
