@@ -42,6 +42,12 @@ namespace bs
 		bool mRequiresStartUp = false;
 		bool mRequiresShutDown = false;
 
+		bool mCursorClipping = false;
+		HWND mClipWindow = 0;
+		RECT mClipRect;
+
+		bool mIsActive = false;
+
 		Mutex mSync;
 	};
 
@@ -56,6 +62,33 @@ namespace bs
 	Event<void()> Platform::onMouseCaptureChanged;
 
 	Platform::Pimpl* Platform::mData = bs_new<Platform::Pimpl>();
+
+	/** Checks if any of the windows of the current application are active. */
+	bool isAppActive(Platform::Pimpl* data)
+	{
+		Lock lock(data->mSync);
+
+		return data->mIsActive;
+	}
+
+	/** Enables or disables cursor clipping depending on the stored data. */
+	void applyClipping(Platform::Pimpl* data)
+	{
+		if(data->mCursorClipping)
+		{
+			if(data->mClipWindow)
+			{
+				// Clip cursor to the window
+				RECT clipWindowRect;
+				if (GetWindowRect(data->mClipWindow, &clipWindowRect))
+					ClipCursor(&clipWindowRect);
+			}
+			else
+				ClipCursor(&data->mClipRect);
+		}
+		else
+			ClipCursor(nullptr);
+	}
 
 	Platform::~Platform()
 	{
@@ -158,28 +191,33 @@ namespace bs
 		UINT64 hwnd;
 		window.getCustomAttribute("WINDOW", &hwnd);
 
-		// Clip cursor to the window
-		RECT clipWindowRect;
-		if(GetWindowRect((HWND)hwnd, &clipWindowRect))
-		{
-			ClipCursor(&clipWindowRect);
-		}
+		mData->mCursorClipping = true;
+		mData->mClipWindow = (HWND)hwnd;
+
+		if(isAppActive(mData))
+			applyClipping(mData);
 	}
 
 	void Platform::clipCursorToRect(const Rect2I& screenRect)
 	{
-		RECT clipWindowRect;
-		clipWindowRect.left = screenRect.x;
-		clipWindowRect.top = screenRect.y;
-		clipWindowRect.right = screenRect.x + screenRect.width;
-		clipWindowRect.bottom = screenRect.y + screenRect.height;
+		mData->mCursorClipping = true;
+		mData->mClipWindow = 0;
 
-		ClipCursor(&clipWindowRect);
+		mData->mClipRect.left = screenRect.x;
+		mData->mClipRect.top = screenRect.y;
+		mData->mClipRect.right = screenRect.x + screenRect.width;
+		mData->mClipRect.bottom = screenRect.y + screenRect.height;
+
+		if(isAppActive(mData))
+			applyClipping(mData);
 	}
 
 	void Platform::clipCursorDisable()
 	{
-		ClipCursor(NULL);
+		mData->mCursorClipping = false;
+		mData->mClipWindow = 0;
+
+		ClipCursor(&mData->mClipRect);
 	}
 
 	// TODO - Add support for animated custom cursor
@@ -611,6 +649,33 @@ namespace bs
 
 		switch( uMsg )
 		{
+		case WM_ACTIVATE:
+			{
+			switch(wParam)
+			{
+			case WA_ACTIVE:
+			case WA_CLICKACTIVE:
+				{
+					Lock lock(mData->mSync);
+
+					mData->mIsActive = true;
+				}
+
+				applyClipping(mData);
+				break;
+			case WA_INACTIVE:
+				{
+					Lock lock(mData->mSync);
+
+					mData->mIsActive = false;
+				}
+
+				ClipCursor(nullptr);
+				break;
+			}
+
+				return 0;
+			}
 		case WM_SETFOCUS:
 			{
 				if (!win->getProperties().hasFocus)
