@@ -161,6 +161,7 @@ namespace bs
 
 		mParent = rigidbody;
 		updateCollisionReportMode();
+		updateTransform();
 	}
 
 	bool CCollider::rayCast(const Ray& ray, PhysicsQueryHit& hit, float maxDist) const
