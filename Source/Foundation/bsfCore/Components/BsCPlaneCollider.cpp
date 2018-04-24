@@ -10,12 +10,16 @@ namespace bs
 	CPlaneCollider::CPlaneCollider()
 	{
 		setName("PlaneCollider");
+
+		mLocalRotation = Quaternion::getRotationFromTo(Vector3::UNIT_X, mNormal);
 	}
 
 	CPlaneCollider::CPlaneCollider(const HSceneObject& parent)
 		: CCollider(parent)
 	{
 		setName("PlaneCollider");
+
+		mLocalRotation = Quaternion::getRotationFromTo(Vector3::UNIT_X, mNormal);
 	}
 
 	void CPlaneCollider::setNormal(const Vector3& normal)
