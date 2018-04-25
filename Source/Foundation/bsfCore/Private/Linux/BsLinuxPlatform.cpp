@@ -187,6 +187,12 @@ namespace bs
 		return false;
 	}
 
+	void clipCursorDisable(Platform::Pimpl* data)
+	{
+		data->cursorClipEnabled = false;
+		data->cursorClipWindow = None;
+	}
+
 	void setCurrentCursor(Platform::Pimpl* data, ::Cursor cursor)
 	{
 		if(data->currentCursor)
@@ -370,8 +376,7 @@ namespace bs
 	{
 		Lock lock(mData->lock);
 
-		mData->cursorClipEnabled = false;
-		mData->cursorClipWindow = None;
+		bs::clipCursorDisable(mData);
 	}
 
 	void Platform::setCursor(PixelData& pixelData, const Vector2I& hotSpot)
@@ -1445,7 +1450,7 @@ namespace bs
 		if(iterFind != mData->windowMap.end())
 		{
 			if(mData->cursorClipEnabled && mData->cursorClipWindow == iterFind->second)
-				clipCursorDisable();
+				bs::clipCursorDisable(mData);
 
 			mData->windowMap.erase(iterFind);
 		}
