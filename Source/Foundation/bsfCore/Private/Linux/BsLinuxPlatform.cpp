@@ -889,35 +889,34 @@ namespace bs
 				// Process text input
 				KeySym keySym = XkbKeycodeToKeysym(mData->xDisplay, (KeyCode)event.xkey.keycode, 0, 0);
 
-				//// Check if input manager wants this event. If not, we process it.
-				if(XFilterEvent(&event, None) == False)
+				// Handle input commands
+				InputCommandType command = InputCommandType::Backspace;
+				bool shift = (event.xkey.state & ShiftMask) != 0;
+
+				bool isInputCommand = parseInputCommand(keySym, shift, command);
+
+				// Check if input manager wants this event. If not, we process it.
+				if(XFilterEvent(&event, None) == False && !isInputCommand)
 				{
-					// Don't consider Return key a character
-					if(keySym != XK_Return)
+					// Send a text input event
+					Status status;
+					char buffer[16];
+
+					INT32 length = Xutf8LookupString(mData->IC, &event.xkey, buffer, sizeof(buffer), nullptr,
+							&status);
+
+					if (length > 0)
 					{
-						Status status;
-						char buffer[16];
+						buffer[length] = '\0';
 
-						INT32 length = Xutf8LookupString(mData->IC, &event.xkey, buffer, sizeof(buffer), nullptr,
-								&status);
-
-						if (length > 0)
-						{
-							buffer[length] = '\0';
-
-							U32String utfStr = UTF8::toUTF32(String(buffer));
-							if (utfStr.length() > 0)
-								onCharInput((UINT32) utfStr[0]);
-						}
+						U32String utfStr = UTF8::toUTF32(String(buffer));
+						if (utfStr.length() > 0)
+							onCharInput((UINT32) utfStr[0]);
 					}
 				}
 
-				// Handle input commands
-				InputCommandType command = InputCommandType::Backspace;
-
-				bool shift = (event.xkey.state & ShiftMask) != 0;
-
-				if(parseInputCommand(keySym, shift, command))
+				// Send an input command event
+				if(isInputCommand)
 				{
 					if(!onInputCommand.empty())
 						onInputCommand(command);
