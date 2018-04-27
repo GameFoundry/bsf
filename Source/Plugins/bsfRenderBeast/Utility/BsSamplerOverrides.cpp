@@ -57,7 +57,8 @@ namespace bs { namespace ct
 
 				override.originalStateHash = override.state->getProperties().getHash();
 
-				overrideLookup[samplerParam.first] = overrideIdx;
+				for (auto& entry : samplerParam.second.gpuVariableNames)
+					overrideLookup[entry] = overrideIdx;
 			}
 
 			UINT32 numPasses = paramsSet->getNumPasses();

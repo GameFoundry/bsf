@@ -27,9 +27,16 @@ shader Surface
 
 	code
 	{
+		[alias(gAlbedoTex)]
 		SamplerState gAlbedoSamp;
+		
+		[alias(gNormalTex)]
 		SamplerState gNormalSamp;
+		
+		[alias(gRoughnessTex)]
 		SamplerState gRoughnessSamp;
+		
+		[alias(gMetalnessTex)]
 		SamplerState gMetalnessSamp;
 		
 		Texture2D gAlbedoTex = white;
