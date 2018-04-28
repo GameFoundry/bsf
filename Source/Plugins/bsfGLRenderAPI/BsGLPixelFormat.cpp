@@ -22,60 +22,70 @@ namespace bs { namespace ct
 		switch (mFormat)
 		{
 		case PF_R8:
-		case PF_R8I:
-		case PF_R8U:
 		case PF_R8S:
 			return GL_RED;
+		case PF_R8I:
+		case PF_R8U:
+			return GL_RED_INTEGER;
 		case PF_RG8:
-		case PF_RG8I:
-		case PF_RG8U:
 		case PF_RG8S:
 			return GL_RG;
+		case PF_RG8I:
+		case PF_RG8U:
+			return GL_RG_INTEGER;
 		case PF_RGB8:
 			return GL_RGB;
 		case PF_BGR8:
 			return GL_BGR;
 		case PF_RGBA8:
-		case PF_RGBA8I:
-		case PF_RGBA8U:
 		case PF_RGBA8S:
 			return GL_RGBA;
+		case PF_RGBA8I:
+		case PF_RGBA8U:
+			return GL_RGBA_INTEGER;
 		case PF_BGRA8:
 			return GL_BGRA;
 		case PF_R16F:
-		case PF_R16I:
-		case PF_R16U:
 		case PF_R16S:
 		case PF_R16:
 			return GL_RED;
+		case PF_R16I:
+		case PF_R16U:
+			return GL_RED_INTEGER;
 		case PF_RG16F:
-		case PF_RG16I:
-		case PF_RG16U:
 		case PF_RG16S:
 		case PF_RG16:
 			return GL_RG;
+		case PF_RG16I:
+		case PF_RG16U:
+			return GL_RG_INTEGER;
 		case PF_RGBA16F:
-		case PF_RGBA16I:
-		case PF_RGBA16U:
 		case PF_RGBA16S:
 		case PF_RGBA16:
 			return GL_RGBA;
+		case PF_RGBA16I:
+		case PF_RGBA16U:
+			return GL_RGBA_INTEGER;
 		case PF_R32F:
+			return GL_RED;
 		case PF_R32I:
 		case PF_R32U:
-			return GL_RED;
+			return GL_RED_INTEGER;
 		case PF_RG32F:
+			return GL_RG;
 		case PF_RG32I:
 		case PF_RG32U:
-			return GL_RG;
+			return GL_RG_INTEGER;
 		case PF_RGB32F:
+			return GL_RGB;
 		case PF_RGB32I:
 		case PF_RGB32U:
-			return GL_RGB;
+			return GL_RGB_INTEGER;
 		case PF_RGBA32F:
+			return GL_RGBA;
 		case PF_RGBA32I:
 		case PF_RGBA32U:
-			return GL_RGBA;
+			return GL_RGBA_INTEGER;
 		case PF_RG11B10F:
 			return GL_RGB;
 		case PF_RGB10A2:
