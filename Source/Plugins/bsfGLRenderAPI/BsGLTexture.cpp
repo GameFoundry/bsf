@@ -182,11 +182,13 @@ namespace bs { namespace ct
 					{
 						glTexImage2D(GL_TEXTURE_2D, 0, mGLFormat, width, height, 0,
 							depthStencilFormat, depthStencilType, nullptr);
+						BS_CHECK_GL_ERROR();
 					}
 					else
 					{
 						glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, mGLFormat, width, height, numFaces, 0,
 							depthStencilFormat, depthStencilType, nullptr);
+						BS_CHECK_GL_ERROR();
 					}
 				}
 				else if(texType == TEX_TYPE_CUBE_MAP)
@@ -197,12 +199,14 @@ namespace bs { namespace ct
 						{
 							glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, mGLFormat,
 								width, height, 0, depthStencilFormat, depthStencilType, nullptr);
+							BS_CHECK_GL_ERROR();
 						}
 					}
 					else
 					{
 						glTexImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, 0, mGLFormat,
 							width, height, numFaces, 0, depthStencilFormat, depthStencilType, nullptr);
+						BS_CHECK_GL_ERROR();
 					}
 				}
 				else
@@ -215,29 +219,42 @@ namespace bs { namespace ct
 				GLenum baseFormat = GLPixelUtil::getGLOriginFormat(mInternalFormat);
 				GLenum baseDataType = GLPixelUtil::getGLOriginDataType(mInternalFormat);
 
-				for (UINT32 mip = 0; mip <= numMips; mip++)
+				for (UINT32 mip = 0; mip < numMips; mip++)
 				{
 					switch (texType)
 					{
 					case TEX_TYPE_1D:
 					{
 						if (numFaces <= 1)
+						{
 							glTexImage1D(GL_TEXTURE_1D, mip, mGLFormat, width, 0, baseFormat, baseDataType, nullptr);
+							BS_CHECK_GL_ERROR();
+						}
 						else
+						{
 							glTexImage2D(GL_TEXTURE_1D_ARRAY, mip, mGLFormat, width, numFaces, 0, baseFormat, baseDataType, nullptr);
+							BS_CHECK_GL_ERROR();
+						}
 					}
 					break;
 					case TEX_TYPE_2D:
 					{
 						if (numFaces <= 1)
+						{
 							glTexImage2D(GL_TEXTURE_2D, mip, mGLFormat, width, height, 0, baseFormat, baseDataType, nullptr);
+							BS_CHECK_GL_ERROR();
+						}
 						else
+						{
 							glTexImage3D(GL_TEXTURE_2D_ARRAY, mip, mGLFormat, width, height, numFaces, 0, baseFormat, baseDataType, nullptr);
+							BS_CHECK_GL_ERROR();
+						}
 					}
 					break;
 					case TEX_TYPE_3D:
 						glTexImage3D(GL_TEXTURE_3D, mip, mGLFormat, width, height,
 							depth, 0, baseFormat, baseDataType, nullptr);
+						BS_CHECK_GL_ERROR();
 						break;
 					case TEX_TYPE_CUBE_MAP:
 					{
@@ -247,12 +264,14 @@ namespace bs { namespace ct
 							{
 								glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, mip, mGLFormat,
 									width, height, 0, baseFormat, baseDataType, nullptr);
+								BS_CHECK_GL_ERROR();
 							}
 						}
 						else
 						{
 							glTexImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, mip, mGLFormat,
 								width, height, numFaces, 0, baseFormat, baseDataType, nullptr);
+							BS_CHECK_GL_ERROR();
 						}
 					}
 					break;
@@ -412,20 +431,31 @@ namespace bs { namespace ct
 				desc.srcVolume.getHeight() == 0 || 
 				desc.srcVolume.getDepth() == 0;
 
+			PixelVolume srcVolume = desc.srcVolume;
+
+			PixelVolume dstVolume;
+			dstVolume.left = (UINT32)desc.dstPosition.x;
+			dstVolume.top = (UINT32)desc.dstPosition.y;
+			dstVolume.front = (UINT32)desc.dstPosition.z;
+
 			if(copyEntireSurface)
-				dest->blitFromTexture(src);
+			{
+				srcVolume.right = srcVolume.left + src->getWidth();
+				srcVolume.bottom = srcVolume.top + src->getHeight();
+				srcVolume.back = srcVolume.front + src->getDepth();
+
+				dstVolume.right = dstVolume.left + src->getWidth();
+				dstVolume.bottom = dstVolume.top + src->getHeight();
+				dstVolume.back = dstVolume.front + src->getDepth();
+			}
 			else
 			{
-				PixelVolume dstVolume;
-				dstVolume.left = (UINT32)desc.dstPosition.x;
-				dstVolume.top = (UINT32)desc.dstPosition.y;
-				dstVolume.front = (UINT32)desc.dstPosition.z;
 				dstVolume.right = dstVolume.left + desc.srcVolume.getWidth();
 				dstVolume.bottom = dstVolume.top + desc.srcVolume.getHeight();
 				dstVolume.back = dstVolume.front + desc.srcVolume.getDepth();
-
-				dest->blitFromTexture(src, desc.srcVolume, dstVolume);
 			}
+
+			dest->blitFromTexture(src, srcVolume, dstVolume);
 		};
 
 		if (commandBuffer == nullptr)
