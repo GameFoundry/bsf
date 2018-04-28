@@ -8,6 +8,7 @@
 #include "$ENGINE$\PPBase.bslinc"
 #include "$ENGINE$\PerCameraData.bslinc"
 #include "$ENGINE$\ImageBasedLighting.bslinc"
+#include "$ENGINE$\DirectLighting.bslinc"
 
 shader DeferredIBLFinalize
 {
@@ -15,6 +16,7 @@ shader DeferredIBLFinalize
 	mixin GBufferInput;
 	mixin PerCameraData;
 	mixin ImageBasedLighting;
+	mixin DirectLighting;
 
 	blend
 	{
@@ -75,10 +77,11 @@ shader DeferredIBLFinalize
 				
 				float3 V = normalize(gViewOrigin - worldPosition);
 				float3 N = surfaceData.worldNormal.xyz;
-				float3 R = 2 * dot(V, N) * N - V;				
+				float3 R = 2 * dot(V, N) * N - V;
+				float3 specR = getSpecularDominantDir(N, R, surfaceData.roughness);
 			
 				float skyMipLevel = mapRoughnessToMipLevel(surfaceData.roughness, gSkyCubemapNumMips);
-				float4 skySample = gSkyReflectionTex.SampleLevel(gSkyReflectionSamp, R, skyMipLevel) * gSkyBrightness;
+				float4 skySample = gSkyReflectionTex.SampleLevel(gSkyReflectionSamp, specR, skyMipLevel) * gSkyBrightness;
 				
 				return float4(skySample.rgb, 1.0f); 
 			}

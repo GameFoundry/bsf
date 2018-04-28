@@ -7,12 +7,14 @@
 #include "$ENGINE$\GBufferInput.bslinc"
 #include "$ENGINE$\PerCameraData.bslinc"
 #include "$ENGINE$\ImageBasedLighting.bslinc"
+#include "$ENGINE$\DirectLighting.bslinc"
 
 shader DeferredIBLProbe
 {
 	mixin GBufferInput;
 	mixin PerCameraData;
 	mixin ImageBasedLighting;
+	mixin DirectLighting;
 
 	depth
 	{
@@ -141,11 +143,12 @@ shader DeferredIBLProbe
 
 				float3 V = normalize(gViewOrigin - worldPosition);
 				float3 N = surfaceData.worldNormal.xyz;
-				float3 R = 2 * dot(V, N) * N - V;				
+				float3 R = 2 * dot(V, N) * N - V;
+				float3 specR = getSpecularDominantDir(N, R, surfaceData.roughness);				
 			
 				float mipLevel = mapRoughnessToMipLevel(surfaceData.roughness, gReflCubemapNumMips);			
 				
-				return evaluateProbe(worldPosition, R, mipLevel, probeData);
+				return evaluateProbe(worldPosition, specR, mipLevel, probeData);
 			}
 			else
 				return float4(0.0f, 0.0f, 0.0f, 0.0f);
