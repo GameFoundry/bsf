@@ -2060,11 +2060,8 @@ namespace bs { namespace ct
 		if(maxAnisotropy < 1)
 			maxAnisotropy = 1;
 
-		if (getCurrentAnisotropy(unit) != maxAnisotropy)
-		{
-			glTexParameterf(mTextureInfos[unit].type, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)maxAnisotropy);
-			BS_CHECK_GL_ERROR();
-		}
+		glTexParameterf(mTextureInfos[unit].type, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)maxAnisotropy);
+		BS_CHECK_GL_ERROR();
 	}
 
 	void GLRenderAPI::setTextureCompareMode(UINT16 unit, CompareFunction compare)
