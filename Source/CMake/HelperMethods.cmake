@@ -213,6 +213,7 @@ function(target_link_framework TARGET FRAMEWORK)
 	endif()
 
 	target_link_libraries(${TARGET} PRIVATE ${FM_${FRAMEWORK}})
+	mark_as_advanced(FM_${FRAMEWORK})
 endfunction()
 
 function(update_binary_deps DEP_PREFIX DEP_FOLDER DEP_VERSION)

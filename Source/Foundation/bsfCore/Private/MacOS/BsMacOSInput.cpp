@@ -701,7 +701,7 @@ namespace bs
 							break;
 						}
 
-						if((INT32)axisType < HID_NUM_GAMEPAD_AXES)
+						if((UINT32)axisType < HID_NUM_GAMEPAD_AXES)
 						{
 							IOHIDValueRef valueRef;
 							if(IOHIDDeviceGetValue(device, axis.ref, &valueRef) != kIOReturnSuccess)
@@ -822,7 +822,7 @@ namespace bs
 				{
 					// Usage -1 and 1 are special signals that happen along with every button press/release and should be
 					// ignored
-					if(usage != -1 && usage != 1)
+					if(usage != (UINT32)-1 && usage != 1)
 						button = scanCodeToKeyCode((UINT32)usage);
 				}
 

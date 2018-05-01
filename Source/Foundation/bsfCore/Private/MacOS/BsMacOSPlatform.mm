@@ -84,7 +84,7 @@ namespace bs
 
 		// Clipboard
 		Mutex clipboardMutex;
-		WString cachedClipboardData;
+		String cachedClipboardData;
 		INT32 clipboardChangeCount = -1;
 	};
 }
@@ -787,29 +787,27 @@ namespace bs
 		usleep(duration * 1000);
 	}
 
-	void Platform::copyToClipboard(const WString& string)
+	void Platform::copyToClipboard(const String& string)
 	{ @autoreleasepool {
-		String utf8String = UTF8::fromWide(string);
-
-		NSString* text = [NSString stringWithUTF8String:utf8String.c_str()];
+		NSString* text = [NSString stringWithUTF8String:string.c_str()];
 		[mData->platformManager performSelectorOnMainThread:@selector(setClipboardText:)
 			withObject:text
 			waitUntilDone:NO];
 	}}
 
-	WString Platform::copyFromClipboard()
+	String Platform::copyFromClipboard()
 	{
 		Lock lock(mData->clipboardMutex);
 		return mData->cachedClipboardData;
 	}
 
-	WString Platform::keyCodeToUnicode(UINT32 buttonCode)
+	String Platform::keyCodeToUnicode(UINT32 buttonCode)
 	{
 		UINT32 keyCode = ButtonCodeToKeyCode[buttonCode];
 
 		TISInputSourceRef currentKeyboard = TISCopyCurrentKeyboardInputSource();
 		if(!currentKeyboard)
-			return L"";
+			return "";
 
 		auto layoutData = (CFDataRef)TISGetInputSourceProperty(currentKeyboard, kTISPropertyUnicodeKeyLayoutData);
 
@@ -823,7 +821,7 @@ namespace bs
 		}
 
 		if(!layoutData)
-			return L"";
+			return "";
 
 		auto keyLayout = (const UCKeyboardLayout*)CFDataGetBytePtr(layoutData);
 
@@ -846,7 +844,7 @@ namespace bs
 		U16String u16String((char16_t*)chars, (size_t)length);
 		String utf8String = UTF8::fromUTF16(u16String);
 
-		return UTF8::toWide(utf8String);
+		return utf8String;
 	}
 
 	void Platform::openFolder(const Path& path)
@@ -897,7 +895,7 @@ namespace bs
 
 			{
 				Lock lock(mData->clipboardMutex);
-				mData->cachedClipboardData = UTF8::toWide(utf8String);
+				mData->cachedClipboardData = utf8String;
 			}
 
 			mData->clipboardChangeCount = changeCount;

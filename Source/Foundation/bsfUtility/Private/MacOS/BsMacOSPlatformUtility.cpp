@@ -77,5 +77,36 @@ namespace bs
 			*(UINT32*)&nativeUUID[8],
 			*(UINT32*)&nativeUUID[12]);
 	}
+
+	String PlatformUtility::convertCaseUTF8(const bs::String& input, bool toUpper)
+	{
+		CFMutableStringRef mutableString = CFStringCreateMutable(nullptr, 0);
+		CFStringAppendCString(mutableString, input.c_str(), kCFStringEncodingUTF8);
+
+		if(toUpper)
+			CFStringUppercase(mutableString, nullptr);
+		else
+			CFStringLowercase(mutableString, nullptr);
+
+		const char* chars = CFStringGetCStringPtr(mutableString, kCFStringEncodingUTF8);
+		if(chars)
+		{
+			String output(chars);
+			CFRelease(mutableString);
+
+			return output;
+		}
+
+		CFIndex stringLength = CFStringGetLength(mutableString) + 1;
+		auto buffer = bs_stack_alloc<char>((UINT32)stringLength);
+
+		CFStringGetCString(mutableString, buffer, stringLength, kCFStringEncodingUTF8);
+		CFRelease(mutableString);
+
+		String output(buffer);
+		bs_stack_free(buffer);
+
+		return output;
+	}
 }
 

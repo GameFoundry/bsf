@@ -29,76 +29,76 @@ namespace bs
 
 	struct FileAction
 	{
-		static FileAction* createAdded(const WString& fileName)
+		static FileAction* createAdded(const String& fileName)
 		{
-			UINT8* bytes = (UINT8*)bs_alloc((UINT32)(sizeof(FileAction) + (fileName.size() + 1) * sizeof(WString::value_type)));
+			UINT8* bytes = (UINT8*)bs_alloc((UINT32)(sizeof(FileAction) + (fileName.size() + 1) * sizeof(String::value_type)));
 
 			FileAction* action = (FileAction*)bytes;
 			bytes += sizeof(FileAction);
 
 			action->oldName = nullptr;
-			action->newName = (WString::value_type*)bytes;
+			action->newName = (String::value_type*)bytes;
 			action->type = FileActionType::Added;
 
-			memcpy(action->newName, fileName.data(), fileName.size() * sizeof(WString::value_type));
-			action->newName[fileName.size()] = L'\0';
+			memcpy(action->newName, fileName.data(), fileName.size() * sizeof(String::value_type));
+			action->newName[fileName.size()] = '\0';
 
 			return action;
 		}
 
-		static FileAction* createRemoved(const WString& fileName)
+		static FileAction* createRemoved(const String& fileName)
 		{
-			UINT8* bytes = (UINT8*)bs_alloc((UINT32)(sizeof(FileAction) + (fileName.size() + 1) * sizeof(WString::value_type)));
+			UINT8* bytes = (UINT8*)bs_alloc((UINT32)(sizeof(FileAction) + (fileName.size() + 1) * sizeof(String::value_type)));
 
 			FileAction* action = (FileAction*)bytes;
 			bytes += sizeof(FileAction);
 
 			action->oldName = nullptr;
-			action->newName = (WString::value_type*)bytes;
+			action->newName = (String::value_type*)bytes;
 			action->type = FileActionType::Removed;
 
-			memcpy(action->newName, fileName.data(), fileName.size() * sizeof(WString::value_type));
-			action->newName[fileName.size()] = L'\0';
+			memcpy(action->newName, fileName.data(), fileName.size() * sizeof(String::value_type));
+			action->newName[fileName.size()] = '\0';
 
 			return action;
 		}
 
-		static FileAction* createModified(const WString& fileName)
+		static FileAction* createModified(const String& fileName)
 		{
-			UINT8* bytes = (UINT8*)bs_alloc((UINT32)(sizeof(FileAction) + (fileName.size() + 1) * sizeof(WString::value_type)));
+			UINT8* bytes = (UINT8*)bs_alloc((UINT32)(sizeof(FileAction) + (fileName.size() + 1) * sizeof(String::value_type)));
 
 			FileAction* action = (FileAction*)bytes;
 			bytes += sizeof(FileAction);
 
 			action->oldName = nullptr;
-			action->newName = (WString::value_type*)bytes;
+			action->newName = (String::value_type*)bytes;
 			action->type = FileActionType::Modified;
 
-			memcpy(action->newName, fileName.data(), fileName.size() * sizeof(WString::value_type));
-			action->newName[fileName.size()] = L'\0';
+			memcpy(action->newName, fileName.data(), fileName.size() * sizeof(String::value_type));
+			action->newName[fileName.size()] = '\0';
 
 			return action;
 		}
 
-		static FileAction* createRenamed(const WString& oldFilename, const WString& newfileName)
+		static FileAction* createRenamed(const String& oldFilename, const String& newfileName)
 		{
 			UINT8* bytes = (UINT8*)bs_alloc((UINT32)(sizeof(FileAction) +
-													 (oldFilename.size() + newfileName.size() + 2) * sizeof(WString::value_type)));
+					(oldFilename.size() + newfileName.size() + 2) * sizeof(String::value_type)));
 
 			FileAction* action = (FileAction*)bytes;
 			bytes += sizeof(FileAction);
 
-			action->oldName = (WString::value_type*)bytes;
-			bytes += (oldFilename.size() + 1) * sizeof(WString::value_type);
+			action->oldName = (String::value_type*)bytes;
+			bytes += (oldFilename.size() + 1) * sizeof(String::value_type);
 
-			action->newName = (WString::value_type*)bytes;
+			action->newName = (String::value_type*)bytes;
 			action->type = FileActionType::Modified;
 
-			memcpy(action->oldName, oldFilename.data(), oldFilename.size() * sizeof(WString::value_type));
-			action->oldName[oldFilename.size()] = L'\0';
+			memcpy(action->oldName, oldFilename.data(), oldFilename.size() * sizeof(String::value_type));
+			action->oldName[oldFilename.size()] = '\0';
 
-			memcpy(action->newName, newfileName.data(), newfileName.size() * sizeof(WString::value_type));
-			action->newName[newfileName.size()] = L'\0';
+			memcpy(action->newName, newfileName.data(), newfileName.size() * sizeof(String::value_type));
+			action->newName[newfileName.size()] = '\0';
 
 			return action;
 		}
@@ -108,8 +108,8 @@ namespace bs
 			bs_free(action);
 		}
 
-		WString::value_type* oldName;
-		WString::value_type* newName;
+		String::value_type* oldName;
+		String::value_type* newName;
 		FileActionType type;
 	};
 
@@ -264,9 +264,9 @@ namespace bs
 			if(wasRenamed)
 			{
 				if(FileSystem::exists(path))
-					folderData->fileActions.push_back(FileAction::createAdded(path.toWString()));
+					folderData->fileActions.push_back(FileAction::createAdded(path.toString()));
 				else
-					folderData->fileActions.push_back(FileAction::createRemoved(path.toWString()));
+					folderData->fileActions.push_back(FileAction::createRemoved(path.toString()));
 			}
 
 			// File/folder was added
@@ -275,7 +275,7 @@ namespace bs
 				if (!isFile)
 				{
 					if (watcher->filter.isSet(FolderChangeBit::DirName))
-						folderData->fileActions.push_back(FileAction::createAdded(path.toWString()));
+						folderData->fileActions.push_back(FileAction::createAdded(path.toString()));
 				}
 				else
 				{
@@ -297,12 +297,12 @@ namespace bs
 				if(!isFile)
 				{
 					if(watcher->filter.isSet(FolderChangeBit::DirName))
-						folderData->fileActions.push_back(FileAction::createRemoved(path.toWString()));
+						folderData->fileActions.push_back(FileAction::createRemoved(path.toString()));
 				}
 				else
 				{
 					if(watcher->filter.isSet(FolderChangeBit::FileName))
-						folderData->fileActions.push_back(FileAction::createRemoved(path.toWString()));
+						folderData->fileActions.push_back(FileAction::createRemoved(path.toString()));
 				}
 			}
 
@@ -318,7 +318,7 @@ namespace bs
 				);
 
 				if(iterFind == watcher->createdFiles.end())
-					folderData->fileActions.push_back(FileAction::createModified(path.toWString()));
+					folderData->fileActions.push_back(FileAction::createModified(path.toString()));
 			}
 		}
 	}
@@ -491,7 +491,7 @@ namespace bs
 
 						if(entry.timer.getMilliseconds() > WRITE_STEADY_WAIT)
 						{
-							folderData->fileActions.push_back(FileAction::createAdded(entry.path.toWString()));
+							folderData->fileActions.push_back(FileAction::createAdded(entry.path.toString()));
 							iter = monitor->createdFiles.erase(iter);
 						}
 						else

@@ -15,10 +15,15 @@ target_compile_definitions(bsfFBXImporter PRIVATE -DBS_FBX_EXPORTS)
 
 # Libraries
 ## External lib: FBX
-target_link_libraries(bsfFBXImporter ${FBXSDK_LIBRARIES})
+target_link_libraries(bsfFBXImporter PRIVATE ${FBXSDK_LIBRARIES})
 
 ## Local libs
-target_link_libraries(bsfFBXImporter bsf)
+target_link_libraries(bsfFBXImporter PRIVATE bsf)
+
+## OS libs
+if(APPLE) # MacOS
+	target_link_framework(bsfFBXImporter CoreFoundation)
+endif()
 
 # IDE specific
 set_property(TARGET bsfFBXImporter PROPERTY FOLDER Plugins)

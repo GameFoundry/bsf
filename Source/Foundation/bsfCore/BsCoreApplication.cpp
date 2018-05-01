@@ -346,7 +346,7 @@ namespace bs
 
 	void CoreApplication::stopMainLoop()
 	{
-		mRunMainLoop = false; // No sync primitives needed, in that rare case of 
+		mRunMainLoop = false; // No sync primitives needed, in that rare case of
 		// a race condition we might run the loop one extra iteration which is acceptable
 	}
 

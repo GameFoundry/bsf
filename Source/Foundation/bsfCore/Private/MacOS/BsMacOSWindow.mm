@@ -186,7 +186,7 @@ enum class MouseEventType
 
 @implementation BSWindowListener
 {
-	BSWindow* mWindow;
+	__weak BSWindow* mWindow;
 }
 @synthesize dragAreas;
 
@@ -409,7 +409,7 @@ NSPoint frameToContentRect(NSWindow* window, NSPoint framePoint)
 
 @implementation BSWindowDelegate
 {
-	BSWindow* mWindow;
+	__weak BSWindow* mWindow;
 	NSRect mStandardZoomFrame;
 	bool mIsZooming;
 }
@@ -425,7 +425,13 @@ NSPoint frameToContentRect(NSWindow* window, NSPoint framePoint)
 
 - (void)windowWillClose:(NSNotification *)notification
 {
+	// Do nothing
+}
+
+- (BOOL)windowShouldClose:(id)sender
+{
 	MacOSPlatform::notifyWindowEvent(WindowEventType::CloseRequested, mWindow.WindowId);
+	return NO;
 }
 
 - (void)windowDidBecomeKey:(NSNotification*)notification
@@ -665,10 +671,14 @@ namespace bs
 
 	CocoaWindow::~CocoaWindow()
 	{
-		if(m->window != nil)
-			_destroy();
-
-		bs_delete(m);
+        if (m->window != nil)
+            _destroy();
+        
+        m->delegate = nil;
+        m->responder = nil;
+        m->view = nil;
+        
+        bs_delete(m);
 	}
 
 	void CocoaWindow::move(INT32 x, INT32 y)
