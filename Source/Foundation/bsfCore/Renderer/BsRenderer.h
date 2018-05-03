@@ -410,7 +410,7 @@ namespace bs
 		struct PrivatelyConstruct {};
 
 	public:
-		RendererTask(const PrivatelyConstruct& dummy, const String& name, std::function<bool()> taskWorker);
+		RendererTask(const PrivatelyConstruct& dummy, String name, std::function<bool()> taskWorker);
 
 		/**
 		 * Creates a new task. Task should be provided to Renderer in order for it to start.
@@ -420,7 +420,7 @@ namespace bs
 		 *							multiple frames, in which case this method should return false (if there's more
 		 *							work to be done), or true (if the task has completed).
 		 */
-		static SPtr<RendererTask> create(const String& name, std::function<bool()> taskWorker);
+		static SPtr<RendererTask> create(String name, std::function<bool()> taskWorker);
 
 		/** Returns true if the task has completed. */
 		bool isComplete() const;
@@ -446,7 +446,7 @@ namespace bs
 
 		String mName;
 		std::function<bool()> mTaskWorker;
-		std::atomic<UINT32> mState; /**< 0 - Inactive, 1 - In progress, 2 - Completed, 3 - Canceled */
+		std::atomic<UINT32> mState{0}; /**< 0 - Inactive, 1 - In progress, 2 - Completed, 3 - Canceled */
 	};
 
 	/** @} */

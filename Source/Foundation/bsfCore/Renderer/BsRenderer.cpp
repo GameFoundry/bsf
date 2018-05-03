@@ -136,13 +136,13 @@ namespace bs { namespace ct
 		return std::static_pointer_cast<Renderer>(RendererManager::instance().getActive());
 	}
 
-	RendererTask::RendererTask(const PrivatelyConstruct& dummy, const String& name, std::function<bool()> taskWorker) 
-		:mName(name), mTaskWorker(taskWorker)
+	RendererTask::RendererTask(const PrivatelyConstruct& dummy, String name, std::function<bool()> taskWorker) 
+		:mName(std::move(name)), mTaskWorker(std::move(taskWorker))
 	{ }
 
-	SPtr<RendererTask> RendererTask::create(const String& name, std::function<bool()> taskWorker)
+	SPtr<RendererTask> RendererTask::create(String name, std::function<bool()> taskWorker)
 	{
-		return bs_shared_ptr_new<RendererTask>(PrivatelyConstruct(), name, taskWorker);
+		return bs_shared_ptr_new<RendererTask>(PrivatelyConstruct(), std::move(name), std::move(taskWorker));
 	}
 
 	bool RendererTask::isComplete() const
