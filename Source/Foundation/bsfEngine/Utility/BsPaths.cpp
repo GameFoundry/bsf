@@ -46,9 +46,9 @@ namespace bs
 		{
 			path = FileSystem::getWorkingDirectoryPath();
 			
-			// Look for bsfEngine library to find the right path
+			// Look for bsf library to find the right path
 			Path anchorFile = path;
-			anchorFile.setFilename("bsfEngine" + String(DynLib::EXTENSION));
+			anchorFile.setFilename("bsf." + String(DynLib::EXTENSION));
 
 			if (!FileSystem::exists(anchorFile))
 			{
