@@ -2270,8 +2270,8 @@ namespace bs
 				UINT32 dstZ = (depth - z - 1) * sliceSize;
 
 				memcpy(sliceTemp, &dataPtr[dstZ], sliceSize);
-				memcpy(&dataPtr[srcZ], &dataPtr[srcZ], sliceSize);
-				memcpy(&dataPtr[dstZ], sliceTemp, sliceSize);
+				memcpy(&dataPtr[dstZ], &dataPtr[srcZ], sliceSize);
+				memcpy(&dataPtr[srcZ], sliceTemp, sliceSize);
 			}
 
 			// Note: If flipping Y or X as well I could do it here without an extra set of memcpys
