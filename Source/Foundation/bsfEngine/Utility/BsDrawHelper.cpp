@@ -314,7 +314,6 @@ namespace bs
 		mLineListData.clear();
 		mRect3Data.clear();
 		mFrustumData.clear();
-		mFrustumData.clear();
 		mDiscData.clear();
 		mWireDiscData.clear();
 		mArcData.clear();
