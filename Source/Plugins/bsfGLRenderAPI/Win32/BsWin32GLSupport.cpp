@@ -308,7 +308,10 @@ namespace bs { namespace ct
 			attribList.push_back(WGL_SAMPLES_ARB); attribList.push_back(multisample);
 
 			if (useHwGamma && checkExtension("WGL_EXT_framebuffer_sRGB"))
-				attribList.push_back(WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT); attribList.push_back(GL_TRUE);
+			{
+				attribList.push_back(WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT);
+				attribList.push_back(GL_TRUE);
+			}
 
 			attribList.push_back(0); // Terminator
 
