@@ -100,7 +100,11 @@ namespace bs
 					UINT32 empty : 1;
 				};
 
-				UINT32 index : 3;
+				struct
+				{
+					UINT32 index : 3;
+					UINT32 empty2 : 1;
+				};
 			};
 
 			HChildNode()
@@ -112,7 +116,7 @@ namespace bs
 			{ }
 
 			HChildNode(UINT32 index)
-				:index(index), empty(false)
+				:index(index), empty2(false)
 			{ }
 		};
 
