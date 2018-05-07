@@ -217,7 +217,8 @@ namespace bs
 		mData->mCursorClipping = false;
 		mData->mClipWindow = 0;
 
-		ClipCursor(&mData->mClipRect);
+		if(isAppActive(mData))
+			applyClipping(mData);
 	}
 
 	// TODO - Add support for animated custom cursor
