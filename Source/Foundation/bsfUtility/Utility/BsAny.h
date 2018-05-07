@@ -35,7 +35,7 @@ namespace bs
 
 			virtual DataBase* clone() const override
 			{
-				return new Data(value);
+				return bs_new<Data<ValueType>>(value);
 			}
 
 			ValueType value;
@@ -45,7 +45,7 @@ namespace bs
 		Any() = default;
 
 		template <typename ValueType>
-		Any(const ValueType& value) 
+		Any(const ValueType& value)
 			:mData(bs_new<Data<ValueType>>(value))
 		{ }
 
@@ -53,7 +53,7 @@ namespace bs
 			:mData(nullptr)
 		{ }
 
-		Any(const Any& other) 
+		Any(const Any& other)
 			:mData(other.mData != nullptr ? other.mData->clone() : nullptr)
 		{ }
 
