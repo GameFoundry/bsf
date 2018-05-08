@@ -4,7 +4,7 @@ if(CMAKE_CONFIGURATION_TYPES) # Multiconfig generator?
 else()
 	if(NOT CMAKE_BUILD_TYPE)
 		message("Defaulting to release build.")
-		set(CMAKE_BUILD_TYPE Release CACHE INTERNAL "")
+		set_property(CACHE CMAKE_BUILD_TYPE PROPERTY VALUE "Release")
 	endif()
 	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY HELPSTRING "Choose the type of build")
 	# Set the valid options for cmake-gui drop-down list
@@ -26,6 +26,7 @@ endif()
 ## Compiler-agnostic settings
 ### Target at least C++14
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 ## Compiler-specific settings
 if(MSVC)
 	# Linker
@@ -78,7 +79,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "A
 	if(LINUX)
 		set(BS_COMPILER_FLAGS_COMMON "${BS_COMPILER_FLAGS_COMMON} -Wl,-rpath=$ORIGIN")
 	elseif(APPLE)
-		set(BS_COMPILER_FLAGS_COMMON "${BS_COMPILER_FLAGS_COMMON} -fobjc-arc -Wno-c++1z-extensions")
+		set(BS_COMPILER_FLAGS_COMMON "${BS_COMPILER_FLAGS_COMMON} -fobjc-arc -std=c++1z")
 	endif()
 
 	set(CMAKE_CXX_FLAGS_DEBUG "${BS_COMPILER_FLAGS_COMMON} -g -O0 -DDEBUG")
