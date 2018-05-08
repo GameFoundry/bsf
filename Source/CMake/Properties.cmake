@@ -4,7 +4,7 @@ if(CMAKE_CONFIGURATION_TYPES) # Multiconfig generator?
 else()
 	if(NOT CMAKE_BUILD_TYPE)
 		message("Defaulting to release build.")
-		set(CMAKE_BUILD_TYPE Release CACHE STRING "")
+		set_property(CACHE CMAKE_BUILD_TYPE PROPERTY VALUE "Release")
 	endif()
 	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY HELPSTRING "Choose the type of build")
 	# Set the valid options for cmake-gui drop-down list
@@ -55,7 +55,7 @@ if(MSVC)
 
 	# Compiler
 	set(BS_COMPILER_FLAGS_COMMON "/GS- /W3 /GR- /WX- /MP /nologo /bigobj /wd\"4577\" /wd\"4530\"")
-	set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS")
+	add_definitions(-DWIN32 -D_WINDOWS)
 
 	set(CMAKE_CXX_FLAGS_DEBUG "${BS_COMPILER_FLAGS_COMMON} /Od /RTC1 /MDd -DDEBUG")
 
