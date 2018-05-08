@@ -223,10 +223,12 @@ namespace bs
 		constexpr T& operator*() const { return *mPtr; }
 		constexpr T* operator->() const { return mPtr; }
 		constexpr T* get() const { return mPtr; }
-		constexpr bool operator<(const NativePtr& rhs) const noexcept {
-			constexpr std::less<> cmp = {};
-			return cmp(mPtr, rhs.mPtr);
-		}
+		constexpr bool operator< (const NativePtr& rhs) const { return mPtr <  rhs.mPtr; }
+		constexpr bool operator> (const NativePtr& rhs) const { return mPtr >  rhs.mPtr; }
+		constexpr bool operator<=(const NativePtr& rhs) const { return mPtr <= rhs.mPtr; }
+		constexpr bool operator>=(const NativePtr& rhs) const { return mPtr >= rhs.mPtr; }
+		constexpr bool operator==(const NativePtr& rhs) const { return mPtr == rhs.mPtr; }
+		constexpr bool operator!=(const NativePtr& rhs) const { return mPtr != rhs.mPtr; }
 
 	private:
 		T* mPtr = nullptr;

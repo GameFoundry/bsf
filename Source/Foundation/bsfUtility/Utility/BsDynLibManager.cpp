@@ -37,7 +37,7 @@ namespace bs
 		}
 		else
 		{
-			DynLib* newLib = new (bs_alloc<DynLib>()) DynLib(std::move(filename));
+			DynLib* newLib = bs_new<DynLib>(std::move(filename));
 			mLoadedLibraries.emplace_hint(iterFind, newLib);
 			return newLib;
 		}
