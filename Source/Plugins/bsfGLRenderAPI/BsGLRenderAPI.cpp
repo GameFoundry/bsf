@@ -418,7 +418,9 @@ namespace bs { namespace ct
 
 			bs_frame_mark();
 			{
-				FrameVector<UINT32> textureUnits(12);
+				FrameVector<UINT32> textureUnits;
+				textureUnits.reserve(12);
+
 				auto getTexUnit = [&](UINT32 binding)
 				{
 					for(UINT32 i = 0; i < (UINT32)textureUnits.size(); i++)
@@ -477,6 +479,8 @@ namespace bs { namespace ct
 						if (!activateGLTextureUnit(unit))
 							continue;
 
+						TextureInfo& texInfo = mTextureInfos[unit];
+
 						GLTexture* glTex = static_cast<GLTexture*>(texture.get());
 						if (glTex != nullptr)
 						{
@@ -508,16 +512,16 @@ namespace bs { namespace ct
 							GLuint texId = glTex->getGLID();
 #endif
 
-							if (mTextureInfos[unit].type != newTextureType)
+							if (texInfo.type != newTextureType)
 							{
-								glBindTexture(mTextureInfos[unit].type, 0);
+								glBindTexture(texInfo.type, 0);
 								BS_CHECK_GL_ERROR();
 							}
 
 							glBindTexture(newTextureType, texId);
 							BS_CHECK_GL_ERROR();
 
-							mTextureInfos[unit].type = newTextureType;
+							texInfo.type = newTextureType;
 
 							SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
 							if (activeProgram != nullptr)
@@ -530,7 +534,7 @@ namespace bs { namespace ct
 						}
 						else
 						{
-							glBindTexture(mTextureInfos[unit].type, 0);
+							glBindTexture(texInfo.type, 0);
 							BS_CHECK_GL_ERROR();
 						}
 					}
@@ -547,11 +551,12 @@ namespace bs { namespace ct
 						if (!activateGLTextureUnit(unit))
 							continue;
 
-						bool isMultisample = mTextureInfos[unit].type == GL_TEXTURE_2D_MULTISAMPLE ||
-							mTextureInfos[unit].type == GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
+						// No sampler options for multisampled textures or buffers
+						bool supportsSampler = mTextureInfos[unit].type == GL_TEXTURE_2D_MULTISAMPLE ||
+							mTextureInfos[unit].type == GL_TEXTURE_2D_MULTISAMPLE_ARRAY ||
+							mTextureInfos[unit].type == GL_TEXTURE_BUFFER;
 
-						// No sampler options for multisampled textures
-						if (!isMultisample)
+						if (!supportsSampler)
 						{
 							const SamplerProperties& stateProps = samplerState->getProperties();
 
@@ -2401,8 +2406,6 @@ namespace bs { namespace ct
 
 		mNumTextureUnits = caps->getNumCombinedTextureUnits();
 		mTextureInfos = bs_newN<TextureInfo>(mNumTextureUnits);
-		for (UINT16 i = 0; i < mNumTextureUnits; i++)
-			mTextureInfos[i].type = GL_TEXTURE_2D;
 		
 		bs::TextureManager::startUp<bs::GLTextureManager>(std::ref(*mGLSupport));
 		TextureManager::startUp<GLTextureManager>(std::ref(*mGLSupport));

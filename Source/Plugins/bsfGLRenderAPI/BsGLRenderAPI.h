@@ -359,7 +359,7 @@ namespace bs { namespace ct
 		/** Information about a currently bound texture. */
 		struct TextureInfo
 		{
-			GLenum type;
+			GLenum type = GL_TEXTURE_2D;
 		};
 
 		static const UINT32 MAX_VB_COUNT = 32;
