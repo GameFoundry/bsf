@@ -14,8 +14,9 @@ namespace bs { namespace ct
 	/**	Handles creation of the DX11 render system. */
 	class D3D11RenderAPIFactory : public RenderAPIFactory
 	{
-		static const char* SystemName;
 	public:
+		static const char* SystemName;
+
 		/** @copydoc RenderAPIFactory::create */
 		void create() override;
 
