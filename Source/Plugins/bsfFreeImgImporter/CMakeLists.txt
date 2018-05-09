@@ -24,17 +24,4 @@ target_link_libraries(bsfFreeImgImporter bsf)
 set_property(TARGET bsfFreeImgImporter PROPERTY FOLDER Plugins)
 
 # Install
-install(
-	TARGETS bsfFreeImgImporter
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
-)
-
-if(WIN32)
-	install(
-		FILES $<TARGET_PDB_FILE:bsfFreeImgImporter> 
-		DESTINATION bin 
-		OPTIONAL
-	)
-endif()
+install_bsf_target(bsfFreeImgImporter)

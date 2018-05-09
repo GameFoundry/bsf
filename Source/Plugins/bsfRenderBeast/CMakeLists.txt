@@ -18,17 +18,4 @@ target_link_libraries(bsfRenderBeast bsf)
 set_property(TARGET bsfRenderBeast PROPERTY FOLDER Plugins)
 
 # Install
-install(
-	TARGETS bsfRenderBeast
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
-)
-
-if(WIN32)
-	install(
-		FILES $<TARGET_PDB_FILE:bsfRenderBeast> 
-		DESTINATION bin 
-		OPTIONAL
-	)
-endif()
+install_bsf_target(bsfRenderBeast)

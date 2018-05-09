@@ -24,17 +24,4 @@ target_link_libraries(bsfFontImporter bsf)
 set_property(TARGET bsfFontImporter PROPERTY FOLDER Plugins)
 
 # Install
-install(
-	TARGETS bsfFontImporter
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
-)
-
-if(WIN32)
-	install(
-		FILES $<TARGET_PDB_FILE:bsfFontImporter> 
-		DESTINATION bin 
-		OPTIONAL
-	)
-endif()
+install_bsf_target(bsfFontImporter)

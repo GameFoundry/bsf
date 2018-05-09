@@ -31,18 +31,5 @@ set_property(TARGET bsfFMOD PROPERTY FOLDER Plugins)
 
 # Install
 if(AUDIO_MODULE MATCHES "FMOD")
-	install(
-		TARGETS bsfFMOD
-		RUNTIME DESTINATION bin
-		LIBRARY DESTINATION lib
-		ARCHIVE DESTINATION lib
-	)
-
-	if(WIN32)
-		install(
-			FILES $<TARGET_PDB_FILE:bsfFMOD> 
-			DESTINATION bin 
-			OPTIONAL
-		)
-	endif()
+	install_bsf_target(bsfFMOD)
 endif()

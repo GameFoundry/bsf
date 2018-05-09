@@ -60,17 +60,4 @@ target_link_libraries(bsfSL PRIVATE bsf)
 set_property(TARGET bsfSL PROPERTY FOLDER Plugins)
 
 # Install
-install(
-	TARGETS bsfSL
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
-)
-
-if(WIN32)
-	install(
-		FILES $<TARGET_PDB_FILE:bsfSL> 
-		DESTINATION bin 
-		OPTIONAL
-	)
-endif()
+install_bsf_target(bsfSL)
