@@ -12,15 +12,23 @@ Use the guide below to get bs::framework up and running as quickly as possible. 
   - `cd bsf`
   - `mkdir Build`
   - `cd Build`
-  - `cmake -G "$generator$" ../`
+  - `cmake -G "$generator$" ..`
     - Where *$generator$* should be replaced with any of the supported generators. Some common ones:
 	  - `Visual Studio 15 2017 Win64` - Visual Studio 2017 (64-bit build)
 	  - `Unix Makefiles`
 	  - `Ninja`
 	  - `Xcode`
-	- See all valid generators: [cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html)
-- Build the project using your chosen tool
-  - Build files will be placed in `bsf\Build` folder
+	  - See all valid generators: [cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html)
+	- Optionally provide the `CMAKE_INSTALL_PREFIX` to override the default install path:
+	  - `cmake -G "$generator$" -DCMAKE_INSTALL_PREFIX=/path/to/install ..`
+  - `cmake --build . --config Release`
+    - Alternatively you can also run your build system manually (depending on your choice of generator):
+	  - Visual Studio solution is present at `bsf/Build/bsf.sln`
+	  - XCode project is present at `bsf/Build`
+	  - Makefiles are present at `bsf/Build`
+  - `cmake --build . --config Release --target install`
+	- Alternatively you can run the install target in your chosen build tool
+    - Note that files install to the default install folder, unless you have overriden it as specified above
 	 
 ## Customizing the build
 
@@ -30,8 +38,8 @@ Modify *CMAKE_INSTALL_PREFIX* to choose where the library gets installed after t
 
 Modify *CMAKE_BUILD_TYPE* to pick what kind of a build you want. Note that this is ignored for workflow generators like Visual Studio or XCode, in which you can pick this within the IDE itself. Supported values are:
  - *Debug* - Builds and unoptimized version with debug symbols. This is generally what you want for development.
- - *OptimizedDebug* - Builds an optimized version with debug symbols.
- - *Release* - Builds an optimized version with no debug symbols.
+ - *OptimizedDebug* - Builds an optimized version with debug symbols and various debug checks enabled.
+ - *Release* - Builds an optimized version with no debug checks.
  
 You can choose to use a different *CMake* generator than those specified above, as long as the platform/compiler is supported:  
   - Supported platforms:

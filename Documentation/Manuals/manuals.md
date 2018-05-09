@@ -1,8 +1,7 @@
 User manuals									{#manuals}
 ===============
 
-- Compiling the framework
-- Creating a project
+- [Setting up a project](@ref build)
 - [Startup and main loop](@ref startup)
 - [Scene objects and components](@ref scenesAndComponents)
 - **Resources**

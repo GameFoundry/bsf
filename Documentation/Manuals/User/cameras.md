@@ -43,7 +43,7 @@ This mode simulates human vision, where objects farther away appear smaller. Thi
 camera->setProjectionType(PT_PERSPECTIVE);
 ~~~~~~~~~~~~~
 
-![Dragon drawn using the perspective camera](PerspectiveCamera.png)  
+![Model drawn using the perspective camera](PerspectiveCamera.png)  
 
 ## Ortographic
 Renders the image without perspective distortion, ensuring objects remain the same size regardless of the distance from camera, essentially "flattening" the image. Useful for 2D applications.
@@ -52,7 +52,7 @@ Renders the image without perspective distortion, ensuring objects remain the sa
 camera->setProjectionType(PT_ORTHOGRAPHIC);
 ~~~~~~~~~~~~~
 
-![Dragon drawn using the ortographic camera](OrtographicCamera.png)  
+![Model drawn using the ortographic camera](OrtographicCamera.png)  
 
 # Field of view
 This is a parameter only relevant for perspective cameras. It controls the horizontal angle of vision - increasing it means the camera essentially has a wider lens. Modify it by calling @ref bs::CCamera::setHorzFOV "CCamera::setHorzFOV()".
@@ -106,4 +106,4 @@ MSAA can be enabled by providing a values of 1, 2, 4 or 8 to @ref bs::CCamera::s
 camera->setMSAACount(4);
 ~~~~~~~~~~~~~
 
-@ref TODO_IMAGE
+![MSAA comparison](MSAA.png)  

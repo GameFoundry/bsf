@@ -34,10 +34,10 @@ gui->setSkin(skin);
 Finally, you must tell the GUI element which style to use by providing its name as a parameter to their **create()** method.
 
 ~~~~~~~~~~~~~{.cpp}
-GUIButton* customStyleButton = GUIButton::create(HString(L"Click me"), "MyButtonStyle");
+GUIButton* customStyleButton = GUIButton::create(HString("Click me"), "MyButtonStyle");
 ~~~~~~~~~~~~~
 
-@ref TODO_IMAGE
+![Button with a custom style](customButton.png)
 
 All GUI elements also have a default style name they will use if you don't provide one in a call to **create()** (as was the case for all GUI elements we created in previous chapters). You can find out that name by calling a static **getGUITypeName()** method present on all GUI elements (e.g. **GUIButton::getGUITypeName()**). You can use this name to override GUI element's default styles in **GUISkin**.
 

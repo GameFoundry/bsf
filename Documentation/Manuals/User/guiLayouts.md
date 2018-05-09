@@ -26,8 +26,8 @@ GUIPanel* mainPanel = gui->getPanel();
 GUILayoutX* layout = mainPanel->addNewElement<GUILayoutX>();
 
 // Add a text label, and a button to the right of it
-layout->addNewElement<GUILabel>(HString(L"This is a button: "));
-layout->addNewElement<GUIButton>(HString(L"Click me"));
+layout->addNewElement<GUILabel>(HString("This is a button: "));
+layout->addNewElement<GUIButton>(HString("Click me"));
 ~~~~~~~~~~~~~ 
 
 GUI elements can also be created separately and then added to layouts later using these methods:
@@ -44,8 +44,8 @@ GUIPanel* mainPanel = gui->getPanel();
 GUILayoutX* layout = mainPanel->addNewElement<GUILayoutX>();
 
 // Add a text label, and a button to the right of it
-GUILabel* label = GUILabel::create(HString(L"This is a button: "));
-GUIButton* button = GUIButton::create(HString(L"Click me"));
+GUILabel* label = GUILabel::create(HString("This is a button: "));
+GUIButton* button = GUIButton::create(HString("Click me"));
 
 layout->addElement(label);
 layout->addElement(button);
@@ -65,7 +65,7 @@ GUILayoutX* layout = mainPanel->addNewElement<GUILayoutX>();
 
 for(int i = 0; i < 5; i++)
 {
-	GUIButton* button = layout->addNewElement<GUIButton>(HString(L"Click me #" + toWString(i)));
+	GUIButton* button = layout->addNewElement<GUIButton>(HString("Click me #" + toString(i)));
 	button->setWidth(90);
 }
 ~~~~~~~~~~~~~  
@@ -84,7 +84,7 @@ GUILayoutY* layout = mainPanel->addNewElement<GUILayoutY>();
 
 for(int i = 0; i < 5; i++)
 {
-	GUIButton* button = layout->addNewElement<GUIButton>(HString(L"Click me #" + toWString(i)));
+	GUIButton* button = layout->addNewElement<GUIButton>(HString("Click me #" + toString(i)));
 	button->setWidth(90);
 }
 ~~~~~~~~~~~~~  
@@ -108,7 +108,7 @@ GUILayoutX* layout = mainPanel->addNewElement<GUILayoutX>();
 
 for(int i = 0; i < 5; i++)
 {
-	GUIButton* button = layout->addNewElement<GUIButton>(HString(L"Click me #" + toWString(i)));
+	GUIButton* button = layout->addNewElement<GUIButton>(HString("Click me #" + toString(i)));
 	
 	// Button will be anywhere between 50 and 200 pixels, depending on how much space is there in the layout
 	button->setFlexibleWidth(50, 200);
@@ -137,7 +137,7 @@ GUILayoutX* layout = mainPanel->addNewElement<GUILayoutX>();
 
 for(int i = 0; i < 5; i++)
 {
-	GUIButton* button = layout->addNewElement<GUIButton>(HString(L"Click me #" + toWString(i)));
+	GUIButton* button = layout->addNewElement<GUIButton>(HString("Click me #" + toString(i)));
 	button->setWidth(90);
 	
 	layout->addNewElement<GUIFixedSpace>(10);
@@ -159,7 +159,7 @@ GUILayoutX* layout = mainPanel->addNewElement<GUILayoutX>();
 
 for(int i = 0; i < 5; i++)
 {
-	GUIButton* button = layout->addNewElement<GUIButton>(HString(L"Click me #" + toWString(i)));
+	GUIButton* button = layout->addNewElement<GUIButton>(HString("Click me #" + toString(i)));
 	button->setWidth(90);
 	
 	if(i != 4)
@@ -185,7 +185,7 @@ layout->setSize(150, 25);
 // Add five buttons to the layout
 for(int i = 0; i < 5; i++)
 {
-	GUIButton* button = layout->addNewElement<GUIButton>(HString(L"Click me #" + toWString(i)));
+	GUIButton* button = layout->addNewElement<GUIButton>(HString("Click me #" + toString(i)));
 	button->setWidth(90);
 	
 	if(i != 4)
@@ -208,7 +208,7 @@ for (int i = 0; i < 5; i++)
 
 	for(int j = 0; j < 4; j++)
 	{
-		GUIButton* button = rows->addNewElement<GUIButton>(HString(L"Click me"));
+		GUIButton* button = rows->addNewElement<GUIButton>(HString("Click me"));
 		button->setWidth(70);
 	}
 
@@ -242,7 +242,7 @@ guiTexture->setSize(150, 150);
 guiTexture->setTint(Color(1.0f, 1.0f, 1.0f, 0.5f));
 
 // Add a button to the main panel, which renders a depth 0 (default), in front of the background panel
-GUIButton* button = mainPanel->addNewElement<GUIButton>(HString(L"Click me"));
+GUIButton* button = mainPanel->addNewElement<GUIButton>(HString("Click me"));
 button->setPosition(280, 190);
 button->setSize(90, 25);
 ~~~~~~~~~~~~~

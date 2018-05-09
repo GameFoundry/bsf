@@ -29,7 +29,7 @@ You can now use the GUI widget to add GUI elements to it
 ~~~~~~~~~~~~~{.cpp}
 // Shows the text "Hello!" on the screen
 GUIPanel* mainPanel = gui->getPanel();
-mainPanel->addElement(GUILabel::create(HString(L"Hello!")));
+mainPanel->addElement(GUILabel::create(HString("Hello!")));
 
 // ... add more elements ...
 ~~~~~~~~~~~~~
