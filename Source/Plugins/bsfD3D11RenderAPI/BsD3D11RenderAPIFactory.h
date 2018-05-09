@@ -11,12 +11,10 @@ namespace bs { namespace ct
 	/** @addtogroup D3D11
 	 *  @{
 	 */
-
-	extern const char* SystemName;
-
 	/**	Handles creation of the DX11 render system. */
 	class D3D11RenderAPIFactory : public RenderAPIFactory
 	{
+		static const char* SystemName;
 	public:
 		/** @copydoc RenderAPIFactory::create */
 		void create() override;
@@ -30,8 +28,8 @@ namespace bs { namespace ct
 		class InitOnStart
 		{
 		public:
-			InitOnStart() 
-			{ 
+			InitOnStart()
+			{
 				static SPtr<RenderAPIFactory> newFactory;
 				if(newFactory == nullptr)
 				{

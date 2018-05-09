@@ -6,11 +6,11 @@
 
 namespace bs
 {
-	const char* SystemName = "BansheeSL";
 
 	/**	Returns a name of the plugin. */
 	extern "C" BS_PLUGIN_EXPORT const char* getPluginName()
 	{
+		static const char* SystemName = "BansheeSL";
 		return SystemName;
 	}
 
