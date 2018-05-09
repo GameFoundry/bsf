@@ -89,8 +89,8 @@ HGUIWidget gui = guiSO->addComponent<CGUIWidget>(guiCamera);
 GUIPanel* guiPanel = gui->getPanel();
 
 GUILayout* guiLayout = guiPanel->addNewElement<GUILayoutY>();
-guiLayout->addNewElement<GUIButton>(HString(L"Click me!"));
-guiLayout->addNewElement<GUIButton>(HString(L"Click me too!"));
+guiLayout->addNewElement<GUIButton>(HString("Click me!"));
+guiLayout->addNewElement<GUIButton>(HString("Click me too!"));
 ~~~~~~~~~~~~~
 
 # Final result

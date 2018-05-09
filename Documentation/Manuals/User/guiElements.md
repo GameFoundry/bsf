@@ -8,7 +8,7 @@ In order to display a GUI element we must first create it. All GUI elements are 
 
 ~~~~~~~~~~~~~{.cpp}
 // GUILabel is a type of GUI element that displays the provided text on screen
-GUILabel* label = GUILabel::create(HString(L"Hello!"));
+GUILabel* label = GUILabel::create(HString("Hello!"));
 ~~~~~~~~~~~~~
 
 But just creating the element is not enough. We must also register it with our **GUIWidget**. To do that we must first retrieve the primary @ref bs::GUIPanel "GUIPanel" from the widget. **GUIPanel** serves as an element container, and by default every widget has one. Use @ref bs::CGUIWidget::getPanel() "CGUIWidget::getPanel()" to retrieve the panel.
@@ -92,14 +92,14 @@ bs::f provides a large library of existing GUI element types. We'll focus on exp
 A label is the most basic of GUI elements, that allows no user interaction and just displays a textual string. It is created with @ref bs::GUILabel::create "GUILabel::create()", which accepts a string as input.
 
 ~~~~~~~~~~~~~{.cpp}
-GUILabel* label = GUILabel::create(HString(L"Hello!"));
+GUILabel* label = GUILabel::create(HString("Hello!"));
 mainPanel->addElement(label);
 ~~~~~~~~~~~~~
 
 Once created you can optionally change the displayed text with @ref bs::GUILabel::setContent "GUILabel::setContent()".
 
 ~~~~~~~~~~~~~{.cpp}
-label->setContent(HString(L"New text!"));
+label->setContent(HString("New text!"));
 ~~~~~~~~~~~~~
 
 > You can use *setContent* function on most GUI elements, so we won't mention it further for each individual element.
@@ -138,7 +138,7 @@ GUI elements that can have either text or image contents (or both) accept a @ref
 
 ~~~~~~~~~~~~~{.cpp}
 // Contents containing only text
-GUIContent textContents(HString(L"Click me!"));
+GUIContent textContents(HString("Click me!"));
 
 // Contents containing only an image
 HTexture tex = gImporter().import<Texture>("BansheLogoRoundSmall.png");
@@ -232,21 +232,21 @@ mainPanel->addElement(multiLineInput);
 Once created you can retrieve the text currently in the input box by calling @ref bs::GUIInputBox::getText "GUIInputBox::getText()".
 
 ~~~~~~~~~~~~~{.cpp}
-WString userInput = singleLineInput->getText();
+String userInput = singleLineInput->getText();
 ~~~~~~~~~~~~~
 
 You can also programatically set text in the box with @ref bs::GUIInputBox::setText "GUIInputBox::setText()".
 
 ~~~~~~~~~~~~~{.cpp}
-multiLineInput->setText(L"Type in me!");
+multiLineInput->setText("Type in me!");
 ~~~~~~~~~~~~~
 
 If you wish to get notified as the user is inputting text you can use the @ref bs::GUIInputBox::onValueChanged "GUIInputBox::onValueChanged" event. It will be called whenever the user types a new character (or deletes an existing one).
 
 ~~~~~~~~~~~~~{.cpp}
-auto respondToInput = [](const WString& text)
+auto respondToInput = [](const String& text)
 {
-	gDebug().logDebug("New input box value: " + toString(text));
+	gDebug().logDebug("New input box value: " + text);
 };
 
 multiLineInput->onValueChanged.connect(respondToInput);
@@ -255,10 +255,10 @@ multiLineInput->onValueChanged.connect(respondToInput);
 Sometimes you might want to limit what is user allowed to input (for example, just numbers). In that case you can use @ref bs::GUIInputBox::setFilter "GUIInputBox::setFilter()" to set a custom filter callback. The callback accepts a potential input, and returns true if it will be accepted.
 
 ~~~~~~~~~~~~~{.cpp}
-auto intFilter = [](const WString& str)
+auto intFilter = [](const String& str)
 {
 	// Use regex to match only integers
-	return std::regex_match(str, std::wregex(L"-?(\\d+)?"));
+	return std::regex_match(str, std::regex("-?(\\d+)?"));
 };
 
 // This input box now accepts only integers
@@ -273,10 +273,10 @@ List boxes allow you to provide multiple elements the user can pick between. The
 ~~~~~~~~~~~~~{.cpp}
 Vector<HString> listElements =
 {
-	HString(L"Orange"),
-	HString(L"Apple"),
-	HString(L"Banana"),
-	HString(L"Strawberry")
+	HString("Orange"),
+	HString("Apple"),
+	HString("Banana"),
+	HString("Strawberry")
 };
 
 // Create a single-select list with four elements
@@ -298,8 +298,8 @@ for(auto& isSelected : selection)
 {
 	if (isSelected)
 	{
-		WString selectedValue = listElements[idx].getValue();
-		gDebug().logDebug("Element " + toString(selectedValue) + " is selected");
+		String selectedValue = listElements[idx].getValue();
+		gDebug().logDebug("Element " + selectedValue + " is selected");
 	}
 
 	idx++;
@@ -311,12 +311,12 @@ You can also get notified immediately as the selection is changing by subscribin
 ~~~~~~~~~~~~~{.cpp}
 auto selectionToggled = [=](UINT32 idx, bool enabled)
 {
-	WString selectedValue = listElements[idx].getValue();
+	String selectedValue = listElements[idx].getValue();
 
 	if (enabled)
-		gDebug().logDebug("User selected " + toString(selectedValue));
+		gDebug().logDebug("User selected " + selectedValue);
 	else
-		gDebug().logDebug("User deselected " + toString(selectedValue));
+		gDebug().logDebug("User deselected " + selectedValue);
 };
 
 listBox->onSelectionToggled.connect(selectionToggled);
@@ -407,7 +407,7 @@ Once scroll area is created it will provide you with a layout, similar to how **
 GUILayout& layout = scrollArea->getLayout();
 for(UINT32 i = 0; i < 20; i++)
 {
-	GUIButton* button = GUIButton::create(HString(L"Entry #" + toWString(i)));
+	GUIButton* button = GUIButton::create(HString("Entry #" + toString(i)));
 	layout.addElement(button);
 }
 ~~~~~~~~~~~~~

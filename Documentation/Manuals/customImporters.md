@@ -17,12 +17,12 @@ Implementing this interface involves implementation of the following methods:
 class PlainTextImporter : public SpecificImporter
 {
 public:
-	bool isExtensionSupported(const WString& ext) const override
+	bool isExtensionSupported(const String& ext) const override
 	{
-		WString lowerCaseExt = ext;
+		String lowerCaseExt = ext;
 		StringUtil::toLowerCase(lowerCaseExt);
 
-		return lowerCaseExt == L"txt";
+		return lowerCaseExt == "txt";
 	}
 
 	bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const override
@@ -34,7 +34,7 @@ public:
 	SPtr<Resource> import(const Path& filePath, SPtr<const ImportOptions> importOptions) override
 	{
 		SPtr<DataStream> stream = FileSystem::openFile(filePath);
-		WString textData = stream->getAsWString();
+		String textData = stream->getAsString();
 
 		// ... initialize some resource with the text and return
 	}
