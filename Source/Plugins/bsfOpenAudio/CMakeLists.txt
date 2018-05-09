@@ -33,18 +33,5 @@ set_property(TARGET bsfOpenAudio PROPERTY FOLDER Plugins)
 
 # Install
 if(AUDIO_MODULE MATCHES "OpenAudio")
-	install(
-		TARGETS bsfOpenAudio
-		RUNTIME DESTINATION bin
-		LIBRARY DESTINATION lib
-		ARCHIVE DESTINATION lib
-	)
-	
-	if(WIN32)
-		install(
-			FILES $<TARGET_PDB_FILE:bsfOpenAudio> 
-			DESTINATION bin 
-			OPTIONAL
-		)
-	endif()
+	install_bsf_target(bsfOpenAudio)
 endif()

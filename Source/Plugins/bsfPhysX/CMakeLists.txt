@@ -26,17 +26,4 @@ target_link_libraries(bsfPhysX PRIVATE bsf)
 set_property(TARGET bsfPhysX PROPERTY FOLDER Plugins)
 
 # Install
-install(
-	TARGETS bsfPhysX
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
-)
-
-if(WIN32)
-	install(
-		FILES $<TARGET_PDB_FILE:bsfPhysX> 
-		DESTINATION bin 
-		OPTIONAL
-	)
-endif()
+install_bsf_target(bsfPhysX)

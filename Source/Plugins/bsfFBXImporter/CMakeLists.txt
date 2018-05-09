@@ -29,17 +29,4 @@ endif()
 set_property(TARGET bsfFBXImporter PROPERTY FOLDER Plugins)
 
 # Install
-install(
-	TARGETS bsfFBXImporter
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
-)
-
-if(WIN32)
-	install(
-		FILES $<TARGET_PDB_FILE:bsfFBXImporter> 
-		DESTINATION bin 
-		OPTIONAL
-	)
-endif()
+install_bsf_target(bsfFBXImporter)

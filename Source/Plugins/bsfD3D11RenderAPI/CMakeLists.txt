@@ -28,18 +28,5 @@ set_property(TARGET bsfD3D11RenderAPI PROPERTY FOLDER Plugins)
 
 # Install
 if(RENDER_API_MODULE MATCHES "DirectX 11")
-	install(
-		TARGETS bsfD3D11RenderAPI
-		RUNTIME DESTINATION bin
-		LIBRARY DESTINATION lib
-		ARCHIVE DESTINATION lib
-	)
-	
-	if(WIN32)
-		install(
-			FILES $<TARGET_PDB_FILE:bsfD3D11RenderAPI> 
-			DESTINATION bin 
-			OPTIONAL
-		)
-	endif()
+	install_bsf_target(bsfD3D11RenderAPI)
 endif()
