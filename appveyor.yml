@@ -22,7 +22,7 @@ build_script:
 
 after_build:
  - ps: cd ..
- - ps: $buildName = "$(Get-Date -format dd.MM.yyyy)"
+ - ps: if($env:APPVEYOR_REPO_TAG -eq "true") { $buildName = $APPVEYOR_REPO_TAG_NAME } else { $buildName = "$(Get-Date -format dd.MM.yyyy)" }
  - ps: Set-AppveyorBuildVariable "BSF_BUILD_NAME" "$buildName"
  - cmd: 7z a bsf_%BSF_BUILD_NAME%_win64.zip ./CI/* -xr!*pdb
  - cmd: 7z a bsf_%BSF_BUILD_NAME%_win64_symbols.zip ./CI/*pdb -r
@@ -48,3 +48,16 @@ deploy:
     debug: true
     on:
       APPVEYOR_SCHEDULED_BUILD: true
+
+  - provider: FTP
+    protocol: ftp
+    host: $(FTP_HOST)
+    username: $(FTP_USER)
+    password: $(FTP_PASSWORD)
+    folder: bsfBuilds
+    application:
+    active_mode: false
+    beta: true
+    debug: true
+    on:
+      APPVEYOR_REPO_TAG: true

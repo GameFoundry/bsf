@@ -90,8 +90,14 @@ script:
 after_success:
   - cd ..
   - today=`date +%d.%m.%Y`
-  - filename=bsf_${today}_${TRAVIS_OS_NAME}.tar.gz
-  - symbolsFilename=bsf_${today}_${TRAVIS_OS_NAME}_symbols.tar.gz
+  - |
+    if [ -n "$TRAVIS_TAG" ]; then
+      buildName = ${TRAVIS_TAG}
+    else
+      buildName = ${today}
+    fi
+  - filename=bsf_${buildName}_${TRAVIS_OS_NAME}.tar.gz
+  - symbolsFilename=bsf_${buildName}_${TRAVIS_OS_NAME}_symbols.tar.gz
   - cd ${INSTALL_DIR}
   - cd ..
   - |
