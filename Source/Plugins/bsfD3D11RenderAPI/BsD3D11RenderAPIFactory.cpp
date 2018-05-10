@@ -5,7 +5,7 @@
 
 namespace bs { namespace ct
 {
-	const char* SystemName = "BansheeD3D11RenderSystem";
+	const char* D3D11RenderAPIFactory::SystemName = "BansheeD3D11RenderSystem";
 
 	void D3D11RenderAPIFactory::create()
 	{
