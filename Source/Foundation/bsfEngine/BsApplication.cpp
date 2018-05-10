@@ -63,7 +63,7 @@ namespace bs
 
 		Cursor::startUp();
 		Cursor::instance().setCursor(CursorType::Arrow);
-		Platform::setIcon(BuiltinResources::instance().getBansheeIcon());
+		Platform::setIcon(BuiltinResources::instance().getFrameworkIcon());
 
 		SceneManager::instance().setMainRenderTarget(getPrimaryWindow());
 		DebugDraw::startUp();

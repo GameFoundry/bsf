@@ -167,7 +167,7 @@ namespace bs
 	/* 							ICON TEXTURES					    		*/
 	/************************************************************************/
 
-	const String BuiltinResources::IconTextureName = u8"BansheeIcon.png";
+	const String BuiltinResources::IconTextureName = u8"bsfIcon.png";
 
 	/************************************************************************/
 	/* 									SHADERS                      		*/
@@ -210,7 +210,7 @@ namespace bs
 		mCursorSizeNS = nullptr;
 		mCursorSizeNWSE = nullptr;
 		mCursorSizeWE = nullptr;
-		mBansheeIcon = nullptr;
+		mFrameworkIcon = nullptr;
 	}
 
 	BuiltinResources::BuiltinResources()
@@ -383,8 +383,8 @@ namespace bs
 
 		HTexture iconTex = gResources().load<Texture>(iconPath);
 
-		mBansheeIcon = iconTex->getProperties().allocBuffer(0, 0);
-		iconTex->readData(mBansheeIcon);
+		mFrameworkIcon = iconTex->getProperties().allocBuffer(0, 0);
+		iconTex->readData(mFrameworkIcon);
 
 		gCoreThread().submit(true);
 	}
@@ -1446,9 +1446,9 @@ namespace bs
 		return *mCursorArrowLeftRight.get();
 	}
 
-	const PixelData& BuiltinResources::getBansheeIcon()
+	const PixelData& BuiltinResources::getFrameworkIcon()
 	{
-		return *mBansheeIcon.get();
+		return *mFrameworkIcon.get();
 	}
 
 	Path BuiltinResources::getRawShaderFolder()
