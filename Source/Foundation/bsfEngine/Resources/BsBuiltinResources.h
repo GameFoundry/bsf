@@ -89,7 +89,7 @@ namespace bs
 		const PixelData& getCursorMoveLeftRight(Vector2I& hotSpot);
 
 		/**	Returns the default application icon. */
-		const PixelData& getBansheeIcon();
+		const PixelData& getFrameworkIcon();
 
 		/**	Returns one of the builtin shader types. */
 		HShader getBuiltinShader(BuiltinShader type) const;
@@ -172,7 +172,7 @@ namespace bs
 		SPtr<PixelData> mCursorSizeNS;
 		SPtr<PixelData> mCursorSizeNWSE;
 		SPtr<PixelData> mCursorSizeWE;
-		SPtr<PixelData> mBansheeIcon;
+		SPtr<PixelData> mFrameworkIcon;
 
 		HSpriteTexture mWhiteSpriteTexture;
 		HSpriteTexture mDummySpriteTexture;
