@@ -321,24 +321,24 @@ namespace bs
 
 		// Try different things:
 		// 1) If defined, honor the TMPDIR environnement variable
-		char *TMPDIR = getenv("TMPDIR");
+		char* TMPDIR = getenv("TMPDIR");
 		if (TMPDIR != nullptr)
-				tmpdir = TMPDIR;
+			tmpdir = TMPDIR;
 		else
 		{
-		// 2) If defined, honor the P_tmpdir macro
+			// 2) If defined, honor the P_tmpdir macro
 #ifdef P_tmpdir
-		tmpdir = String(P_tmpdir);
+			tmpdir = String(P_tmpdir);
 #else
-		// 3) If everything else fails, simply default to /tmp
-		tmpdir = String("/tmp");
+			// 3) If everything else fails, simply default to /tmp
+			tmpdir = String("/tmp");
 #endif
 		}
 
-		tmpdir.append("/banshee-XXXXXX");
-		Vector<char> nameTemplate(tmpdir.data(),tmpdir.data()+tmpdir.size());
-		nameTemplate.push_back(0); // null terminate the name template.
-
+		tmpdir.append("/bsf-XXXXXX");
+		
+		// null terminated, modifiable tmpdir name template
+		Vector<char> nameTemplate(tmpdir.c_str(), tmpdir.c_str() + tmpdir.size() + 1);
 		char *directoryName = mkdtemp(nameTemplate.data());
 
 		if (directoryName == nullptr)
