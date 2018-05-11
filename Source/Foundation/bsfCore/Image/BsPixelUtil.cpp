@@ -8,16 +8,16 @@
 #include "Image/BsTexture.h"
 #include <nvtt.h>
 
-namespace bs 
+namespace bs
 {
 	/**
 	 * Performs pixel data resampling using the point filter (nearest neighbor). Does not perform format conversions.
 	 *
 	 * @tparam elementSize	Size of a single pixel in bytes.
 	 */
-	template<UINT32 elementSize> struct NearestResampler 
+	template<UINT32 elementSize> struct NearestResampler
 	{
-		static void scale(const PixelData& source, const PixelData& dest) 
+		static void scale(const PixelData& source, const PixelData& dest)
 		{
 			UINT8* sourceData = source.getData();
 			UINT8* destPtr = dest.getData();
@@ -28,23 +28,23 @@ namespace bs
 			UINT64 stepZ = ((UINT64)source.getDepth() << 48) / dest.getDepth();
 
 			UINT64 curZ = (stepZ >> 1) - 1; // Offset half a pixel to start at pixel center
-			for (UINT32 z = dest.getFront(); z < dest.getBack(); z++, curZ += stepZ) 
+			for (UINT32 z = dest.getFront(); z < dest.getBack(); z++, curZ += stepZ)
 			{
 				UINT32 offsetZ = (UINT32)(curZ >> 48) * source.getSlicePitch();
 
 				UINT64 curY = (stepY >> 1) - 1; // Offset half a pixel to start at pixel center
-				for (UINT32 y = dest.getTop(); y < dest.getBottom(); y++, curY += stepY) 
+				for (UINT32 y = dest.getTop(); y < dest.getBottom(); y++, curY += stepY)
 				{
 					UINT32 offsetY = (UINT32)(curY >> 48) * source.getRowPitch();
 
 					UINT64 curX = (stepX >> 1) - 1; // Offset half a pixel to start at pixel center
-					for (UINT32 x = dest.getLeft(); x < dest.getRight(); x++, curX += stepX) 
+					for (UINT32 x = dest.getLeft(); x < dest.getRight(); x++, curX += stepX)
 					{
 						UINT32 offsetX = (UINT32)(curX >> 48);
 						UINT32 offsetBytes = elementSize*(offsetX + offsetY + offsetZ);
 
 						UINT8* curSourcePtr = sourceData + offsetBytes;
-							
+
 						memcpy(destPtr, curSourcePtr, elementSize);
 						destPtr += elementSize;
 					}
@@ -58,9 +58,9 @@ namespace bs
 	};
 
 	/** Performs pixel data resampling using the box filter (linear). Performs format conversions. */
-	struct LinearResampler 
+	struct LinearResampler
 	{
-		static void scale(const PixelData& source, const PixelData& dest) 
+		static void scale(const PixelData& source, const PixelData& dest)
 		{
 			UINT32 sourceElemSize = PixelUtil::getNumElemBytes(source.getFormat());
 			UINT32 destElemSize = PixelUtil::getNumElemBytes(dest.getFormat());
@@ -80,16 +80,16 @@ namespace bs
 			UINT32 temp = 0;
 
 			UINT64 curZ = (stepZ >> 1) - 1; // Offset half a pixel to start at pixel center
-			for (UINT32 z = dest.getFront(); z < dest.getBack(); z++, curZ += stepZ) 
+			for (UINT32 z = dest.getFront(); z < dest.getBack(); z++, curZ += stepZ)
 			{
 				temp = UINT32(curZ >> 32);
 				temp = (temp > 0x8000)? temp - 0x8000 : 0;
 				UINT32 sampleCoordZ1 = temp >> 16;
 				UINT32 sampleCoordZ2 = std::min(sampleCoordZ1 + 1, (UINT32)source.getDepth() - 1);
-				float sampleWeightZ = (temp & 0xFFFF) / 65536.0f; 
+				float sampleWeightZ = (temp & 0xFFFF) / 65536.0f;
 
 				UINT64 curY = (stepY >> 1) - 1; // Offset half a pixel to start at pixel center
-				for (UINT32 y = dest.getTop(); y < dest.getBottom(); y++, curY += stepY) 
+				for (UINT32 y = dest.getTop(); y < dest.getBottom(); y++, curY += stepY)
 				{
 					temp = (UINT32)(curY >> 32);
 					temp = (temp > 0x8000)? temp - 0x8000 : 0;
@@ -98,7 +98,7 @@ namespace bs
 					float sampleWeightY = (temp & 0xFFFF) / 65536.0f;
 
 					UINT64 curX = (stepX >> 1) - 1; // Offset half a pixel to start at pixel center
-					for (UINT32 x = dest.getLeft(); x < dest.getRight(); x++, curX += stepX) 
+					for (UINT32 x = dest.getLeft(); x < dest.getRight(); x++, curX += stepX)
 					{
 						temp = (UINT32)(curX >> 32);
 						temp = (temp > 0x8000)? temp - 0x8000 : 0;
@@ -145,13 +145,13 @@ namespace bs
 	};
 
 
-	/** 
+	/**
 	 * Performs pixel data resampling using the box filter (linear). Only handles float RGB or RGBA pixel data (32 bits per
 	 * channel).
 	 */
-	struct LinearResampler_Float32 
+	struct LinearResampler_Float32
 	{
-		static void scale(const PixelData& source, const PixelData& dest) 
+		static void scale(const PixelData& source, const PixelData& dest)
 		{
 			UINT32 numSourceChannels = PixelUtil::getNumElemBytes(source.getFormat()) / sizeof(float);
 			UINT32 numDestChannels = PixelUtil::getNumElemBytes(dest.getFormat()) / sizeof(float);
@@ -171,7 +171,7 @@ namespace bs
 			UINT32 temp = 0;
 
 			UINT64 curZ = (stepZ >> 1) - 1; // Offset half a pixel to start at pixel center
-			for (UINT32 z = dest.getFront(); z < dest.getBack(); z++, curZ += stepZ) 
+			for (UINT32 z = dest.getFront(); z < dest.getBack(); z++, curZ += stepZ)
 			{
 				temp = (UINT32)(curZ >> 32);
 				temp = (temp > 0x8000)? temp - 0x8000 : 0;
@@ -180,7 +180,7 @@ namespace bs
 				float sampleWeightZ = (temp & 0xFFFF) / 65536.0f;
 
 				UINT64 curY = (stepY >> 1) - 1; // Offset half a pixel to start at pixel center
-				for (UINT32 y = dest.getTop(); y < dest.getBottom(); y++, curY += stepY) 
+				for (UINT32 y = dest.getTop(); y < dest.getBottom(); y++, curY += stepY)
 				{
 					temp = (UINT32)(curY >> 32);
 					temp = (temp > 0x8000)? temp - 0x8000 : 0;
@@ -189,7 +189,7 @@ namespace bs
 					float sampleWeightY = (temp & 0xFFFF) / 65536.0f;
 
 					UINT64 curX = (stepX >> 1) - 1; // Offset half a pixel to start at pixel center
-					for (UINT32 x = dest.getLeft(); x < dest.getRight(); x++, curX += stepX) 
+					for (UINT32 x = dest.getLeft(); x < dest.getRight(); x++, curX += stepX)
 					{
 						temp = (UINT32)(curX >> 32);
 						temp = (temp > 0x8000)? temp - 0x8000 : 0;
@@ -226,7 +226,7 @@ namespace bs
 							ACCUM3(sampleCoordX2, sampleCoordY2, sampleCoordZ2, sampleWeightX		   * sampleWeightY			* sampleWeightZ);
 							accum[3] = 1.0f;
 						}
-						else 
+						else
 						{
 							// RGBA
 							ACCUM4(sampleCoordX1, sampleCoordY1, sampleCoordZ1, (1.0f - sampleWeightX) * (1.0f - sampleWeightY) * (1.0f - sampleWeightZ));
@@ -264,17 +264,17 @@ namespace bs
 	// as unrolling loops and replacing multiplies with bitshifts
 
 	/**
-	 * Performs pixel data resampling using the box filter (linear). Only handles pixel formats with one byte per channel. 
+	 * Performs pixel data resampling using the box filter (linear). Only handles pixel formats with one byte per channel.
 	 * Does not perform format conversion.
 	 *
 	 * @tparam	channels	Number of channels in the pixel format.
 	 */
-	template<UINT32 channels> struct LinearResampler_Byte 
+	template<UINT32 channels> struct LinearResampler_Byte
 	{
-		static void scale(const PixelData& source, const PixelData& dest) 
+		static void scale(const PixelData& source, const PixelData& dest)
 		{
 			// Only optimized for 2D
-			if (source.getDepth() > 1 || dest.getDepth() > 1) 
+			if (source.getDepth() > 1 || dest.getDepth() > 1)
 			{
 				LinearResampler::scale(source, dest);
 				return;
@@ -315,7 +315,7 @@ namespace bs
 					UINT32 sampleCoordX2 = std::min(sampleCoordX1 + 1, (UINT32)source.getRight() - source.getLeft() - 1);
 
 					UINT32 sxfsyf = sampleWeightX*sampleWeightY;
-					for (UINT32 k = 0; k < channels; k++) 
+					for (UINT32 k = 0; k < channels; k++)
 					{
 						UINT32 accum =
 							sourceData[(sampleCoordX1 + sampleY1Offset)*channels+k]*(0x1000000-(sampleWeightX<<12)-(sampleWeightY<<12)+sxfsyf) +
@@ -360,7 +360,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		0, 0, 0, 0,
 		/* Masks and shifts */
-		0, 0, 0, 0, 
+		0, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -374,7 +374,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		8, 0, 0, 0,
 		/* Masks and shifts */
-		0x000000FF, 0, 0, 0, 
+		0x000000FF, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -388,7 +388,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		8, 8, 0, 0,
 		/* Masks and shifts */
-		0x000000FF, 0x0000FF00, 0, 0, 
+		0x000000FF, 0x0000FF00, 0, 0,
 		0, 8, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -470,7 +470,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		0, 0, 0, 0,
 		/* Masks and shifts */
-		0, 0, 0, 0, 
+		0, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -484,7 +484,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		0, 0, 0, 0,
 		/* Masks and shifts */
-		0, 0, 0, 0, 
+		0, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -498,7 +498,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		0, 0, 0, 0,
 		/* Masks and shifts */
-		0, 0, 0, 0, 
+		0, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -512,7 +512,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		0, 0, 0, 0,
 		/* Masks and shifts */
-		0, 0, 0, 0, 
+		0, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -526,7 +526,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		0, 0, 0, 0,
 		/* Masks and shifts */
-		0, 0, 0, 0, 
+		0, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -540,7 +540,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		0, 0, 0, 0,
 		/* Masks and shifts */
-		0, 0, 0, 0, 
+		0, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -554,7 +554,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		0, 0, 0, 0,
 		/* Masks and shifts */
-		0, 0, 0, 0, 
+		0, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -568,7 +568,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		0, 0, 0, 0,
 		/* Masks and shifts */
-		0, 0, 0, 0, 
+		0, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -582,7 +582,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		16, 0, 0, 0,
 		/* Masks and shifts */
-		0x0000FFFF, 0, 0, 0, 
+		0x0000FFFF, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -596,7 +596,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		16, 16, 0, 0,
 		/* Masks and shifts */
-		0x0000FFFF, 0xFFFF0000, 0, 0, 
+		0x0000FFFF, 0xFFFF0000, 0, 0,
 		0, 16, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -612,7 +612,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		16, 16, 16, 16,
 		/* Masks and shifts */
-		0x0000FFFF, 0xFFFF0000, 0x0000FFFF, 0xFFFF0000, 
+		0x0000FFFF, 0xFFFF0000, 0x0000FFFF, 0xFFFF0000,
 		0, 16, 0, 16,
 		},
 	//-----------------------------------------------------------------------
@@ -626,7 +626,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		32, 0, 0, 0,
 		/* Masks and shifts */
-		0xFFFFFFFF, 0, 0, 0, 
+		0xFFFFFFFF, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -640,7 +640,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		32, 32, 0, 0,
 		/* Masks and shifts */
-		0xFFFFFFFF, 0xFFFFFFFF, 0, 0, 
+		0xFFFFFFFF, 0xFFFFFFFF, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -654,7 +654,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		32, 32, 32, 0,
 		/* Masks and shifts */
-		0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0, 
+		0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -668,7 +668,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		32, 32, 32, 32,
 		/* Masks and shifts */
-		0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 
+		0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -682,9 +682,9 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		32, 8, 0, 0,
 		/* Masks and shifts */
-		0xFFFFFFFF, 0x000000FF, 0x00000000, 0x00000000, 
+		0xFFFFFFFF, 0x000000FF, 0x00000000, 0x00000000,
 		0, 0, 0, 0,
-		}, 
+		},
 	//-----------------------------------------------------------------------
 		{"PF_D24_S8",
 		/* Bytes per element */
@@ -696,9 +696,9 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		24, 8, 0, 0,
 		/* Masks and shifts */
-		0x00FFFFFF, 0x0FF0000, 0x00000000, 0x00000000, 
+		0x00FFFFFF, 0x0FF0000, 0x00000000, 0x00000000,
 		0, 24, 0, 0,
-		}, 
+		},
 	//-----------------------------------------------------------------------
 		{"PF_D32",
 		/* Bytes per element */
@@ -710,9 +710,9 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		32, 0, 0, 0,
 		/* Masks and shifts */
-		0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000, 
+		0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000,
 		0, 0, 0, 0,
-		}, 
+		},
 	//-----------------------------------------------------------------------
 		{"PF_D16",
 		/* Bytes per element */
@@ -724,9 +724,9 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		16, 0, 0, 0,
 		/* Masks and shifts */
-		0x0000FFFF, 0x00000000, 0x00000000, 0x00000000, 
+		0x0000FFFF, 0x00000000, 0x00000000, 0x00000000,
 		0, 0, 0, 0,
-		}, 
+		},
 	//-----------------------------------------------------------------------
 		{ "PF_RG11B10F",
 		/* Bytes per element */
@@ -766,7 +766,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		8, 0, 0, 0,
 		/* Masks and shifts */
-		0x000000FF, 0, 0, 0, 
+		0x000000FF, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -780,7 +780,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		8, 8, 0, 0,
 		/* Masks and shifts */
-		0x000000FF, 0x0000FF00, 0, 0, 
+		0x000000FF, 0x0000FF00, 0, 0,
 		0, 8, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -808,7 +808,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		8, 0, 0, 0,
 		/* Masks and shifts */
-		0x000000FF, 0, 0, 0, 
+		0x000000FF, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -822,7 +822,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		8, 8, 0, 0,
 		/* Masks and shifts */
-		0x000000FF, 0x0000FF00, 0, 0, 
+		0x000000FF, 0x0000FF00, 0, 0,
 		0, 8, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -850,7 +850,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		8, 0, 0, 0,
 		/* Masks and shifts */
-		0x000000FF, 0, 0, 0, 
+		0x000000FF, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -864,7 +864,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		8, 8, 0, 0,
 		/* Masks and shifts */
-		0x000000FF, 0x0000FF00, 0, 0, 
+		0x000000FF, 0x0000FF00, 0, 0,
 		0, 8, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -892,7 +892,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		16, 0, 0, 0,
 		/* Masks and shifts */
-		0x0000FFFF, 0, 0, 0, 
+		0x0000FFFF, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -906,7 +906,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		16, 16, 0, 0,
 		/* Masks and shifts */
-		0x0000FFFF, 0xFFFF0000, 0, 0, 
+		0x0000FFFF, 0xFFFF0000, 0, 0,
 		0, 16, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -920,7 +920,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		16, 16, 16, 16,
 		/* Masks and shifts */
-		0x0000FFFF, 0xFFFF0000, 0x0000FFFF, 0xFFFF0000, 
+		0x0000FFFF, 0xFFFF0000, 0x0000FFFF, 0xFFFF0000,
 		0, 16, 0, 16,
 		},
 	//-----------------------------------------------------------------------
@@ -934,7 +934,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		16, 0, 0, 0,
 		/* Masks and shifts */
-		0x0000FFFF, 0, 0, 0, 
+		0x0000FFFF, 0, 0, 0,
 		0, 0, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -948,7 +948,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		16, 16, 0, 0,
 		/* Masks and shifts */
-		0x0000FFFF, 0xFFFF0000, 0, 0, 
+		0x0000FFFF, 0xFFFF0000, 0, 0,
 		0, 16, 0, 0,
 		},
 	//-----------------------------------------------------------------------
@@ -962,7 +962,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		16, 16, 16, 16,
 		/* Masks and shifts */
-		0x0000FFFF, 0xFFFF0000, 0x0000FFFF, 0xFFFF0000, 
+		0x0000FFFF, 0xFFFF0000, 0x0000FFFF, 0xFFFF0000,
 		0, 16, 0, 16,
 		},
 	//-----------------------------------------------------------------------
@@ -1018,7 +1018,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		32, 32, 32, 32,
 		/* Masks and shifts */
-		0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 
+		0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
 		0, 0, 0, 0
 		},
 	//-----------------------------------------------------------------------
@@ -1074,7 +1074,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		32, 32, 32, 32,
 		/* Masks and shifts */
-		0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 
+		0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
 		0, 0, 0, 0
 		},
 	//-----------------------------------------------------------------------
@@ -1130,7 +1130,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		16, 0, 0, 0,
 		/* Masks and shifts */
-		0x0000FFFF, 0, 0, 0, 
+		0x0000FFFF, 0, 0, 0,
 		0, 0, 0, 0
 		},
 	//-----------------------------------------------------------------------
@@ -1144,7 +1144,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		16, 16, 0, 0,
 		/* Masks and shifts */
-		0x0000FFFF, 0xFFFF0000, 0, 0, 
+		0x0000FFFF, 0xFFFF0000, 0, 0,
 		0, 16, 0, 0
 		},
 	//-----------------------------------------------------------------------
@@ -1158,7 +1158,7 @@ namespace bs
 		/* rbits, gbits, bbits, abits */
 		16, 16, 16, 16,
 		/* Masks and shifts */
-		0x0000FFFF, 0xFFFF0000, 0x0000FFFF, 0xFFFF0000, 
+		0x0000FFFF, 0xFFFF0000, 0x0000FFFF, 0xFFFF0000,
 		0, 16, 0, 16
 		},
 	};
@@ -1206,7 +1206,7 @@ namespace bs
 		{ }
 
 		void beginImage(int size, int width, int height, int depth, int face, int miplevel) override
-		{ 
+		{
 			assert(miplevel >= 0 && miplevel < (int)buffers.size());
 			assert((UINT32)size == buffers[miplevel]->getConsecutiveSize());
 
@@ -1322,7 +1322,7 @@ namespace bs
 			switch(format)
 			{
 				// BC formats work by dividing the image into 4x4 blocks, then encoding each
-				// 4x4 block with a certain number of bytes. 
+				// 4x4 block with a certain number of bytes.
 				case PF_BC1:
 				case PF_BC1a:
 				case PF_BC4:
@@ -1351,7 +1351,7 @@ namespace bs
 			switch (format)
 			{
 				// BC formats work by dividing the image into 4x4 blocks, then encoding each
-				// 4x4 block with a certain number of bytes. 
+				// 4x4 block with a certain number of bytes.
 			case PF_BC1:
 			case PF_BC1a:
 			case PF_BC4:
@@ -1754,7 +1754,7 @@ namespace bs
 
 			return;
 		}
-		
+
 		if(format == PF_RGB10A2)
 		{
 			LOGERR("unpackColor() not implemented for format \"" + getFormatName(PF_RGB10A2) + "\".");
@@ -1827,7 +1827,7 @@ namespace bs
 			LOGERR("Cannot convert depth to " + getFormatName(format) + ": it is not a depth format");
 			return;
 		}
-		
+
 		LOGERR("Method is not implemented");
 		//TODO implement depth packing
 	}
@@ -1839,10 +1839,10 @@ namespace bs
 			LOGERR("Cannot unpack from " + getFormatName(format) + ": it is not a depth format");
 			return 0;
 		}
-		
+
 		UINT32* color = (UINT32 *)src;
 		UINT32 masked = 0;
-		switch (format) 
+		switch (format)
 		{
 		case PF_D24S8:
 			return  static_cast<float>(*color & 0x00FFFFFF) / (float)16777216;
@@ -2005,7 +2005,7 @@ namespace bs
 		bool bitCountMismatch = false;
 		if (pfd.rbits != pfd.gbits)
 			bitCountMismatch = true;
-		
+
 		if(pfd.componentCount > 2 && pfd.rbits != pfd.bbits)
 			bitCountMismatch = true;
 
@@ -2034,12 +2034,12 @@ namespace bs
 
 		// Ensure unused components are at the end, after sort
 		if (pfd.componentCount < 4)
-			compData[4].shift = 0xFF;
-
-		if (pfd.componentCount < 3)
 			compData[3].shift = 0xFF;
 
-		std::sort(compData.begin(), compData.end(), 
+		if (pfd.componentCount < 3)
+			compData[2].shift = 0xFF;
+
+		std::sort(compData.begin(), compData.end(),
 			[&](const CompData& lhs, const CompData& rhs) { return lhs.shift < rhs.shift; }
 		);
 
@@ -2108,24 +2108,24 @@ namespace bs
 		assert(PixelUtil::isAccessible(scaled.getFormat()));
 
 		PixelData temp;
-		switch (filter) 
+		switch (filter)
 		{
 		default:
 		case FILTER_NEAREST:
-			if(src.getFormat() == scaled.getFormat()) 
+			if(src.getFormat() == scaled.getFormat())
 			{
 				// No intermediate buffer needed
 				temp = scaled;
 			}
 			else
 			{
-				// Allocate temporary buffer of destination size in source format 
+				// Allocate temporary buffer of destination size in source format
 				temp = PixelData(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.getFormat());
 				temp.allocateInternalBuffer();
 			}
 
 			// No conversion
-			switch (PixelUtil::getNumElemBytes(src.getFormat())) 
+			switch (PixelUtil::getNumElemBytes(src.getFormat()))
 			{
 			case 1: NearestResampler<1>::scale(src, temp); break;
 			case 2: NearestResampler<2>::scale(src, temp); break;
@@ -2151,25 +2151,25 @@ namespace bs
 			break;
 
 		case FILTER_LINEAR:
-			switch (src.getFormat()) 
+			switch (src.getFormat())
 			{
 			case PF_RG8:
 			case PF_RGB8: case PF_BGR8:
 			case PF_RGBA8: case PF_BGRA8:
-				if(src.getFormat() == scaled.getFormat()) 
+				if(src.getFormat() == scaled.getFormat())
 				{
 					// No intermediate buffer needed
 					temp = scaled;
 				}
 				else
 				{
-					// Allocate temp buffer of destination size in source format 
+					// Allocate temp buffer of destination size in source format
 					temp = PixelData(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.getFormat());
 					temp.allocateInternalBuffer();
 				}
 
 				// No conversion
-				switch (PixelUtil::getNumElemBytes(src.getFormat())) 
+				switch (PixelUtil::getNumElemBytes(src.getFormat()))
 				{
 				case 1: LinearResampler_Byte<1>::scale(src, temp); break;
 				case 2: LinearResampler_Byte<2>::scale(src, temp); break;
@@ -2366,8 +2366,8 @@ namespace bs
 			if(b > 255.0f && (tmp=(255.0f/b)) < scale)
 				scale = tmp;
 
-			r *= scale; 
-			g *= scale; 
+			r *= scale;
+			g *= scale;
 			b *= scale;
 
 			buffer[0] = (UINT8)r;
@@ -2429,13 +2429,13 @@ namespace bs
 		nvtt::OutputOptions oo;
 		oo.setOutputHeader(false);
 		oo.setOutputHandler(&outputHandler);
-		
+
 		nvtt::Compressor compressor;
 		if (!compressor.process(io, co, oo))
 		{
 			LOGERR("Compression failed. Internal error.");
 			return;
-		}	
+		}
 	}
 
 	Vector<SPtr<PixelData>> PixelUtil::genMipmaps(const PixelData& src, const MipMapGenOptions& options)
@@ -2465,7 +2465,7 @@ namespace bs
 		PixelData interimData(src.getWidth(), src.getHeight(), 1, interimFormat);
 		interimData.allocateInternalBuffer();
 		bulkPixelConversion(src, interimData);
-		
+
 		if (interimFormat != PF_RGBA32F)
 			flipComponentOrder(interimData);
 
@@ -2490,7 +2490,7 @@ namespace bs
 
 		nvtt::CompressionOptions co;
 		co.setFormat(nvtt::Format_RGBA);
-		
+
 		if (interimFormat == PF_RGBA32F)
 		{
 			co.setPixelType(nvtt::PixelType_Float);
@@ -2516,7 +2516,7 @@ namespace bs
 			rgbaMipBuffers.push_back(bs_shared_ptr_new<PixelData>(curWidth, curHeight, 1, interimFormat));
 			rgbaMipBuffers.back()->allocateInternalBuffer();
 
-			if (curWidth > 1) 
+			if (curWidth > 1)
 				curWidth = curWidth / 2;
 
 			if (curHeight > 1)
