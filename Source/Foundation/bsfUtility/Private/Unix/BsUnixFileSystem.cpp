@@ -336,9 +336,8 @@ namespace bs
 		}
 
 		tmpdir.append("/banshee-XXXXXX");
-		Vector<char> nameTemplate(tmpdir.data(),tmpdir.data()+tmpdir.size());
-		nameTemplate.push_back(0); // null terminate the name template.
-
+		// null terminated, modifiable tmpdir name template
+		Vector<char> nameTemplate(tmpdir.c_str(),tmpdir.c_str()+tmpdir.size()+1);
 		char *directoryName = mkdtemp(nameTemplate.data());
 
 		if (directoryName == nullptr)
