@@ -12,20 +12,58 @@ environment:
     secure: vkR/qaZuHZ7k7iZQBfLlNYJzx/+rzkhRlOloJq7o0mk=
 
 build_script:
-  - cmd: set INSTALL_DIR=C:/Projects/bsf/CI
+  - cmd: set INSTALL_DIR=C:/Projects/bsf/install/Release
+  - cmd: set INSTALL_DIR_DBG=C:/Projects/bsf/install/Debug
   - cmd: mkdir "%INSTALL_DIR%"
+  - cmd: mkdir "%INSTALL_DIR_DBG%"
   - cmd: mkdir Build
   - cmd: cd Build
   - cmd: cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX:STRING=%INSTALL_DIR% ..
   - cmd: cmake --build ./ --config Release
   - cmd: cmake --build ./ --config Release --target INSTALL
-
+  # Build debug version as well, if building due to a tag
+  - cmd: if %APPVEYOR_REPO_TAG% == true (cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX:STRING=%INSTALL_DIR_DBG% ..)
+  - cmd: if %APPVEYOR_REPO_TAG% == true (cmake --build ./ --config Debug)
+  - cmd: if %APPVEYOR_REPO_TAG% == true (cmake --build ./ --config Debug --target INSTALL)
+  
 after_build:
  - ps: cd ..
- - ps: if($env:APPVEYOR_REPO_TAG -eq "true") { $buildName = $APPVEYOR_REPO_TAG_NAME } else { $buildName = "$(Get-Date -format dd.MM.yyyy)" }
+ - ps: mkdir packaged
+ - ps: cd packaged
+ - ps: >-
+       if($env:APPVEYOR_REPO_TAG -eq "true") 
+       {
+         Move-Item -Path ../install/Release/include -Destination ./
+         mkdir bin
+         cd bin
+         Move-Item -Path ../../install/Release/bin/Data -Destination ./
+         Remove-Item ../../install/Debug/bin/Data -Force -Recurse
+         mkdir Release
+         Move-Item -Path ../../install/Release/bin/* -Destination ./Release
+         mkdir Debug
+         Move-Item -Path ../../install/Debug/bin/* -Destination ./Debug
+         cd ..
+         mkdir lib
+         cd lib
+         mkdir Release
+         Move-Item -Path ../../install/Release/lib/* -Destination ./Release
+         mkdir Debug
+         Move-Item -Path ../../install/Debug/lib/* -Destination ./Debug
+         cd ..
+       }
+       else
+       {
+         Move-Item -Path ../install/Release/* -Destination ./
+       }
+ - ps: cd ..
+ - ps: >-
+      if($env:APPVEYOR_REPO_TAG -eq "true") 
+      { $buildName = $env:APPVEYOR_REPO_TAG_NAME } 
+      else 
+      { $buildName = "$(Get-Date -format dd.MM.yyyy)" }
  - ps: Set-AppveyorBuildVariable "BSF_BUILD_NAME" "$buildName"
- - cmd: 7z a bsf_%BSF_BUILD_NAME%_win64.zip ./CI/* -xr!*pdb
- - cmd: 7z a bsf_%BSF_BUILD_NAME%_win64_symbols.zip ./CI/*pdb -r
+ - cmd: 7z a bsf_%BSF_BUILD_NAME%_win64.zip ./packaged/* -xr!*pdb
+ - cmd: 7z a bsf_%BSF_BUILD_NAME%_win64_symbols.zip ./packaged/*pdb -r
 
 artifacts:
   - path: bsf_%BSF_BUILD_NAME%_win64.zip
