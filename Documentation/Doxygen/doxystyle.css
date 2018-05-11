@@ -365,3 +365,12 @@ blockquote {
 .caption {
 	padding-bottom: 0.75rem;
 }
+
+@media (min-width: 1260px) and (orientation:landscape) 
+{
+   .toc {
+     position: fixed;
+	 left: 0;
+	 top: 150px;
+   }
+}
