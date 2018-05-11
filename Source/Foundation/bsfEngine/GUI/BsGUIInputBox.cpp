@@ -991,7 +991,7 @@ namespace bs
 
 	void GUIInputBox::clearSelection()
 	{
-		gGUIManager().getInputSelectionTool()->clearSelection();
+		gGUIManager().getInputSelectionTool()->clearSelectionVisuals();
 		mSelectionShown = false;
 	}
 
@@ -1264,8 +1264,7 @@ namespace bs
 
 	void GUIInputBox::pasteText()
 	{
-		if (mSelectionShown)
-			deleteSelectedText(true);
+		deleteSelectedText(true);
 
 		String textInClipboard = Platform::copyFromClipboard();
 		UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();

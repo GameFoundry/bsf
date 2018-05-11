@@ -47,8 +47,11 @@ namespace bs
 		 */
 		void showSelection(UINT32 anchorCaretPos);
 
-		/**	Clears the currently active selection. */
-		void clearSelection();
+		/**	
+		 * Clears the currently active selection. Note this does not clear the internal selection range, just the
+		 * selection sprites.
+		 */
+		void clearSelectionVisuals();
 
 		/**
 		 * Moves the selection to caret. Selected area will be from the anchor provided in showSelection() to the caret

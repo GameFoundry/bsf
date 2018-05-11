@@ -183,7 +183,7 @@ namespace bs
 		mSelectionAnchor = charIdx;
 	}
 
-	void GUIInputSelection::clearSelection()
+	void GUIInputSelection::clearSelectionVisuals()
 	{
 		for(auto& sprite : mSprites)
 			bs_delete(sprite);
@@ -193,7 +193,7 @@ namespace bs
 
 	void GUIInputSelection::selectionDragStart(UINT32 caretPos)
 	{
-		clearSelection();
+		clearSelectionVisuals();
 
 		showSelection(caretPos); 
 		mSelectionDragAnchor = caretPos;
@@ -227,7 +227,7 @@ namespace bs
 	void GUIInputSelection::selectionDragEnd()
 	{
 		if(isSelectionEmpty())
-			clearSelection();
+			clearSelectionVisuals();
 	}
 
 	void GUIInputSelection::moveSelectionToCaret(UINT32 caretPos)
@@ -246,7 +246,7 @@ namespace bs
 		}
 
 		if(mSelectionStart == mSelectionEnd)
-			clearSelection();
+			clearSelectionVisuals();
 	}
 
 	void GUIInputSelection::selectAll()
