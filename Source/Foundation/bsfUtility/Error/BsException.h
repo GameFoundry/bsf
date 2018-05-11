@@ -11,13 +11,13 @@ namespace bs
 	 */
 
 	/**
-	 * Base class for all Banshee exceptions. 
+	 * Base class for all Banshee exceptions.
 	 *
 	 * @note	Banshee doesn't perform exception handling, but these classes remain here in case others wish to enable them.
 	 */
 	class Exception : public std::exception
-    {
-    public:
+	{
+	public:
 		Exception(const char* type, const String& description, const String& source)
 			:mTypeName(type), mDescription(description), mSource(source)
 		{ }
@@ -26,14 +26,14 @@ namespace bs
 			: mLine(line), mTypeName(type), mDescription(description), mSource(source), mFile(file)
 		{ }
 
-        Exception(const Exception& rhs)
+		Exception(const Exception& rhs)
 			: mLine(rhs.mLine), mTypeName(rhs.mTypeName), mDescription(rhs.mDescription),
 			mSource(rhs.mSource), mFile(rhs.mFile)
 		{ }
 
 		~Exception() noexcept = default;
 
-        void operator = (const Exception& rhs)
+		void operator = (const Exception& rhs)
 		{
 			mDescription = rhs.mDescription;
 			mSource = rhs.mSource;
@@ -45,8 +45,8 @@ namespace bs
 		/**
 		 * Returns a string with the full description of the exception.
 		 *
-		 * @note	
-		 * The description contains the error number, the description supplied by the thrower, what routine threw the 
+		 * @note
+		 * The description contains the error number, the description supplied by the thrower, what routine threw the
 		 * exception, and will also supply extra platform-specific information where applicable.
 		 */
 		virtual const String& getFullDescription() const
@@ -76,8 +76,8 @@ namespace bs
 		/** Gets the source file name in which the exception was thrown. */
 		virtual const String& getFile() const { return mFile; }
 
-        /** Gets line number on which the exception was thrown. */
-        virtual long getLine() const { return mLine; }
+		/** Gets line number on which the exception was thrown. */
+		virtual long getLine() const { return mLine; }
 
 		/** Gets a short description about the exception. */
 		virtual const String& getDescription(void) const { return mDescription; }
@@ -92,10 +92,10 @@ namespace bs
 		String mSource;
 		String mFile;
 		mutable String mFullDesc;
-    };
+	};
 
 	/** Exception for signaling not implemented parts of the code. */
-	class NotImplementedException : public Exception 
+	class NotImplementedException : public Exception
 	{
 	public:
 		NotImplementedException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
@@ -111,7 +111,7 @@ namespace bs
 	};
 
 	/** Exception for signaling general IO errors.
-	 * 			
+	 *
 	 * @note	An example being failed to open a file or a network connection.
 	 */
 	class IOException : public Exception
@@ -138,7 +138,7 @@ namespace bs
 	};
 
 	/**
-	 * Exception for signaling an internal error, normally something that shouldn't have happened or wasn't anticipated by 
+	 * Exception for signaling an internal error, normally something that shouldn't have happened or wasn't anticipated by
 	 * the programmers of that system.
 	 */
 	class InternalErrorException : public Exception
@@ -165,16 +165,18 @@ namespace bs
 	};
 
 	/**
-	 * Macro for throwing exceptions that will automatically fill out function name, file name and line number of the 
+	 * Macro for throwing exceptions that will automatically fill out function name, file name and line number of the
 	 * exception.
 	 */
 	// Banshee doesn't actually use exceptions, so we just emulate the unhandled exception handler by crashing the application.
 #ifndef BS_EXCEPT
-#define BS_EXCEPT(type, desc)	\
-		{                           \
-	static_assert((std::is_base_of<bs::Exception, type>::value), "Invalid exception type (" #type ") for BS_EXCEPT macro. It needs to derive from bs::Exception."); \
-	gCrashHandler().reportCrash(#type, desc, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
-	PlatformUtility::terminate(true); \
+#define BS_EXCEPT(type, desc)																\
+	{																						\
+		static_assert((std::is_base_of<bs::Exception, type>::value),						\
+			"Invalid exception type (" #type ") for BS_EXCEPT macro."						\
+			" It needs to derive from bs::Exception.");										\
+		gCrashHandler().reportCrash(#type, desc, __PRETTY_FUNCTION__, __FILE__, __LINE__);	\
+		PlatformUtility::terminate(true);													\
 	}
 #endif
 
