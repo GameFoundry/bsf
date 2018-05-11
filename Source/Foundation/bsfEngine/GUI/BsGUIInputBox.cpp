@@ -1065,6 +1065,8 @@ namespace bs
 		UINT32 byteIdx = UTF8::charToByteIndex(mText, charIdx);
 		mText.insert(mText.begin() + byteIdx, string.begin(), string.end());
 
+		mNumChars = UTF8::count(mText);
+
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 
 		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
@@ -1078,6 +1080,8 @@ namespace bs
 
 		mText.insert(mText.begin() + byteIdx, utf8chars.begin(), utf8chars.end());
 
+		mNumChars = UTF8::count(mText);
+
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 
 		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
@@ -1089,6 +1093,8 @@ namespace bs
 		UINT32 byteIdx = UTF8::charToByteIndex(mText, charIdx);
 		UINT32 byteCount = UTF8::charByteCount(mText, charIdx);
 		mText.erase(byteIdx, byteCount);
+
+		mNumChars = UTF8::count(mText);
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 
@@ -1119,6 +1125,8 @@ namespace bs
 		if(filterOkay)
 		{
 			mText.erase(mText.begin() + byteStart, mText.begin() + byteEnd);
+
+			mNumChars = UTF8::count(mText);
 
 			TEXT_SPRITE_DESC textDesc = getTextDesc();
 			gGUIManager().getInputCaretTool()->updateText(this, textDesc);
