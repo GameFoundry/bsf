@@ -185,7 +185,7 @@ namespace bs
 		/**
 		 * Deletes text that is currently selected.
 		 * 			
-		 * @param[in]	internal	If internal not filter will be applied after the text is deleted, and no event will be 
+		 * @param[in]	internal	If internal no filter will be applied after the text is deleted, and no event will be 
 		 * 							triggered either.
 		 */
 		void deleteSelectedText(bool internal = false);
