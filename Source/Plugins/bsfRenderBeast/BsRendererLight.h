@@ -27,7 +27,7 @@ namespace ct
 	struct LightData
 	{
 		Vector3 position;
-		float attRadius;
+		float boundsRadius;
 		Vector3 direction;
 		float luminance;
 		Vector3 spotAngles;

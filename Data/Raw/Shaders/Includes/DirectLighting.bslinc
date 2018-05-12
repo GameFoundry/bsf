@@ -8,7 +8,7 @@ mixin LightData
 		struct LightData
 		{
 			float3 position;
-			float attRadius;
+			float boundRadius;
 			float3 direction;
 			float luminance;
 			float3 spotAngles;

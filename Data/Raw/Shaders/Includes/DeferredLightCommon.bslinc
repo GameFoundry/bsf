@@ -48,7 +48,7 @@ mixin DeferredLightCommon
 			float4 gLightColorAndLuminance;
 			// x - outerAngle in radians, y - cos(outerAngle), z - 1.0f/(cos(innerAngle) - cos(outerAngle)), w - inverse light attenuation radius
 			float4 gLightSpotAnglesAndSqrdInvAttRadius;
-			float4 gLightDirectionAndAttRadius;
+			float4 gLightDirectionAndBoundRadius;
 			// xyz - light position shifted in order to adjust for area spot lights
 			// w - light type -> Directional = 0, Radial = >0, Spot = >0.5
 			float4 gShiftedLightPositionAndType;
@@ -66,8 +66,8 @@ mixin DeferredLightCommon
 			LightData output;
 			
 			output.position = gLightPositionAndSrcRadius.xyz;
-			output.attRadius = gLightDirectionAndAttRadius.w;
-			output.direction = gLightDirectionAndAttRadius.xyz;
+			output.boundRadius = gLightDirectionAndBoundRadius.w;
+			output.direction = gLightDirectionAndBoundRadius.xyz;
 			output.luminance = gLightColorAndLuminance.w;
 			output.spotAngles = gLightSpotAnglesAndSqrdInvAttRadius.xyz;
 			output.attRadiusSqrdInv = gLightSpotAnglesAndSqrdInvAttRadius.w;

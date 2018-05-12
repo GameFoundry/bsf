@@ -115,7 +115,7 @@ shader LightGridLLCreation
 				for(uint i = lightsStart; i < lightsEnd; ++i)
 				{
 					float4 lightPosition = mul(gMatView, float4(gLights[i].position, 1.0f));
-					float lightRadius = gLights[i].attRadius;
+					float lightRadius = gLights[i].boundRadius;
 					
 					// Calculate distance from box to light
 					float3 distances = max(abs(lightPosition - cellCenter) - cellExtent, 0);

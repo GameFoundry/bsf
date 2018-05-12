@@ -151,7 +151,7 @@ namespace bs
 			Vector3 offset(0, 0, mAttRadius * 0.5f);
 
 			// Direction along the edge of the cone, on the YZ plane (doesn't matter if we used XZ instead)
-			Degree angle = Math::clamp(mSpotAngle, Degree(-89), Degree(89));
+			Degree angle = Math::clamp(mSpotAngle * 0.5f, Degree(-89), Degree(89));
 			Vector3 coneDir(0, Math::tan(angle)*mAttRadius, mAttRadius);
 
 			// Distance between the "corner" of the cone and our center, must be the radius (provided the center is at

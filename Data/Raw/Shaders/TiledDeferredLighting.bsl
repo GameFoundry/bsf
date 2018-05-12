@@ -211,7 +211,7 @@ shader TiledDeferredLighting
 				for (uint i = threadIndex + lightsStart; i < lightsEnd && i < MAX_LIGHTS; i += TILE_SIZE * TILE_SIZE)
 				{
 					float4 lightPosition = mul(gMatView, float4(gLights[i].position, 1.0f));
-					float lightRadius = gLights[i].attRadius;
+					float lightRadius = gLights[i].boundRadius;
 					
 					// Note: The cull method can have false positives. In case of large light bounds and small tiles, it
 					// can end up being quite a lot. Consider adding an extra heuristic to check a separating plane.
