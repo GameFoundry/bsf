@@ -95,8 +95,8 @@ namespace bs { namespace ct
 
 		if (mBinary)
 		{
-			GLboolean anyPassed = GL_FALSE;
-			glGetQueryObjectuiv(mQueryObj, GL_QUERY_RESULT, (GLuint*)&anyPassed);
+			GLuint anyPassed = GL_FALSE;
+			glGetQueryObjectuiv(mQueryObj, GL_QUERY_RESULT, &anyPassed);
 			BS_CHECK_GL_ERROR();
 
 			mNumSamples = anyPassed == GL_TRUE ? 1 : 0;
@@ -104,7 +104,7 @@ namespace bs { namespace ct
 		else
 		{
 			GLuint numSamples = 0;
-			glGetQueryObjectuiv(mQueryObj, GL_QUERY_RESULT, (GLuint*)&numSamples);
+			glGetQueryObjectuiv(mQueryObj, GL_QUERY_RESULT, &numSamples);
 			BS_CHECK_GL_ERROR();
 
 			mNumSamples = (UINT32)numSamples;
