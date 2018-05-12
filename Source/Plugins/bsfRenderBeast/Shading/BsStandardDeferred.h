@@ -15,7 +15,7 @@ namespace bs { namespace ct {
 		BS_PARAM_BLOCK_ENTRY(Vector4, gLightPositionAndSrcRadius)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gLightColorAndLuminance)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gLightSpotAnglesAndSqrdInvAttRadius)
-		BS_PARAM_BLOCK_ENTRY(Vector4, gLightDirectionAndAttRadius)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gLightDirectionAndBoundRadius)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gShiftedLightPositionAndType)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gLightGeometry)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatConeTransform)

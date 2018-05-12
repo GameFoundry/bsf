@@ -26,14 +26,14 @@ namespace bs { namespace ct
 
 		const Transform& tfrm = internal->getTransform();
 		output.position = tfrm.getPosition();
-		output.attRadius = internal->getBounds().getRadius();
+		output.boundsRadius = internal->getBounds().getRadius();
 		output.srcRadius = internal->getSourceRadius();
 		output.direction = -tfrm.getRotation().zAxis();
 		output.luminance = internal->getLuminance();
 		output.spotAngles.x = spotAngle.valueRadians();
 		output.spotAngles.y = Math::cos(output.spotAngles.x);
 		output.spotAngles.z = 1.0f / std::max(Math::cos(spotFalloffAngle) - output.spotAngles.y, 0.001f);
-		output.attRadiusSqrdInv = 1.0f / (output.attRadius * output.attRadius);
+		output.attRadiusSqrdInv = 1.0f / (internal->getAttenuationRadius() * internal->getAttenuationRadius());
 		output.color = Vector3(color.r, color.g, color.b);
 
 		// If directional lights, convert angular radius in degrees to radians
@@ -67,7 +67,7 @@ namespace bs { namespace ct
 		gPerLightParamDef.gLightPositionAndSrcRadius.set(buffer, Vector4(lightData.position, lightData.srcRadius));
 		gPerLightParamDef.gLightColorAndLuminance.set(buffer, Vector4(lightData.color, lightData.luminance));
 		gPerLightParamDef.gLightSpotAnglesAndSqrdInvAttRadius.set(buffer, Vector4(lightData.spotAngles, lightData.attRadiusSqrdInv));
-		gPerLightParamDef.gLightDirectionAndAttRadius.set(buffer, Vector4(lightData.direction, lightData.attRadius));
+		gPerLightParamDef.gLightDirectionAndBoundRadius.set(buffer, Vector4(lightData.direction, lightData.boundsRadius));
 		gPerLightParamDef.gShiftedLightPositionAndType.set(buffer, Vector4(lightData.shiftedLightPosition, type));
 
 		Vector4 lightGeometry;
@@ -282,7 +282,7 @@ namespace bs { namespace ct
 		{
 			const LightData* lightData = &mVisibleLightData[j];
 
-			Sphere lightSphere(lightData->position, lightData->attRadius);
+			Sphere lightSphere(lightData->position, lightData->boundsRadius);
 			if (bounds.getSphere().intersects(lightSphere))
 			{
 				float distance = bounds.getSphere().getCenter().squaredDistance(lightData->position);
