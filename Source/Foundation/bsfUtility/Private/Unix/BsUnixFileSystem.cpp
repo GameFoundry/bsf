@@ -112,10 +112,10 @@ namespace bs
 		if (std::rename(oldPathStr.c_str(), newPathStr.c_str()) == -1)
 		{
 			// Cross-filesystem copy is likely needed (for example, /tmp to Banshee install dir while copying assets)
-		    std::ifstream src(oldPathStr.c_str(), std::ios::binary);
+			std::ifstream src(oldPathStr.c_str(), std::ios::binary);
 			std::ofstream dst(newPathStr.c_str(), std::ios::binary);
 			dst << src.rdbuf(); // First, copy
-			
+
 			// Error handling
 			src.close();
 			if (!src)
@@ -322,7 +322,7 @@ namespace bs
 		// Try different things:
 		// 1) If defined, honor the TMPDIR environnement variable
 		char *TMPDIR = getenv("TMPDIR");
-		if (TMPDIR != NULL)
+		if (TMPDIR != nullptr)
 				tmpdir = TMPDIR;
 		else
 		{
@@ -336,12 +336,11 @@ namespace bs
 		}
 
 		tmpdir.append("/banshee-XXXXXX");
-		size_t len = tmpdir.size()+1;
-		char *nameTemplate = bs_newN<char>(len);
-		snprintf(nameTemplate, len, "%s", tmpdir.c_str());
+		// null terminated, modifiable tmpdir name template
+		Vector<char> nameTemplate(tmpdir.c_str(),tmpdir.c_str()+tmpdir.size()+1);
+		char *directoryName = mkdtemp(nameTemplate.data());
 
-		char *directoryName = mkdtemp(nameTemplate);
-		if (directoryName == NULL)
+		if (directoryName == nullptr)
 		{
 			LOGERR(String(__FUNCTION__) + ": " + strerror(errno));
 			return Path(StringUtil::BLANK);

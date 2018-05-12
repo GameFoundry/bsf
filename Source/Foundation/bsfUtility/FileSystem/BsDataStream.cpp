@@ -4,7 +4,7 @@
 #include "Debug/BsDebug.h"
 #include "String/BsUnicode.h"
 
-namespace bs 
+namespace bs
 {
 	const UINT32 DataStream::StreamTempSize = 128;
 
@@ -94,7 +94,7 @@ namespace bs
 		// Read the entire buffer - ideally in one read, but if the size of
 		// the buffer is unknown, do multiple fixed size reads.
 		size_t bufSize = (mSize > 0 ? mSize : 4096);
-		std::stringstream::char_type* tempBuffer = (std::stringstream::char_type*)bs_alloc((UINT32)bufSize);
+		std::array<std::stringstream::char_type,4096> tempBuffer;
 
 		// Ensure read from begin of stream
 		seek(0);
@@ -112,15 +112,15 @@ namespace bs
 			{
 				LOGWRN("UTF-32 big endian decoding not supported");
 				return u8"";
-			}			
+			}
 		}
-		
+
 		if(dataOffset == 0 && numHeaderBytes >= 3)
 		{
 			if (isUTF8(headerBytes))
 				dataOffset = 3;
 		}
-		
+
 		if(dataOffset == 0 && numHeaderBytes >= 2)
 		{
 			if (isUTF16LE(headerBytes))
@@ -137,11 +137,10 @@ namespace bs
 		std::stringstream result;
 		while (!eof())
 		{
-			size_t numReadBytes = read(tempBuffer, bufSize);
-			result.write(tempBuffer, numReadBytes);
+			size_t numReadBytes = read(tempBuffer.data(), bufSize);
+			result.write(tempBuffer.data(), numReadBytes);
 		}
 
-		free(tempBuffer);
 		std::string string = result.str();
 
 		switch(dataOffset)
@@ -268,7 +267,7 @@ namespace bs
 	void MemoryDataStream::skip(size_t count)
 	{
 		size_t newpos = (size_t)( (mPos - mData) + count );
-		assert(mData + newpos <= mEnd);        
+		assert(mData + newpos <= mEnd);
 
 		mPos = mData + newpos;
 	}
@@ -293,11 +292,11 @@ namespace bs
 	{
 		if (!copyData)
 			return bs_shared_ptr_new<MemoryDataStream>(mData, mSize, false);
-		
+
 		return bs_shared_ptr_new<MemoryDataStream>(*this);
 	}
 
-	void MemoryDataStream::close()    
+	void MemoryDataStream::close()
 	{
 		if (mData != nullptr)
 		{
@@ -338,7 +337,7 @@ namespace bs
 			LOGWRN("Cannot open file: " + path.toString());
 			return;
 		}
-		
+
 		mInStream->seekg(0, std::ios_base::end);
 		mSize = (size_t)mInStream->tellg();
 		mInStream->seekg(0, std::ios_base::beg);
@@ -368,7 +367,7 @@ namespace bs
 		return written;
 	}
 	void FileDataStream::skip(size_t count)
-	{	
+	{
 		mInStream->clear(); // Clear fail status in case eof was set
 		mInStream->seekg(static_cast<std::ifstream::pos_type>(count), std::ios::cur);
 	}
@@ -412,8 +411,8 @@ namespace bs
 			if (mFreeOnClose)
 			{
 				mInStream = nullptr;
-				mFStreamRO = nullptr; 
-				mFStream = nullptr; 
+				mFStreamRO = nullptr;
+				mFStream = nullptr;
 			}
 		}
 	}
