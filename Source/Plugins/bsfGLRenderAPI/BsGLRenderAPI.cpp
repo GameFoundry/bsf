@@ -225,7 +225,8 @@ namespace bs { namespace ct
 		mCurrentDomainProgram = nullptr;
 		mCurrentComputeProgram = nullptr;
 
-		mGLSupport->stop();
+		if (mGLSupport)
+			mGLSupport->stop();
 
 		TextureManager::shutDown();
 		bs::TextureManager::shutDown();

@@ -115,7 +115,7 @@ namespace bs
 			if (contexts.size() > 1)
 				alcMakeContextCurrent(contexts[i]);
 
-			alSourcef(mSourceIDs[i], AL_LOOPING, loop);
+			alSourcei(mSourceIDs[i], AL_LOOPING, loop);
 		}
 	}
 
@@ -397,9 +397,9 @@ namespace bs
 			alSourcef(mSourceIDs[i], AL_ROLLOFF_FACTOR, mAttenuation);
 
 			if(requiresStreaming())
-				alSourcef(mSourceIDs[i], AL_LOOPING, false);
+				alSourcei(mSourceIDs[i], AL_LOOPING, false);
 			else
-				alSourcef(mSourceIDs[i], AL_LOOPING, mLoop);
+				alSourcei(mSourceIDs[i], AL_LOOPING, mLoop);
 
 			if (is3D())
 			{
