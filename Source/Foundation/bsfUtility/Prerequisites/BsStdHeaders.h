@@ -216,6 +216,11 @@ namespace bs
 		return bs_unique_ptr<Type, Alloc, Deleter>(rawPtr);
 	}
 
+	/**
+	 * "Smart" pointer that is not smart. Does nothing but hold a pointer value. No memory management is performed at all.
+	 * This class exists to make storing pointers in containers easier to manage, such as with non-member comparison
+	 * operators.
+	 */
 	template<typename T>
 	struct NativePtr
 	{
@@ -223,24 +228,49 @@ namespace bs
 		constexpr T& operator*() const { return *mPtr; }
 		constexpr T* operator->() const { return mPtr; }
 		constexpr T* get() const { return mPtr; }
-		bool operator< (const NativePtr& rhs) const { return mPtr <  rhs.mPtr; }
-		bool operator> (const NativePtr& rhs) const { return mPtr >  rhs.mPtr; }
-		bool operator<=(const NativePtr& rhs) const { return mPtr <= rhs.mPtr; }
-		bool operator>=(const NativePtr& rhs) const { return mPtr >= rhs.mPtr; }
-		bool operator==(const NativePtr& rhs) const { return mPtr == rhs.mPtr; }
-		bool operator!=(const NativePtr& rhs) const { return mPtr != rhs.mPtr; }
 
 	private:
 		T* mPtr = nullptr;
 	};
 
-	/**
-	 * "Smart" pointer that is not smart. Does nothing but hold a pointer value. No memory management is performed at all.
-	 * This class exists to make storing pointers in containers easier to manage, such as with non-member comparison
-	 * operators.
-	 */
-	template <typename T>
+	template<typename T>
 	using NPtr = NativePtr<T>;
+
+	template<typename L_T, typename R_T>
+	constexpr bool operator< (const NPtr<L_T>& lhs, const NPtr<R_T>& rhs)
+	{
+		 return lhs.get() < rhs.get();
+	}
+
+	template<typename L_T, typename R_T>
+	constexpr bool operator> (const NPtr<L_T>& lhs, const NPtr<R_T>& rhs)
+	{
+		 return lhs.get() > rhs.get();
+	}
+
+	template<typename L_T, typename R_T>
+	constexpr bool operator<= (const NPtr<L_T>& lhs, const NPtr<R_T>& rhs)
+	{
+		 return lhs.get() <= rhs.get();
+	}
+
+	template<typename L_T, typename R_T>
+	constexpr bool operator>= (const NPtr<L_T>& lhs, const NPtr<R_T>& rhs)
+	{
+		 return lhs.get() >= rhs.get();
+	}
+
+	template<typename L_T, typename R_T>
+	constexpr bool operator== (const NPtr<L_T>& lhs, const NPtr<R_T>& rhs)
+	{
+		 return lhs.get() == rhs.get();
+	}
+
+	template<typename L_T, typename R_T>
+	constexpr bool operator!= (const NPtr<L_T>& lhs, const NPtr<R_T>& rhs)
+	{
+		 return lhs.get() != rhs.get();
+	}
 
 	/** @} */
 }
