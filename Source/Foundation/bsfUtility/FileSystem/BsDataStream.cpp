@@ -132,7 +132,7 @@ namespace bs
 		// Read the entire buffer - ideally in one read, but if the size of the buffer is unknown, do multiple fixed size
 		// reads.
 		size_t bufSize = (mSize > 0 ? mSize : 4096);
-		auto tempBuffer = bs_stack_alloc<std::stringstream::char_type>((UINT32)mSize);
+		auto tempBuffer = bs_stack_alloc<std::stringstream::char_type>((UINT32)bufSize);
 
 		std::stringstream result;
 		while (!eof())
