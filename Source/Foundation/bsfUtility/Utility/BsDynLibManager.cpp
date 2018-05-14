@@ -14,10 +14,11 @@ namespace bs
 	{
 		return lhs < rhs->getName();
 	}
-	template<>
-	bool NPtr<DynLib>::operator<(const NPtr<DynLib>& rhs) const {
-		return mPtr->getName() < rhs->getName();
+	static bool operator<(const NPtr<DynLib>& lhs, const NPtr<DynLib>& rhs)
+	{
+		return lhs->getName() < rhs->getName();
 	}
+
 	DynLib* DynLibManager::load(String filename)
 	{
 		// Add the extension (.dll, .so, ...) if necessary.
