@@ -19,22 +19,22 @@ namespace bs { namespace ct
 		static PixelFormat getClosestSupportedPF(PixelFormat format, TextureType texType, int usage);
 
 		/**	Returns matching OpenGL base pixel format type if one is found, zero otherwise. */
-		static GLenum getGLOriginFormat(PixelFormat mFormat);
+		static GLenum getGLOriginFormat(PixelFormat format);
 	
 		/**	Returns OpenGL data type used in the provided format. */
-		static GLenum getGLOriginDataType(PixelFormat mFormat);
+		static GLenum getGLOriginDataType(PixelFormat format);
 		
 		/**
 		 * Returns matching OpenGL internal pixel format type if one is found, zero otherwise. Optionally returns an SRGB
 		 * format if @p hwGamma is specified and such format exists.
 		 */
-		static GLenum getGLInternalFormat(PixelFormat mFormat, bool hwGamma = false);
+		static GLenum getGLInternalFormat(PixelFormat format, bool hwGamma = false);
 	
 		/** Returns an OpenGL type that should be used for creating a buffer for the specified depth/stencil format. */
-		static GLenum getDepthStencilTypeFromPF(PixelFormat mFormat);
+		static GLenum getDepthStencilTypeFromPF(PixelFormat format);
 
 		/** Returns an OpenGL format that should be used for creating a buffer for the specified depth/stencil format. */
-		static GLenum getDepthStencilFormatFromPF(PixelFormat mFormat);
+		static GLenum getDepthStencilFormatFromPF(PixelFormat format);
 
 		/** Converts engine GPU buffer format to OpenGL GPU buffer format. */
 		static GLenum getBufferFormat(GpuBufferFormat format);

@@ -110,16 +110,10 @@ namespace bs { namespace ct
 		BS_EXCEPT(RenderingAPIException, "Framebuffer bind not possible for this pixel buffer type");
 	}
 
-	GLTextureBuffer::GLTextureBuffer(
-		GLenum target,
-		GLuint id,
-		GLint face,
-		GLint level,
-		GpuBufferUsage usage,
-		PixelFormat format,
-		UINT32 multisampleCount)
+	GLTextureBuffer::GLTextureBuffer(GLenum target, GLuint id, GLint face, GLint level, PixelFormat format, 
+		GpuBufferUsage usage, bool hwGamma, UINT32 multisampleCount)
 		: GLPixelBuffer(0, 0, 0, format, usage), mTarget(target), mFaceTarget(0), mTextureID(id), mFace(face)
-		, mLevel(level), mMultisampleCount(multisampleCount)
+		, mLevel(level), mMultisampleCount(multisampleCount), mHwGamma(hwGamma)
 	{
 		GLint value = 0;
 	
@@ -185,74 +179,35 @@ namespace bs { namespace ct
 				return;
 			}
 
-			GLenum format = GLPixelUtil::getGLInternalFormat(mFormat);
-			switch(mTarget) {
+			GLenum format = GLPixelUtil::getGLInternalFormat(mFormat, mHwGamma);
+			switch(mTarget) 
+			{
 				case GL_TEXTURE_1D:
-					if (dest.left == 0)
-					{
-						glCompressedTexImage1D(GL_TEXTURE_1D, mLevel,
-							format,
-							dest.getWidth(),
-							0,
-							data.getConsecutiveSize(),
-							data.getData());
-						BS_CHECK_GL_ERROR();
-					}
-					else
-					{
-						glCompressedTexSubImage1D(GL_TEXTURE_1D, mLevel, 
-							dest.left,
-							dest.getWidth(),
-							format, data.getConsecutiveSize(),
-							data.getData());
-						BS_CHECK_GL_ERROR();
-					}
+					glCompressedTexSubImage1D(GL_TEXTURE_1D, mLevel,
+						dest.left,
+						dest.getWidth(),
+						format, data.getConsecutiveSize(),
+						data.getData());
+					BS_CHECK_GL_ERROR();
 					break;
 				case GL_TEXTURE_2D:
 				case GL_TEXTURE_CUBE_MAP:
-					if (dest.left == 0 && dest.top == 0)
-					{
-						glCompressedTexImage2D(mFaceTarget, mLevel,
-							format,
-							dest.getWidth(),
-							dest.getHeight(),
-							0,
-							data.getConsecutiveSize(),
-							data.getData());
-						BS_CHECK_GL_ERROR();
-					}
-					else
-					{
-						glCompressedTexSubImage2D(mFaceTarget, mLevel, 
-							dest.left, dest.top, 
-							dest.getWidth(), dest.getHeight(),
-							format, data.getConsecutiveSize(),
-							data.getData());
-						BS_CHECK_GL_ERROR();
-					}
+					glCompressedTexSubImage2D(mFaceTarget, mLevel,
+						dest.left, dest.top,
+						dest.getWidth(), dest.getHeight(),
+						format, data.getConsecutiveSize(),
+						data.getData());
+					BS_CHECK_GL_ERROR();
 					break;
 				case GL_TEXTURE_3D:
-					if (dest.left == 0 && dest.top == 0 && dest.front == 0)
-					{
-						glCompressedTexImage3D(GL_TEXTURE_3D, mLevel,
-							format,
-							dest.getWidth(),
-							dest.getHeight(),
-							dest.getDepth(),
-							0,
-							data.getConsecutiveSize(),
-							data.getData());
-						BS_CHECK_GL_ERROR();
-					}
-					else
-					{			
-						glCompressedTexSubImage3D(GL_TEXTURE_3D, mLevel, 
-							dest.left, dest.top, dest.front,
-							dest.getWidth(), dest.getHeight(), dest.getDepth(),
-							format, data.getConsecutiveSize(),
-							data.getData());
-						BS_CHECK_GL_ERROR();
-					}
+					glCompressedTexSubImage3D(GL_TEXTURE_3D, mLevel,
+						dest.left, dest.top, dest.front,
+						dest.getWidth(), dest.getHeight(), dest.getDepth(),
+						format, data.getConsecutiveSize(),
+						data.getData());
+					BS_CHECK_GL_ERROR();
+					break;
+				default:
 					break;
 			}
 		

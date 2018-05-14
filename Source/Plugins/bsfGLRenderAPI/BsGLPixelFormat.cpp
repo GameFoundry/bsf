@@ -7,19 +7,18 @@
 
 namespace bs { namespace ct
 {
-	PixelFormat GLPixelUtil::getClosestSupportedPF(PixelFormat pf, TextureType texType, int usage)
+	PixelFormat GLPixelUtil::getClosestSupportedPF(PixelFormat format, TextureType texType, int usage)
 	{
 		// Check for any obvious issues first
-		PixelUtil::checkFormat(pf, texType, usage);
+		PixelUtil::checkFormat(format, texType, usage);
 		
 		// We don't check for any platform-specific format issues, assumed all are supported
-
-		return pf;
+		return format;
 	}
 
-	GLenum GLPixelUtil::getGLOriginFormat(PixelFormat mFormat)
+	GLenum GLPixelUtil::getGLOriginFormat(PixelFormat format)
 	{
-		switch (mFormat)
+		switch (format)
 		{
 		case PF_R8:
 		case PF_R8S:
@@ -170,9 +169,10 @@ namespace bs { namespace ct
 		}
 	}
 
-	GLenum GLPixelUtil::getGLInternalFormat(PixelFormat mFormat, bool hwGamma)
+	GLenum GLPixelUtil::getGLInternalFormat(PixelFormat format, bool hwGamma)
 	{
-		switch (mFormat) {
+		switch (format) 
+		{
 		case PF_R8:
 			return GL_R8;
 		case PF_R8I:
@@ -309,9 +309,9 @@ namespace bs { namespace ct
 		}
 	}
 
-	GLenum GLPixelUtil::getDepthStencilTypeFromPF(PixelFormat mFormat)
+	GLenum GLPixelUtil::getDepthStencilTypeFromPF(PixelFormat format)
 	{
-		switch(mFormat)
+		switch(format)
 		{
 		case PF_D32_S8X24:
 			return GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
@@ -329,9 +329,9 @@ namespace bs { namespace ct
 		return PF_D32_S8X24;
 	}
 		
-	GLenum GLPixelUtil::getDepthStencilFormatFromPF(PixelFormat mFormat)
+	GLenum GLPixelUtil::getDepthStencilFormatFromPF(PixelFormat format)
 	{
-		switch (mFormat)
+		switch (format)
 		{
 		case PF_D32_S8X24:
 			return GL_DEPTH_STENCIL;
