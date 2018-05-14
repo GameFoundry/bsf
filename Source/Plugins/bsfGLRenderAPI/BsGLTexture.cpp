@@ -344,6 +344,33 @@ namespace bs { namespace ct
 		};
 	}
 
+	GLenum GLTexture::getGLTextureTarget(GpuParamObjectType type)
+	{
+		switch(type)
+		{
+		case GPOT_TEXTURE1D:
+			return GL_TEXTURE_1D;
+		case GPOT_TEXTURE2D:
+			return GL_TEXTURE_2D;
+		case GPOT_TEXTURE2DMS:
+			return GL_TEXTURE_2D_MULTISAMPLE;
+		case GPOT_TEXTURE3D:
+			return GL_TEXTURE_3D;
+		case GPOT_TEXTURECUBE:
+			return GL_TEXTURE_CUBE_MAP;
+		case GPOT_TEXTURE1DARRAY:
+			return GL_TEXTURE_1D_ARRAY;
+		case GPOT_TEXTURE2DARRAY:
+			return GL_TEXTURE_2D_ARRAY;
+		case GPOT_TEXTURE2DMSARRAY:
+			return GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
+		case GPOT_TEXTURECUBEARRAY:
+			return GL_TEXTURE_CUBE_MAP_ARRAY;
+		default:
+			return GL_TEXTURE_2D;
+		}
+	}
+
 	PixelData GLTexture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx,
 									  UINT32 queueIdx)
 	{
