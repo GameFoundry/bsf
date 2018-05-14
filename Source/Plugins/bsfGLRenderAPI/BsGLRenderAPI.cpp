@@ -482,6 +482,8 @@ namespace bs { namespace ct
 						TextureInfo& texInfo = mTextureInfos[unit];
 
 						GLTexture* glTex = static_cast<GLTexture*>(texture.get());
+						GLenum newTextureType;
+						GLuint texId;
 						if (glTex != nullptr)
 						{
 #if BS_OPENGL_4_3 || BS_OPENGLES_3_1 
@@ -494,8 +496,8 @@ namespace bs { namespace ct
 
 							GLTextureView* glTexView = static_cast<GLTextureView*>(texView.get());
 
-							GLenum newTextureType = glTexView->getGLTextureTarget();
-							GLuint texId = glTexView->getGLID();
+							newTextureType = glTexView->getGLTextureTarget();
+							texId = glTexView->getGLID();
 #else
 							// Texture views are not supported, so if user requested a part of the texture surface report
 							// a warning
@@ -508,33 +510,34 @@ namespace bs { namespace ct
 									"Entire texture will be bound instead.");
 							}
 
-							GLenum newTextureType = glTex->getGLTextureTarget();
-							GLuint texId = glTex->getGLID();
+							newTextureType = glTex->getGLTextureTarget();
+							texId = glTex->getGLID();
 #endif
-
-							if (texInfo.type != newTextureType)
-							{
-								glBindTexture(texInfo.type, 0);
-								BS_CHECK_GL_ERROR();
-							}
-
-							glBindTexture(newTextureType, texId);
-							BS_CHECK_GL_ERROR();
-
-							texInfo.type = newTextureType;
-
-							SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
-							if (activeProgram != nullptr)
-							{
-								GLuint glProgram = activeProgram->getGLHandle();
-
-								glProgramUniform1i(glProgram, binding, unit);
-								BS_CHECK_GL_ERROR();
-							}
 						}
 						else
 						{
+
+							newTextureType = GLTexture::getGLTextureTarget(entry.second.type);
+							texId = 0;
+						}
+
+						if (texInfo.type != newTextureType)
+						{
 							glBindTexture(texInfo.type, 0);
+							BS_CHECK_GL_ERROR();
+						}
+
+						glBindTexture(newTextureType, texId);
+						BS_CHECK_GL_ERROR();
+
+						texInfo.type = newTextureType;
+
+						SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
+						if (activeProgram != nullptr)
+						{
+							GLuint glProgram = activeProgram->getGLHandle();
+
+							glProgramUniform1i(glProgram, binding, unit);
 							BS_CHECK_GL_ERROR();
 						}
 					}
@@ -552,11 +555,11 @@ namespace bs { namespace ct
 							continue;
 
 						// No sampler options for multisampled textures or buffers
-						bool supportsSampler = mTextureInfos[unit].type == GL_TEXTURE_2D_MULTISAMPLE ||
-							mTextureInfos[unit].type == GL_TEXTURE_2D_MULTISAMPLE_ARRAY ||
-							mTextureInfos[unit].type == GL_TEXTURE_BUFFER;
+						bool supportsSampler = mTextureInfos[unit].type != GL_TEXTURE_2D_MULTISAMPLE &&
+							mTextureInfos[unit].type != GL_TEXTURE_2D_MULTISAMPLE_ARRAY &&
+							mTextureInfos[unit].type != GL_TEXTURE_BUFFER;
 
-						if (!supportsSampler)
+						if (supportsSampler)
 						{
 							const SamplerProperties& stateProps = samplerState->getProperties();
 
@@ -592,31 +595,27 @@ namespace bs { namespace ct
 								if (!activateGLTextureUnit(unit))
 									continue;
 
+								GLuint texId = 0;
 								if (glBuffer != nullptr)
-								{
-									if (mTextureInfos[unit].type != GL_TEXTURE_BUFFER)
-									{
-										glBindTexture(mTextureInfos[unit].type, 0);
-										BS_CHECK_GL_ERROR();
-									}
+									texId = glBuffer->getGLTextureId();
 
-									mTextureInfos[unit].type = GL_TEXTURE_BUFFER;
-
-									glBindTexture(GL_TEXTURE_BUFFER, glBuffer->getGLTextureId());
-									BS_CHECK_GL_ERROR();
-
-									SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
-									if (activeProgram != nullptr)
-									{
-										GLuint glProgram = activeProgram->getGLHandle();
-
-										glProgramUniform1i(glProgram, binding, unit);
-										BS_CHECK_GL_ERROR();
-									}
-								}
-								else
+								if (mTextureInfos[unit].type != GL_TEXTURE_BUFFER)
 								{
 									glBindTexture(mTextureInfos[unit].type, 0);
+									BS_CHECK_GL_ERROR();
+								}
+
+								mTextureInfos[unit].type = GL_TEXTURE_BUFFER;
+
+								glBindTexture(GL_TEXTURE_BUFFER, texId);
+								BS_CHECK_GL_ERROR();
+
+								SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
+								if (activeProgram != nullptr)
+								{
+									GLuint glProgram = activeProgram->getGLHandle();
+
+									glProgramUniform1i(glProgram, binding, unit);
 									BS_CHECK_GL_ERROR();
 								}
 							}
@@ -625,30 +624,24 @@ namespace bs { namespace ct
 						case GPOT_RWBYTE_BUFFER: // Storage buffer (read/write, unstructured)
 							{
 								UINT32 unit = getImageUnit(binding);
+
+								GLuint texId = 0;
+								GLuint format = GL_R32F;
 								if (glBuffer != nullptr)
 								{
-									glBindImageTexture(
-										unit,
-										glBuffer->getGLTextureId(),
-										0,
-										false,
-										0,
-										GL_READ_WRITE,
-										glBuffer->getGLFormat());
-									BS_CHECK_GL_ERROR();
-
-									SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
-									if (activeProgram != nullptr)
-									{
-										GLuint glProgram = activeProgram->getGLHandle();
-
-										glProgramUniform1i(glProgram, binding, unit);
-										BS_CHECK_GL_ERROR();
-									}
+									texId = glBuffer->getGLTextureId();
+									format = glBuffer->getGLFormat();
 								}
-								else
+
+								glBindImageTexture(unit, texId, 0, false, 0, GL_READ_WRITE, format);
+								BS_CHECK_GL_ERROR();
+
+								SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
+								if (activeProgram != nullptr)
 								{
-									glBindImageTexture(unit, 0, 0, false, 0, GL_READ_WRITE, GL_R32F);
+									GLuint glProgram = activeProgram->getGLHandle();
+
+									glProgramUniform1i(glProgram, binding, unit);
 									BS_CHECK_GL_ERROR();
 								}
 							}
@@ -658,23 +651,20 @@ namespace bs { namespace ct
 						case GPOT_RWSTRUCTURED_BUFFER: // Shared storage block (read/write, structured)
 							{
 								UINT32 unit = getSharedStorageUnit(binding);
-								if (glBuffer != nullptr)
-								{
-									glBindBufferBase(GL_SHADER_STORAGE_BUFFER, unit, glBuffer->getGLBufferId());
-									BS_CHECK_GL_ERROR();
-									
-									SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
-									if (activeProgram != nullptr)
-									{
-										GLuint glProgram = activeProgram->getGLHandle();
 
-										glShaderStorageBlockBinding(glProgram, binding, unit);
-										BS_CHECK_GL_ERROR();
-									}
-								}
-								else
+								GLuint bufferId = 0;
+								if (glBuffer != nullptr)
+									bufferId = glBuffer->getGLBufferId();
+
+								glBindBufferBase(GL_SHADER_STORAGE_BUFFER, unit, bufferId);
+								BS_CHECK_GL_ERROR();
+
+								SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
+								if (activeProgram != nullptr)
 								{
-									glBindBufferBase(GL_SHADER_STORAGE_BUFFER, unit, 0);
+									GLuint glProgram = activeProgram->getGLHandle();
+
+									glShaderStorageBlockBinding(glProgram, binding, unit);
 									BS_CHECK_GL_ERROR();
 								}
 							}
@@ -694,14 +684,18 @@ namespace bs { namespace ct
 						const TextureSurface& surface = gpuParams->getLoadStoreSurface(entry.second.set, binding);
 
 						UINT32 unit = getImageUnit(binding);
+						GLuint texId = 0;
+						UINT32 mipLevel = 0;
+						UINT32 face = 0;
+						bool bindAllLayers = false;
+						GLenum format = GL_R32F;
+
 						if (texture != nullptr)
 						{
 							GLTexture* tex = static_cast<GLTexture*>(texture.get());
 							auto& texProps = tex->getProperties();
 
-							GLboolean bindAllLayers = 
-								texProps.getNumFaces() == surface.numFaces ||
-								surface.numFaces == 0;
+							bindAllLayers = texProps.getNumFaces() == surface.numFaces || surface.numFaces == 0;
 
 							if(!bindAllLayers && surface.numFaces > 1)
 							{
@@ -716,28 +710,21 @@ namespace bs { namespace ct
 									supported and only the first provided level will be bound.");
 							}
 
-							glBindImageTexture(
-								unit,
-								tex->getGLID(),
-								surface.mipLevel,
-								bindAllLayers,
-								surface.face,
-								GL_READ_WRITE,
-								tex->getGLFormat());
-							BS_CHECK_GL_ERROR();
-
-							SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
-							if (activeProgram != nullptr)
-							{
-								GLuint glProgram = activeProgram->getGLHandle();
-
-								glProgramUniform1i(glProgram, binding, unit);
-								BS_CHECK_GL_ERROR();
-							}
+							texId = tex->getGLID();
+							format = tex->getGLFormat();
+							mipLevel = surface.mipLevel;
+							face = surface.face;
 						}
-						else
+
+						glBindImageTexture(unit, texId, mipLevel, bindAllLayers, face, GL_READ_WRITE, format);
+						BS_CHECK_GL_ERROR();
+
+						SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
+						if (activeProgram != nullptr)
 						{
-							glBindImageTexture(unit, 0, 0, false, 0, GL_READ_WRITE, GL_R32F);
+							GLuint glProgram = activeProgram->getGLHandle();
+
+							glProgramUniform1i(glProgram, binding, unit);
 							BS_CHECK_GL_ERROR();
 						}
 					}

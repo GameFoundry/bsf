@@ -39,9 +39,12 @@ namespace bs { namespace ct
 		SPtr<GLPixelBuffer> getBuffer(UINT32 face, UINT32 mipmap);
 
 		/** 
-		 * Generates an OpenGL texture target based on the texture type, number of samples per pixel, and number of faces.
+		 * Picks an OpenGL texture target based on the texture type, number of samples per pixel, and number of faces.
 		 */
 		static GLenum getGLTextureTarget(TextureType type, UINT32 numSamples, UINT32 numFaces);
+
+		/** Picks an OpenGL texture target based on a GPU program parameter type. */
+		static GLenum getGLTextureTarget(GpuParamObjectType type);
 
 	protected:
 		friend class GLTextureManager;
