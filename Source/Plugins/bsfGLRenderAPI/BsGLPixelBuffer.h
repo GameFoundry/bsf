@@ -149,12 +149,13 @@ namespace bs { namespace ct
 		 * @param[in]	id					OpenGL handle to the texture to retrieve the surface from.
 		 * @param[in]	face				Face index of the texture in the case of cube textures or texture arrays.
 		 * @param[in]	level				Mip level of the texture.
-		 * @param[in]	usage				Usage signaling the render system how we plan on using the buffer.
 		 * @param[in]	format				Format of each pixel in the buffer.
+		 * @param[in]	usage				Usage signaling the render system how we plan on using the buffer.
+		 * @param[in]	hwGamma				True if buffer colors are assumed to be in sRGB space.
 		 * @param[in]	multisampleCount	Number of samples the parent texture was created with.
 		 */
 		GLTextureBuffer(GLenum target, GLuint id, GLint face, 
-			GLint level, GpuBufferUsage usage, PixelFormat format, UINT32 multisampleCount);
+			GLint level, PixelFormat format, GpuBufferUsage usage, bool hwGamma, UINT32 multisampleCount);
 		~GLTextureBuffer() = default;
 		
 		/** @copydoc GLPixelBuffer::bindToFramebuffer */
@@ -186,6 +187,7 @@ namespace bs { namespace ct
 		GLint mFace;
 		GLint mLevel;
 		UINT32 mMultisampleCount;
+		bool mHwGamma;
 	};
 
 	/** @} */
