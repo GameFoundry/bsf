@@ -12,7 +12,7 @@ namespace bs
 	 */
 
 	/**
-	 * Represents one engine module. Essentially it is a specialized type of singleton. Module must be manually started up 
+	 * Represents one engine module. Essentially it is a specialized type of singleton. Module must be manually started up
 	 * and shut down before and after use.
 	 */
 	template <class T>
@@ -27,13 +27,13 @@ namespace bs
 		{
 			if (!isStartedUp())
 			{
-				BS_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException,
 					"Trying to access a module but it hasn't been started up yet.");
 			}
 
 			if (isDestroyed())
 			{
-				BS_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException,
 					"Trying to access a destroyed module.");
 			}
 
@@ -41,26 +41,26 @@ namespace bs
 		}
 
 		/**
-		 * Returns a pointer to the module instance. Module has to have been started up first otherwise an exception will 
+		 * Returns a pointer to the module instance. Module has to have been started up first otherwise an exception will
 		 * be thrown.
 		 */
 		static T* instancePtr()
 		{
 			if (!isStartedUp())
 			{
-				BS_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException,
 					"Trying to access a module but it hasn't been started up yet.");
 			}
 
 			if (isDestroyed())
 			{
-				BS_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException,
 					"Trying to access a destroyed module.");
 			}
 
 			return _instance();
 		}
-		
+
 		/** Constructs and starts the module using the specified parameters. */
 		template<class ...Args>
 		static void startUp(Args &&...args)
@@ -75,7 +75,7 @@ namespace bs
 		}
 
 		/**
-		 * Constructs and starts a specialized type of the module. Provided type must derive from type the Module is 
+		 * Constructs and starts a specialized type of the module. Provided type must derive from type the Module is
 		 * initialized with.
 		 */
 		template<class SubType, class ...Args>
@@ -97,13 +97,13 @@ namespace bs
 		{
 			if (isDestroyed())
 			{
-				BS_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException,
 					"Trying to shut down an already shut down module.");
 			}
-			
-			if (!isStartedUp()) 
+
+			if (!isStartedUp())
 			{
-				BS_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException,
 					"Trying to shut down a module which was never started.");
 			}
 
@@ -124,23 +124,26 @@ namespace bs
 
 		virtual ~Module() = default;
 
-		Module(Module&&) = default;
-		Module(const Module&) = default;
-		Module& operator=(Module&&) = default;
-		Module& operator=(const Module&) = default;
+		/*
+		 * The notion of copying or moving a singleton is rather nonsensical.
+		 */
+		Module(Module&&) = delete;
+		Module(const Module&) = delete;
+		Module& operator=(Module&&) = delete;
+		Module& operator=(const Module&) = delete;
 
 		/**
 		 * Override if you want your module to be notified once it has been constructed and started.
-		 * 			
-		 * @note	Useful when your module is polymorphic and you cannot perform some implementation specific 
+		 *
+		 * @note	Useful when your module is polymorphic and you cannot perform some implementation specific
 		 *			initialization in constructor itself.
 		 */
 		virtual void onStartUp() {}
 
 		/**
 		 * Override if you want your module to be notified just before it is deleted.
-		 * 			
-		 * @note	Useful when your module is polymorphic and you might want to perform some kind of clean up perhaps 
+		 *
+		 * @note	Useful when your module is polymorphic and you might want to perform some kind of clean up perhaps
 		 *			overriding that of a base class.
 		 */
 		virtual void onShutDown() {}
@@ -154,7 +157,7 @@ namespace bs
 
 		/**
 		 * Checks has the Module been shut down.
-		 *			
+		 *
 		 * @note	If module was never even started, this will return false.
 		 */
 		static bool& isDestroyed()
