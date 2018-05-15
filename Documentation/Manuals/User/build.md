@@ -3,7 +3,7 @@ Setting up a project				{#build}
 [TOC]
 
 This manual will explain how to set up your own project and link it with bs::framework. We'll explore two options:
- - **Link with binaries** - Either download the precompiled set of binaries or compile them yourself. Then create a project that links with the binaries. If do not wish to compile `bsf` yourself, this is the best approach to follow.
+ - **Link with binaries** - Either download the precompiled set of binaries or compile them yourself. Then create a project that links with the binaries. If you do not wish to compile `bsf` yourself, this is the best approach to follow.
  - **Link with source** - Grab the source code and include it as part of your own project. Requires you to go through the same steps as if you were compiling `bsf` from scratch, but allows you to easily recompile the framework from latest source, or due to your own modifications. If you plan on making changes to the framework, or want to frequently update to the latest version, this is the best approach.
 
 # Link with binaries {#build_a}
@@ -15,7 +15,7 @@ The first step is to actually get `bsf` binaries. You have two options:
 Whether you downloaded precompiled binaries or compiled them yourself you should now have three folders containing the entirety of `bsf`:
  - `bin` - Contains dynamic libraries and data files
  - `include` - Contains public header files
- - `lib` - Contains import libraries (Windows only)
+ - `lib` - Contains shared and import libraries
  
 For precompiled dependencies these folders will be part of the downloaded archive, and for manually compiled option they will be placed in the chosen `install` folder.
 
@@ -37,6 +37,9 @@ First create a new directory where you would like your project to live. Copy the
 ## CMake project {#build_a_c}
 In your project folder create `CMakeLists.txt`, and fill it out like so:
 ```
+# Minimum version of CMake as required by bsf
+cmake_minimum_required (VERSION 3.9.0)
+
 # Name of your project
 project (myProject)
 
