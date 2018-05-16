@@ -17,7 +17,12 @@ else()
 endif()
 
 find_imported_includes(FLAC FLAC/all.h)
-find_imported_library_shared(FLAC ${FLAC_LIBNAME})
+
+if(APPLE)
+	find_imported_library(FLAC ${FLAC_LIBNAME})
+else()
+	find_imported_library_shared(FLAC ${FLAC_LIBNAME})
+endif()
 
 if(WIN32)
 	# .dll has a different name than .lib, so we must register it separately

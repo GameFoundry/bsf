@@ -72,7 +72,7 @@ Additionally, if the dependency structure still isn't clear, download one of the
 - PhysX 3.3
 - https://github.com/NVIDIAGameWorks/PhysX-3.3
 - Required by bsfPhysX
-- Compile as a dynamic library
+- Compile as a dynamic library on Windows, static library on Linux/macOS (default)
 	
 **OpenAL**
 - OpenAL Soft 1.17.2
@@ -81,7 +81,8 @@ Additionally, if the dependency structure still isn't clear, download one of the
 - **Linux only**
   - Make sure to get audio backend libraries before compiling: PulseAudio, OSS, ALSA and JACK
   - On Debian/Ubuntu run: `apt-get install libpulse libasound2-dev libjack-dev`
-- Compile as a dynamic library
+- Compile as a dynamic library on Windows/Linux (default), static library on macOS
+  - Use `LIBTYPE=STATIC` CMake flag to force it to compile as a static library
    
 **libogg**
 - libogg v1.3.2
@@ -95,14 +96,15 @@ Additionally, if the dependency structure still isn't clear, download one of the
 - libvorbis commit:8a8f8589e19c5016f6548d877a8fda231fce4f93
 - https://git.xiph.org/?p=vorbis.git
 - Required by bsfOpenAudio and bsfFMOD
-- Compile as a dynamic library
+- Compile as a dynamic library on Windows, static library on Linux/macOS (default)
   - Requires libogg, as described in its readme file.
    
 **libFLAC**
 - libflac commit: f7cd466c24fb5d1966943f3ea36a1f4a37858597
 - https://git.xiph.org/?p=flac.git
 - Required by bsfOpenAudio
-- Compile as a dynamic library
+- Compile as a dynamic library on Windows/Linux (default), static library on macOS
+  - Provide `--disable-shared --enable-static` flags to `configure` to force it to compile as a static library
   - Requires libogg, as described in its readme file.
    
 **glslang**
