@@ -17,7 +17,12 @@ else()
 endif()
 
 find_imported_includes(OpenAL AL/al.h)
-find_imported_library_shared(OpenAL ${OpenAL_LIBNAME})
+
+if(APPLE)
+	find_imported_library(OpenAL ${OpenAL_LIBNAME})
+else()
+	find_imported_library_shared(OpenAL ${OpenAL_LIBNAME})
+endif()
 
 install_dependency_binaries(OpenAL)
 

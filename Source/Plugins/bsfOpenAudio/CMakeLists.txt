@@ -25,6 +25,13 @@ target_link_libraries(bsfOpenAudio PRIVATE ${ogg_LIBRARIES})
 target_link_libraries(bsfOpenAudio PRIVATE ${vorbis_LIBRARIES})
 target_link_libraries(bsfOpenAudio PRIVATE ${OpenAL_LIBRARIES})
 
+## OS libs
+if(APPLE) # MacOS
+	target_link_framework(bsfOpenAudio CoreAudio)
+	target_link_framework(bsfOpenAudio AudioUnit)
+	target_link_framework(bsfOpenAudio AudioToolbox)
+endif()
+
 ## Local libs
 target_link_libraries(bsfOpenAudio PRIVATE bsf)
 

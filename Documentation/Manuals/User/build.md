@@ -39,6 +39,9 @@ In your project folder create `CMakeLists.txt`, and fill it out like so:
 # Name of your project
 project (myProject)
 
+# Make sure to use the C++14 standard
+set(CMAKE_CXX_STANDARD 14)
+
 # Build an executable from the provided C++ files
 add_executable(myApp "Main.cpp")
 
