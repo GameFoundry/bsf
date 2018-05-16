@@ -27,6 +27,9 @@ endif()
 ### Target at least C++14
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+
+set(CMAKE_INSTALL_RPATH "\$ORIGIN")
+
 ## Compiler-specific settings
 if(MSVC)
 	# Linker
@@ -76,9 +79,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "A
 	# TODO: Use link-time optimization -flto. Might require non-default linker.
 	set(BS_COMPILER_FLAGS_COMMON "-Wall -Wextra -Wno-unused-parameter -fPIC -fno-exceptions -fno-strict-aliasing -fno-rtti -fno-ms-compatibility")
 
-	if(LINUX)
-		set(BS_COMPILER_FLAGS_COMMON "${BS_COMPILER_FLAGS_COMMON} -Wl,-rpath=$ORIGIN")
-	elseif(APPLE)
+	if(APPLE)
 		set(BS_COMPILER_FLAGS_COMMON "${BS_COMPILER_FLAGS_COMMON} -fobjc-arc -std=c++1z")
 	endif()
 
@@ -95,10 +96,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "A
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	# TODO: Use link-time optimization -flto. Might require non-default linker.
 	set(BS_COMPILER_FLAGS_COMMON "-Wall -Wextra -Wno-unused-parameter -fPIC -fno-exceptions -fno-strict-aliasing -fno-rtti")
-
-	if(LINUX)
-		set(BS_COMPILER_FLAGS_COMMON "${BS_COMPILER_FLAGS_COMMON} -Wl,-rpath=$ORIGIN")
-	endif()
 
 	set(CMAKE_CXX_FLAGS_DEBUG "${BS_COMPILER_FLAGS_COMMON} -ggdb -O0 -DDEBUG")
 	set(CMAKE_CXX_FLAGS_OPTIMIZEDDEBUG "${BS_COMPILER_FLAGS_COMMON} -ggdb -O2 -DDEBUG -Wno-unused-variable")
