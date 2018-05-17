@@ -15,11 +15,14 @@ if(WIN32)
 endif()
 
 find_imported_includes(vorbis vorbis/vorbisenc.h)
-find_imported_library_shared(vorbis ${vorbis_LIB_PREFIX}vorbis)
-find_imported_library_shared(vorbis ${vorbis_LIB_PREFIX}vorbisfile)
 
 if(UNIX)
-	find_imported_library_shared(vorbis ${vorbis_LIB_PREFIX}vorbisenc)
+	find_imported_library(vorbis ${vorbis_LIB_PREFIX}vorbis)
+	find_imported_library(vorbis ${vorbis_LIB_PREFIX}vorbisfile)
+	find_imported_library(vorbis ${vorbis_LIB_PREFIX}vorbisenc)
+else()
+	find_imported_library_shared(vorbis ${vorbis_LIB_PREFIX}vorbis)
+	find_imported_library_shared(vorbis ${vorbis_LIB_PREFIX}vorbisfile)
 endif()
 
 install_dependency_binaries(vorbis)
