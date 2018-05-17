@@ -18,7 +18,7 @@ endif()
 
 find_imported_includes(FLAC FLAC/all.h)
 
-if(APPLE)
+if(UNIX)
 	find_imported_library(FLAC ${FLAC_LIBNAME})
 else()
 	find_imported_library_shared(FLAC ${FLAC_LIBNAME})

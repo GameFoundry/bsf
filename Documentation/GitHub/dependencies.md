@@ -48,6 +48,13 @@ Additionally, if the dependency structure still isn't clear, download one of the
 - Required by bsfCore
 - Compile as a static library
  
+**LibICU**
+- http://site.icu-project.org/
+- Only required for Linux builds
+- Required by bsfCore
+- Compile as a static library
+ - You *can* use system version of the ICU library, but your binaries will then only be compatible with Linux distros using the exact same API version (which changes often). It's safest to link ICU statically.
+
 **FBXSDK**
 - FBX SDK 2016.1
 - http://usa.autodesk.com/fbx
@@ -98,12 +105,13 @@ Additionally, if the dependency structure still isn't clear, download one of the
 - Required by bsfOpenAudio and bsfFMOD
 - Compile as a dynamic library on Windows, static library on Linux/macOS (default)
   - Requires libogg, as described in its readme file.
+  - When compiling as static library on Linux, make sure to specify `-DCMAKE_POSITION_INDEPENDENT_CODE=ON` to CMake, otherwise it will fail to link
    
 **libFLAC**
 - libflac commit: f7cd466c24fb5d1966943f3ea36a1f4a37858597
 - https://git.xiph.org/?p=flac.git
 - Required by bsfOpenAudio
-- Compile as a dynamic library on Windows/Linux (default), static library on macOS
+- Compile as a dynamic library on Windows (default), static library on Linux/macOS
   - Provide `--disable-shared --enable-static` flags to `configure` to force it to compile as a static library
   - Requires libogg, as described in its readme file.
    
@@ -117,7 +125,7 @@ Additionally, if the dependency structure still isn't clear, download one of the
 - https://github.com/BearishSun/XShaderCompiler (branch *banshee*)
 - Required by bsfSL
 - Compile as a static library
-   
+
 **bison**
 - Bison 3.0.4
 - Only required if BUILD_BSL option is specified during the build (off by default)
