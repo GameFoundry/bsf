@@ -57,10 +57,10 @@ target_link_libraries(bsf PRIVATE ${snappy_LIBRARIES})
 target_link_libraries(bsf PUBLIC ThirdParty)
 
 if(LINUX)
-	## External lib: X11, LibUUID
+	## External lib: X11, LibUUID, LibICU
 	target_link_libraries(bsf PUBLIC ${X11_LIBRARIES} ${X11_Xcursor_LIB} ${X11_Xrandr_LIB} ${X11_Xi_LIB})
 	target_link_libraries(bsf PRIVATE ${LibUUID_LIBRARIES})
-	target_link_libraries(bsf PRIVATE ${LibICU_LIBRARIES})
+	target_link_libraries(bsf PUBLIC ${LibICU_LIBRARIES})
 endif()
 
 if(APPLE)
