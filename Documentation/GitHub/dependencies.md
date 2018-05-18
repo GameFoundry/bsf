@@ -53,6 +53,7 @@ Additionally, if the dependency structure still isn't clear, download one of the
 - Only required for Linux builds
 - Required by bsfCore
 - Compile as a static library
+ - Make sure to provide `-fPIC` as an explicit flag
  - You *can* use system version of the ICU library, but your binaries will then only be compatible with Linux distros using the exact same API version (which changes often). It's safest to link ICU statically.
 
 **FBXSDK**

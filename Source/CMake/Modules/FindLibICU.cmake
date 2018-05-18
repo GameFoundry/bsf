@@ -7,7 +7,7 @@
 
 start_find_package(LibICU)
 
-set(snappy_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/LibICU CACHE PATH "")
+set(LibICU_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/libICU CACHE PATH "")
 gen_default_lib_search_dirs(LibICU)
 
 find_imported_includes(LibICU unicode/utypes.h)
