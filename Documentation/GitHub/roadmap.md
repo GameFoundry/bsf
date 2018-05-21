@@ -1,7 +1,7 @@
 # Roadmap
 
 All tasks are organized as GitHub issues per milestone:
- - [v1.0](https://github.com/GameFoundry/bsf/milestone/1)
+ - [v1.0] Feature complete. In the process of testing, bugfixing and polishing.
  - [v1.1](https://github.com/GameFoundry/bsf/milestone/2)
  - [v1.2](https://github.com/GameFoundry/bsf/milestone/3)
  - [v1.3](https://github.com/GameFoundry/bsf/milestone/4)
