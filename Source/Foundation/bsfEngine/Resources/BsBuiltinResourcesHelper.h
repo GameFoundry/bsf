@@ -122,7 +122,7 @@ namespace bs
 	 * Determines how are resources for GUIElementStyle loaded, when it is being decoded from a non-binary format that only
 	 * stores resource names.
 	 */
-	class GUIElementStyleLoader
+	class BS_EXPORT GUIElementStyleLoader
 	{
 	public:
 		virtual ~GUIElementStyleLoader() = default;
@@ -135,7 +135,7 @@ namespace bs
 	};
 
 	/** Handles loading of GUIELementStyle resources by retrieving them from the builtin resources folder. */
-	class BuiltinResourceGUIElementStyleLoader final : public GUIElementStyleLoader
+	class BS_EXPORT BuiltinResourceGUIElementStyleLoader final : public GUIElementStyleLoader
 	{
 	public:
 		BuiltinResourceGUIElementStyleLoader(const Path& fontPath, const Path& texturePath);
