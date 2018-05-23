@@ -742,6 +742,56 @@
             "Path": "White.psd",
             "SpriteUUID": "46bc0d6b-5cf0-4edc-bc5f-e0a06b8b04c2",
             "TextureUUID": "723670c8-f634-435f-8887-001a6791226a"
+        },
+        {
+            "Path": "ButtonFocused.png",
+            "SpriteUUID": "57ce5eab-4310-79ad-3496-43107442c389",
+            "TextureUUID": "9dd24478-446e-8e10-82a8-446eca04620b"
+        },
+        {
+            "Path": "DropDownButtonFocused.png",
+            "SpriteUUID": "42d60331-4169-b6cc-41b2-4169ae0b6a85",
+            "TextureUUID": "7a3671b1-4ccb-e6ee-05a5-4ccb9ac57a06"
+        },
+        {
+            "Path": "SliderHBackgroundFocused.png",
+            "SpriteUUID": "ae02917b-436c-90f4-f584-436cb29932ac",
+            "TextureUUID": "346fef92-4524-dcdc-879c-4524dec1d093"
+        },
+        {
+            "Path": "SliderVBackgroundFocused.png",
+            "SpriteUUID": "9030b1e8-4d48-5ff9-d298-4d48b86e4632",
+            "TextureUUID": "8c887b69-4f8d-6a65-8ab5-4f8dd2247c26"
+        },
+        {
+            "Path": "ToggleFocused.png",
+            "SpriteUUID": "530f1b5d-410c-ba94-b095-410c4b4e6da1",
+            "TextureUUID": "06795729-437c-24f7-9088-437c1feea5aa"
+        },
+        {
+            "Path": "ToggleFocusedOn.png",
+            "SpriteUUID": "69a7b28d-4a9a-fa1d-dab6-4a9a881a91f8",
+            "TextureUUID": "e0d4afc2-4ba6-e6a5-57aa-4ba69061df71"
+        },
+        {
+            "Path": "ButtonFocusedHover.png",
+            "SpriteUUID": "89e494c9-4d6a-ae0e-0b96-4d6adec391ef",
+            "TextureUUID": "8bf1494e-4943-01d0-2a90-4943001f3f69"
+        },
+        {
+            "Path": "ToggleFocusedHover.png",
+            "SpriteUUID": "e9224fb0-4a2c-ab11-a4ab-4a2c9536bc40",
+            "TextureUUID": "7964c3a7-4366-a859-d09c-4366a8874f0a"
+        },
+        {
+            "Path": "ToggleFocusedHoverOn.png",
+            "SpriteUUID": "22a9c0b4-4d53-2113-fb97-4d53f1c43859",
+            "TextureUUID": "106417e8-4dc3-ab1f-efad-4dc35feb6df3"
+        },
+        {
+            "Path": "DropDownButtonFocusedHover.png",
+            "SpriteUUID": "6ff54b8e-4f01-bc8c-fd8d-4f01a316065b",
+            "TextureUUID": "138dc6d2-497e-8376-bc87-497e0cafc1d1"
         }
     ]
 }

@@ -21,6 +21,8 @@
 #include "GUI/BsGUIContextMenu.h"
 #include "GUI/BsDragAndDropManager.h"
 #include "GUI/BsGUIDropDownBoxManager.h"
+#include "GUI/BsGUIPanel.h"
+#include "GUI/BsGUINavGroup.h"
 #include "Profiling/BsProfilerCPU.h"
 #include "Input/BsVirtualInput.h"
 #include "Platform/BsCursor.h"
@@ -279,6 +281,7 @@ namespace bs
 			mActiveElements.swap(mNewActiveElements);
 
 			mNewElementsInFocus.clear();
+
 			for (auto& elementInfo : mElementsInFocus)
 			{
 				if (!elementInfo.element->_isDestroyed())
@@ -287,16 +290,53 @@ namespace bs
 
 			mElementsInFocus.swap(mNewElementsInFocus);
 
+			// If anything else is taking focus, clear any existing focused elements
+			bool clearFocus = false;
+			for (auto& focusElementInfo : mForcedFocusElements)
+			{
+				if(focusElementInfo.focus)
+				{
+					clearFocus = true;
+					break;
+				}
+			}
+
+			if(clearFocus)
+			{
+				// Clear focus on all elements that aren't part of the forced focus list (in case they are already in focus)
+				mCommandEvent.setType(GUICommandEventType::FocusLost);
+
+				for (auto iter = mElementsInFocus.begin(); iter != mElementsInFocus.end();)
+				{
+					const ElementFocusInfo& elementInfo = *iter;
+
+					const auto iterFind = std::find_if(begin(mForcedFocusElements), end(mForcedFocusElements),
+						[&elementInfo](const ElementForcedFocusInfo& x)
+					{
+						return x.focus && x.element == elementInfo.element;
+					});
+
+					if (iterFind == mForcedFocusElements.end())
+					{
+						sendCommandEvent(elementInfo.element, mCommandEvent);
+						iter = mElementsInFocus.erase(iter);
+					}
+					else
+						++iter;
+				}
+			}
+
 			for (auto& focusElementInfo : mForcedFocusElements)
 			{
 				if (focusElementInfo.element->_isDestroyed())
 					continue;
 
+				const auto iterFind = std::find_if(mElementsInFocus.begin(), mElementsInFocus.end(),
+					[&](const ElementFocusInfo& x) { return x.element == focusElementInfo.element; });
+
 				if (focusElementInfo.focus)
 				{
-					auto iterFind = std::find_if(mElementsInFocus.begin(), mElementsInFocus.end(),
-						[&](const ElementFocusInfo& x) { return x.element == focusElementInfo.element; });
-
+					// Gain focus unless already in focus
 					if (iterFind == mElementsInFocus.end())
 					{
 						mElementsInFocus.push_back(ElementFocusInfo(focusElementInfo.element, 
@@ -310,21 +350,15 @@ namespace bs
 				}
 				else
 				{
-					mNewElementsInFocus.clear();
-					for (auto& elementInfo : mElementsInFocus)
+					// Force clear focus
+					if(iterFind != mElementsInFocus.end())
 					{
-						if (elementInfo.element == focusElementInfo.element)
-						{
-							mCommandEvent = GUICommandEvent();
-							mCommandEvent.setType(GUICommandEventType::FocusLost);
+						mCommandEvent = GUICommandEvent();
+						mCommandEvent.setType(GUICommandEventType::FocusLost);
 
-							sendCommandEvent(elementInfo.element, mCommandEvent);
-						}
-						else
-							mNewElementsInFocus.push_back(elementInfo);
+						sendCommandEvent(iterFind->element, mCommandEvent);
+						bs_swap_and_erase(mElementsInFocus, iterFind);
 					}
-
-					mElementsInFocus.swap(mNewElementsInFocus);
 				}
 			}
 
@@ -1157,10 +1191,18 @@ namespace bs
 
 	void GUIManager::onInputCommandEntered(InputCommandType commandType)
 	{
-		if(mElementsInFocus.size() == 0)
+		if(mElementsInFocus.empty())
 			return;
 
 		hideTooltip();
+
+		// Tabs are handled by the GUI manager itself, while other events are passed to GUI elements
+		if(commandType == InputCommandType::Tab)
+		{
+			tabFocusNext();
+			return;
+		}
+
 		mCommandEvent = GUICommandEvent();
 
 		switch(commandType)
@@ -1204,12 +1246,12 @@ namespace bs
 		case InputCommandType::SelectDown:
 			mCommandEvent.setType(GUICommandEventType::SelectDown);
 			break;
+		default:
+			break;
 		}
 
 		for(auto& elementInfo : mElementsInFocus)
-		{
 			sendCommandEvent(elementInfo.element, mCommandEvent);
-		}		
 	}
 
 	void GUIManager::onVirtualButtonDown(const VirtualButton& button, UINT32 deviceIdx)
@@ -1700,6 +1742,68 @@ namespace bs
 		}
 
 		return nullptr;
+	}
+
+	void GUIManager::tabFocusFirst()
+	{
+		UINT32 nearestDist = std::numeric_limits<UINT32>::max();
+		GUIElement* closestElement = nullptr;
+
+		// Find to top-left most element
+		GUIWidget* widget = nullptr;
+		for (auto& widgetInfo : mWidgets)
+		{
+			const RenderWindow* window = getWidgetWindow(*widgetInfo.widget);
+
+			const Vector<GUIElement*>& elements = widget->getElements();
+			for (auto& element : elements)
+			{
+				const bool acceptsKeyFocus = element->getOptionFlags().isSet(GUIElementOption::AcceptsKeyFocus);
+				if (!acceptsKeyFocus || element->_isDisabled() || !element->_isVisible())
+					continue;
+
+				const Rect2I elemBounds = element->_getClippedBounds();
+				const bool isFullyClipped = element->_getClippedBounds().width == 0 ||
+					element->_getClippedBounds().height == 0;
+
+				if (isFullyClipped)
+					continue;
+
+				Vector2I elementPos(elemBounds.x, elemBounds.y);
+				Vector2I screenPos = window->windowToScreenPos(elementPos);
+
+				const UINT32 dist = screenPos.squaredLength();
+				if (dist < nearestDist)
+				{
+					nearestDist = dist;
+					closestElement = element;
+				}
+			}
+		}
+
+		if (closestElement == nullptr)
+			return;
+
+		// Don't use the element directly though, since its tab group could have explicit ordering
+		SPtr<GUINavGroup> navGroup = closestElement->_getNavGroup();
+		navGroup->focusFirst();
+	}
+
+	void GUIManager::tabFocusNext()
+	{
+		for(auto& entry : mElementsInFocus)
+		{
+			SPtr<GUINavGroup> navGroup = entry.element->_getNavGroup();
+			if(navGroup != nullptr)
+			{
+				navGroup->focusNext(entry.element);
+				return;
+			}
+			
+		}
+
+		// Nothing currently in focus
+		tabFocusFirst();
 	}
 
 	bool GUIManager::sendMouseEvent(GUIElement* element, const GUIMouseEvent& event)

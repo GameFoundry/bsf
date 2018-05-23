@@ -15,6 +15,9 @@
         }
     },
     {
+        "name": "Texture"
+    },	
+    {
         "active": {
             "textColor": {
                 "a": 1.0,
@@ -92,6 +95,42 @@
             },
             "texture": "ButtonActive.png"
         },
+        "focused": {
+            "textColor": {
+                "a": 1.0,
+                "b": 0.699999988079071,
+                "g": 0.699999988079071,
+                "r": 0.699999988079071
+            },
+            "texture": "ButtonFocused.png"
+        },
+        "focusedOn": {
+            "textColor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 0.0,
+                "r": 0.0
+            },
+            "texture": "ButtonFocused.png"
+        },
+        "focusedHover": {
+            "textColor": {
+                "a": 1.0,
+                "b": 0.699999988079071,
+                "g": 0.699999988079071,
+                "r": 0.699999988079071
+            },
+            "texture": "ButtonFocusedHover.png"
+        },
+        "focusedHoverOn": {
+            "textColor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 0.0,
+                "r": 0.0
+            },
+            "texture": "ButtonFocusedHover.png"
+        },
         "textHorzAlign": 1,
         "textVertAlign": 1
     },
@@ -111,6 +150,12 @@
         "hoverOn": {
             "texture": "ToggleHoverOn.png"
         },
+        "focusedHover": {
+            "texture": "ToggleFocusedHover.png"
+        },
+        "focusedHoverOn": {
+            "texture": "ToggleFocusedHoverOn.png"
+        },
         "margins": {
             "bottom": 2,
             "left": 0,
@@ -123,6 +168,12 @@
         },
         "normalOn": {
             "texture": "ToggleNormalOn.png"
+        },
+		"focused": {
+            "texture": "ToggleFocused.png"
+        },
+        "focusedOn": {
+            "texture": "ToggleFocusedOn.png"
         },
         "width": 13
     },
@@ -481,6 +532,24 @@
             },
             "texture": "DropDownButtonActive.png"
         },
+		"focusedHover": {
+            "textColor": {
+                "a": 1.0,
+                "b": 0.699999988079071,
+                "g": 0.699999988079071,
+                "r": 0.699999988079071
+            },
+            "texture": "DropDownButtonFocusedHover.png"
+        },
+        "focusedHoverOn": {
+            "textColor": {
+                "a": 1.0,
+                "b": 0.699999988079071,
+                "g": 0.699999988079071,
+                "r": 0.699999988079071
+            },
+            "texture": "DropDownButtonFocusedHover.png"
+        },
         "margins": {
             "bottom": 2,
             "left": 0,
@@ -506,6 +575,24 @@
                 "r": 0.699999988079071
             },
             "texture": "DropDownButtonActive.png"
+        },
+		"focused": {
+            "textColor": {
+                "a": 1.0,
+                "b": 0.699999988079071,
+                "g": 0.699999988079071,
+                "r": 0.699999988079071
+            },
+            "texture": "DropDownButtonFocused.png"
+        },
+        "focusedOn": {
+            "textColor": {
+                "a": 1.0,
+                "b": 0.699999988079071,
+                "g": 0.699999988079071,
+                "r": 0.699999988079071
+            },
+            "texture": "DropDownButtonFocused.png"
         },
         "textVertAlign": 1
     },
@@ -1083,6 +1170,9 @@
         "name": "SliderHorzBg",
         "normal": {
             "texture": "SliderHBackground.png"
+        },
+		"focused": {
+            "texture": "SliderHBackgroundFocused.png"
         }
     },
     {
@@ -1131,6 +1221,9 @@
         "name": "SliderVertBg",
         "normal": {
             "texture": "SliderVBackground.png"
+        },
+		"focused": {
+            "texture": "SliderVBackgroundFocused.png"
         },
         "width": 10
     },

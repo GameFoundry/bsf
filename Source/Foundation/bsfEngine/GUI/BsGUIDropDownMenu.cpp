@@ -358,8 +358,18 @@ namespace bs
 				mScrollUpBtn = GUIButton::create(HString(""), mOwner->mScrollUpStyle);
 				mScrollUpBtn->onClick.connect(std::bind(&DropDownSubMenu::scrollUp, this));
 
+				GUIElementOptions scrollUpBtnOptions = mScrollUpBtn->getOptionFlags();
+				scrollUpBtnOptions.unset(GUIElementOption::AcceptsKeyFocus);
+
+				mScrollUpBtn->setOptionFlags(scrollUpBtnOptions);
+
 				mScrollDownBtn = GUIButton::create(HString(""), mOwner->mScrollDownStyle);
 				mScrollDownBtn->onClick.connect(std::bind(&DropDownSubMenu::scrollDown, this));
+
+				GUIElementOptions scrollDownBtnOptions = mScrollDownBtn->getOptionFlags();
+				scrollDownBtnOptions.unset(GUIElementOption::AcceptsKeyFocus);
+
+				mScrollDownBtn->setOptionFlags(scrollDownBtnOptions);
 
 				mHandle = GUITexture::create(mOwner->mHandleStyle);
 				GUITexture* background = GUITexture::create(mOwner->mSideBackgroundStyle);

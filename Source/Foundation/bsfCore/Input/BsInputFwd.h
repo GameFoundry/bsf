@@ -351,7 +351,7 @@ namespace bs
 	{
 		CursorMoveLeft, CursorMoveRight, CursorMoveUp, CursorMoveDown, 
 		SelectLeft, SelectRight, SelectUp, SelectDown,
-		Escape, Delete, Backspace, Return, Confirm
+		Escape, Delete, Backspace, Return, Confirm, Tab
 	};
 
 	/**

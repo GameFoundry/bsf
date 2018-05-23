@@ -768,6 +768,9 @@ namespace bs
 		case XK_Delete:
 			command = InputCommandType::Delete;
 			return true;
+		case XK_Tab:
+			command = InputCommandType::Tab;
+			return true;
 		}
 
 		return false;

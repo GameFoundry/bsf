@@ -12,14 +12,20 @@ namespace bs
 	/**	Type of GUI element states. */
 	enum class GUIElementState
 	{
-		Normal = 0x01, /**< Normal state when button is not being iteracted with. */
-		Hover = 0x02, /**< State when pointer is hovering over the button. */
-		Active = 0x04, /**< State when button is being clicked. */
-		Focused = 0x08, /**< State when button has been selected. */
-		NormalOn = 0x11, /**< Normal state when button is not being iteracted with and is in "on" state. */
-		HoverOn = 0x12, /**< State when pointer is hovering over the button and is in "on" state. */
-		ActiveOn = 0x14, /**< State when button is being clicked and is in "on" state. */
-		FocusedOn = 0x18 /**< State when button has been selected and is in "on" state. */
+		Normal = 0x01, /**< Normal state when element is not being iteracted with. */
+		Hover = 0x02, /**< State when pointer is hovering over the element. */
+		Active = 0x04, /**< State when element is being clicked. */
+		Focused = 0x08, /**< State when the element has input focus and pointer is not hovering over the element. */
+		FocusedHover = 0x10, /**< State when the element has input focus and pointer is hovering over the element. */
+		NormalOn = 0x101, /**< Same as Normal, if the element is also in the "on" state. */
+		HoverOn = 0x102, /**< Same as Hover, if the element is also in the "on" state. */
+		ActiveOn = 0x104, /**< Same as Active, if the element is also in the "on" state. */
+		FocusedOn = 0x108, /**< Same as Focused, if the element is also in the "on" state. */
+		FocusedHoverOn = 0x110, /**< Same as FocusedHover, if the element is also in the "on" state. */
+
+		// Helpers
+		TypeMask = 0xFF, /**< Mask for determining the state type (ignoring the on state). */
+		OnFlag = 0x100 /**< Flag that differentiates between on and off states. */
 	};
 
 	/**	Contains separate GUI content images for every possible GUI element state. */

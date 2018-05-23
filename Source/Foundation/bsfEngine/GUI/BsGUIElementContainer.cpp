@@ -6,11 +6,9 @@
 
 namespace bs
 {
-	GUIElementContainer::GUIElementContainer(const GUIDimensions& dimensions, const String& style)
-		:GUIElement(style, dimensions)
-	{ }
-
-	GUIElementContainer::~GUIElementContainer()
+	GUIElementContainer::GUIElementContainer(const GUIDimensions& dimensions, const String& style, 
+		GUIElementOptions options)
+		:GUIElement(style, dimensions, options)
 	{ }
 
 	UINT32 GUIElementContainer::_getNumRenderElements() const

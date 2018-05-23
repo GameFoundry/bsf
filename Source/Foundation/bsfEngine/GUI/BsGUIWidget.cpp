@@ -5,6 +5,7 @@
 #include "GUI/BsGUISkin.h"
 #include "GUI/BsGUILabel.h"
 #include "GUI/BsGUIPanel.h"
+#include "GUI/BsGUINavGroup.h"
 #include "Math/BsVector2I.h"
 #include "Components/BsCCamera.h"
 #include "RenderAPI/BsViewport.h"
@@ -39,6 +40,8 @@ namespace bs
 				mCachedRTId = target->getInternalID();
 			}
 		}
+
+		mDefaultNavGroup = GUINavGroup::create();
 
 		GUIManager::instance().registerWidget(this);
 

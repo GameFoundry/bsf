@@ -74,6 +74,7 @@ set(BS_ENGINE_SRC_GUI
 	"bsfEngine/GUI/BsShortcutManager.cpp"
 	"bsfEngine/GUI/BsCGUIWidget.cpp"
 	"bsfEngine/GUI/BsGUICanvas.cpp"
+	"bsfEngine/GUI/BsGUINavGroup.cpp"
 )
 
 set(BS_ENGINE_INC_PLATFORM
@@ -249,6 +250,7 @@ set(BS_ENGINE_INC_GUI
 	"bsfEngine/GUI/BsShortcutManager.h"
 	"bsfEngine/GUI/BsShortcutKey.h"
 	"bsfEngine/GUI/BsGUICanvas.h"
+	"bsfEngine/GUI/BsGUINavGroup.h"
 )
 
 set(BS_ENGINE_SRC_NOFILTER

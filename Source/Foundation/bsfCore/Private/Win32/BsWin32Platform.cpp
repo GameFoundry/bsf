@@ -617,6 +617,9 @@ namespace bs
 		case VK_DELETE:
 			command = InputCommandType::Delete;
 			return true;
+		case VK_TAB:
+			command = InputCommandType::Tab;
+			return true;
 		}
 
 		return false;

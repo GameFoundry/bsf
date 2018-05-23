@@ -27,12 +27,17 @@
 
 -(void)sendEvent:(NSEvent *)event
 {
-	// Handle Esc key here, as it doesn't seem to be reported elsewhere
+	// Handle Esc & Tab key here, as it doesn't seem to be reported elsewhere
 	if([event type] == NSEventTypeKeyDown)
 	{
 		if([event keyCode] == 53) // Escape key
 		{
-			bs::InputCommandType ic = bs::InputCommandType ::Escape;
+			bs::InputCommandType ic = bs::InputCommandType::Escape;
+			bs::MacOSPlatform::sendInputCommandEvent(ic);
+		}
+		else if([event keyCode] == 48) // Tab key
+		{
+			bs::InputCommandType ic = bs::InputCommandType::Tab;
 			bs::MacOSPlatform::sendInputCommandEvent(ic);
 		}
 	}

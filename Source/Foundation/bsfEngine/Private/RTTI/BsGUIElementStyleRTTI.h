@@ -57,6 +57,11 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(fixedHeight, 33)
 
 			BS_RTTI_MEMBER_PLAIN(subStyles, 34)
+
+			BS_RTTI_MEMBER_REFL_NAMED(focusedHoverTex, focusedHover.texture, 35)
+			BS_RTTI_MEMBER_PLAIN_NAMED(focusedHoverTextColor, focusedHover.textColor, 36)
+			BS_RTTI_MEMBER_REFL_NAMED(focusedHoverOnTex, focusedHoverOn.texture, 37)
+			BS_RTTI_MEMBER_PLAIN_NAMED(focusedHoverOnTextColor, focusedHoverOn.textColor, 38)
 		BS_END_RTTI_MEMBERS
 
 	public:

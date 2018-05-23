@@ -72,6 +72,9 @@ namespace bs
 		/** @} */
 	private:
 		GUIButton(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions);
+
+		/** @copydoc GUIButtonBase::_commandEvent */
+		bool _commandEvent(const GUICommandEvent& ev) override;
 	};
 
 	/** @} */

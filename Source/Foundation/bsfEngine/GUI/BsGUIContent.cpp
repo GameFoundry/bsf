@@ -46,6 +46,7 @@ namespace bs
 		case GUIElementState::Active:
 			return mImages.active;
 		case GUIElementState::Focused:
+		case GUIElementState::FocusedHover:
 			return mImages.focused;
 		case GUIElementState::NormalOn:
 			return mImages.normalOn;
@@ -54,6 +55,7 @@ namespace bs
 		case GUIElementState::ActiveOn:
 			return mImages.activeOn;
 		case GUIElementState::FocusedOn:
+		case GUIElementState::FocusedHoverOn:
 			return mImages.focusedOn;
 		default:
 			return mImages.normal;

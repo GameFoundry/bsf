@@ -4,13 +4,15 @@
 #include "GUI/BsGUISliderHandle.h"
 #include "GUI/BsGUITexture.h"
 #include "GUI/BsGUIDimensions.h"
+#include "GUI/BsGUICommandEvent.h"
+#include "GUI/BsGUIElementStyle.h"
 
 using namespace std::placeholders;
 
 namespace bs
 {
 	GUISlider::GUISlider(bool horizontal, const String& styleName, const GUIDimensions& dimensions)
-		:GUIElementContainer(dimensions, styleName), mHorizontal(horizontal), mMinRange(0.0f), mMaxRange(1.0f)
+		:GUIElementContainer(dimensions, styleName, GUIElementOption::AcceptsKeyFocus), mHorizontal(horizontal)
 	{
 		GUISliderHandleFlags flags = horizontal ? GUISliderHandleFlag::Horizontal : GUISliderHandleFlag::Vertical;
 		flags |= GUISliderHandleFlag::JumpOnClick;
@@ -136,6 +138,12 @@ namespace bs
 		mBackground->setStyle(getSubStyleName(getBackgroundStyleType()));
 		mFillBackground->setStyle(getSubStyleName(getFillStyleType()));
 		mSliderHandle->setStyle(getSubStyleName(getHandleStyleType()));
+
+		const GUIElementStyle* bgStyle = mBackground->_getStyle();
+		if(mHasFocus)
+			mBackground->setTexture(bgStyle->focused.texture);
+		else
+			mBackground->setTexture(bgStyle->normal.texture);
 	}
 
 	void GUISlider::setPercent(float pct)
@@ -184,6 +192,12 @@ namespace bs
 
 	void GUISlider::setStep(float step)
 	{
+		float range = mMaxRange - mMinRange;
+		if(range > 0.0f)
+			step = step / range;
+		else
+			step = 0.0f;
+
 		mSliderHandle->setStep(step);
 	}
 
@@ -201,6 +215,41 @@ namespace bs
 	void GUISlider::onHandleMoved(float newPosition, float newSize)
 	{
 		onChanged(getValue());
+	}
+
+	bool GUISlider::_commandEvent(const GUICommandEvent& ev)
+	{
+		const bool baseReturnValue = GUIElement::_commandEvent(ev);
+
+		const GUIElementStyle* bgStyle = mBackground->_getStyle();
+		if(ev.getType() == GUICommandEventType::FocusGained)
+		{
+			mHasFocus = true;
+
+			if(!_isDisabled())
+				mBackground->setTexture(bgStyle->focused.texture);
+
+			return true;
+		}
+		else if(ev.getType() == GUICommandEventType::FocusLost)
+		{
+			mHasFocus = false;
+			mBackground->setTexture(bgStyle->normal.texture);
+
+			return true;
+		}
+		else if(ev.getType() == GUICommandEventType::MoveLeft)
+		{
+			mSliderHandle->moveOneStep(false);
+			return true;
+		}
+		else if(ev.getType() == GUICommandEventType::MoveRight)
+		{
+			mSliderHandle->moveOneStep(true);
+			return true;
+		}
+
+		return baseReturnValue;
 	}
 
 	GUISliderHorz::GUISliderHorz(const String& styleName, const GUIDimensions& dimensions)

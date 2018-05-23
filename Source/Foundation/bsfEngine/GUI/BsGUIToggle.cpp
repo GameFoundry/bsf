@@ -4,6 +4,7 @@
 #include "GUI/BsGUIDimensions.h"
 #include "GUI/BsGUIMouseEvent.h"
 #include "GUI/BsGUIToggleGroup.h"
+#include "BsGUICommandEvent.h"
 
 namespace bs
 {
@@ -177,6 +178,26 @@ namespace bs
 			}
 
 			processed = true;
+		}
+
+		return processed;
+	}
+
+	bool GUIToggle::_commandEvent(const GUICommandEvent& ev)
+	{
+		const bool processed = GUIButtonBase::_commandEvent(ev);
+
+		if(ev.getType() == GUICommandEventType::Confirm)
+		{
+			if(!_isDisabled())
+			{
+				if(mIsToggled)
+					toggleOff();
+				else
+					toggleOn();
+			}
+
+			return true;
 		}
 
 		return processed;

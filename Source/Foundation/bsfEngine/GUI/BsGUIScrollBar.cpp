@@ -58,6 +58,16 @@ namespace bs
 			mHandleBtn = GUISliderHandle::create(flags | GUISliderHandleFlag::Vertical, getSubStyleName(getVScrollHandleType()));
 		}
 
+		GUIElementOptions scrollUpBtnOptions = mUpBtn->getOptionFlags();
+		scrollUpBtnOptions.unset(GUIElementOption::AcceptsKeyFocus);
+
+		mUpBtn->setOptionFlags(scrollUpBtnOptions);
+
+		GUIElementOptions scrollDownBtnOptions = mDownBtn->getOptionFlags();
+		scrollDownBtnOptions.unset(GUIElementOption::AcceptsKeyFocus);
+
+		mDownBtn->setOptionFlags(scrollDownBtnOptions);
+
 		mLayout->addNewElement<GUIFixedSpace>(2);
 		mLayout->addElement(mUpBtn);
 		mLayout->addElement(mHandleBtn);

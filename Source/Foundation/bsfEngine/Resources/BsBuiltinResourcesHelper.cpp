@@ -748,11 +748,13 @@ namespace bs
 		loadState("hover", style.hover);
 		loadState("active", style.active);
 		loadState("focused", style.focused);
+		loadState("focusedHover", style.focusedHover);
 
 		loadState("normalOn", style.normalOn);
 		loadState("hoverOn", style.hoverOn);
 		loadState("activeOn", style.activeOn);
 		loadState("focusedOn", style.focusedOn);
+		loadState("focusedHoverOn", style.focusedHoverOn);
 
 		const auto loadRectOffset = [entry](const char* name, RectOffset& state)
 		{

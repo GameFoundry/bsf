@@ -4,22 +4,17 @@
 #include "GUI/BsGUIWidget.h"
 #include "GUI/BsGUISkin.h"
 #include "GUI/BsGUIManager.h"
+#include "BsGUINavGroup.h"
 
 namespace bs
 {
 	const Color GUIElement::DISABLED_COLOR = Color(0.5f, 0.5f, 0.5f, 1.0f);
 
-	GUIElement::GUIElement(const String& styleName, const GUIDimensions& dimensions)
-		:GUIElementBase(dimensions), mIsDestroyed(false), mBlockPointerEvents(true), mStyle(&GUISkin::DefaultStyle)
-		, mStyleName(styleName)
+	GUIElement::GUIElement(String styleName, const GUIDimensions& dimensions, GUIElementOptions options)
+		:GUIElementBase(dimensions), mOptionFlags(options), mStyle(&GUISkin::DefaultStyle), mStyleName(std::move(styleName))
 	{
 		// Style is set to default here, and the proper one is assigned once GUI element
 		// is assigned to a parent (that's when the active GUI skin becomes known)
-	}
-
-	GUIElement::~GUIElement()
-	{
-
 	}
 
 	void GUIElement::_updateRenderElements()
@@ -59,12 +54,12 @@ namespace bs
 		if (ev.getType() == GUICommandEventType::FocusGained)
 		{
 			onFocusChanged(true);
-			return mBlockPointerEvents;
+			return !mOptionFlags.isSet(GUIElementOption::ClickThrough);
 		}
 		else if (ev.getType() == GUICommandEventType::FocusLost)
 		{
 			onFocusChanged(false);
-			return mBlockPointerEvents;
+			return !mOptionFlags.isSet(GUIElementOption::ClickThrough);
 		}
 
 		return false;
@@ -109,14 +104,26 @@ namespace bs
 		if (_isDestroyed())
 			return;
 
-		bool doRefreshStyle = false;
+		bool widgetChanged = false;
 		if(mParentWidget != widget)
-			doRefreshStyle = true;
+		{
+			// Unregister from current widget's nav-group
+			if(!mNavGroup && mParentWidget)
+				mParentWidget->_getDefaultNavGroup()->unregisterElement(this);
+
+			widgetChanged = true;
+		}
 
 		GUIElementBase::_changeParentWidget(widget);
 
-		if(doRefreshStyle)
+		if(widgetChanged)
+		{
+			// Register with the new widget's nav-group
+			if(!mNavGroup && mParentWidget)
+				mParentWidget->_getDefaultNavGroup()->registerElement(this);
+
 			_refreshStyle();
+		}
 	}
 
 	const RectOffset& GUIElement::_getPadding() const
@@ -129,6 +136,39 @@ namespace bs
 
 			return padding;
 		}
+	}
+
+	void GUIElement::setNavGroup(const SPtr<GUINavGroup>& navGroup)
+	{
+		SPtr<GUINavGroup> currentNavGroup = _getNavGroup();
+		if(currentNavGroup == navGroup)
+			return;
+
+		if(currentNavGroup)
+			currentNavGroup->unregisterElement(this);
+
+		if(navGroup)
+			navGroup->registerElement(this);
+
+		mNavGroup = navGroup;
+	}
+
+	void GUIElement::setNavGroupIndex(INT32 index)
+	{
+		SPtr<GUINavGroup> navGroup = _getNavGroup();
+		if(navGroup != nullptr)
+			navGroup->setIndex(this, index);
+	}
+
+	SPtr<GUINavGroup> GUIElement::_getNavGroup() const
+	{
+		if(mNavGroup)
+			return mNavGroup;
+
+		if(mParentWidget)
+			return mParentWidget->_getDefaultNavGroup();
+
+		return nullptr;
 	}
 
 	void GUIElement::setFocus(bool enabled)
@@ -241,6 +281,10 @@ namespace bs
 	{
 		if(element->mIsDestroyed)
 			return;
+
+		SPtr<GUINavGroup> currentNavGroup = element->_getNavGroup();
+		if(currentNavGroup)
+			currentNavGroup->unregisterElement(element);
 
 		if (element->mParentElement != nullptr)
 			element->mParentElement->_unregisterChildElement(element);

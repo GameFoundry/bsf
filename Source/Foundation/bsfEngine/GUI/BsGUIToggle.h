@@ -156,6 +156,9 @@ namespace bs
 		/** @copydoc GUIButtonBase::_mouseEvent */
 		bool _mouseEvent(const GUIMouseEvent& ev) override;
 
+		/** @copydoc GUIButtonBase::_commandEvent */
+		bool _commandEvent(const GUICommandEvent& ev) override;
+
 	protected:
 		SPtr<GUIToggleGroup> mToggleGroup;
 		bool mIsToggled;

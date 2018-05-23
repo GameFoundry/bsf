@@ -10,7 +10,7 @@ namespace bs
 
 	/** Generates a new hash for the provided type using the default standard hasher and combines it with a previous hash. */
 	template <class T>
-	inline void hash_combine(std::size_t& seed, const T& v)
+	void hash_combine(std::size_t& seed, const T& v)
 	{
 		using HashType = typename std::conditional<std::is_enum<T>::value, EnumClassHash, std::hash<T>>::type;
 
@@ -51,6 +51,29 @@ namespace bs
 	constexpr size_t bs_size(const T (&array)[N])
 	{
 	    return N;
+	}
+
+	/** 
+	 * Erases the provided element from the container, but first swaps the element so its located at the end of the
+	 * container, making the erase operation cheaper at the cost of an extra copy. Return true if a swap occurred, or
+	 * false if the element was already at the end of the container.
+	 */
+	template <class T, class A = StdAlloc<T>>
+	bool bs_swap_and_erase(Vector<T, A>& container, const typename Vector<T, A>::iterator iter)
+	{
+		assert(!container.empty());
+
+		auto iterLast = container.end() - 1;
+
+		bool swapped = false;
+		if(iter != iterLast)
+		{
+			std::swap(*iter, *iterLast);
+			swapped = true;
+		}
+
+		container.pop_back();
+		return swapped;
 	}
 
 	/** @} */

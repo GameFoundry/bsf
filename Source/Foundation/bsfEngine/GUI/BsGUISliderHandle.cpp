@@ -1,6 +1,5 @@
 //************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
-#include "math.h"
 #include "GUI/BsGUISliderHandle.h"
 #include "2D/BsImageSprite.h"
 #include "GUI/BsGUISkin.h"
@@ -19,9 +18,7 @@ namespace bs
 	}
 
 	GUISliderHandle::GUISliderHandle(GUISliderHandleFlags flags, const String& styleName, const GUIDimensions& dimensions)
-		: GUIElement(styleName, dimensions), mFlags(flags), mMinHandleSize(0), mPctHandlePos(0.0f), mPctHandleSize(0.0f)
-		, mStep(0.0f), mDragStartPos(0), mDragState(DragState::Normal), mMouseOverHandle(false), mHandleDragged(false)
-		, mState(State::Normal)
+		: GUIElement(styleName, dimensions), mFlags(flags)
 	{
 		mImageSprite = bs_new<ImageSprite>();
 
@@ -389,22 +386,15 @@ namespace bs
 					INT32 handlePosPx = getHandlePosPx();
 					if (!mFlags.isSet(GUISliderHandleFlag::JumpOnClick))
 					{
-						UINT32 stepSizePx = 0;
-						if (mStep > 0.0f)
-							stepSizePx = (UINT32)(mStep * getMaxSize());
-						else
-							stepSizePx = handleSize;
-
-						INT32 handleOffset = 0;
 						if (mFlags.isSet(GUISliderHandleFlag::Horizontal))
 						{
 							INT32 handleLeft = (INT32)mLayoutData.area.x + handlePosPx;
 							INT32 handleRight = handleLeft + handleSize;
 
 							if (ev.getPosition().x < handleLeft)
-								handleOffset -= stepSizePx;
+								moveOneStep(false);
 							else if (ev.getPosition().x > handleRight)
-								handleOffset += stepSizePx;
+								moveOneStep(true);
 						}
 						else
 						{
@@ -412,16 +402,11 @@ namespace bs
 							INT32 handleBottom = handleTop + handleSize;
 
 							if (ev.getPosition().y < handleTop)
-								handleOffset -= stepSizePx;
+								moveOneStep(false);
 							else if (ev.getPosition().y > handleBottom)
-								handleOffset += stepSizePx;
+								moveOneStep(true);
 						}
-
-						handlePosPx += handleOffset;
 					}
-
-					setHandlePosPx(handlePosPx);
-					onHandleMovedOrResized(mPctHandlePos, _getHandleSizePct());
 				}
 				mHandleDragged = false;
 				_markLayoutAsDirty();
@@ -447,6 +432,25 @@ namespace bs
 		}
 		
 		return false;
+	}
+
+	void GUISliderHandle::moveOneStep(bool forward)
+	{
+		const UINT32 handleSize = getHandleSize();
+		INT32 handlePosPx = getHandlePosPx();
+
+		INT32 stepSizePx;
+		if (mStep > 0.0f)
+			stepSizePx = (INT32)(mStep * getMaxSize());
+		else
+			stepSizePx = (INT32)handleSize;
+
+		handlePosPx += forward ? stepSizePx : -stepSizePx;
+
+		setHandlePosPx(handlePosPx);
+		onHandleMovedOrResized(mPctHandlePos, _getHandleSizePct());
+
+		_markLayoutAsDirty();
 	}
 
 	bool GUISliderHandle::isOnHandle(const Vector2I& pos) const

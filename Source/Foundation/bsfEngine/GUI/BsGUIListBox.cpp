@@ -148,6 +148,26 @@ namespace bs
 		return processed;
 	}
 
+	bool GUIListBox::_commandEvent(const GUICommandEvent& ev)
+	{
+		const bool processed = GUIButtonBase::_commandEvent(ev);
+
+		if(ev.getType() == GUICommandEventType::Confirm)
+		{
+			if(!_isDisabled())
+			{
+				if (mDropDownBox == nullptr)
+					openListBox();
+				else
+					closeListBox();
+			}
+
+			return true;
+		}
+
+		return processed;
+	}
+
 	void GUIListBox::elementSelected(UINT32 idx)
 	{
 		if (idx >= (UINT32)mElements.size())

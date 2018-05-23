@@ -10,19 +10,9 @@
 
 namespace bs
 {
-	GUIElementBase::GUIElementBase()
-		: mParentWidget(nullptr), mAnchorParent(nullptr), mUpdateParent(nullptr), mParentElement(nullptr)
-		, mFlags(GUIElem_Dirty)
-	{
-
-	}
-
 	GUIElementBase::GUIElementBase(const GUIDimensions& dimensions)
-		: mParentWidget(nullptr), mAnchorParent(nullptr), mUpdateParent(nullptr), mParentElement(nullptr)
-		, mFlags(GUIElem_Dirty), mDimensions(dimensions)
-	{
-
-	}
+		: mDimensions(dimensions)
+	{ }
 
 	GUIElementBase::~GUIElementBase()
 	{
@@ -480,22 +470,22 @@ namespace bs
 		{
 			if (child->_getType() == Type::Element)
 			{
-				GUIElement* element = static_cast<GUIElement*>(child);
+				const auto element = static_cast<GUIElement*>(child);
 				GUIElement::destroy(element);
 			}
 			else if (child->_getType() == Type::Layout || child->_getType() == GUIElementBase::Type::Panel)
 			{
-				GUILayout* layout = static_cast<GUILayout*>(child);
+				const auto layout = static_cast<GUILayout*>(child);
 				GUILayout::destroy(layout);
 			}
 			else if (child->_getType() == Type::FixedSpace)
 			{
-				GUIFixedSpace* space = static_cast<GUIFixedSpace*>(child);
+				const auto space = static_cast<GUIFixedSpace*>(child);
 				GUIFixedSpace::destroy(space);
 			}
 			else if (child->_getType() == Type::FlexibleSpace)
 			{
-				GUIFlexibleSpace* space = static_cast<GUIFlexibleSpace*>(child);
+				const auto space = static_cast<GUIFlexibleSpace*>(child);
 				GUIFlexibleSpace::destroy(space);
 			}
 		}

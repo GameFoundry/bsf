@@ -84,6 +84,9 @@ namespace bs
 		/** @copydoc GUIElement::_mouseEvent */
 		bool _mouseEvent(const GUIMouseEvent& ev) override;
 
+		/** @copydoc GUIElement::_commandEvent */
+		bool _commandEvent(const GUICommandEvent& ev) override;
+
 		/** @copydoc GUIElement::_getRenderElementDepth */
 		UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const override;
 
@@ -106,12 +109,13 @@ namespace bs
 		Color getActiveTextColor() const;
 	private:
 		ImageSprite* mImageSprite;
-		ImageSprite* mContentImageSprite;
+		ImageSprite* mContentImageSprite = nullptr;
 		TextSprite* mTextSprite;
-		GUIElementState mActiveState;
+		GUIElementState mActiveState = GUIElementState::Normal;
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		GUIContent mContent;
+		bool mHasFocus = false;
 	};
 
 	/** @} */

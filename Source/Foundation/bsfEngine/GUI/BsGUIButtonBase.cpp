@@ -7,13 +7,13 @@
 #include "2D/BsTextSprite.h"
 #include "GUI/BsGUIDimensions.h"
 #include "GUI/BsGUIMouseEvent.h"
+#include "GUI/BsGUICommandEvent.h"
 #include "GUI/BsGUIHelper.h"
 
 namespace bs
 {
 	GUIButtonBase::GUIButtonBase(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions)
-		: GUIElement(styleName, dimensions), mContentImageSprite(nullptr), mActiveState(GUIElementState::Normal)
-		, mContent(content)
+		: GUIElement(styleName, dimensions, GUIElementOption::AcceptsKeyFocus), mContent(content)
 	{
 		mImageSprite = bs_new<ImageSprite>();
 		mTextSprite = bs_new<TextSprite>();
@@ -48,14 +48,14 @@ namespace bs
 	void GUIButtonBase::_setOn(bool on) 
 	{ 
 		if(on)
-			_setState((GUIElementState)((INT32)mActiveState | 0x10)); 
+			_setState((GUIElementState)((INT32)mActiveState | (INT32)GUIElementState::OnFlag)); 
 		else
-			_setState((GUIElementState)((INT32)mActiveState & (~0x10))); 
+			_setState((GUIElementState)((INT32)mActiveState & ~(INT32)GUIElementState::OnFlag)); 
 	}
 
 	bool GUIButtonBase::_isOn() const
 	{
-		return ((INT32)mActiveState & 0x10) != 0;
+		return ((INT32)mActiveState & (INT32)GUIElementState::OnFlag) != 0;
 	}
 
 	UINT32 GUIButtonBase::_getNumRenderElements() const
@@ -301,48 +301,94 @@ namespace bs
 		{
 			if (!_isDisabled())
 			{
-				_setState(_isOn() ? GUIElementState::HoverOn : GUIElementState::Hover);
+				if(mHasFocus)
+					_setState(_isOn() ? GUIElementState::FocusedHoverOn : GUIElementState::FocusedHover);
+				else
+					_setState(_isOn() ? GUIElementState::HoverOn : GUIElementState::Hover);
+
 				onHover();
 			}
 
-			return mBlockPointerEvents;
+			return !mOptionFlags.isSet(GUIElementOption::ClickThrough);
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
 			if (!_isDisabled())
 			{
-				_setState(_isOn() ? GUIElementState::NormalOn : GUIElementState::Normal);
+				if(mHasFocus)
+					_setState(_isOn() ? GUIElementState::FocusedOn : GUIElementState::Focused);
+				else
+					_setState(_isOn() ? GUIElementState::NormalOn : GUIElementState::Normal);
+
 				onOut();
 			}
 
-			return mBlockPointerEvents;
+			return !mOptionFlags.isSet(GUIElementOption::ClickThrough);
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDown)
 		{
 			if (!_isDisabled())
 				_setState(_isOn() ? GUIElementState::ActiveOn : GUIElementState::Active);
 
-			return mBlockPointerEvents;
+			return !mOptionFlags.isSet(GUIElementOption::ClickThrough);
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
 			if (!_isDisabled())
 			{
-				_setState(_isOn() ? GUIElementState::HoverOn : GUIElementState::Hover);
+				if(mHasFocus)
+					_setState(_isOn() ? GUIElementState::FocusedHoverOn : GUIElementState::FocusedHover);
+				else
+					_setState(_isOn() ? GUIElementState::HoverOn : GUIElementState::Hover);
+
 				onClick();
 			}
 
-			return mBlockPointerEvents;
+			return !mOptionFlags.isSet(GUIElementOption::ClickThrough);
 		}
 		else if (ev.getType() == GUIMouseEventType::MouseDoubleClick)
 		{
 			if (!_isDisabled())
 				onDoubleClick();
 
-			return mBlockPointerEvents;
+			return !mOptionFlags.isSet(GUIElementOption::ClickThrough);
 		}
 
 		return false;
+	}
+
+	bool GUIButtonBase::_commandEvent(const GUICommandEvent& ev)
+	{
+		const bool baseReturnValue = GUIElement::_commandEvent(ev);
+
+		GUIElementState state = (GUIElementState)((UINT32)mActiveState & (UINT32)GUIElementState::TypeMask);
+		if(ev.getType() == GUICommandEventType::FocusGained)
+		{
+			mHasFocus = true;
+
+			if(!_isDisabled())
+			{
+				if(state == GUIElementState::Normal)
+					_setState(_isOn() ? GUIElementState::FocusedOn : GUIElementState::Focused);
+				else if(state == GUIElementState::Hover)
+					_setState(_isOn() ? GUIElementState::FocusedHoverOn : GUIElementState::FocusedHover);
+			}
+
+			return true;
+		}
+		else if(ev.getType() == GUICommandEventType::FocusLost)
+		{
+			mHasFocus = false;
+
+			if (state == GUIElementState::Focused)
+				_setState(_isOn() ? GUIElementState::NormalOn : GUIElementState::Normal);
+			else if (state == GUIElementState::FocusedHover)
+				_setState(_isOn() ? GUIElementState::HoverOn : GUIElementState::Hover);
+
+			return true;
+		}
+
+		return baseReturnValue;
 	}
 
 	String GUIButtonBase::_getTooltip() const
@@ -411,6 +457,8 @@ namespace bs
 			return _getStyle()->active.texture;
 		case GUIElementState::Focused:
 			return _getStyle()->focused.texture;
+		case GUIElementState::FocusedHover:
+			return _getStyle()->focusedHover.texture;
 		case GUIElementState::NormalOn:
 			return _getStyle()->normalOn.texture;
 		case GUIElementState::HoverOn:
@@ -419,6 +467,10 @@ namespace bs
 			return _getStyle()->activeOn.texture;
 		case GUIElementState::FocusedOn:
 			return _getStyle()->focusedOn.texture;
+		case GUIElementState::FocusedHoverOn:
+			return _getStyle()->focusedHoverOn.texture;
+		default:
+			break;
 		}
 
 		return _getStyle()->normal.texture;
@@ -436,6 +488,8 @@ namespace bs
 			return _getStyle()->active.textColor;
 		case GUIElementState::Focused:
 			return _getStyle()->focused.textColor;
+		case GUIElementState::FocusedHover:
+			return _getStyle()->focusedHover.textColor;
 		case GUIElementState::NormalOn:
 			return _getStyle()->normalOn.textColor;
 		case GUIElementState::HoverOn:
@@ -444,6 +498,10 @@ namespace bs
 			return _getStyle()->activeOn.textColor;
 		case GUIElementState::FocusedOn:
 			return _getStyle()->focusedOn.textColor;
+		case GUIElementState::FocusedHoverOn:
+			return _getStyle()->focusedHoverOn.textColor;
+		default:
+			break;
 		}
 
 		return _getStyle()->normal.textColor;

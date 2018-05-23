@@ -15,8 +15,9 @@ namespace bs
 	class BS_EXPORT GUIElementContainer : public GUIElement
 	{
 	protected:
-		GUIElementContainer(const GUIDimensions& dimensions, const String& style = StringUtil::BLANK);
-		virtual ~GUIElementContainer();
+		GUIElementContainer(const GUIDimensions& dimensions, const String& style = StringUtil::BLANK, 
+			GUIElementOptions options = GUIElementOptions(0));
+		virtual ~GUIElementContainer() = default;
 
 		/** @copydoc GUIElement::_getNumRenderElements */
 		UINT32 _getNumRenderElements() const override;
@@ -35,7 +36,7 @@ namespace bs
 		Vector2I _getOptimalSize() const override;
 
 		/** @copydoc GUIElement::_commandEvent */
-		bool _commandEvent(const GUICommandEvent& event) override;
+		bool _commandEvent(const GUICommandEvent& ev) override;
 	};
 
 	/** @} */

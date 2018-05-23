@@ -2,6 +2,7 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "GUI/BsGUIButton.h"
 #include "GUI/BsGUIDimensions.h"
+#include "GUI/BsGUICommandEvent.h"
 
 namespace bs
 {
@@ -33,5 +34,21 @@ namespace bs
 	GUIButton* GUIButton::create(const GUIContent& content, const GUIOptions& options, const String& styleName)
 	{
 		return new (bs_alloc<GUIButton>()) GUIButton(getStyleName<GUIButton>(styleName), content, GUIDimensions::create(options));
+	}
+
+	bool GUIButton::_commandEvent(const GUICommandEvent& ev)
+	{
+		const bool processed = GUIButtonBase::_commandEvent(ev);
+
+		if(ev.getType() == GUICommandEventType::Confirm)
+		{
+			if(!_isDisabled())
+			{
+				onClick();
+				return true;
+			}
+		}
+
+		return processed;
 	}
 }

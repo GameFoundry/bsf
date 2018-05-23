@@ -51,11 +51,12 @@ skin->setStyle(GUIButton::getGUITypeName(), myButtonStyle);
 **GUIElementStyle** allows you to set a variety of different properties to customize its look. They can be categorized into *states*, *textual*, *dimensions* and *offsets*.
 
 ## States {#guiStyles_a_a}
-States are used to change how an element looks as the user interacts with the element. There are four different states:
+States are used to change how an element looks as the user interacts with the element. There are five different states:
  - Normal - Default state when no interaction is happening
  - Hover - State when the user is hovering the pointer over the element
  - Active - State when the user is interacting with the element
  - Focused - State when the element has input focus
+ - Focused hover - State when the element has input focus and the user is hovering the pointer over the element
  
 All elements must have a *normal* state. This is the state that defines their default look. Elements that can be interacted with (like buttons) can optionally also provide the remaining states.
 
@@ -64,12 +65,14 @@ The states can be set in **GUIElementStyle** by populating the following fields:
  - @ref bs::GUIElementStyle::hover "GUIElementStyle::hover"
  - @ref bs::GUIElementStyle::active "GUIElementStyle::active"
  - @ref bs::GUIElementStyle::focused "GUIElementStyle::focused"
-
+ - @ref bs::GUIElementStyle::focusedHover "GUIElementStyle::focusedHover"
+ 
 Additionally, certain elements can be permanently toggled on or off (i.e. toggle buttons). In that case it is useful to have a separate set of states for on and off modes. Therefore there are also states specific to the "on" mode (while above states default to "off"):
  - @ref bs::GUIElementStyle::normalOn "GUIElementStyle::normalOn"
  - @ref bs::GUIElementStyle::hoverOn "GUIElementStyle::hoverOn"
  - @ref bs::GUIElementStyle::activeOn "GUIElementStyle::activeOn"
  - @ref bs::GUIElementStyle::focusedOn "GUIElementStyle::focusedOn"
+ - @ref bs::GUIElementStyle::focusedHoverOn "GUIElementStyle::focusedHoverOn"
  
 Each of these eight states is a @ref bs::GUIElementStyle::GUIElementStateStyle "GUIElementStateStyle" object, which contains a single sprite texture and a text color tint. When the style is active the element will render the provided texture covering its available area, and render any text using the provided color.
 

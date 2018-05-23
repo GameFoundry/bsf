@@ -250,19 +250,19 @@ namespace bs
 		TextSprite* mTextSprite;
 		bool mIsMultiline;
 		Vector2I mTextOffset;
-		bool mHasFocus;
-		UINT64 mFocusGainedFrame;
-		bool mIsMouseOver;
-		State mState;
+		bool mHasFocus = false;
+		UINT64 mFocusGainedFrame = (UINT64)-1;
+		bool mIsMouseOver = false;
+		State mState = State::Normal;
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		String mText;
 		UINT32 mNumChars = 0;
 		std::function<bool(const String&)> mFilter;
 
-		bool mCaretShown;
-		bool mSelectionShown;
-		bool mDragInProgress;
+		bool mCaretShown = false;
+		bool mSelectionShown = false;
+		bool mDragInProgress = false;
 	};
 
 	/** @} */

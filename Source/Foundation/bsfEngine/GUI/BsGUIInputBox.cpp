@@ -32,8 +32,7 @@ namespace bs
 	}
 
 	GUIInputBox::GUIInputBox(const String& styleName, const GUIDimensions& dimensions, bool multiline)
-		: GUIElement(styleName, dimensions), mIsMultiline(multiline), mHasFocus(false), mFocusGainedFrame((UINT64)-1)
-		, mIsMouseOver(false), mState(State::Normal), mCaretShown(false), mSelectionShown(false), mDragInProgress(false)
+		: GUIElement(styleName, dimensions, GUIElementOption::AcceptsKeyFocus), mIsMultiline(multiline)
 	{
 		mImageSprite = bs_new<ImageSprite>();
 		mTextSprite = bs_new<TextSprite>();

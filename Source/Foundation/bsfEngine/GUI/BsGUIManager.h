@@ -140,7 +140,6 @@ namespace bs
 		{
 			GUIElement* element;
 			bool focus;
-			bool usesFocus;
 		};
 
 	public:
@@ -313,6 +312,12 @@ namespace bs
 
 		/**	Hides the tooltip if any is shown. */
 		void hideTooltip();
+
+		/** Switches the focus to the first element in the tab group. */
+		void tabFocusFirst();
+
+		/** Switches the focus to the next element in the tab group. Usually triggered when the user hits Tab key. */
+		void tabFocusNext();
 
 		/**
 		 * Sends a mouse event to the specified GUI element.

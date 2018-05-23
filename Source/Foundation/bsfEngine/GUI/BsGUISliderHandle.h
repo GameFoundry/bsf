@@ -89,9 +89,15 @@ namespace bs
 
 		/**	
 		 * Sets a step that defines the minimal increment the value can be increased/decreased by. Set to zero to have no
-		 * step.
+		 * step. In percent.
 		 */
 		void setStep(float step);
+
+		/** 
+		 * Moves the slider handle one step forwards or backwards. Step size is determined by step (if set) or handle size 
+		 * otherwise. If @p forward is true the handle is moved one step forward, otherwise one step backward.
+		 */
+		void moveOneStep(bool forward);
 
 		/** Triggered when the user drags the handle. */
 		Event<void(float pos, float size)> onHandleMovedOrResized;
@@ -171,15 +177,15 @@ namespace bs
 		ImageSprite* mImageSprite;
 
 		GUISliderHandleFlags mFlags;
-		UINT32 mMinHandleSize;
-		float mPctHandlePos;
-		float mPctHandleSize;
-		float mStep;
-		INT32 mDragStartPos;
-		DragState mDragState;
-		bool mMouseOverHandle;
-		bool mHandleDragged;
-		State mState;
+		UINT32 mMinHandleSize = 0;
+		float mPctHandlePos = 0.0f;
+		float mPctHandleSize = 0.0f;
+		float mStep = 0.0f;
+		INT32 mDragStartPos = 0;
+		DragState mDragState = DragState::Normal;
+		bool mMouseOverHandle = false;
+		bool mHandleDragged = false;
+		State mState = State::Normal;
 	};
 
 	/** @} */

@@ -100,8 +100,11 @@ namespace bs
 		GUIListBox(const String& styleName, const Vector<HString>& elements, bool isMultiselect, 
 			const GUIDimensions& dimensions);
 
-		/** @copydoc GUIButtonBase::mouseEvent */
+		/** @copydoc GUIButtonBase::_mouseEvent */
 		bool _mouseEvent(const GUIMouseEvent& ev) override;
+
+		/** @copydoc GUIButtonBase::_commandEvent */
+		bool _commandEvent(const GUICommandEvent& ev) override;
 
 		/**	Triggered when user clicks on an element. */
 		void elementSelected(UINT32 idx);

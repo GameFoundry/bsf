@@ -93,13 +93,16 @@ namespace bs
 		/**	Triggered when the slider handles moves. */
 		void onHandleMoved(float newPosition, float newSize);
 
+		/** @copydoc GUIElement::_commandEvent */
+		bool _commandEvent(const GUICommandEvent& ev) override;
 	private:
 		GUISliderHandle* mSliderHandle;
 		GUITexture* mBackground;
 		GUITexture* mFillBackground;
 		bool mHorizontal;
-		float mMinRange;
-		float mMaxRange;
+		float mMinRange = 0.0f;
+		float mMaxRange = 1.0f;
+		bool mHasFocus = false;
 
 		HEvent mHandleMovedConn;
 	};

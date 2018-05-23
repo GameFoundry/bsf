@@ -11,6 +11,8 @@
 
 namespace bs
 {
+	class GUINavGroup;
+
 	/** @addtogroup GUI
 	 *  @{
 	 */
@@ -114,6 +116,12 @@ namespace bs
 		 */
 		void _unregisterElement(GUIElementBase* elem);
 
+		/** 
+		 * Returns the default navigation group assigned to all elements of this widget that don't have an explicit nav-
+		 * group. See GUIElement::setNavGroup().
+		 */
+		SPtr<GUINavGroup> _getDefaultNavGroup() const { return mDefaultNavGroup; }
+
 		/**
 		 * Marks the widget mesh dirty requiring a mesh rebuild. Provided element is the one that requested the mesh update.
 		 */
@@ -182,6 +190,7 @@ namespace bs
 		GUIPanel* mPanel;
 		UINT8 mDepth;
 		bool mIsActive;
+		SPtr<GUINavGroup> mDefaultNavGroup;
 
 		Vector3 mPosition;
 		Quaternion mRotation;

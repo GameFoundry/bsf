@@ -23,6 +23,7 @@
 #include <string>
 #include <set>
 #include <list>
+#include <forward_list>
 #include <deque>
 #include <queue>
 #include <bitset>
@@ -117,9 +118,19 @@ namespace bs
 	template <typename T, typename A = StdAlloc<T>>
 	using Vector = std::vector<T, A>;
 
-	/** Container that supports constant time insertion and removal, but without fast random access to elements. */
+	/** 
+	 * Container that supports constant time insertion and removal, but without fast random access to elements. 
+	 * Internally implemented as a doubly linked list. Use ForwardList if you do not need reverse iteration.
+	 */
 	template <typename T, typename A = StdAlloc<T>>
 	using List = std::list<T, A>;
+
+	/** 
+	 * Container that supports constant time insertion and removal, but without fast random access to elements. 
+	 * Internally implemented as a singly linked list that doesn't support reverse iteration.
+	 */
+	template <typename T, typename A = StdAlloc<T>>
+	using ForwardList = std::forward_list<T, A>;
 
 	/** First-in, last-out data structure. */
 	template <typename T, typename A = StdAlloc<T>>
@@ -136,6 +147,10 @@ namespace bs
 	/** An associative container containing an ordered set of key-value pairs. */
 	template <typename K, typename V, typename P = std::less<K>, typename A = StdAlloc<std::pair<const K, V>>>
 	using Map = std::map<K, V, P, A>;
+
+	/** An associative container containing an ordered set of elements where multiple elements can have the same key. */
+	template <typename T, typename P = std::less<T>, typename A = StdAlloc<T>>
+	using MultiSet = std::multiset<T, P, A>;
 
 	/** An associative container containing an ordered set of key-value pairs where multiple elements can have the same key. */
 	template <typename K, typename V, typename P = std::less<K>, typename A = StdAlloc<std::pair<const K, V>>>

@@ -11,9 +11,29 @@
 
 namespace bs
 {
+	class GUINavGroup;
+
 	/** @addtogroup Implementation
 	 *  @{
 	 */
+
+	enum class GUIElementOption
+	{
+		/** 
+		 * Enable this option if you want pointer events to pass through this element by default. This will allow elements
+		 * underneath this element to receive pointer events.
+		 */
+		ClickThrough,
+
+		/** 
+		 * Enable this option if the element accepts keyboard/gamepad input focus. This will allow the element to be
+		 * navigated to using keys/buttons. 
+		 */
+		AcceptsKeyFocus
+	};
+
+	typedef Flags<GUIElementOption> GUIElementOptions;
+	BS_FLAGS_OPERATORS(GUIElementOption)
 
 	/**
 	 * Represents parent class for all visible GUI elements. Contains methods needed for positioning, rendering and
@@ -37,8 +57,8 @@ namespace bs
 		};
 
 	public:
-		GUIElement(const String& styleName, const GUIDimensions& dimensions);
-		virtual ~GUIElement();
+		GUIElement(String styleName, const GUIDimensions& dimensions, GUIElementOptions options = GUIElementOptions(0));
+		virtual ~GUIElement() = default;
 
 		/**	Sets or removes focus from an element. Will change element style. */
 		void setFocus(bool enabled);
@@ -55,20 +75,33 @@ namespace bs
 		/**	Returns the name of the style used by this element. */
 		const String& getStyleName() const { return mStyleName; }
 
-		/** 
-		 * Determines will this element block elements underneath it from receiving pointer events (clicks, focus 
-		 * gain/lost, hover on/off, etc.). Enabled by default.
-		 */
-		void setBlockPointerEvents(bool block) { mBlockPointerEvents = block; }
+		/** A set of flags controlling various aspects of the GUIElement. See GUIElementOptions.  */
+		void setOptionFlags(GUIElementOptions options) { mOptionFlags = options; }
 
-		/** @copydoc setBlockPointerEvents */
-		bool getBlockPointerEvents() const { return mBlockPointerEvents; }
+		/** @copydoc setOptionFlags */
+		GUIElementOptions getOptionFlags() const { return mOptionFlags; }
 
 		/**
 		 * Assigns a new context menu that will be opened when the element is right clicked. Null is allowed in case no
 		 * context menu is wanted.
 		 */
 		void setContextMenu(const SPtr<GUIContextMenu>& menu) { mContextMenu = menu; }
+
+		/** 
+		 * Sets a navigation group that determines in what order are GUI elements visited when using a keyboard or gamepad
+		 * to switch between the elements. If you don't set a navigation group the elements will inherit the default
+		 * navigation group from their parent GUIWidget. Also see setNavGroupIndex().
+		 */
+		void setNavGroup(const SPtr<GUINavGroup>& navGroup);
+
+		/**
+		 * Sets the index that determines in what order is the element visited compared to all the other elements in the
+		 * nav-group. Elements with lower index will be visited before elements with a higher index. Elements with index
+		 * 0 (the default) are special and will have their visit order determines by their position compared to other
+		 * elements. The applied index is tied to the nav-group, so if the nav-group changes the index will need to be
+		 * re-applied.
+		 */
+		void setNavGroupIndex(INT32 index);
 
 		/** @copydoc GUIElementBase::getVisibleBounds */
 		Rect2I getVisibleBounds() override;
@@ -225,6 +258,9 @@ namespace bs
 		 */
 		UINT32 _getDepth() const { return mLayoutData.depth; }
 
+		/** Returns the navigation group this element belongs to. See setNavGroup(). */
+		SPtr<GUINavGroup> _getNavGroup() const;
+
 		/** Checks is the specified position within GUI element bounds. Position is relative to parent GUI widget. */
 		virtual bool _isInBounds(const Vector2I position) const;
 
@@ -295,8 +331,8 @@ namespace bs
 		/**	Returns the tint that is applied to the GUI element. */
 		Color getTint() const;
 
-		bool mIsDestroyed;
-		bool mBlockPointerEvents;
+		bool mIsDestroyed = false;
+		GUIElementOptions mOptionFlags;
 		Rect2I mClippedBounds;
 		
 	private:
@@ -306,6 +342,7 @@ namespace bs
 		String mStyleName;
 
 		SPtr<GUIContextMenu> mContextMenu;
+		SPtr<GUINavGroup> mNavGroup;
 		Color mColor;
 	};
 
