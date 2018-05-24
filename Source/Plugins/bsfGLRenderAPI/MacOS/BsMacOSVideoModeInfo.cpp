@@ -53,8 +53,12 @@ namespace bs::ct
 			auto keys = (CFStringRef*)bs_stack_alloc(numNames * sizeof(CFTypeRef));
 			CFDictionaryGetKeysAndValues(locNames, (const void**)keys, nullptr);
 
-			CFStringRef value = (CFStringRef)CFDictionaryGetValue(locNames, keys[0]);
-			mName = CFStringGetCStringPtr(value, kCFStringEncodingUTF8);
+			auto value = (CFStringRef)CFDictionaryGetValue(locNames, keys[0]);
+
+			if(value)
+				mName = CFStringGetCStringPtr(value, kCFStringEncodingUTF8);
+			else
+				mName = "Unknown";
 
 			bs_stack_free(keys);
 		}
