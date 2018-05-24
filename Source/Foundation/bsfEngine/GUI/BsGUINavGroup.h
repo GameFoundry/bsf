@@ -25,7 +25,8 @@ namespace bs
 		/** 
 		 * Sets the focus to the next element in the navigation order. 
 		 *
-		 * @param[in]	anchor	Element relative to which to determine order. Must be part of this navigation group.
+		 * @param[in]	anchor		Element relative to which to determine the navigation. This is usually the currently 
+		 *							focused element. 
 		 */
 		void focusNext(GUIElement* anchor);
 

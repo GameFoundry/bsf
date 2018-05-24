@@ -12,8 +12,9 @@
 
 namespace bs
 {
-	GUIButtonBase::GUIButtonBase(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions)
-		: GUIElement(styleName, dimensions, GUIElementOption::AcceptsKeyFocus), mContent(content)
+	GUIButtonBase::GUIButtonBase(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions,
+		GUIElementOptions options)
+		: GUIElement(styleName, dimensions, options), mContent(content)
 	{
 		mImageSprite = bs_new<ImageSprite>();
 		mTextSprite = bs_new<TextSprite>();

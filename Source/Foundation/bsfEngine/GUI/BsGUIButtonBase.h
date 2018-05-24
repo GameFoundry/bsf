@@ -62,7 +62,8 @@ namespace bs
 
 		/** @} */
 	protected:
-		GUIButtonBase(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions);
+		GUIButtonBase(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions,
+			GUIElementOptions options = GUIElementOption::AcceptsKeyFocus);
 		virtual ~GUIButtonBase();
 
 		/** @copydoc GUIElement::_getNumRenderElements */

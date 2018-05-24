@@ -1750,12 +1750,11 @@ namespace bs
 		GUIElement* closestElement = nullptr;
 
 		// Find to top-left most element
-		GUIWidget* widget = nullptr;
 		for (auto& widgetInfo : mWidgets)
 		{
 			const RenderWindow* window = getWidgetWindow(*widgetInfo.widget);
 
-			const Vector<GUIElement*>& elements = widget->getElements();
+			const Vector<GUIElement*>& elements = widgetInfo.widget->getElements();
 			for (auto& element : elements)
 			{
 				const bool acceptsKeyFocus = element->getOptionFlags().isSet(GUIElementOption::AcceptsKeyFocus);
@@ -1794,12 +1793,12 @@ namespace bs
 		for(auto& entry : mElementsInFocus)
 		{
 			SPtr<GUINavGroup> navGroup = entry.element->_getNavGroup();
-			if(navGroup != nullptr)
+			GUIElementOptions elementOptions = entry.element->getOptionFlags();
+			if(elementOptions.isSet(GUIElementOption::AcceptsKeyFocus) && navGroup != nullptr)
 			{
 				navGroup->focusNext(entry.element);
 				return;
 			}
-			
 		}
 
 		// Nothing currently in focus

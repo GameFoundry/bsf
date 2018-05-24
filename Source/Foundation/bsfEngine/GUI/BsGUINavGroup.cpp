@@ -50,10 +50,7 @@ namespace bs
 
 			// Reached the end, wrap around
 			if(iterFind == mOrderedElements.end())
-			{
-				focusFirst();
-				return;
-			}
+				return focusFirst();
 
 			// If a next element with an explicit index exists, select it
 			if(iterFind->first != 0)
@@ -67,78 +64,152 @@ namespace bs
 			return;
 		}
 
-		// Find next element to focus on, to the right of the current element, or left-most element below it
+		// Find next element to focus on
 		{
 			const Rect2I focusedElemBounds = anchor->_getClippedBounds();
-			INT32 nearestX = std::numeric_limits<INT32>::max();
-			INT32 nearestX0 = std::numeric_limits<INT32>::max();
-			INT32 nearestY = std::numeric_limits<INT32>::max();
-			
-			GUIElement* nextElement = nullptr;
+
+			// We look for the element to the right of the current element, within some Y range (a 'row').
+			//// We search by rows in order to make the navigation perceptually nicer. Sometimes elements appear to be
+			//// in the same row, but might be off by a few pixels, in which case the simpler approach would 'jump'
+			//// over an element.
+			constexpr static INT32 ROW_HEIGHT = 5;
+
 			const auto unindexedRange = mOrderedElements.equal_range(0);
-			for (auto iter = unindexedRange.first; iter != unindexedRange.second; ++iter)
+			bs_frame_mark();
 			{
-				GUIElement* element = iter->second;
-
-				const bool acceptsKeyFocus = element->getOptionFlags().isSet(GUIElementOption::AcceptsKeyFocus);
-				if(!acceptsKeyFocus || !element->_isVisible() || element->_isDisabled())
-					continue;
-
-				if(element == anchor)
-					continue;
-
-				const Rect2I elemBounds = element->_getClippedBounds();
-				const bool isFullyClipped = element->_getClippedBounds().width == 0 ||
-					element->_getClippedBounds().height == 0;
-
-				if(isFullyClipped)
-					continue;
-
-				const INT32 yDiff = elemBounds.y - focusedElemBounds.y;
-
-				// First look for element at the same height but to the right
-				if(yDiff == 0)
+				struct YCompare
 				{
+					bool operator()(const GUIElement* lhs, const GUIElement* rhs) const
+					{
+						const Rect2I boundsLHS = lhs->_getClippedBounds();
+						const Rect2I boundsRHS = rhs->_getClippedBounds();
+
+						if(boundsLHS.y != boundsRHS.y)
+							return boundsLHS.y < boundsRHS.y;
+
+						return lhs < rhs;
+					}
+				};
+
+				// Build a list of relevant elements, ordered by height
+				FrameSet<GUIElement*, YCompare> elements;
+				for (auto iter = unindexedRange.first; iter != unindexedRange.second; ++iter)
+				{
+					GUIElement* element = iter->second;
+					const bool acceptsKeyFocus = element->getOptionFlags().isSet(GUIElementOption::AcceptsKeyFocus);
+					if (!acceptsKeyFocus || !element->_isVisible() || element->_isDisabled())
+						continue;
+
+					const Rect2I elemBounds = element->_getClippedBounds();
+					const bool isFullyClipped = elemBounds.width == 0 || elemBounds.height == 0;
+
+					if (isFullyClipped)
+						continue;
+
+					elements.insert(element);
+				}
+
+				// Find the row the currently selected element is part of
+				auto iterElem = elements.begin();
+				auto iterRowStart = iterElem;
+
+				INT32 firstRowY = 0;
+				INT32 rowY = 0;
+				for(; iterElem != elements.end(); ++iterElem)
+				{
+					GUIElement* element = *iterElem;
+
+					const Rect2I elemBounds = element->_getClippedBounds();
+					if(iterElem == elements.begin())
+					{
+						firstRowY = elemBounds.y;
+						rowY = elemBounds.y;
+					}
+					else
+					{
+						const INT32 yDiff = elemBounds.y - rowY;
+
+						// New row
+						if (yDiff >= ROW_HEIGHT)
+						{
+							iterRowStart = iterElem;
+							rowY = elemBounds.y;
+						}
+					}
+
+					if(element == anchor)
+						break;
+				}
+
+				const bool foundRow = iterElem != elements.end();
+				if(!foundRow)
+					rowY = firstRowY;
+
+				// Try to find the next element in the current row (to the right of the current one)
+				GUIElement* nextElement = nullptr;
+				INT32 nearestX = std::numeric_limits<INT32>::max();
+				iterElem = iterRowStart;
+				for(; iterElem != elements.end(); ++iterElem)
+				{
+					GUIElement* element = *iterElem;
+					if(element == anchor)
+						continue;
+
+					const Rect2I elemBounds = element->_getClippedBounds();
+					const INT32 yDiff = elemBounds.y - rowY;
+
+					// New row
+					if(yDiff >= ROW_HEIGHT)
+					{
+						rowY = elemBounds.y;
+						break;
+					}
+
 					// Note: We're purposely ignoring elements at the same exact position, as the tab focus would then just
 					// ping-pong between the two elements, and we'd have to keep a list of previously visited elements in
 					// order to avoid the issue.
 					if(elemBounds.x > focusedElemBounds.x)
 					{
 						const INT32 xDiff = elemBounds.x - focusedElemBounds.x;
-						if (xDiff < nearestX0)
+						if (xDiff < nearestX)
 						{
-							nearestX0 = xDiff;
+							nearestX = xDiff;
 							nextElement = element;
 						}
-
-						nearestY = 0;
 					}
 				}
-				// Otherwise find left-most element that's closest below the current element
-				else if(yDiff > 0 && yDiff <= nearestY)
+
+				// If no element in the current row, find the left-most element in the next row
+				if(!nextElement)
 				{
-					if(yDiff < nearestY)
+					nearestX = std::numeric_limits<INT32>::max();
+					for (; iterElem != elements.end(); ++iterElem)
 					{
-						nearestX = elemBounds.x;
-						nearestY = yDiff;
-						nextElement = element;
-					}
-					else
-					{
-						if(elemBounds.x < nearestX)
+						GUIElement* element = *iterElem;
+
+						const Rect2I elemBounds = element->_getClippedBounds();
+						const INT32 yDiff = elemBounds.y - rowY;
+
+						// New row
+						if (yDiff >= ROW_HEIGHT)
+							break;
+
+						if (elemBounds.x < nearestX)
 						{
 							nearestX = elemBounds.x;
 							nextElement = element;
 						}
 					}
 				}
-			}
 
-			if(nextElement)
-			{
-				nextElement->setFocus(true);
-				return;
+				if (nextElement)
+				{
+					nextElement->setFocus(true);
+					return;
+				}
+
 			}
+			bs_frame_clear();
 
 			// No more elements with no tab index. Check elements with positive tab index
 			const auto iterAfterUnindexed = unindexedRange.second;
