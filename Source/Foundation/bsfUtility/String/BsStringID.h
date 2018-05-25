@@ -166,11 +166,12 @@ namespace bs
 			{
 				UINT32 length = (size - sizeof(UINT32) - sizeof(bool)) / sizeof(char);
 
-				char* name = (char*)bs_alloc(length + 1);
+				auto name = (char*)bs_stack_alloc(length + 1);
 				memcpy(name, memory, length);
 				name[length] = '\0';
 
 				data = StringID(name);
+				bs_stack_free(name);
 			}
 
 			return size;
