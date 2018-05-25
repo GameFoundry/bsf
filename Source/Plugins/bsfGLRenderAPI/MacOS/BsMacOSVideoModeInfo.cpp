@@ -54,9 +54,22 @@ namespace bs::ct
 			CFDictionaryGetKeysAndValues(locNames, (const void**)keys, nullptr);
 
 			auto value = (CFStringRef)CFDictionaryGetValue(locNames, keys[0]);
-
 			if(value)
-				mName = CFStringGetCStringPtr(value, kCFStringEncodingUTF8);
+			{
+				const char* chars = CFStringGetCStringPtr(value, kCFStringEncodingUTF8);
+				if(chars)
+					mName = chars;
+				else
+				{
+					CFIndex stringLength = CFStringGetLength(value) + 1;
+					auto buffer = bs_stack_alloc<char>((UINT32)stringLength);
+
+					CFStringGetCString(value, buffer, stringLength, kCFStringEncodingUTF8);
+
+					mName = buffer;
+					bs_stack_free(buffer);
+				}
+			}
 			else
 				mName = "Unknown";
 
@@ -90,6 +103,8 @@ namespace bs::ct
 	MacOSVideoMode::MacOSVideoMode(CGDisplayModeRef mode, CVDisplayLinkRef linkRef, UINT32 outputIdx)
 			:VideoMode(0, 0, 0.0f, outputIdx), mModeRef(mode)
 	{
+		CGDisplayModeRetain(mModeRef);
+
 		mWidth = (UINT32)CGDisplayModeGetPixelWidth(mModeRef);
 		mHeight = (UINT32)CGDisplayModeGetPixelHeight(mModeRef);
 
