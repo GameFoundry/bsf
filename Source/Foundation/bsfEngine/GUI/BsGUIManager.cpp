@@ -1781,7 +1781,7 @@ namespace bs
 			return;
 
 		// Don't use the element directly though, since its tab group could have explicit ordering
-		SPtr<GUINavGroup> navGroup = closestElement->_getNavGroup();
+		const SPtr<GUINavGroup>& navGroup = closestElement->_getNavGroup();
 		navGroup->focusFirst();
 	}
 
@@ -1789,7 +1789,7 @@ namespace bs
 	{
 		for(auto& entry : mElementsInFocus)
 		{
-			SPtr<GUINavGroup> navGroup = entry.element->_getNavGroup();
+			const SPtr<GUINavGroup>& navGroup = entry.element->_getNavGroup();
 			GUIElementOptions elementOptions = entry.element->getOptionFlags();
 			if(elementOptions.isSet(GUIElementOption::AcceptsKeyFocus) && navGroup != nullptr)
 			{
