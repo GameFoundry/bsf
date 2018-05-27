@@ -246,7 +246,7 @@ function(update_binary_deps DEP_PREFIX DEP_FOLDER DEP_VERSION)
 	)
 	
 	# Copy executables and dynamic libraries
-	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Temp/bin ${PROJECT_SOURCE_DIR}/bin)	
+	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Temp/bin ${DEP_FOLDER}/../bin)	
 	
 	# Copy static libraries, headers and tools
 	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${DEP_FOLDER})	
