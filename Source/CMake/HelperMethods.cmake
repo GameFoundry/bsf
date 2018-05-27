@@ -368,7 +368,7 @@ function(install_bsf_target targetName)
 		ARCHIVE DESTINATION lib
 	)		
 	
-	if(WIN32)
+	if(MSVC)
 		install(
 			FILES $<TARGET_PDB_FILE:${targetName}> 
 			DESTINATION bin 
