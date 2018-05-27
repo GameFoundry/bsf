@@ -723,7 +723,7 @@ namespace bs
 		const auto loadState = [&loader, &entry](const char* name, GUIElementStyle::GUIElementStateStyle& state)
 		{
 			if (entry.count(name) == 0)
-				return;
+				return false;
 
 			nlohmann::json subEntry = entry[name];
 
@@ -742,19 +742,49 @@ namespace bs
 				state.textColor.b = colorEntry["b"];
 				state.textColor.a = colorEntry["a"];
 			}
+
+			return true;
 		};
 
 		loadState("normal", style.normal);
-		loadState("hover", style.hover);
-		loadState("active", style.active);
-		loadState("focused", style.focused);
-		loadState("focusedHover", style.focusedHover);
+
+		const bool hasHover = loadState("hover", style.hover);
+		if(!hasHover)
+			style.hover = style.normal;
+
+		if(!loadState("active", style.active))
+			style.active = style.normal;
+
+		if(!loadState("focused", style.focused))
+			style.focused = style.normal;
+
+		if(!loadState("focusedHover", style.focusedHover))
+		{
+			if(hasHover)
+				style.focusedHover = style.hover;
+			else
+				style.focusedHover = style.normal;
+		}
 
 		loadState("normalOn", style.normalOn);
-		loadState("hoverOn", style.hoverOn);
-		loadState("activeOn", style.activeOn);
-		loadState("focusedOn", style.focusedOn);
-		loadState("focusedHoverOn", style.focusedHoverOn);
+
+		const bool hasHoverOn = loadState("hoverOn", style.hoverOn);
+		if(!hasHoverOn)
+			style.hoverOn = style.normalOn;
+
+		if(!loadState("activeOn", style.activeOn))
+			style.activeOn = style.normalOn;
+
+		if(!loadState("focusedOn", style.focusedOn))
+			style.focusedOn = style.normalOn;
+
+		if(!loadState("focusedHoverOn", style.focusedHoverOn))
+		{
+			if(hasHoverOn)
+				style.focusedHoverOn = style.hoverOn;
+			else
+				style.focusedHoverOn = style.normalOn;
+		}
 
 		const auto loadRectOffset = [entry](const char* name, RectOffset& state)
 		{
