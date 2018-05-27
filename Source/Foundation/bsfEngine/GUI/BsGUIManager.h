@@ -163,8 +163,15 @@ namespace bs
 		/** Forces all GUI elements that are queued for destruction to be destroyed immediately. */
 		void processDestroyQueue();
 
-		/**	Change the GUI element focus state. */
-		void setFocus(GUIElement* element, bool focus);
+		/**	
+		 * Change the GUI element focus state. 
+		 * 
+		 * @param[in]	element		Element whose focus state to change
+		 * @param[in]	focus		Give the element focus or take it away.
+		 * @param[in]	clear		If true the focus will be cleared from any elements currently in focus. Otherwise
+		 *							the element will just be appended to the in-focus list (if enabling focus).
+		 */
+		void setFocus(GUIElement* element, bool focus, bool clear);
 
 		/**	Changes the color of the input caret used in input boxes and similar controls. */
 		void setCaretColor(const Color& color) { mCaretColor = color; updateCaretTexture(); }
@@ -381,6 +388,7 @@ namespace bs
 		Vector<ElementFocusInfo> mElementsInFocus;
 		Vector<ElementFocusInfo> mNewElementsInFocus;
 
+		bool mForcedClearFocus = false;
 		Vector<ElementForcedFocusInfo> mForcedFocusElements;
 
 		// Tooltip

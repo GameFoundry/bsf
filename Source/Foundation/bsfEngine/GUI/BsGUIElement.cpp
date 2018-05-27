@@ -171,9 +171,9 @@ namespace bs
 		return nullptr;
 	}
 
-	void GUIElement::setFocus(bool enabled)
+	void GUIElement::setFocus(bool enabled, bool clear)
 	{
-		GUIManager::instance().setFocus(this, enabled);
+		GUIManager::instance().setFocus(this, enabled, clear);
 	}
 
 	void GUIElement::resetDimensions()

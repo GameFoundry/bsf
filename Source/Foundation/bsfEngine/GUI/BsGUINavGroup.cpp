@@ -20,7 +20,7 @@ namespace bs
 		auto iterStart = mOrderedElements.begin();
 		if(iterStart->first != 0)
 		{
-			iterStart->second->setFocus(true);
+			iterStart->second->setFocus(true, true);
 			return;
 		}
 
@@ -55,7 +55,7 @@ namespace bs
 			// If a next element with an explicit index exists, select it
 			if(iterFind->first != 0)
 			{
-				iterFind->second->setFocus(true);
+				iterFind->second->setFocus(true, true);
 				return;
 			}
 
@@ -204,7 +204,7 @@ namespace bs
 
 				if (nextElement)
 				{
-					nextElement->setFocus(true);
+					nextElement->setFocus(true, true);
 					return;
 				}
 
@@ -215,7 +215,7 @@ namespace bs
 			const auto iterAfterUnindexed = unindexedRange.second;
 			if(iterAfterUnindexed != mOrderedElements.end())
 			{
-				iterAfterUnindexed->second->setFocus(true);
+				iterAfterUnindexed->second->setFocus(true, true);
 				return;
 			}
 
@@ -256,7 +256,7 @@ namespace bs
 		}
 
 		if (topLeftElement)
-			topLeftElement->setFocus(true);
+			topLeftElement->setFocus(true, true);
 	}
 	
 	void GUINavGroup::registerElement(GUIElement* element, INT32 tabIdx)

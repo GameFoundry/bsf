@@ -290,18 +290,7 @@ namespace bs
 
 			mElementsInFocus.swap(mNewElementsInFocus);
 
-			// If anything else is taking focus, clear any existing focused elements
-			bool clearFocus = false;
-			for (auto& focusElementInfo : mForcedFocusElements)
-			{
-				if(focusElementInfo.focus)
-				{
-					clearFocus = true;
-					break;
-				}
-			}
-
-			if(clearFocus)
+			if(mForcedClearFocus)
 			{
 				// Clear focus on all elements that aren't part of the forced focus list (in case they are already in focus)
 				mCommandEvent.setType(GUICommandEventType::FocusLost);
@@ -324,6 +313,8 @@ namespace bs
 					else
 						++iter;
 				}
+
+				mForcedClearFocus = false;
 			}
 
 			for (auto& focusElementInfo : mForcedFocusElements)
@@ -1581,11 +1572,17 @@ namespace bs
 		mScheduledForDestruction.push(element);
 	}
 
-	void GUIManager::setFocus(GUIElement* element, bool focus)
+	void GUIManager::setFocus(GUIElement* element, bool focus, bool clear)
 	{
 		ElementForcedFocusInfo efi;
 		efi.element = element;
 		efi.focus = focus;
+
+		if(clear)
+		{
+			mForcedClearFocus = true;
+			mForcedFocusElements.clear();
+		}
 
 		mForcedFocusElements.push_back(efi);
 	}
