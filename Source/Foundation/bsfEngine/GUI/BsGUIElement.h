@@ -23,13 +23,13 @@ namespace bs
 		 * Enable this option if you want pointer events to pass through this element by default. This will allow elements
 		 * underneath this element to receive pointer events.
 		 */
-		ClickThrough,
+		ClickThrough = 0x01,
 
 		/** 
 		 * Enable this option if the element accepts keyboard/gamepad input focus. This will allow the element to be
 		 * navigated to using keys/buttons. 
 		 */
-		AcceptsKeyFocus
+		AcceptsKeyFocus = 0x02
 	};
 
 	typedef Flags<GUIElementOption> GUIElementOptions;
