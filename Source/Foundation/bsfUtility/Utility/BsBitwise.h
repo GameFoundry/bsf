@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Prerequisites/BsPrerequisitesUtil.h"
+#include "Math/BsMath.h"
 
 namespace bs 
 {
@@ -108,12 +109,12 @@ namespace bs
 
 		/** Returns the number of bits a pattern must be shifted right by to remove right-hand zeros. */
 		template<typename T>
-		static unsigned int getBitShift(T mask)
+		static uint32_t getBitShift(T mask)
 		{
 			if (mask == 0)
 				return 0;
 
-			unsigned int result = 0;
+			uint32_t result = 0;
 			while ((mask & 1) == 0) {
 				++result;
 				mask >>= 1;
@@ -129,14 +130,14 @@ namespace bs
 			srcValue = srcValue & srcBitMask;
 
 			// Shift source down to bottom of DWORD
-			const unsigned int srcBitShift = getBitShift(srcBitMask);
+			const uint32_t srcBitShift = getBitShift(srcBitMask);
 			srcValue >>= srcBitShift;
 
 			// Get max value possible in source from srcMask
 			const SrcT srcMax = srcBitMask >> srcBitShift;
 
 			// Get max available in dest
-			const unsigned int destBitShift = getBitShift(destBitMask);
+			const uint32_t destBitShift = getBitShift(destBitMask);
 			const DestT destMax = destBitMask >> destBitShift;
 
 			// Scale source value into destination, and shift back
@@ -148,7 +149,7 @@ namespace bs
 		 * Convert N bit color channel value to P bits. It fills P bits with the bit pattern repeated. 
 		 * (this is /((1<<n)-1) in fixed point).
 		 */
-		static unsigned int fixedToFixed(UINT32 value, unsigned int n, unsigned int p)
+		static uint32_t fixedToFixed(UINT32 value, uint32_t n, uint32_t p)
 		{
 			if (n > p)
 			{
@@ -161,7 +162,7 @@ namespace bs
 				// Use old fashioned division, probably better than a loop
 				if (value == 0)
 					value = 0;
-				else if (value == (static_cast<unsigned int>(1) << n) - 1)
+				else if (value == (static_cast<uint32_t>(1) << n) - 1)
 					value = (1 << p) - 1;
 				else    value = value*(1 << p) / ((1 << n) - 1);
 			}
@@ -172,36 +173,132 @@ namespace bs
 		 * Converts floating point value in range [0, 1] to an unsigned integer of a certain number of bits. Works for any
 		 * value of bits between 0 and 31.
 		 */
-		static unsigned int unormToUint(float value, unsigned int bits)
+		static uint32_t unormToUint(float value, uint32_t bits)
 		{
 			if (value <= 0.0f) return 0;
-			else if (value >= 1.0f) return (1 << bits) - 1;
-			else return (unsigned int)(value * (1 << bits));
+			if (value >= 1.0f) return (1 << bits) - 1;
+			return Math::roundToInt(value * (1 << bits));
 		}
 
 		/** 
 		 * Converts floating point value in range [-1, 1] to an unsigned integer of a certain number of bits. Works for any
 		 * value of bits between 0 and 31.
 		 */
-		static unsigned int snormToUint(float value, unsigned int bits)
+		static uint32_t snormToUint(float value, uint32_t bits)
 		{
 			return unormToUint((value + 1.0f) * 0.5f, bits);
 		}
 
 		/** Converts an unsigned integer to a floating point in range [0, 1]. */
-		static float uintToUnorm(unsigned value, unsigned int bits)
+		static float uintToUnorm(uint32_t value, uint32_t bits)
 		{
 			return (float)value / (float)((1 << bits) - 1);
 		}
 
 		/** Converts an unsigned integer to a floating point in range [-1, 1]. */
-		static float uintToSnorm(unsigned value, unsigned int bits)
+		static float uintToSnorm(uint32_t value, uint32_t bits)
 		{
-			return uintToUnorm(value, bits) * 2.0f - 1.0f;
+			return uintToUnorm(value) * 2.0f - 1.0f;
+		}
+
+		/** 
+		 * Converts floating point value in range [0, 1] to an unsigned integer of a certain number of bits. Works for any
+		 * value of bits between 0 and 31.
+		 */
+		template<uint32_t bits = 8>
+		static uint32_t unormToUint(float value)
+		{
+			if (value <= 0.0f) return 0;
+			if (value >= 1.0f) return (1 << bits) - 1;
+			return Math::roundToInt(value * (1 << bits));
+		}
+
+		/** 
+		 * Converts floating point value in range [-1, 1] to an unsigned integer of a certain number of bits. Works for any
+		 * value of bits between 0 and 31.
+		 */
+		template<uint32_t bits = 8>
+		static uint32_t snormToUint(float value)
+		{
+			return unormToUint<bits>((value + 1.0f) * 0.5f);
+		}
+
+		/** Converts an unsigned integer to a floating point in range [0, 1]. */
+		template<uint32_t bits = 8>
+		static float uintToUnorm(uint32_t value)
+		{
+			return (float)value / (float)((1 << bits) - 1);
+		}
+
+		/** Converts an unsigned integer to a floating point in range [-1, 1]. */
+		template<uint32_t bits = 8>
+		static float uintToSnorm(uint32_t value)
+		{
+			return uintToUnorm<bits>(value) * 2.0f - 1.0f;
+		}
+
+		/** 
+		 * Interpolates between two values using the @p t parameter. All parameters must be in [0, 255] range. When @p t
+		 * is zero, @p from value will be returned, and when it is 255 @p to value will be returned, and interpolation
+		 * between @p from and @p to will occurr for in-between values.
+		 */
+		static uint32_t lerpByte(uint32_t from, uint32_t to, uint32_t t)
+		{
+			assert((from & 0xFF) == from);
+			assert((to & 0xFF) == to);
+			assert((t & 0xFF) == t);
+			assert(from <= to);
+
+			return from + (((to - from) * t) >> 8) & 0xFF;
+		}
+
+		/** 
+		 * Interpolates between two values using the @p t parameter. All parameters must be in [0, 65536] range. When @p t
+		 * is zero, @p from value will be returned, and when it is 65536 @p to value will be returned, and interpolation
+		 * between @p from and @p to will occurr for in-between values.
+		 */
+		static uint32_t lerpWord(uint32_t from, uint32_t to, uint32_t t)
+		{
+			assert((from & 0xFFFF) == from);
+			assert((to & 0xFFFF) == to);
+			assert((t & 0xFFFF) == t);
+			assert(from <= to);
+
+			return from + (((to - from) * t) >> 16) & 0xFFFF;
+		}
+
+		/**
+		 * Determines the position of the @p val parameter in the [from, to] range, returned in [0, 255] range where 0 is
+		 * returned if @p val is less or equal than @p from, and 255 is returned if @p val is equal to greater to @p to,
+		 * and in-between values returned accordingly. All values must be in [0, 255] range.
+		 */
+		static uint32_t invLerpByte(uint32_t from, uint32_t to, uint32_t val)
+		{
+			assert((from & 0xFF) == from);
+			assert((to & 0xFF) == to);
+			assert((val & 0xFF) == val);
+			assert(from <= to);
+
+			return (val - from) << 8 / std::max(to - from, 1u);
+		}
+
+		/**
+		 * Determines the position of the @p val parameter in the [from, to] range, returned in [0, 65536] range where 0 is
+		 * returned if @p val is less or equal than @p from, and 65536 is returned if @p val is equal to greater to @p to,
+		 * and in-between values returned accordingly. All values must be in [0, 65536] range.
+		 */
+		static uint32_t invLerpWord(uint32_t from, uint32_t to, uint32_t val)
+		{
+			assert((from & 0xFFFF) == from);
+			assert((to & 0xFFFF) == to);
+			assert((val & 0xFFFF) == val);
+			assert(from <= to);
+
+			return (val - from) << 16 / std::max(to - from, 1u);
 		}
 
 		/** Write a n*8 bits integer value to memory in native endian. */
-		static void intWrite(void *dest, const int n, const unsigned int value)
+		static void intWrite(void *dest, const int32_t n, const uint32_t value)
 		{
 			switch(n) {
 				case 1:
@@ -222,13 +319,13 @@ namespace bs
 #endif
 					break;
 				case 4:
-					((UINT32*)dest)[0] = (UINT32)value;                
-					break;                
-			}        
+					((UINT32*)dest)[0] = (UINT32)value;
+					break;
+			}
 		}
 
 		/** Read a n*8 bits integer value to memory in native endian. */
-		static unsigned int intRead(const void *src, int n) {
+		static uint32_t intRead(const void *src, int32_t n) {
 			switch(n) {
 				case 1:
 					return ((UINT8*)src)[0];
@@ -261,9 +358,9 @@ namespace bs
 		/** Converts float in UINT32 format to a a half in UINT16 format. */
 		static UINT16 floatToHalfI(UINT32 i)
 		{
-			int s =  (i >> 16) & 0x00008000;
-			int e = ((i >> 23) & 0x000000ff) - (127 - 15);
-			int m =   i        & 0x007fffff;
+			int32_t s =  (i >> 16) & 0x00008000;
+			int32_t e = ((i >> 23) & 0x000000ff) - (127 - 15);
+			int32_t m =   i        & 0x007fffff;
 		
 			if (e <= 0)
 			{
@@ -309,9 +406,9 @@ namespace bs
 		/** Converts a half in UINT16 format to a float in UINT32 format. */
 		static UINT32 halfToFloatI(UINT16 y)
 		{
-			int s = (y >> 15) & 0x00000001;
-			int e = (y >> 10) & 0x0000001f;
-			int m =  y        & 0x000003ff;
+			int32_t s = (y >> 15) & 0x00000001;
+			int32_t e = (y >> 10) & 0x0000001f;
+			int32_t m =  y        & 0x000003ff;
 		
 			if (e == 0)
 			{

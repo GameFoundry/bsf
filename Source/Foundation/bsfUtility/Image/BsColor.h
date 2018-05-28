@@ -273,6 +273,30 @@ namespace bs
 		 */
 		static Color lerp(float t, const Color& a, const Color& b);
 
+		/** 
+		 * Linearly interpolates between the two colors using @p t. t should be in [0, 255] range, where t = 0 corresponds
+		 * to the left color, while t = 1 corresponds to the right color. Operates directly on 8-bit per channel
+		 * encoded color instead of on floating point values.
+		 */
+		static constexpr RGBA lerp(UINT8 t, RGBA from, RGBA to)
+		{
+			constexpr UINT32 RB_MASK = 0x00FF00FF;
+			constexpr UINT32 GA_MASK = 0xFF00FF00;
+
+			// Lerp two channels at a time (this leaves 8 extra bits for each channel for results)
+			//// Red-blue first
+			const UINT32 rbFrom = from & RB_MASK;
+			const UINT32 rbTo = to & RB_MASK;
+			const UINT32 rb = rbFrom + (((rbTo - rbFrom) * t) >> 8) & RB_MASK;
+
+			//// Then green-alpha
+			const UINT32 gaFrom = from & GA_MASK;
+			const UINT32 gaTo = to & GA_MASK;
+			const UINT32 ga = gaFrom + ((((gaTo >> 8) - (gaFrom >> 8)) * t) >> 8) & GA_MASK;
+
+			return rb | ga;
+		}
+
 		float r, g, b, a;
 	};
 

@@ -17,6 +17,8 @@ namespace bs
 	class BS_UTILITY_EXPORT Math 
 	{
 	public:
+		static constexpr float BIGGEST_FLOAT_SMALLER_THAN_ONE = 0.99999994f;
+
 		/** Inverse cosine. */
 		static Radian acos(float val);
 
@@ -98,14 +100,42 @@ namespace bs
 		/** Returns the nearest integer equal or higher to the provided value. */
 		static float ceil(float val) { return (float)std::ceil(val); }
 
-		/** Returns the nearest integer equal or higher to the provided value. */
-		static int ceilToInt(float val) { return (int)std::ceil(val); }
+		/** 
+		 * Returns the nearest integer equal or higher to the provided value. If you are sure the input is positive use
+		 * ceilToPosInt() for a slightly faster operation.
+		 */
+		static int32_t ceilToInt(float val)
+		{
+			assert(val >= std::numeric_limits<int32_t>::min() && val <= std::numeric_limits<int32_t>::max());
+
+			// Positive values need offset in order to truncate towards positive infinity (cast truncates towards zero) 
+			return val >= 0.0f ? (int32_t)(val + BIGGEST_FLOAT_SMALLER_THAN_ONE) : (int32_t)val;
+		}
+
+		/** 
+		 * Returns the nearest integer equal or higher to the provided value. Value must be non-negative. Slightly faster
+		 * than ceilToInt().
+		 */
+		static uint32_t ceilToPosInt(float val)
+		{
+			assert(val >= 0 && val <= std::numeric_limits<uint32_t>::max());
+
+			return (uint32_t)(val + BIGGEST_FLOAT_SMALLER_THAN_ONE);
+		}
 
 		/** Returns the integer nearest to the provided value. */
 		static float round(float val) { return (float)std::floor(val + 0.5f); }
 
-		/** Returns the integer nearest to the provided value. */
-		static int roundToInt(float val) { return (int)std::floor(val + 0.5f); }
+		/** 
+		 * Returns the integer nearest to the provided value. If you are sure the input is positive use roundToPosInt()
+		 * for a slightly faster operation.
+		 */
+		static int32_t roundToInt(float val) { return floorToInt(val + 0.5f); }
+
+		/** 
+		 * Returns the integer nearest to the provided value. Value must be non-negative. Slightly faster than roundToInt().
+		 */
+		static uint32_t roundToPosInt(float val) { return floorToPosInt(val + 0.5f); }
 
 		/** 
 		 * Divides an integer by another integer and returns the result, rounded up. Only works if both integers are
@@ -117,8 +147,28 @@ namespace bs
 		/** Returns the nearest integer equal or lower of the provided value. */
 		static float floor(float val) { return (float)std::floor(val); }
 
-		/** Returns the nearest integer equal or lower of the provided value. */
-		static int floorToInt(float val) { return (int)std::floor(val); }
+		/** 
+		 * Returns the nearest integer equal or lower of the provided value. If you are sure the input is positive
+		 * use floorToPosInt() for a slightly faster operation.
+		 */
+		static int floorToInt(float val)
+		{
+			assert(val >= std::numeric_limits<int32_t>::min() && val <= std::numeric_limits<int32_t>::max());
+
+			// Negative values need offset in order to truncate towards negative infinity (cast truncates towards zero) 
+			return val >= 0.0f ? (int32_t)val : (int32_t)(val - BIGGEST_FLOAT_SMALLER_THAN_ONE);
+		}
+
+		/** 
+		 * Returns the nearest integer equal or lower of the provided value. Value must be non-negative. Slightly faster
+		 * than floorToInt(). 
+		 */
+		static uint32_t floorToPosInt(float val)
+		{
+			assert(val >= 0 && val <= std::numeric_limits<uint32_t>::max());
+
+			return (uint32_t)val;
+		}
 
 		/** Clamp a value within an inclusive range. */
 		template <typename T>
