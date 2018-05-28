@@ -15,7 +15,7 @@ Huge thanks to all the patrons, contributors and donators!
 - Christian Clavet [Founder]
 
 # Tier 2 Patrons
--
+- Andrzej Oraniewicz [Founder]
 
 # Tier 1 Patrons
 - Danijel Ribić [Founder]
