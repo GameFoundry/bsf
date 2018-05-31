@@ -82,6 +82,10 @@ set(PHYSICS_MODULE_LIB bsfPhysX)
 configure_file("${BSF_SOURCE_DIR}/CMake/BsEngineConfig.h.in" "${BSF_SOURCE_DIR}/Foundation/bsfEngine/BsEngineConfig.h")
 configure_file("${BSF_SOURCE_DIR}/CMake/BsFrameworkConfig.h.in" "${BSF_SOURCE_DIR}/Foundation/bsfUtility/BsFrameworkConfig.h")
 
+## Set files disallowed in precompiled headers
+set_directory_properties(PROPERTIES
+    COTIRE_PREFIX_HEADER_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR};/usr/include/clang")
+
 # Sub-directories
 ## Foundation
 add_subdirectory(Foundation)

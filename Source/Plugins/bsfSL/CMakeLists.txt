@@ -61,3 +61,7 @@ set_property(TARGET bsfSL PROPERTY FOLDER Plugins)
 
 # Install
 install_bsf_target(bsfSL)
+set_directory_properties(PROPERTIES
+    COTIRE_PREFIX_HEADER_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../;/usr/lib/llvm-5.0;/usr/lib/llvm-6.0;/usr/lib/llvm-7")
+
+cotire(bsfSL)

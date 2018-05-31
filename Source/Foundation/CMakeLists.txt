@@ -107,3 +107,10 @@ install(
 )
 
 install_bsf_target(bsf)
+
+set_directory_properties(PROPERTIES
+    COTIRE_PREFIX_HEADER_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR};/usr/include/clang;${X11_INCLUDE_DIR}/X11;inttypes.h")
+target_compile_definitions(bsf PRIVATE "__STDC_FORMAT_MACROS=1")
+
+cotire(bsf)
+
