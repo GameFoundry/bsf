@@ -16,4 +16,6 @@ include(Source/CMake/Properties.cmake)
 include(Source/CMake/FindPackageOrBuild.cmake)
 include(Source/CMake/HelperMethods.cmake)
 
+enable_colored_output()
+
 add_subdirectory(Source)

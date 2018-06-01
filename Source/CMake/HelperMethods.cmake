@@ -1,3 +1,5 @@
+include(CheckCXXCompilerFlag)
+
 function(add_prefix var prefix)
    SET(listVar "")
    FOREACH(f ${ARGN})
@@ -408,17 +410,12 @@ function(copyBsfBinaries target srcDir)
 	endif()
 endfunction()
 
-# C too...
 function(find_clang_invalid_libc_pch_headers banned_files)
-	if (UNIX AND NOT APPLE)
-		set(LINUX True)
-	endif()
-
-	if (NOT LINUX)
+	if (NOT UNIX)
 		return()
 	endif()
 
-	if ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+	if (CMAKE_C_COMPILER_ID MATCHES "Clang")
 		execute_process(COMMAND ${CMAKE_C_COMPILER} -E -x c - -v
 						INPUT_FILE /dev/null
 						OUTPUT_FILE /dev/null
@@ -428,11 +425,9 @@ function(find_clang_invalid_libc_pch_headers banned_files)
 		string(REPLACE "\n " "" clang_c_search_dirs "${clang_c_search_dirs}")
 
 		find_file(inttypes_c_location "inttypes.h" PATHS ${clang_c_search_dirs} PATH_SUFFIXES include NO_DEFAULT_PATH)
-
-		set(${banned_files} ${${banned_files}} ${inttypes_c_location} PARENT_SCOPE)
 	endif()
 
-	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		execute_process(COMMAND ${CMAKE_CXX_COMPILER} -E -x c++ - -v
 						INPUT_FILE /dev/null
 						OUTPUT_FILE /dev/null
@@ -442,7 +437,15 @@ function(find_clang_invalid_libc_pch_headers banned_files)
 		string(REPLACE "\n " "" clang_cxx_search_dirs "${clang_cxx_search_dirs}")
 
 		find_file(inttypes_cxx_location "inttypes.h" PATHS ${clang_cxx_search_dirs} PATH_SUFFIXES include NO_DEFAULT_PATH)
-
 	endif()
 	set(${banned_files} ${inttypes_c_location} ${inttypes_cxx_location} PARENT_SCOPE)
 endfunction()
+
+macro(enable_colored_output)
+	if (CMAKE_GENERATOR STREQUAL "Ninja")
+		check_cxx_compiler_flag("-fdiagnostics-color=always" F_DIAGNOSTIC_COLOR_ALWAYS)
+		if (F_DIAGNOSTIC_COLOR_ALWAYS)
+			add_compile_options("-fdiagnostics-color=always")
+		endif()
+	endif()
+endmacro()
