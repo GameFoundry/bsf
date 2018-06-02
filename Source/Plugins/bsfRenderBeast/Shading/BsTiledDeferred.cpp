@@ -213,7 +213,11 @@ namespace bs { namespace ct
 		framebufferSize[1] = height;
 		gTiledImageBasedLightingParamDef.gFramebufferSize.set(mParamBuffer, framebufferSize);
 
-		mReflProbeParamBuffer.populate(sceneInfo.skybox, probeData.getNumProbes(), sceneInfo.reflProbeCubemapsTex, 
+		Skybox* skybox = nullptr; 
+		if(view.getRenderSettings().enableSkybox)
+			skybox = sceneInfo.skybox;
+
+		mReflProbeParamBuffer.populate(skybox, probeData.getNumProbes(), sceneInfo.reflProbeCubemapsTex, 
 			viewProps.capturingReflections);
 
 		mParamBuffer->flushToGPU();
@@ -225,8 +229,8 @@ namespace bs { namespace ct
 		mGBufferDepth.set(inputs.gbuffer.depth);
 
 		SPtr<Texture> skyFilteredRadiance;
-		if(sceneInfo.skybox)
-			skyFilteredRadiance = sceneInfo.skybox->getFilteredRadiance();
+		if(skybox)
+			skyFilteredRadiance = skybox->getFilteredRadiance();
 
 		mImageBasedParams.preintegratedEnvBRDFParam.set(inputs.preIntegratedGF);
 		mImageBasedParams.reflectionProbesParam.set(probeData.getProbeBuffer());

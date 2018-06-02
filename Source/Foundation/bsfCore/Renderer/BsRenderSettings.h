@@ -573,6 +573,13 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		bool overlayOnly = false;
 
+		/**
+		 * If enabled the camera will use the skybox for rendering the background. A skybox has to be present in the scene.
+		 * When disabled the camera will use the clear color for rendering the background.
+		 */
+		BS_SCRIPT_EXPORT()
+		bool enableSkybox = true;
+
 		/** @name Internal
 		 *  @{
 		 */

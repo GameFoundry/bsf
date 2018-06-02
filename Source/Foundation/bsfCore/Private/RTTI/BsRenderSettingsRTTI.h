@@ -271,6 +271,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(overlayOnly, 15)
 			BS_RTTI_MEMBER_PLAIN(enableIndirectLighting, 16)
 			BS_RTTI_MEMBER_REFL(shadowSettings, 17)
+			BS_RTTI_MEMBER_PLAIN(enableSkybox, 18)
 		BS_END_RTTI_MEMBERS
 
 	public:

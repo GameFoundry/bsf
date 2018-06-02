@@ -108,6 +108,7 @@ namespace bs
 		bufferSize += rttiGetElemSize(enableShadows);
 		bufferSize += rttiGetElemSize(enableIndirectLighting);
 		bufferSize += rttiGetElemSize(overlayOnly);
+		bufferSize += rttiGetElemSize(enableSkybox);
 
 		bufferSize += rttiGetElemSize(autoExposure.histogramLog2Min);
 		bufferSize += rttiGetElemSize(autoExposure.histogramLog2Max);
@@ -184,6 +185,7 @@ namespace bs
 		writeDst = rttiWriteElem(enableShadows, writeDst);
 		writeDst = rttiWriteElem(enableIndirectLighting, writeDst);
 		writeDst = rttiWriteElem(overlayOnly, writeDst);
+		writeDst = rttiWriteElem(enableSkybox, writeDst);
 
 		writeDst = rttiWriteElem(autoExposure.histogramLog2Min, writeDst);
 		writeDst = rttiWriteElem(autoExposure.histogramLog2Max, writeDst);
@@ -252,6 +254,7 @@ namespace bs
 		readSource = rttiReadElem(enableShadows, readSource);
 		readSource = rttiReadElem(enableIndirectLighting, readSource);
 		readSource = rttiReadElem(overlayOnly, readSource);
+		readSource = rttiReadElem(enableSkybox, readSource);
 
 		readSource = rttiReadElem(autoExposure.histogramLog2Min, readSource);
 		readSource = rttiReadElem(autoExposure.histogramLog2Max, readSource);

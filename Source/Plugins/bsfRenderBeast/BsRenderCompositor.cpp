@@ -832,7 +832,11 @@ namespace bs { namespace ct
 		if (volumeIndices)
 			volumeIndicesTex = volumeIndices->texture;
 
-		evaluateMat->execute(inputs.view, gbuffer, volumeIndicesTex, lpInfo, inputs.scene.skybox, ssaoNode->output, 
+		Skybox* skybox = nullptr;
+		if(inputs.view.getRenderSettings().enableSkybox)
+			skybox = inputs.scene.skybox;
+
+		evaluateMat->execute(inputs.view, gbuffer, volumeIndicesTex, lpInfo, skybox, ssaoNode->output, 
 			lightAccumNode->renderTarget);
 
 		if(volumeIndices)
@@ -931,8 +935,12 @@ namespace bs { namespace ct
 
 			const VisibleReflProbeData& probeData = inputs.viewGroup.getVisibleReflProbeData();
 
+			Skybox* skybox = nullptr;
+			if(inputs.view.getRenderSettings().enableSkybox)
+				skybox = inputs.scene.skybox;
+
 			ReflProbeParamBuffer reflProbeParams;
-			reflProbeParams.populate(inputs.scene.skybox, probeData.getNumProbes(), inputs.scene.reflProbeCubemapsTex,
+			reflProbeParams.populate(skybox, probeData.getNumProbes(), inputs.scene.reflProbeCubemapsTex,
 				viewProps.capturingReflections);
 
 			// Prepare the texture for refl. probe and skybox rendering
@@ -966,13 +974,13 @@ namespace bs { namespace ct
 
 				// Render sky
 				SPtr<Texture> skyFilteredRadiance;
-				if (inputs.scene.skybox)
-					skyFilteredRadiance = inputs.scene.skybox->getFilteredRadiance();
+				if (skybox)
+					skyFilteredRadiance = skybox->getFilteredRadiance();
 
 				if (skyFilteredRadiance)
 				{
 					DeferredIBLSkyMat* skymat = DeferredIBLSkyMat::getVariation(isMSAA, true);
-					skymat->bind(gbuffer, perViewBuffer, inputs.scene.skybox, reflProbeParams.buffer);
+					skymat->bind(gbuffer, perViewBuffer, skybox, reflProbeParams.buffer);
 
 					gRendererUtility().drawScreenQuad();
 
@@ -980,7 +988,7 @@ namespace bs { namespace ct
 					if (isMSAA)
 					{
 						DeferredIBLSkyMat* msaaMat = DeferredIBLSkyMat::getVariation(true, false);
-						msaaMat->bind(gbuffer, perViewBuffer, inputs.scene.skybox, reflProbeParams.buffer);
+						msaaMat->bind(gbuffer, perViewBuffer, skybox, reflProbeParams.buffer);
 
 						gRendererUtility().drawScreenQuad();
 					}
@@ -1071,14 +1079,18 @@ namespace bs { namespace ct
 			lightAndReflProbeParamsParamBlock = gLightAndReflProbeParamsParamDef.createBuffer();
 		}
 
+		Skybox* skybox = nullptr;
+		if(inputs.view.getRenderSettings().enableSkybox)
+			skybox = sceneInfo.skybox;
+
 		// Prepare refl. probe param buffer
 		ReflProbeParamBuffer reflProbeParamBuffer;
-		reflProbeParamBuffer.populate(sceneInfo.skybox, visibleReflProbeData.getNumProbes(), sceneInfo.reflProbeCubemapsTex, 
+		reflProbeParamBuffer.populate(skybox, visibleReflProbeData.getNumProbes(), sceneInfo.reflProbeCubemapsTex, 
 			viewProps.capturingReflections);
 
 		SPtr<Texture> skyFilteredRadiance;
-		if(sceneInfo.skybox)
-			skyFilteredRadiance = sceneInfo.skybox->getFilteredRadiance();
+		if(skybox)
+			skyFilteredRadiance = skybox->getFilteredRadiance();
 
 		// Prepare objects for rendering
 		const VisibilityInfo& visibility = inputs.view.getVisibilityMasks();
@@ -1274,7 +1286,10 @@ namespace bs { namespace ct
 
 	void RCNodeSkybox::render(const RenderCompositorNodeInputs& inputs)
 	{
-		Skybox* skybox = inputs.scene.skybox;
+		Skybox* skybox = nullptr;
+		if(inputs.view.getRenderSettings().enableSkybox)
+			skybox = inputs.scene.skybox;
+
 		SPtr<Texture> radiance = skybox ? skybox->getTexture() : nullptr;
 
 		if (radiance != nullptr)
