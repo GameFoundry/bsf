@@ -14,6 +14,9 @@
 #include "Renderer/BsRenderer.h"
 #include "Scene/BsSceneManager.h"
 
+// Do not delete this, it prevents massive problems with windows headers across the codebase
+#include "Private/Win32/BsWin32Undefs.h"
+
 namespace bs
 {
 	const float CameraBase::INFINITE_FAR_PLANE_ADJUST = 0.00001f;

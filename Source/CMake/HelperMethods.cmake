@@ -441,6 +441,18 @@ function(find_clang_invalid_libc_pch_headers banned_files)
 	set(${banned_files} ${inttypes_c_location} ${inttypes_cxx_location} PARENT_SCOPE)
 endfunction()
 
+function(find_windowsh banned_files)
+	if (NOT MSVC)
+		return()
+	endif()
+
+	find_file(windowsh_location "Windows.h")
+
+	message(STATUS ${windowsh_location})
+
+	set(${banned_files} ${windowsh_location} PARENT_SCOPE)
+endfunction()
+
 macro(enable_colored_output)
 	if (CMAKE_GENERATOR STREQUAL "Ninja")
 		check_cxx_compiler_flag("-fdiagnostics-color=always" F_DIAGNOSTIC_COLOR_ALWAYS)
