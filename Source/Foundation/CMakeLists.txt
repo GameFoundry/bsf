@@ -118,5 +118,5 @@ set_directory_properties(PROPERTIES
 set_directory_properties(PROPERTIES
 	COTIRE_PREFIX_HEADER_INCLUDE_PRIORITY_PATH "${windowsh}")
 
-cotire(bsf)
+conditional_cotire(bsf)
 

@@ -26,4 +26,4 @@ set_property(TARGET bsfFontImporter PROPERTY FOLDER Plugins)
 # Install
 install_bsf_target(bsfFontImporter)
 
-cotire(bsfFontImporter)
+conditional_cotire(bsfFontImporter)

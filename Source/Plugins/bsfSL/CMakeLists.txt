@@ -66,4 +66,4 @@ install_bsf_target(bsfSL)
 set_directory_properties(PROPERTIES
     COTIRE_PREFIX_HEADER_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../;${inttypes_loc}")
 
-cotire(bsfSL)
+conditional_cotire(bsfSL)

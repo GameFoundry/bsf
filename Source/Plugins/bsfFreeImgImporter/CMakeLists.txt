@@ -26,4 +26,4 @@ set_property(TARGET bsfFreeImgImporter PROPERTY FOLDER Plugins)
 # Install
 install_bsf_target(bsfFreeImgImporter)
 
-cotire(bsfFreeImgImporter)
+conditional_cotire(bsfFreeImgImporter)

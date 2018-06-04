@@ -20,4 +20,4 @@ set_property(TARGET bsfRenderBeast PROPERTY FOLDER Plugins)
 # Install
 install_bsf_target(bsfRenderBeast)
 
-cotire(bsfRenderBeast)
+conditional_cotire(bsfRenderBeast)

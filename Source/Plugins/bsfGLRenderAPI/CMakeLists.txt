@@ -47,4 +47,4 @@ message(STATUS "X11 Include: ${X11_INCLUDE_DIR}")
 set_directory_properties(PROPERTIES
     COTIRE_PREFIX_HEADER_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../;${X11_INCLUDE_DIR}/X11;${OPENGL_INCLUDE_DIR}/GL")
 
-cotire(bsfGLRenderAPI)
+conditional_cotire(bsfGLRenderAPI)

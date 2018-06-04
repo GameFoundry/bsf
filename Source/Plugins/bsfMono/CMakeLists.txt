@@ -27,4 +27,4 @@ target_link_libraries(MonoExec ${mono_LIBRARIES})
 # IDE specific
 set_property(TARGET bsfMono PROPERTY FOLDER Plugins)
 
-cotire(bsfMono)
+conditional_cotire(bsfMono)

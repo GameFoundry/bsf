@@ -31,4 +31,4 @@ if(RENDER_API_MODULE MATCHES "DirectX 11")
 	install_bsf_target(bsfD3D11RenderAPI)
 endif()
 
-cotire(bsfD3D11RenderAPI)
+conditional_cotire(bsfD3D11RenderAPI)

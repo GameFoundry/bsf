@@ -28,4 +28,4 @@ set_property(TARGET bsfPhysX PROPERTY FOLDER Plugins)
 # Install
 install_bsf_target(bsfPhysX)
 
-cotire(bsfPhysX)
+conditional_cotire(bsfPhysX)

@@ -34,4 +34,4 @@ if(AUDIO_MODULE MATCHES "FMOD")
 	install_bsf_target(bsfFMOD)
 endif()
 
-cotire(bsfFMOD)
+conditional_cotire(bsfFMOD)

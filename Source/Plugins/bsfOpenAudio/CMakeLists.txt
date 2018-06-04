@@ -43,4 +43,4 @@ if(AUDIO_MODULE MATCHES "OpenAudio")
 	install_bsf_target(bsfOpenAudio)
 endif()
 
-cotire(bsfOpenAudio)
+conditional_cotire(bsfOpenAudio)

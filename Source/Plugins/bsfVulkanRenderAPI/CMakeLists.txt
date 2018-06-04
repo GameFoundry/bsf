@@ -32,4 +32,4 @@ if(RENDER_API_MODULE MATCHES "Vulkan")
 	install_bsf_target(bsfVulkanRenderAPI)
 endif()
 
-cotire(bsfVulkanRenderAPI)
+conditional_cotire(bsfVulkanRenderAPI)
