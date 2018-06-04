@@ -84,7 +84,7 @@ configure_file("${BSF_SOURCE_DIR}/CMake/BsFrameworkConfig.h.in" "${BSF_SOURCE_DI
 
 ## Set files disallowed in precompiled headers
 set_directory_properties(PROPERTIES
-    COTIRE_PREFIX_HEADER_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR};/usr/include/clang")
+    COTIRE_PREFIX_HEADER_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Sub-directories
 ## Foundation

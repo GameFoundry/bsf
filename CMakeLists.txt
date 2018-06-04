@@ -16,6 +16,10 @@ include(Source/CMake/Properties.cmake)
 include(Source/CMake/FindPackageOrBuild.cmake)
 include(Source/CMake/HelperMethods.cmake)
 
+if(ENABLE_COTIRE)
+	include(Source/CMake/cotire.cmake)
+endif()
+
 enable_colored_output()
 
 add_subdirectory(Source)

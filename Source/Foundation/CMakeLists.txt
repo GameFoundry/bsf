@@ -114,7 +114,8 @@ find_windowsh(windowsh)
 set_directory_properties(PROPERTIES
 	COTIRE_PREFIX_HEADER_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR};${X11_INCLUDE_DIR}/X11;${inttypes_loc};")
 set_directory_properties(PROPERTIES
-	COTIRE_PREFIX_HEADER_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bsfUtility/Private/Win32/BsWin32Undefs.h")
+	COTIRE_PREFIX_HEADER_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bsfUtility/Private/Win32/BsWindows.h")
+# Things that pull in windows.h as a transitive dependency need near/far to be defined, Pull windows in first by itself
 set_directory_properties(PROPERTIES
 	COTIRE_PREFIX_HEADER_INCLUDE_PRIORITY_PATH "${windowsh}")
 

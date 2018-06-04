@@ -8,7 +8,7 @@
 #include "FileSystem/BsDataStream.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32 && BS_COMPILER == BS_COMPILER_MSVC
-#include <windows.h>
+#include "Private/Win32/BsWindows.h"
 #include <iostream>
 
 void logToIDEConsole(const bs::String& message)

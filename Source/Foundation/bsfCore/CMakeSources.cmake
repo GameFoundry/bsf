@@ -621,30 +621,20 @@ set(BS_CORE_INC_PLATFORM_LINUX
 )
 
 set(BS_CORE_SRC_PLATFORM_LINUX
-	# Use X11
 	"bsfCore/Private/Linux/BsLinuxPlatform.cpp"
 	"bsfCore/Private/Linux/BsLinuxWindow.cpp"
 	"bsfCore/Private/Linux/BsLinuxMouse.cpp"
 	"bsfCore/Private/Linux/BsLinuxKeyboard.cpp"
-
-	# Is special
 	"bsfCore/Private/Linux/BsLinuxDropTarget.cpp"
-
-	# Don't use X11
 	"bsfCore/Private/Linux/BsLinuxInput.cpp"
 	"bsfCore/Private/Linux/BsLinuxGamepad.cpp"
 	"bsfCore/Private/Linux/BsLinuxFolderMonitor.cpp"
 )
 
-# Force unity builds to isolate these files into their own section. 
-# COTIRE_START_NEW_UNITY_SOURCE causes the source file to be the first one included in a new file. 
-# This isolates the X11 headers which define inane things.
-set_source_files_properties ("bsfCore/Private/Linux/BsLinuxPlatform.cpp" PROPERTIES
-    COTIRE_START_NEW_UNITY_SOURCE "True")
-set_source_files_properties ("bsfCore/Private/Linux/BsLinuxInput.cpp" PROPERTIES
-    COTIRE_START_NEW_UNITY_SOURCE "True")
-set_source_files_properties ("bsfCore/Private/Linux/BsLinuxDropTarget.cpp" PROPERTIES
-    COTIRE_EXCLUDED "True")
+foreach(source ${BS_CORE_SRC_PLATFORM_LINUX} ${BS_CORE_SRC_PLATFORM_WIN32})
+	set_source_files_properties ("${source}" PROPERTIES
+			COTIRE_EXCLUDED "True")
+endforeach()
 
 set(BS_CORE_INC_PLATFORM_MACOS
 	"bsfCore/Private/MacOS/BsMacOSInput.h"
