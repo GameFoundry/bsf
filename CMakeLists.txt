@@ -16,6 +16,8 @@ include(Source/CMake/Properties.cmake)
 include(Source/CMake/FindPackageOrBuild.cmake)
 include(Source/CMake/HelperMethods.cmake)
 
+set(ENABLE_COTIRE false CACHE BOOL "Enable cotire's precompiled headers and unity build support (experimental)")
+
 if(ENABLE_COTIRE)
 	include(Source/CMake/cotire.cmake)
 endif()
