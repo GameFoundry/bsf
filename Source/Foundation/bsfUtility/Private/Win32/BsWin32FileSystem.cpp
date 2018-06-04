@@ -4,7 +4,7 @@
 #include "Error/BsException.h"
 #include "FileSystem/BsDataStream.h"
 #include "Debug/BsDebug.h"
-#include "Private/Win32/BsWindows.h"
+#include <windows.h>
 #include "String/BsUnicode.h"
 
 namespace bs

@@ -3,7 +3,7 @@
 #include "Prerequisites/BsPrerequisitesUtil.h"
 #include "Private/Win32/BsWin32PlatformUtility.h"
 #include "Image/BsColor.h"
-#include "Private/Win32/BsWindows.h"
+#include <windows.h>
 #include <iphlpapi.h>
 #include <VersionHelpers.h>
 #include <intrin.h>

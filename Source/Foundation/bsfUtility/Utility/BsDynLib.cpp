@@ -8,7 +8,7 @@
 	#if !defined(NOMINMAX) && defined(_MSC_VER)
 		#define NOMINMAX // required to stop windows.h messing up std::min
 	#endif
-	#include "Private/Win32/BsWindows.h"
+	#include <windows.h>
 #endif
 
 #if BS_PLATFORM == BS_PLATFORM_OSX
