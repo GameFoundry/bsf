@@ -441,26 +441,41 @@ function(find_clang_invalid_libc_pch_headers banned_files)
 	set(${banned_files} ${inttypes_c_location} ${inttypes_cxx_location} PARENT_SCOPE)
 endfunction()
 
-function(find_windowsh banned_files)
+function(find_windows_system_headers paths files_to_find)
 	if (NOT MSVC)
 		return()
 	endif()
 
-	file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/windows.h.cxx"
-	           "#include <windows.h>")
+	set(file_string "")
 
-	execute_process(COMMAND ${CMAKE_CXX_COMPILER} "${CMAKE_CURRENT_BINARY_DIR}/windows.h.cxx" /nologo /showIncludes /P "/Fi${CMAKE_CURRENT_BINARY_DIR}/windows.h.cxx.i"
+	foreach (file ${files_to_find})
+		set(file_string "${file_string}\n#include<${file}>")
+	endforeach()
+
+	file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/default_headers.h.cxx"
+	           ${file_string})
+
+	execute_process(COMMAND ${CMAKE_CXX_COMPILER} "${CMAKE_CURRENT_BINARY_DIR}/default_headers.h.cxx" /nologo /showIncludes /P "/Fi${CMAKE_CURRENT_BINARY_DIR}/default_headers.h.cxx.i"
 					ERROR_VARIABLE show_includes)
+
+	file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/default_headers.h.cxx.i")
 
 	string(REGEX MATCHALL "Note: including file:\\w*([^\n]*)" include_list "${show_includes}")
 
-	foreach(file ${include_list})
-		string(REGEX REPLACE "Note: including file:\\w*([^\n]*)" "\\1" file_path "${show_includes}")
+	set(to_return "")
+
+	foreach(entry ${include_list})
+		string(REGEX REPLACE "Note: including file:\\w*([^\n]*)" "\\1" entry_path "${entry}")
+		foreach (file ${files_to_find})
+			if (${entry_path} MATCHES "${file}")
+				string(STRIP ${entry_path} entry_path_stripped)
+				message(STATUS "${file} found at: ${entry_path_stripped}")
+				set(to_return ${to_return} ${entry_path_stripped})
+			endif()
+		endforeach()
 	endforeach()
 
-	message(STATUS "${include_list}")
-
-	#set(${banned_files} ${windowsh_location} PARENT_SCOPE)
+	set(${paths} ${to_return} PARENT_SCOPE)
 endfunction()
 
 macro(enable_colored_output)
@@ -476,4 +491,14 @@ macro(conditional_cotire)
 	if(COMMAND cotire)
 		cotire(${ARGN})
 	endif()
+endmacro()
+
+macro(esape_windows_path ret_var) 
+	set(to_return "")
+	foreach(arg ${ARGN})
+		string(REPLACE "\\" "\\\\" escaped_arg ${arg})
+		set(to_return ${to_return} ${escaped_arg})
+	endforeach()
+
+	set(${ret_var} ${to_return})
 endmacro()
