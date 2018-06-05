@@ -446,7 +446,7 @@ function(find_windows_system_headers paths files_to_find)
 		return()
 	endif()
 
-	set(file_string "")
+	set(file_string "int main(){}\n")
 
 	foreach (file ${files_to_find})
 		set(file_string "${file_string}\n#include<${file}>")
@@ -455,12 +455,20 @@ function(find_windows_system_headers paths files_to_find)
 	file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/default_headers.h.cxx"
 	           ${file_string})
 
-	execute_process(COMMAND ${CMAKE_CXX_COMPILER} "${CMAKE_CURRENT_BINARY_DIR}/default_headers.h.cxx" /nologo /showIncludes /P "/Fi${CMAKE_CURRENT_BINARY_DIR}/default_headers.h.cxx.i"
-					ERROR_VARIABLE show_includes)
+	if (COTIRE_DEBUG)
+		message(STATUS "Compiling the following file to find ${files_to_find}: " ${file_string})
+	endif()
 
-	file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/default_headers.h.cxx.i")
+	try_compile(try_compile_result "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/default_headers.h.cxx"
+            COMPILE_DEFINITIONS /showIncludes
+            OUTPUT_VARIABLE try_compile_output
+            )
 
-	string(REGEX MATCHALL "Note: including file:\\w*([^\n]*)" include_list "${show_includes}")
+	if (COTIRE_DEBUG)
+		message(STATUS "${try_compile_output}")
+	endif()
+
+	string(REGEX MATCHALL "Note: including file:\\w*([^\n]*)" include_list "${try_compile_output}")
 
 	set(to_return "")
 
@@ -470,7 +478,8 @@ function(find_windows_system_headers paths files_to_find)
 			if (${entry_path} MATCHES "${file}")
 				string(STRIP ${entry_path} entry_path_stripped)
 				message(STATUS "${file} found at: ${entry_path_stripped}")
-				set(to_return ${to_return} ${entry_path_stripped})
+				file(TO_CMAKE_PATH "${entry_path_stripped}" entry_path_stripped_slashes)
+				set(to_return ${to_return} ${entry_path_stripped_slashes})
 			endif()
 		endforeach()
 	endforeach()
@@ -491,14 +500,4 @@ macro(conditional_cotire)
 	if(COMMAND cotire)
 		cotire(${ARGN})
 	endif()
-endmacro()
-
-macro(esape_windows_path ret_var) 
-	set(to_return "")
-	foreach(arg ${ARGN})
-		string(REPLACE "\\" "\\\\" escaped_arg ${arg})
-		set(to_return ${to_return} ${escaped_arg})
-	endforeach()
-
-	set(${ret_var} ${to_return})
 endmacro()
