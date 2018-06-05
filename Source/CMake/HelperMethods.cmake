@@ -446,11 +446,21 @@ function(find_windowsh banned_files)
 		return()
 	endif()
 
-	find_file(windowsh_location "Windows.h")
+	file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/windows.h.cxx"
+	           "#include <windows.h>")
 
-	message(STATUS ${windowsh_location})
+	execute_process(COMMAND ${CMAKE_CXX_COMPILER} "${CMAKE_CURRENT_BINARY_DIR}/windows.h.cxx" /nologo /showIncludes /P "/Fi${CMAKE_CURRENT_BINARY_DIR}/windows.h.cxx.i"
+					ERROR_VARIABLE show_includes)
 
-	set(${banned_files} ${windowsh_location} PARENT_SCOPE)
+	string(REGEX MATCHALL "Note: including file:\\w*([^\n]*)" include_list "${show_includes}")
+
+	foreach(file ${include_list})
+		string(REGEX REPLACE "Note: including file:\\w*([^\n]*)" "\\1" file_path "${show_includes}")
+	endforeach()
+
+	message(STATUS "${include_list}")
+
+	#set(${banned_files} ${windowsh_location} PARENT_SCOPE)
 endfunction()
 
 macro(enable_colored_output)
