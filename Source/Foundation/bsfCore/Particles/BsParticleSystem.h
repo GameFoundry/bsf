@@ -645,7 +645,7 @@ namespace bs
 	class BS_CORE_EXPORT ParticleSystem final : public IReflectable, public CoreObject, public SceneActor, public INonCopyable
 	{
 	public:
-		~ParticleSystem();
+		~ParticleSystem() final;
 
 		void addEmitter(UPtr<ParticleEmitter> emitter)
 		{
@@ -745,7 +745,7 @@ namespace bs
 		HMaterial mMaterial;
 
 		Random mRandom;
-		UPtr<ParticleSet> mParticleSet;
+		ParticleSet* mParticleSet;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -824,6 +824,7 @@ namespace bs
 		struct Members;
 	public:
 		ParticlesManager();
+		~ParticlesManager();
 
 		ParticleRenderDataGroup* update();
 
@@ -833,7 +834,7 @@ namespace bs
 		UINT32 registerParticleSystem(ParticleSystem* system);
 		void unregisterParticleSystem(ParticleSystem* system);
 
-		UPtr<Members> m;
+		Members* m;
 
 		UINT32 mNextId = 1;
 		UnorderedSet<ParticleSystem*> mSystems;

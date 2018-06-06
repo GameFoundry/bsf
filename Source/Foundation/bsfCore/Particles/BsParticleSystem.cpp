@@ -1634,7 +1634,7 @@ namespace bs
 	static constexpr UINT32 INITIAL_PARTICLE_CAPACITY = 1000;
 
 	ParticleSystem::ParticleSystem()
-		: mParticleSet(bs_unique_ptr_new<ParticleSet>(INITIAL_PARTICLE_CAPACITY))
+		: mParticleSet(bs_new<ParticleSet>(INITIAL_PARTICLE_CAPACITY))
 	{
 		// TODO - Determine initial capacity based on existing emitters (if deserialized and emitters and known beforehand)
 		// - Or just delay this creation until first call to simulate()
@@ -1645,6 +1645,8 @@ namespace bs
 	ParticleSystem::~ParticleSystem()
 	{
 		ParticlesManager::instance().unregisterParticleSystem(this);
+
+		bs_delete(mParticleSet);
 	}
 
 	void ParticleSystem::simulate(float timeDelta, ParticleRenderData& renderData)
@@ -1833,9 +1835,12 @@ namespace bs
 	};
 
 	ParticlesManager::ParticlesManager()
-		:m(bs_unique_ptr_new<Members>())
+		:m(bs_new<Members>())
+	{ }
+
+	ParticlesManager::~ParticlesManager()
 	{
-		
+		bs_delete(m);
 	}
 
 	ParticleRenderDataGroup* ParticlesManager::update()
