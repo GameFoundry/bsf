@@ -3,19 +3,18 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "Allocators/BsGroupAlloc.h"
 #include "Image/BsColor.h"
 #include "Image/BsColorGradient.h"
 #include "Math/BsVector3.h"
 #include "Animation/BsAnimationCurve.h"
-#include "Utility/BsBitwise.h"
 #include "Math/BsRandom.h"
 #include "Scene/BsSceneActor.h"
 #include "CoreThread/BsCoreObject.h"
 #include "Utility/BsModule.h"
-#include "Math/BsConvexVolume.h"
 #include "CoreThread/BsCoreThread.h"
 #include "Image/BsPixelData.h"
+#include "Math/BsAABox.h"
+#include "Utility/BsBitwise.h"
 
 namespace bs 
 {
@@ -585,7 +584,12 @@ namespace bs
 		PixelData positionAndRotation;
 		PixelData color;
 		PixelData size;
+
+		UINT32 numParticles;
+		AABox bounds;
 	};
+
+	namespace ct { class ParticleSystem; }
 
 	/** @} */
 
@@ -594,9 +598,23 @@ namespace bs
 	 */
 
 	// TODO - Doc
+	enum class ParticleOrientation
+	{
+		ViewPlane,
+		ViewPosition,
+		Axis
+	};
+
+	// TODO - Doc
 	class BS_CORE_EXPORT ParticleEmitter : public ParticleModule
 	{
 	public:
+		ParticleEmitter()
+			:mShape(bs_unique_ptr<ParticleEmitterShape>(nullptr))
+		{
+			
+		}
+
 		void setShape(UPtr<ParticleEmitterShape> shape) { mShape = std::move(shape); }
 		ParticleEmitterShape* getShape() const { return mShape.get(); }
 
@@ -610,7 +628,17 @@ namespace bs
 	class BS_CORE_EXPORT ParticleEvolver : public ParticleModule
 	{
 	public:
+		ParticleEvolver() = default;
+		virtual ~ParticleEvolver() = default;
+
 		virtual void evolve(Random& random, ParticleSet& set) const = 0;
+	};
+
+	// TODO - Debug only
+	class BS_CORE_EXPORT ParticleDebugEvolver : public ParticleEvolver
+	{
+	public:
+		void evolve(Random& random, ParticleSet& set) const;
 	};
 
 	// TODO - Doc
@@ -674,16 +702,38 @@ namespace bs
 				mEvolvers.erase(iterFind);
 		}
 
+		void setMaterial(const HMaterial& material)
+		{
+			mMaterial = material;
+			_markCoreDirty();
+		}
+
+		const HMaterial& getMaterial() const { return mMaterial; }
+
 		void simulate(float timeDelta, ParticleRenderData& output); // TODO - Mark as internal
+
+		AABox calculateBounds() const;
+
+		/**	Retrieves an implementation of the particle system usable only from the core thread. */
+		SPtr<ct::ParticleSystem> getCore() const;
 
 		/** Creates a new empty ParticleSystem object. */
 		static SPtr<ParticleSystem> create();
 	private:
-		friend class ParticleSystemManager;
+		friend class ParticlesManager;
 
 		friend class ParticleSystemRTTI;
 
 		ParticleSystem();
+
+		/** @copydoc CoreObject::createCore */
+		SPtr<ct::CoreObject> createCore() const override;
+
+		/** @copydoc SceneActor::_markCoreDirty */
+		void _markCoreDirty(ActorDirtyFlag flag = ActorDirtyFlag::Everything) override;
+
+		/** @copydoc CoreObject::syncToCore */
+		CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
 		/**	Creates a new ParticleSystem instance without initializing it. */
 		static SPtr<ParticleSystem> createEmpty();
@@ -692,6 +742,7 @@ namespace bs
 
 		Vector<UPtr<ParticleEmitter>> mEmitters;
 		Vector<UPtr<ParticleEvolver>> mEvolvers;
+		HMaterial mMaterial;
 
 		Random mRandom;
 		UPtr<ParticleSet> mParticleSet;
@@ -710,14 +761,71 @@ namespace bs
 		UnorderedMap<UINT32, ParticleRenderData*> data;
 	};
 
-	// TODO - Doc
-	class BS_CORE_EXPORT ParticleSystemManager final : public Module<ParticleSystemManager>
-	{
-		struct Pimpl;
-	public:
-		ParticleSystemManager();
+	/** @} */
 
-		ParticleRenderDataGroup* simulate();
+	/** @addtogroup Particles-Internal
+	 *  @{
+	 */
+
+	namespace ct
+	{
+		// TODO - Doc
+		struct ParticleTextures
+		{
+			SPtr<Texture> positionAndRotation;
+			SPtr<Texture> color;
+			SPtr<Texture> size;
+		};
+
+		// TODO - Doc
+		class BS_CORE_EXPORT ParticleSystem final : public CoreObject, public SceneActor
+		{
+		public:
+			~ParticleSystem();
+
+			/**	Sets an ID that can be used for uniquely identifying this object by the renderer. */
+			void setRendererId(UINT32 id) { mRendererId = id; }
+
+			/**	Retrieves an ID that can be used for uniquely identifying this object by the renderer. */
+			UINT32 getRendererId() const { return mRendererId; }
+
+			/** 
+			 * Returns an ID that uniquely identifies the particle system. Can be used for locating evaluated particle 
+			 * system render data in the structure output by the ParticlesManager. 
+			 */
+			UINT32 getId() const { return mId; }
+
+			void setMaterial(const SPtr<Material>& material) { mMaterial = material; }
+			const SPtr<Material>& getMaterial() const { return mMaterial; }
+
+
+			/** @copydoc CoreObject::initialize */
+			void initialize() override;
+		private:
+			friend class bs::ParticleSystem;
+
+			ParticleSystem(UINT32 id)
+				:mId(id)
+			{ }
+
+			/** @copydoc CoreObject::syncToCore */
+			void syncToCore(const CoreSyncData& data) override;
+
+			UINT32 mRendererId = 0;
+			UINT32 mId;
+
+			SPtr<Material> mMaterial;
+		};
+	}
+
+	// TODO - Doc
+	class BS_CORE_EXPORT ParticlesManager final : public Module<ParticlesManager>
+	{
+		struct Members;
+	public:
+		ParticlesManager();
+
+		ParticleRenderDataGroup* update();
 
 	private:
 		friend class ParticleSystem;
@@ -725,7 +833,7 @@ namespace bs
 		UINT32 registerParticleSystem(ParticleSystem* system);
 		void unregisterParticleSystem(ParticleSystem* system);
 
-		UPtr<Pimpl> mPimpl;
+		UPtr<Members> m;
 
 		UINT32 mNextId = 1;
 		UnorderedSet<ParticleSystem*> mSystems;

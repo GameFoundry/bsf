@@ -82,9 +82,9 @@ set(BS_ENGINE_INC_PLATFORM
 )
 
 set(BS_ENGINE_INC_RENDERER
-	"bsfEngine/Renderer/BsRenderableElement.h"
 	"bsfEngine/Renderer/BsRendererMaterial.h"
 	"bsfEngine/Renderer/BsRendererMaterialManager.h"
+	"bsfEngine/Renderer/BsRenderElement.h"
 	"bsfEngine/Renderer/BsRenderQueue.h"
 	"bsfEngine/Renderer/BsRendererUtility.h"
 )

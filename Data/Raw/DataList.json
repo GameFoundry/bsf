@@ -429,6 +429,10 @@
         {
             "Path": "ShadowDepthNormalNoPS.bsl",
             "UUID": "5335edda-c14c-0158-d73e-f880d58d0596"
+        },
+        {
+            "Path": "ParticlesUnlit.bsl",
+            "UUID": "cf6ba550-40b3-6e4e-55ab-40b3abd077f1"
         }
     ],
     "Skin": [

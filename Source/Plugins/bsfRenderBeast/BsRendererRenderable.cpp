@@ -1,19 +1,19 @@
 //************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
-#include "BsRendererObject.h"
+#include "BsRendererRenderable.h"
 
 namespace bs { namespace ct
 {
 	PerObjectParamDef gPerObjectParamDef;
 	PerCallParamDef gPerCallParamDef;
 
-	RendererObject::RendererObject()
+	RendererRenderable::RendererRenderable()
 	{
 		perObjectParamBuffer = gPerObjectParamDef.createBuffer();
 		perCallParamBuffer = gPerCallParamDef.createBuffer();
 	}
 
-	void RendererObject::updatePerObjectBuffer()
+	void RendererRenderable::updatePerObjectBuffer()
 	{
 		Matrix4 worldTransform = renderable->getMatrix();
 		Matrix4 worldNoScaleTransform = renderable->getMatrixNoScale();
@@ -25,7 +25,7 @@ namespace bs { namespace ct
 		gPerObjectParamDef.gWorldDeterminantSign.set(perObjectParamBuffer, worldTransform.determinant3x3() >= 0.0f ? 1.0f : -1.0f);
 	}
 
-	void RendererObject::updatePerCallBuffer(const Matrix4& viewProj, bool flush)
+	void RendererRenderable::updatePerCallBuffer(const Matrix4& viewProj, bool flush)
 	{
 		Matrix4 worldViewProjMatrix = viewProj * renderable->getMatrix();
 

@@ -12,7 +12,7 @@ namespace bs { namespace ct
 	 */
 
 	/** Contains all information needed for rendering a single sub-mesh. Closely tied with Renderer. */
-	class BS_EXPORT RenderableElement
+	class BS_EXPORT RenderElement
 	{
 	public:
 		/**	Reference to the mesh to render. */
@@ -23,6 +23,15 @@ namespace bs { namespace ct
 
 		/**	Material to render the mesh with. */
 		SPtr<Material> material;
+
+		/** Index of the technique in the material to render the element with. */
+		UINT32 techniqueIdx;
+
+		/** All GPU parameters from the material used by the renderable. */
+		SPtr<GpuParamsSet> params;
+
+		/** Renderer specific value that identifies the type of this renderable element. */
+		UINT32 type = 0;
 	};
 
 	/** @} */

@@ -5,8 +5,10 @@
 #include "BsRenderBeastPrerequisites.h"
 #include "BsRendererLight.h"
 #include "BsRendererView.h"
+#include "BsRendererParticles.h"
 #include "Shading/BsLightProbes.h"
 #include "Utility/BsSamplerOverrides.h"
+#include "Particles/BsParticleSystem.h"
 
 namespace bs 
 { 
@@ -32,7 +34,7 @@ namespace bs
 		UnorderedMap<const Camera*, UINT32> cameraToView;
 		
 		// Renderables
-		Vector<RendererObject*> renderables;
+		Vector<RendererRenderable*> renderables;
 		Vector<CullInfo> renderableCullInfos;
 
 		// Lights
@@ -50,6 +52,10 @@ namespace bs
 
 		// Light probes (indirect lighting)
 		LightProbes lightProbes;
+
+		// Particles
+		Vector<RendererParticles> particleSystems;
+		Vector<AABox> particleSystemBounds;
 
 		// Sky
 		Skybox* skybox = nullptr;
@@ -126,6 +132,15 @@ namespace bs
 		/** Removes a skybox from the scene. */
 		void unregisterSkybox(Skybox* skybox);
 
+		/** Registers a new particle system in the scene. */
+		void registerParticleSystem(ParticleSystem* particleSystem);
+
+		/** Updates information about a previously registered particle system. */
+		void updateParticleSystem(ParticleSystem* particleSystem);
+
+		/** Removes a particle system from the scene. */
+		void unregisterParticleSystem(ParticleSystem* particleSystem);
+
 		/** Returns a container with all relevant scene objects. */
 		const SceneInfo& getSceneInfo() const { return mInfo; }
 
@@ -152,6 +167,9 @@ namespace bs
 		 * @param[in]	frameInfo	Global information describing the current frame.
 		 */
 		void prepareRenderable(UINT32 idx, const FrameInfo& frameInfo);
+
+		/** Updates the bounds for all the particle systems from the provided object. */
+		void updateParticleSystemBounds(const ParticleRenderDataGroup* particleRenderData);
 
 		/** Returns a modifiable version of SceneInfo. Only to be used by friends who know what they are doing. */
 		SceneInfo& _getSceneInfo() { return mInfo; }

@@ -157,7 +157,7 @@ namespace bs { namespace ct
 		mTransparentQueue->clear();
 	}
 
-	void RendererView::determineVisible(const Vector<RendererObject*>& renderables, const Vector<CullInfo>& cullInfos,
+	void RendererView::determineVisible(const Vector<RendererRenderable*>& renderables, const Vector<CullInfo>& cullInfos,
 		Vector<bool>* visibility)
 	{
 		mVisibility.renderables.clear();
@@ -168,29 +168,6 @@ namespace bs { namespace ct
 
 		calculateVisibility(cullInfos, mVisibility.renderables);
 
-		// Update per-object param buffers and queue render elements
-		for(UINT32 i = 0; i < (UINT32)cullInfos.size(); i++)
-		{
-			if (!mVisibility.renderables[i])
-				continue;
-
-			const AABox& boundingBox = cullInfos[i].bounds.getBox();
-			float distanceToCamera = (mProperties.viewOrigin - boundingBox.getCenter()).length();
-
-			for (auto& renderElem : renderables[i]->elements)
-			{
-				// Note: I could keep renderables in multiple separate arrays, so I don't need to do the check here
-				ShaderFlags shaderFlags = renderElem.material->getShader()->getFlags();
-
-				if (shaderFlags.isSet(ShaderFlag::Transparent))
-					mTransparentQueue->add(&renderElem, distanceToCamera);
-				else if (shaderFlags.isSet(ShaderFlag::Forward))
-					mForwardOpaqueQueue->add(&renderElem, distanceToCamera);
-				else
-					mDeferredOpaqueQueue->add(&renderElem, distanceToCamera);
-			}
-		}
-
 		if(visibility != nullptr)
 		{
 			for (UINT32 i = 0; i < (UINT32)renderables.size(); i++)
@@ -200,10 +177,28 @@ namespace bs { namespace ct
 				(*visibility)[i] = visible || mVisibility.renderables[i];
 			}
 		}
+	}
 
-		mForwardOpaqueQueue->sort();
-		mDeferredOpaqueQueue->sort();
-		mTransparentQueue->sort();
+	void RendererView::determineVisible(const Vector<RendererParticles>& particleSystems, const Vector<AABox>& bounds, 
+		Vector<bool>* visibility)
+	{
+		mVisibility.particleSystems.clear();
+		mVisibility.particleSystems.resize(particleSystems.size(), false);
+
+		if (mRenderSettings->overlayOnly)
+			return;
+
+		calculateVisibility(bounds, mVisibility.particleSystems);
+
+		if(visibility != nullptr)
+		{
+			for (UINT32 i = 0; i < (UINT32)particleSystems.size(); i++)
+			{
+				bool visible = (*visibility)[i];
+
+				(*visibility)[i] = visible || mVisibility.particleSystems[i];
+			}
+		}
 	}
 
 	void RendererView::determineVisible(const Vector<RendererLight>& lights, const Vector<Sphere>& bounds, 
@@ -295,6 +290,51 @@ namespace bs { namespace ct
 			if (worldFrustum.intersects(bounds[i]))
 				visibility[i] = true;
 		}
+	}
+
+	void RendererView::queueRenderElements(const SceneInfo& sceneInfo)
+	{
+		if (mRenderSettings->overlayOnly)
+			return;
+
+		// Update per-object param buffers and queue render elements
+		for(UINT32 i = 0; i < (UINT32)sceneInfo.renderables.size(); i++)
+		{
+			if (!mVisibility.renderables[i])
+				continue;
+
+			const AABox& boundingBox = sceneInfo.renderableCullInfos[i].bounds.getBox();
+			const float distanceToCamera = (mProperties.viewOrigin - boundingBox.getCenter()).length();
+
+			for (auto& renderElem : sceneInfo.renderables[i]->elements)
+			{
+				// Note: I could keep renderables in multiple separate arrays, so I don't need to do the check here
+				ShaderFlags shaderFlags = renderElem.material->getShader()->getFlags();
+
+				if (shaderFlags.isSet(ShaderFlag::Transparent))
+					mTransparentQueue->add(&renderElem, distanceToCamera);
+				else if (shaderFlags.isSet(ShaderFlag::Forward))
+					mForwardOpaqueQueue->add(&renderElem, distanceToCamera);
+				else
+					mDeferredOpaqueQueue->add(&renderElem, distanceToCamera);
+			}
+		}
+
+		// Queue render elements
+		for(UINT32 i = 0; i < (UINT32)sceneInfo.particleSystems.size(); i++)
+		{
+			if (!mVisibility.particleSystems[i])
+				continue;
+
+			const AABox& boundingBox = sceneInfo.particleSystemBounds[i];
+			const float distanceToCamera = (mProperties.viewOrigin - boundingBox.getCenter()).length();
+
+			mTransparentQueue->add(&sceneInfo.particleSystems[i].renderElement, distanceToCamera);
+		}
+
+		mForwardOpaqueQueue->sort();
+		mDeferredOpaqueQueue->sort();
+		mTransparentQueue->sort();
 	}
 
 	Vector2 RendererView::getDeviceZToViewZ(const Matrix4& projMatrix)
@@ -531,7 +571,7 @@ namespace bs { namespace ct
 
 	void RendererViewGroup::determineVisibility(const SceneInfo& sceneInfo)
 	{
-		UINT32 numViews = (UINT32)mViews.size();
+		const auto numViews = (UINT32)mViews.size();
 
 		// Early exit if no views render scene geometry
 		bool allViewsOverlay = false;
@@ -547,19 +587,29 @@ namespace bs { namespace ct
 		if (allViewsOverlay)
 			return;
 
-		// Generate render queues per camera
+		// Calculate renderable visibility per view
 		mVisibility.renderables.resize(sceneInfo.renderables.size(), false);
 		mVisibility.renderables.assign(sceneInfo.renderables.size(), false);
 
+		mVisibility.particleSystems.resize(sceneInfo.particleSystems.size(), false);
+		mVisibility.particleSystems.assign(sceneInfo.particleSystems.size(), false);
+
 		for(UINT32 i = 0; i < numViews; i++)
+		{
 			mViews[i]->determineVisible(sceneInfo.renderables, sceneInfo.renderableCullInfos, &mVisibility.renderables);
+			mViews[i]->determineVisible(sceneInfo.particleSystems, sceneInfo.particleSystemBounds, &mVisibility.particleSystems);
+		}
+		
+		// Generate render queues per camera
+		for(UINT32 i = 0; i < numViews; i++)
+			mViews[i]->queueRenderElements(sceneInfo);
 
 		// Calculate light visibility for all views
-		UINT32 numRadialLights = (UINT32)sceneInfo.radialLights.size();
+		const auto numRadialLights = (UINT32)sceneInfo.radialLights.size();
 		mVisibility.radialLights.resize(numRadialLights, false);
 		mVisibility.radialLights.assign(numRadialLights, false);
 
-		UINT32 numSpotLights = (UINT32)sceneInfo.spotLights.size();
+		const auto numSpotLights = (UINT32)sceneInfo.spotLights.size();
 		mVisibility.spotLights.resize(numSpotLights, false);
 		mVisibility.spotLights.assign(numSpotLights, false);
 
@@ -576,7 +626,7 @@ namespace bs { namespace ct
 		}
 
 		// Calculate refl. probe visibility for all views
-		UINT32 numProbes = (UINT32)sceneInfo.reflProbes.size();
+		const auto numProbes = (UINT32)sceneInfo.reflProbes.size();
 		mVisibility.reflProbes.resize(numProbes, false);
 		mVisibility.reflProbes.assign(numProbes, false);
 
@@ -600,7 +650,7 @@ namespace bs { namespace ct
 		mVisibleLightData.update(sceneInfo, *this);
 		mVisibleReflProbeData.update(sceneInfo, *this);
 
-		bool supportsClusteredForward = gRenderBeast()->getFeatureSet() == RenderBeastFeatureSet::Desktop;
+		const bool supportsClusteredForward = gRenderBeast()->getFeatureSet() == RenderBeastFeatureSet::Desktop;
 		if(supportsClusteredForward)
 		{
 			for (UINT32 i = 0; i < numViews; i++)

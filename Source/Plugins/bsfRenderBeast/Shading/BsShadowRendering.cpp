@@ -11,6 +11,7 @@
 #include "Utility/BsBitwise.h"
 #include "RenderAPI/BsVertexDataDesc.h"
 #include "Renderer/BsRenderer.h"
+#include "BsRendererRenderable.h"
 
 namespace bs { namespace ct
 {
@@ -447,14 +448,14 @@ namespace bs { namespace ct
 			Command()
 			{ }
 
-			Command(BeastRenderableElement* element)
+			Command(RenderableElement* element)
 				:element(element), isElement(true)
 			{ }
 
 			union
 			{
-				BeastRenderableElement* element;
-				RendererObject* renderable;
+				RenderableElement* element;
+				RendererRenderable* renderable;
 			};
 
 
@@ -485,7 +486,7 @@ namespace bs { namespace ct
 					Command renderableCommand;
 					renderableCommand.mask = 0;
 
-					RendererObject* renderable = sceneInfo.renderables[i];
+					RendererRenderable* renderable = sceneInfo.renderables[i];
 					renderableCommand.isElement = false;
 					renderableCommand.renderable = renderable;
 
@@ -522,7 +523,7 @@ namespace bs { namespace ct
 					{
 						if (command.isElement)
 						{
-							const BeastRenderableElement& element = *command.element;
+							const RenderableElement& element = *command.element;
 
 							if (element.morphVertexDeclaration == nullptr)
 								gRendererUtility().draw(element.mesh, element.subMesh);
@@ -571,7 +572,7 @@ namespace bs { namespace ct
 
 		void bindRenderable(ShadowRenderQueue::Command& command) const
 		{
-			RendererObject* renderable = command.renderable;
+			RendererRenderable* renderable = command.renderable;
 
 			for (UINT32 j = 0; j < 6; j++)
 				gShadowCubeMasksDef.gFaceMasks.set(shadowCubeMasksBuffer, (command.mask & (1 << j)), j);
@@ -614,7 +615,7 @@ namespace bs { namespace ct
 
 		void bindRenderable(ShadowRenderQueue::Command& command) const
 		{
-			RendererObject* renderable = command.renderable;
+			RendererRenderable* renderable = command.renderable;
 
 			material->setPerObjectBuffer(renderable->perObjectParamBuffer);
 		}
@@ -651,7 +652,7 @@ namespace bs { namespace ct
 
 		void bindRenderable(ShadowRenderQueue::Command& command) const
 		{
-			RendererObject* renderable = command.renderable;
+			RendererRenderable* renderable = command.renderable;
 
 			material->setPerObjectBuffer(renderable->perObjectParamBuffer);
 		}
@@ -688,7 +689,7 @@ namespace bs { namespace ct
 
 		void bindRenderable(ShadowRenderQueue::Command& command) const
 		{
-			RendererObject* renderable = command.renderable;
+			RendererRenderable* renderable = command.renderable;
 
 			material->setPerObjectBuffer(renderable->perObjectParamBuffer);
 		}

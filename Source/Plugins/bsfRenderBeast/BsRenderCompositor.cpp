@@ -21,6 +21,7 @@
 #include "BsRenderBeastOptions.h"
 #include "BsRendererScene.h"
 #include "BsRenderBeast.h"
+#include "Particles/BsParticleSystem.h"
 
 namespace bs { namespace ct
 {
@@ -267,8 +268,8 @@ namespace bs { namespace ct
 			if (!visibility.renderables[i])
 				continue;
 
-			RendererObject* rendererObject = inputs.scene.renderables[i];
-			rendererObject->updatePerCallBuffer(viewProps.viewProjTransform);
+			RendererRenderable* rendererRenderable = inputs.scene.renderables[i];
+			rendererRenderable->updatePerCallBuffer(viewProps.viewProjTransform);
 
 			for (auto& element : inputs.scene.renderables[i]->elements)
 			{
@@ -318,7 +319,7 @@ namespace bs { namespace ct
 		const Vector<RenderQueueElement>& opaqueElements = inputs.view.getOpaqueQueue(false)->getSortedElements();
 		for (auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
 		{
-			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
+			const RenderableElement* renderElem = static_cast<const RenderableElement*>(iter->renderElem);
 
 			SPtr<Material> material = renderElem->material;
 
@@ -1241,26 +1242,74 @@ namespace bs { namespace ct
 			inputs.view.getTransparentQueue().get()
 		};
 
+		// Prepare all visible particle systems
+		const ParticleRenderDataGroup* particleData = inputs.frameInfo.perFrameData.particles;
+		ParticleTexturePool& particlesTexPool = ParticleRenderer::instance().getTexturePool();
+		if(particleData)
+		{
+			const auto numParticleSystems = (UINT32)inputs.scene.particleSystems.size();
+			for (UINT32 i = 0; i < numParticleSystems; i++)
+			{
+				if (!visibility.particleSystems[i])
+					continue;
+
+				const RendererParticles& rendererParticles = inputs.scene.particleSystems[i];
+				ParticlesRenderElement& renderElement = rendererParticles.renderElement;
+
+				const auto iterFind = particleData->data.find(rendererParticles.particleSystem->getId());
+				if (iterFind == particleData->data.end())
+					continue;
+
+				const ParticleRenderData* renderData = iterFind->second;
+				const ParticleTextures* textures = particlesTexPool.alloc(*renderData);
+
+				renderElement.positionAndRotTexture.set(textures->positionAndRotation);
+				renderElement.colorTexture.set(textures->color);
+				renderElement.sizeTexture.set(textures->size);
+				renderElement.numParticles = renderData->numParticles;
+
+				UINT32 texSize = textures->positionAndRotation->getProperties().getWidth();
+				gParticlesParamDef.gTexSize.set(rendererParticles.particlesParamBuffer, texSize);
+
+				SPtr<GpuParams> gpuParams = renderElement.params->getGpuParams();
+				for (UINT32 j = 0; j < GPT_COUNT; j++)
+				{
+					const GpuParamBinding& binding = renderElement.perCameraBindings[j];
+					if (binding.slot != (UINT32)-1)
+						gpuParams->setParamBlockBuffer(binding.set, binding.slot, inputs.view.getPerViewBuffer());
+				}
+			}
+		}
+
 		for(UINT32 i = 0; i < bs_size(queues); i++)
 		{
 			const Vector<RenderQueueElement>& elements = queues[i]->getSortedElements();
 			for (auto iter = elements.begin(); iter != elements.end(); ++iter)
 			{
-				BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
-				SPtr<Material> material = renderElem->material;
-
 				if (iter->applyPass)
-					gRendererUtility().setPass(material, iter->passIdx, renderElem->techniqueIdx);
+					gRendererUtility().setPass(iter->renderElem->material, iter->passIdx, iter->renderElem->techniqueIdx);
 
-				gRendererUtility().setPassParams(renderElem->params, iter->passIdx);
+				gRendererUtility().setPassParams(iter->renderElem->params, iter->passIdx);
 
-				if (renderElem->morphVertexDeclaration == nullptr)
-					gRendererUtility().draw(renderElem->mesh, renderElem->subMesh);
-				else
-					gRendererUtility().drawMorph(renderElem->mesh, renderElem->subMesh, renderElem->morphShapeBuffer,
-						renderElem->morphVertexDeclaration);
+				if(iter->renderElem->type == (UINT32)RenderElementType::Particle)
+				{
+					const auto& renderElem = static_cast<const ParticlesRenderElement*>(iter->renderElem);
+					ParticleRenderer::instance().drawBillboards(renderElem->numParticles);
+				}
+				else // Renderable
+				{
+					const auto& renderElem = static_cast<const RenderableElement*>(iter->renderElem);
+					if (renderElem->morphVertexDeclaration == nullptr)
+						gRendererUtility().draw(renderElem->mesh, renderElem->subMesh);
+					else
+						gRendererUtility().drawMorph(renderElem->mesh, renderElem->subMesh, renderElem->morphShapeBuffer,
+							renderElem->morphVertexDeclaration);
+				}
 			}
 		}
+
+		// Note: Perhaps delay clearing this one frame, so previous frame textures have a better chance of being done
+		particlesTexPool.clear();
 
 		// Trigger post-lighting callbacks
 		Camera* sceneCamera = inputs.view.getSceneCamera();

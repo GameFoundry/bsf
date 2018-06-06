@@ -6,6 +6,7 @@
 #include "Renderer/BsSkybox.h"
 #include "Renderer/BsReflectionProbe.h"
 #include "Renderer/BsRenderer.h"
+#include "Particles/BsParticleSystem.h"
 #include "Mesh/BsMesh.h"
 #include "Material/BsPass.h"
 #include "Material/BsGpuParamsSet.h"
@@ -223,12 +224,12 @@ namespace bs {	namespace ct
 
 		renderable->setRendererId(renderableId);
 
-		mInfo.renderables.push_back(bs_new<RendererObject>());
+		mInfo.renderables.push_back(bs_new<RendererRenderable>());
 		mInfo.renderableCullInfos.push_back(CullInfo(renderable->getBounds(), renderable->getLayer()));
 
-		RendererObject* rendererObject = mInfo.renderables.back();
-		rendererObject->renderable = renderable;
-		rendererObject->updatePerObjectBuffer();
+		RendererRenderable* rendererRenderable = mInfo.renderables.back();
+		rendererRenderable->renderable = renderable;
+		rendererRenderable->updatePerObjectBuffer();
 
 		SPtr<Mesh> mesh = renderable->getMesh();
 		if (mesh != nullptr)
@@ -238,12 +239,12 @@ namespace bs {	namespace ct
 
 			for (UINT32 i = 0; i < meshProps.getNumSubMeshes(); i++)
 			{
-				rendererObject->elements.push_back(BeastRenderableElement());
-				BeastRenderableElement& renElement = rendererObject->elements.back();
+				rendererRenderable->elements.push_back(RenderableElement());
+				RenderableElement& renElement = rendererRenderable->elements.back();
 
+				renElement.type = (UINT32)RenderElementType::Renderable;
 				renElement.mesh = mesh;
 				renElement.subMesh = meshProps.getSubMesh(i);
-				renElement.renderableId = renderableId;
 				renElement.animType = renderable->getAnimType();
 				renElement.animationId = renderable->getAnimationId();
 				renElement.morphShapeVersion = 0;
@@ -310,6 +311,7 @@ namespace bs {	namespace ct
 
 				renElement.techniqueIdx = techniqueIdx;
 
+#if BS_DEBUG_MODE
 				// Validate mesh <-> shader vertex bindings
 				if (renElement.material != nullptr)
 				{
@@ -351,6 +353,7 @@ namespace bs {	namespace ct
 						}
 					}
 				}
+#endif
 
 				// Generate or assigned renderer specific data for the material
 				renElement.params = renElement.material->createParamsSet(techniqueIdx);
@@ -379,7 +382,7 @@ namespace bs {	namespace ct
 		}
 
 		// Prepare all parameter bindings
-		for(auto& element : rendererObject->elements)
+		for(auto& element : rendererRenderable->elements)
 		{
 			SPtr<Shader> shader = element.material->getShader();
 			if (shader == nullptr)
@@ -393,8 +396,8 @@ namespace bs {	namespace ct
 			// Note: Perhaps perform buffer validation to ensure expected buffer has the same size and layout as the 
 			// provided buffer, and show a warning otherwise. But this is perhaps better handled on a higher level.
 			gpuParams->setParamBlockBuffer("PerFrame", mPerFrameParamBuffer);
-			gpuParams->setParamBlockBuffer("PerObject", rendererObject->perObjectParamBuffer);
-			gpuParams->setParamBlockBuffer("PerCall", rendererObject->perCallParamBuffer);
+			gpuParams->setParamBlockBuffer("PerObject", rendererRenderable->perObjectParamBuffer);
+			gpuParams->setParamBlockBuffer("PerCall", rendererRenderable->perCallParamBuffer);
 
 			gpuParams->getParamInfo()->getBindings(
 				GpuPipelineParamInfoBase::ParamType::ParamBlock,
@@ -470,8 +473,8 @@ namespace bs {	namespace ct
 		Renderable* lastRenerable = mInfo.renderables.back()->renderable;
 		UINT32 lastRenderableId = lastRenerable->getRendererId();
 
-		RendererObject* rendererObject = mInfo.renderables[renderableId];
-		Vector<BeastRenderableElement>& elements = rendererObject->elements;
+		RendererRenderable* rendererRenderable = mInfo.renderables[renderableId];
+		Vector<RenderableElement>& elements = rendererRenderable->elements;
 		for (auto& element : elements)
 		{
 			SamplerOverrideKey samplerKey(element.material, element.techniqueIdx);
@@ -497,16 +500,13 @@ namespace bs {	namespace ct
 			std::swap(mInfo.renderableCullInfos[renderableId], mInfo.renderableCullInfos[lastRenderableId]);
 
 			lastRenerable->setRendererId(renderableId);
-
-			for (auto& element : elements)
-				element.renderableId = renderableId;
 		}
 
 		// Last element is the one we want to erase
 		mInfo.renderables.erase(mInfo.renderables.end() - 1);
 		mInfo.renderableCullInfos.erase(mInfo.renderableCullInfos.end() - 1);
 
-		bs_delete(rendererObject);
+		bs_delete(rendererRenderable);
 	}
 
 	void RendererScene::registerReflectionProbe(ReflectionProbe* probe)
@@ -621,6 +621,101 @@ namespace bs {	namespace ct
 	{
 		if (mInfo.skybox == skybox)
 			mInfo.skybox = nullptr;
+	}
+
+	void RendererScene::registerParticleSystem(ParticleSystem* particleSystem)
+	{
+		const UINT32 rendererId = (UINT32)mInfo.particleSystems.size();
+		particleSystem->setRendererId(rendererId);
+
+		mInfo.particleSystems.push_back(RendererParticles());
+		mInfo.particleSystemBounds.push_back(AABox());
+
+		RendererParticles& rendererParticles = mInfo.particleSystems.back();
+		rendererParticles.particleSystem = particleSystem;
+
+		SPtr<GpuParamBlockBuffer> paramBuffer = gParticlesParamDef.createBuffer();
+		gParticlesParamDef.gWorldTfrm.set(paramBuffer, particleSystem->getTransform().getMatrix());
+		gParticlesParamDef.gAxisUp.set(paramBuffer, Vector3::UNIT_Y); // TODO
+		gParticlesParamDef.gAxisRight.set(paramBuffer, Vector3::UNIT_X); // TODO;
+
+		rendererParticles.particlesParamBuffer = paramBuffer;
+
+		ParticlesRenderElement& renElement = rendererParticles.renderElement;
+		renElement.type = (UINT32)RenderElementType::Particle;
+
+		renElement.material = particleSystem->getMaterial();
+
+		if (renElement.material != nullptr && renElement.material->getShader() == nullptr)
+			renElement.material = nullptr;
+
+		// If no material use the default material
+		if (renElement.material == nullptr)
+			renElement.material = Material::create(DefaultParticlesMat::get()->getShader());
+
+		// TODO - Pick variation depending on the particle system properties
+		const ShaderVariation* variation = &getParticleShaderVariation(ParticleOrientation::ViewPlane, false);
+
+		FIND_TECHNIQUE_DESC findDesc;
+		findDesc.variation = variation;
+
+		UINT32 techniqueIdx = renElement.material->findTechnique(findDesc);
+
+		if (techniqueIdx == (UINT32)-1)
+			techniqueIdx = renElement.material->getDefaultTechnique();
+
+		renElement.techniqueIdx = techniqueIdx;
+
+		// Generate or assigned renderer specific data for the material
+		renElement.params = renElement.material->createParamsSet(techniqueIdx);
+		renElement.material->updateParamsSet(renElement.params, true);
+
+		SPtr<GpuParams> gpuParams = renElement.params->getGpuParams();
+
+		// Note: Perhaps perform buffer validation to ensure expected buffer has the same size and layout as the 
+		// provided buffer, and show a warning otherwise. But this is perhaps better handled on a higher level.
+		gpuParams->setParamBlockBuffer("ParticleParams", rendererParticles.particlesParamBuffer);
+
+		gpuParams->getTextureParam(GPT_VERTEX_PROGRAM, "gPositionAndRotTex", renElement.positionAndRotTexture);
+		gpuParams->getTextureParam(GPT_VERTEX_PROGRAM, "gColorTex", renElement.colorTexture);
+		gpuParams->getTextureParam(GPT_VERTEX_PROGRAM, "gSizeTex", renElement.sizeTexture);
+
+		gpuParams->getParamInfo()->getBindings(
+			GpuPipelineParamInfoBase::ParamType::ParamBlock,
+			"PerCamera",
+			renElement.perCameraBindings
+		);
+
+		// TODO - Set up buffers/bindings required for advanced lighting
+	}
+
+	void RendererScene::updateParticleSystem(ParticleSystem* particleSystem)
+	{
+		const UINT32 rendererId = particleSystem->getRendererId();
+
+		SPtr<GpuParamBlockBuffer>& paramBuffer = mInfo.particleSystems[rendererId].particlesParamBuffer;
+		gParticlesParamDef.gWorldTfrm.set(paramBuffer, particleSystem->getTransform().getMatrix());
+	}
+
+	void RendererScene::unregisterParticleSystem(ParticleSystem* particleSystem)
+	{
+		const UINT32 rendererId = particleSystem->getRendererId();
+
+		const RendererParticles& lastSystem = mInfo.particleSystems.back();
+		const UINT32 lastRendererId = lastSystem.particleSystem->getRendererId();
+
+		if (rendererId != lastRendererId)
+		{
+			// Swap current last element with the one we want to erase
+			std::swap(mInfo.particleSystems[rendererId], mInfo.particleSystems[lastRendererId]);
+			std::swap(mInfo.particleSystemBounds[rendererId], mInfo.particleSystemBounds[lastRendererId]);
+
+			particleSystem->setRendererId(rendererId);
+		}
+
+		// Last element is the one we want to erase
+		mInfo.particleSystems.erase(mInfo.particleSystems.end() - 1);
+		mInfo.particleSystemBounds.erase(mInfo.particleSystemBounds.end() - 1);
 	}
 
 	void RendererScene::setOptions(const SPtr<RenderBeastOptions>& options)
@@ -862,8 +957,8 @@ namespace bs {	namespace ct
 			return;
 		
 		// Note: Before uploading bone matrices perhaps check if they has actually been changed since last frame
-		if(frameInfo.animData != nullptr)
-			mInfo.renderables[idx]->renderable->updateAnimationBuffers(*frameInfo.animData);
+		if(frameInfo.perFrameData.animation != nullptr)
+			mInfo.renderables[idx]->renderable->updateAnimationBuffers(*frameInfo.perFrameData.animation);
 		
 		// Note: Could this step be moved in notifyRenderableUpdated, so it only triggers when material actually gets
 		// changed? Although it shouldn't matter much because if the internal versions keeping track of dirty params.
@@ -872,5 +967,25 @@ namespace bs {	namespace ct
 		
 		mInfo.renderables[idx]->perObjectParamBuffer->flushToGPU();
 		mInfo.renderableReady[idx] = true;
+	}
+
+	void RendererScene::updateParticleSystemBounds(const ParticleRenderDataGroup* particleRenderData)
+	{
+		// Note: Avoid updating bounds for deterministic particle systems every frame. Also see if this can be copied
+		// over in a faster way (or ideally just assigned)
+
+		for(auto& entry : mInfo.particleSystems)
+		{
+			const auto iterFind = particleRenderData->data.find(entry.particleSystem->getId());
+			if(iterFind == particleRenderData->data.end())
+				continue;
+
+			const UINT32 rendererId = entry.particleSystem->getRendererId();
+
+			AABox worldBounds = iterFind->second->bounds;
+			worldBounds.transformAffine(entry.particleSystem->getTransform().getMatrix());
+
+			mInfo.particleSystemBounds[rendererId] = worldBounds;
+		}
 	}
 }}

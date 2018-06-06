@@ -377,6 +377,7 @@ namespace bs
 	class AudioClip;
 	class CoreObjectManager;
 	struct CollisionData;
+	class ParticleSystem;
 	// Scene
 	class SceneObject;
 	class Component;
@@ -452,12 +453,13 @@ namespace bs
 		class TimerQuery;
 		class OcclusionQuery;
 		class TextureView;
-		class RenderableElement;
+		class RenderElement;
 		class RenderWindowManager;
 		class RenderStateManager;
 		class HardwareBufferManager;
 		class ReflectionProbe;
 		class Skybox;
+		class ParticleSystem;
 	}
 }
 

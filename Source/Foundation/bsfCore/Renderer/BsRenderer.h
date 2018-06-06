@@ -13,6 +13,14 @@ namespace bs
 	class LightProbeVolume;
 	struct RenderSettings;
 	struct EvaluatedAnimationData;
+	struct ParticleRenderDataGroup;
+
+	/** Contains various data evaluated by external systems on a per-frame basis that is to be used by the renderer. */
+	struct PerFrameData
+	{
+		const EvaluatedAnimationData* animation = nullptr;
+		const ParticleRenderDataGroup* particles = nullptr;
+	};
 
 	namespace ct
 	{
@@ -138,7 +146,7 @@ namespace bs
 		virtual const StringID& getName() const = 0;
 
 		/** Called in order to render all currently active cameras. */
-		virtual void renderAll(const EvaluatedAnimationData* animData) = 0;
+		virtual void renderAll(PerFrameData perFrameData) = 0;
 
 		/**
 		 * Called whenever a new camera is created.
@@ -261,6 +269,27 @@ namespace bs
 		 * @note	Core thread.
 		 */
 		virtual void notifySkyboxRemoved(Skybox* skybox) { }
+
+		/**
+		 * Called whenever a new particle system is created.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void notifyParticleSystemAdded(ParticleSystem* particleSystem) { }
+
+		/**
+		 * Called whenever a particle system is updated.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void notifyParticleSystemUpdated(ParticleSystem* particleSystem) { }
+
+		/**
+		 * Called whenever a particle system is destroyed.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void notifyParticleSystemRemoved(ParticleSystem* particleSystem) { }
 
 		/** 
 		 * Captures the scene at the specified location into a cubemap. 

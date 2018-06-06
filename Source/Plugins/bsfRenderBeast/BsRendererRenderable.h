@@ -3,7 +3,7 @@
 #pragma once
 
 #include "BsRenderBeastPrerequisites.h"
-#include "Renderer/BsRenderableElement.h"
+#include "Renderer/BsRenderElement.h"
 #include "Renderer/BsRenderable.h"
 #include "Renderer/BsParamBlocks.h"
 #include "Material/BsMaterialParam.h"
@@ -35,11 +35,10 @@ namespace bs { namespace ct
 	struct MaterialSamplerOverrides;
 
 	/**
-	 * @copydoc	RenderableElement
-	 *
-	 * Contains additional data specific to RenderBeast renderer.
+	 * Contains information required for rendering a single Renderable sub-mesh, representing a generic static or animated
+	 * 3D model.
 	 */
-	class BeastRenderableElement : public RenderableElement
+	class RenderableElement : public RenderElement
 	{
 	public:
 		/**
@@ -48,20 +47,11 @@ namespace bs { namespace ct
 		 */
 		MaterialSamplerOverrides* samplerOverrides;
 
-		/** All GPU parameters from the material used by the renderable. */
-		SPtr<GpuParamsSet> params;
-
-		/**	Identifier of the owner renderable. */
-		UINT32 renderableId;
-
 		/** Identifier of the animation running on the renderable's mesh. -1 if no animation. */
 		UINT64 animationId;
 
 		/** Type of animation applied to this element, if any. */
 		RenderableAnimType animType;
-
-		/** Index of the technique in the material to render the element with. */
-		UINT32 techniqueIdx;
 
 		/** Binding indices representing where should the per-camera param block buffer be bound to. */
 		GpuParamBinding perCameraBindings[GPT_COUNT];
@@ -116,9 +106,9 @@ namespace bs { namespace ct
 	};
 
 	 /** Contains information about a Renderable, used by the Renderer. */
-	struct RendererObject
+	struct RendererRenderable
 	{
-		RendererObject();
+		RendererRenderable();
 
 		/** Updates the per-object GPU buffer according to the currently set properties. */
 		void updatePerObjectBuffer();
@@ -132,7 +122,7 @@ namespace bs { namespace ct
 		void updatePerCallBuffer(const Matrix4& viewProj, bool flush = true);
 
 		Renderable* renderable;
-		Vector<BeastRenderableElement> elements;
+		Vector<RenderableElement> elements;
 
 		SPtr<GpuParamBlockBuffer> perObjectParamBuffer;
 		SPtr<GpuParamBlockBuffer> perCallParamBuffer;

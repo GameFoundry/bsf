@@ -94,16 +94,16 @@ namespace bs
 	{
 		Vector3 min = mMinimum;
 		Vector3 max = mMaximum;
-		max.ceil(rhs.mMaximum);
-		min.floor(rhs.mMinimum);
+		max.max(rhs.mMaximum);
+		min.min(rhs.mMinimum);
 
 		setExtents(min, max);
 	}
 
 	void AABox::merge(const Vector3& point)
 	{
-		mMaximum.ceil(point);
-		mMinimum.floor(point);
+		mMaximum.max(point);
+		mMinimum.min(point);
 	}
 
 	void AABox::transform(const Matrix4& matrix)

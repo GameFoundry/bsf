@@ -174,7 +174,7 @@ namespace bs
 	class GUIContextMenu;
 	class GUIDropDownHitBox;
 	class GUIDropDownContent;
-	class RenderableElement;
+	class RenderElement;
 	class GUISlider;
 	class GUISliderVert;
 	class GUISliderHorz;

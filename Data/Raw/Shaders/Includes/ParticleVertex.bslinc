@@ -7,7 +7,7 @@ mixin ParticleVertex
 	variations
 	{
 		ORIENT = { 0, 1, 2 }; // 0 - Camera plane, 1 - Camera position, 2 - Axis
-		LOCK_Y = { false, true }
+		LOCK_Y = { false, true };
 	};
 
 	code
@@ -31,7 +31,7 @@ mixin ParticleVertex
 		Texture2D gSizeTex;
 
 		[internal]
-		cbuffer Params
+		cbuffer ParticleParams
 		{
 			float4x4 gWorldTfrm;
 			uint gTexSize;
@@ -41,15 +41,16 @@ mixin ParticleVertex
 
 		VStoFS vsmain(VertexInput input)
 		{
-			uint2 pixelPos;
+			uint3 pixelPos;
 			pixelPos.y = input.instanceId / gTexSize;
-			pixelPos.x = input.instanceId - y * gTexSize;
+			pixelPos.x = input.instanceId - pixelPos.y * gTexSize;
+			pixelPos.z = 0;
 		
 			float4 posAndRot = gPositionAndRotTex.Load(pixelPos);
 			float4 worldPosition = mul(gWorldTfrm, float4(posAndRot.xyz, 1.0f));
 			
 			float2 size = gSizeTex.Load(pixelPos).xy;
-			float2 axisRight, axisUp;
+			float3 axisRight, axisUp;
 			#if ORIENT == 2 // Axis
 				axisRight = gAxisRight;
 				axisUp = gAxisUp;
@@ -74,7 +75,7 @@ mixin ParticleVertex
 				#endif
 			#endif
 
-			worldPosition += axisRight * input.position.x * size.x + axisUp * input.position.y  * size.y;	
+			worldPosition.xyz += axisRight * input.position.x * size.x + axisUp * input.position.y  * size.y;	
 			
 			VStoFS output;
 			output.color = gColorTex.Load(pixelPos);

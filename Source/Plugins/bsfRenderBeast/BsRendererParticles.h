@@ -1,0 +1,163 @@
+//************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
+//*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
+#pragma once
+
+#include "BsRenderBeastPrerequisites.h"
+#include "Renderer/BsRenderElement.h"
+#include "Renderer/BsParamBlocks.h"
+#include "RenderAPI/BsGpuPipelineParamInfo.h"
+#include "Material/BsShaderVariation.h"
+#include "Particles/BsParticleSystem.h"
+#include "Allocators/BsPoolAlloc.h"
+
+namespace bs { namespace ct
+{
+	/** @addtogroup RenderBeast
+	 *  @{
+	 */
+
+	BS_PARAM_BLOCK_BEGIN(ParticlesParamDef)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gWorldTfrm)
+		BS_PARAM_BLOCK_ENTRY(UINT32, gTexSize)
+		BS_PARAM_BLOCK_ENTRY(Vector3, gAxisUp)
+		BS_PARAM_BLOCK_ENTRY(Vector3, gAxisRight)
+	BS_PARAM_BLOCK_END
+
+	extern ParticlesParamDef gParticlesParamDef;
+
+	/** 
+	 * Returns a specific particle rendering shader variation.
+	 *
+	 * @tparam ORIENT	Particle orientiation mode.
+	 * @tparam LOCK_Y	If true, billboard rotation will be locked around the Y axis, otherwise the rotation is free.
+	 */
+	template<ParticleOrientation ORIENT, bool LOCK_Y>
+	static const ShaderVariation& getParticleShaderVariation()
+	{
+		static ShaderVariation variation = ShaderVariation(
+			Vector<ShaderVariation::Param>{
+				ShaderVariation::Param("ORIENT", (UINT32)ORIENT),
+				ShaderVariation::Param("LOCK_Y", LOCK_Y),
+		});
+
+		return variation;
+	}
+
+	/**
+	 * Returns a particle material variation matching the provided parameters.
+	 * 
+	 * @param[in]	orient	Determines in which direction are billboard particles oriented.
+	 * @param[in]	lockY	If true, billboard rotation will be locked around the Y axis, otherwise the rotation is free.
+	 * @return				Object that can be used for looking up the variation technique in the material. 
+	 */
+	static const ShaderVariation& getParticleShaderVariation(ParticleOrientation orient, bool lockY)
+	{
+		if (lockY)
+		{
+			switch (orient)
+			{
+			default:
+			case ParticleOrientation::ViewPlane: 
+				return getParticleShaderVariation<ParticleOrientation::ViewPlane, true>();
+			case ParticleOrientation::ViewPosition: 
+				return getParticleShaderVariation<ParticleOrientation::ViewPosition, true>();
+			case ParticleOrientation::Axis: 
+				return getParticleShaderVariation<ParticleOrientation::Axis, true>();
+			}
+		}
+		else
+		{
+			switch (orient)
+			{
+			default:
+			case ParticleOrientation::ViewPlane: 
+				return getParticleShaderVariation<ParticleOrientation::ViewPlane, false>();
+			case ParticleOrientation::ViewPosition: 
+				return getParticleShaderVariation<ParticleOrientation::ViewPosition, false>();
+			case ParticleOrientation::Axis: 
+				return getParticleShaderVariation<ParticleOrientation::Axis, false>();
+			}
+		}
+	}
+
+
+	/** Contains information required for rendering a single particle system. */
+	class ParticlesRenderElement : public RenderElement
+	{
+	public:
+		/** Binding locations for the per-camera param block buffer. */
+		GpuParamBinding perCameraBindings[GPT_COUNT];
+
+		/** Binding spot for the texture containing position and rotation information. */
+		GpuParamTexture positionAndRotTexture;
+
+		/** Binding spot for the texture containing color information. */
+		GpuParamTexture colorTexture;
+
+		/** Binding spot for the texture containing size information. */
+		GpuParamTexture sizeTexture;
+
+		/** Number of particles to render. */
+		UINT32 numParticles = 0;
+	};
+
+	/** Contains information about a ParticleSystem, used by the Renderer. */
+	struct RendererParticles
+	{
+		/** Owner particle system. */
+		ParticleSystem* particleSystem;
+
+		/** Element used for sorting and rendering the particle system. */
+		mutable ParticlesRenderElement renderElement;
+
+		/** Parameters used by the particle rendering shader. */
+		SPtr<GpuParamBlockBuffer> particlesParamBuffer;
+	};
+
+	/** Default material used for rendering particles, when no other is available. */
+	class DefaultParticlesMat : public RendererMaterial<DefaultParticlesMat> { RMAT_DEF("ParticlesUnlit.bsl"); };
+
+	// TODO - Doc
+	class ParticleTexturePool final
+	{
+		struct BuffersPerSize
+		{
+			Vector<ParticleTextures*> buffers;
+			UINT32 nextFreeIdx = 0;
+		};
+
+	public:
+		~ParticleTexturePool();
+
+		const ParticleTextures* alloc(const ParticleRenderData& renderData);
+		void clear();
+
+	private:
+		ParticleTextures * createNewTextures(UINT32 size);
+
+		UnorderedMap<UINT32, BuffersPerSize> mBufferList;
+		PoolAlloc<sizeof(ParticleTextures), 32> mAlloc;
+	};
+	/** Handles internal logic for rendering of particle systems. */
+	class ParticleRenderer final : public Module<ParticleRenderer>
+	{
+		struct Members;
+	public:
+		ParticleRenderer();
+
+		/** 
+		 * Returns a texture pool object that can be used for allocating textures required for holding particle system
+		 * properties like position/color/etc.
+		 */
+		ParticleTexturePool& getTexturePool() { return mTexturePool; }
+
+		/** Draws @p count quads used for billboard rendering, using instanced drawing. */
+		void drawBillboards(UINT32 count);
+
+	private:
+		ParticleTexturePool mTexturePool;
+		UPtr<Members> m;
+	};
+
+	/** @} */
+}}

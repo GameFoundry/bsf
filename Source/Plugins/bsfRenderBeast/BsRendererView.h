@@ -11,8 +11,9 @@
 #include "Shading/BsLightGrid.h"
 #include "Shading/BsShadowRendering.h"
 #include "BsRendererView.h"
-#include "BsRendererObject.h"
+#include "BsRendererRenderable.h"
 #include "BsRenderCompositor.h"
+#include "BsRendererParticles.h"
 
 namespace bs { namespace ct
 {
@@ -193,6 +194,7 @@ namespace bs { namespace ct
 		Vector<bool> radialLights;
 		Vector<bool> spotLights;
 		Vector<bool> reflProbes;
+		Vector<bool> particleSystems;
 	};
 
 	/** Information used for culling an object against a view. */
@@ -276,7 +278,24 @@ namespace bs { namespace ct
 		 *									As a side-effect, per-view visibility data is also calculated and can be
 		 *									retrieved by calling getVisibilityMask().
 		 */
-		void determineVisible(const Vector<RendererObject*>& renderables, const Vector<CullInfo>& cullInfos,
+		void determineVisible(const Vector<RendererRenderable*>& renderables, const Vector<CullInfo>& cullInfos,
+			Vector<bool>* visibility = nullptr);
+
+		/**
+		 * Populates view render queues by determining visible particle systems. 
+		 *
+		 * @param[in]	particleSystems		A set of particle systems to iterate over and determine visibility for.
+		 * @param[in]	bounds				A set of world bounds for the particle systems. Must be the same size as the
+		 *									@p particleSystems array.
+		 * @param[out]	visibility			Output parameter that will have the true bit set for any visible particle system
+		 *									object. If the bit for an object is already set to true, the method will never
+		 *									change it to false which allows the same bitfield to be provided to multiple
+		 *									renderer views. Must be the same size as the @p particleSystems array.
+		 *									
+		 *									As a side-effect, per-view visibility data is also calculated and can be
+		 *									retrieved by calling getVisibilityMask().
+		 */
+		void determineVisible(const Vector<RendererParticles>& particleSystems, const Vector<AABox>& bounds,
 			Vector<bool>* visibility = nullptr);
 
 		/**
@@ -314,6 +333,13 @@ namespace bs { namespace ct
 		 * which entry is or isn't visible by this view. Both inputs must be arrays of the same size.
 		 */
 		void calculateVisibility(const Vector<AABox>& bounds, Vector<bool>& visibility) const;
+
+		/**
+		 * Inserts all visible renderable elements into render queues. Assumes visibility has been calculated beforehand
+		 * by calling determineVisible(). After the call render elements can be retrieved from the queues using
+		 * getOpqueQueue or getTransparentQueue() calls.
+		 */
+		void queueRenderElements(const SceneInfo& sceneInfo);
 
 		/** Returns the visibility mask calculated with the last call to determineVisible(). */
 		const VisibilityInfo& getVisibilityMasks() const { return mVisibility; }

@@ -491,6 +491,14 @@
             "Path": "PPTonemapCommon.bslinc"
         }
     ],
+    "ParticlesUnlit.bsl": [
+        {
+            "Path": "ParticleVertex.bslinc"
+        },
+        {
+            "Path": "PerCameraData.bslinc"
+        }
+    ],
     "ReflectionCubeDownsample.bsl": [
         {
             "Path": "ReflectionCubemapCommon.bslinc"

@@ -11,9 +11,9 @@ namespace bs
 
 	VertexBuffer::VertexBuffer(const VERTEX_BUFFER_DESC& desc)
 		: mProperties(desc.numVerts, desc.vertexSize), mUsage(desc.usage), mStreamOut(desc.streamOut)
-    {
+	{
 
-    }
+	}
 
 	SPtr<ct::CoreObject> VertexBuffer::createCore() const
 	{

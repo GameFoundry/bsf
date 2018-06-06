@@ -31,13 +31,13 @@ namespace bs
 	/** Contains information global to an entire frame. */
 	struct FrameInfo
 	{
-		FrameInfo(const FrameTimings& timings, const EvaluatedAnimationData* animData = nullptr)
-			:timeDelta(timings.timeDelta), frameIdx(timings.frameIdx), animData(animData)
+		FrameInfo(const FrameTimings& timings, PerFrameData perFrameData)
+			:timeDelta(timings.timeDelta), frameIdx(timings.frameIdx), perFrameData(perFrameData)
 		{ }
 
 		float timeDelta;
 		UINT64 frameIdx;
-		const EvaluatedAnimationData* animData;
+		PerFrameData perFrameData;
 	};
 
 	/**
@@ -61,7 +61,7 @@ namespace bs
 		const StringID& getName() const override;
 
 		/** @copydoc Renderer::renderAll */
-		void renderAll(const EvaluatedAnimationData* animData) override;
+		void renderAll(PerFrameData perFrameData) override;
 
 		/**	Sets options used for controlling the rendering. */
 		void setOptions(const SPtr<RendererOptions>& options) override;
@@ -140,6 +140,15 @@ namespace bs
 		/** @copydoc Renderer::notifySkyboxRemoved */
 		void notifySkyboxRemoved(Skybox* skybox) override;
 
+		/** @copydoc Renderer::notifyParticleSystemAdded */
+		void notifyParticleSystemAdded(ParticleSystem* particleSystem) override;
+
+		/** @copydoc Renderer::notifyParticleSystemUpdated */
+		void notifyParticleSystemUpdated(ParticleSystem* particleSystem) override;
+
+		/** @copydoc Renderer::notifyParticleSystemRemoved */
+		void notifyParticleSystemRemoved(ParticleSystem* particleSystem) override;
+
 		/**
 		 * Updates the render options on the core thread.
 		 *
@@ -150,12 +159,12 @@ namespace bs
 		/**
 		 * Performs rendering over all camera proxies.
 		 *
-		 * @param[in]	timings		Information about frame time and frame index.
-		 * @param[in]	animData	Data used for rendering animated renderables.
+		 * @param[in]	timings			Information about frame time and frame index.
+		 * @param[in]	perFrameData	Per-frame data provided by external systems.
 		 *
 		 * @note	Core thread only.
 		 */
-		void renderAllCore(FrameTimings timings, const EvaluatedAnimationData* animData);
+		void renderAllCore(FrameTimings timings, PerFrameData perFrameData);
 
 		/**
 		 * Renders all views in the provided view group.

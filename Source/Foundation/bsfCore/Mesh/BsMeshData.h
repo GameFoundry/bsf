@@ -205,6 +205,18 @@ namespace bs
 		 */
 		UINT32 getElementOffset(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
 
+		/**	Returns a pointer to the start of the index buffer. */
+		UINT8* getIndexData() const { return getData(); }
+
+		/**	Returns a pointer to the start of the specified vertex stream. */
+		UINT8* getStreamData(UINT32 streamIdx) const;
+
+		/**	Returns the size of the specified stream in bytes. */
+		UINT32 getStreamSize(UINT32 streamIdx) const;
+
+		/**	Returns the size of all the streams in bytes. */
+		UINT32 getStreamSize() const;
+
 		/** Returns an object that describes data contained in a single vertex. */
 		const SPtr<VertexDataDesc>& getVertexDesc() const { return mVertexData; }
 
@@ -244,12 +256,6 @@ namespace bs
 		UINT32 getInternalBufferSize() const override;
 
 	private:
-		/**	Returns a pointer to the start of the index buffer. */
-		UINT8* getIndexData() const { return getData(); }
-
-		/**	Returns a pointer to the start of the specified vertex stream. */
-		UINT8* getStreamData(UINT32 streamIdx) const;
-
 		/**	Returns an offset in bytes to the start of the index buffer from the start of the internal buffer. */
 		UINT32 getIndexBufferOffset() const;
 
@@ -258,12 +264,6 @@ namespace bs
 
 		/**	Returns the size of the index buffer in bytes. */
 		UINT32 getIndexBufferSize() const;
-
-		/**	Returns the size of the specified stream in bytes. */
-		UINT32 getStreamSize(UINT32 streamIdx) const;
-
-		/**	Returns the size of all the streams in bytes. */
-		UINT32 getStreamSize() const;
 
 		/**
 		 * Returns the data needed for iterating over the requested vertex element.

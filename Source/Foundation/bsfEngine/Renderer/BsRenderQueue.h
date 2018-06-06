@@ -23,15 +23,11 @@ namespace bs { namespace ct
 	};
 
 	/** Contains data needed for performing a single rendering pass. */
-	struct BS_EXPORT RenderQueueElement
+	struct RenderQueueElement
 	{
-		RenderQueueElement()
-			:renderElem(nullptr), passIdx(0), applyPass(true)
-		{ }
-
-		RenderableElement* renderElem;
-		UINT32 passIdx;
-		bool applyPass;
+		const RenderElement* renderElem = nullptr;
+		UINT32 passIdx = 0;
+		bool applyPass = true;
 	};
 
 	/**
@@ -53,7 +49,7 @@ namespace bs { namespace ct
 
 	public:
 		RenderQueue(StateReduction grouping = StateReduction::Distance);
-		virtual ~RenderQueue() { }
+		virtual ~RenderQueue() = default;
 
 		/**
 		 * Adds a new entry to the render queue.
@@ -61,7 +57,7 @@ namespace bs { namespace ct
 		 * @param[in]	element			Renderable element to add to the queue.
 		 * @param[in]	distFromCamera	Distance of this object from the camera. Used for distance sorting.
 		 */
-		void add(RenderableElement* element, float distFromCamera);
+		void add(const RenderElement* element, float distFromCamera);
 
 		/**	Clears all render operations from the queue. */
 		void clear();
@@ -90,7 +86,7 @@ namespace bs { namespace ct
 
 		Vector<SortableElement> mSortableElements;
 		Vector<UINT32> mSortableElementIdx;
-		Vector<RenderableElement*> mElements;
+		Vector<const RenderElement*> mElements;
 
 		Vector<RenderQueueElement> mSortedRenderElements;
 		StateReduction mStateReductionMode;

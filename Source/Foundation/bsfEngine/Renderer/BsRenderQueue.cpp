@@ -5,7 +5,7 @@
 #include "Material/BsShader.h"
 #include "Mesh/BsMesh.h"
 #include "Material/BsMaterial.h"
-#include "Renderer/BsRenderableElement.h"
+#include "Renderer/BsRenderElement.h"
 
 using namespace std::placeholders;
 
@@ -26,7 +26,7 @@ namespace bs { namespace ct
 		mSortedRenderElements.clear();
 	}
 
-	void RenderQueue::add(RenderableElement* element, float distFromCamera)
+	void RenderQueue::add(const RenderElement* element, float distFromCamera)
 	{
 		SPtr<Material> material = element->material;
 		SPtr<Shader> shader = material->getShader();
@@ -92,7 +92,7 @@ namespace bs { namespace ct
 
 		UINT32 prevShaderId = (UINT32)-1;
 		UINT32 prevPassIdx = (UINT32)-1;
-		RenderableElement* renderElem = nullptr;
+		const RenderElement* renderElem = nullptr;
 		INT32 currentElementIdx = -1;
 		UINT32 numPassesInCurrentElement = 0;
 		bool separablePasses = true;

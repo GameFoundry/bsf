@@ -87,6 +87,7 @@ namespace bs { namespace ct
 		mMainViewGroup = bs_new<RendererViewGroup>();
 
 		StandardDeferred::startUp();
+		ParticleRenderer::startUp();
 
 		RenderCompositor::registerNodeType<RCNodeSceneDepth>();
 		RenderCompositor::registerNodeType<RCNodeGBuffer>();
@@ -118,6 +119,7 @@ namespace bs { namespace ct
 
 		RenderCompositor::cleanUp();
 
+		ParticleRenderer::shutDown();
 		StandardDeferred::shutDown();
 
 		bs_delete(mMainViewGroup);
@@ -213,6 +215,21 @@ namespace bs { namespace ct
 		mScene->unregisterSkybox(skybox);
 	}
 
+	void RenderBeast::notifyParticleSystemAdded(ParticleSystem* particleSystem)
+	{
+		mScene->registerParticleSystem(particleSystem);
+	}
+
+	void RenderBeast::notifyParticleSystemUpdated(ParticleSystem* particleSystem)
+	{
+		mScene->updateParticleSystem(particleSystem);
+	}
+
+	void RenderBeast::notifyParticleSystemRemoved(ParticleSystem* particleSystem)
+	{
+		mScene->unregisterParticleSystem(particleSystem);
+	}
+
 	void RenderBeast::setOptions(const SPtr<RendererOptions>& options)
 	{
 		mOptions = std::static_pointer_cast<RenderBeastOptions>(options);
@@ -290,7 +307,7 @@ namespace bs { namespace ct
 		gCoreThread().queueCommand(setShaderOverride);
 	}
 
-	void RenderBeast::renderAll(const EvaluatedAnimationData* animData) 
+	void RenderBeast::renderAll(PerFrameData perFrameData) 
 	{
 		// Sync all dirty sim thread CoreObject data to core thread
 		CoreObjectManager::instance().syncToCore();
@@ -306,10 +323,10 @@ namespace bs { namespace ct
 		timings.timeDelta = gTime().getFrameDelta();
 		timings.frameIdx = gTime().getFrameIdx();
 		
-		gCoreThread().queueCommand(std::bind(&RenderBeast::renderAllCore, this, timings, animData));
+		gCoreThread().queueCommand(std::bind(&RenderBeast::renderAllCore, this, timings, perFrameData));
 	}
 
-	void RenderBeast::renderAllCore(FrameTimings timings, const EvaluatedAnimationData* animData)
+	void RenderBeast::renderAllCore(FrameTimings timings, PerFrameData perFrameData)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -326,16 +343,19 @@ namespace bs { namespace ct
 		// Update global per-frame hardware buffers
 		mScene->setParamFrameParams(timings.time);
 
-		// Retrieve animation data
+		// Update bounds for all particle systems
+		if(perFrameData.particles)
+			mScene->updateParticleSystemBounds(perFrameData.particles);
+
 		sceneInfo.renderableReady.resize(sceneInfo.renderables.size(), false);
 		sceneInfo.renderableReady.assign(sceneInfo.renderables.size(), false);
 		
-		FrameInfo frameInfo(timings, animData);
+		FrameInfo frameInfo(timings, perFrameData);
 
 		// Make sure any renderer tasks finish first, as rendering might depend on them
 		processTasks(false);
 
-		// Update reflection probe array if required
+		// If any reflection probes were updated or added, we need to copy them over in the global reflection probe array
 		updateReflProbeArray();
 
 		// Gather all views
@@ -722,7 +742,7 @@ namespace bs { namespace ct
 		RendererViewGroup viewGroup(viewPtrs, 6, mCoreOptions->shadowMapSize);
 		viewGroup.determineVisibility(sceneInfo);
 
-		FrameInfo frameInfo({ 0.0f, 1.0f / 60.0f, 0 });
+		FrameInfo frameInfo({ 0.0f, 1.0f / 60.0f, 0 }, PerFrameData());
 		renderViews(viewGroup, frameInfo);
 
 		// Make sure the render texture is available for reads

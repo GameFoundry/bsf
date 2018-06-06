@@ -2,16 +2,16 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "Particles/BsParticleSystem.h"
 #include "Private/RTTI/BsParticleSystemRTTI.h"
-#include "Mesh/BsMesh.h"
 #include "RenderAPI/BsVertexDataDesc.h"
 #include "Mesh/BsMeshUtility.h"
-#include "Image/BsTexture.h"
 #include "Allocators/BsPoolAlloc.h"
+#include "Allocators/BsGroupAlloc.h"
 #include "Utility/BsTime.h"
 #include "Threading/BsTaskScheduler.h"
-#include "Scene/BsSceneManager.h"
 #include "Animation/BsAnimationManager.h"
+#include "Material/BsMaterial.h"
 #include "Renderer/BsCamera.h"
+#include "Renderer/BsRenderer.h"
 
 namespace bs
 {
@@ -80,6 +80,7 @@ namespace bs
 				reserve<Vector3>(capacity).
 				reserve<Vector3>(capacity).
 				reserve<Vector3>(capacity).
+				reserve<Vector2>(capacity).
 				reserve<float>(capacity).
 				reserve<RGBA>(capacity).
 				reserve<UINT32>(capacity).
@@ -1593,97 +1594,6 @@ namespace bs
 		PoolAlloc<sizeof(ParticleRenderData), 32> mAlloc;
 	};
 
-	namespace ct
-	{
-		// TODO - Doc
-		struct ParticleTextures
-		{
-			SPtr<Texture> positionAndRotation;
-			SPtr<Texture> color;
-			SPtr<Texture> size;
-
-		private:
-			friend class ParticleTexturePool;
-
-			UINT32 index;
-		};
-
-		// TODO - Doc
-		class ParticleTexturePool
-		{
-		public:
-			~ParticleTexturePool()
-			{
-				for(auto& sizeEntry : mFreeList)
-				{
-					for(auto& entry : sizeEntry.second)
-						mAlloc.destruct(entry);
-				}
-			}
-
-			const ParticleTextures* alloc(const ParticleRenderData& renderData)
-			{
-				const UINT32 size = renderData.color.getWidth();
-
-				const ParticleTextures* output = nullptr;
-				Vector<ParticleTextures*>& freeList = mFreeList[size];
-				if(!freeList.empty())
-				{
-					output = freeList.back();
-					freeList.pop_back();
-				}
-
-				if(!output)
-					output = createNewTextures(size);
-
-				// Populate texture contents
-				output->positionAndRotation->writeData(renderData.positionAndRotation, 0, 0, true);
-				output->color->writeData(renderData.color, 0, 0, true);
-				output->size->writeData(renderData.size, 0, 0, true);
-
-				return output;
-			}
-
-			void free(ParticleTextures* textures)
-			{
-				UINT32 size = (UINT32)textures->positionAndRotation->getProperties().getWidth();
-
-				Vector<ParticleTextures*>& freeList = mFreeList[size];
-				freeList.push_back(textures);
-			}
-
-		private:
-			ParticleTextures* createNewTextures(UINT32 size)
-			{
-				ParticleTextures* output = mAlloc.construct<ParticleTextures>();
-				output->index = mNextIdx++;
-
-				// TODO - Avoid duplicating texture formats here and during PixelData construction
-				TEXTURE_DESC texDesc;
-				texDesc.type = TEX_TYPE_2D;
-				texDesc.width = size;
-				texDesc.height = size;
-				texDesc.usage = TU_DYNAMIC;
-
-				texDesc.format = PF_RGBA32F;
-				output->positionAndRotation = Texture::create(texDesc);
-
-				texDesc.format = PF_RGBA8;
-				output->color = Texture::create(texDesc);
-
-				texDesc.format = PF_RG16F;
-				output->size = Texture::create(texDesc);
-				
-				return output;
-			}
-
-			UnorderedMap<UINT32, Vector<ParticleTextures*>> mFreeList;
-			UINT32 mNextIdx = 0;
-
-			PoolAlloc<sizeof(ParticleTextures), 32> mAlloc;
-		};
-	}
-
 	void ParticleEmitter::spawn(Random& random, const ParticleEmitterState& state, ParticleSet& set) const
 	{
 		if(!mShape)
@@ -1696,8 +1606,29 @@ namespace bs
 		const UINT32 endIdx = firstIdx + numToSpawn;
 
 		ParticleSetData& particles = set.getParticles();
+
+		// TODO - Using arbitrary default values
 		for(UINT32 i = firstIdx; i < endIdx; i++)
-			particles.lifetime[i] = 0.0f;
+			particles.lifetime[i] = 1000.0f;
+
+		for(UINT32 i = firstIdx; i < endIdx; i++)
+			particles.size[i] = Vector3::ONE;
+
+		for(UINT32 i = firstIdx; i < endIdx; i++)
+			particles.rotation[i] = Vector2::ZERO;
+
+		const RGBA whiteColor = Color::White.getAsRGBA();
+		for(UINT32 i = firstIdx; i < endIdx; i++)
+			particles.color[i] = whiteColor;
+	}
+
+	void ParticleDebugEvolver::evolve(Random& random, ParticleSet& set) const
+	{
+		ParticleSetData& particles = set.getParticles();
+
+		UINT32 count = set.getParticleCount();
+		for(UINT32 i = 0; i < count; i++)
+			particles.position[i] += Vector3::UNIT_Y * gTime().getFrameDelta() * 0.1f;
 	}
 
 	static constexpr UINT32 INITIAL_PARTICLE_CAPACITY = 1000;
@@ -1708,12 +1639,12 @@ namespace bs
 		// TODO - Determine initial capacity based on existing emitters (if deserialized and emitters and known beforehand)
 		// - Or just delay this creation until first call to simulate()
 
-		mId = ParticleSystemManager::instance().registerParticleSystem(this);
+		mId = ParticlesManager::instance().registerParticleSystem(this);
 	}
 
 	ParticleSystem::~ParticleSystem()
 	{
-		ParticleSystemManager::instance().unregisterParticleSystem(this);
+		ParticlesManager::instance().unregisterParticleSystem(this);
 	}
 
 	void ParticleSystem::simulate(float timeDelta, ParticleRenderData& renderData)
@@ -1752,6 +1683,62 @@ namespace bs
 			particles.lifetime[i] -= timeDelta;
 	}
 
+	AABox ParticleSystem::calculateBounds() const
+	{
+		// TODO - If evolvers are deterministic (as well as their properties), calculate the maximinal bounds in an
+		// analytical way
+
+		const UINT32 particleCount = mParticleSet->getParticleCount();
+		if(particleCount == 0)
+			return AABox::BOX_EMPTY;
+
+		const ParticleSetData& particles = mParticleSet->getParticles();
+		AABox bounds(Vector3::INF, -Vector3::INF);
+		for(UINT32 i = 0; i < particleCount; i++)
+			bounds.merge(particles.position[i]);
+
+		return bounds;
+	}
+
+	SPtr<ct::ParticleSystem> ParticleSystem::getCore() const
+	{
+		return std::static_pointer_cast<ct::ParticleSystem>(mCoreSpecific);
+	}
+
+	SPtr<ct::CoreObject> ParticleSystem::createCore() const
+	{
+		ct::ParticleSystem* rawPtr = new (bs_alloc<ct::ParticleSystem>()) ct::ParticleSystem(mId);
+		SPtr<ct::ParticleSystem> ptr = bs_shared_ptr<ct::ParticleSystem>(rawPtr);
+		ptr->_setThisPtr(ptr);
+
+		return ptr;
+	}
+
+	void ParticleSystem::_markCoreDirty(ActorDirtyFlag flag)
+	{
+		markCoreDirty((UINT32)flag);
+	}
+
+	CoreSyncData ParticleSystem::syncToCore(FrameAlloc* allocator)
+	{
+		const UINT32 size = 
+			getActorSyncDataSize() +
+			rttiGetElemSize(getCoreDirtyFlags()) +
+			sizeof(SPtr<ct::Material>);
+
+		UINT8* data = allocator->alloc(size);
+		char* dataPtr = (char*)data;
+		dataPtr = syncActorTo(dataPtr);
+		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
+
+		SPtr<ct::Material>* material = new (dataPtr) SPtr<ct::Material>();
+		if (mMaterial.isLoaded())
+			*material = mMaterial->getCore();
+
+		dataPtr += sizeof(SPtr<ct::Material>);
+
+		return CoreSyncData(data, size);
+	}
 	SPtr<ParticleSystem> ParticleSystem::create()
 	{
 		SPtr<ParticleSystem> ptr = createEmpty();
@@ -1779,20 +1766,79 @@ namespace bs
 		return ParticleSystem::getRTTIStatic();
 	}
 
-	struct ParticleSystemManager::Pimpl
+	namespace ct
+	{
+		ParticleSystem::~ParticleSystem()
+		{
+			if(mActive)
+				gRenderer()->notifyParticleSystemRemoved(this);
+		}
+
+		void ParticleSystem::initialize()
+		{
+			gRenderer()->notifyParticleSystemAdded(this);
+		}
+
+		void ParticleSystem::syncToCore(const CoreSyncData& data)
+		{
+			char* dataPtr = (char*)data.getBuffer();
+
+			UINT32 dirtyFlags = 0;
+			const bool oldIsActive = mActive;
+
+			dataPtr = syncActorFrom(dataPtr);
+			dataPtr = rttiReadElem(dirtyFlags, dataPtr);
+
+			SPtr<Material>* material = (SPtr<Material>*)dataPtr;
+			mMaterial = *material;
+			material->~SPtr<Material>();
+			dataPtr += sizeof(SPtr<Material>);
+
+			constexpr UINT32 updateEverythingFlag = (UINT32)ActorDirtyFlag::Everything
+				| (UINT32)ActorDirtyFlag::Active
+				| (UINT32)ActorDirtyFlag::Dependency;
+
+			if ((dirtyFlags & updateEverythingFlag) != 0)
+			{
+				if (oldIsActive != mActive)
+				{
+					if (mActive)
+						gRenderer()->notifyParticleSystemAdded(this);
+					else
+						gRenderer()->notifyParticleSystemRemoved(this);
+				}
+				else
+				{
+					gRenderer()->notifyParticleSystemRemoved(this);
+					gRenderer()->notifyParticleSystemAdded(this);
+				}
+			}
+			else if ((dirtyFlags & (UINT32)ActorDirtyFlag::Mobility) != 0)
+			{
+				gRenderer()->notifyParticleSystemRemoved(this);
+				gRenderer()->notifyParticleSystemAdded(this);
+			}
+			else if ((dirtyFlags & (UINT32)ActorDirtyFlag::Transform) != 0)
+			{
+				if (mActive)
+					gRenderer()->notifyParticleSystemUpdated(this);
+			}
+		}
+	}
+
+	struct ParticlesManager::Members
 	{
 		// TODO - Perhaps sharing one pool is better
-		ParticleRenderDataPool mRenderDataPool[CoreThread::NUM_SYNC_BUFFERS];
-
+		ParticleRenderDataPool renderDataPool[CoreThread::NUM_SYNC_BUFFERS];
 	};
 
-	ParticleSystemManager::ParticleSystemManager()
-		:mPimpl(bs_unique_ptr_new<Pimpl>())
+	ParticlesManager::ParticlesManager()
+		:m(bs_unique_ptr_new<Members>())
 	{
 		
 	}
 
-	ParticleRenderDataGroup* ParticleSystemManager::simulate()
+	ParticleRenderDataGroup* ParticlesManager::update()
 	{
 		// Note: Allow the worker threads to work alongside the main thread? Would require extra synchronization but
 		// potentially no benefit?
@@ -1809,7 +1855,8 @@ namespace bs
 		if(mPaused)
 			return &mRenderData[mReadBufferIdx];
 
-		// TODO - Perform culling (but only on deterministic particle systems) 
+		// TODO - Perform culling (but only on deterministic particle systems). In which case cache the bounds so we don't
+		// need to recalculate them below
 
 		// Prepare the write buffer
 		ParticleRenderDataGroup& renderDataGroup = mRenderData[mWriteBufferIdx];
@@ -1823,12 +1870,15 @@ namespace bs
 
 		float timeDelta = gTime().getFrameDelta();
 
-		ParticleRenderDataPool& renderDataPool = mPimpl->mRenderDataPool[mWriteBufferIdx];
+		ParticleRenderDataPool& renderDataPool = m->renderDataPool[mWriteBufferIdx];
 		renderDataPool.clear();
 
 		for(auto& system : mSystems)
 		{
 			ParticleRenderData* renderData = renderDataPool.alloc(*system->mParticleSet);
+			renderData->bounds = system->calculateBounds();
+			renderData->numParticles = system->mParticleSet->getParticleCount();
+
 			renderDataGroup.data[system->mId] = renderData;
 
 			const auto evaluateWorker = [this, timeDelta, system, renderData]()
@@ -1861,17 +1911,15 @@ namespace bs
 		return &mRenderData[mReadBufferIdx];
 	}
 
-	UINT32 ParticleSystemManager::registerParticleSystem(ParticleSystem* system)
+	UINT32 ParticlesManager::registerParticleSystem(ParticleSystem* system)
 	{
 		mSystems.insert(system);
 
 		return mNextId++;
 	}
 
-	void ParticleSystemManager::unregisterParticleSystem(ParticleSystem* system)
+	void ParticlesManager::unregisterParticleSystem(ParticleSystem* system)
 	{
 		mSystems.erase(system);
 	}
-
-
 }

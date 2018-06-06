@@ -48,6 +48,7 @@
 #include "Audio/BsAudio.h"
 #include "Animation/BsAnimationManager.h"
 #include "Renderer/BsParamBlocks.h"
+#include "Particles/BsParticleSystem.h"
 
 namespace bs
 {
@@ -85,10 +86,11 @@ namespace bs
 		AudioManager::shutDown();
 		ResourceListenerManager::shutDown();
 		RenderStateManager::shutDown();
+		ParticlesManager::shutDown();
+		AnimationManager::shutDown();
 
 		// This must be done after all resources are released since it will unload the physics plugin, and some resources
 		// might be instances of types from that plugin.
-		AnimationManager::shutDown();
 		PhysicsManager::shutDown();
 
 		RendererManager::shutDown();
@@ -173,6 +175,7 @@ namespace bs
 		AudioManager::startUp(mStartUpDesc.audio);
 		PhysicsManager::startUp(mStartUpDesc.physics, isEditor());
 		AnimationManager::startUp();
+		ParticlesManager::startUp();
 
 		for (auto& importerName : mStartUpDesc.importers)
 			loadPlugin(importerName);
@@ -274,9 +277,12 @@ namespace bs
 
 			postUpdate();
 
+			PerFrameData perFrameData;
+
 			// Evaluate animation after scene and plugin updates because the renderer will just now be displaying the
 			// animation we sent on the previous frame, and we want the scene information to match to what is displayed.
-			const EvaluatedAnimationData* animData = AnimationManager::instance().update();
+			perFrameData.animation = AnimationManager::instance().update();
+			perFrameData.particles = ParticlesManager::instance().update();
 
 			// Send out resource events in case any were loaded/destroyed/modified
 			ResourceListenerManager::instance().update();
@@ -286,7 +292,7 @@ namespace bs
 			RendererManager::instance().getActive()->update();
 
 			gSceneManager()._updateCoreObjectTransforms();
-			PROFILE_CALL(RendererManager::instance().getActive()->renderAll(animData), "Render");
+			PROFILE_CALL(RendererManager::instance().getActive()->renderAll(perFrameData), "Render");
 
 			// Core and sim thread run in lockstep. This will result in a larger input latency than if I was 
 			// running just a single thread. Latency becomes worse if the core thread takes longer than sim 
