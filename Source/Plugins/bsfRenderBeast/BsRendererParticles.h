@@ -9,6 +9,7 @@
 #include "Material/BsShaderVariation.h"
 #include "Particles/BsParticleSystem.h"
 #include "Allocators/BsPoolAlloc.h"
+#include "Renderer/BsRendererMaterial.h"
 
 namespace bs { namespace ct
 {
