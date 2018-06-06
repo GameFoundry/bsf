@@ -51,36 +51,7 @@ namespace bs { namespace ct
 	 * @param[in]	lockY	If true, billboard rotation will be locked around the Y axis, otherwise the rotation is free.
 	 * @return				Object that can be used for looking up the variation technique in the material. 
 	 */
-	static const ShaderVariation& getParticleShaderVariation(ParticleOrientation orient, bool lockY)
-	{
-		if (lockY)
-		{
-			switch (orient)
-			{
-			default:
-			case ParticleOrientation::ViewPlane: 
-				return getParticleShaderVariation<ParticleOrientation::ViewPlane, true>();
-			case ParticleOrientation::ViewPosition: 
-				return getParticleShaderVariation<ParticleOrientation::ViewPosition, true>();
-			case ParticleOrientation::Axis: 
-				return getParticleShaderVariation<ParticleOrientation::Axis, true>();
-			}
-		}
-		else
-		{
-			switch (orient)
-			{
-			default:
-			case ParticleOrientation::ViewPlane: 
-				return getParticleShaderVariation<ParticleOrientation::ViewPlane, false>();
-			case ParticleOrientation::ViewPosition: 
-				return getParticleShaderVariation<ParticleOrientation::ViewPosition, false>();
-			case ParticleOrientation::Axis: 
-				return getParticleShaderVariation<ParticleOrientation::Axis, false>();
-			}
-		}
-	}
-
+	const ShaderVariation& getParticleShaderVariation(ParticleOrientation orient, bool lockY);
 
 	/** Contains information required for rendering a single particle system. */
 	class ParticlesRenderElement : public RenderElement
@@ -145,6 +116,7 @@ namespace bs { namespace ct
 		struct Members;
 	public:
 		ParticleRenderer();
+		~ParticleRenderer();
 
 		/** 
 		 * Returns a texture pool object that can be used for allocating textures required for holding particle system
@@ -157,7 +129,7 @@ namespace bs { namespace ct
 
 	private:
 		ParticleTexturePool mTexturePool;
-		UPtr<Members> m;
+		Members* m;
 	};
 
 	/** @} */

@@ -8,6 +8,36 @@
 
 namespace bs { namespace ct
 {
+	const ShaderVariation& getParticleShaderVariation(ParticleOrientation orient, bool lockY)
+	{
+		if (lockY)
+		{
+			switch (orient)
+			{
+			default:
+			case ParticleOrientation::ViewPlane:
+				return getParticleShaderVariation<ParticleOrientation::ViewPlane, true>();
+			case ParticleOrientation::ViewPosition:
+				return getParticleShaderVariation<ParticleOrientation::ViewPosition, true>();
+			case ParticleOrientation::Axis:
+				return getParticleShaderVariation<ParticleOrientation::Axis, true>();
+			}
+		}
+		else
+		{
+			switch (orient)
+			{
+			default:
+			case ParticleOrientation::ViewPlane:
+				return getParticleShaderVariation<ParticleOrientation::ViewPlane, false>();
+			case ParticleOrientation::ViewPosition:
+				return getParticleShaderVariation<ParticleOrientation::ViewPosition, false>();
+			case ParticleOrientation::Axis:
+				return getParticleShaderVariation<ParticleOrientation::Axis, false>();
+			}
+		}
+	}
+
 	ParticlesParamDef gParticlesParamDef;
 
 	ParticleTexturePool::~ParticleTexturePool()
@@ -83,7 +113,7 @@ namespace bs { namespace ct
 	};
 
 	ParticleRenderer::ParticleRenderer()
-		:m(bs_unique_ptr_new<Members>())
+		:m(bs_new<Members>())
 	{
 		SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
@@ -110,6 +140,11 @@ namespace bs { namespace ct
 		uvIter.addValue(Vector2(1.0f, 0.0f));
 
 		m->billboardVB->writeData(0, meshData.getStreamSize(0), meshData.getStreamData(0), BWT_DISCARD);
+	}
+
+	ParticleRenderer::~ParticleRenderer()
+	{
+		bs_delete(m);
 	}
 
 	void ParticleRenderer::drawBillboards(UINT32 count)
