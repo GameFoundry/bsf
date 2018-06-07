@@ -7,6 +7,7 @@
 #include "Math/BsDegree.h"
 #include "Math/BsVector2.h"
 #include "Math/BsVector3.h"
+#include "BsParticleDistribution.h"
 
 namespace bs
 {
@@ -411,6 +412,72 @@ namespace bs
 		/** @copydoc setShape */
 		ParticleEmitterShape* getShape() const { return mShape.get(); }
 
+		/** Determines the constant particle emission rate, per second. */
+		void setEmissionRate(UINT32 value) { mEmissionRate = value; }
+
+		/** @copydoc setEmissionRate */
+		UINT32 getEmissionRate() const { return mEmissionRate; }
+
+		/** 
+		 * Determines the size of the particles when initially spawned. The size is applied uniformly in all dimensions.
+		 * Only used if 3D size is disabled. 
+		 */
+		void setInitialSize(FloatDistribution value) { mInitialSize = std::move(value); }
+
+		/** @copydoc setInitialSize */
+		const FloatDistribution& getInitialSize() const { return mInitialSize; }
+
+		/** 
+		 * Determines the size of the particles when initially spawned. Size can be specified for each dimension separately.
+		 * Only used if 3D size is enabled. 
+		 */
+		void setInitialSize3D(Vector3Distribution value) { mInitialSize3D = std::move(value); }
+
+		/** @copydoc setInitialSize3D */
+		const Vector3Distribution& getInitialSize3D() const { return mInitialSize3D; }
+
+		/** 
+		 * Determines should the initial particle size be applied uniformly (if disabled), or evaluated separately for each
+		 * dimension (if enabled).
+		 */
+		void setUse3DSize(bool value) { mUse3DSize = value; }
+
+		/** @copydoc setUse3DSize */
+		bool getUse3DSize() const { return mUse3DSize; }
+
+		/** 
+		 * Determines the rotation of the particles when initially spawned, in degrees. The rotation is applied around the 
+		 * particle's local Z axis. Only used if 3D rotation is disabled. 
+		 */
+		void setInitialRotation(FloatDistribution value) { mInitialRotation = std::move(value); }
+
+		/** @copydoc setInitialRotation */
+		const FloatDistribution& getInitialRotation() const { return mInitialRotation; }
+
+		/** 
+		 * Determines the rotation of the particles when initially spawned, in Euler angles. Only used if 3D rotation is
+		 * enabled. 
+		 */
+		void setInitialRotation3D(Vector3Distribution value) { mInitialRotation3D = std::move(value); }
+
+		/** @copydoc setInitialRotation3D */
+		const Vector3Distribution& getInitialRotation3D() const { return mInitialRotation3D; }
+
+		/**
+		 * Determines should the initial particle rotation be a single angle applied around a Z axis (if disabled), or a 
+		 * set of Euler angles that allow you to rotate around every axis (if enabled).
+		 */
+		void setUse3DRotation(bool value) { mUse3DRotation = value; }
+
+		/** @copydoc setUse3DRotation */
+		bool getUse3DRotation() const { return mUse3DRotation; }
+
+		/** Determines the initial color (in RGB channels) and transparency (in A channel) of particles. */
+		void setInitialColor(const ColorDistribution& value) { mInitialColor = value; }
+
+		/** @copydoc setInitialColor */
+		const ColorDistribution& getInitialColor() const { return mInitialColor; }
+
 		/** 
 		 * Spawns new particles in the specified time increment (if any). 
 		 *
@@ -424,6 +491,18 @@ namespace bs
 
 	private:
 		UPtr<ParticleEmitterShape> mShape;
+
+		UINT32 mEmissionRate = 50;
+
+		FloatDistribution mInitialSize;
+		Vector3Distribution mInitialSize3D;
+		bool mUse3DSize = false;
+
+		FloatDistribution mInitialRotation;
+		Vector3Distribution mInitialRotation3D;
+		bool mUse3DRotation = false;
+
+		ColorDistribution mInitialColor;
 	};
 
 	/** @} */

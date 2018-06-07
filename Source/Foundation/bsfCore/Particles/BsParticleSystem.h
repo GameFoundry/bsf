@@ -10,8 +10,7 @@
 #include "CoreThread/BsCoreObject.h"
 #include "Image/BsPixelData.h"
 #include "Math/BsAABox.h"
-#include "Particles/BsParticleEmitter.h"
-#include "Particles/BsParticleEvolver.h"
+#include "BsParticleDistribution.h"
 
 namespace bs 
 {
@@ -38,6 +37,21 @@ namespace bs
 
 		/** Orient with normal parallel to a specific axis. */
 		Axis
+	};
+
+	/** Space in which to spawn/transform particles. */
+	enum class ParticleSimulationSpace
+	{
+		/** 
+		 * Particles will always remain local to their transform parent. This means if the transform parent moves so will
+		 * all the particles.
+		Local,
+
+		/** 
+		 * Particles will be placed in world space. This means they will spawn at the location of the transform parent,
+		 * but are no longer affected by its transform after spawn (e.g. smoke rising from a moving train).
+		 */
+		World
 	};
 
 	/** 
@@ -129,6 +143,48 @@ namespace bs
 			_markCoreDirty();
 		}
 
+		/** Determines the duration during which the system runs, in seconds. */
+		void setDuration(float duration) { mDuration = duration; }
+
+		/** @copydoc setDuration */
+		float getDuration() const { return mDuration; }
+
+		/** Determines should the system start playing again once it reaches the end. */
+		void setLooping(bool loop) { mIsLooping = loop; }
+
+		/** @copydoc setLooping */
+		bool getLooping() const { return mIsLooping; }
+
+		/** Determines in which space are particles in. */
+		void setSimulationSpace(ParticleSimulationSpace value) { mSimulationSpace = value; }
+
+		/** @copydoc setSimulationSpace */
+		ParticleSimulationSpace getSimulationSpace() const { return mSimulationSpace; }
+
+		/** Determines the maximum number of particles that can ever be active in this system. */
+		void setMaxParticles(UINT32 value) { mMaxParticles = value; }
+
+		/** @copydoc setMaxParticles */
+		UINT32 getMaxParticles() const { return mMaxParticles; }
+
+		/** 
+		 * Determines should an automatic seed be used for the internal random number generator. This ensures the particle
+		 * system yields different results each time it is ran.
+		 */
+		void setUseAutomaticSeed(bool enable) { mUseAutomaticSeed = enable ;}
+
+		/** @copydoc setUseAutomaticSeed */
+		bool getUseAutomaticSeed() const { return mUseAutomaticSeed; }
+
+		/** 
+		 * Determines the seed to use for the internal random number generator. Allows you to guarantee identical behaviour
+		 * between different runs. Only relevant if automatic seed is disabled.
+		 */
+		void setManualSeed(UINT32 seed) { mSeed = seed; }
+
+		/** @copydoc setManualSeed */
+		UINT32 getManualSeed() const { return mSeed; }
+
 		/** @copydoc setMaterial */
 		const HMaterial& getMaterial() const { return mMaterial; }
 
@@ -157,7 +213,6 @@ namespace bs
 		/** @} */
 	private:
 		friend class ParticleManager;
-
 		friend class ParticleSystemRTTI;
 
 		ParticleSystem();
@@ -175,6 +230,13 @@ namespace bs
 		static SPtr<ParticleSystem> createEmpty();
 
 		UINT32 mId = 0;
+
+		float mDuration = 5.0f;
+		bool mIsLooping = true;
+		ParticleSimulationSpace mSimulationSpace = ParticleSimulationSpace::World;
+		UINT32 mMaxParticles = 2000;
+		bool mUseAutomaticSeed = true;
+		UINT32 mSeed = 0;
 
 		Vector<UPtr<ParticleEmitter>> mEmitters;
 		Vector<UPtr<ParticleEvolver>> mEvolvers;
