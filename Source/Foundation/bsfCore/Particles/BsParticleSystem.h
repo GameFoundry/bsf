@@ -10,7 +10,9 @@
 #include "CoreThread/BsCoreObject.h"
 #include "Image/BsPixelData.h"
 #include "Math/BsAABox.h"
-#include "BsParticleDistribution.h"
+#include "Particles/BsParticleDistribution.h"
+#include "Particles/BsParticleEvolver.h"
+#include "Particles/BsParticleEmitter.h"
 
 namespace bs 
 {
@@ -45,6 +47,7 @@ namespace bs
 		/** 
 		 * Particles will always remain local to their transform parent. This means if the transform parent moves so will
 		 * all the particles.
+		 */
 		Local,
 
 		/** 
