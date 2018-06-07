@@ -44,7 +44,7 @@
 #include "Audio/BsAudio.h"
 #include "Animation/BsAnimationManager.h"
 #include "Renderer/BsParamBlocks.h"
-#include "Particles/BsParticlemanager.h"
+#include "Particles/BsParticleManager.h"
 
 namespace bs
 {
