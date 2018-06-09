@@ -274,7 +274,7 @@ namespace bs
 			Vector3 relativePos = invRotation.rotate(myPos - parentPos) *  invScale;
 			Quaternion relativeRot = invRotation * myRot;
 
-			relativePos = relativePos + myRot.rotate(mLocalPosition * scale);
+			relativePos = relativePos + relativeRot.rotate(mLocalPosition * scale);
 			relativeRot = relativeRot * mLocalRotation;
 
 			mInternal->setTransform(relativePos, relativeRot);
