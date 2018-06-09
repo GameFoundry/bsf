@@ -216,6 +216,8 @@ function(target_link_framework TARGET FRAMEWORK)
 	mark_as_advanced(FM_${FRAMEWORK})
 endfunction()
 
+set(BS_BINARY_DEP_WEBSITE "https://data.banshee3d.com" CACHE STRING "The location that binary dependencies will be pulled from. Must follow the same naming scheme as data.banshee3d.com")
+
 function(update_binary_deps DEP_PREFIX DEP_FOLDER DEP_VERSION)
 	# Clean and create a temporary folder
 	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)	
@@ -229,7 +231,7 @@ function(update_binary_deps DEP_PREFIX DEP_FOLDER DEP_VERSION)
 		set(DEP_TYPE macOS)
 	endif()
 
-	set(BINARY_DEPENDENCIES_URL https://data.banshee3d.com/${DEP_PREFIX}Dependencies_${DEP_TYPE}_Master_${DEP_VERSION}.zip)
+	set(BINARY_DEPENDENCIES_URL ${BS_BINARY_DEP_WEBSITE}/${DEP_PREFIX}Dependencies_${DEP_TYPE}_Master_${DEP_VERSION}.zip)
 	file(DOWNLOAD ${BINARY_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip 
 		SHOW_PROGRESS
 		STATUS DOWNLOAD_STATUS)
@@ -275,7 +277,7 @@ function(update_builtin_assets ASSET_PREFIX ASSET_FOLDER ASSET_VERSION CLEAR_MAN
 	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)	
 	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/Temp)	
 	
-	set(ASSET_DEPENDENCIES_URL https://data.banshee3d.com/${ASSET_PREFIX}Data_Master_${ASSET_VERSION}.zip)
+	set(ASSET_DEPENDENCIES_URL ${BS_BINARY_DEP_WEBSITE}/${ASSET_PREFIX}Data_Master_${ASSET_VERSION}.zip)
 	file(DOWNLOAD ${ASSET_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip 
 		SHOW_PROGRESS
 		STATUS DOWNLOAD_STATUS)
