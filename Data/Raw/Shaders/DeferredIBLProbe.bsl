@@ -20,7 +20,7 @@ shader DeferredIBLProbe
 	{
 		write = false;
 		
-		#ifdef INSIDE_GEOMETRY
+		#if INSIDE_GEOMETRY
 		read = false;
 		#else
 		read = true;
@@ -39,7 +39,7 @@ shader DeferredIBLProbe
 	
 	raster
 	{
-		#ifdef INSIDE_GEOMETRY
+		#if INSIDE_GEOMETRY
 		cull = cw;
 		#else
 		cull = ccw;
