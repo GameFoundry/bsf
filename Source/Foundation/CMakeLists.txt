@@ -88,26 +88,31 @@ set_property(TARGET bsf PROPERTY FOLDER Foundation)
 install(
 	DIRECTORY bsfUtility
 	DESTINATION include
-	FILES_MATCHING PATTERN "*.h"
+	FILES_MATCHING 
+	PATTERN "*.h"
+	PATTERN "*.hpp"
 	PATTERN "Private" EXCLUDE
 )
 
 install(
 	DIRECTORY bsfCore 
 	DESTINATION include
-	FILES_MATCHING PATTERN "*.h"
+	FILES_MATCHING 
+	PATTERN "*.h"
+	PATTERN "*.hpp"
 	PATTERN "Private" EXCLUDE
 )
 
 install(
 	DIRECTORY bsfEngine
 	DESTINATION include
-	FILES_MATCHING PATTERN "*.h"
+	FILES_MATCHING 
+	PATTERN "*.h"
+	PATTERN "*.hpp"
 	PATTERN "Private" EXCLUDE
 )
 
 install_bsf_target(bsf)
-
 
 # Precompiled headers (Cotire)
 if(MSVC)

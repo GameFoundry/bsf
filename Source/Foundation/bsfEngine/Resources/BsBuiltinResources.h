@@ -8,7 +8,7 @@
 #include "Math/BsVector2I.h"
 #include "BsApplication.h"
 
-#include "json.hpp"
+#include "ThirdParty/json.hpp"
 
 namespace bs
 {
