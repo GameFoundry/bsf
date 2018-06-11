@@ -111,6 +111,6 @@ To retrieve an index buffer from a **ct::Mesh** call @ref bs::ct::Mesh::getIndex
 SPtr<Mesh> mesh = ...;
 SPtr<IndexBuffer> meshIB = mesh->getIndexBuffer();
 SPtr<VertexData> vertexData = mesh->getVertexData();
-SPtr<VertexDeclaration> = vertexData->vertexDeclaration;
+SPtr<VertexDeclaration> vertexDeclaration = vertexData->vertexDeclaration;
 SPtr<VertexBuffer> meshVB = vertexData->getBuffer(0);
 ~~~~~~~~~~~~~
