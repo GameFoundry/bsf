@@ -64,7 +64,7 @@ namespace bs
 		Vector3* position = nullptr;
 		Vector3* velocity = nullptr;
 		Vector3* size = nullptr;
-		Vector2* rotation = nullptr;
+		Vector3* rotation = nullptr;
 		float* lifetime = nullptr;
 		RGBA* color = nullptr;
 		UINT32* indices = nullptr;
@@ -80,7 +80,7 @@ namespace bs
 				reserve<Vector3>(capacity).
 				reserve<Vector3>(capacity).
 				reserve<Vector3>(capacity).
-				reserve<Vector2>(capacity).
+				reserve<Vector3>(capacity).
 				reserve<float>(capacity).
 				reserve<RGBA>(capacity).
 				reserve<UINT32>(capacity).
@@ -89,7 +89,7 @@ namespace bs
 			position = alloc.alloc<Vector3>(capacity);
 			velocity = alloc.alloc<Vector3>(capacity);
 			size = alloc.alloc<Vector3>(capacity);
-			rotation = alloc.alloc<Vector2>(capacity);
+			rotation = alloc.alloc<Vector3>(capacity);
 			lifetime = alloc.alloc<float>(capacity);
 			color = alloc.alloc<RGBA>(capacity);
 			indices = alloc.alloc<UINT32>(capacity);
@@ -208,6 +208,13 @@ namespace bs
 			mCount--;
 		}
 
+		/** Frees all active partices past the provided particle count (0 to clear all particles). */
+		void clear(UINT32 numPartices = 0)
+		{
+			if(mCount > numPartices)
+				mCount = numPartices;
+		}
+
 		/** Returns all data about the particles. Active particles are always sequential at the start of the buffer. */
 		ParticleSetData& getParticles() { return mParticles; }
 
@@ -223,7 +230,7 @@ namespace bs
 		 */
 		UINT32 determineTextureSize() const
 		{
-			const UINT32 count = getParticleCount();
+			const UINT32 count = std::max(2U, getParticleCount());
 
 			UINT32 width = Bitwise::nextPow2(count);
 			UINT32 height = 1;

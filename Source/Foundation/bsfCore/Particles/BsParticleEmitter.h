@@ -7,6 +7,7 @@
 #include "Math/BsDegree.h"
 #include "Math/BsVector2.h"
 #include "Math/BsVector3.h"
+#include "Math/BsMatrix4.h"
 #include "BsParticleDistribution.h"
 
 namespace bs
@@ -33,6 +34,13 @@ namespace bs
 		{
 			SkinnedMesh skinnedMesh;
 		};
+
+		float time;
+		float length;
+		float timeStep;
+		UINT32 maxParticles;
+		bool worldSpace;
+		Matrix4 transform;
 	};
 
 	/** @} */
@@ -413,10 +421,25 @@ namespace bs
 		ParticleEmitterShape* getShape() const { return mShape.get(); }
 
 		/** Determines the constant particle emission rate, per second. */
-		void setEmissionRate(UINT32 value) { mEmissionRate = value; }
+		void setEmissionRate(FloatDistribution value) { mEmissionRate = std::move(value); }
 
 		/** @copydoc setEmissionRate */
-		UINT32 getEmissionRate() const { return mEmissionRate; }
+		const FloatDistribution& getEmissionRate() const { return mEmissionRate; }
+
+		/** Determines the lifetime of particles when they are initially spawned, in seconds. */
+		void setInitialLifetime(FloatDistribution value) { mInitialLifetime = std::move(value); }
+
+		/** @copydoc setInitialLifetime */
+		const FloatDistribution& getInitialLifetime() const { return mInitialLifetime; }
+
+		/** 
+		 * Sets the initial speed of the particles, in meters/second. The speed is applied along the particle's velocity
+		 * direction, which is determined by the emission shape and potentially other properties.
+		 */
+		void setInitialSpeed(FloatDistribution value) { mInitialSpeed = std::move(value); }
+
+		/** @copydoc setInitialSpeed */
+		const FloatDistribution& getInitialSpeed() const { return mInitialSpeed; }
 
 		/** 
 		 * Determines the size of the particles when initially spawned. The size is applied uniformly in all dimensions.
@@ -481,28 +504,32 @@ namespace bs
 		/** 
 		 * Spawns new particles in the specified time increment (if any). 
 		 *
-		 * @param[in]	timeDelta		Determines how much time has passed since the last call to this method, which in
-		 *								turn controls how many particles to spawn (depending on other properties).
 		 * @param[in]	random			Random number generator.
-		 * @param[in]	state			Per-frame state required by some emitters.
+		 * @param[in]	state			Various per-frame information provided by the parent particle system.
 		 * @param[in]	set				Set to which to append new particles to.
 		 */
-		void spawn(float timeDelta, Random& random, const ParticleEmitterState& state, ParticleSet& set) const;
+		void spawn(Random& random, const ParticleEmitterState& state, ParticleSet& set) const;
 
 	private:
+		// User-visible properties
 		UPtr<ParticleEmitterShape> mShape;
 
-		UINT32 mEmissionRate = 50;
+		FloatDistribution mEmissionRate = 50.0f;
+		FloatDistribution mInitialLifetime = 10.0f;
+		FloatDistribution mInitialSpeed = 1.0f;
 
-		FloatDistribution mInitialSize;
-		Vector3Distribution mInitialSize3D;
+		FloatDistribution mInitialSize = 0.1f;
+		Vector3Distribution mInitialSize3D = Vector3::ONE;
 		bool mUse3DSize = false;
 
-		FloatDistribution mInitialRotation;
-		Vector3Distribution mInitialRotation3D;
+		FloatDistribution mInitialRotation = 0.0f;
+		Vector3Distribution mInitialRotation3D = Vector3::ZERO;
 		bool mUse3DRotation = false;
 
-		ColorDistribution mInitialColor;
+		ColorDistribution mInitialColor = Color::Black;
+
+		// Internal state
+		mutable float mEmitAccumulator = 0.0f;
 	};
 
 	/** @} */

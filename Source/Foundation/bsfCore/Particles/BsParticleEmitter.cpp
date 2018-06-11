@@ -1213,31 +1213,75 @@ namespace bs
 		:mShape(bs_unique_ptr<ParticleEmitterShape>(nullptr))
 	{ }
 
-	void ParticleEmitter::spawn(float timeDelta, Random& random, const ParticleEmitterState& state, ParticleSet& set) const
+	void ParticleEmitter::spawn(Random& random, const ParticleEmitterState& state, ParticleSet& set) const
 	{
 		if(!mShape)
 			return;
 
-		// TODO - Currently spawning roughly 50 particles per second, for debug purposes
-		const UINT32 numToSpawn = (UINT32)(50 * timeDelta);
+		const float t = state.time / state.length;
+		const float rate = mEmissionRate.evaluate(t, random);
+
+		mEmitAccumulator += rate * state.timeStep;
+		auto numToSpawn = (UINT32)mEmitAccumulator;
+		mEmitAccumulator -= (float)numToSpawn;
+
+		const UINT32 numPartices = set.getParticleCount() + numToSpawn;
+		if(numPartices > state.maxParticles)
+			numToSpawn = state.maxParticles - set.getParticleCount();
 
 		const UINT32 firstIdx = mShape->spawn(random, set, numToSpawn, state);
 		const UINT32 endIdx = firstIdx + numToSpawn;
 
 		ParticleSetData& particles = set.getParticles();
 
-		// TODO - Using arbitrary default values
 		for(UINT32 i = firstIdx; i < endIdx; i++)
-			particles.lifetime[i] = 1000.0f;
+			particles.lifetime[i] = mInitialLifetime.evaluate(t, random);
 
 		for(UINT32 i = firstIdx; i < endIdx; i++)
-			particles.size[i] = Vector3::ONE;
+			particles.velocity[i] *= mInitialSpeed.evaluate(t, random);
+
+		if(!mUse3DSize)
+		{
+			for (UINT32 i = firstIdx; i < endIdx; i++)
+			{
+				const float size = mInitialSize.evaluate(t, random);
+				particles.size[i] = Vector3(size, size, size);
+			}
+		}
+		else
+		{
+			for (UINT32 i = firstIdx; i < endIdx; i++)
+			{
+				const Vector3 size = mInitialSize3D.evaluate(t, random);
+				particles.size[i] = size;
+			}
+		}
+
+		if(!mUse3DRotation)
+		{
+			for (UINT32 i = firstIdx; i < endIdx; i++)
+			{
+				const float rotation = mInitialRotation.evaluate(t, random);
+				particles.rotation[i] = Vector3(rotation, 0.0f, 0.0f);
+			}
+		}
+		else
+		{
+			for (UINT32 i = firstIdx; i < endIdx; i++)
+			{
+				const Vector3 rotation = mInitialRotation3D.evaluate(t, random);
+				particles.rotation[i] = rotation;
+			}
+		}
 
 		for(UINT32 i = firstIdx; i < endIdx; i++)
-			particles.rotation[i] = Vector2::ZERO;
+			particles.color[i] = mInitialColor.evaluate(t, random);
 
-		const RGBA whiteColor = Color::White.getAsRGBA();
-		for(UINT32 i = firstIdx; i < endIdx; i++)
-			particles.color[i] = whiteColor;
+		// If in world-space we apply the transform here, otherwise we apply it in the rendering code
+		if(state.worldSpace)
+		{
+			for (UINT32 i = firstIdx; i < endIdx; i++)
+				particles.position[i] = state.transform.multiplyAffine(particles.position[i]);
+		}
 	}
 }

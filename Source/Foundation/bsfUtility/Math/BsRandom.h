@@ -31,12 +31,6 @@ namespace bs
 			mSeed[3] = seed * 694295795 + 1;
 		}
 
-		/** Changes the seed of the generator to a random value. */
-		void setRandomSeed()
-		{
-			setSeed(rand());
-		}
-
 		/** Returns a random value in range [0, std::numeric_limits<uint32_t>::max()]. */
 		uint32_t get() const
 		{

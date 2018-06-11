@@ -16,27 +16,144 @@ namespace bs
 	static constexpr UINT32 INITIAL_PARTICLE_CAPACITY = 1000;
 
 	ParticleSystem::ParticleSystem()
-		: mParticleSet(bs_new<ParticleSet>(INITIAL_PARTICLE_CAPACITY))
 	{
-		// TODO - Determine initial capacity based on existing emitters (if deserialized and emitters and known beforehand)
-		// - Or just delay this creation until first call to simulate()
-
 		mId = ParticleManager::instance().registerParticleSystem(this);
+		mSeed = rand();
 	}
 
 	ParticleSystem::~ParticleSystem()
 	{
 		ParticleManager::instance().unregisterParticleSystem(this);
 
-		bs_delete(mParticleSet);
+		if(mParticleSet)
+			bs_delete(mParticleSet);
+	}
+
+	void ParticleSystem::setManualSeed(UINT32 seed)
+	{
+		mManualSeed = seed;
+
+		if(!mUseAutomaticSeed)
+		{
+			mSeed = seed;
+			mRandom.setSeed(seed);
+		}
+	}
+
+	void ParticleSystem::setUseAutomaticSeed(bool enable)
+	{
+		if(mUseAutomaticSeed == enable)
+			return;
+
+		if(enable)
+			mSeed = rand();
+		else
+			mSeed = mManualSeed;
+
+		mRandom.setSeed(mSeed);
+	}
+
+	void ParticleSystem::setMaxParticles(UINT32 value)
+	{
+		if(mMaxParticles == value)
+			return;
+
+		mParticleSet->clear(value);
+		mMaxParticles = value;
+	}
+
+	void ParticleSystem::setSimulationSpace(ParticleSimulationSpace value)
+	{
+		if(mSimulationSpace == value)
+			return;
+
+		mSimulationSpace = value;
+		_markCoreDirty();
+	}
+
+	void ParticleSystem::play()
+	{
+		if(mState == State::Playing)
+			return;
+
+		if(mState == State::Uninitialized)
+		{
+			UINT32 particleCapacity = std::min(mMaxParticles, INITIAL_PARTICLE_CAPACITY);
+			mParticleSet = bs_new<ParticleSet>(particleCapacity);
+		}
+
+		mState = State::Playing;
+		mTime = 0.0f;
+		mRandom.setSeed(mSeed);
+	}
+
+	void ParticleSystem::pause()
+	{
+		if(mState == State::Playing)
+			mState = State::Paused;
+	}
+
+	void ParticleSystem::stop()
+	{
+		if(mState != State::Playing && mState != State::Paused)
+			return;
+
+		mState = State::Stopped;
+		mParticleSet->clear();
 	}
 
 	void ParticleSystem::_simulate(float timeDelta)
 	{
-		// Kill expired particles
+		if(mState != State::Playing)
+			return;
+
+		float newTime = mTime;
+
+		float timeStep = timeDelta;
+		if(newTime >= mDuration)
+		{
+			if(mIsLooping)
+				newTime = fmod(newTime, mDuration);
+			else
+			{
+				timeStep = mTime - mDuration;
+				newTime = mDuration;
+			}
+		}
+		else
+			newTime += timeDelta;
+
+		if(timeStep < 0.00001f)
+			return;
+
+		// Spawn new particles
+		ParticleEmitterState emitterState; // TODO - Needs to be populated with skinning information
+		emitterState.time = newTime;
+		emitterState.length = mDuration;
+		emitterState.timeStep = timeStep;
+		emitterState.maxParticles = mMaxParticles;
+		emitterState.worldSpace = mSimulationSpace == ParticleSimulationSpace::World;
+		emitterState.transform = mTransform.getMatrix();
+
+		for(auto& emitter : mEmitters)
+			emitter->spawn(mRandom, emitterState, *mParticleSet);
+
+		// Simulate
+		for(auto& evolver : mEvolvers)
+			evolver->evolve(mRandom, *mParticleSet);
+
+		// Update position
 		UINT32 numParticles = mParticleSet->getParticleCount();
 		const ParticleSetData& particles = mParticleSet->getParticles();
 
+		for(UINT32 i = 0; i < numParticles; i++)
+			particles.position[i] += particles.velocity[i] * timeStep;
+
+		// Decrement lifetime
+		for(UINT32 i = 0; i < numParticles; i++)
+			particles.lifetime[i] -= timeStep;
+
+		// Kill expired particles
 		for(UINT32 i = 0; i < numParticles;)
 		{
 			// TODO - Upon freeing a particle don't immediately remove it to save on swap, since we will be immediately
@@ -51,20 +168,7 @@ namespace bs
 				i++;
 		}
 
-		// Spawn new particles
-		ParticleEmitterState emitterState; // TODO - Needs to be populated with skinning information
-
-		for(auto& emitter : mEmitters)
-			emitter->spawn(timeDelta, mRandom, emitterState, *mParticleSet);
-
-		// Simulate
-		for(auto& evolver : mEvolvers)
-			evolver->evolve(mRandom, *mParticleSet);
-
-		// Decrement lifetime
-		numParticles = mParticleSet->getParticleCount();
-		for(UINT32 i = 0; i < numParticles; i++)
-			particles.lifetime[i] -= timeDelta;
+		mTime = newTime;
 	}
 
 	AABox ParticleSystem::_calculateBounds() const
@@ -108,12 +212,14 @@ namespace bs
 		const UINT32 size = 
 			getActorSyncDataSize() +
 			rttiGetElemSize(getCoreDirtyFlags()) +
+			rttiGetElemSize(mSimulationSpace) +
 			sizeof(SPtr<ct::Material>);
 
 		UINT8* data = allocator->alloc(size);
 		char* dataPtr = (char*)data;
 		dataPtr = syncActorTo(dataPtr);
 		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
+		dataPtr = rttiWriteElem(mSimulationSpace, dataPtr);
 
 		SPtr<ct::Material>* material = new (dataPtr) SPtr<ct::Material>();
 		if (mMaterial.isLoaded())
@@ -172,6 +278,7 @@ namespace bs
 
 			dataPtr = syncActorFrom(dataPtr);
 			dataPtr = rttiReadElem(dirtyFlags, dataPtr);
+			dataPtr = rttiReadElem(mSimulationSpace, dataPtr);
 
 			SPtr<Material>* material = (SPtr<Material>*)dataPtr;
 			mMaterial = *material;

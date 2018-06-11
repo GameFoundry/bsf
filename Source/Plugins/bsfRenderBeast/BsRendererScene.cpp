@@ -634,8 +634,14 @@ namespace bs {	namespace ct
 		RendererParticles& rendererParticles = mInfo.particleSystems.back();
 		rendererParticles.particleSystem = particleSystem;
 
+		Matrix4 transform;
+		if(particleSystem->getSimulationSpace() == ParticleSimulationSpace::Local)
+			transform = particleSystem->getTransform().getMatrix();
+		else
+			transform = Matrix4::IDENTITY;
+
 		SPtr<GpuParamBlockBuffer> paramBuffer = gParticlesParamDef.createBuffer();
-		gParticlesParamDef.gWorldTfrm.set(paramBuffer, particleSystem->getTransform().getMatrix());
+		gParticlesParamDef.gWorldTfrm.set(paramBuffer, transform);
 		gParticlesParamDef.gAxisUp.set(paramBuffer, Vector3::UNIT_Y); // TODO
 		gParticlesParamDef.gAxisRight.set(paramBuffer, Vector3::UNIT_X); // TODO;
 

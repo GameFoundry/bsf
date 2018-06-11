@@ -6,6 +6,7 @@
 #include "Image/BsColor.h"
 #include "Image/BsColorGradient.h"
 #include "Math/BsVector3.h"
+#include "Math/BsRandom.h"
 #include "Animation/BsAnimationCurve.h"
 #include "Utility/BsBitwise.h"
 
@@ -90,6 +91,40 @@ namespace bs
 			}
 		}
 
+		/** 
+		 * Evaluates the value of the distribution.
+		 * 
+		 * @param[in]	t		Time at which to evaluate the distribution. This is only relevant if the distribution
+		 *						contains gradients.
+		 * @param[in]	factor	Random number generator that determines the factor. Factor determines how to interpolate
+		 *						between min/max value, if the distribution represents a range.
+		 * @return				Evaluated color.
+		 *
+		 */
+		RGBA evaluate(float t, Random& factor) const
+		{
+			switch(mType)
+			{
+			default:
+			case PDT_Constant:
+				return mMinColor;
+			case PDT_RandomRange:
+			{
+				const UINT32 byteFactor = Bitwise::unormToUint<8>(factor.getUNorm());
+				return Color::lerp(byteFactor, mMinColor, mMaxColor);
+			}
+			case PDT_Curve:
+				return mMinGradient.evaluate(t);
+			case PDT_RandomCurveRange:
+				{
+					const RGBA minColor = mMinGradient.evaluate(t);
+					const RGBA maxColor = mMaxGradient.evaluate(t);
+
+					const UINT32 byteFactor = Bitwise::unormToUint<8>(factor.getUNorm());
+					return Color::lerp(byteFactor, minColor, maxColor);
+				}
+			}
+		}
 	private:
 		friend struct RTTIPlainType<ColorDistribution>;
 
@@ -135,7 +170,7 @@ namespace bs
 		 * @return				Evaluated value.
 		 *
 		 */
-		T evaluate(T t, float factor) const
+		T evaluate(float t, float factor) const
 		{
 			switch(mType)
 			{
@@ -148,10 +183,41 @@ namespace bs
 				return mMinCurve.evaluate(t);
 			case PDT_RandomCurveRange:
 				{
-					const float minValue = mMinCurve.evaluate(t);
-					const float maxValue = mMaxCurve.evaluate(t);
+					const T minValue = mMinCurve.evaluate(t);
+					const T maxValue = mMaxCurve.evaluate(t);
 
 					return Math::lerp(factor, minValue, maxValue);
+				}
+			}
+		}
+
+		/** 
+		 * Evaluates the value of the distribution.
+		 * 
+		 * @param[in]	t		Time at which to evaluate the distribution. This is only relevant if the distribution
+		 *						contains curves.
+		 * @param[in]	factor	Random number generator that determines the factor. Factor determines how to interpolate
+		 *						between min/max value, if the distribution represents a range.
+		 * @return				Evaluated value.
+		 *
+		 */
+		T evaluate(float t, Random& factor) const
+		{
+			switch(mType)
+			{
+			default:
+			case PDT_Constant:
+				return mMinValue;
+			case PDT_RandomRange:
+				return Math::lerp(factor.getUNorm(), mMinValue, mMaxValue);
+			case PDT_Curve:
+				return mMinCurve.evaluate(t);
+			case PDT_RandomCurveRange:
+				{
+					const T minValue = mMinCurve.evaluate(t);
+					const T maxValue = mMaxCurve.evaluate(t);
+
+					return Math::lerp(factor.getUNorm(), minValue, maxValue);
 				}
 			}
 		}

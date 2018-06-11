@@ -139,12 +139,14 @@ namespace bs
 				mEvolvers.erase(iterFind);
 		}
 
-		/** Material to render the particles with. */
-		void setMaterial(const HMaterial& material)
-		{
-			mMaterial = material;
-			_markCoreDirty();
-		}
+		/** Starts the particle system. New particles will be emitted and existing particles will be evolved. */
+		void play();
+
+		/** Pauses the particle system. New particles will stop being emitted and existing particle state will be frozen. */
+		void pause();
+
+		/** Stops the particle system and resets it to initial state, clearing all particles. */
+		void stop();
 
 		/** Determines the duration during which the system runs, in seconds. */
 		void setDuration(float duration) { mDuration = duration; }
@@ -159,13 +161,13 @@ namespace bs
 		bool getLooping() const { return mIsLooping; }
 
 		/** Determines in which space are particles in. */
-		void setSimulationSpace(ParticleSimulationSpace value) { mSimulationSpace = value; }
+		void setSimulationSpace(ParticleSimulationSpace value);
 
 		/** @copydoc setSimulationSpace */
 		ParticleSimulationSpace getSimulationSpace() const { return mSimulationSpace; }
 
 		/** Determines the maximum number of particles that can ever be active in this system. */
-		void setMaxParticles(UINT32 value) { mMaxParticles = value; }
+		void setMaxParticles(UINT32 value);
 
 		/** @copydoc setMaxParticles */
 		UINT32 getMaxParticles() const { return mMaxParticles; }
@@ -174,7 +176,7 @@ namespace bs
 		 * Determines should an automatic seed be used for the internal random number generator. This ensures the particle
 		 * system yields different results each time it is ran.
 		 */
-		void setUseAutomaticSeed(bool enable) { mUseAutomaticSeed = enable ;}
+		void setUseAutomaticSeed(bool enable);
 
 		/** @copydoc setUseAutomaticSeed */
 		bool getUseAutomaticSeed() const { return mUseAutomaticSeed; }
@@ -183,10 +185,17 @@ namespace bs
 		 * Determines the seed to use for the internal random number generator. Allows you to guarantee identical behaviour
 		 * between different runs. Only relevant if automatic seed is disabled.
 		 */
-		void setManualSeed(UINT32 seed) { mSeed = seed; }
+		void setManualSeed(UINT32 seed);
 
 		/** @copydoc setManualSeed */
 		UINT32 getManualSeed() const { return mSeed; }
+
+		/** Material to render the particles with. */
+		void setMaterial(const HMaterial& material)
+		{
+			mMaterial = material;
+			_markCoreDirty();
+		}
 
 		/** @copydoc setMaterial */
 		const HMaterial& getMaterial() const { return mMaterial; }
@@ -218,6 +227,12 @@ namespace bs
 		friend class ParticleManager;
 		friend class ParticleSystemRTTI;
 
+		/** States the particle system can be in. */
+		enum class State
+		{
+			Uninitialized, Stopped, Paused, Playing
+		};
+
 		ParticleSystem();
 
 		/** @copydoc CoreObject::createCore */
@@ -232,21 +247,26 @@ namespace bs
 		/**	Creates a new ParticleSystem instance without initializing it. */
 		static SPtr<ParticleSystem> createEmpty();
 
-		UINT32 mId = 0;
-
+		// User-visible properties
 		float mDuration = 5.0f;
 		bool mIsLooping = true;
 		ParticleSimulationSpace mSimulationSpace = ParticleSimulationSpace::World;
 		UINT32 mMaxParticles = 2000;
 		bool mUseAutomaticSeed = true;
-		UINT32 mSeed = 0;
+		UINT32 mManualSeed = 0;
+		HMaterial mMaterial;
 
 		Vector<UPtr<ParticleEmitter>> mEmitters;
 		Vector<UPtr<ParticleEvolver>> mEvolvers;
-		HMaterial mMaterial;
+
+		// Internal state
+		UINT32 mId = 0;
+		State mState = State::Uninitialized;
+		float mTime = 0.0f;
+		UINT32 mSeed = 0;
 
 		Random mRandom;
-		ParticleSet* mParticleSet;
+		ParticleSet* mParticleSet = nullptr;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -294,11 +314,17 @@ namespace bs
 			 */
 			UINT32 getId() const { return mId; }
 
-			/** Material to render the particles with. */
+			/** @copydoc bs::ParticleSystem::setMaterial */
 			void setMaterial(const SPtr<Material>& material) { mMaterial = material; }
 
 			/** @copydoc setMaterial() */
 			const SPtr<Material>& getMaterial() const { return mMaterial; }
+
+			/** @copydoc bs::ParticleSystem::setSimulationSpace */
+			void setSimulationSpace(ParticleSimulationSpace value) { mSimulationSpace = value; }
+
+			/** @copydoc setSimulationSpace */
+			ParticleSimulationSpace getSimulationSpace() const { return mSimulationSpace; }
 
 			/** @copydoc CoreObject::initialize */
 			void initialize() override;
@@ -316,6 +342,7 @@ namespace bs
 			UINT32 mId;
 
 			SPtr<Material> mMaterial;
+			ParticleSimulationSpace mSimulationSpace = ParticleSimulationSpace::World;
 		};
 	}
 

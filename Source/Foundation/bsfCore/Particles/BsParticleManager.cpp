@@ -245,6 +245,9 @@ namespace bs
 		// Generate output data from the current set
 		for (auto& system : mSystems)
 		{
+			if(!system->mParticleSet)
+				continue;
+
 			// TODO - Make the output data allocation, and bound calculation happen on the worker thread
 			ParticleRenderData* renderData = renderDataPool.alloc(*system->mParticleSet);
 			renderData->numParticles = system->mParticleSet->getParticleCount();

@@ -25,12 +25,5 @@ namespace bs
 		virtual void evolve(Random& random, ParticleSet& set) const = 0;
 	};
 
-	// TODO - Debug only
-	class BS_CORE_EXPORT ParticleDebugEvolver : public ParticleEvolver
-	{
-	public:
-		void evolve(Random& random, ParticleSet& set) const;
-	};
-
 	/** @} */
 }

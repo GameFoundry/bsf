@@ -6,12 +6,4 @@
 
 namespace bs
 {
-	void ParticleDebugEvolver::evolve(Random& random, ParticleSet& set) const
-	{
-		ParticleSetData& particles = set.getParticles();
-
-		UINT32 count = set.getParticleCount();
-		for(UINT32 i = 0; i < count; i++)
-			particles.position[i] += Vector3::UNIT_Y * gTime().getFrameDelta() * 0.1f;
-	}
 }
