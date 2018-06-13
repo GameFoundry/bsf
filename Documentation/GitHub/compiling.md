@@ -38,7 +38,8 @@ Modify *CMAKE_INSTALL_PREFIX* to choose where the library gets installed after t
 
 Modify *CMAKE_BUILD_TYPE* to pick what kind of a build you want. Note that this is ignored for workflow generators like Visual Studio or XCode, in which you can pick this within the IDE itself. Supported values are:
  - *Debug* - Builds and unoptimized version with debug symbols. This is generally what you want for development.
- - *OptimizedDebug* - Builds an optimized version with debug symbols and various debug checks enabled.
+ - *RelWithDebInfo* - Builds an optimized version with debug symbols and various debug checks enabled.
+ - *MinSizeRel* - Builds an optimized version attempting to keep the resultant binary as small as possible. Debug checks are disabled.
  - *Release* - Builds an optimized version with no debug checks.
  
 You can choose to use a different *CMake* generator than those specified above, as long as the platform/compiler is supported:  
@@ -113,4 +114,4 @@ The following dependencies will need to be installed manually. Which ones are re
     - http://www.fmod.org/download/
     - If CMake complains it cannot find FMOD, manually set the FMOD_INSTALL_DIRS to your installation directory 
     - Copy the dynamic libraries (.dll) from {INSTALLDIR}/api/lowlevel/lib into /bin folder in bs::framework source code folder
-      - Use logging libraries for the Debug builds, and non-logging for OptimizedDebug and Release builds
+      - Use logging libraries for the Debug builds, and non-logging for RelWithDebInfo and Release builds

@@ -14,8 +14,10 @@ static constexpr const char* SECONDARY_APP_ROOT = "@SECONDARY_APP_ROOT_DIR@/";
 /** Path to the binaries when files haven't been packaged yet (e.g. running from debugger). */
 #if BS_CONFIG == BS_CONFIG_DEBUG
 static constexpr const char* BINARIES_PATH = "@CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG@";
-#elif BS_CONFIG == BS_CONFIG_OPTIMIZEDDEBUG
-static constexpr const char* BINARIES_PATH = "@CMAKE_RUNTIME_OUTPUT_DIRECTORY_OPTIMIZEDDEBUG@";
+#elif BS_CONFIG == BS_CONFIG_RELWITHDEBINFO
+static constexpr const char* BINARIES_PATH = "@CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO@";
+#elif BS_CONFIG == BS_CONFIG_MINSIZEREL
+static constexpr const char* BINARIES_PATH = "@CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL@";
 #elif BS_CONFIG == BS_CONFIG_RELEASE
 static constexpr const char* BINARIES_PATH = "@CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE@";
 #endif

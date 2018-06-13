@@ -42,7 +42,7 @@ if(WIN32)
 	install(
 		FILES ${SRC_RELEASE}
 		DESTINATION ${DESTINATION_DIR}
-		CONFIGURATIONS Release OptimizedDebug
+		CONFIGURATIONS Release RelWithDebInfo MinSizeRel
 		RENAME ${RELEASE_FILENAME}
 	)
 		
