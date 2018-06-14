@@ -186,6 +186,9 @@ namespace bs
 		/**	Returns the total number of created threads in the pool	(both running and unused). */
 		UINT32 getNumAllocated() const;
 
+		/** The thread pool will check for unused threads every UNUSED_CHECK_PERIOD \fn getThread calls*/
+		static constexpr int UNUSED_CHECK_PERIOD = 32;
+
 	protected:
 		friend class HThread;
 
