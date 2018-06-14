@@ -400,7 +400,7 @@ namespace bs
 		case Xsc::Reflection::Filter::ComparisonAnisotropic:
 			desc.minFilter = FO_ANISOTROPIC;
 			desc.magFilter = FO_ANISOTROPIC;
-			desc.minFilter = FO_ANISOTROPIC;
+			desc.mipFilter = FO_ANISOTROPIC;
 			break;
 		default:
 			break;
