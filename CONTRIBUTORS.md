@@ -16,6 +16,7 @@ Huge thanks to all the patrons, contributors and donators!
 
 # Tier 2 Patrons
 - Andrzej Oraniewicz [Founder]
+- Nemerle [Founder]
 
 # Tier 1 Patrons
 - Danijel Ribić [Founder]
