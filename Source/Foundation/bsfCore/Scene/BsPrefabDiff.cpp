@@ -158,51 +158,43 @@ namespace bs
 
 	SPtr<PrefabObjectDiff> PrefabDiff::generateDiff(const HSceneObject& prefab, const HSceneObject& instance)
 	{
-		SPtr<PrefabObjectDiff> output;
-
+		PrefabObjectDiff output;
+		bool valid_diff = false;
 		if (prefab->getName() != instance->getName())
 		{
-			output = bs_shared_ptr_new<PrefabObjectDiff>();
-			output->name = instance->getName();
-			output->soFlags |= (UINT32)SceneObjectDiffFlags::Name;
+			valid_diff = true;
+			output.name = instance->getName();
+			output.soFlags |= (UINT32)SceneObjectDiffFlags::Name;
 		}
 
 		const Transform& prefabTfrm = prefab->getLocalTransform();
 		const Transform& instanceTfrm = instance->getLocalTransform();
 		if (prefabTfrm.getPosition() != instanceTfrm.getPosition())
 		{
-			if (output == nullptr)
-				output = bs_shared_ptr_new<PrefabObjectDiff>();
-
-			output->position = instanceTfrm.getPosition();
-			output->soFlags |= (UINT32)SceneObjectDiffFlags::Position;
+			valid_diff = true;
+			output.position = instanceTfrm.getPosition();
+			output.soFlags |= (UINT32)SceneObjectDiffFlags::Position;
 		}
 
 		if (prefabTfrm.getRotation() != instanceTfrm.getRotation())
 		{
-			if (output == nullptr)
-				output = bs_shared_ptr_new<PrefabObjectDiff>();
-
-			output->rotation = instanceTfrm.getRotation();
-			output->soFlags |= (UINT32)SceneObjectDiffFlags::Rotation;
+			valid_diff = true;
+			output.rotation = instanceTfrm.getRotation();
+			output.soFlags |= (UINT32)SceneObjectDiffFlags::Rotation;
 		}
 
 		if (prefabTfrm.getScale() != instanceTfrm.getScale())
 		{
-			if (output == nullptr)
-				output = bs_shared_ptr_new<PrefabObjectDiff>();
-
-			output->scale = instanceTfrm.getScale();
-			output->soFlags |= (UINT32)SceneObjectDiffFlags::Scale;
+			valid_diff = true;
+			output.scale = instanceTfrm.getScale();
+			output.soFlags |= (UINT32)SceneObjectDiffFlags::Scale;
 		}
 
 		if (prefab->getActive() != instance->getActive())
 		{
-			if (output == nullptr)
-				output = bs_shared_ptr_new<PrefabObjectDiff>();
-
-			output->isActive = instance->getActive();
-			output->soFlags |= (UINT32)SceneObjectDiffFlags::Active;
+			valid_diff = true;
+			output.isActive = instance->getActive();
+			output.soFlags |= (UINT32)SceneObjectDiffFlags::Active;
 		}
 
 		UINT32 prefabChildCount = prefab->getNumChildren();
@@ -233,18 +225,14 @@ namespace bs
 			{
 				if (childDiff != nullptr)
 				{
-					if (output == nullptr)
-						output = bs_shared_ptr_new<PrefabObjectDiff>();
-
-					output->childDiffs.push_back(childDiff);
+					valid_diff = true;
+					output.childDiffs.push_back(childDiff);
 				}
 			}
 			else
 			{
-				if (output == nullptr)
-					output = bs_shared_ptr_new<PrefabObjectDiff>();
-
-				output->removedChildren.push_back(prefabChild->getLinkId());
+				valid_diff = true;
+				output.removedChildren.push_back(prefabChild->getLinkId());
 			}
 		}
 
@@ -276,10 +264,8 @@ namespace bs
 				BinarySerializer bs;
 				SPtr<SerializedObject> obj = bs._encodeToIntermediate(instanceChild.get());
 
-				if (output == nullptr)
-					output = bs_shared_ptr_new<PrefabObjectDiff>();
-
-				output->addedChildren.push_back(obj);
+				valid_diff = true;
+				output.addedChildren.push_back(obj);
 			}
 		}
 
@@ -325,18 +311,14 @@ namespace bs
 			{
 				if (childDiff != nullptr)
 				{
-					if (output == nullptr)
-						output = bs_shared_ptr_new<PrefabObjectDiff>();
-
-					output->componentDiffs.push_back(childDiff);
+					valid_diff = true;
+					output.componentDiffs.push_back(childDiff);
 				}
 			}
 			else
 			{
-				if (output == nullptr)
-					output = bs_shared_ptr_new<PrefabObjectDiff>();
-
-				output->removedComponents.push_back(prefabComponent->getLinkId());
+				valid_diff = true;
+				output.removedComponents.push_back(prefabComponent->getLinkId());
 			}
 		}
 
@@ -365,17 +347,15 @@ namespace bs
 				BinarySerializer bs;
 				SPtr<SerializedObject> obj = bs._encodeToIntermediate(instanceComponent.get());
 
-				if (output == nullptr)
-					output = bs_shared_ptr_new<PrefabObjectDiff>();
-
-				output->addedComponents.push_back(obj);
+				valid_diff = true;
+				output.addedComponents.push_back(obj);
 			}
 		}
 
-		if (output != nullptr)
-			output->id = instance->getLinkId();
+		if (valid_diff)
+			output.id = instance->getLinkId();
 
-		return output;
+		return valid_diff ? bs_shared_ptr_new<PrefabObjectDiff>(std::move(output)) : nullptr;
 	}
 
 	void PrefabDiff::renameInstanceIds(const HSceneObject& prefab, const HSceneObject& instance, Vector<RenamedGameObject>& output)
