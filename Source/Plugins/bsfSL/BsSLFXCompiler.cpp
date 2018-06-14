@@ -1381,14 +1381,7 @@ namespace bs
 
 		if (index != (UINT32)-1 && index < (UINT32)codeBlocks.size())
 		{
-			switch (codeNode->type)
-			{
-			case NT_Code:
-				passData.code += codeBlocks[index];
-				break;
-			default:
-				break;
-			}
+			passData.code += codeBlocks[index];
 		}
 	}
 
