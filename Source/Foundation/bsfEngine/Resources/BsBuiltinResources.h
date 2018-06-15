@@ -19,7 +19,7 @@ namespace bs
 	/**	Types of builtin meshes that are always available. */
 	enum class BuiltinMesh
 	{
-		Box, Sphere, Cone, Quad, Disc
+		Box, Sphere, Cone, Cylinder, Quad, Disc
 	};
 
 	/**	Types of builtin textures that are always available. */
@@ -249,6 +249,7 @@ namespace bs
 		static const String MeshSphereFile;
 		static const String MeshBoxFile;
 		static const String MeshConeFile;
+		static const String MeshCylinderFile;
 		static const String MeshQuadFile;
 		static const String MeshDiscFile;
 

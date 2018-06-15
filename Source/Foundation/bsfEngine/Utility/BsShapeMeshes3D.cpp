@@ -246,6 +246,56 @@ namespace bs
 			meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset, quality);
 	}
 
+	void ShapeMeshes3D::solidCylinder(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
+		const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
+	{
+		const SPtr<VertexDataDesc>& desc = meshData->getVertexDesc();
+
+		UINT32* indexData = meshData->getIndices32();
+		UINT8* positionData = meshData->getElementData(VES_POSITION);
+		UINT8* normalData = meshData->getElementData(VES_NORMAL);
+
+		UINT32 numVertices = meshData->getNumVertices();
+		UINT32 numIndices = meshData->getNumIndices();
+		UINT32 vertexStride = desc->getVertexStride();
+
+		UINT32 requiredNumVertices, requiredNumIndices;
+		getNumElementsCylinder(quality, requiredNumVertices, requiredNumIndices);
+
+		assert((vertexOffset + requiredNumVertices) <= meshData->getNumVertices());
+		assert((indexOffset + requiredNumIndices) <= meshData->getNumIndices());
+
+		UINT8* uvData = nullptr;
+		if (desc->hasElement(VES_TEXCOORD))
+			uvData = meshData->getElementData(VES_TEXCOORD);
+
+		solidCylinder(base, normal, height, radius, scale, positionData, normalData, uvData, vertexOffset,
+			vertexStride, indexData, indexOffset, quality);
+
+		if (uvData != nullptr && desc->hasElement(VES_TANGENT))
+		{
+			UINT8* tangentData = meshData->getElementData(VES_TANGENT);
+			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices,
+				vertexOffset, indexOffset, vertexStride, tangentData);
+		}
+	}
+
+	void ShapeMeshes3D::wireCylinder(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
+		const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
+	{
+		UINT32* indexData = meshData->getIndices32();
+		UINT8* positionData = meshData->getElementData(VES_POSITION);
+
+		UINT32 requiredNumVertices, requiredNumIndices;
+		getNumElementsWireCylinder(quality, requiredNumVertices, requiredNumIndices);
+
+		assert((vertexOffset + requiredNumVertices) <= meshData->getNumVertices());
+		assert((indexOffset + requiredNumIndices) <= meshData->getNumIndices());
+
+		wireCylinder(base, normal, height, radius, scale, positionData, vertexOffset,
+			meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset, quality);
+	}
+
 	void ShapeMeshes3D::solidQuad(const Rect3& area, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		const SPtr<VertexDataDesc>& desc = meshData->getVertexDesc();
@@ -409,6 +459,18 @@ namespace bs
 	{
 		numVertices = (quality + 1) * 4 + 5;
 		numIndices = ((quality + 1) * 4 + 4) * 2;
+	}
+
+	void ShapeMeshes3D::getNumElementsCylinder(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
+	{
+		numVertices = ((quality + 1) * 4 + 1) * 4;
+		numIndices = ((quality + 1) * 4) * 12;
+	}
+
+	void ShapeMeshes3D::getNumElementsWireCylinder(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
+	{
+		numVertices = ((quality + 1) * 4) * 2;
+		numIndices = ((quality + 1) * 4) * 6;
 	}
 
 	void ShapeMeshes3D::getNumElementsQuad(UINT32& numVertices, UINT32& numIndices)
@@ -997,6 +1059,257 @@ namespace bs
 		{
 			outIndices[i * 2 + 0] = vertexOffset + 4;
 			outIndices[i * 2 + 1] = vertexOffset + i;
+		}
+	}
+
+	void ShapeMeshes3D::solidCylinder(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
+		UINT8* outVertices, UINT8* outNormals, UINT8* outUV, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices,
+		UINT32 indexOffset, UINT32 quality)
+	{
+		outVertices += vertexOffset * vertexStride;
+		outIndices += indexOffset;
+
+		if (outUV != nullptr)
+			outUV += vertexOffset * vertexStride;
+
+		if (outNormals != nullptr)
+			outNormals += vertexOffset * vertexStride;
+
+		// Generate base disc
+		UINT32 numArcVertices = (quality + 1) * 4;
+
+		generateArcVertices(base, normal, radius, Degree(0), Degree(360), scale,
+			numArcVertices + 1, outVertices, 0, vertexStride);
+
+		if (outUV != nullptr)
+		{
+			Vector3 arcNormal = normal;
+			Vector3 right, top;
+			arcNormal.orthogonalComplement(right, top);
+
+			for (UINT32 i = 0; i < numArcVertices; i++)
+			{
+				Vector3 vec = *(Vector3*)&outVertices[i * vertexStride];
+				Vector3 diff = Vector3::normalize(vec - base);
+
+				Vector2 uv;
+				uv.x = Vector3::dot(diff, right) * 0.5f + 0.5f;
+				uv.y = Vector3::dot(diff, top) * 0.5f + 0.5f;
+
+				outUV = writeVector2(outUV, vertexStride, uv);
+			}
+
+			outUV = writeVector2(outUV, vertexStride, Vector2(0.5f, 0.5f));
+		}
+
+		outVertices += numArcVertices * vertexStride;
+		outVertices = writeVector3(outVertices, vertexStride, base); // Write base vertex
+
+		UINT32 baseIdx = numArcVertices;
+
+		if (outNormals != nullptr)
+		{
+			UINT32 totalNumBaseVertices = numArcVertices + 1;
+			for (UINT32 i = 0; i < totalNumBaseVertices; i++)
+				outNormals = writeVector3(outNormals, vertexStride, -normal);
+		}
+
+		UINT32 numTriangles = numArcVertices;
+		for (UINT32 i = 0; i < numTriangles - 1; i++)
+		{
+			outIndices[i * 3 + 0] = vertexOffset + baseIdx;
+			outIndices[i * 3 + 1] = vertexOffset + i + 1;
+			outIndices[i * 3 + 2] = vertexOffset + i;
+		}
+
+		{
+			UINT32 i = numTriangles - 1;
+			outIndices[i * 3 + 0] = vertexOffset + baseIdx;
+			outIndices[i * 3 + 1] = vertexOffset + 0;
+			outIndices[i * 3 + 2] = vertexOffset + i;
+		}
+
+		outIndices += numTriangles * 3;
+		UINT32 vertexOffsetBase = vertexOffset + numArcVertices + 1;
+
+		// Generate cap disc
+		Vector3 topVertex = base + normal * height;
+
+		generateArcVertices(topVertex, normal, radius, Degree(0), Degree(360), scale,
+			numArcVertices + 1, outVertices, 0, vertexStride);
+
+		if (outUV != nullptr)
+		{
+			Vector3 arcNormal = normal;
+			Vector3 right, top;
+			arcNormal.orthogonalComplement(right, top);
+
+			for (UINT32 i = 0; i < numArcVertices; i++)
+			{
+				Vector3 vec = *(Vector3*)&outVertices[i * vertexStride];
+				Vector3 diff = Vector3::normalize(vec - topVertex);
+
+				Vector2 uv;
+				uv.x = Vector3::dot(diff, right) * 0.5f + 0.5f;
+				uv.y = Vector3::dot(diff, top) * 0.5f + 0.5f;
+
+				outUV = writeVector2(outUV, vertexStride, uv);
+			}
+
+			outUV = writeVector2(outUV, vertexStride, Vector2(0.5f, 0.5f));
+		}
+
+		outVertices += numArcVertices * vertexStride;
+		outVertices = writeVector3(outVertices, vertexStride, topVertex); // Write top vertex
+
+		if (outNormals != nullptr)
+		{
+			UINT32 totalNumBaseVertices = numArcVertices + 1;
+			for (UINT32 i = 0; i < totalNumBaseVertices; i++)
+				outNormals = writeVector3(outNormals, vertexStride, normal);
+		}
+
+		for (UINT32 i = 0; i < numTriangles - 1; i++)
+		{
+			outIndices[i * 3 + 0] = vertexOffsetBase + baseIdx;
+			outIndices[i * 3 + 1] = vertexOffsetBase + i;
+			outIndices[i * 3 + 2] = vertexOffsetBase + i + 1;
+		}
+
+		{
+			UINT32 i = numTriangles - 1;
+			outIndices[i * 3 + 0] = vertexOffsetBase + baseIdx;
+			outIndices[i * 3 + 1] = vertexOffsetBase + i;
+			outIndices[i * 3 + 2] = vertexOffsetBase + 0;
+		}
+
+		outIndices += numTriangles * 3;
+		UINT32 vertexOffsetCap = vertexOffsetBase + numArcVertices + 1;
+
+		// Generate cylinder
+		generateArcVertices(base, normal, radius, Degree(0), Degree(360), scale,
+			numArcVertices + 1, outVertices, 0, vertexStride);
+
+		generateArcVertices(topVertex, normal, radius, Degree(0), Degree(360), scale,
+			numArcVertices + 1, outVertices, numArcVertices + 1, vertexStride);
+
+		// Normals
+		if (outNormals != nullptr)
+		{
+			UINT8* outNormalsBase = outNormals;
+			UINT8* outNormalsCap = outNormals + (numArcVertices + 1) * vertexStride;
+			for (INT32 i = 0; i < (INT32)numArcVertices + 1; i++)
+			{
+				int offsetA = i == 0 ? numArcVertices - 1 : i - 1;
+				int offsetB = i;
+				int offsetC = i == numArcVertices ? 1 : i + 1;
+
+				Vector3* a = (Vector3*)(outVertices + (offsetA * vertexStride));
+				Vector3* b = (Vector3*)(outVertices + (offsetB * vertexStride));
+				Vector3* c = (Vector3*)(outVertices + (offsetC * vertexStride));
+
+				Vector3 toTop = normal;
+
+				Vector3 normalLeft = Vector3::cross(*a - *b, toTop);
+				normalLeft.normalize();
+
+				Vector3 normalRight = Vector3::cross(toTop, *c - *b);
+				normalRight.normalize();
+
+				Vector3 triNormal = Vector3::normalize(normalLeft + normalRight);
+
+				outNormalsBase = writeVector3(outNormalsBase, vertexStride, triNormal);
+				outNormalsCap = writeVector3(outNormalsCap, vertexStride, triNormal);
+			}
+		}
+
+		// UV
+		if (outUV != nullptr)
+		{
+			float angle = 0.0f;
+			float angleIncrement = Math::TWO_PI / numArcVertices;
+
+			for (UINT32 i = 0; i < numArcVertices + 1; i++)
+			{
+				Vector2 uv;
+				uv.x = angle / Math::TWO_PI;
+				uv.y = 1.0f;
+
+				outUV = writeVector2(outUV, vertexStride, uv);
+				angle += angleIncrement;
+			}
+
+			angle = 0.0f;
+			for (UINT32 i = 0; i < numArcVertices + 1; i++)
+			{
+				Vector2 uv;
+				uv.x = angle / Math::TWO_PI;
+				uv.y = 0.0f;
+
+				outUV = writeVector2(outUV, vertexStride, uv);
+				angle += angleIncrement;
+			}
+		}
+
+		vertexOffsetBase = vertexOffsetCap;
+		vertexOffsetCap = vertexOffsetCap + numArcVertices + 1;
+
+		for (UINT32 i = 0; i < numTriangles; i++)
+		{
+			outIndices[i * 6 + 0] = vertexOffsetCap + i;
+			outIndices[i * 6 + 1] = vertexOffsetBase + i;
+			outIndices[i * 6 + 2] = vertexOffsetBase + i + 1;
+
+			outIndices[i * 6 + 3] = vertexOffsetCap + i;
+			outIndices[i * 6 + 4] = vertexOffsetBase + i + 1;
+			outIndices[i * 6 + 5] = vertexOffsetCap + i + 1;
+		}
+	}
+
+	void ShapeMeshes3D::wireCylinder(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
+		UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality)
+	{
+		outVertices += vertexOffset * vertexStride;
+		outIndices += indexOffset;
+
+		// Generate base and cap discs
+		UINT32 numArcVertices = (quality + 1) * 4;
+
+		Degree angleAmount = Degree(360) - Degree(360) / (float)(numArcVertices);
+
+		generateArcVertices(base, normal, radius, Degree(0), angleAmount, scale,
+			numArcVertices, outVertices, 0, vertexStride);
+
+		Vector3 topVertex = base + normal * height;
+
+		generateArcVertices(topVertex, normal, radius, Degree(0), angleAmount, scale,
+			numArcVertices, outVertices, numArcVertices, vertexStride);
+
+		UINT32 vertexOffsetBase = vertexOffset;
+		UINT32 vertexOffsetCap = vertexOffset + numArcVertices;
+
+		UINT32 numLines = numArcVertices;
+		for (UINT32 i = 0; i < numLines - 1; i++)
+		{
+			outIndices[i * 4 + 0] = vertexOffsetBase + i;
+			outIndices[i * 4 + 1] = vertexOffsetBase + i + 1;
+			outIndices[i * 4 + 2] = vertexOffsetCap + i;
+			outIndices[i * 4 + 3] = vertexOffsetCap + i + 1;
+		}
+		{
+			UINT32 i = numLines - 1;
+			outIndices[i * 4 + 0] = vertexOffsetBase + i;
+			outIndices[i * 4 + 1] = vertexOffsetBase + 0;
+			outIndices[i * 4 + 2] = vertexOffsetCap + i;
+			outIndices[i * 4 + 3] = vertexOffsetCap + 0;
+		}
+
+		// Generate cylinder
+		outIndices += numLines * 4;
+		for (UINT32 i = 0; i < numLines; i++)
+		{
+			outIndices[i * 2 + 0] = vertexOffsetBase + i;
+			outIndices[i * 2 + 1] = vertexOffsetCap + i;
 		}
 	}
 
