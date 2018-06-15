@@ -7,7 +7,7 @@
 
 start_find_package(vorbis)
 
-set(vorbis_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/libvorbis CACHE PATH "")
+set(vorbis_INSTALL_DIR ${BS_DEPENDENCY_DIR}/libvorbis CACHE PATH "")
 gen_default_lib_search_dirs(vorbis)
 
 if(WIN32)

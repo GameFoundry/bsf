@@ -10,7 +10,7 @@ start_find_package(FMOD)
 if(WIN32)
 	set(FMOD_INSTALL_DIR "C:/Program Files (x86)/FMOD SoundSystem/FMOD Studio API Windows" CACHE PATH "")
 else()
-	set(FMOD_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/FMOD CACHE PATH "")
+	set(FMOD_INSTALL_DIR ${BS_DEPENDENCY_DIR}/FMOD CACHE PATH "")
 endif()
 
 gen_default_lib_search_dirs(FMOD)

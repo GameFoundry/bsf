@@ -7,7 +7,7 @@
 
 start_find_package(freetype)
 
-set(freetype_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/freetype CACHE PATH "")
+set(freetype_INSTALL_DIR ${BS_DEPENDENCY_DIR}/freetype CACHE PATH "")
 gen_default_lib_search_dirs(freetype)
 
 list(APPEND freetype_INCLUDE_SEARCH_DIRS /usr/local/include/freetype2)

@@ -7,7 +7,7 @@
 
 start_find_package(glslang)
 
-set(glslang_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/glslang CACHE PATH "")
+set(glslang_INSTALL_DIR ${BS_DEPENDENCY_DIR}/glslang CACHE PATH "")
 gen_default_lib_search_dirs(glslang)
 
 if(WIN32)

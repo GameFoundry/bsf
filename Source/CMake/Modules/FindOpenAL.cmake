@@ -7,7 +7,7 @@
 
 start_find_package(OpenAL)
 
-set(OpenAL_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/OpenAL CACHE PATH "")
+set(OpenAL_INSTALL_DIR ${BS_DEPENDENCY_DIR}/OpenAL CACHE PATH "")
 gen_default_lib_search_dirs(OpenAL)
 
 if(WIN32)

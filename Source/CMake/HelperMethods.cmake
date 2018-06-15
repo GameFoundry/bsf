@@ -222,8 +222,10 @@ mark_as_advanced(BS_BINARY_DEP_WEBSITE)
 
 function(update_binary_deps DEP_PREFIX DEP_FOLDER DEP_VERSION)
 	# Clean and create a temporary folder
-	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)	
-	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/Temp)	
+	set(DOWNLOAD_TEMP_FOLDER ${PROJECT_BINARY_DIR}/TempDeps)
+
+	file(REMOVE_RECURSE ${DOWNLOAD_TEMP_FOLDER})
+	file(MAKE_DIRECTORY ${DOWNLOAD_TEMP_FOLDER})
 
 	if(WIN32)
 		set(DEP_TYPE VS2015)
@@ -234,7 +236,7 @@ function(update_binary_deps DEP_PREFIX DEP_FOLDER DEP_VERSION)
 	endif()
 
 	set(BINARY_DEPENDENCIES_URL ${BS_BINARY_DEP_WEBSITE}/${DEP_PREFIX}Dependencies_${DEP_TYPE}_Master_${DEP_VERSION}.zip)
-	file(DOWNLOAD ${BINARY_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip 
+	file(DOWNLOAD ${BINARY_DEPENDENCIES_URL} ${DOWNLOAD_TEMP_FOLDER}/Dependencies.zip
 		SHOW_PROGRESS
 		STATUS DOWNLOAD_STATUS)
 		
@@ -245,19 +247,20 @@ function(update_binary_deps DEP_PREFIX DEP_FOLDER DEP_VERSION)
 	
 	message(STATUS "Extracting files. Please wait...")
 	execute_process(
-		COMMAND ${CMAKE_COMMAND} -E tar xzf ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip
-		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Temp
+		COMMAND ${CMAKE_COMMAND} -E tar xzf ${DOWNLOAD_TEMP_FOLDER}/Dependencies.zip
+		WORKING_DIRECTORY ${DOWNLOAD_TEMP_FOLDER}
 	)
 	
 	# Copy executables and dynamic libraries
-	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Temp/bin ${DEP_FOLDER}/../bin)	
+	file(MAKE_DIRECTORY ${DOWNLOAD_TEMP_FOLDER}/bin) # Create folder if it doesn't exist
+	file(COPY ${DOWNLOAD_TEMP_FOLDER}/bin DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 	
 	# Copy static libraries, headers and tools
-	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${DEP_FOLDER})	
-	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Temp/Dependencies ${DEP_FOLDER})
+	file(REMOVE_RECURSE ${DEP_FOLDER})
+	file(COPY ${DOWNLOAD_TEMP_FOLDER}/Dependencies DESTINATION ${DEP_FOLDER}/../)
 	
 	# Clean up
-	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)	
+	file(REMOVE_RECURSE ${DOWNLOAD_TEMP_FOLDER})
 endfunction()
 
 function(check_and_update_binary_deps DEP_PREFIX DEP_FOLDER DEP_VERSION)
@@ -276,11 +279,13 @@ endfunction()
 
 function(update_builtin_assets ASSET_PREFIX ASSET_FOLDER ASSET_VERSION CLEAR_MANIFEST)
 	# Clean and create a temporary folder
-	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)	
-	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/Temp)	
+	set(DOWNLOAD_TEMP_FOLDER ${PROJECT_BINARY_DIR}/TempAssets)
+
+	file(REMOVE_RECURSE ${DOWNLOAD_TEMP_FOLDER})
+	file(MAKE_DIRECTORY ${DOWNLOAD_TEMP_FOLDER})
 	
 	set(ASSET_DEPENDENCIES_URL ${BS_BINARY_DEP_WEBSITE}/${ASSET_PREFIX}Data_Master_${ASSET_VERSION}.zip)
-	file(DOWNLOAD ${ASSET_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip 
+	file(DOWNLOAD ${ASSET_DEPENDENCIES_URL} ${DOWNLOAD_TEMP_FOLDER}/BuiltinAssets.zip
 		SHOW_PROGRESS
 		STATUS DOWNLOAD_STATUS)
 		
@@ -291,23 +296,23 @@ function(update_builtin_assets ASSET_PREFIX ASSET_FOLDER ASSET_VERSION CLEAR_MAN
 	
 	message(STATUS "Extracting files. Please wait...")
 	execute_process(
-		COMMAND ${CMAKE_COMMAND} -E tar xzf ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip
-		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Temp
+		COMMAND ${CMAKE_COMMAND} -E tar xzf ${DOWNLOAD_TEMP_FOLDER}/BuiltinAssets.zip
+		WORKING_DIRECTORY ${DOWNLOAD_TEMP_FOLDER}
 	)
 	
 	# Copy files
-	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Temp/Data ${ASSET_FOLDER})
+	file(COPY ${DOWNLOAD_TEMP_FOLDER}/Data DESTINATION ${ASSET_FOLDER}/../)
 	
 	# Make sure timestamp modify date/times are newer (avoids triggering reimport)
-	execute_process(COMMAND ${CMAKE_COMMAND} -E touch ${ASSET_FOLDER}/Timestamp.asset )
-	
+	file(APPEND "${ASSET_FOLDER}/Timestamp.asset" "")
+
 	# Make sure resource manifests get rebuilt
 	if(CLEAR_MANIFEST)
-		execute_process(COMMAND ${CMAKE_COMMAND} -E remove ${ASSET_FOLDER}/ResourceManifest.asset)
+		file(REMOVE ${ASSET_FOLDER}/ResourceManifest.asset)
 	endif()
 	
 	# Clean up
-	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)	
+	file(REMOVE_RECURSE ${DOWNLOAD_TEMP_FOLDER})
 endfunction()
 
 function(check_and_update_builtin_assets ASSET_PREFIX ASSET_FOLDER ASSET_VERSION CLEAR_MANIFEST)
@@ -349,7 +354,7 @@ function(strip_symbols targetName outputFilename)
 				add_custom_command(
 					TARGET ${targetName}
 					POST_BUILD
-					VERBATIM 
+					VERBATIM
 					COMMAND ${OBJCOPY_TOOL} --only-keep-debug ${fileToStrip} ${symbolsFile}
 					COMMAND ${OBJCOPY_TOOL} --strip-unneeded ${fileToStrip}
 					COMMAND ${OBJCOPY_TOOL} --add-gnu-debuglink=${symbolsFile} ${fileToStrip}

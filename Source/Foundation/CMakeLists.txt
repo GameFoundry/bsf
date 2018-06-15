@@ -36,9 +36,12 @@ add_library(bsf SHARED ${BS_UTILITY_SRC} ${BS_CORE_SRC} ${BS_ENGINE_SRC})
 
 # Includes
 target_include_directories(bsf PUBLIC "bsfUtility" "bsfCore" "bsfEngine")
+target_include_directories(bsf PUBLIC "${PROJECT_BINARY_DIR}/GeneratedCode/Foundation/bsfEngine/"
+	                                  "${PROJECT_BINARY_DIR}/GeneratedCode/Foundation/bsfUtility/"
+	)
 
 # Defines
-target_compile_definitions(bsf PRIVATE 
+target_compile_definitions(bsf PRIVATE
 	-DBS_EXPORTS
 	-DBS_CORE_EXPORTS
 	-DBS_UTILITY_EXPORTS
@@ -49,7 +52,7 @@ target_compile_definitions(bsf PRIVATE
 
 # Libraries
 ## External lib: NVTT
-target_link_libraries(bsf PRIVATE ${nvtt_LIBRARIES})	
+target_link_libraries(bsf PRIVATE ${nvtt_LIBRARIES})
 
 ## External lib: Snappy
 target_link_libraries(bsf PRIVATE ${snappy_LIBRARIES})
@@ -89,7 +92,7 @@ set_property(TARGET bsf PROPERTY FOLDER Foundation)
 install(
 	DIRECTORY bsfUtility
 	DESTINATION include
-	FILES_MATCHING 
+	FILES_MATCHING
 	PATTERN "*.h"
 	PATTERN "*.hpp"
 	PATTERN "Private" EXCLUDE

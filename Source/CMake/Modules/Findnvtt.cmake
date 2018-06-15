@@ -7,7 +7,7 @@
 
 start_find_package(nvtt)
 
-set(nvtt_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/nvtt CACHE PATH "")
+set(nvtt_INSTALL_DIR ${BS_DEPENDENCY_DIR}/nvtt CACHE PATH "")
 gen_default_lib_search_dirs(nvtt)
 
 find_imported_includes(nvtt nvtt.h)

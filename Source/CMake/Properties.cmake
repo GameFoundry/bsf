@@ -187,3 +187,10 @@ if (UNIX)
 
 	endif()
 endif()
+
+# Custom Dependency Directory
+set(BS_DEPENDENCY_DIR "${PROJECT_BINARY_DIR}/Dependencies" CACHE STRING "The output location of dependencies.")
+mark_as_advanced(BS_DEPENDENCY_DIR)
+
+set(BS_ASSET_DIR "${PROJECT_BINARY_DIR}/Data" CACHE STRING "The output location of builtin assets.")
+mark_as_advanced(BS_ASSET_DIR)

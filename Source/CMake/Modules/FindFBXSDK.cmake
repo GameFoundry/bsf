@@ -7,7 +7,7 @@
 
 start_find_package(FBXSDK)
 
-set(FBXSDK_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/FBXSDK CACHE PATH "")
+set(FBXSDK_INSTALL_DIR ${BS_DEPENDENCY_DIR}/FBXSDK CACHE PATH "")
 gen_default_lib_search_dirs(FBXSDK)
 
 if(WIN32)
