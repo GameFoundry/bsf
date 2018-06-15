@@ -94,6 +94,7 @@ namespace bs
 	const String BuiltinResources::MeshSphereFile = u8"Sphere.asset";
 	const String BuiltinResources::MeshBoxFile = u8"Box.asset";
 	const String BuiltinResources::MeshConeFile = u8"Cone.asset";
+	const String BuiltinResources::MeshCylinderFile = u8"Cylinder.asset";
 	const String BuiltinResources::MeshQuadFile = u8"Quad.asset";
 	const String BuiltinResources::MeshDiscFile = u8"Disc.asset";
 
@@ -654,6 +655,14 @@ namespace bs
 		ShapeMeshes3D::solidCone(Vector3::ZERO, Vector3::UNIT_Y, 1.0f, 1.0f, Vector2::ONE, coneMeshData, 0, 0);
 		SPtr<Mesh> coneMesh = Mesh::_createPtr(RendererMeshData::convert(coneMeshData));
 
+		UINT32 cylinderNumVertices = 0;
+		UINT32 cylinderNumIndices = 0;
+		ShapeMeshes3D::getNumElementsCylinder(10, cylinderNumVertices, cylinderNumIndices);
+		SPtr<MeshData> cylinderMeshData = bs_shared_ptr_new<MeshData>(cylinderNumVertices, cylinderNumIndices, vertexDesc);
+
+		ShapeMeshes3D::solidCylinder(Vector3::ZERO, Vector3::UNIT_Y, 1.0f, 1.0f, Vector2::ONE, cylinderMeshData, 0, 0);
+		SPtr<Mesh> cylinderMesh = Mesh::_createPtr(RendererMeshData::convert(cylinderMeshData));
+
 		UINT32 quadNumVertices = 8;
 		UINT32 quadNumIndices = 12;
 		ShapeMeshes3D::getNumElementsQuad(quadNumVertices, quadNumIndices);
@@ -692,6 +701,9 @@ namespace bs
 
 		Path conePath = outputDir + MeshConeFile;
 		saveMesh(conePath, coneMesh, "b8cf6db5-1736-47ac-852f-82ecd88b4d46");
+
+		Path cylinderPath = outputDir + MeshCylinderFile;
+		saveMesh(cylinderPath, cylinderMesh, "e6b2b797-4e72-7e49-61ba-4e7275bd561d");
 
 		Path quadPath = outputDir + MeshQuadFile;
 		saveMesh(quadPath, quadMesh, "06592bf3-f82a-472e-a034-26a98225fbe1");
@@ -819,6 +831,9 @@ namespace bs
 			break;
 		case BuiltinMesh::Cone:
 			meshPath.append(MeshConeFile);
+			break;
+		case BuiltinMesh::Cylinder:
+			meshPath.append(MeshCylinderFile);
 			break;
 		case BuiltinMesh::Quad:
 			meshPath.append(MeshQuadFile);
