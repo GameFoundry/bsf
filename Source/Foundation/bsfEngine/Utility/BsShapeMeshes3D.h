@@ -295,6 +295,62 @@ namespace bs
 			const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
 
 		/**
+		* Fills the mesh data with vertices representing a wireframe cylinder.
+		*
+		* @param[in]		base			World position of the cylinder base.
+		* @param[in]		normal			Orientation of the cylinder (height gets applied in this direction).
+		* @param[in]		height			Cylinder height (distance from base to the top).
+		* @param[in]		radius			Cylinder radius (distance from base center to outer edge).
+		* @param[in]		scale			Scale to apply to the x/y axes, allowing you to create elliptical cylinders.
+		* @param[in, out]	meshData		Mesh data that will be populated.
+		* @param[in]		vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		* @param[in]		indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		* @param[in]		quality			Represents the level of tessellation the cylinder will have. Higher level means
+		*									higher quality but also more vertices and primitives.
+		*
+		* @note
+		* Provided MeshData must have some specific elements at least:
+		*  Vector3 VES_POSITION
+		* 	32bit index buffer
+		* 	Enough space for ((quality + 1) * 4) * 2) vertices
+		*	Enough space for ((quality + 1) * 4) * 6) indices
+		* @note
+		* Primitives are output in the form of a line list.
+		*/
+		static void wireCylinder(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
+			const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
+
+		/**
+		* Fills the mesh data with vertices representing a solid cylinder.
+		*
+		* @param[in]		base			World position of the cylinder base.
+		* @param[in]		normal			Orientation of the cylinder (height gets applied in this direction).
+		* @param[in]		height			Cylinder height (distance from base to the top).
+		* @param[in]		radius			Cylinder radius (distance from base center to outer edge).
+		* @param[in]		scale			Scale to apply to the x/y axes, allowing you to create elliptical cylinders.
+		* @param[in, out]	meshData		Mesh data that will be populated.
+		* @param[in]		vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		* @param[in]		indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		* @param[in]		quality			Represents the level of tessellation the cylinder will have. Higher level means
+		*									higher quality but also more vertices and primitives.
+		*
+		* @note
+		* Provided MeshData must have some specific elements at least:
+		*  Vector3 VES_POSITION
+		*	Vector3 VES_NORMAL
+		* 	32bit index buffer
+		* 	Enough space for ((quality + 1) * 4 + 1) * 4) vertices
+		*	Enough space for ((quality + 1) * 4) * 12) indices
+		* Optionally it may also have:
+		*  Vector2 VES_TEXCOORD
+		*  Vector4 VES_TANGENT
+		* @note
+		* Primitives are output in the form of a triangle list.
+		*/
+		static void solidCylinder(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
+			const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
+
+		/**
 		 * Fills the mesh data with vertices representing a quad (4 triangles, two sided).
 		 *
 		 * @param[in]		area			Area in which to draw the quad.
@@ -566,7 +622,53 @@ namespace bs
 			UINT32 quality);
 
 		/**
-		 * Fills the provided buffers with position and index data representing a solid quad. Use getNumElementsCone() to
+		* Fills the provided buffers with position and index data representing a solid cylinder. Use getNumElementsCylinder() to
+		* determine the required sizes of the output buffers.
+		*
+		* @param[in]	base			World position of the cylinder base.
+		* @param[in]	normal			Orientation of the cylinder (height gets applied in this direction).
+		* @param[in]	height			Cylinder height (distance from base to the top).
+		* @param[in]	radius			Cylinder radius (distance from base center to outer edge).
+		* @param[in]	scale			Scale to apply to the x/y axes, allowing you to create elliptical cylinders.
+		* @param[out]	outVertices		Pre-allocated output buffer that will store the vertex position data.
+		* @param[out]	outNormals		Pre-allocated output buffer that will store the vertex normal data. Can be null if
+		*								normals aren't needed.
+		* @param[out]	outUV			Pre-allocated output buffer that will store the vertex UV data. Set to null if not
+		*								required.
+		* @param[in]	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		* @param[in]	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
+		* @param[out]	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
+		* @param[in]	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		* @param[in]	quality			Represents the level of tessellation the cylinder will have. Higher level means higher
+		*								quality but also more vertices and primitives.
+		*/
+		static void solidCylinder(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
+			UINT8* outVertices, UINT8* outNormals, UINT8* outUV, UINT32 vertexOffset, UINT32 vertexStride,
+			UINT32* outIndices, UINT32 indexOffset, UINT32 quality);
+
+		/**
+		* Fills the provided buffers with position and index data representing a wire cylinder. Use getNumElementsWireCylinder() to
+		* determine the required sizes of the output buffers.
+		*
+		* @param[in]	base			World position of the cylinder base.
+		* @param[in]	normal			Orientation of the cylinder (height gets applied in this direction).
+		* @param[in]	height			Cylinder height (distance from base to the top).
+		* @param[in]	radius			Cylinder radius (distance from base center to outer edge).
+		* @param[in]	scale			Scale to apply to the x/y axes, allowing you to create elliptical cylinders.
+		* @param[out]	outVertices		Pre-allocated output buffer that will store the vertex position data.
+		* @param[in]	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		* @param[in]	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
+		* @param[out]	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
+		* @param[in]	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		* @param[in]	quality			Represents the level of tessellation the cylinder will have. Higher level means higher
+		*								quality but also more vertices and primitives.
+		*/
+		static void wireCylinder(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
+			UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset,
+			UINT32 quality);
+
+		/**
+		 * Fills the provided buffers with position and index data representing a solid quad. Use getNumElementsQuad() to
 		 * determine the required sizes of the output buffers.
 		 *
 		 * @param[in]	area			Area covered by the quad.
@@ -611,6 +713,12 @@ namespace bs
 
 		/**	Calculates number of vertices and indices required for geometry of a wireframe cone of the specified quality. */
 		static void getNumElementsWireCone(UINT32 quality, UINT32& numVertices, UINT32& numIndices);
+
+		/**	Calculates number of vertices and indices required for geometry of a solid cylinder of the specified quality. */
+		static void getNumElementsCylinder(UINT32 quality, UINT32& numVertices, UINT32& numIndices);
+
+		/**	Calculates number of vertices and indices required for geometry of a wireframe cylinder of the specified quality. */
+		static void getNumElementsWireCylinder(UINT32 quality, UINT32& numVertices, UINT32& numIndices);
 
 		/**	Calculates number of vertices and indices required for geometry of a frustum. */
 		static void getNumElementsFrustum(UINT32& numVertices, UINT32& numIndices);
@@ -747,7 +855,8 @@ namespace bs
 		 * @param[in]	vertexStride	Size of a single vertex, in bytes. (Same for both position and color buffer)
 		 */
 		static void generateArcVertices(const Vector3& center, const Vector3& up, float radius, Degree startAngle, 
-			Degree angleAmount, Vector2 scale, UINT32 numVertices, UINT8* outvertices, UINT32 vertexOffset, UINT32 vertexStride);
+			Degree angleAmount, Vector2 scale, UINT32 numVertices, UINT8* outVertices, UINT32 vertexOffset, 
+			UINT32 vertexStride);
 
 		/**
 		 * Calculates per-vertex tangents and bitangents based on the provided vertices, uv coordinates and indices.
