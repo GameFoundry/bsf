@@ -133,7 +133,7 @@ namespace bs
 	void DebugDraw::_update()
 	{
 		mActiveMeshes.clear();
-		mActiveMeshes = mDrawHelper->buildMeshes(DrawHelper::SortType::None, Vector3::ZERO);
+		mActiveMeshes = mDrawHelper->buildMeshes(DrawHelper::SortType::None);
 
 		Vector<MeshRenderData> proxyData = createMeshProxyData(mActiveMeshes);
 
