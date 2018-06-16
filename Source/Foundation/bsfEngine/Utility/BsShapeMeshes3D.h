@@ -298,7 +298,7 @@ namespace bs
 		* Fills the mesh data with vertices representing a wireframe cylinder.
 		*
 		* @param[in]		base			World position of the cylinder base.
-		* @param[in]		normal			Direction of the pointed part of the cone.
+		* @param[in]		normal			Orientation of the cylinder (height gets applied in this direction).
 		* @param[in]		height			Cylinder height (distance from base to the top).
 		* @param[in]		radius			Cylinder radius (distance from base center to outer edge).
 		* @param[in]		scale			Scale to apply to the x/y axes, allowing you to create elliptical cylinders.
@@ -312,8 +312,8 @@ namespace bs
 		* Provided MeshData must have some specific elements at least:
 		*  Vector3 VES_POSITION
 		* 	32bit index buffer
-		* 	Enough space for ((quality + 1) * 4) * 2 + 2) vertices
-		*	Enough space for ((quality + 1) * 4) * 12) indices
+		* 	Enough space for ((quality + 1) * 4) * 2) vertices
+		*	Enough space for ((quality + 1) * 4) * 6) indices
 		* @note
 		* Primitives are output in the form of a line list.
 		*/
@@ -324,7 +324,7 @@ namespace bs
 		* Fills the mesh data with vertices representing a solid cylinder.
 		*
 		* @param[in]		base			World position of the cylinder base.
-		* @param[in]		normal			Direction of the pointed part of the cone.
+		* @param[in]		normal			Orientation of the cylinder (height gets applied in this direction).
 		* @param[in]		height			Cylinder height (distance from base to the top).
 		* @param[in]		radius			Cylinder radius (distance from base center to outer edge).
 		* @param[in]		scale			Scale to apply to the x/y axes, allowing you to create elliptical cylinders.
@@ -339,7 +339,7 @@ namespace bs
 		*  Vector3 VES_POSITION
 		*	Vector3 VES_NORMAL
 		* 	32bit index buffer
-		* 	Enough space for ((quality + 1) * 4) * 4 + 2) vertices
+		* 	Enough space for ((quality + 1) * 4 + 1) * 4) vertices
 		*	Enough space for ((quality + 1) * 4) * 12) indices
 		* Optionally it may also have:
 		*  Vector2 VES_TEXCOORD
@@ -626,7 +626,7 @@ namespace bs
 		* determine the required sizes of the output buffers.
 		*
 		* @param[in]	base			World position of the cylinder base.
-		* @param[in]	normal			Direction of the pointed part of the cone.
+		* @param[in]	normal			Orientation of the cylinder (height gets applied in this direction).
 		* @param[in]	height			Cylinder height (distance from base to the top).
 		* @param[in]	radius			Cylinder radius (distance from base center to outer edge).
 		* @param[in]	scale			Scale to apply to the x/y axes, allowing you to create elliptical cylinders.
@@ -651,7 +651,7 @@ namespace bs
 		* determine the required sizes of the output buffers.
 		*
 		* @param[in]	base			World position of the cylinder base.
-		* @param[in]	normal			Direction of the pointed part of the cone.
+		* @param[in]	normal			Orientation of the cylinder (height gets applied in this direction).
 		* @param[in]	height			Cylinder height (distance from base to the top).
 		* @param[in]	radius			Cylinder radius (distance from base center to outer edge).
 		* @param[in]	scale			Scale to apply to the x/y axes, allowing you to create elliptical cylinders.
@@ -855,7 +855,8 @@ namespace bs
 		 * @param[in]	vertexStride	Size of a single vertex, in bytes. (Same for both position and color buffer)
 		 */
 		static void generateArcVertices(const Vector3& center, const Vector3& up, float radius, Degree startAngle, 
-			Degree angleAmount, Vector2 scale, UINT32 numVertices, UINT8* outvertices, UINT32 vertexOffset, UINT32 vertexStride);
+			Degree angleAmount, Vector2 scale, UINT32 numVertices, UINT8* outVertices, UINT32 vertexOffset, 
+			UINT32 vertexStride);
 
 		/**
 		 * Calculates per-vertex tangents and bitangents based on the provided vertices, uv coordinates and indices.
