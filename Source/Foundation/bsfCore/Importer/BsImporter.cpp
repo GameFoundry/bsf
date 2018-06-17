@@ -76,16 +76,6 @@ namespace bs
 			return output;
 		}
 
-		// Fall back on sync if not supported
-		ImporterAsyncMode asyncMode = importer->getAsyncMode();
-		if(asyncMode == ImporterAsyncMode::None)
-		{
-			HResource resource = import(inputFilePath, importOptions, UUID);
-			output._completeOperation(resource);
-
-			return output;
-		}
-
 		queueForImport(importer, inputFilePath, importOptions, false, UUID, handle, output);
 		return output;
 	}
@@ -115,38 +105,57 @@ namespace bs
 			return output;
 		}
 
-		// Fall back on sync if not supported
-		ImporterAsyncMode asyncMode = importer->getAsyncMode();
-		if(asyncMode == ImporterAsyncMode::None)
-		{
-			Vector<SubResource> resources = importAll(inputFilePath, importOptions);
-			output._completeOperation(resources);
-
-			return output;
-		}
-
 		queueForImport(importer, inputFilePath, importOptions, true, UUID::EMPTY, handle, output);
 		return output;
 	}
 
-	SPtr<Resource> Importer::_import(const Path& inputFilePath, SPtr<const ImportOptions> importOptions) const
+	SPtr<Resource> Importer::_import(const Path& inputFilePath, SPtr<const ImportOptions> importOptions)
 	{
 		SpecificImporter* importer = prepareForImport(inputFilePath, importOptions);
 		if(importer == nullptr)
 			return nullptr;
 
-		waitForAsync(importer);
-		return importer->import(inputFilePath, importOptions);
+		const UINT64 taskId = waitForAsync(importer);
+		SPtr<Resource> output = importer->import(inputFilePath, importOptions);
+		
+		if(importer->getAsyncMode() == ImporterAsyncMode::Single)
+		{
+			Lock lock(mLastTaskMutex);
+			auto iterFind = mLastQueuedTask.find(importer);
+			if (iterFind != mLastQueuedTask.end())
+			{
+				if (iterFind->second.id == taskId)
+					mLastQueuedTask.erase(iterFind);
+
+				mTaskCompleted.notify_one();
+			}
+		}
+
+		return output;
 	}
 
-	Vector<SubResourceRaw> Importer::_importAll(const Path& inputFilePath, SPtr<const ImportOptions> importOptions) const
+	Vector<SubResourceRaw> Importer::_importAll(const Path& inputFilePath, SPtr<const ImportOptions> importOptions)
 	{
 		SpecificImporter* importer = prepareForImport(inputFilePath, importOptions);
 		if(!importer)
 			return Vector<SubResourceRaw>();
 
-		waitForAsync(importer);
-		return importer->importAll(inputFilePath, importOptions);
+		const UINT64 taskId = waitForAsync(importer);
+		Vector<SubResourceRaw> output = importer->importAll(inputFilePath, importOptions);
+
+		if(importer->getAsyncMode() == ImporterAsyncMode::Single)
+		{
+			Lock lock(mLastTaskMutex);
+			auto iterFind = mLastQueuedTask.find(importer);
+			if (iterFind != mLastQueuedTask.end())
+			{
+				if (iterFind->second.id == taskId)
+					mLastQueuedTask.erase(iterFind);
+
+				mTaskCompleted.notify_one();
+			}
+		}
+		return output;
 	}
 
 	SpecificImporter* Importer::prepareForImport(const Path& filePath, SPtr<const ImportOptions>& importOptions) const
@@ -176,24 +185,31 @@ namespace bs
 		return importer;
 	}
 
-	void Importer::waitForAsync(SpecificImporter* importer) const
+	UINT64 Importer::waitForAsync(SpecificImporter* importer)
 	{
-		// Note: This doesn't account for the situation if sync. import gets called from different threads, therefore
-		// it is only allowed to be called from the main thread.
+		UINT64 taskId = 0;
+
 		const ImporterAsyncMode asyncMode = importer->getAsyncMode();
 		if(asyncMode == ImporterAsyncMode::Single)
 		{
 			Lock lock(mLastTaskMutex);
 
+			// Wait for any existing async tasks to complete
 			while(true)
 			{
-				auto iterFind = mLastQueuedTask.find(importer);
+				const auto iterFind = mLastQueuedTask.find(importer);
 				if (iterFind != mLastQueuedTask.end())
 					mTaskCompleted.wait(lock);
 				else
 					break;
 			}
+
+			// Register a new task so other calls to this method know to wait
+			taskId = mTaskId++;
+			mLastQueuedTask[importer] = QueuedTask(nullptr, taskId);
 		}
+
+		return taskId;
 	}
 
 	void Importer::queueForImport(SpecificImporter* importer, const Path& inputFilePath, 
