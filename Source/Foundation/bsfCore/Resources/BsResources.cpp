@@ -21,8 +21,11 @@ namespace bs
 {
 	Resources::Resources()
 	{
-		mDefaultResourceManifest = ResourceManifest::create("Default");
-		mResourceManifests.push_back(mDefaultResourceManifest);
+		{
+			Lock lock(mDefaultManifestMutex);
+			mDefaultResourceManifest = ResourceManifest::create("Default");
+			mResourceManifests.push_back(mDefaultResourceManifest);
+		}
 	}
 
 	Resources::~Resources()
@@ -566,22 +569,40 @@ namespace bs
 				return; // Nothing to save
 		}
 
-		bool fileExists = FileSystem::isFile(filePath);
+		const bool fileExists = FileSystem::isFile(filePath);
 		if(fileExists && !overwrite)
 		{
 			LOGERR("Another file exists at the specified location. Not saving.");
 			return;
 		}
 
+		{
+			Lock lock(mDefaultManifestMutex);
+			mDefaultResourceManifest->registerResource(resource.getUUID(), filePath);
+		}
+
+		_save(resource.getInternalPtr(), filePath, compress);
+	}
+
+	void Resources::save(const HResource& resource, bool compress)
+	{
+		if (resource == nullptr)
+			return;
+
+		Path path;
+		if (getFilePathFromUUID(resource.getUUID(), path))
+			save(resource, path, true, compress);
+	}
+
+	void Resources::_save(const SPtr<Resource>& resource, const Path& filePath, bool compress)
+	{
 		if (!resource->mKeepSourceData)
 		{
 			LOGWRN("Saving a resource that was created/loaded without ResourceLoadFlag::KeepSourceData. Some data might "
 				"not be available for saving. File path: " + filePath.toString());
 		}
 
-		mDefaultResourceManifest->registerResource(resource.getUUID(), filePath);
-
-		Vector<ResourceDependency> dependencyList = Utility::findResourceDependencies(*resource.get());
+		Vector<ResourceDependency> dependencyList = Utility::findResourceDependencies(*resource);
 		Vector<UUID> dependencyUUIDs(dependencyList.size());
 		for (UINT32 i = 0; i < (UINT32)dependencyList.size(); i++)
 			dependencyUUIDs[i] = dependencyList[i].resource.getUUID();
@@ -595,6 +616,7 @@ namespace bs
 			FileSystem::createDir(parentDir);
 
 		Path savePath;
+		const bool fileExists = FileSystem::isFile(filePath);
 		if(fileExists)
 		{
 			// If a file exists, save to a temporary location, then copy over only after a save was successful. This guards
@@ -664,16 +686,6 @@ namespace bs
 			FileSystem::remove(filePath);
 			FileSystem::move(savePath, filePath);
 		}
-	}
-
-	void Resources::save(const HResource& resource, bool compress)
-	{
-		if (resource == nullptr)
-			return;
-
-		Path path;
-		if (getFilePathFromUUID(resource.getUUID(), path))
-			save(resource, path, true, compress);
 	}
 
 	void Resources::update(HResource& handle, const SPtr<Resource>& resource)
