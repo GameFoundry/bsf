@@ -7,6 +7,10 @@
 #include "Material/BsMaterialParams.h"
 #include "RenderAPI/BsSamplerState.h"
 #include "FileSystem/BsDataStream.h"
+#include "Animation/BsAnimationCurve.h"
+#include "Image/BsColorGradient.h"
+#include "Private/RTTI/BsAnimationCurveRTTI.h"
+#include "Private/RTTI/BsColorGradientRTTI.h"
 
 namespace bs
 {
@@ -19,9 +23,10 @@ namespace bs
 	{
 	public:
 		BS_BEGIN_RTTI_MEMBERS
-			BS_RTTI_MEMBER_REFL(value, 0)
+			BS_RTTI_MEMBER_REFL(texture, 0)
 			BS_RTTI_MEMBER_PLAIN(isLoadStore, 1)
 			BS_RTTI_MEMBER_PLAIN(surface, 2)
+			BS_RTTI_MEMBER_REFL(spriteTexture, 3)
 		BS_END_RTTI_MEMBERS
 
 		const String& getRTTIName() override
@@ -177,6 +182,15 @@ namespace bs
 			obj->mBufferParams = obj->mAlloc.construct<MaterialParamBufferData>(value);
 		}
 
+		MaterialParamsBase::DataParamInfo& getDataParam(MaterialParams* obj, UINT32 idx) { return obj->mDataParams[idx]; }
+		void setDataParam(MaterialParams* obj, UINT32 idx, MaterialParamsBase::DataParamInfo& param) { obj->mDataParams[idx] = param; }
+		UINT32 getDataParamArraySize(MaterialParams* obj) { return (UINT32)obj->mNumDataParams; }
+		void setDataParamArraySize(MaterialParams* obj, UINT32 size)
+		{
+			obj->mNumDataParams = size;
+			obj->mDataParams = obj->mAlloc.construct<MaterialParamsBase::DataParamInfo>(size);
+		}
+
 		MaterialParamsRTTI()
 		{
 			addPlainArrayField("paramData", 0, &MaterialParamsRTTI::getParamData, &MaterialParamsRTTI::getParamDataArraySize, 
@@ -194,6 +208,9 @@ namespace bs
 				&MaterialParamsRTTI::getSamplerStateArraySize, &MaterialParamsRTTI::setSamplerStateParam, &MaterialParamsRTTI::setSamplerStateArraySize);
 
 			addPlainField("numBufferParams", 5, &MaterialParamsRTTI::getNumBufferParams, &MaterialParamsRTTI::setNumBufferParams);
+
+			addPlainArrayField("dataParams", 6, &MaterialParamsRTTI::getDataParam,
+				&MaterialParamsRTTI::getDataParamArraySize, &MaterialParamsRTTI::setDataParam, &MaterialParamsRTTI::setDataParamArraySize);
 		}
 
 		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
@@ -261,6 +278,87 @@ namespace bs
 		{
 			assert(false);
 			return 0;
+		}
+	};
+
+	template<> struct RTTIPlainType<MaterialParamsBase::DataParamInfo>
+	{
+		enum { id = TID_DataParamInfo }; enum { hasDynamicSize = 1 };
+
+		static void toMemory(const MaterialParamsBase::DataParamInfo& data, char* memory)
+		{
+			static constexpr UINT32 VERSION = 0;
+
+			const UINT32 size = getDynamicSize(data);
+			memory = rttiWriteElem(size, memory);
+			memory = rttiWriteElem(VERSION, memory);
+
+			memory = rttiWriteElem(data.offset, memory);
+
+			UINT32 curveType = 0; // No curve
+
+			if(data.floatCurve)
+				curveType = 1;
+			else if(data.colorGradient)
+				curveType = 2;
+
+			memory = rttiWriteElem(curveType, memory);
+			if(data.floatCurve)
+				memory = rttiWriteElem(*data.floatCurve, memory);
+			else if(data.colorGradient)
+				memory = rttiWriteElem(*data.colorGradient, memory);
+		}
+
+		static UINT32 fromMemory(MaterialParamsBase::DataParamInfo& data, char* memory)
+		{
+			UINT32 size = 0;
+			memory = rttiReadElem(size, memory);
+
+			UINT32 version = 0;
+			memory = rttiReadElem(version, memory);
+
+			switch(version)
+			{
+			case 0:
+			{
+				memory = rttiReadElem(data.offset, memory);
+				
+				UINT32 curveType = 0;
+				memory = rttiReadElem(curveType, memory);
+
+				switch(curveType)
+				{
+				case 1:
+					data.floatCurve = bs_pool_new<TAnimationCurve<float>>();
+					memory = rttiReadElem(*data.floatCurve, memory);
+					break;
+				case 2:
+					data.colorGradient = bs_pool_new<ColorGradient>();
+					memory = rttiReadElem(*data.colorGradient, memory);
+					break;
+				default:
+					break;
+				}
+			}
+				break;
+			default:
+				LOGERR("Unknown version. Unable to deserialize.");
+				break;
+			}
+
+			return size;
+		}
+
+		static UINT32 getDynamicSize(const MaterialParamsBase::DataParamInfo& data)
+		{
+			UINT32 size = sizeof(UINT32) * 3 + rttiGetElemSize(data.offset);
+
+			if(data.floatCurve)
+				size += rttiGetElemSize(*data.floatCurve);
+			else if(data.colorGradient)
+				size += rttiGetElemSize(*data.colorGradient);
+
+			return size;
 		}
 	};
 

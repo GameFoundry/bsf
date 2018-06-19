@@ -7,6 +7,7 @@
 #include "Allocators/BsStaticAlloc.h"
 #include "Math/BsVector2.h"
 #include "RenderAPI/BsGpuParams.h"
+#include "Allocators/BsPoolAlloc.h"
 
 namespace bs
 {
@@ -20,6 +21,17 @@ namespace bs
 
 	struct SHADER_DATA_PARAM_DESC;
 	struct SHADER_OBJECT_PARAM_DESC;
+
+	/** Types of textures that can be assigned to a material texture parameter. */
+	enum class MateralParamTextureType
+	{
+		/** Normal texture (static image, entire UV range). */
+		Normal,
+		/** Texture that is writeable by the material using unordered writes. */
+		LoadStore,
+		/** Sprite texture (either a subset of a larger texture, or an animated texture). */
+		Sprite
+	};
 
 	/** Common functionality for MaterialParams and ct::MaterialParams. */
 	class BS_CORE_EXPORT MaterialParamsBase
@@ -50,6 +62,18 @@ namespace bs
 			mutable UINT64 version;
 		};
 
+		/** Information about a single data parameter in a material. */
+		struct DataParamInfo
+		{
+			UINT32 offset;
+
+			union
+			{
+				TAnimationCurve<float>* floatCurve;
+				ColorGradient* colorGradient;
+			};
+		};
+
 		/** 
 		 * Creates a new material params object and initializes enough room for parameters from the provided parameter data.
 		 */
@@ -60,8 +84,7 @@ namespace bs
 			const Map<String, SHADER_OBJECT_PARAM_DESC>& samplerParams);
 
 		/** Constructor for serialization use only. */
-		MaterialParamsBase() { }
-
+		MaterialParamsBase() = default;
 		virtual ~MaterialParamsBase();
 
 		/**
@@ -84,11 +107,12 @@ namespace bs
 			if (result != GetParamResult::Success)
 				return;
 
+			const DataParamInfo& paramInfo = mDataParams[param->index + arrayIdx];
+
 			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[dataType];
 			UINT32 paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
-			output = *(T*)(mDataParamsBuffer[param->index + arrayIdx * paramTypeSize]);
 
-			memcpy(output, &mDataParamsBuffer[param->index + arrayIdx * paramTypeSize], sizeof(paramTypeSize));
+			memcpy(output, &mDataParamsBuffer[paramInfo.offset], sizeof(paramTypeSize));
 		}
 
 		/**
@@ -111,10 +135,12 @@ namespace bs
 			if (result != GetParamResult::Success)
 				return;
 
+			const DataParamInfo& paramInfo = mDataParams[param->index + arrayIdx];
+
 			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[dataType];
 			UINT32 paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
-			memcpy(&mDataParamsBuffer[param->index + arrayIdx * paramTypeSize], input, sizeof(paramTypeSize));
+			memcpy(&mDataParamsBuffer[paramInfo.offset], input, sizeof(paramTypeSize));
 		}
 
 		/**
@@ -153,7 +179,7 @@ namespace bs
 		 * @tparam		T			Native type of the parameter.
 		 */
 		template <typename T>
-		void setCurveParam(const String& name, UINT32 arrayIdx, const TAnimationCurve<T>& input) const
+		void setCurveParam(const String& name, UINT32 arrayIdx, TAnimationCurve<T> input) const
 		{
 			GpuParamDataType dataType = TGpuDataParamInfo<T>::TypeId;
 
@@ -162,7 +188,7 @@ namespace bs
 			if (result != GetParamResult::Success)
 				return;
 
-			setCurveParam(*param, arrayIdx, input);
+			setCurveParam(*param, arrayIdx, std::move(input));
 		}
 
 		/**
@@ -256,11 +282,13 @@ namespace bs
 		{
 			GpuParamDataType dataType = (GpuParamDataType)TGpuDataParamInfo<T>::TypeId;
 
+			const DataParamInfo& paramInfo = mDataParams[param.index + arrayIdx];
+
 			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[dataType];
 			UINT32 paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
 			assert(sizeof(output) == paramTypeSize);
-			memcpy(&output, &mDataParamsBuffer[param.index + arrayIdx * paramTypeSize], paramTypeSize);
+			memcpy(&output, &mDataParamsBuffer[paramInfo.offset], paramTypeSize);
 		}
 
 		/**
@@ -273,11 +301,24 @@ namespace bs
 		{
 			GpuParamDataType dataType = (GpuParamDataType)TGpuDataParamInfo<T>::TypeId;
 
+			DataParamInfo& paramInfo = mDataParams[param.index + arrayIdx];
+			if (paramInfo.floatCurve)
+			{
+				bs_pool_free(paramInfo.floatCurve);
+				paramInfo.floatCurve = nullptr;
+			}
+
+			if (paramInfo.colorGradient)
+			{
+				bs_pool_free(paramInfo.colorGradient);
+				paramInfo.colorGradient = nullptr;
+			}
+
 			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[dataType];
 			UINT32 paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
 			assert(sizeof(input) == paramTypeSize);
-			memcpy(&mDataParamsBuffer[param.index + arrayIdx * paramTypeSize], &input, paramTypeSize);
+			memcpy(&mDataParamsBuffer[paramInfo.offset], &input, paramTypeSize);
 
 			param.version = ++mParamVersion;
 		}
@@ -290,9 +331,17 @@ namespace bs
 		template <typename T>
 		const TAnimationCurve<T>& getCurveParam(const ParamData& param, UINT32 arrayIdx) const
 		{
-			static TAnimationCurve<T> EMPTY_CURVE;
+			GpuParamDataType dataType = (GpuParamDataType)TGpuDataParamInfo<T>::TypeId;
 
-			// TODO - Not implemented
+			// Only supported for float types
+			if(dataType == GPDT_FLOAT1)
+			{
+				const DataParamInfo& paramInfo = mDataParams[param.index + arrayIdx];
+				if (paramInfo.floatCurve)
+					return *paramInfo.floatCurve;
+			}
+
+			static TAnimationCurve<T> EMPTY_CURVE;
 			return EMPTY_CURVE;
 		}
 
@@ -302,9 +351,21 @@ namespace bs
 		 * and belongs to this object.
 		 */
 		template <typename T>
-		void setCurveParam(const ParamData& param, UINT32 arrayIdx, const TAnimationCurve<T>& input) const
+		void setCurveParam(const ParamData& param, UINT32 arrayIdx, TAnimationCurve<T> input) const
 		{
-			// TODO - Not implemented
+			GpuParamDataType dataType = (GpuParamDataType)TGpuDataParamInfo<T>::TypeId;
+
+			// Only supported for float types
+			if(dataType == GPDT_FLOAT1)
+			{
+				DataParamInfo& paramInfo = mDataParams[param.index + arrayIdx];
+				if(paramInfo.floatCurve)
+					bs_pool_free(paramInfo.floatCurve);
+
+				paramInfo.floatCurve = bs_pool_new<TAnimationCurve<T>>(std::move(input));
+
+				param.version = ++mParamVersion;
+			}
 		}
 
 		/**
@@ -324,7 +385,7 @@ namespace bs
 		/** Returns pointer to the internal data buffer for a data parameter at the specified index. */
 		UINT8* getData(UINT32 index) const
 		{
-			return &mDataParamsBuffer[index];
+			return &mDataParamsBuffer[mDataParams[index].offset];
 		}
 
 		/** Returns a counter that gets incremented whenever a parameter gets updated. */
@@ -336,9 +397,11 @@ namespace bs
 		UnorderedMap<String, UINT32> mParamLookup;
 		Vector<ParamData> mParams;
 
+		DataParamInfo* mDataParams = nullptr;
 		UINT8* mDataParamsBuffer = nullptr;
 
 		UINT32 mDataSize = 0;
+		UINT32 mNumDataParams = 0;
 		UINT32 mNumStructParams = 0;
 		UINT32 mNumTextureParams = 0;
 		UINT32 mNumBufferParams = 0;
@@ -372,7 +435,8 @@ namespace bs
 	class BS_CORE_EXPORT MaterialParamTextureDataCore
 	{
 	public:
-		SPtr<ct::Texture> value;
+		SPtr<ct::Texture> texture;
+		SPtr<ct::SpriteTexture> spriteTexture;
 		bool isLoadStore;
 		TextureSurface surface;
 	};
@@ -381,7 +445,8 @@ namespace bs
 	class BS_CORE_EXPORT MaterialParamTextureData : public IReflectable
 	{
 	public:
-		HTexture value;
+		HTexture texture;
+		HSpriteTexture spriteTexture;
 		bool isLoadStore;
 		TextureSurface surface;
 
@@ -670,10 +735,18 @@ namespace bs
 		void setLoadStoreTexture(const ParamData& param, const TextureType& value, const TextureSurface& surface);
 
 		/**
-		 * Checks is a texture with the specified parameter reference a load/store texture or a normal one. Caller must
-		 * guarantee the parameter reference is valid and belongs to this object.
+		 * Returns the type of texture that is currently assigned to the provided parameter. This can only be called on
+		 * on texture parameters. Caller must guarantee the parameter reference is valid, is of a texture type and 
+		 * belongs to this object.
 		 */
-		bool getIsTextureLoadStore(const ParamData& param) const;
+		MateralParamTextureType getTextureType(const ParamData& param) const;
+
+		/**
+		 * Checks does the provided parameter have a curve or gradient assigned. This can only be called on data parameters.
+		 * Caller must guarantee the parameter reference is valid, is of a data type and belongs to this object.
+
+		 */
+		bool isAnimated(const ParamData& param, UINT32 arrayIdx) const;
 
 		/**
 		 * Equivalent to getSamplerState(const String&, SPtr<SamplerState>&) except it uses the internal parameter reference

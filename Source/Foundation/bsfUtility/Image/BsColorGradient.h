@@ -4,6 +4,7 @@
 
 #include "Prerequisites/BsPrerequisitesUtil.h"
 #include "Image/BsColor.h"
+#include "Allocators/BsPoolAlloc.h"
 
 namespace bs 
 {
@@ -45,4 +46,6 @@ namespace bs
 	};
 
 	/* @} */
+
+	IMPLEMENT_GLOBAL_POOL(ColorGradient, 32)
 }

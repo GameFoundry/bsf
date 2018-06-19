@@ -63,6 +63,11 @@ namespace bs
 			dependencies.push_back(mAtlasTexture.get());
 	}
 
+	SPtr<ct::SpriteTexture> SpriteTexture::getCore() const
+	{
+		return std::static_pointer_cast<ct::SpriteTexture>(mCoreSpecific);
+	}
+
 	HSpriteTexture SpriteTexture::create(const HTexture& texture)
 	{
 		SPtr<SpriteTexture> texturePtr = _createPtr(texture);

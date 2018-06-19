@@ -608,6 +608,7 @@ namespace bs
 		TID_ColorDistribution = 1156,
 		TID_TDistribution = 1157,
 		TID_SHADER_PARAM_ATTRIBUTE = 1158,
+		TID_DataParamInfo = 1159,
 
 		// Moved from Engine layer
 		TID_CCamera = 30000,

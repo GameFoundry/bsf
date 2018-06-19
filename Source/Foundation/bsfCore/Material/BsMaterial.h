@@ -211,8 +211,8 @@ namespace bs
 		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
 		BS_SCRIPT_EXPORT()
-		void setFloatCurve(const String& name, const TAnimationCurve<float>& value, UINT32 arrayIdx = 0)	
-		{ return getParamFloatCurve(name).set(value, arrayIdx); }
+		void setFloatCurve(const String& name, TAnimationCurve<float>&value, UINT32 arrayIdx = 0)	
+		{ return getParamFloatCurve(name).set(std::move(value), arrayIdx); }
 
 		/**
 		 * Assigns a color to the shader parameter with the specified name. 

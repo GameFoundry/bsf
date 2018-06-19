@@ -69,7 +69,7 @@ namespace bs
 	}
 
 	template<class T, bool Core>
-	void TMaterialCurveParam<T, Core>::set(const TAnimationCurve<T>& value, UINT32 arrayIdx) const
+	void TMaterialCurveParam<T, Core>::set(TAnimationCurve<T> value, UINT32 arrayIdx) const
 	{
 		if (this->mMaterial == nullptr)
 			return;
@@ -84,7 +84,7 @@ namespace bs
 		SPtr<typename Base::MaterialParamsType> params = this->mMaterial->_getInternalParams();
 		const MaterialParams::ParamData* data = params->getParamData(this->mParamIndex);
 
-		params->setCurveParam(*data, arrayIdx, value);
+		params->setCurveParam(*data, arrayIdx, std::move(value));
 		this->mMaterial->_markCoreDirty();
 	}
 

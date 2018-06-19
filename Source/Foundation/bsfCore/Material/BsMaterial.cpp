@@ -14,6 +14,7 @@
 #include "Serialization/BsMemorySerializer.h"
 #include "Material/BsMaterialParams.h"
 #include "Material/BsGpuParamsSet.h"
+#include "Animation/BsAnimationCurve.h"
 
 namespace bs
 {
@@ -728,6 +729,24 @@ namespace bs
 					bs_stack_free(structData);
 				}
 			}
+
+			for(UINT32 i = 0; i < arraySize; i++)
+			{
+				const bool isAnimated = params->isAnimated(*paramData, i);
+				if(!isAnimated)
+					continue;
+
+				if(param.second.type == GPDT_FLOAT1)
+				{
+					TMaterialCurveParam<float, false> curParam = getParamFloatCurve(param.first);
+					curParam.set(params->getCurveParam<float>(*paramData, i), i);
+				}
+				else if(param.second.type == GPDT_COLOR)
+				{
+					TMaterialColorGradientParam<false> curParam = getParamColorGradient(param.first);
+					curParam.set(params->getColorGradientParam(*paramData, i), i);
+				}
+			}
 		}
 
 		auto& textureParams = mShader->getTextureParams();
@@ -739,8 +758,11 @@ namespace bs
 			if (result != MaterialParams::GetParamResult::Success)
 				continue;
 
-			bool isLoadStore = params->getIsTextureLoadStore(*paramData);
-			if(!isLoadStore)
+			MateralParamTextureType texType = params->getTextureType(*paramData);
+			switch(texType)
+			{
+			default:
+			case MateralParamTextureType::Normal: 
 			{
 				TMaterialParamTexture<false> curParam = getParamTexture(param.first);
 
@@ -749,7 +771,8 @@ namespace bs
 				params->getTexture(*paramData, texture, surface);
 				curParam.set(texture);
 			}
-			else
+				break;
+			case MateralParamTextureType::LoadStore:
 			{
 				TMaterialParamLoadStoreTexture<false> curParam = getParamLoadStoreTexture(param.first);
 
@@ -757,6 +780,17 @@ namespace bs
 				TextureSurface surface;
 				params->getLoadStoreTexture(*paramData, texture, surface);
 				curParam.set(texture, surface);
+			}
+			break;
+			case MateralParamTextureType::Sprite:
+			{
+				TMaterialParamSpriteTexture<false> curParam = getParamSpriteTexture(param.first);
+
+				HSpriteTexture texture;
+				params->getSpriteTexture(*paramData, texture);
+				curParam.set(texture);
+			}
+			break;
 			}
 		}
 

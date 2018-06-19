@@ -6,6 +6,7 @@
 #include "Animation/BsCurveCache.h"
 #include "Math/BsVector3.h"
 #include "Math/BsQuaternion.h"
+#include "Allocators/BsPoolAlloc.h"
 
 namespace bs
 {
@@ -240,4 +241,6 @@ namespace bs
 #endif
 
 	/** @} */
+
+	IMPLEMENT_GLOBAL_POOL(TAnimationCurve<float>, 32)
 }

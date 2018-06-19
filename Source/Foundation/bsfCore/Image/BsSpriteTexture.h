@@ -60,6 +60,9 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:Height,pr:getter)
 		UINT32 getHeight() const;
 
+		/**	Retrieves a core implementation of a sprite texture usable only from the core thread. */
+		SPtr<ct::SpriteTexture> getCore() const;
+
 		/**	Creates a new sprite texture that references the entire area of the provided texture. */
 		BS_SCRIPT_EXPORT(ec:SpriteTexture)
 		static HSpriteTexture create(const HTexture& texture);

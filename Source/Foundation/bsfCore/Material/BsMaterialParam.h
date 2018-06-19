@@ -94,7 +94,7 @@ namespace bs
 		using TMaterialDataCommon<TGpuDataParamInfo<T>::TypeId, Core>::TMaterialDataCommon;
 
 		/** @copydoc TGpuDataParam::set */
-		void set(const TAnimationCurve<T>& value, UINT32 arrayIdx = 0) const;
+		void set(TAnimationCurve<T> value, UINT32 arrayIdx = 0) const;
 
 		/** @copydoc TGpuDataParam::get */
 		const TAnimationCurve<T>& get(UINT32 arrayIdx = 0) const;
