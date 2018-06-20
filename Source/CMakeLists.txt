@@ -43,6 +43,12 @@ endif()
 # Ensure dependencies are up to date
 ## Check prebuilt dependencies that are downloaded in a .zip
 check_and_update_binary_deps(bsf ${BS_DEPENDENCY_DIR} ${BS_FRAMEWORK_PREBUILT_DEPENDENCIES_VERSION})
+if (BS_TOP_LEVEL)
+	bsf_dependency_binary_copy(Debug "${BS_BINARY_OUTPUT_DIR}/Debug")
+	bsf_dependency_binary_copy(RelWithDebInfo "${BS_BINARY_OUTPUT_DIR}/RelWithDebInfo")
+	bsf_dependency_binary_copy(MinSizeRel "${BS_BINARY_OUTPUT_DIR}/MinSizeRel")
+	bsf_dependency_binary_copy(Release "${BS_BINARY_OUTPUT_DIR}/Release")
+endif()
 
 ## Check dependencies built from source
 if(WIN32)

@@ -253,7 +253,7 @@ function(update_binary_deps DEP_PREFIX DEP_FOLDER DEP_VERSION)
 	
 	# Copy executables and dynamic libraries
 	file(MAKE_DIRECTORY ${DOWNLOAD_TEMP_FOLDER}/bin) # Create folder if it doesn't exist
-	file(COPY ${DOWNLOAD_TEMP_FOLDER}/bin DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+	file(COPY ${DOWNLOAD_TEMP_FOLDER}/bin DESTINATION ${DEP_FOLDER})
 	
 	# Copy static libraries, headers and tools
 	file(REMOVE_RECURSE ${DEP_FOLDER})
@@ -316,6 +316,8 @@ function(update_builtin_assets ASSET_PREFIX ASSET_FOLDER ASSET_VERSION CLEAR_MAN
 endfunction()
 
 function(check_and_update_builtin_assets ASSET_PREFIX ASSET_FOLDER ASSET_VERSION CLEAR_MANIFEST)
+	file(LOCK ${ASSET_FOLDER} DIRECTORY GUARD FUNCTION)
+
 	set(BUILTIN_ASSETS_VERSION_FILE ${ASSET_FOLDER}/.version)
 	if(NOT EXISTS ${BUILTIN_ASSETS_VERSION_FILE})
 		message(STATUS "Builtin assets for '${ASSET_PREFIX}' are missing. Downloading package...")
@@ -502,3 +504,40 @@ macro(conditional_cotire)
 		cotire(${ARGN})
 	endif()
 endmacro()
+
+function(bsf_dependency_binary_copy build_type location)
+	if ("${build_type}" STREQUAL "All")
+		bsf_dependency_binary_copy(Debug ${location})
+		bsf_dependency_binary_copy(RelWithDebInfo ${location})
+		bsf_dependency_binary_copy(MinSizeRel ${location})
+		bsf_dependency_binary_copy(Release ${location})
+		return()
+	elseif("${build_type}" STREQUAL "Debug")
+		set(guard_var __BSF_DEP_COPY_DEBUG_GUARD)
+		set(dep_folder "Debug")
+	elseif("${build_type}" STREQUAL "RelWithDebInfo")
+		set(guard_var __BSF_DEP_COPY_RELWITHDEBINFO_GUARD)
+		set(dep_folder "OptimizedDebug")
+	elseif("${build_type}" STREQUAL "MinSizeRel")
+		set(guard_var __BSF_DEP_COPY_MINSIZEREL_GUARD)
+		set(dep_folder "Release")
+	elseif("${build_type}" STREQUAL "Release")
+		set(guard_var __BSF_DEP_COPY_RELEASE_GUARD)
+		set(dep_folder "Release")
+	else()
+		message(FATAL_ERROR "\"${build_type}\" is not a valid build type")
+	endif()
+
+	get_property(current_guard_value GLOBAL PROPERTY ${guard_var} SET)
+
+	if (current_guard_value)
+		message(STATUS "bsf_dependency_binary_copy has already been called for the build type \"${build_type)\"")
+		return()
+	endif()
+
+	set_property(GLOBAL PROPERTY ${guard_var} True)
+
+	file(GLOB_RECURSE binary_deps "${BS_DEPENDENCY_DIR}/bin/x64/${dep_folder}/*")
+	file(MAKE_DIRECTORY ${location})
+	file(COPY ${binary_deps} DESTINATION ${location})
+endfunction()

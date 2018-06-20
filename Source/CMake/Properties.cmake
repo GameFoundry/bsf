@@ -192,5 +192,5 @@ endif()
 set(BS_DEPENDENCY_DIR "${PROJECT_BINARY_DIR}/Dependencies" CACHE STRING "The output location of dependencies.")
 mark_as_advanced(BS_DEPENDENCY_DIR)
 
-set(BS_ASSET_DIR "${PROJECT_BINARY_DIR}/Data" CACHE STRING "The output location of builtin assets.")
+set(BS_ASSET_DIR "${PROJECT_SOURCE_DIR}/Data" CACHE STRING "The output location of builtin assets. Do not change unless you really know what you're doing.")
 mark_as_advanced(BS_ASSET_DIR)
