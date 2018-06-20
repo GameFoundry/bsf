@@ -8,28 +8,51 @@
 
 namespace bs
 {
+	Rect2 SpriteTextureBase::evaluate(float t) const
+	{
+		if(mPlayback == SpriteAnimationPlayback::None)
+			return Rect2(mUVOffset.x, mUVOffset.y, mUVScale.x, mUVScale.y);
+
+		// Note: Duration could be pre-calculated
+		float duration = 0.0f;
+		if (mAnimation.fps > 0)
+			duration = mAnimation.count / (float)mAnimation.fps;
+
+		switch(mPlayback)
+		{
+		default:
+		case SpriteAnimationPlayback::Normal:
+			t = Math::clamp(t, 0.0f, duration);
+			break;
+		case SpriteAnimationPlayback::Loop: 
+			t = Math::repeat(t, duration);
+			break;
+		case SpriteAnimationPlayback::PingPong: 
+			t = Math::pingPong(t, duration);
+			break;
+		}
+
+		const float pct = t / duration;
+		const UINT32 frame = Math::clamp(Math::floorToPosInt(pct * mAnimation.count), 0U, mAnimation.count);
+
+		const UINT32 row = frame / mAnimation.numRows;
+		const UINT32 column = frame % mAnimation.numColumns;
+
+		Rect2 output;
+
+		// Note: These could be pre-calculated
+		output.width = mUVScale.x / mAnimation.numColumns;
+		output.height = mUVScale.y / mAnimation.numRows;
+
+		output.x = mUVOffset.x + column * output.width;
+		output.y = mUVOffset.y + row * output.height;
+
+		return output;
+	}
+
 	SpriteTexture::SpriteTexture(const Vector2& uvOffset, const Vector2& uvScale, const HTexture& texture)
-		:Resource(false), mAtlasTexture(texture), mUVOffset(uvOffset), mUVScale(uvScale)
-	{
-
-	}
-
-	const HTexture& SpriteTexture::getTexture() const 
-	{ 
-		return mAtlasTexture; 
-	}
-
-	void SpriteTexture::setTexture(const HTexture& texture)
-	{
-		mAtlasTexture = texture;
-
-		markDependenciesDirty();
-	}
-
-	Vector2 SpriteTexture::transformUV(const Vector2& uv) const
-	{
-		return mUVOffset + uv * mUVScale;
-	}
+		:SpriteTextureBase(uvOffset, uvScale), mAtlasTexture(texture)
+	{ }
 
 	const HSpriteTexture& SpriteTexture::dummy()
 	{
@@ -49,6 +72,50 @@ namespace bs
 	UINT32 SpriteTexture::getHeight() const
 	{
 		return Math::roundToInt(mAtlasTexture->getProperties().getHeight() * mUVScale.y);
+	}
+
+	void SpriteTexture::_markCoreDirty()
+	{
+		markCoreDirty();
+	}
+
+	SPtr<ct::CoreObject> SpriteTexture::createCore() const
+	{
+		SPtr<ct::Texture> texturePtr;
+		if(mAtlasTexture.isLoaded())
+			texturePtr = mAtlasTexture->getCore();
+
+		ct::SpriteTexture* spriteTexture = new (bs_alloc<ct::SpriteTexture>()) ct::SpriteTexture(mUVOffset, mUVScale, 
+			std::move(texturePtr), mAnimation, mPlayback);
+
+		SPtr<ct::SpriteTexture> spriteTexPtr = bs_shared_ptr<ct::SpriteTexture>(spriteTexture);
+		spriteTexPtr->_setThisPtr(spriteTexPtr);
+
+		return spriteTexPtr;
+	}
+
+	CoreSyncData SpriteTexture::syncToCore(FrameAlloc* allocator)
+	{
+		UINT32 size = sizeof(mUVOffset) + sizeof(mUVScale) + sizeof(SPtr<ct::Texture>) + sizeof(mAnimation) + 
+			sizeof(mPlayback);
+
+		UINT8* buffer = allocator->alloc(size);
+		char* dataPtr = (char*)buffer;
+
+		dataPtr = rttiWriteElem(mUVOffset, dataPtr);
+		dataPtr = rttiWriteElem(mUVScale, dataPtr);
+		
+		SPtr<ct::Texture>* texture = new (dataPtr) SPtr<ct::Texture>();
+		if (mAtlasTexture.isLoaded(false))
+			*texture = mAtlasTexture->getCore();
+		else
+			*texture = nullptr;
+
+		dataPtr += sizeof(SPtr<ct::Texture>);
+		dataPtr = rttiWriteElem(mAnimation, dataPtr);
+		dataPtr = rttiWriteElem(mPlayback, dataPtr);
+
+		return CoreSyncData(buffer, size);
 	}
 
 	void SpriteTexture::getResourceDependencies(FrameVector<HResource>& dependencies) const
@@ -123,5 +190,33 @@ namespace bs
 	RTTITypeBase* SpriteTexture::getRTTI() const
 	{
 		return SpriteTexture::getRTTIStatic();
+	}
+
+	namespace ct
+	{
+		SpriteTexture::SpriteTexture(const Vector2& uvOffset, const Vector2& uvScale, SPtr<Texture> texture,
+			const SpriteSheetGridAnimation& anim, SpriteAnimationPlayback playback)
+			:SpriteTextureBase(uvOffset, uvScale), mAtlasTexture(std::move(texture))
+		{
+			mAnimation = anim;
+			mPlayback = playback;
+		}
+
+		void SpriteTexture::syncToCore(const CoreSyncData& data)
+		{
+			char* dataPtr = (char*)data.getBuffer();
+
+			dataPtr = rttiReadElem(mUVOffset, dataPtr);
+			dataPtr = rttiReadElem(mUVScale, dataPtr);
+
+			SPtr<Texture>* texture = (SPtr<Texture>*)dataPtr;
+
+			mAtlasTexture = *texture;
+			texture->~SPtr<Texture>();
+			dataPtr += sizeof(SPtr<Texture>);
+
+			dataPtr = rttiReadElem(mAnimation, dataPtr);
+			dataPtr = rttiReadElem(mPlayback, dataPtr);
+		}
 	}
 }

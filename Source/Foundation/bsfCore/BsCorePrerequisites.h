@@ -609,6 +609,7 @@ namespace bs
 		TID_TDistribution = 1157,
 		TID_SHADER_PARAM_ATTRIBUTE = 1158,
 		TID_DataParamInfo = 1159,
+		TID_SpriteSheetGridAnimation = 1160,
 
 		// Moved from Engine layer
 		TID_CCamera = 30000,
