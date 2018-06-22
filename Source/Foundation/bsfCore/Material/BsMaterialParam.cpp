@@ -4,7 +4,6 @@
 #include "Math/BsVector2I.h"
 #include "Material/BsMaterialParams.h"
 #include "Material/BsMaterial.h"
-#include "Animation/BsAnimationCurve.h"
 #include "Image/BsColorGradient.h"
 
 namespace bs

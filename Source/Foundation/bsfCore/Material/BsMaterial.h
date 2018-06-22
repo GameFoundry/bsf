@@ -8,6 +8,7 @@
 #include "Material/BsMaterialParam.h"
 #include "Material/BsMaterialParams.h"
 #include "Material/BsTechnique.h"
+#include "Animation/BsAnimationCurve.h"
 #include "Math/BsVector2.h"
 #include "Math/BsVector3.h"
 #include "Math/BsVector4.h"
@@ -211,7 +212,7 @@ namespace bs
 		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
 		BS_SCRIPT_EXPORT()
-		void setFloatCurve(const String& name, TAnimationCurve<float>&value, UINT32 arrayIdx = 0)	
+		void setFloatCurve(const String& name, TAnimationCurve<float> value, UINT32 arrayIdx = 0)	
 		{ return getParamFloatCurve(name).set(std::move(value), arrayIdx); }
 
 		/**

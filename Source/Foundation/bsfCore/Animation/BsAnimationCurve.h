@@ -26,7 +26,7 @@ namespace bs
 
 	/** Keyframe specialization for integers (no tangents). */
 	template <>
-	struct TKeyframe<INT32>
+	struct BS_SCRIPT_EXPORT(m:Animation,n:KeyFrameInt,pl:true) TKeyframe<INT32>
 	{
 		INT32 value; /**< Value of the key. */
 		float time; /**< Position of the key along the animation spline. */
@@ -35,10 +35,6 @@ namespace bs
 	template struct BS_SCRIPT_EXPORT(m:Animation,n:KeyFrame,pl:true) TKeyframe<float>;
 	template struct BS_SCRIPT_EXPORT(m:Animation,n:KeyFrameVec3,pl:true) TKeyframe<Vector3>;
 	template struct BS_SCRIPT_EXPORT(m:Animation,n:KeyFrameQuat,pl:true) TKeyframe<Quaternion>;
-
-#ifdef BS_SBGEN
-	template struct BS_SCRIPT_EXPORT(m:Animation,n:KeyFrameInt,pl:true) TKeyframe<INT32>;
-#endif
 
 	/**
 	 * Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The
@@ -84,7 +80,7 @@ namespace bs
 		 *						value will be clamped.
 		 * @return				Interpolated value from the curve at provided time.
 		 */
-		BS_SCRIPT_EXPORT(n:Evaluate)
+		BS_SCRIPT_EXPORT()
 		T evaluate(float time, bool loop = true) const;
 
 		/**

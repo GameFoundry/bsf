@@ -5,6 +5,7 @@
 #include "BsCorePrerequisites.h"
 #include "RenderAPI/BsGpuParam.h"
 #include "RenderAPI/BsGpuParams.h"
+#include "Animation/BsAnimationCurve.h"
 
 namespace bs
 {

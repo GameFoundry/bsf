@@ -13,27 +13,38 @@ namespace bs
 	 */
 
 	/** Single key in a ColorGradient. */
-	struct ColorGradientKey
+	struct BS_SCRIPT_EXPORT(m:Image,pl:true) ColorGradientKey
 	{
 		Color color;
-		float time;
+		float time = 0.0f;
 	};
 
 	/** 
 	 * Represents a range of color values over some parameters, similar to a curve. Internally represented as a set of
 	 * keys that get interpolated between.
 	 */
-	class BS_UTILITY_EXPORT ColorGradient
+	class BS_UTILITY_EXPORT BS_SCRIPT_EXPORT(m:Image) ColorGradient
 	{
 		static constexpr UINT32 MAX_KEYS = 8;
 	public:
+		BS_SCRIPT_EXPORT()
+		ColorGradient() = default;
+
+		BS_SCRIPT_EXPORT()
+		ColorGradient(const Color& color);
+
+		BS_SCRIPT_EXPORT()
+		ColorGradient(const Vector<ColorGradientKey>& keys);
+
 		/** Evaluates a color at the specified @p t. */
 		RGBA evaluate(float t) const;
 
 		/** Set of keys that control the gradient, sorted by time from first to last. */
+		BS_SCRIPT_EXPORT()
 		void setKeys(const Vector<ColorGradientKey>& keys);
 
 		/** Specify a "gradient" that represents a single color value. */
+		BS_SCRIPT_EXPORT()
 		void setConstant(const Color& color);
 
 	private:
