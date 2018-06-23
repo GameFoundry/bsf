@@ -119,7 +119,7 @@ namespace bs
 
 		numSceneObjects = (UINT32)sceneObjects.size();
 		if (numSceneObjects > 0)
-			sceneObjectPose = LocalSkeletonPose(numSceneObjects);
+			sceneObjectPose = LocalSkeletonPose(numSceneObjects, true);
 		else
 			sceneObjectPose = LocalSkeletonPose();
 
