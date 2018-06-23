@@ -11,10 +11,12 @@ namespace bs
 		: positions(nullptr), rotations(nullptr), scales(nullptr), hasOverride(nullptr), numBones(0)
 	{ }
 
-	LocalSkeletonPose::LocalSkeletonPose(UINT32 numBones)
+	LocalSkeletonPose::LocalSkeletonPose(UINT32 numBones, bool individualOverride)
 		: numBones(numBones)
 	{
-		UINT32 elementSize = sizeof(Vector3) * 2 + sizeof(Quaternion) + sizeof(bool);
+		const UINT32 overridesPerBone = individualOverride ? 3 : 1;
+
+		UINT32 elementSize = sizeof(Vector3) * 2 + sizeof(Quaternion) + sizeof(bool) * overridesPerBone;
 		UINT8* buffer = (UINT8*)bs_alloc(elementSize * numBones);
 
 		positions = (Vector3*)buffer;

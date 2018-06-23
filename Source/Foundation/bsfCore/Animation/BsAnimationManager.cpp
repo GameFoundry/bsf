@@ -241,7 +241,7 @@ namespace bs
 		}
 
 		// Update mapped scene objects
-		memset(anim->sceneObjectPose.hasOverride, 1, sizeof(bool) * anim->numSceneObjects);
+		memset(anim->sceneObjectPose.hasOverride, 1, sizeof(bool) * 3 * anim->numSceneObjects);
 
 		// Update scene object transforms
 		for (UINT32 i = 0; i < anim->numSceneObjects; i++)
@@ -265,7 +265,7 @@ namespace bs
 				{
 					const TAnimationCurve<Vector3>& curve = state.curves->position[curveIdx].curve;
 					anim->sceneObjectPose.positions[curveIdx] = curve.evaluate(state.time, state.positionCaches[curveIdx], state.loop);
-					anim->sceneObjectPose.hasOverride[curveIdx] = false;
+					anim->sceneObjectPose.hasOverride[i * 3 + 0] = false;
 				}
 			}
 
@@ -276,7 +276,7 @@ namespace bs
 					const TAnimationCurve<Quaternion>& curve = state.curves->rotation[curveIdx].curve;
 					anim->sceneObjectPose.rotations[curveIdx] = curve.evaluate(state.time, state.rotationCaches[curveIdx], state.loop);
 					anim->sceneObjectPose.rotations[curveIdx].normalize();
-					anim->sceneObjectPose.hasOverride[curveIdx] = false;
+					anim->sceneObjectPose.hasOverride[i * 3 + 1] = false;
 				}
 			}
 
@@ -286,7 +286,7 @@ namespace bs
 				{
 					const TAnimationCurve<Vector3>& curve = state.curves->scale[curveIdx].curve;
 					anim->sceneObjectPose.scales[curveIdx] = curve.evaluate(state.time, state.scaleCaches[curveIdx], state.loop);
-					anim->sceneObjectPose.hasOverride[curveIdx] = false;
+					anim->sceneObjectPose.hasOverride[i * 3 + 2] = false;
 				}
 			}
 		}
