@@ -1164,7 +1164,7 @@ namespace bs
 					arrParamInfo.floatCurve = bs_pool_new<TAnimationCurve<float>>();
 					sourceData = rttiReadElem(*arrParamInfo.floatCurve, sourceData);
 				}
-				else if (arrParamInfo.colorGradient && param.dataType == GPDT_COLOR)
+				else if (param.dataType == GPDT_COLOR)
 				{
 					if(arrParamInfo.colorGradient)
 						bs_pool_free(arrParamInfo.colorGradient);

@@ -358,6 +358,14 @@ namespace bs { namespace ct
 		// If any reflection probes were updated or added, we need to copy them over in the global reflection probe array
 		updateReflProbeArray();
 
+		// Update material animation times for all renderables
+		for (UINT32 i = 0; i < sceneInfo.renderables.size(); i++)
+		{
+			RendererRenderable* renderable = sceneInfo.renderables[i];
+			for (auto& element : renderable->elements)
+				element.materialAnimationTime += timings.timeDelta;
+		}
+
 		// Gather all views
 		for (auto& rtInfo : sceneInfo.renderTargets)
 		{

@@ -254,7 +254,7 @@ namespace bs
 		 * @param[in]	name	Name of an object or data parameter to apply the attribute to.
 		 * @param[in]	attrib	Structure describing the attribute to apply.
 		 */
-		void setParameterAttribute(const String& name, SHADER_PARAM_ATTRIBUTE attrib);
+		void setParameterAttribute(const String& name, const SHADER_PARAM_ATTRIBUTE& attrib);
 
 		/**
 		 * Changes parameters of a parameter block with the specified name.

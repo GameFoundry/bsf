@@ -96,8 +96,8 @@ namespace bs
 
 	CoreSyncData SpriteTexture::syncToCore(FrameAlloc* allocator)
 	{
-		UINT32 size = sizeof(mUVOffset) + sizeof(mUVScale) + sizeof(SPtr<ct::Texture>) + sizeof(mAnimation) + 
-			sizeof(mPlayback);
+		UINT32 size = rttiGetElemSize(mUVOffset) + rttiGetElemSize(mUVScale) + sizeof(SPtr<ct::Texture>) + 
+			rttiGetElemSize(mAnimation) + rttiGetElemSize(mPlayback);
 
 		UINT8* buffer = allocator->alloc(size);
 		char* dataPtr = (char*)buffer;
@@ -112,6 +112,7 @@ namespace bs
 			*texture = nullptr;
 
 		dataPtr += sizeof(SPtr<ct::Texture>);
+
 		dataPtr = rttiWriteElem(mAnimation, dataPtr);
 		dataPtr = rttiWriteElem(mPlayback, dataPtr);
 

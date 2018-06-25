@@ -15,6 +15,11 @@ namespace bs
 	/** Single key in a ColorGradient. */
 	struct BS_SCRIPT_EXPORT(m:Image,pl:true) ColorGradientKey
 	{
+		ColorGradientKey() = default;
+		ColorGradientKey(const Color& color, float time)
+			:color(color), time(time)
+		{ }
+
 		Color color;
 		float time = 0.0f;
 	};

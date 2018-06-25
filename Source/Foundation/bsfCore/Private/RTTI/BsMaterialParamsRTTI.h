@@ -404,7 +404,7 @@ namespace bs
 
 		static UINT32 getDynamicSize(const MaterialParamsBase::DataParamInfo& data)
 		{
-			UINT32 size = sizeof(UINT32) * 3 + rttiGetElemSize(data.offset) + rttiGetElemSize(data.spriteTextureIdx);
+			UINT32 size = sizeof(UINT32) * 3 + rttiGetElemSize(data.offset);
 
 			if(data.floatCurve)
 				size += rttiGetElemSize(*data.floatCurve);

@@ -513,7 +513,7 @@ namespace bs
 
 	CoreSyncData Material::syncToCore(FrameAlloc* allocator)
 	{
-		bool syncAllParams = (getCoreDirtyFlags() & (UINT32)MaterialDirtyFlags::ResourceChanged) != 0;
+		bool syncAllParams = (getCoreDirtyFlags() & (UINT32)MaterialDirtyFlags::ParamResource) != 0;
 
 		UINT32 paramsSize = 0;
 		if (mParams != nullptr)
@@ -627,7 +627,7 @@ namespace bs
 		else
 		{
 			// Otherwise just sync changes (most likely just a texture got reimported)
-			_markCoreDirty(MaterialDirtyFlags::ResourceChanged);
+			_markCoreDirty(MaterialDirtyFlags::ParamResource);
 		}
 	}
 
@@ -876,7 +876,7 @@ namespace bs
 		mShader = shader;
 
 		initializeTechniques();
-		_markCoreDirty();
+		_markCoreDirty(MaterialDirtyFlags::Shader);
 	}
 	
 	void Material::setShader(const SPtr<Shader>& shader, const ShaderVariation& variation)
@@ -884,7 +884,7 @@ namespace bs
 		mShader = shader;
 
 		initializeTechniques(false, variation);
-		_markCoreDirty();
+		_markCoreDirty(MaterialDirtyFlags::Shader);
 	}
 
 	void Material::syncToCore(const CoreSyncData& data)

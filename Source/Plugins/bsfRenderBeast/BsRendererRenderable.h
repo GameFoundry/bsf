@@ -101,6 +101,9 @@ namespace bs { namespace ct
 		/** Vertex declaration used for rendering meshes containing morph shape information. */
 		SPtr<VertexDeclaration> morphVertexDeclaration;
 
+		/** Time to used for evaluating material animation. */
+		float materialAnimationTime = 0.0f;
+
 		/** Version of the morph shape vertices in the buffer. */
 		mutable UINT32 morphShapeVersion;
 	};

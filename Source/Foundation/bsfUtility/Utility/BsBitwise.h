@@ -279,7 +279,7 @@ namespace bs
 			assert((val & 0xFF) == val);
 			assert(from <= to);
 
-			return (val - from) << 8 / std::max(to - from, 1u);
+			return ((val - from) << 8) / std::max(to - from, 1u);
 		}
 
 		/**
@@ -294,7 +294,7 @@ namespace bs
 			assert((val & 0xFFFF) == val);
 			assert(from <= to);
 
-			return (val - from) << 16 / std::max(to - from, 1u);
+			return ((val - from) << 16) / std::max(to - from, 1u);
 		}
 
 		/** Write a n*8 bits integer value to memory in native endian. */

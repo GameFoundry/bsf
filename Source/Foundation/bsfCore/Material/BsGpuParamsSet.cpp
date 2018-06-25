@@ -1027,13 +1027,11 @@ namespace bs
 						params->getOwningSpriteTexture(*materialParamInfo);
 
 					UINT32 writeOffset = paramInfo.offset * sizeof(UINT32);
+					Rect2 uv = Rect2(0.0f, 0.0f, 1.0f, 1.0f);
 					if(spriteTexture != nullptr)
-					{
-						Rect2 uv = spriteTexture->evaluate(t);
-						paramBlock->write(writeOffset, &uv, paramSize);
-					}
-					else
-						paramBlock->write(writeOffset, data, paramSize);
+						uv = spriteTexture->evaluate(t);
+
+					paramBlock->write(writeOffset, &uv, paramSize);
 
 					// Only the first array element receives sprite UVs, the rest are treated as normal
 					if(arraySize > 1)

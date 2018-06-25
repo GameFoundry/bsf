@@ -48,8 +48,12 @@ namespace bs
 	/** Flags that signal in what way did the Material change. */
 	enum class MaterialDirtyFlags
 	{
-		Normal				= 1 << 0,
-		ResourceChanged		= 2 << 1
+		/** Material parameter changed. */
+		Param				= 1 << 0,
+		/** Dependant resource has been loaded and/or changed. (e.g. a texture assigned to a parameter. */
+		ParamResource		= 1 << 1,
+		/** Material shader has changed. */
+		Shader				= 2 << 2
 	};
 
 	/** Structure used when searching for a specific technique in a Material. */
@@ -116,7 +120,7 @@ namespace bs
 		 */
 
 		/** Marks the contents of the sim thread object as dirty, causing it to sync with its core thread counterpart. */
-		virtual void _markCoreDirty(MaterialDirtyFlags flags = MaterialDirtyFlags::Normal) { }
+		virtual void _markCoreDirty(MaterialDirtyFlags flags = MaterialDirtyFlags::Param) { }
 
 		/** @copydoc CoreObject::markDependenciesDirty */
 		virtual void _markDependenciesDirty() { }
@@ -757,7 +761,7 @@ namespace bs
 		 * Marks the core data as dirty. This causes the syncToCore() method to trigger the next time objects are synced 
 		 * between core and sim threads. 
 		 */
-		void _markCoreDirty(MaterialDirtyFlags flags = MaterialDirtyFlags::Normal) override;
+		void _markCoreDirty(MaterialDirtyFlags flags = MaterialDirtyFlags::Param) override;
 
 		/** @copydoc CoreObject::markDependenciesDirty */
 		void _markDependenciesDirty() override;

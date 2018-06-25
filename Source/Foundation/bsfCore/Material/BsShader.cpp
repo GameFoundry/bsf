@@ -39,6 +39,10 @@ namespace bs
 			return;
 		}
 
+		const auto iterFind = dataParams.find(paramDesc.name);
+		if(iterFind != dataParams.end())
+			return;
+
 		if (defaultValue != nullptr)
 		{
 			paramDesc.defaultValueIdx = (UINT32)dataDefaultValues.size();
@@ -130,7 +134,7 @@ namespace bs
 	}
 
 	template<bool Core>
-	void TSHADER_DESC<Core>::setParameterAttribute(const String& name, SHADER_PARAM_ATTRIBUTE attrib)
+	void TSHADER_DESC<Core>::setParameterAttribute(const String& name, const SHADER_PARAM_ATTRIBUTE& attrib)
 	{
 		SHADER_DATA_PARAM_DESC* paramDescData = nullptr;
 
@@ -185,13 +189,33 @@ namespace bs
 			}
 		}
 
-		const auto attribIdx = (UINT32)paramAttributes.size();
+		// Look for duplicate attributes
+		UINT32 curAttribIdx = paramDesc->attribIdx;
+		bool found = false;
+		while(curAttribIdx != (UINT32)-1)
+		{
+			SHADER_PARAM_ATTRIBUTE& curAttrib = paramAttributes[curAttribIdx];
+			if(curAttrib.type == attrib.type)
+			{
+				curAttrib = attrib;
 
-		if(paramDesc->attribIdx != (UINT32)-1)
-			attrib.nextParamIdx = paramDesc->attribIdx;
+				found = true;
+				break;
+			}
 
-		paramDesc->attribIdx = attribIdx;
-		paramAttributes.emplace_back(attrib);
+			curAttribIdx = curAttrib.nextParamIdx;
+		}
+
+		if(!found)
+		{
+			const auto attribIdx = (UINT32)paramAttributes.size();
+			paramAttributes.emplace_back(attrib);
+
+			if (paramDesc->attribIdx != (UINT32)-1)
+				paramAttributes.back().nextParamIdx = paramDesc->attribIdx;
+
+			paramDesc->attribIdx = attribIdx;
+		}
 	}
 
 	template<bool Core>
@@ -435,6 +459,7 @@ namespace bs
 		output.samplerParams = desc.samplerParams;
 		output.bufferParams = desc.bufferParams;
 		output.paramBlocks = desc.paramBlocks;
+		output.paramAttributes = desc.paramAttributes;
 
 		output.dataDefaultValues = desc.dataDefaultValues;
 
