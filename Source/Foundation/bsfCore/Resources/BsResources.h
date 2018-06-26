@@ -181,6 +181,8 @@ namespace bs
 		 * @note
 		 * If saving a core thread resource this is a potentially very slow operation as we must wait on the core thread 
 		 * and the GPU in order to read the resource.
+		 * @note
+		 * Thread safe if you guarantee the resource isn't being written to from another thread.
 		 */
 		void save(const HResource& resource, const Path& filePath, bool overwrite, bool compress = false);
 
@@ -198,6 +200,8 @@ namespace bs
 		 * @note
 		 * If saving a core thread resource this is a potentially very slow operation as we must wait on the core thread 
 		 * and the GPU in order to read the resource.
+		 * @note
+		 * Thread safe if you guarantee the resource isn't being written to from another thread.
 		 */
 		void save(const HResource& resource, bool compress = false);
 
@@ -302,6 +306,12 @@ namespace bs
 		/** Returns an existing handle for the specified UUID if one exists, or creates a new one. */
 		HResource _getResourceHandle(const UUID& uuid);
 
+		/** 
+		 * Same as save() except it saves the resource without registering it in the default manifest, requiring a handle, 
+		 * or checking for overwrite.
+		 */
+		void _save(const SPtr<Resource>& resource, const Path& filePath, bool compress);
+
 		/** @} */
 	private:
 		friend class ResourceHandleBase;
@@ -331,6 +341,7 @@ namespace bs
 
 		Mutex mInProgressResourcesMutex;
 		Mutex mLoadedResourceMutex;
+		Mutex mDefaultManifestMutex;
 		RecursiveMutex mDestroyMutex;
 
 		UnorderedMap<UUID, WeakResourceHandle<Resource>> mHandles;

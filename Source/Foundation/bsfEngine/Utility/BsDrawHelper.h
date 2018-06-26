@@ -9,6 +9,7 @@
 #include "Image/BsColor.h"
 #include "Math/BsRect3.h"
 #include "RenderAPI/BsSubMesh.h"
+#include "Scene/BsTransform.h"
 
 namespace bs
 {
@@ -125,14 +126,13 @@ namespace bs
 		 *
 		 * @param	sorting		(optional) Determines how (and if) should elements be sorted
 		 *						based on their distance from the reference point.
-		 * @param	reference	(optional) Reference point to use for determining distance when
-		 *						sorting.
+		 * @param	camera		(optional) Camera through which the meshes will be rendered.
 		 * @param	layers		(optional) Layers bitfield that can be used for controlling which shapes will be included
 		 *						in the mesh. This bitfield will be ANDed with the layer specified when recording the shape.
 		 * @return				Generated mesh data.
 		 */
-		Vector<ShapeMeshData> buildMeshes(SortType sorting = SortType::None, const Vector3& reference = Vector3::ZERO, 
-			UINT64 layers = 0xFFFFFFFFFFFFFFFF);
+		Vector<ShapeMeshData> buildMeshes(SortType sorting = SortType::None, 
+			const Camera* camera = nullptr, UINT64 layers = 0xFFFFFFFFFFFFFFFF);
 
 	private:
 		struct CommonData

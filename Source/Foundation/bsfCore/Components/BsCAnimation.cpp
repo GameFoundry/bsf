@@ -321,8 +321,16 @@ namespace bs
 			if (isRunning)
 				return false;
 
-			restoreInternal(true);
-			mPreviewMode = true;
+			if(!mPreviewMode)
+			{
+				// Make sure not to re-enable preview mode if already enabled because it rebuilds the internal Animation
+				// component, changing its ID. If animation evaluation is async then the new ID will not have any animation
+				// attached for one frame. This can look weird when sampling the animation for preview purposes 
+				// (e.g. scrubbing in editor), in which case animation will reset to T pose for a single frame before
+				// settling on the chosen frame.
+				restoreInternal(true);
+				mPreviewMode = true;
+			}
 
 			return true;
 		}

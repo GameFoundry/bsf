@@ -1,7 +1,7 @@
 //************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "GUI/BsGUIHelper.h"
-#include "2D/BsSpriteTexture.h"
+#include "Image/BsSpriteTexture.h"
 #include "GUI/BsGUIElementStyle.h"
 #include "GUI/BsGUIDimensions.h"
 #include "Image/BsTexture.h"
@@ -23,8 +23,8 @@ namespace bs
 	{
 		Vector2I contentBounds = calcOptimalContentsSize((const String&)content.getText(), style, dimensions);
 
-		HSpriteTexture image = content.getImage(state);
-		if (image.isLoaded())
+		const HSpriteTexture& image = content.getImage(state);
+		if (SpriteTexture::checkIsLoaded(image))
 		{
 			contentBounds.x += image->getWidth() + GUIContent::IMAGE_TEXT_SPACING;
 			contentBounds.y = std::max(image->getHeight(), (UINT32)contentBounds.y);

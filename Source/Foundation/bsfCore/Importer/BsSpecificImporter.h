@@ -23,8 +23,6 @@ namespace bs
 	/** Modes signififying the level of asynchronous functionality provided by a SpecificImporter. */
 	enum class ImporterAsyncMode
 	{
-		/** No asynchronous import is supported. */
-		None,
 		/** Asynchronous import is supported but only on a single thread. */
 		Single,
 		/** Asynchronous import for multiple simultaneous threads is supported. */

@@ -43,6 +43,7 @@ namespace bs
 		 * @return						Imported resource.
 		 *
 		 * @see		createImportOptions
+		 * @note	Thread safe.
 		 */
 		HResource import(const Path& inputFilePath, SPtr<const ImportOptions> importOptions = nullptr, 
 			const UUID& UUID = UUID::EMPTY);
@@ -75,6 +76,7 @@ namespace bs
 		 *								resource.
 		 *
 		 * @see		createImportOptions
+		 * @note	Thread safe.
 		 */
 		Vector<SubResource> importAll(const Path& inputFilePath, SPtr<const ImportOptions> importOptions = nullptr);
 
@@ -141,11 +143,11 @@ namespace bs
 
 		/** Alternative to import() which doesn't create a resource handle, but instead returns a raw resource pointer. */
 		SPtr<Resource> _import(const Path& inputFilePath, 
-			SPtr<const ImportOptions> importOptions = nullptr) const;
+			SPtr<const ImportOptions> importOptions = nullptr);
 
 		/** Alternative to importAll() which doesn't create resource handles, but instead returns raw resource pointers. */
 		Vector<SubResourceRaw> _importAll(const Path& inputFilePath, 
-			SPtr<const ImportOptions> importOptions = nullptr) const;
+			SPtr<const ImportOptions> importOptions = nullptr);
 
 		/** @} */
 	private:
@@ -192,15 +194,18 @@ namespace bs
 
 		/**
 		 * Checks is the specific importer currently importing something asynchronously. If the importer doesn't support
-		 * multiple threads then the method will wait until async. import completes.
+		 * multiple threads then the method will wait until async. import completes, register a new task (so further
+		 * calls to the same method appropriately wait), and return an index of the task. The caller must check to
+		 * remove the task when import is done.
 		 */
-		void waitForAsync(SpecificImporter* importer) const;
+		UINT64 waitForAsync(SpecificImporter* importer);
 
 		Vector<SpecificImporter*> mAssetImporters;
 
 		mutable Mutex mLastTaskMutex;
 		mutable Signal mTaskCompleted;
-		UINT64 mTaskId = 0;
+		mutable Mutex mImportMutex;
+		mutable UINT64 mTaskId = 0;
 
 		/** Information about a task queued for a specific import operation. */
 		struct QueuedTask

@@ -4,7 +4,7 @@
 #include "Mesh/BsMesh.h"
 #include "RenderAPI/BsVertexDataDesc.h"
 #include "Utility/BsShapeMeshes3D.h"
-#include "2D/BsSpriteTexture.h"
+#include "Image/BsSpriteTexture.h"
 #include "CoreThread/BsCoreThread.h"
 #include "Material/BsMaterial.h"
 #include "RenderAPI/BsGpuParams.h"
@@ -133,7 +133,7 @@ namespace bs
 	void DebugDraw::_update()
 	{
 		mActiveMeshes.clear();
-		mActiveMeshes = mDrawHelper->buildMeshes(DrawHelper::SortType::None, Vector3::ZERO);
+		mActiveMeshes = mDrawHelper->buildMeshes(DrawHelper::SortType::None);
 
 		Vector<MeshRenderData> proxyData = createMeshProxyData(mActiveMeshes);
 

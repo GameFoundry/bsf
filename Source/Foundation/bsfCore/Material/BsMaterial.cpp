@@ -14,6 +14,7 @@
 #include "Serialization/BsMemorySerializer.h"
 #include "Material/BsMaterialParams.h"
 #include "Material/BsGpuParamsSet.h"
+#include "Animation/BsAnimationCurve.h"
 
 namespace bs
 {
@@ -54,9 +55,9 @@ namespace bs
 	}
 
 	template<bool Core>
-	void TMaterial<Core>::updateParamsSet(const SPtr<GpuParamsSetType>& paramsSet, bool updateAll)
+	void TMaterial<Core>::updateParamsSet(const SPtr<GpuParamsSetType>& paramsSet, float t, bool updateAll)
 	{
-		paramsSet->update(mParams, updateAll);
+		paramsSet->update(mParams, t, updateAll);
 	}
 	
 	template<bool Core>
@@ -157,11 +158,35 @@ namespace bs
 	}
 
 	template<bool Core>
+	TMaterialColorGradientParam<Core> TMaterial<Core>::getParamColorGradient(const String& name) const
+	{
+		throwIfNotInitialized();
+
+		return TMaterialColorGradientParam<Core>(name, getMaterialPtr(this));
+	}
+
+	template <bool Core>
+	TMaterialCurveParam<float, Core> TMaterial<Core>::getParamFloatCurve(const String& name) const
+	{
+		throwIfNotInitialized();
+
+		return TMaterialCurveParam<float, Core>(name, getMaterialPtr(this));
+	}
+
+	template<bool Core>
 	TMaterialParamTexture<Core> TMaterial<Core>::getParamTexture(const String& name) const
 	{
 		throwIfNotInitialized();
 
 		return TMaterialParamTexture<Core>(name, getMaterialPtr(this));
+	}
+
+	template<bool Core>
+	TMaterialParamSpriteTexture<Core> TMaterial<Core>::getParamSpriteTexture(const String& name) const
+	{
+		throwIfNotInitialized();
+
+		return TMaterialParamSpriteTexture<Core>(name, getMaterialPtr(this));
 	}
 
 	template<bool Core>
@@ -488,7 +513,7 @@ namespace bs
 
 	CoreSyncData Material::syncToCore(FrameAlloc* allocator)
 	{
-		bool syncAllParams = (getCoreDirtyFlags() & (UINT32)MaterialDirtyFlags::ResourceChanged) != 0;
+		bool syncAllParams = (getCoreDirtyFlags() & (UINT32)MaterialDirtyFlags::ParamResource) != 0;
 
 		UINT32 paramsSize = 0;
 		if (mParams != nullptr)
@@ -602,7 +627,7 @@ namespace bs
 		else
 		{
 			// Otherwise just sync changes (most likely just a texture got reimported)
-			_markCoreDirty(MaterialDirtyFlags::ResourceChanged);
+			_markCoreDirty(MaterialDirtyFlags::ParamResource);
 		}
 	}
 
@@ -704,6 +729,24 @@ namespace bs
 					bs_stack_free(structData);
 				}
 			}
+
+			for(UINT32 i = 0; i < arraySize; i++)
+			{
+				const bool isAnimated = params->isAnimated(*paramData, i);
+				if(!isAnimated)
+					continue;
+
+				if(param.second.type == GPDT_FLOAT1)
+				{
+					TMaterialCurveParam<float, false> curParam = getParamFloatCurve(param.first);
+					curParam.set(params->getCurveParam<float>(*paramData, i), i);
+				}
+				else if(param.second.type == GPDT_COLOR)
+				{
+					TMaterialColorGradientParam<false> curParam = getParamColorGradient(param.first);
+					curParam.set(params->getColorGradientParam(*paramData, i), i);
+				}
+			}
 		}
 
 		auto& textureParams = mShader->getTextureParams();
@@ -715,8 +758,11 @@ namespace bs
 			if (result != MaterialParams::GetParamResult::Success)
 				continue;
 
-			bool isLoadStore = params->getIsTextureLoadStore(*paramData);
-			if(!isLoadStore)
+			MateralParamTextureType texType = params->getTextureType(*paramData);
+			switch(texType)
+			{
+			default:
+			case MateralParamTextureType::Normal: 
 			{
 				TMaterialParamTexture<false> curParam = getParamTexture(param.first);
 
@@ -725,7 +771,8 @@ namespace bs
 				params->getTexture(*paramData, texture, surface);
 				curParam.set(texture);
 			}
-			else
+				break;
+			case MateralParamTextureType::LoadStore:
 			{
 				TMaterialParamLoadStoreTexture<false> curParam = getParamLoadStoreTexture(param.first);
 
@@ -733,6 +780,17 @@ namespace bs
 				TextureSurface surface;
 				params->getLoadStoreTexture(*paramData, texture, surface);
 				curParam.set(texture, surface);
+			}
+			break;
+			case MateralParamTextureType::Sprite:
+			{
+				TMaterialParamSpriteTexture<false> curParam = getParamSpriteTexture(param.first);
+
+				HSpriteTexture texture;
+				params->getSpriteTexture(*paramData, texture);
+				curParam.set(texture);
+			}
+			break;
 			}
 		}
 
@@ -818,7 +876,7 @@ namespace bs
 		mShader = shader;
 
 		initializeTechniques();
-		_markCoreDirty();
+		_markCoreDirty(MaterialDirtyFlags::Shader);
 	}
 	
 	void Material::setShader(const SPtr<Shader>& shader, const ShaderVariation& variation)
@@ -826,7 +884,7 @@ namespace bs
 		mShader = shader;
 
 		initializeTechniques(false, variation);
-		_markCoreDirty();
+		_markCoreDirty(MaterialDirtyFlags::Shader);
 	}
 
 	void Material::syncToCore(const CoreSyncData& data)
@@ -862,7 +920,7 @@ namespace bs
 		if (mParams == nullptr && mShader != nullptr)
 			mParams = bs_shared_ptr_new<MaterialParams>(mShader);
 
-		if(mParams != nullptr)
+		if(mParams != nullptr && paramsSize > 0)
 			mParams->setSyncData((UINT8*)dataPtr, paramsSize);
 
 		dataPtr += paramsSize;

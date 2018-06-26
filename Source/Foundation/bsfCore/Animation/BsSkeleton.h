@@ -81,7 +81,7 @@ namespace bs
 	struct LocalSkeletonPose
 	{
 		LocalSkeletonPose();
-		LocalSkeletonPose(UINT32 numBones);
+		LocalSkeletonPose(UINT32 numBones, bool individualOverride = false);
 		LocalSkeletonPose(UINT32 numPos, UINT32 numRot, UINT32 numScale);
 		LocalSkeletonPose(const LocalSkeletonPose& other) = delete;
 		LocalSkeletonPose(LocalSkeletonPose&& other);

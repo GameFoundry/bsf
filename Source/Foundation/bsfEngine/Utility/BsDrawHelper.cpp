@@ -10,6 +10,7 @@
 #include "Math/BsVector2.h"
 #include "Math/BsQuaternion.h"
 #include "String/BsUnicode.h"
+#include "Renderer/BsCamera.h"
 
 namespace bs
 {
@@ -324,7 +325,7 @@ namespace bs
 		mWireMeshData.clear();
 	}
 
-	Vector<DrawHelper::ShapeMeshData> DrawHelper::buildMeshes(SortType sorting, const Vector3& reference, UINT64 layers)
+	Vector<DrawHelper::ShapeMeshData> DrawHelper::buildMeshes(SortType sorting, const Camera* camera, UINT64 layers)
 	{
 		Vector<ShapeMeshData> meshInfos;
 
@@ -351,6 +352,10 @@ namespace bs
 
 		UINT32 idx = 0;
 		Vector<RawData> allShapes;
+		Vector3 reference = Vector3::ZERO;
+		
+		if(camera)
+			reference = camera->getTransform().getPosition();
 
 		UINT32 localIdx = 0;
 		for (auto& shapeData : mSolidCubeData)
@@ -1140,6 +1145,10 @@ namespace bs
 			}
 			else // Text
 			{
+				// Text drawing requires a camera in order to determine screen space coordinates
+				if(!camera)
+					continue;
+
 				meshInfos.push_back(ShapeMeshData());
 				ShapeMeshData& newMesh = meshInfos.back();
 				newMesh.subMesh.indexOffset = indexOffset[typeIdx];
@@ -1156,7 +1165,7 @@ namespace bs
 					TextRenderData& renderData = textRenderData[shapeData.textIdx];
 					UINT32 numQuads = renderData.textData->getNumQuadsForPage(renderData.page);
 
-					UINT32* indices = meshData[typeIdx]->getIndices32();
+					UINT32* indices = meshData[typeIdx]->getIndices32() + indexOffset[typeIdx];
 
 					// Note: Need temporary buffers because TextLine doesn't support arbitrary vertex stride. Eventually
 					// that should be supported (should be almost trivial to implement)
@@ -1173,32 +1182,21 @@ namespace bs
 						quadOffset += writtenQuads;
 					}
 
-					Vector3 translation = text2DData.transform.getTranslation();
-					
-					Vector2 accum(BsZero);
-					for (UINT32 j = 0; j < shapeData.numVertices; j++)
-						accum += tempVertices[j];
+					for(UINT32 j = 0; j < shapeData.numIndices; j++)
+						indices[j] += vertexOffset[typeIdx];
 
-					Vector2 center2D = accum / (float)shapeData.numVertices;
-					Vector3 lookAt = Vector3::normalize(reference - translation);
+					Vector3 worldSpacePos = text2DData.transform.multiplyAffine(text2DData.position);
+					Vector2I screenPos = camera->worldToScreenPoint(worldSpacePos);
+					screenPos.x -= renderData.textData->getWidth() / 2;
+					screenPos.y -= renderData.textData->getHeight() / 2;
 
-					Quaternion rotation;
-					rotation.lookRotation(lookAt, Vector3::UNIT_Y);
-
-					float scale = translation.distance(reference) * 0.0025f; // 0.0025 = arbitrary scale to make the text look okay in world space
-
-					// Scale by negative because we want to flip the vertices (they're upside down because GUI shader expects them as such)
-					Matrix4 transform = Matrix4::TRS(translation, rotation, Vector3::ONE);
+					float z = camera->projectPoint(camera->worldToViewPoint(worldSpacePos)).z;
 
 					for (UINT32 j = 0; j < shapeData.numVertices; j++)
 					{
-						Vector2 localPos2D = tempVertices[j] - center2D;
-						localPos2D = localPos2D * -scale;
+						Vector3 vertexPos(screenPos.x + tempVertices[j].x, screenPos.y + tempVertices[j].y, z);
 
-						Vector3 localPos(localPos2D.x, localPos2D.y, 0.0f);
-						Vector3 worldPos = transform.multiplyAffine(localPos);
-
-						positionIter[typeIdx].addValue(worldPos);
+						positionIter[typeIdx].addValue(vertexPos);
 						textUVIter.addValue(tempUVs[j]);
 						colorIter[typeIdx].addValue(text2DData.color.getAsRGBA());
 					}

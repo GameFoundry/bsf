@@ -185,6 +185,22 @@ namespace bs
 			return std::max(std::min(val, (T)1), (T)0);
 		}
 
+		/** Returns a floating point remainder for (@p val / @p length). */
+		static float repeat(float val, float length)
+		{
+			return val - floor(val / length) * length;
+		}
+
+		/** 
+		 * Wraps the value in range [0, length) and reverses the direction every @p length increment. This results in
+		 * @p val incrementing until @p length, then decrementing back to 0, and so on.
+		 */
+		static float pingPong(float val, float length)
+		{
+			val = repeat(val, length * 2.0f);
+			return length - fabs(val - length);
+		}
+
 		/** Checks if the value is a valid number. */
 		static bool isNaN(float f)
 		{

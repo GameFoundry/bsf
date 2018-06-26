@@ -357,7 +357,7 @@ namespace bs {	namespace ct
 
 				// Generate or assigned renderer specific data for the material
 				renElement.params = renElement.material->createParamsSet(techniqueIdx);
-				renElement.material->updateParamsSet(renElement.params, true);
+				renElement.material->updateParamsSet(renElement.params, 0.0f, true);
 
 				// Generate or assign sampler state overrides
 				SamplerOverrideKey samplerKey(renElement.material, techniqueIdx);
@@ -674,7 +674,7 @@ namespace bs {	namespace ct
 
 		// Generate or assigned renderer specific data for the material
 		renElement.params = renElement.material->createParamsSet(techniqueIdx);
-		renElement.material->updateParamsSet(renElement.params, true);
+		renElement.material->updateParamsSet(renElement.params, 0.0f, true);
 
 		SPtr<GpuParams> gpuParams = renElement.params->getGpuParams();
 
@@ -969,7 +969,7 @@ namespace bs {	namespace ct
 		// Note: Could this step be moved in notifyRenderableUpdated, so it only triggers when material actually gets
 		// changed? Although it shouldn't matter much because if the internal versions keeping track of dirty params.
 		for (auto& element : mInfo.renderables[idx]->elements)
-			element.material->updateParamsSet(element.params);
+			element.material->updateParamsSet(element.params, element.materialAnimationTime);
 		
 		mInfo.renderables[idx]->perObjectParamBuffer->flushToGPU();
 		mInfo.renderableReady[idx] = true;

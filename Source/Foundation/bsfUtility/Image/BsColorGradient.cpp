@@ -7,6 +7,16 @@
 
 namespace bs
 {
+	ColorGradient::ColorGradient(const Color& color)
+	{
+		setConstant(color);
+	}
+
+	ColorGradient::ColorGradient(const Vector<ColorGradientKey>& keys)
+	{
+		setKeys(keys);
+	}
+
 	RGBA ColorGradient::evaluate(float t) const
 	{
 		if(mNumKeys == 0)

@@ -21,8 +21,11 @@ namespace bs
 {
 	Resources::Resources()
 	{
-		mDefaultResourceManifest = ResourceManifest::create("Default");
-		mResourceManifests.push_back(mDefaultResourceManifest);
+		{
+			Lock lock(mDefaultManifestMutex);
+			mDefaultResourceManifest = ResourceManifest::create("Default");
+			mResourceManifests.push_back(mDefaultResourceManifest);
+		}
 	}
 
 	Resources::~Resources()
@@ -292,6 +295,31 @@ namespace bs
 			return outputResource;
 		}
 
+		// Load dependencies (before the main resource)
+		const auto numDependencies = (UINT32)dependenciesToLoad.size();
+		if(numDependencies > 0)
+		{
+			ResourceLoadFlags depLoadFlags = ResourceLoadFlag::LoadDependencies;
+			if (loadFlags.isSet(ResourceLoadFlag::KeepSourceData))
+				depLoadFlags |= ResourceLoadFlag::KeepSourceData;
+
+			Vector<HResource> dependencies(numDependencies);
+			for (UINT32 i = 0; i < numDependencies; i++)
+				dependencies[i] = loadFromUUID(dependenciesToLoad[i], !synchronous, depLoadFlags);
+
+			// Keep dependencies alive until the parent is done loading
+			{
+				Lock inProgressLock(mInProgressResourcesMutex);
+
+				// If we're doing a dependency-only load (main resource itself was previously loaded), then the in-progress
+				// operation could have already finished when the last dependency was loaded (this will always be true for
+				// synchronous loads), and no need to register dependencies.
+				const auto iterFind = mInProgressResources.find(uuid);
+				if(iterFind != mInProgressResources.end())
+					iterFind->second->dependencies = dependencies;
+			}
+		}
+
 		// Actually start the file read operation if not already loaded or in progress
 		if (initiateLoad)
 		{
@@ -318,28 +346,6 @@ namespace bs
 				// Already loaded, decrement dependency count
 				loadComplete(outputResource);
 			}
-		}
-
-		// Load dependencies
-		UINT32 numDependencies = (UINT32)dependenciesToLoad.size();
-		if(numDependencies > 0)
-		{
-			ResourceLoadFlags depLoadFlags = ResourceLoadFlag::LoadDependencies;
-			if (loadFlags.isSet(ResourceLoadFlag::KeepSourceData))
-				depLoadFlags |= ResourceLoadFlag::KeepSourceData;
-
-			Vector<HResource> dependencies(numDependencies);
-
-			// Keep dependencies alive until the parent is done loading
-			{
-				// Note the resource is still guaranteed to be in the in-progress map because it can't be removed until
-				// its dependency count is reduced to zero.
-				Lock inProgressLock(mInProgressResourcesMutex);
-				mInProgressResources[uuid]->dependencies = dependencies;
-			}
-
-			for (UINT32 i = 0; i < numDependencies; i++)
-				dependencies[i] = loadFromUUID(dependenciesToLoad[i], !synchronous, depLoadFlags);
 		}
 
 		return outputResource;
@@ -566,22 +572,40 @@ namespace bs
 				return; // Nothing to save
 		}
 
-		bool fileExists = FileSystem::isFile(filePath);
+		const bool fileExists = FileSystem::isFile(filePath);
 		if(fileExists && !overwrite)
 		{
 			LOGERR("Another file exists at the specified location. Not saving.");
 			return;
 		}
 
+		{
+			Lock lock(mDefaultManifestMutex);
+			mDefaultResourceManifest->registerResource(resource.getUUID(), filePath);
+		}
+
+		_save(resource.getInternalPtr(), filePath, compress);
+	}
+
+	void Resources::save(const HResource& resource, bool compress)
+	{
+		if (resource == nullptr)
+			return;
+
+		Path path;
+		if (getFilePathFromUUID(resource.getUUID(), path))
+			save(resource, path, true, compress);
+	}
+
+	void Resources::_save(const SPtr<Resource>& resource, const Path& filePath, bool compress)
+	{
 		if (!resource->mKeepSourceData)
 		{
 			LOGWRN("Saving a resource that was created/loaded without ResourceLoadFlag::KeepSourceData. Some data might "
 				"not be available for saving. File path: " + filePath.toString());
 		}
 
-		mDefaultResourceManifest->registerResource(resource.getUUID(), filePath);
-
-		Vector<ResourceDependency> dependencyList = Utility::findResourceDependencies(*resource.get());
+		Vector<ResourceDependency> dependencyList = Utility::findResourceDependencies(*resource);
 		Vector<UUID> dependencyUUIDs(dependencyList.size());
 		for (UINT32 i = 0; i < (UINT32)dependencyList.size(); i++)
 			dependencyUUIDs[i] = dependencyList[i].resource.getUUID();
@@ -595,6 +619,7 @@ namespace bs
 			FileSystem::createDir(parentDir);
 
 		Path savePath;
+		const bool fileExists = FileSystem::isFile(filePath);
 		if(fileExists)
 		{
 			// If a file exists, save to a temporary location, then copy over only after a save was successful. This guards
@@ -666,16 +691,6 @@ namespace bs
 		}
 	}
 
-	void Resources::save(const HResource& resource, bool compress)
-	{
-		if (resource == nullptr)
-			return;
-
-		Path path;
-		if (getFilePathFromUUID(resource.getUUID(), path))
-			save(resource, path, true, compress);
-	}
-
 	void Resources::update(HResource& handle, const SPtr<Resource>& resource)
 	{
 		const UUID& uuid = handle.getUUID();
@@ -692,6 +707,8 @@ namespace bs
 		}
 
 		onResourceModified(handle);
+
+		// This method is not thread safe due to this call (callable from main thread only)
 		ResourceListenerManager::instance().notifyListeners(uuid);
 	}
 
@@ -776,6 +793,12 @@ namespace bs
 
 			LoadedResourceData& resData = mLoadedResources[UUID];
 			resData.resource = newHandle.getWeak();
+
+#if BS_DEBUG_MODE
+			const auto iterFind = mHandles.find(UUID);
+			assert(iterFind == mHandles.end() && "Overwriting an existing handle!");
+#endif
+
 			mHandles[UUID] = newHandle.getWeak();
 		}
 

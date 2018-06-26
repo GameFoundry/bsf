@@ -119,7 +119,7 @@ namespace bs
 
 		numSceneObjects = (UINT32)sceneObjects.size();
 		if (numSceneObjects > 0)
-			sceneObjectPose = LocalSkeletonPose(numSceneObjects);
+			sceneObjectPose = LocalSkeletonPose(numSceneObjects, true);
 		else
 			sceneObjectPose = LocalSkeletonPose();
 
@@ -1458,12 +1458,14 @@ namespace bs
 			}
 			else
 			{
-				if (mAnimProxy->sceneObjectPose.hasOverride[i])
-					continue;
+				if (!mAnimProxy->sceneObjectPose.hasOverride[i * 3 + 0])
+					so->setPosition(mAnimProxy->sceneObjectPose.positions[i]);
 
-				so->setPosition(mAnimProxy->sceneObjectPose.positions[i]);
-				so->setRotation(mAnimProxy->sceneObjectPose.rotations[i]);
-				so->setScale(mAnimProxy->sceneObjectPose.scales[i]);
+				if (!mAnimProxy->sceneObjectPose.hasOverride[i * 3 + 1])
+					so->setRotation(mAnimProxy->sceneObjectPose.rotations[i]);
+
+				if (!mAnimProxy->sceneObjectPose.hasOverride[i * 3 + 2])
+					so->setScale(mAnimProxy->sceneObjectPose.scales[i]);
 			}
 		}
 
