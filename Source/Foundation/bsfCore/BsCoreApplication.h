@@ -36,61 +36,55 @@ namespace bs
 	 */
 	class BS_CORE_EXPORT CoreApplication : public Module<CoreApplication>
 	{
-		public:
-			CoreApplication(START_UP_DESC desc);
-			virtual ~CoreApplication();
+	public:
+		CoreApplication(START_UP_DESC desc);
+		virtual ~CoreApplication();
 
-			/**
-			 * Executes the main loop. This will update your components and modules, queue objects for rendering and run 
-			 * the simulation. Usually called immediately after startUp().
-			 * 			
-			 * This will run infinitely until stopMainLoop is called (usually from another thread or internally).
-			 */
-			void runMainLoop();
+		/**
+		 * Executes the main loop. This will update your components and modules, queue objects for rendering and run
+		 * the simulation. Usually called immediately after startUp().
+		 *
+		 * This will run infinitely until stopMainLoop is called (usually from another thread or internally).
+		 */
+		void runMainLoop();
 
-			/**	Stops the (infinite) main loop from running. The loop will complete its current cycle before stopping. */
-			void stopMainLoop();
+		/**	Stops the (infinite) main loop from running. The loop will complete its current cycle before stopping. */
+		void stopMainLoop();
 
-			/** Changes the maximum FPS the application is allowed to run in. Zero means unlimited. */
-			void setFPSLimit(UINT32 limit);
+		/** Changes the maximum FPS the application is allowed to run in. Zero means unlimited. */
+		void setFPSLimit(UINT32 limit);
 
-			/** 
-			 * Returns the step (in seconds) between fixed frame updates. This value should be used as frame delta within
-			 * fixed update calls.
-			 */
-			float getFixedUpdateStep() const { return mFixedStep / 1000000.0f; }
+		/**
+		 * Issues a request for the application to close. Application may choose to ignore the request depending on the
+		 * circumstances and the implementation.
+		 */
+		virtual void quitRequested();
 
-			/**
-			 * Issues a request for the application to close. Application may choose to ignore the request depending on the
-			 * circumstances and the implementation.
-			 */
-			virtual void quitRequested();
+		/**	Returns the main window that was created on application start-up. */
+		SPtr<RenderWindow> getPrimaryWindow() const { return mPrimaryWindow; }
 
-			/**	Returns the main window that was created on application start-up. */
-			SPtr<RenderWindow> getPrimaryWindow() const { return mPrimaryWindow; }
+		/**
+		 * Returns the id of the simulation thread.
+		 *
+		 * @note	Thread safe.
+		 */
+		ThreadId getSimThreadId() const { return mSimThreadId; }
 
-			/**
-			 * Returns the id of the simulation thread.
-			 *
-			 * @note	Thread safe.
-			 */
-			ThreadId getSimThreadId() { return mSimThreadId; }
+		/**	Returns true if the application is running in an editor, false if standalone. */
+		virtual bool isEditor() const { return false; }
 
-			/**	Returns true if the application is running in an editor, false if standalone. */
-			virtual bool isEditor() const { return false; }
+		/**
+		 * Loads a plugin.
+		 *
+		 * @param[in]	pluginName	Name of the plugin to load, without extension.
+		 * @param[out]	library		Specify as not null to receive a reference to the loaded library.
+		 * @param[in]	passThrough	Optional parameter that will be passed to the loadPlugin function.
+		 * @return					Value returned from the plugin start-up method.
+		 */
+		void* loadPlugin(const String& pluginName, DynLib** library = nullptr, void* passThrough = nullptr);
 
-			/**
-			 * Loads a plugin.
-			 *
-			 * @param[in]	pluginName	Name of the plugin to load, without extension.
-			 * @param[out]	library		Specify as not null to receive a reference to the loaded library.
-			 * @param[in]	passThrough	Optional parameter that will be passed to the loadPlugin function.
-			 * @return					Value returned from the plugin start-up method.
-			 */
-			void* loadPlugin(const String& pluginName, DynLib** library = nullptr, void* passThrough = nullptr);
-
-			/**	Unloads a previously loaded plugin. */
-			void unloadPlugin(DynLib* library);
+		/**	Unloads a previously loaded plugin. */
+		void unloadPlugin(DynLib* library);
 
 	protected:
 		/** @copydoc Module::onStartUp */
@@ -128,10 +122,6 @@ namespace bs
 		UINT64 mFrameStep = 16666; // 60 times a second in microseconds
 		UINT64 mLastFrameTime = 0; // Microseconds
 
-		// Fixed update
-		UINT64 mFixedStep = 16666; // 60 times a second in microseconds
-		UINT64 mLastFixedUpdateTime = 0;
-		bool mFirstFrame = true;
 		DynLib* mRendererPlugin;
 
 		Map<DynLib*, UpdatePluginFunc> mPluginUpdateFunctions;
@@ -142,9 +132,6 @@ namespace bs
 		ThreadId mSimThreadId;
 
 		volatile bool mRunMainLoop;
-
-		/** Determines how many fixed updates per frame are allowed. Only relevant when framerate is low. */
-		static constexpr UINT32 MAX_FIXED_UPDATES_PER_FRAME = 4;
 
 	};
 
