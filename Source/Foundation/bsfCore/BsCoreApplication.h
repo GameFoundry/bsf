@@ -54,11 +54,17 @@ namespace bs
 			/** Changes the maximum FPS the application is allowed to run in. Zero means unlimited. */
 			void setFPSLimit(UINT32 limit);
 
+			/** Returns the time (in seconds) the latest frame has started. */
+			float getLastFrameTime() const { return mLastFrameTime / 1000000.0f; }
+
 			/** 
 			 * Returns the step (in seconds) between fixed frame updates. This value should be used as frame delta within
 			 * fixed update calls.
 			 */
 			float getFixedUpdateStep() const { return mFixedStep / 1000000.0f; }
+
+			/** Returns the time (in seconds) the latest fixedUpdate has started. */
+			float getLastFixedUpdateTime() const { return mLastFixedUpdateTime / 1000000.0f; }
 
 			/**
 			 * Issues a request for the application to close. Application may choose to ignore the request depending on the
