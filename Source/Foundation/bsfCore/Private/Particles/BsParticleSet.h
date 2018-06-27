@@ -65,8 +65,11 @@ namespace bs
 		Vector3* velocity = nullptr;
 		Vector3* size = nullptr;
 		Vector3* rotation = nullptr;
+		float* initialLifetime = nullptr;
 		float* lifetime = nullptr;
 		RGBA* color = nullptr;
+		UINT32* seed = nullptr;
+		float* frame = nullptr;
 		UINT32* indices = nullptr;
 
 	private:
@@ -82,7 +85,10 @@ namespace bs
 				reserve<Vector3>(capacity).
 				reserve<Vector3>(capacity).
 				reserve<float>(capacity).
+				reserve<float>(capacity).
 				reserve<RGBA>(capacity).
+				reserve<UINT32>(capacity).
+				reserve<float>(capacity).
 				reserve<UINT32>(capacity).
 				init();
 
@@ -91,7 +97,10 @@ namespace bs
 			size = alloc.alloc<Vector3>(capacity);
 			rotation = alloc.alloc<Vector3>(capacity);
 			lifetime = alloc.alloc<float>(capacity);
+			initialLifetime = alloc.alloc<float>(capacity);
 			color = alloc.alloc<RGBA>(capacity);
+			seed = alloc.alloc<UINT32>(capacity);
+			frame = alloc.alloc<float>(capacity);
 			indices = alloc.alloc<UINT32>(capacity);
 		}
 
@@ -103,7 +112,10 @@ namespace bs
 			if(size) alloc.free(size);
 			if(rotation) alloc.free(rotation);
 			if(lifetime) alloc.free(lifetime);
+			if(initialLifetime) alloc.free(initialLifetime);
 			if(color) alloc.free(color);
+			if(seed) alloc.free(seed);
+			if(frame) alloc.free(frame);
 			if(indices) alloc.free(indices);
 
 			alloc.clear();
@@ -117,7 +129,10 @@ namespace bs
 			size = std::exchange(other.size, nullptr);
 			rotation = std::exchange(other.rotation, nullptr);
 			lifetime = std::exchange(other.lifetime, nullptr);
+			initialLifetime = std::exchange(other.initialLifetime, nullptr);
 			color = std::exchange(other.color, nullptr);
+			seed = std::exchange(other.seed, nullptr);
+			frame = std::exchange(other.frame, nullptr);
 			indices = std::exchange(other.indices, nullptr);
 			capacity = std::exchange(other.capacity, 0);
 
@@ -134,7 +149,10 @@ namespace bs
 			bs_copy(size, other.size, other.capacity);
 			bs_copy(rotation, other.rotation, other.capacity);
 			bs_copy(lifetime, other.lifetime, other.capacity);
+			bs_copy(initialLifetime, other.initialLifetime, other.capacity);
 			bs_copy(color, other.color, other.capacity);
+			bs_copy(seed, other.seed, other.capacity);
+			bs_copy(frame, other.frame, other.capacity);
 			bs_copy(indices, other.indices, other.capacity);
 		}
 
@@ -201,7 +219,10 @@ namespace bs
 				std::swap(mParticles.size[idx], mParticles.size[lastIdx]);
 				std::swap(mParticles.rotation[idx], mParticles.rotation[lastIdx]);
 				std::swap(mParticles.lifetime[idx], mParticles.lifetime[lastIdx]);
+				std::swap(mParticles.initialLifetime[idx], mParticles.initialLifetime[lastIdx]);
 				std::swap(mParticles.color[idx], mParticles.color[lastIdx]);
+				std::swap(mParticles.seed[idx], mParticles.seed[lastIdx]);
+				std::swap(mParticles.frame[idx], mParticles.frame[lastIdx]);
 				std::swap(mParticles.indices[idx], mParticles.indices[lastIdx]);
 			}
 

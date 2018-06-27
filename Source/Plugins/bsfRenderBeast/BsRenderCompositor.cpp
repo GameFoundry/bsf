@@ -1266,7 +1266,7 @@ namespace bs { namespace ct
 
 				renderElement.positionAndRotTexture.set(textures->positionAndRotation);
 				renderElement.colorTexture.set(textures->color);
-				renderElement.sizeTexture.set(textures->size);
+				renderElement.sizeAndFrameIdxTexture.set(textures->sizeAndFrameIdx);
 				renderElement.numParticles = renderData->numParticles;
 
 				UINT32 texSize = textures->positionAndRotation->getProperties().getWidth();

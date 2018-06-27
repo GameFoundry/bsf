@@ -4,6 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "Particles/BsParticleModule.h"
+#include "BsParticleDistribution.h"
 
 namespace bs
 {
@@ -22,7 +23,35 @@ namespace bs
 		virtual ~ParticleEvolver() = default;
 
 		/** Updates properties of all particles in the @p set according to the ruleset of the evolver. */
-		virtual void evolve(Random& random, ParticleSet& set) const = 0;
+		virtual void evolve(float t, Random& random, ParticleSet& set) const = 0;
+	};
+
+	/** Structure used for initializing a ParticleTextureAnimation object. */
+	struct PARTICLE_TEXTURE_ANIMATION_DESC
+	{
+		/**
+		 * Randomly pick a row to use for animation when the particle is first spawned. This implies that only a single row
+		 * of the grid will be used for individual particle's animation.
+		 */
+		bool randomizeRow = false;
+
+		/** Number of cycles to loop the animation during particle's lifetime. */
+		UINT32 numCycles = 1;
+	};
+
+	/** 
+	 * Provides functionality for particle texture animation. Uses the sprite texture assigned to the particle's material
+	 * to determine animation properties.
+	 */
+	class BS_CORE_EXPORT ParticleTextureAnimation : public ParticleEvolver
+	{
+	public:
+		ParticleTextureAnimation(const PARTICLE_TEXTURE_ANIMATION_DESC& desc);
+
+		/** @copydoc ParticleEvolver::evolve */
+		void evolve(float t, Random& random, ParticleSet& set) const override;
+	private:
+		PARTICLE_TEXTURE_ANIMATION_DESC mDesc;
 	};
 
 	/** @} */

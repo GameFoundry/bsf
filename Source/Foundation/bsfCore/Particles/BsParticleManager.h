@@ -26,8 +26,8 @@ namespace bs
 		/** Contains particle color in .xyz and transparency in .a. */
 		PixelData color;
 
-		/** Contains 2D particle size in .xy. */
-		PixelData size;
+		/** Contains 2D particle size in .xy, frame index (used for animation) in .z. */
+		PixelData sizeAndFrameIdx;
 
 		/** Total number of particles in the particle system. */
 		UINT32 numParticles;

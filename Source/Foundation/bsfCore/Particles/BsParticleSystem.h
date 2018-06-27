@@ -73,12 +73,14 @@ namespace bs
 		/** Registers a new particle emitter. */
 		void addEmitter(UPtr<ParticleEmitter> emitter)
 		{
+			emitter->setParent(this);
 			mEmitters.push_back(std::move(emitter));
 		}
 
 		/** Registers a new particle evolver. */
 		void addEvolver(UPtr<ParticleEvolver> evolver)
 		{
+			evolver->setParent(this);
 			mEvolvers.push_back(std::move(evolver));
 		}
 
@@ -293,7 +295,7 @@ namespace bs
 		{
 			SPtr<Texture> positionAndRotation;
 			SPtr<Texture> color;
-			SPtr<Texture> size;
+			SPtr<Texture> sizeAndFrameIdx;
 		};
 
 		/** Core thread counterpart of bs::ParticleSystem. */

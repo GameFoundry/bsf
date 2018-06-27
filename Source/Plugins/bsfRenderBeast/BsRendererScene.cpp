@@ -13,6 +13,7 @@
 #include "Utility/BsSamplerOverrides.h"
 #include "BsRenderBeastOptions.h"
 #include "BsRenderBeast.h"
+#include "Image/BsSpriteTexture.h"
 
 namespace bs {	namespace ct
 {
@@ -625,7 +626,7 @@ namespace bs {	namespace ct
 
 	void RendererScene::registerParticleSystem(ParticleSystem* particleSystem)
 	{
-		const UINT32 rendererId = (UINT32)mInfo.particleSystems.size();
+		const auto rendererId = (UINT32)mInfo.particleSystems.size();
 		particleSystem->setRendererId(rendererId);
 
 		mInfo.particleSystems.push_back(RendererParticles());
@@ -659,6 +660,26 @@ namespace bs {	namespace ct
 		if (renElement.material == nullptr)
 			renElement.material = Material::create(DefaultParticlesMat::get()->getShader());
 
+		SpriteTexture* spriteTexture = nullptr;
+		if(renElement.material->getShader()->hasTextureParam("gTexture"))
+			spriteTexture = renElement.material->getSpriteTexture("gTexture").get();
+
+		if(spriteTexture)
+		{
+			gParticlesParamDef.gUVOffset.set(paramBuffer, spriteTexture->getOffset());
+			gParticlesParamDef.gUVScale.set(paramBuffer, spriteTexture->getScale());
+
+			const SpriteSheetGridAnimation& anim = spriteTexture->getAnimation();
+			gParticlesParamDef.gSubImageSize.set(paramBuffer, 
+				Vector4((float)anim.numColumns, (float)anim.numRows, 1.0f / anim.numColumns, 1.0f / anim.numRows));
+		}
+		else
+		{
+			gParticlesParamDef.gUVOffset.set(paramBuffer, Vector2::ZERO);
+			gParticlesParamDef.gUVScale.set(paramBuffer, Vector2::ONE);
+			gParticlesParamDef.gSubImageSize.set(paramBuffer, Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+
 		// TODO - Pick variation depending on the particle system properties
 		const ShaderVariation* variation = &getParticleShaderVariation(ParticleOrientation::ViewPlane, false);
 
@@ -684,7 +705,7 @@ namespace bs {	namespace ct
 
 		gpuParams->getTextureParam(GPT_VERTEX_PROGRAM, "gPositionAndRotTex", renElement.positionAndRotTexture);
 		gpuParams->getTextureParam(GPT_VERTEX_PROGRAM, "gColorTex", renElement.colorTexture);
-		gpuParams->getTextureParam(GPT_VERTEX_PROGRAM, "gSizeTex", renElement.sizeTexture);
+		gpuParams->getTextureParam(GPT_VERTEX_PROGRAM, "gSizeAndFrameIdxTex", renElement.sizeAndFrameIdxTexture);
 
 		gpuParams->getParamInfo()->getBindings(
 			GpuPipelineParamInfoBase::ParamType::ParamBlock,

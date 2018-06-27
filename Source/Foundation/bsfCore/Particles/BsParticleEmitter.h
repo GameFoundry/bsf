@@ -502,6 +502,24 @@ namespace bs
 		const ColorDistribution& getInitialColor() const { return mInitialColor; }
 
 		/** 
+		 * Determines should particle U texture coordinate be randomly flipped, mirroring the image. The value represents
+		 * a percent of particles that should be flipped, in range [0, 1]. 
+		 */
+		void setFlipU(float value) { mFlipU = Math::clamp01(value); }
+
+		/** @copydoc setFlipU */
+		float getFlipU() const { return mFlipU; }
+
+		/** 
+		 * Determines should particle V texture coordinate be randomly flipped, mirroring the image. The value represents
+		 * a percent of particles that should be flipped, in range [0, 1]. 
+		 */
+		void setFlipV(float value) { mFlipV = Math::clamp01(value); }
+
+		/** @copydoc setFlipV */
+		float getFlipV() const { return mFlipV; }
+
+		/** 
 		 * Spawns new particles in the specified time increment (if any). 
 		 *
 		 * @param[in]	random			Random number generator.
@@ -527,6 +545,9 @@ namespace bs
 		bool mUse3DRotation = false;
 
 		ColorDistribution mInitialColor = Color::Black;
+
+		float mFlipU = 0.0f;
+		float mFlipV = 0.0f;
 
 		// Internal state
 		mutable float mEmitAccumulator = 0.0f;

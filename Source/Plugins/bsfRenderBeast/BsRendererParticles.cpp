@@ -73,7 +73,7 @@ namespace bs { namespace ct
 		// just use no-overwrite? write-discard will very likely allocate memory under the hood.
 		output->positionAndRotation->writeData(renderData.positionAndRotation, 0, 0, true);
 		output->color->writeData(renderData.color, 0, 0, true);
-		output->size->writeData(renderData.size, 0, 0, true);
+		output->sizeAndFrameIdx->writeData(renderData.sizeAndFrameIdx, 0, 0, true);
 
 		return output;
 	}
@@ -100,8 +100,8 @@ namespace bs { namespace ct
 		texDesc.format = PF_RGBA8;
 		output->color = Texture::create(texDesc);
 
-		texDesc.format = PF_RG16F;
-		output->size = Texture::create(texDesc);
+		texDesc.format = PF_RGBA16F;
+		output->sizeAndFrameIdx = Texture::create(texDesc);
 
 		mBufferList[size].buffers.push_back(output);
 

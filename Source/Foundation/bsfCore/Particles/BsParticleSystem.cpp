@@ -140,7 +140,7 @@ namespace bs
 
 		// Simulate
 		for(auto& evolver : mEvolvers)
-			evolver->evolve(mRandom, *mParticleSet);
+			evolver->evolve(newTime, mRandom, *mParticleSet);
 
 		// Update position
 		UINT32 numParticles = mParticleSet->getParticleCount();

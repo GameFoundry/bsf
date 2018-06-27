@@ -25,6 +25,8 @@ namespace bs
 	public:
 		~ParticleRenderDataPool()
 		{
+			Lock lock(mMutex);
+
 			for (auto& sizeEntry : mBufferList)
 			{
 				for (auto& entry : sizeEntry.second.buffers)
@@ -38,16 +40,26 @@ namespace bs
 			const UINT32 size = particleSet.determineTextureSize();
 
 			ParticleRenderData* output = nullptr;
-			BuffersPerSize& buffers = mBufferList[size];
-			if (buffers.nextFreeIdx < (UINT32)buffers.buffers.size())
+
 			{
-				output = buffers.buffers[buffers.nextFreeIdx];
-				buffers.nextFreeIdx++;
+				Lock lock(mMutex);
+
+				BuffersPerSize& buffers = mBufferList[size];
+				if (buffers.nextFreeIdx < (UINT32)buffers.buffers.size())
+				{
+					output = buffers.buffers[buffers.nextFreeIdx];
+					buffers.nextFreeIdx++;
+				}
 			}
 
 			if (!output)
 			{
 				output = createNewBuffers(size);
+
+				Lock lock(mMutex);
+
+				BuffersPerSize& buffers = mBufferList[size];
+				buffers.buffers.push_back(output);
 				buffers.nextFreeIdx++;
 			}
 
@@ -106,7 +118,7 @@ namespace bs
 			}
 
 			{
-				const PixelData& pixels = output->size;
+				const PixelData& pixels = output->sizeAndFrameIdx;
 
 				UINT8* dstData = pixels.getData();
 				UINT8* ptr = dstData;
@@ -120,8 +132,15 @@ namespace bs
 					UINT16& sizeY = *(UINT16*)ptr;
 					ptr += sizeof(UINT16);
 
+					UINT16& frameIdx = *(UINT16*)ptr;
+					ptr += sizeof(UINT16);
+
+					// Unused
+					ptr += sizeof(UINT16);
+
 					sizeX = Bitwise::floatToHalf(particles.size[i].x);
 					sizeY = Bitwise::floatToHalf(particles.size[i].y);
+					frameIdx = Bitwise::floatToHalf(particles.frame[i]);
 
 					x++;
 					if (x >= size)
@@ -137,6 +156,8 @@ namespace bs
 
 		void clear()
 		{
+			Lock lock(mMutex);
+
 			for(auto& buffers : mBufferList)
 				buffers.second.nextFreeIdx = 0;
 		}
@@ -149,20 +170,19 @@ namespace bs
 
 			output->positionAndRotation = PixelData(size, size, 1, PF_RGBA32F);
 			output->color = PixelData(size, size, 1, PF_RGBA8);
-			output->size = PixelData(size, size, 1, PF_RG16F);
+			output->sizeAndFrameIdx = PixelData(size, size, 1, PF_RGBA16F);
 
 			// Note: Potentially allocate them all in one large block
 			output->positionAndRotation.allocateInternalBuffer();
 			output->color.allocateInternalBuffer();
-			output->size.allocateInternalBuffer();
-
-			mBufferList[size].buffers.push_back(output);
+			output->sizeAndFrameIdx.allocateInternalBuffer();
 
 			return output;
 		}
 
 		UnorderedMap<UINT32, BuffersPerSize> mBufferList;
-		PoolAlloc<sizeof(ParticleRenderData), 32> mAlloc;
+		PoolAlloc<sizeof(ParticleRenderData), 32, 4, true> mAlloc;
+		Mutex mMutex;
 	};
 
 	struct ParticleManager::Members
@@ -217,14 +237,23 @@ namespace bs
 
 		for (auto& system : mSystems)
 		{
-			const auto evaluateWorker = [this, timeDelta, system]()
+			const auto evaluateWorker = [this, timeDelta, system, &renderDataPool, &renderDataGroup]()
 			{
+				// Advance the simulation
 				system->_simulate(timeDelta);
 
-				Lock lock(mMutex);
+				// Generate output data
+				ParticleRenderData* renderData = renderDataPool.alloc(*system->mParticleSet);
+				renderData->numParticles = system->mParticleSet->getParticleCount();
+				renderData->bounds = system->_calculateBounds();
+
 				{
+					Lock lock(mMutex);
+
 					assert(mNumActiveWorkers > 0);
 					mNumActiveWorkers--;
+
+					renderDataGroup.data[system->mId] = renderData;
 				}
 
 				mWorkerDoneSignal.notify_one();
@@ -235,26 +264,14 @@ namespace bs
 		}
 
 		// Wait for tasks to complete
+		TaskScheduler::instance().addWorker(); // Make the current core available for work (since this thread waits)
 		{
 			Lock lock(mMutex);
 
 			while (mNumActiveWorkers > 0)
 				mWorkerDoneSignal.wait(lock);
 		}
-
-		// Generate output data from the current set
-		for (auto& system : mSystems)
-		{
-			if(!system->mParticleSet)
-				continue;
-
-			// TODO - Make the output data allocation, and bound calculation happen on the worker thread
-			ParticleRenderData* renderData = renderDataPool.alloc(*system->mParticleSet);
-			renderData->numParticles = system->mParticleSet->getParticleCount();
-			renderData->bounds = system->_calculateBounds();
-
-			renderDataGroup.data[system->mId] = renderData;
-		}
+		TaskScheduler::instance().removeWorker();
 
 		mSwapBuffers = true;
 

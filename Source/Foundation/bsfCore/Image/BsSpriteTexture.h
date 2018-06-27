@@ -106,7 +106,7 @@ namespace bs
 
 		/** @copydoc setAnimation */
 		BS_SCRIPT_EXPORT(n:Animation,pr:getter)
-		const SpriteSheetGridAnimation getAnimation() const { return mAnimation; }
+		const SpriteSheetGridAnimation& getAnimation() const { return mAnimation; }
 
 		/** Determines if and how should the sprite animation play. */
 		BS_SCRIPT_EXPORT(n:AnimationPlayback,pr:setter)
