@@ -20,8 +20,8 @@ namespace bs { namespace ct
 				return getParticleShaderVariation<ParticleOrientation::ViewPlane, true>();
 			case ParticleOrientation::ViewPosition:
 				return getParticleShaderVariation<ParticleOrientation::ViewPosition, true>();
-			case ParticleOrientation::Axis:
-				return getParticleShaderVariation<ParticleOrientation::Axis, true>();
+			case ParticleOrientation::Plane:
+				return getParticleShaderVariation<ParticleOrientation::Plane, true>();
 			}
 		}
 		else
@@ -33,8 +33,8 @@ namespace bs { namespace ct
 				return getParticleShaderVariation<ParticleOrientation::ViewPlane, false>();
 			case ParticleOrientation::ViewPosition:
 				return getParticleShaderVariation<ParticleOrientation::ViewPosition, false>();
-			case ParticleOrientation::Axis:
-				return getParticleShaderVariation<ParticleOrientation::Axis, false>();
+			case ParticleOrientation::Plane:
+				return getParticleShaderVariation<ParticleOrientation::Plane, false>();
 			}
 		}
 	}

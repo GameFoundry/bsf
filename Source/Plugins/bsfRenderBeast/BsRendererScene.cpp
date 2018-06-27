@@ -643,8 +643,18 @@ namespace bs {	namespace ct
 
 		SPtr<GpuParamBlockBuffer> paramBuffer = gParticlesParamDef.createBuffer();
 		gParticlesParamDef.gWorldTfrm.set(paramBuffer, transform);
-		gParticlesParamDef.gAxisUp.set(paramBuffer, Vector3::UNIT_Y); // TODO
-		gParticlesParamDef.gAxisRight.set(paramBuffer, Vector3::UNIT_X); // TODO;
+
+		Vector3 axisForward = particleSystem->getOrientationPlane().normal;
+
+		Vector3 axisUp = Vector3::UNIT_Y;
+		if(axisForward.dot(axisUp) > 0.9998f)
+			axisUp = Vector3::UNIT_Z;
+
+		Vector3 axisRight = axisUp.cross(axisForward);
+		Vector3::orthonormalize(axisRight, axisUp, axisForward);
+
+		gParticlesParamDef.gAxisUp.set(paramBuffer, axisUp);
+		gParticlesParamDef.gAxisRight.set(paramBuffer, axisRight);
 
 		rendererParticles.particlesParamBuffer = paramBuffer;
 
@@ -680,8 +690,9 @@ namespace bs {	namespace ct
 			gParticlesParamDef.gSubImageSize.set(paramBuffer, Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 		}
 
-		// TODO - Pick variation depending on the particle system properties
-		const ShaderVariation* variation = &getParticleShaderVariation(ParticleOrientation::ViewPlane, false);
+		const ParticleOrientation orientation = particleSystem->getOrientation();
+		const bool lockY = particleSystem->getOrientationLockY();
+		const ShaderVariation* variation = &getParticleShaderVariation(orientation, lockY);
 
 		FIND_TECHNIQUE_DESC findDesc;
 		findDesc.variation = variation;

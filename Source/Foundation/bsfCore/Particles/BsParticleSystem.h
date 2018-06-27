@@ -37,8 +37,8 @@ namespace bs
 		/** Orient towards view (camera) position. */
 		ViewPosition,
 
-		/** Orient with normal parallel to a specific axis. */
-		Axis
+		/** Orient with a user-provided plane. */
+		Plane
 	};
 
 	/** Space in which to spawn/transform particles. */
@@ -57,6 +57,49 @@ namespace bs
 		World
 	};
 
+	/** Common code used by both sim and core thread variations of ParticleSystem. */
+	class BS_CORE_EXPORT ParticleSystemBase : public SceneActor, public INonCopyable
+	{
+	public:
+		virtual ~ParticleSystemBase() = default;
+
+		/** Determines in which space are particles in. */
+		void setSimulationSpace(ParticleSimulationSpace value);
+
+		/** @copydoc setSimulationSpace */
+		ParticleSimulationSpace getSimulationSpace() const { return mSimulationSpace; }
+
+		/** Determines how are particles oriented when rendering. */
+		void setOrientation(ParticleOrientation orientation) { mOrientation = orientation; _markCoreDirty(); }
+
+		/** @copydoc setOrientation */
+		ParticleOrientation getOrientation() const { return mOrientation; }
+
+		/** 
+		 * Determines should the particles only be allowed to orient themselves around the Y axis, or freely. Ignored if
+		 * using the Plane orientation mode.
+		 */
+		void setOrientationLockY(bool lockY) { mOrientationLockY = lockY; _markCoreDirty(); }
+
+		/** @copydoc setOrientationLockY */
+		bool getOrientationLockY() const { return mOrientationLockY; }
+
+		/** 
+		 * Sets a plane to orient particles towards. Only used if particle orientation mode is set to 
+		 * ParticleOrientation::Plane. 
+		 */
+		void setOrientationPlane(const Plane& plane) { mOrientationPlane = plane; _markCoreDirty(); }
+
+		/** @copydoc setOrientationPlane */
+		Plane getOrientationPlane() const { return mOrientationPlane; }
+
+	protected:
+		ParticleSimulationSpace mSimulationSpace = ParticleSimulationSpace::World;
+		ParticleOrientation mOrientation = ParticleOrientation::ViewPlane;
+		bool mOrientationLockY = false;
+		Plane mOrientationPlane = Plane(Vector3::UNIT_Z, Vector3::ZERO);
+	};
+
 	/** 
 	 * Controls spawning, evolution and rendering of particles. Particles can be 2D or 3D, with a variety of rendering
 	 * options. Particle system should be used for rendering objects that cannot properly be represented using static or
@@ -65,7 +108,7 @@ namespace bs
 	 * The particle system requires you to specify at least one ParticleEmitter, which controls how are new particles
 	 * generated. You will also want to specify one or more ParticleEvolver%s, which change particle properties over time.
 	 */
-	class BS_CORE_EXPORT ParticleSystem final : public IReflectable, public CoreObject, public SceneActor, public INonCopyable
+	class BS_CORE_EXPORT ParticleSystem final : public IReflectable, public CoreObject, public ParticleSystemBase
 	{
 	public:
 		~ParticleSystem() final;
@@ -162,12 +205,6 @@ namespace bs
 		/** @copydoc setLooping */
 		bool getLooping() const { return mIsLooping; }
 
-		/** Determines in which space are particles in. */
-		void setSimulationSpace(ParticleSimulationSpace value);
-
-		/** @copydoc setSimulationSpace */
-		ParticleSimulationSpace getSimulationSpace() const { return mSimulationSpace; }
-
 		/** Determines the maximum number of particles that can ever be active in this system. */
 		void setMaxParticles(UINT32 value);
 
@@ -252,7 +289,6 @@ namespace bs
 		// User-visible properties
 		float mDuration = 5.0f;
 		bool mIsLooping = true;
-		ParticleSimulationSpace mSimulationSpace = ParticleSimulationSpace::World;
 		UINT32 mMaxParticles = 2000;
 		bool mUseAutomaticSeed = true;
 		UINT32 mManualSeed = 0;
@@ -299,7 +335,7 @@ namespace bs
 		};
 
 		/** Core thread counterpart of bs::ParticleSystem. */
-		class BS_CORE_EXPORT ParticleSystem final : public CoreObject, public SceneActor
+		class BS_CORE_EXPORT ParticleSystem final : public CoreObject, public ParticleSystemBase
 		{
 		public:
 			~ParticleSystem();
@@ -322,12 +358,6 @@ namespace bs
 			/** @copydoc setMaterial() */
 			const SPtr<Material>& getMaterial() const { return mMaterial; }
 
-			/** @copydoc bs::ParticleSystem::setSimulationSpace */
-			void setSimulationSpace(ParticleSimulationSpace value) { mSimulationSpace = value; }
-
-			/** @copydoc setSimulationSpace */
-			ParticleSimulationSpace getSimulationSpace() const { return mSimulationSpace; }
-
 			/** @copydoc CoreObject::initialize */
 			void initialize() override;
 		private:
@@ -344,7 +374,6 @@ namespace bs
 			UINT32 mId;
 
 			SPtr<Material> mMaterial;
-			ParticleSimulationSpace mSimulationSpace = ParticleSimulationSpace::World;
 		};
 	}
 

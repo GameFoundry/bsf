@@ -9,10 +9,6 @@
 
 namespace bs 
 {
-	Plane::Plane(const Plane& copy)
-		:normal(copy.normal), d(copy.d)
-	{ }
-
 	Plane::Plane(const Vector3& normal, float d)
 		:normal(normal), d(d)
 	{ }
@@ -103,20 +99,20 @@ namespace bs
 
 	}
 
-    float Plane::normalize()
-    {
-        float fLength = normal.length();
+	float Plane::normalize()
+	{
+		float fLength = normal.length();
 
-        // Will also work for zero-sized vectors, but will change nothing
-        if (fLength > 1e-08f)
-        {
-            float fInvLength = 1.0f / fLength;
-            normal *= fInvLength;
-            d *= fInvLength;
-        }
+		// Will also work for zero-sized vectors, but will change nothing
+		if (fLength > 1e-08f)
+		{
+			float fInvLength = 1.0f / fLength;
+			normal *= fInvLength;
+			d *= fInvLength;
+		}
 
-        return fLength;
-    }
+		return fLength;
+	}
 
 	bool Plane::intersects(const AABox& box) const
 	{
