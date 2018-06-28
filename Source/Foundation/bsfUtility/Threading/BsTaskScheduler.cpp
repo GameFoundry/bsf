@@ -39,6 +39,32 @@ namespace bs
 		mState = 3;
 	}
 
+	TaskGroup::TaskGroup(const PrivatelyConstruct& dummy, String name, std::function<void(UINT32)> taskWorker, 
+		UINT32 count, TaskPriority priority, SPtr<Task> dependency)
+		: mName(std::move(name)), mCount(count), mPriority(priority), mTaskWorker(std::move(taskWorker))
+		, mTaskDependency(std::move(dependency))
+	{
+
+	}
+
+	SPtr<TaskGroup> TaskGroup::create(String name, std::function<void(UINT32)> taskWorker, UINT32 count, 
+		TaskPriority priority, SPtr<Task> dependency)
+	{
+		return bs_shared_ptr_new<TaskGroup>(PrivatelyConstruct(), std::move(name), std::move(taskWorker), count, priority, 
+			std::move(dependency));
+	}
+
+	bool TaskGroup::isComplete() const
+	{
+		return mNumRemainingTasks == 0;
+	}
+
+	void TaskGroup::wait()
+	{
+		if(mParent != nullptr)
+			mParent->waitUntilComplete(this);
+	}
+
 	TaskScheduler::TaskScheduler()
 		:mTaskQueue(&TaskScheduler::taskCompare)
 	{
@@ -87,6 +113,33 @@ namespace bs
 
 		mCheckTasks = true;
 		mTaskQueue.insert(std::move(task));
+
+		// Wake main scheduler thread
+		mTaskReadyCond.notify_one();
+	}
+
+	void TaskScheduler::addTaskGroup(const SPtr<TaskGroup>& taskGroup)
+	{
+		Lock lock(mReadyMutex);
+
+		for(UINT32 i = 0; i < taskGroup->mCount; i++)
+		{
+			const auto worker = [i, taskGroup] 
+			{ 
+				taskGroup->mTaskWorker(i); 
+				--taskGroup->mNumRemainingTasks;
+			};
+
+			SPtr<Task> task = Task::create(taskGroup->mName, worker, taskGroup->mPriority, taskGroup->mTaskDependency);
+			task->mParent = this;
+			task->mTaskId = mNextTaskId++;
+			task->mState.store(0); // Reset state in case the task is getting re-queued
+
+			mCheckTasks = true;
+			mTaskQueue.insert(std::move(task));
+		}
+
+		taskGroup->mParent = this;
 
 		// Wake main scheduler thread
 		mTaskReadyCond.notify_one();
@@ -195,6 +248,18 @@ namespace bs
 				mTaskCompleteCond.wait(lock);
 				removeWorker();
 			}
+		}
+	}
+
+	void TaskScheduler::waitUntilComplete(const TaskGroup* taskGroup)
+	{
+		Lock lock(mCompleteMutex);
+
+		while (taskGroup->mNumRemainingTasks > 0)
+		{
+			addWorker();
+			mTaskCompleteCond.wait(lock);
+			removeWorker();
 		}
 	}
 
