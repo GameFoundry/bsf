@@ -336,7 +336,10 @@ namespace bs
 
 	void CoreApplication::setFPSLimit(UINT32 limit)
 	{
-		mFrameStep = (UINT64)1000000 / limit;
+		if(limit > 0)
+			mFrameStep = (UINT64)1000000 / limit;
+		else
+			mFrameStep = 0;
 	}
 
 	void CoreApplication::frameRenderingFinishedCallback()
