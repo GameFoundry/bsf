@@ -2155,7 +2155,9 @@ namespace bs { namespace ct
 		if(!mDrawCallInProgress)
 			return;
 
+#if BS_OPENGL_4_2 || BS_OPENGLES_3_1
 		glMemoryBarrier(GL_ALL_BARRIER_BITS);
+#endif
 
 		mDrawCallInProgress = false;
 	}
