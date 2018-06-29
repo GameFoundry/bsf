@@ -26,9 +26,9 @@ namespace bs
 		void setSeed(uint32_t seed)
 		{
 			mSeed[0] = seed;
-			mSeed[1] = seed * 434521248 + 1; // Arbitrary random numbers
-			mSeed[2] = seed * 854624531 + 1;
-			mSeed[3] = seed * 694295795 + 1;
+			mSeed[1] = seed * 0x72e0447c + 1; // Arbitrary random numbers
+			mSeed[2] = seed * 0x352ad225 + 1;
+			mSeed[3] = seed * 0x03c3629f + 1;
 		}
 
 		/** Returns a random value in range [0, std::numeric_limits<uint32_t>::max()]. */

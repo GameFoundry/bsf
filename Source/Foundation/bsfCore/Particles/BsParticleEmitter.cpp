@@ -1217,7 +1217,12 @@ namespace bs
 		ParticleSetData& particles = set.getParticles();
 
 		for(UINT32 i = firstIdx; i < endIdx; i++)
-			particles.lifetime[i] = mInitialLifetime.evaluate(t, random);
+		{
+			const float lifetime = mInitialLifetime.evaluate(t, random);
+
+			particles.initialLifetime[i] = lifetime;
+			particles.lifetime[i] = lifetime;
+		}
 
 		for(UINT32 i = firstIdx; i < endIdx; i++)
 			particles.velocity[i] *= mInitialSpeed.evaluate(t, random);
@@ -1227,14 +1232,24 @@ namespace bs
 			for (UINT32 i = firstIdx; i < endIdx; i++)
 			{
 				const float size = mInitialSize.evaluate(t, random);
-				particles.size[i] = Vector3(size, size, size);
+
+				// Encode UV flip in size XY as sign
+				const float flipU = random.getUNorm() < mFlipU ? -1.0f : 1.0f;
+				const float flipV = random.getUNorm() < mFlipV ? -1.0f : 1.0f;
+
+				particles.size[i] = Vector3(size * flipU, size * flipV, size);
 			}
 		}
 		else
 		{
 			for (UINT32 i = firstIdx; i < endIdx; i++)
 			{
-				const Vector3 size = mInitialSize3D.evaluate(t, random);
+				Vector3 size = mInitialSize3D.evaluate(t, random);
+
+				// Encode UV flip in size XY as sign
+				size.x *= random.getUNorm() < mFlipU ? -1.0f : 1.0f;
+				size.y *= random.getUNorm() < mFlipV ? -1.0f : 1.0f;
+
 				particles.size[i] = size;
 			}
 		}
@@ -1258,6 +1273,12 @@ namespace bs
 
 		for(UINT32 i = firstIdx; i < endIdx; i++)
 			particles.color[i] = mInitialColor.evaluate(t, random);
+
+		for(UINT32 i = firstIdx; i < endIdx; i++)
+			particles.seed[i] = random.get();
+
+		for(UINT32 i = firstIdx; i < endIdx; i++)
+			particles.frame[i] = 0.0f;
 
 		// If in world-space we apply the transform here, otherwise we apply it in the rendering code
 		if(state.worldSpace)

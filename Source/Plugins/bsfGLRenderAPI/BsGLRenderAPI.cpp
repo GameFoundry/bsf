@@ -1269,6 +1269,8 @@ namespace bs { namespace ct
 
 			glDispatchCompute(numGroupsX, numGroupsY, numGroupsZ);
 			BS_CHECK_GL_ERROR();
+
+			glMemoryBarrier(GL_ALL_BARRIER_BITS);
 #else
 			LOGWRN("Compute shaders not supported on current OpenGL version.");
 #endif
@@ -2152,6 +2154,10 @@ namespace bs { namespace ct
 	{
 		if(!mDrawCallInProgress)
 			return;
+
+#if BS_OPENGL_4_2 || BS_OPENGLES_3_1
+		glMemoryBarrier(GL_ALL_BARRIER_BITS);
+#endif
 
 		mDrawCallInProgress = false;
 	}

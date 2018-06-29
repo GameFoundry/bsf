@@ -48,8 +48,6 @@
 
 namespace bs
 {
-	constexpr UINT32 CoreApplication::MAX_FIXED_UPDATES_PER_FRAME;
-
 	CoreApplication::CoreApplication(START_UP_DESC desc)
 		: mPrimaryWindow(nullptr), mStartUpDesc(desc), mRendererPlugin(nullptr), mIsFrameRenderingFinished(true)
 		, mSimThreadId(BS_THREAD_CURRENT_ID), mRunMainLoop(false)
@@ -229,37 +227,16 @@ namespace bs
 
 			// Trigger fixed updates if required
 			{
-				UINT64 currentTime = gTime().getTimePrecise();
+				UINT64 step;
+				const UINT32 numIterations = gTime()._getFixedUpdateStep(step);
 
-				// Skip fixed update first frame (time delta is zero, and no input received yet)
-				if(mFirstFrame)
+				const float stepSeconds = step / 1000000.0f;
+				for (UINT32 i = 0; i < numIterations; i++)
 				{
-					mLastFixedUpdateTime = currentTime;
-					mFirstFrame = false;
-				}
+					PROFILE_CALL(gSceneManager()._fixedUpdate(), "Scene fixed update");
+					gPhysics().fixedUpdate(stepSeconds);
 
-				UINT64 nextFrameTime = mLastFixedUpdateTime + mFixedStep;
-				if(nextFrameTime <= currentTime)
-				{
-					INT64 simulationAmount = (INT64)std::max(currentTime - mLastFixedUpdateTime, mFixedStep); // At least one step
-					UINT32 numIterations = (UINT32)Math::divideAndRoundUp(simulationAmount, (INT64)mFixedStep);
-
-					// If too many iterations are required, increase time step. This should only happen in extreme 
-					// situations (or when debugging).
-					INT64 step = (INT64)mFixedStep;
-					if (numIterations > (INT32)MAX_FIXED_UPDATES_PER_FRAME)
-						step = Math::divideAndRoundUp(simulationAmount, (INT64)MAX_FIXED_UPDATES_PER_FRAME);
-
-					while (simulationAmount >= step) // In case we're running really slow multiple updates might be needed
-					{
-						float stepSeconds = step / 1000000.0f;
-
-						PROFILE_CALL(gSceneManager()._fixedUpdate(), "Scene fixed update");
-						gPhysics().fixedUpdate(stepSeconds);
-
-						simulationAmount -= step;
-						mLastFixedUpdateTime += step;
-					}
+					gTime()._advanceFixedUpdate(step);
 				}
 			}
 
@@ -359,7 +336,10 @@ namespace bs
 
 	void CoreApplication::setFPSLimit(UINT32 limit)
 	{
-		mFrameStep = (UINT64)1000000 / limit;
+		if(limit > 0)
+			mFrameStep = (UINT64)1000000 / limit;
+		else
+			mFrameStep = 0;
 	}
 
 	void CoreApplication::frameRenderingFinishedCallback()

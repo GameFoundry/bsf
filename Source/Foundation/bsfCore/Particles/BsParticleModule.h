@@ -14,6 +14,8 @@ namespace bs
 	class BS_CORE_EXPORT ParticleModule
 	{
 	protected:
+		friend class ParticleSystem;
+
 		ParticleModule() = default;
 		virtual ~ParticleModule() = default;
 

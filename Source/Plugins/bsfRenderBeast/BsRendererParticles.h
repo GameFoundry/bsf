@@ -21,8 +21,11 @@ namespace bs { namespace ct
 
 	BS_PARAM_BLOCK_BEGIN(ParticlesParamDef)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gWorldTfrm)
-		BS_PARAM_BLOCK_ENTRY(UINT32, gTexSize)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gSubImageSize)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gUVOffset)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gUVScale)
 		BS_PARAM_BLOCK_ENTRY(Vector3, gAxisUp)
+		BS_PARAM_BLOCK_ENTRY(INT32, gTexSize)
 		BS_PARAM_BLOCK_ENTRY(Vector3, gAxisRight)
 	BS_PARAM_BLOCK_END
 
@@ -68,8 +71,11 @@ namespace bs { namespace ct
 		/** Binding spot for the texture containing color information. */
 		GpuParamTexture colorTexture;
 
-		/** Binding spot for the texture containing size information. */
-		GpuParamTexture sizeTexture;
+		/** Binding spot for the texture containing size and sub-image index information. */
+		GpuParamTexture sizeAndFrameIdxTexture;
+
+		/** Binding spot for the buffer containing instance id -> particle index mapping. */
+		GpuParamBuffer indicesBuffer;
 
 		/** Number of particles to render. */
 		UINT32 numParticles = 0;

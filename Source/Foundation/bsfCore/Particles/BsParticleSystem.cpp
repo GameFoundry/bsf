@@ -15,6 +15,15 @@ namespace bs
 {
 	static constexpr UINT32 INITIAL_PARTICLE_CAPACITY = 1000;
 
+	void ParticleSystemBase::setSimulationSpace(ParticleSimulationSpace value)
+	{
+		if(mSimulationSpace == value)
+			return;
+
+		mSimulationSpace = value;
+		_markCoreDirty();
+	}
+
 	ParticleSystem::ParticleSystem()
 	{
 		mId = ParticleManager::instance().registerParticleSystem(this);
@@ -60,15 +69,6 @@ namespace bs
 
 		mParticleSet->clear(value);
 		mMaxParticles = value;
-	}
-
-	void ParticleSystem::setSimulationSpace(ParticleSimulationSpace value)
-	{
-		if(mSimulationSpace == value)
-			return;
-
-		mSimulationSpace = value;
-		_markCoreDirty();
 	}
 
 	void ParticleSystem::play()
@@ -140,7 +140,7 @@ namespace bs
 
 		// Simulate
 		for(auto& evolver : mEvolvers)
-			evolver->evolve(mRandom, *mParticleSet);
+			evolver->evolve(newTime, mRandom, *mParticleSet);
 
 		// Update position
 		UINT32 numParticles = mParticleSet->getParticleCount();
@@ -213,6 +213,10 @@ namespace bs
 			getActorSyncDataSize() +
 			rttiGetElemSize(getCoreDirtyFlags()) +
 			rttiGetElemSize(mSimulationSpace) +
+			rttiGetElemSize(mOrientation) +
+			rttiGetElemSize(mOrientationPlane) +
+			rttiGetElemSize(mOrientationLockY) +
+			rttiGetElemSize(mSortMode) + 
 			sizeof(SPtr<ct::Material>);
 
 		UINT8* data = allocator->alloc(size);
@@ -220,6 +224,10 @@ namespace bs
 		dataPtr = syncActorTo(dataPtr);
 		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
 		dataPtr = rttiWriteElem(mSimulationSpace, dataPtr);
+		dataPtr = rttiWriteElem(mOrientation, dataPtr);
+		dataPtr = rttiWriteElem(mOrientationPlane, dataPtr);
+		dataPtr = rttiWriteElem(mOrientationLockY, dataPtr);
+		dataPtr = rttiWriteElem(mSortMode, dataPtr);
 
 		SPtr<ct::Material>* material = new (dataPtr) SPtr<ct::Material>();
 		if (mMaterial.isLoaded())
@@ -279,6 +287,10 @@ namespace bs
 			dataPtr = syncActorFrom(dataPtr);
 			dataPtr = rttiReadElem(dirtyFlags, dataPtr);
 			dataPtr = rttiReadElem(mSimulationSpace, dataPtr);
+			dataPtr = rttiReadElem(mOrientation, dataPtr);
+			dataPtr = rttiReadElem(mOrientationPlane, dataPtr);
+			dataPtr = rttiReadElem(mOrientationLockY, dataPtr);
+			dataPtr = rttiReadElem(mSortMode, dataPtr);
 
 			SPtr<Material>* material = (SPtr<Material>*)dataPtr;
 			mMaterial = *material;

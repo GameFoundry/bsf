@@ -78,6 +78,56 @@ namespace bs
 	};
 
 	/**
+	 * Represents a group of tasks that may be queued in the TaskScheduler to be processed in parallel.
+	 *
+	 * @note	Thread safe.
+	 */
+	class BS_UTILITY_EXPORT TaskGroup
+	{
+		struct PrivatelyConstruct {};
+
+	public:
+		TaskGroup(const PrivatelyConstruct& dummy, String name, std::function<void(UINT32)> taskWorker, UINT32 count,
+			TaskPriority priority, SPtr<Task> dependency);
+
+		/**
+		 * Creates a new task group. Task group should be provided to TaskScheduler in order for it to start.
+		 *
+		 * @param[in]	name		Name you can use to more easily identify the tasks in the group.
+		 * @param[in]	taskWorker	Worker method that will get called for each item in the group. Each call will receive
+		 *							a sequential index of the item in the group.
+		 * @param[in]	count		Number of items in the task group. Each item will be processed in a worker thread.
+		 * @param[in]	priority  	(optional) Higher priority means the tasks will be executed sooner.
+		 * @param[in]	dependency	(optional) Task dependency if one exists. If provided the task will
+		 * 							not be executed until its dependency is complete.
+		 */
+		static SPtr<TaskGroup> create(String name, std::function<void(UINT32)> taskWorker, UINT32 count,
+			TaskPriority priority = TaskPriority::Normal, SPtr<Task> dependency = nullptr);
+
+		/** Returns true if all the tasks in the group have completed. */
+		bool isComplete() const;
+
+		/**
+		 * Blocks the current thread until all tasks in the group have completed.
+		 *
+		 * @note	While waiting adds a new worker thread, so that the blocking threads core can be utilized.
+		 */
+		void wait();
+
+	private:
+		friend class TaskScheduler;
+
+		String mName;
+		UINT32 mCount;
+		TaskPriority mPriority;
+		std::function<void(UINT32)> mTaskWorker;
+		SPtr<Task> mTaskDependency;
+		std::atomic<UINT32> mNumRemainingTasks{mCount};
+
+		TaskScheduler* mParent = nullptr;
+	};
+
+	/**
 	 * Represents a task scheduler running on multiple threads. You may queue tasks on it from any thread and they will be
 	 * executed in user specified order on any available thread.
 	 *
@@ -100,6 +150,9 @@ namespace bs
 		/** Queues a new task. */
 		void addTask(SPtr<Task> task);
 
+		/** Queues a new task group. */
+		void addTaskGroup(const SPtr<TaskGroup>& taskGroup);
+
 		/**	Adds a new worker thread which will be used for executing queued tasks. */
 		void addWorker();
 
@@ -110,6 +163,7 @@ namespace bs
 		UINT32 getNumWorkers() const { return mMaxActiveTasks; }
 	protected:
 		friend class Task;
+		friend class TaskGroup;
 
 		/**	Main task scheduler method that dispatches tasks to other threads. */
 		void runMain();
@@ -119,6 +173,9 @@ namespace bs
 
 		/**	Blocks the calling thread until the specified task has completed. */
 		void waitUntilComplete(const Task* task);
+
+		/**	Blocks the calling thread until all the tasks in the provided task group have completed. */
+		void waitUntilComplete(const TaskGroup* taskGroup);
 
 		/**	Method used for sorting tasks. */
 		static bool taskCompare(const SPtr<Task>& lhs, const SPtr<Task>& rhs);

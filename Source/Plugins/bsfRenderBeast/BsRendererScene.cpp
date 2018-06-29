@@ -13,6 +13,7 @@
 #include "Utility/BsSamplerOverrides.h"
 #include "BsRenderBeastOptions.h"
 #include "BsRenderBeast.h"
+#include "Image/BsSpriteTexture.h"
 
 namespace bs {	namespace ct
 {
@@ -625,7 +626,7 @@ namespace bs {	namespace ct
 
 	void RendererScene::registerParticleSystem(ParticleSystem* particleSystem)
 	{
-		const UINT32 rendererId = (UINT32)mInfo.particleSystems.size();
+		const auto rendererId = (UINT32)mInfo.particleSystems.size();
 		particleSystem->setRendererId(rendererId);
 
 		mInfo.particleSystems.push_back(RendererParticles());
@@ -642,8 +643,18 @@ namespace bs {	namespace ct
 
 		SPtr<GpuParamBlockBuffer> paramBuffer = gParticlesParamDef.createBuffer();
 		gParticlesParamDef.gWorldTfrm.set(paramBuffer, transform);
-		gParticlesParamDef.gAxisUp.set(paramBuffer, Vector3::UNIT_Y); // TODO
-		gParticlesParamDef.gAxisRight.set(paramBuffer, Vector3::UNIT_X); // TODO;
+
+		Vector3 axisForward = particleSystem->getOrientationPlane().normal;
+
+		Vector3 axisUp = Vector3::UNIT_Y;
+		if(axisForward.dot(axisUp) > 0.9998f)
+			axisUp = Vector3::UNIT_Z;
+
+		Vector3 axisRight = axisUp.cross(axisForward);
+		Vector3::orthonormalize(axisRight, axisUp, axisForward);
+
+		gParticlesParamDef.gAxisUp.set(paramBuffer, axisUp);
+		gParticlesParamDef.gAxisRight.set(paramBuffer, axisRight);
 
 		rendererParticles.particlesParamBuffer = paramBuffer;
 
@@ -659,8 +670,29 @@ namespace bs {	namespace ct
 		if (renElement.material == nullptr)
 			renElement.material = Material::create(DefaultParticlesMat::get()->getShader());
 
-		// TODO - Pick variation depending on the particle system properties
-		const ShaderVariation* variation = &getParticleShaderVariation(ParticleOrientation::ViewPlane, false);
+		SpriteTexture* spriteTexture = nullptr;
+		if(renElement.material->getShader()->hasTextureParam("gTexture"))
+			spriteTexture = renElement.material->getSpriteTexture("gTexture").get();
+
+		if(spriteTexture)
+		{
+			gParticlesParamDef.gUVOffset.set(paramBuffer, spriteTexture->getOffset());
+			gParticlesParamDef.gUVScale.set(paramBuffer, spriteTexture->getScale());
+
+			const SpriteSheetGridAnimation& anim = spriteTexture->getAnimation();
+			gParticlesParamDef.gSubImageSize.set(paramBuffer, 
+				Vector4((float)anim.numColumns, (float)anim.numRows, 1.0f / anim.numColumns, 1.0f / anim.numRows));
+		}
+		else
+		{
+			gParticlesParamDef.gUVOffset.set(paramBuffer, Vector2::ZERO);
+			gParticlesParamDef.gUVScale.set(paramBuffer, Vector2::ONE);
+			gParticlesParamDef.gSubImageSize.set(paramBuffer, Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+
+		const ParticleOrientation orientation = particleSystem->getOrientation();
+		const bool lockY = particleSystem->getOrientationLockY();
+		const ShaderVariation* variation = &getParticleShaderVariation(orientation, lockY);
 
 		FIND_TECHNIQUE_DESC findDesc;
 		findDesc.variation = variation;
@@ -684,7 +716,8 @@ namespace bs {	namespace ct
 
 		gpuParams->getTextureParam(GPT_VERTEX_PROGRAM, "gPositionAndRotTex", renElement.positionAndRotTexture);
 		gpuParams->getTextureParam(GPT_VERTEX_PROGRAM, "gColorTex", renElement.colorTexture);
-		gpuParams->getTextureParam(GPT_VERTEX_PROGRAM, "gSizeTex", renElement.sizeTexture);
+		gpuParams->getTextureParam(GPT_VERTEX_PROGRAM, "gSizeAndFrameIdxTex", renElement.sizeAndFrameIdxTexture);
+		gpuParams->getBufferParam(GPT_VERTEX_PROGRAM, "gIndices", renElement.indicesBuffer);
 
 		gpuParams->getParamInfo()->getBindings(
 			GpuPipelineParamInfoBase::ParamType::ParamBlock,

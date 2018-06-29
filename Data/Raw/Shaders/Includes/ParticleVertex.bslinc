@@ -26,31 +26,41 @@ mixin ParticleVertex
 			float4 color : COLOR0;
 		};
 		
-		Texture2D gPositionAndRotTex;
+		Texture2D gPositionAndRotTex; // position in .xyz, rotation in radians in .w
 		Texture2D gColorTex;
-		Texture2D gSizeTex;
+		Texture2D gSizeAndFrameIdxTex; // size in .xy, uv flip encoded in sign of .xy, frame index in .z, .w unused
+		Buffer<uint> gIndices;
 
 		[internal]
 		cbuffer ParticleParams
 		{
 			float4x4 gWorldTfrm;
-			uint gTexSize;
+			float4 gSubImageSize; // .xy column/row count, .zw inverse column/row count
+			float2 gUVOffset;
+			float2 gUVSize;
 			float3 gAxisUp;
+			uint gTexSize;
 			float3 gAxisRight;
-			float4 gSubImageSize;
 		}		
 
 		VStoFS vsmain(VertexInput input)
 		{
+			uint index = gIndices[input.instanceId];
+		
 			uint3 pixelPos;
-			pixelPos.y = input.instanceId / gTexSize;
-			pixelPos.x = input.instanceId - pixelPos.y * gTexSize;
+			pixelPos.y = index / gTexSize;
+			pixelPos.x = index - pixelPos.y * gTexSize;
 			pixelPos.z = 0;
 		
 			float4 posAndRot = gPositionAndRotTex.Load(pixelPos);
 			float4 worldPosition = mul(gWorldTfrm, float4(posAndRot.xyz, 1.0f));
 			
-			float2 size = gSizeTex.Load(pixelPos).xy;
+			float3 sizeAndFrame = gSizeAndFrameIdxTex.Load(pixelPos).xyz;
+			float2 uvflip = sign(sizeAndFrame.xy);
+			float2 size = abs(sizeAndFrame.xy);
+			
+			float frame = sizeAndFrame.z;
+			
 			float3 axisRight, axisUp;
 			#if ORIENT == 2 // Axis
 				axisRight = gAxisRight;
@@ -62,7 +72,7 @@ mixin ParticleVertex
 				axisRight = normalize(cross(diff, cameraUp));
 				
 				#if LOCK_Y
-					axisUp = float3(0, 1, 0);		
+					axisUp = float3(0, 1, 0);
 				#else
 					axisUp = normalize(cross(axisRight, diff));
 				#endif
@@ -84,9 +94,19 @@ mixin ParticleVertex
 			
 			worldPosition.xyz += rotAxisRight * input.position.x * size.x + rotAxisUp * input.position.y  * size.y;	
 			
+			float2 uv;
+			uv.x = uvflip.x >= 0.0f ? input.uv0.x : 1.0f - input.uv0.x;
+			uv.y = uvflip.y >= 0.0f ? input.uv0.y : 1.0f - input.uv0.y;
+			
+			frame -= frac(frame);
+			float row = fmod(frame, gSubImageSize.x);
+			float column = floor(frame * gSubImageSize.z);
+			
+			float2 subUV = (float2(row, column) + uv) * gSubImageSize.zw;
+			
 			VStoFS output;
 			output.color = gColorTex.Load(pixelPos);
-			output.uv0 = input.uv0;
+			output.uv0 = gUVOffset + subUV * gUVSize;
 			output.position = mul(gMatViewProj, worldPosition);
 		
 			return output;

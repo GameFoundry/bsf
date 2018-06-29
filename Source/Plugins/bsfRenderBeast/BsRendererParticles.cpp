@@ -6,6 +6,7 @@
 #include "RenderAPI/BsVertexDataDesc.h"
 #include "Mesh/BsMeshData.h"
 #include "Renderer/BsRendererUtility.h"
+#include "RenderAPI/BsGpuBuffer.h"
 
 namespace bs { namespace ct
 {
@@ -20,8 +21,8 @@ namespace bs { namespace ct
 				return getParticleShaderVariation<ParticleOrientation::ViewPlane, true>();
 			case ParticleOrientation::ViewPosition:
 				return getParticleShaderVariation<ParticleOrientation::ViewPosition, true>();
-			case ParticleOrientation::Axis:
-				return getParticleShaderVariation<ParticleOrientation::Axis, true>();
+			case ParticleOrientation::Plane:
+				return getParticleShaderVariation<ParticleOrientation::Plane, true>();
 			}
 		}
 		else
@@ -33,8 +34,8 @@ namespace bs { namespace ct
 				return getParticleShaderVariation<ParticleOrientation::ViewPlane, false>();
 			case ParticleOrientation::ViewPosition:
 				return getParticleShaderVariation<ParticleOrientation::ViewPosition, false>();
-			case ParticleOrientation::Axis:
-				return getParticleShaderVariation<ParticleOrientation::Axis, false>();
+			case ParticleOrientation::Plane:
+				return getParticleShaderVariation<ParticleOrientation::Plane, false>();
 			}
 		}
 	}
@@ -73,7 +74,8 @@ namespace bs { namespace ct
 		// just use no-overwrite? write-discard will very likely allocate memory under the hood.
 		output->positionAndRotation->writeData(renderData.positionAndRotation, 0, 0, true);
 		output->color->writeData(renderData.color, 0, 0, true);
-		output->size->writeData(renderData.size, 0, 0, true);
+		output->sizeAndFrameIdx->writeData(renderData.sizeAndFrameIdx, 0, 0, true);
+		output->indices->writeData(0, renderData.numParticles * sizeof(UINT32), renderData.indices.data(), BWT_DISCARD);
 
 		return output;
 	}
@@ -100,8 +102,15 @@ namespace bs { namespace ct
 		texDesc.format = PF_RGBA8;
 		output->color = Texture::create(texDesc);
 
-		texDesc.format = PF_RG16F;
-		output->size = Texture::create(texDesc);
+		texDesc.format = PF_RGBA16F;
+		output->sizeAndFrameIdx = Texture::create(texDesc);
+
+		GPU_BUFFER_DESC bufferDesc;
+		bufferDesc.type = GBT_STANDARD;
+		bufferDesc.elementCount = size * size;
+		bufferDesc.format = BF_32X1U;
+
+		output->indices = GpuBuffer::create(bufferDesc);
 
 		mBufferList[size].buffers.push_back(output);
 

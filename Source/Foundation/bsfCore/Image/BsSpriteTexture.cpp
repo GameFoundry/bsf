@@ -33,7 +33,10 @@ namespace bs
 		}
 
 		const float pct = t / duration;
-		const UINT32 frame = Math::clamp(Math::floorToPosInt(pct * mAnimation.count), 0U, mAnimation.count);
+		UINT32 frame = 0;
+		
+		if(mAnimation.count > 0)
+			frame = Math::clamp(Math::floorToPosInt(pct * mAnimation.count), 0U, mAnimation.count - 1);
 
 		const UINT32 row = frame / mAnimation.numRows;
 		const UINT32 column = frame % mAnimation.numColumns;
