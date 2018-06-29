@@ -5,6 +5,8 @@
 
 namespace bs
 {
+	Transform Transform::IDENTITY;
+
 	Transform::Transform()
 		: mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE)
 	{ }

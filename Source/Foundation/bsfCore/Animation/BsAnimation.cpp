@@ -743,6 +743,7 @@ namespace bs
 			clipInfo->playbackType = AnimPlaybackType::Normal;
 		}
 
+		mSampleStep = AnimSampleStep::None;
 		mDirty |= AnimDirtyStateFlag::Value;
 	}
 
@@ -756,6 +757,7 @@ namespace bs
 			HAnimationClip nullClip;
 			addClip(nullClip, layer);
 
+			mSampleStep = AnimSampleStep::None;
 			return;
 		}
 
@@ -775,6 +777,8 @@ namespace bs
 			}
 
 			clipInfo->playbackType = AnimPlaybackType::Normal;
+
+			mSampleStep = AnimSampleStep::None;
 			mDirty |= AnimDirtyStateFlag::Value;
 		}
 	}
@@ -870,6 +874,7 @@ namespace bs
 			}
 		}
 
+		mSampleStep = AnimSampleStep::None;
 		mDirty |= AnimDirtyStateFlag::Value;
 	}
 
@@ -923,6 +928,7 @@ namespace bs
 			botRightClipInfo->playbackType = AnimPlaybackType::Normal;
 		}
 
+		mSampleStep = AnimSampleStep::None;
 		mDirty |= AnimDirtyStateFlag::Value;
 	}
 
@@ -971,6 +977,7 @@ namespace bs
 			}
 		}
 
+		mSampleStep = AnimSampleStep::None;
 		mDirty |= AnimDirtyStateFlag::Value;
 	}
 
@@ -986,6 +993,7 @@ namespace bs
 			clipInfo->playbackType = AnimPlaybackType::Sampled;
 		}
 
+		mSampleStep = AnimSampleStep::Frame;
 		mDirty |= AnimDirtyStateFlag::Value;
 	}
 
@@ -1012,6 +1020,8 @@ namespace bs
 	void Animation::stopAll()
 	{
 		mClipInfos.clear();
+
+		mSampleStep = AnimSampleStep::None;
 		mDirty |= AnimDirtyStateFlag::Layout;
 	}
 
@@ -1281,6 +1291,16 @@ namespace bs
 			clipInfo.fadeTime = Math::clamp(fadeTime, 0.0f, clipInfo.fadeLength);
 		}
 
+		if(mSampleStep == AnimSampleStep::None)
+			mAnimProxy->sampleStep = AnimSampleStep::None;
+		else if(mSampleStep == AnimSampleStep::Frame)
+		{
+			if(mAnimProxy->sampleStep == AnimSampleStep::None)
+				mAnimProxy->sampleStep = AnimSampleStep::Frame;
+			else
+				mAnimProxy->sampleStep = AnimSampleStep::Done;
+		}
+
 		if (mDirty.isSet(AnimDirtyStateFlag::Culling))
 		{
 			mAnimProxy->mCullEnabled = mCull;
@@ -1363,6 +1383,12 @@ namespace bs
 
 	void Animation::updateFromProxy()
 	{
+		// When sampling a single frame we don't want to keep updating the scene objects so they can be moved through other
+		// means (e.g. for the purposes of recording new keyframes if running from the editor).
+		const bool disableSOUpdates = mAnimProxy->sampleStep == AnimSampleStep::Done;
+		if(disableSOUpdates)
+			return;
+
 		HSceneObject rootSO;
 
 		// Write TRS animation results to relevant SceneObjects

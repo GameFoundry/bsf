@@ -154,6 +154,8 @@ namespace bs
 		 * @param[in]	angle	Angle to rotate by.
 		 */
 		void pitch(const Radian& angle);
+
+		static Transform IDENTITY;
 	private:
 		Vector3 mPosition;
 		Quaternion mRotation;
