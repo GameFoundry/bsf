@@ -1185,6 +1185,7 @@ namespace bs
 		clipInfo->state = state;
 		clipInfo->playbackType = AnimPlaybackType::Normal;
 
+		mSampleStep = AnimSampleStep::None;
 		mDirty |= AnimDirtyStateFlag::Value;
 	}
 
