@@ -108,7 +108,7 @@ namespace bs
 			if(paramIdx == (UINT32)-1)
 				paramIdx = (UINT32)obj->mParams.size();
 
-			obj->mParams[paramIdx] = param.data;
+			obj->mParams.push_back(param.data);
 			obj->mParamLookup[param.name] = paramIdx;
 		}
 
@@ -119,9 +119,7 @@ namespace bs
 		}
 
 		void setParamDataArraySize(MaterialParams* obj, UINT32 size)
-		{
-			obj->mParams.resize(size);
-		}
+		{ }
 
 		SPtr<DataStream> getDataBuffer(MaterialParams* obj, UINT32& size)
 		{
