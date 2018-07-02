@@ -318,7 +318,8 @@ shader IrradianceEvaluate
 			float2 uv = NDCToUV(input.screenPos);
 			float ao = gAmbientOcclusionTex.Sample(gLinearSamp, uv);
 			
-			return irradiance * surfaceData.albedo.rgb * ao;
+			float3 diffuseColor = lerp(surfaceData.albedo.rgb, float3(0.0f, 0.0f, 0.0f), surfaceData.metalness);
+			return irradiance * diffuseColor * ao;
 		}	
 	};
 };
