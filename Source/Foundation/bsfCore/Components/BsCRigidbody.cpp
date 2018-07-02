@@ -292,14 +292,14 @@ namespace bs
 				
 				for (auto& entry : colliders)
 				{
-					if (!entry->isValidParent(mThisHandle))
+					if (!entry->isValidParent(static_object_cast<CRigidbody>(mThisHandle)))
 						continue;
 
 					Collider* collider = entry->_getInternal();
 					if (collider == nullptr)
 						continue;
 
-					entry->setRigidbody(mThisHandle, true);
+					entry->setRigidbody(static_object_cast<CRigidbody>(mThisHandle), true);
 					mChildren.push_back(entry);
 
 					collider->setRigidbody(mInternal.get());
@@ -378,13 +378,13 @@ namespace bs
 		if (data.colliders[0] != nullptr)
 		{
 			CCollider* other = (CCollider*)data.colliders[0]->_getOwner(PhysicsOwnerType::Component);
-			output.collider[0] = other->getHandle();
+			output.collider[0] = static_object_cast<CCollider>(other->getHandle());
 		}
 
 		if (data.colliders[1] != nullptr)
 		{
 			CCollider* other = (CCollider*)data.colliders[1]->_getOwner(PhysicsOwnerType::Component);
-			output.collider[1] = other->getHandle();
+			output.collider[1] = static_object_cast<CCollider>(other->getHandle());
 		}
 	}
 
@@ -507,7 +507,7 @@ namespace bs
 		mInternal->setTransform(tfrm.getPosition(), tfrm.getRotation());
 
 		if (mParentJoint != nullptr)
-			mParentJoint->notifyRigidbodyMoved(mThisHandle);
+			mParentJoint->notifyRigidbodyMoved(static_object_cast<CRigidbody>(mThisHandle));
 	}
 
 	RTTITypeBase* CRigidbody::getRTTIStatic()

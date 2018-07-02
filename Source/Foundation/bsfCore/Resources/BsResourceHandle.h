@@ -29,7 +29,12 @@ namespace bs
 	class BS_CORE_EXPORT ResourceHandleBase : public IReflectable
 	{
 	public:
+		ResourceHandleBase(const ResourceHandleBase& other) = default;
+		ResourceHandleBase(ResourceHandleBase&& other) = default;
 		virtual ~ResourceHandleBase();
+
+		ResourceHandleBase& operator=(const ResourceHandleBase& other) = default;
+		ResourceHandleBase& operator=(ResourceHandleBase&& other) = default;
 
 		/**
 		 * Checks if the resource is loaded. Until resource is loaded this handle is invalid and you may not get the 
@@ -126,7 +131,7 @@ namespace bs
 	class BS_CORE_EXPORT TResourceHandleBase<true> : public ResourceHandleBase
 	{
 	public:
-		virtual ~TResourceHandleBase() { }
+		virtual ~TResourceHandleBase() = default;
 
 	protected:
 		void addRef() { };
@@ -146,7 +151,7 @@ namespace bs
 	class BS_CORE_EXPORT TResourceHandleBase<false> : public ResourceHandleBase
 	{
 	public:
-		virtual ~TResourceHandleBase() { }
+		virtual ~TResourceHandleBase() = default;
 
 	protected:
 		void addRef()
@@ -181,15 +186,19 @@ namespace bs
 	class TResourceHandle : public TResourceHandleBase<WeakHandle>
 	{
 	public:
-		TResourceHandle()
-		{ }
+		using TResourceHandleBase<WeakHandle>::TResourceHandleBase;
+
+		TResourceHandle() = default;
 
 		/**	Copy constructor. */
-		TResourceHandle(const TResourceHandle<T, WeakHandle>& ptr)
+		TResourceHandle(const TResourceHandle& other)
 		{
-			this->mData = ptr.getHandleData();
+			this->mData = other.getHandleData();
 			this->addRef();
 		}
+
+		/** Move constructor. */
+		TResourceHandle(TResourceHandle&& other) noexcept = default;
 
 		virtual ~TResourceHandle()
 		{
@@ -228,10 +237,22 @@ namespace bs
 			return *this;
 		}
 
-		/**	Normal assignment operator. */
+		/**	Copy assignment. */
 		TResourceHandle<T, WeakHandle>& operator=(const TResourceHandle<T, WeakHandle>& rhs)
 		{ 	
 			setHandleData(rhs.getHandleData());
+			return *this;
+		}
+
+		/**	Move assignment. */
+		TResourceHandle& operator=(TResourceHandle&& other) noexcept
+		{
+			if(this->mData == other.mData)
+				return *this;
+
+			this->releaseRef();
+			this->mData = std::exchange(other.mData, nullptr);
+
 			return *this;
 		}
 

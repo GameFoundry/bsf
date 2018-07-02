@@ -29,14 +29,11 @@ namespace bs
 	/**	Internal data shared between GameObject handles. */
 	struct BS_CORE_EXPORT GameObjectHandleData
 	{
-		GameObjectHandleData()
-			:mPtr(nullptr)
-		{ }
+		GameObjectHandleData() = default;
 
-		GameObjectHandleData(const SPtr<GameObjectInstanceData>& ptr)
-		{
-			mPtr = ptr;
-		}
+		GameObjectHandleData(SPtr<GameObjectInstanceData> ptr)
+			:mPtr(std::move(ptr))
+		{ }
 
 		SPtr<GameObjectInstanceData> mPtr;
 	};
@@ -112,7 +109,7 @@ namespace bs
 		 */
 
 		/** Returns internal handle data. */
-		SPtr<GameObjectHandleData> _getHandleData() const { return mData; }
+		const SPtr<GameObjectHandleData>& _getHandleData() const { return mData; }
 
 		/** Resolves a handle to a proper GameObject in case it was created uninitialized. */
 		void _resolve(const GameObjectHandleBase& object);
@@ -128,8 +125,8 @@ namespace bs
 		template<class _Ty1, class _Ty2>
 		friend bool operator==(const GameObjectHandle<_Ty1>& _Left, const GameObjectHandle<_Ty2>& _Right);
 
-		GameObjectHandleBase(const SPtr<GameObject> ptr);
-		GameObjectHandleBase(const SPtr<GameObjectHandleData>& data);
+		GameObjectHandleBase(const SPtr<GameObject>& ptr);
+		GameObjectHandleBase(SPtr<GameObjectHandleData> data);
 		GameObjectHandleBase(std::nullptr_t ptr);
 
 		/**	Throws an exception if the referenced GameObject has been destroyed. */
@@ -153,7 +150,7 @@ namespace bs
 	public:
 		friend class GameObjectHandleRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/** @} */
@@ -179,19 +176,10 @@ namespace bs
 		}
 
 		/**	Copy constructor from another handle of the same type. */
-		template <typename T1>
-		GameObjectHandle(const GameObjectHandle<T1>& ptr)
-			:GameObjectHandleBase()
-		{ 	
-			mData = ptr._getHandleData();
-		}
+		GameObjectHandle(const GameObjectHandle<T>& ptr) = default;
 
-		/**	Copy constructor from another handle of the base type. */
-		GameObjectHandle(const GameObjectHandleBase& ptr)
-			:GameObjectHandleBase()
-		{ 	
-			mData = ptr._getHandleData();
-		}
+		/**	Move constructor from another handle of the same type. */
+		GameObjectHandle(GameObjectHandle<T>&& ptr) noexcept = default;
 
 		/**	Invalidates the handle. */
 		GameObjectHandle<T>& operator=(std::nullptr_t ptr)
@@ -200,6 +188,12 @@ namespace bs
 
 			return *this;
 		}
+
+		/** Copy assignment */
+		GameObjectHandle<T>& operator=(const GameObjectHandle<T>& other) = default;
+
+		/** Move assignment */
+		GameObjectHandle<T>& operator=(GameObjectHandle<T>&& other) noexcept = default;
 
 		/**
 		 * Returns a pointer to the referenced GameObject.
@@ -263,13 +257,31 @@ namespace bs
 		}
 
 		/** @} */
+
+	protected:
+		template<class _Ty1, class _Ty2>
+		friend GameObjectHandle<_Ty1> static_object_cast(const GameObjectHandle<_Ty2>& other);
+
+		template<class T>
+		friend GameObjectHandle<T> static_object_cast(const GameObjectHandleBase& other);
+
+		GameObjectHandle(SPtr<GameObjectHandleData> data)
+			:GameObjectHandleBase(std::move(data))
+		{ }
 	};
 
 	/**	Casts one GameObject handle type to another. */
 	template<class _Ty1, class _Ty2>
-		GameObjectHandle<_Ty1> static_object_cast(const GameObjectHandle<_Ty2>& other)
+	GameObjectHandle<_Ty1> static_object_cast(const GameObjectHandle<_Ty2>& other)
 	{	
-		return GameObjectHandle<_Ty1>(other);
+		return GameObjectHandle<_Ty1>(other._getHandleData());
+	}
+
+	/**	Casts a generic GameObject handle to a specific one . */
+	template<class T>
+	GameObjectHandle<T> static_object_cast(const GameObjectHandleBase& other)
+	{	
+		return GameObjectHandle<T>(other._getHandleData());
 	}
 
 	/**	Compares if two handles point to the same GameObject. */

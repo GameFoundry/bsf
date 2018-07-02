@@ -340,7 +340,7 @@ namespace bs
 			updateSceneObjectMapping();
 
 		if (mAnimatedRenderable != nullptr)
-			mAnimatedRenderable->_registerAnimation(mThisHandle);
+			mAnimatedRenderable->_registerAnimation(static_object_cast<CAnimation>(mThisHandle));
 	}
 
 	void CAnimation::destroyInternal()
@@ -411,19 +411,19 @@ namespace bs
 		mInternal->unmapSceneObject(so);
 	}
 
-	void CAnimation::_addBone(const HBone& bone)
+	void CAnimation::_addBone(HBone bone)
 	{
-		HSceneObject currentSO = bone->SO();
+		const HSceneObject& currentSO = bone->SO();
 
 		SceneObjectMappingInfo newMapping;
 		newMapping.sceneObject = currentSO;
 		newMapping.isMappedToBone = true;
-		newMapping.bone = bone;
+		newMapping.bone = std::move(bone);
 
 		mMappingInfos.push_back(newMapping);
 
 		if(mInternal)
-			mInternal->mapCurveToSceneObject(bone->getBoneName(), newMapping.sceneObject);
+			mInternal->mapCurveToSceneObject(newMapping.bone->getBoneName(), newMapping.sceneObject);
 	}
 
 	void CAnimation::_removeBone(const HBone& bone)
@@ -606,7 +606,7 @@ namespace bs
 			HBone bone = currentSO->getComponent<CBone>();
 			if (bone != nullptr)
 			{
-				bone->_setParent(getHandle(), true);
+				bone->_setParent(static_object_cast<CAnimation>(getHandle()), true);
 				bones.push_back(bone);
 			}
 

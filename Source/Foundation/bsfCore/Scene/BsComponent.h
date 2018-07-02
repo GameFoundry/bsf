@@ -18,7 +18,7 @@ namespace bs
 		/** 
 		 * Ensures that scene manager cannot pause or stop component callbacks from executing. Off by default. 
 		 * Note that this flag must be specified on component creation, in its constructor and any later changes
-		 * to the flag will be ignored.
+		 * to the flag could be ignored.
 		 */
 		AlwaysRun = 1 
 	};
@@ -29,8 +29,9 @@ namespace bs
 	/** 
 	 * Components represent primary logic elements in the scene. They are attached to scene objects. 
 	 *
-	 * You should implement some or all of update/onCreated/onInitialized/onEnabled/onDisabled/onTransformChanged/
-	 * onDestroyed methods to implement the relevant component logic. Avoid putting logic in constructors or destructors.
+	 * You should implement some or all of update/fixedUpdate/onCreated/onInitialized/onEnabled/onDisabled/
+	 * onTransformChanged/onDestroyed methods to implement the relevant component logic. Avoid putting logic in constructors
+	 * or destructors.
 	 *
 	 * Components can be in different states. These states control which of the events listed above trigger:
 	 *  - Running - Scene manager is sending out events.  
@@ -49,13 +50,13 @@ namespace bs
 	{
 	public:
 		/**	Returns the SceneObject this Component is assigned to. */
-		HSceneObject sceneObject() const { return mParent; }
+		const HSceneObject& sceneObject() const { return mParent; }
 
 		/** @copydoc sceneObject */
-		HSceneObject SO() const { return sceneObject(); }
+		const HSceneObject& SO() const { return sceneObject(); }
 
 		/**	Returns a handle to this object. */
-		HComponent getHandle() const { return mThisHandle; }
+		const HComponent& getHandle() const { return mThisHandle; }
 
 		/** Called once per frame. Only called if the component is in Running state. */
 		virtual void update() { }
@@ -115,7 +116,7 @@ namespace bs
 		friend class SceneObject;
 		friend class SceneObjectRTTI;
 
-		Component(const HSceneObject& parent);
+		Component(HSceneObject parent);
 		virtual ~Component();
 
 		/** Called once when the component has been created. Called regardless of the state the component is in. */
@@ -173,15 +174,15 @@ namespace bs
 		 *
 		 * @note	Unlike destroy(), does not remove the component from its parent.
 		 */
-		void destroyInternal(GameObjectHandleBase& handle, bool immediate = false) override;
+		void destroyInternal(GameObjectHandleBase& handle, bool immediate) override;
 	private:
 		Component(const Component& other) { }
 
 	protected:
 		HComponent mThisHandle;
-		TransformChangedFlags mNotifyFlags;
+		TransformChangedFlags mNotifyFlags = TCF_None;
 		ComponentFlags mFlags;
-		UINT32 mSceneManagerId;
+		UINT32 mSceneManagerId = 0;
 
 	private:
 		HSceneObject mParent;
@@ -195,7 +196,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		Component(); // Serialization only
+		Component() = default; // Serialization only
 	};
 
 	/** @} */

@@ -365,7 +365,7 @@ namespace bs
 		{
 			CCollider* component = (CCollider*)output.colliderRaw->_getOwner(PhysicsOwnerType::Component);
 			if (component != nullptr)
-				output.collider = component->getHandle();
+				output.collider = static_object_cast<CCollider>(component->getHandle());
 		}
 	}
 
@@ -382,7 +382,7 @@ namespace bs
 		{
 			CCollider* component = (CCollider*)output.colliderRaw->_getOwner(PhysicsOwnerType::Component);
 			if (component != nullptr)
-				output.collider = component->getHandle();
+				output.collider = static_object_cast<CCollider>(component->getHandle());
 		}
 	}
 

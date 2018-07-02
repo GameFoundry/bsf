@@ -6,12 +6,8 @@
 
 namespace bs
 {
-	Component::Component()
-		:mNotifyFlags(TCF_None), mSceneManagerId(-1)
-	{ }
-
-	Component::Component(const HSceneObject& parent)
-		:mNotifyFlags(TCF_None), mSceneManagerId(-1), mParent(parent)
+	Component::Component(HSceneObject parent)
+		:mParent(std::move(parent))
 	{
 		setName("Component");
 	}

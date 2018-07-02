@@ -47,7 +47,7 @@ namespace bs
 		if (mAnimation != nullptr)
 		{
 			_registerAnimation(mAnimation);
-			mAnimation->_registerRenderable(mThisHandle);
+			mAnimation->_registerRenderable(static_object_cast<CRenderable>(mThisHandle));
 		}
 	}
 

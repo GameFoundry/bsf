@@ -487,11 +487,11 @@ namespace bs
 				std::forward<Args>(args)...),
 				&bs_delete<T>, StdAlloc<T>());
 
-			GameObjectHandle<T> newComponent =
-				GameObjectManager::instance().registerObject(gameObject);
+			const HComponent newComponent =
+				static_object_cast<Component>(GameObjectManager::instance().registerObject(gameObject));
 
 			addAndInitializeComponent(newComponent);
-			return newComponent;
+			return static_object_cast<T>(newComponent);
 		}
 
 		/** 
@@ -541,7 +541,7 @@ namespace bs
 			for (auto entry : mComponents)
 			{
 				if (entry->getRTTI()->isDerivedFrom(T::getRTTIStatic()))
-					output.push_back(entry);
+					output.push_back(static_object_cast<T>(entry));
 			}
 
 			return output;
@@ -618,13 +618,13 @@ namespace bs
 		}
 
 		/**	Adds the component to the internal component array. */
-		void addComponentInternal(const SPtr<Component> component);
+		void addComponentInternal(const SPtr<Component>& component);
 
 		/**	Adds the component to the internal component array, and initializes it. */
 		void addAndInitializeComponent(const HComponent& component);
 
 		/**	Adds the component to the internal component array, and initializes it. */
-		void addAndInitializeComponent(const SPtr<Component> component);
+		void addAndInitializeComponent(const SPtr<Component>& component);
 
 		Vector<HComponent> mComponents;
 

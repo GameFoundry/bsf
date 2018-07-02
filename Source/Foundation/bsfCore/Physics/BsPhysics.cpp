@@ -65,7 +65,7 @@ namespace bs
 			if (component == nullptr)
 				continue;
 
-			output.push_back(component->getHandle());
+			output.push_back(static_object_cast<CCollider>(component->getHandle()));
 		}
 
 		return output;
