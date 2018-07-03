@@ -9,11 +9,11 @@
 
 namespace bs
 {
-	GameObjectHandleBase::GameObjectHandleBase(const SPtr<GameObjectHandleData>& data)
-		:mData(data)
+	GameObjectHandleBase::GameObjectHandleBase(SPtr<GameObjectHandleData> data)
+		:mData(std::move(data))
 	{ }
 
-	GameObjectHandleBase::GameObjectHandleBase(const SPtr<GameObject> ptr)
+	GameObjectHandleBase::GameObjectHandleBase(const SPtr<GameObject>& ptr)
 	{
 		mData = bs_shared_ptr_new<GameObjectHandleData>(ptr->mInstanceData);
 	}

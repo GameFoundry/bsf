@@ -13,7 +13,7 @@
 
 namespace bs
 {
-	/** @addtogroup Animation-Internal
+	/** @addtogroup Animation 
 	 *  @{
 	 */
 
@@ -23,20 +23,6 @@ namespace bs
 		Loop, /**< Loop around to the beginning/end when the last/first frame is reached. */
 		Clamp /**< Clamp to end/beginning, keeping the last/first frame active. */
 	};
-
-	/** Flags that determine which portion of Animation was changed and needs to be updated. */
-	enum class AnimDirtyStateFlag
-	{
-		Clean = 0,
-		Value = 1 << 0,
-		Layout = 1 << 1,
-		All = 1 << 2,
-		Culling = 1 << 3,
-		MorphWeights = 1 << 4
-	};
-
-	typedef Flags<AnimDirtyStateFlag> AnimDirtyState;
-	BS_FLAGS_OPERATORS(AnimDirtyStateFlag)
 
 	/** Contains information about a currently playing animation clip. */
 	struct BS_SCRIPT_EXPORT(pl:true,m:Animation) AnimationClipState
@@ -57,6 +43,26 @@ namespace bs
 		bool stopped = false;
 	};
 
+	/** @} */
+
+	/** @addtogroup Animation-Internal
+	 *  @{
+	 */
+
+	/** Flags that determine which portion of Animation was changed and needs to be updated. */
+	enum class AnimDirtyStateFlag
+	{
+		Clean = 0,
+		Value = 1 << 0,
+		Layout = 1 << 1,
+		All = 1 << 2,
+		Culling = 1 << 3,
+		MorphWeights = 1 << 4
+	};
+
+	typedef Flags<AnimDirtyStateFlag> AnimDirtyState;
+	BS_FLAGS_OPERATORS(AnimDirtyStateFlag)
+
 	/** Type of playback for animation clips. */
 	enum class AnimPlaybackType
 	{
@@ -66,6 +72,19 @@ namespace bs
 		Sampled,
 		/** Do not play the animation. */
 		None
+	};
+
+	/** Steps used for progressing through the animation when it is being sampled a single frame. */
+	enum class AnimSampleStep
+	{
+		/** No sample. Either no playback at all or normal playback. */
+		None,
+
+		/** Sample is being done this frame. */
+		Frame,
+
+		/** Sample has been performed some previous frame. */
+		Done
 	};
 
 	/** Internal information about a single playing animation clip within Animation. */
@@ -248,6 +267,9 @@ namespace bs
 		// Culling
 		AABox mBounds;
 		bool mCullEnabled;
+
+		// Single frame sample
+		AnimSampleStep sampleStep = AnimSampleStep::None;
 
 		// Evaluation results
 		LocalSkeletonPose skeletonPose;
@@ -519,6 +541,7 @@ namespace bs
 		UnorderedMap<UINT64, AnimatedSceneObject> mSceneObjects;
 		Vector<float> mGenericCurveOutputs;
 		bool mGenericCurveValuesValid;
+		AnimSampleStep mSampleStep = AnimSampleStep::None;
 
 		// Animation thread only
 		SPtr<AnimationProxy> mAnimProxy;

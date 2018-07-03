@@ -162,7 +162,7 @@ namespace bs
 		 * Registers a new bone component, creating a new transform mapping from the bone name to the scene object the
 		 * component is attached to. 
 		 */
-		void _addBone(const HBone& bone);
+		void _addBone(HBone bone);
 
 		/** Unregisters a bone component, removing the bone -> scene object mapping. */
 		void _removeBone(const HBone& bone);

@@ -117,7 +117,7 @@ namespace bs
 	{
 		mObjects.erase(object->getInstanceId());
 
-		onDestroyed(object);
+		onDestroyed(static_object_cast<GameObject>(object));
 		object.destroy();
 	}
 

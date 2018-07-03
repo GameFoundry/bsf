@@ -50,7 +50,7 @@ namespace bs
 		mBodies[(int)body] = value;
 
 		if (value != nullptr)
-			mBodies[(int)body]->_setJoint(mThisHandle);
+			mBodies[(int)body]->_setJoint(static_object_cast<CJoint>(mThisHandle));
 
 		// If joint already exists, destroy it if we removed all bodies, otherwise update its transform
 		if(mInternal != nullptr)

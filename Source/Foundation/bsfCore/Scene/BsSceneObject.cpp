@@ -46,7 +46,8 @@ namespace bs
 		SPtr<SceneObject> sceneObjectPtr = SPtr<SceneObject>(new (bs_alloc<SceneObject>()) SceneObject(name, flags),
 			&bs_delete<SceneObject>, StdAlloc<SceneObject>());
 
-		HSceneObject sceneObject = GameObjectManager::instance().registerObject(sceneObjectPtr);
+		HSceneObject sceneObject = static_object_cast<SceneObject>(
+			GameObjectManager::instance().registerObject(sceneObjectPtr));
 		sceneObject->mThisHandle = sceneObject;
 
 		return sceneObject;
@@ -54,7 +55,8 @@ namespace bs
 
 	HSceneObject SceneObject::createInternal(const SPtr<SceneObject>& soPtr, UINT64 originalId)
 	{
-		HSceneObject sceneObject = GameObjectManager::instance().registerObject(soPtr, originalId);
+		HSceneObject sceneObject = static_object_cast<SceneObject>(
+			GameObjectManager::instance().registerObject(soPtr, originalId));
 		sceneObject->mThisHandle = sceneObject;
 
 		return sceneObject;
@@ -812,16 +814,17 @@ namespace bs
 		}
 
 		SPtr<Component> componentPtr = std::static_pointer_cast<Component>(newObj);
-		HComponent newComponent = GameObjectManager::instance().registerObject(componentPtr);
+		HComponent newComponent = static_object_cast<Component>(GameObjectManager::instance().registerObject(componentPtr));
 		newComponent->mParent = mThisHandle;
 
 		addAndInitializeComponent(newComponent);
 		return newComponent;
 	}
 
-	void SceneObject::addComponentInternal(const SPtr<Component> component)
+	void SceneObject::addComponentInternal(const SPtr<Component>& component)
 	{
-		GameObjectHandle<Component> newComponent = GameObjectManager::instance().getObject(component->getInstanceId());
+		HComponent newComponent = static_object_cast<Component>(
+			GameObjectManager::instance().getObject(component->getInstanceId()));
 		newComponent->mParent = mThisHandle;
 		newComponent->mThisHandle = newComponent;
 
@@ -841,9 +844,10 @@ namespace bs
 		}
 	}
 
-	void SceneObject::addAndInitializeComponent(const SPtr<Component> component)
+	void SceneObject::addAndInitializeComponent(const SPtr<Component>& component)
 	{
-		GameObjectHandle<Component> newComponent = GameObjectManager::instance().getObject(component->getInstanceId());
+		HComponent newComponent = static_object_cast<Component>(
+			GameObjectManager::instance().getObject(component->getInstanceId()));
 		newComponent->mParent = mThisHandle;
 
 		addAndInitializeComponent(newComponent);

@@ -14,6 +14,7 @@ namespace bs
 		setName("Bone");
 
 		mNotifyFlags = TCF_Parent;
+		setFlag(ComponentFlag::AlwaysRun, true);
 	}
 
 	CBone::CBone(const HSceneObject& parent)
@@ -32,13 +33,13 @@ namespace bs
 		mBoneName = name;
 
 		if (mParent != nullptr)
-			mParent->_notifyBoneChanged(getHandle());
+			mParent->_notifyBoneChanged(static_object_cast<CBone>(getHandle()));
 	}
 
 	void CBone::onDestroyed()
 	{
 		if (mParent != nullptr)
-			mParent->_removeBone(getHandle());
+			mParent->_removeBone(static_object_cast<CBone>(getHandle()));
 
 		mParent = nullptr;
 	}
@@ -46,11 +47,11 @@ namespace bs
 	void CBone::onDisabled()
 	{
 		if (mParent != nullptr)
-			mParent->_removeBone(getHandle());
+			mParent->_removeBone(static_object_cast<CBone>(getHandle()));
 
 		mParent = nullptr;
 	}
-
+	
 	void CBone::onEnabled()
 	{
 		updateParentAnimation();
@@ -95,10 +96,10 @@ namespace bs
 		if (!isInternal)
 		{
 			if (mParent != nullptr)
-				mParent->_removeBone(getHandle());
+				mParent->_removeBone(static_object_cast<CBone>(getHandle()));
 
 			if (animation != nullptr)
-				animation->_addBone(getHandle());
+				animation->_addBone(static_object_cast<CBone>(getHandle()));
 		}
 
 		mParent = animation;

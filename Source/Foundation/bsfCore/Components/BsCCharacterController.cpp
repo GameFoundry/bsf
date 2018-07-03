@@ -4,6 +4,7 @@
 #include "Scene/BsSceneObject.h"
 #include "Physics/BsCollider.h"
 #include "Private/RTTI/BsCCharacterControllerRTTI.h"
+#include "BsCCollider.h"
 
 using namespace std::placeholders;
 
@@ -200,8 +201,13 @@ namespace bs
 	void CCharacterController::triggerOnColliderHit(const ControllerColliderCollision& value)
 	{
 		// Const-cast and modify is okay because we're the only object receiving this event
-		ControllerColliderCollision& hit = const_cast<ControllerColliderCollision&>(value);
-		hit.collider = mThisHandle;
+		auto& hit = const_cast<ControllerColliderCollision&>(value);
+
+		if(hit.colliderRaw)
+		{
+			const auto collider = (CCollider*)hit.colliderRaw->_getOwner(PhysicsOwnerType::Component);
+			hit.collider = static_object_cast<CCollider>(collider->getHandle());
+		}
 
 		onColliderHit(hit);
 	}
@@ -210,7 +216,12 @@ namespace bs
 	{
 		// Const-cast and modify is okay because we're the only object receiving this event
 		ControllerControllerCollision& hit = const_cast<ControllerControllerCollision&>(value);
-		hit.controller = mThisHandle;
+
+		if(hit.controllerRaw)
+		{
+			const auto controller = (CCharacterController*)hit.controllerRaw->_getOwner(PhysicsOwnerType::Component);
+			hit.controller = static_object_cast<CCharacterController>(controller->getHandle());
+		}
 
 		onControllerHit(hit);
 	}
