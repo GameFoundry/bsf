@@ -1406,10 +1406,7 @@ namespace bs { namespace ct
 		mapInfo.depthBias = getDepthBias(*light, light->getBounds().getRadius(), mapInfo.depthRange, options.mapSize);
 		mapInfo.subjectBounds = light->getBounds();
 
-		Quaternion lightRotation(BsIdentity);
-		lightRotation.lookRotation(-light->getTransform().getRotation().zAxis());
-
-		Matrix4 view = Matrix4::view(rendererLight.getShiftedLightPosition(), lightRotation);
+		Matrix4 view = Matrix4::view(rendererLight.getShiftedLightPosition(), light->getTransform().getRotation());
 		Matrix4 proj = Matrix4::projectionPerspective(light->getSpotAngle(), 1.0f, 0.05f, light->getAttenuationRadius());
 
 		ConvexVolume localFrustum = ConvexVolume(proj);
