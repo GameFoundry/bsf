@@ -168,7 +168,7 @@ namespace bs
 		UINT32 mReportHeadPos;
 		UINT32 mReportCount;
 
-		PoolAlloc<sizeof(ProfiledSample)> mSamplePool;
+		PoolAlloc<sizeof(ProfiledSample), 256> mSamplePool;
 
 		mutable Stack<SPtr<ct::TimerQuery>> mFreeTimerQueries;
 		mutable Stack<SPtr<ct::OcclusionQuery>> mFreeOcclusionQueries;

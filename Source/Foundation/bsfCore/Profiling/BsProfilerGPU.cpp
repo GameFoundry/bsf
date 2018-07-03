@@ -18,6 +18,14 @@ namespace bs
 
 	ProfilerGPU::~ProfilerGPU()
 	{
+		while (!mUnresolvedFrames.empty())
+		{
+			ProfiledSample& frameSample = mUnresolvedFrames.front();
+
+			freeSample(frameSample);
+			mUnresolvedFrames.pop();
+		}
+
 		bs_deleteN(mReadyReports, MAX_QUEUE_ELEMENTS);
 	}
 
