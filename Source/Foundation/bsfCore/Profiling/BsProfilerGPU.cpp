@@ -39,7 +39,7 @@ namespace bs
 
 		mFrameSample = ProfiledSample();
 		mFrameSample.name = "Frame";
-		beginSampleInternal(mFrameSample);
+		beginSampleInternal(mFrameSample, true);
 
 		mIsFrameActive = true;
 	}
@@ -71,7 +71,7 @@ namespace bs
 
 		auto sample = mSamplePool.construct<ProfiledSample>();
 		sample->name = name;
-		beginSampleInternal(*sample);
+		beginSampleInternal(*sample, false);
 
 		if(mActiveSamples.empty())
 			mFrameSample.children.push_back(sample);
@@ -169,14 +169,20 @@ namespace bs
 		sample.children.clear();
 
 		mFreeTimerQueries.push(sample.activeTimeQuery);
-		mFreeOcclusionQueries.push(sample.activeOcclusionQuery);
+
+		if(sample.activeOcclusionQuery)
+			mFreeOcclusionQueries.push(sample.activeOcclusionQuery);
 	}
 
 	void ProfilerGPU::resolveSample(const ProfiledSample& sample, GPUProfileSample& reportSample)
 	{
 		reportSample.name = String(sample.name.c_str());
 		reportSample.timeMs = sample.activeTimeQuery->getTimeMs();
-		reportSample.numDrawnSamples = sample.activeOcclusionQuery->getNumSamples();
+
+		if(sample.activeOcclusionQuery)
+			reportSample.numDrawnSamples = sample.activeOcclusionQuery->getNumSamples();
+		else
+			reportSample.numDrawnSamples = 0;
 
 		reportSample.numDrawCalls = (UINT32)(sample.endStats.numDrawCalls - sample.startStats.numDrawCalls);
 		reportSample.numRenderTargetChanges = (UINT32)(sample.endStats.numRenderTargetChanges - sample.startStats.numRenderTargetChanges);
@@ -205,20 +211,26 @@ namespace bs
 		}
 	}
 
-	void ProfilerGPU::beginSampleInternal(ProfiledSample& sample)
+	void ProfilerGPU::beginSampleInternal(ProfiledSample& sample, bool issueOcclusion)
 	{
 		sample.startStats = RenderStats::instance().getData();
 		sample.activeTimeQuery = getTimerQuery();
 		sample.activeTimeQuery->begin();
 
-		sample.activeOcclusionQuery = getOcclusionQuery();
-		sample.activeOcclusionQuery->begin();
+		if(issueOcclusion)
+		{
+			sample.activeOcclusionQuery = getOcclusionQuery();
+			sample.activeOcclusionQuery->begin();
+		}
 	}
 
 	void ProfilerGPU::endSampleInternal(ProfiledSample& sample)
 	{
 		sample.endStats = RenderStats::instance().getData();
-		sample.activeOcclusionQuery->end();
+
+		if(sample.activeOcclusionQuery)
+			sample.activeOcclusionQuery->end();
+
 		sample.activeTimeQuery->end();
 	}
 

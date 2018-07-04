@@ -139,7 +139,7 @@ namespace bs
 
 	private:
 		/** Assigns start values for the provided sample. */
-		void beginSampleInternal(ProfiledSample& sample);
+		void beginSampleInternal(ProfiledSample& sample, bool issueOcclusion);
 
 		/**	Assigns end values for the provided sample. */
 		void endSampleInternal(ProfiledSample& sample);
