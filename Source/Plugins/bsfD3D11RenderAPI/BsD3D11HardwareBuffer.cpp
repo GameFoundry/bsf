@@ -193,7 +193,7 @@ namespace bs { namespace ct
 			if (!mpTempStagingBuffer)
 			{
 				// Create another buffer instance but use system memory
-				mpTempStagingBuffer = bs_new<D3D11HardwareBuffer>(mBufferType, mUsage, 1, mSize, std::ref(mDevice), true);
+				mpTempStagingBuffer = bs_new<D3D11HardwareBuffer>(mBufferType, GBU_STATIC, 1, mSize, std::ref(mDevice), true);
 			}
 
 			// Schedule a copy to the staging

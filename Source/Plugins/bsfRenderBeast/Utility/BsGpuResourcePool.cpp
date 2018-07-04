@@ -127,6 +127,7 @@ namespace bs { namespace ct
 		bufferDesc.elementSize = desc.elementSize;
 		bufferDesc.elementCount = desc.numElements;
 		bufferDesc.format = desc.format;
+		bufferDesc.usage = desc.usage;
 		bufferDesc.randomGpuWrite = true;
 
 		newBufferData->buffer = GpuBuffer::create(bufferDesc);
@@ -181,6 +182,9 @@ namespace bs { namespace ct
 				match = props.getFormat() == desc.format;
 			else // Structured
 				match = props.getElementSize() == desc.elementSize;
+
+			if(match)
+				match = props.getUsage() == desc.usage;
 		}
 
 		return match;
@@ -260,24 +264,28 @@ namespace bs { namespace ct
 		return desc;
 	}
 
-	POOLED_STORAGE_BUFFER_DESC POOLED_STORAGE_BUFFER_DESC::createStandard(GpuBufferFormat format, UINT32 numElements)
+	POOLED_STORAGE_BUFFER_DESC POOLED_STORAGE_BUFFER_DESC::createStandard(GpuBufferFormat format, UINT32 numElements,
+		GpuBufferUsage usage)
 	{
 		POOLED_STORAGE_BUFFER_DESC desc;
 		desc.type = GBT_STANDARD;
 		desc.format = format;
 		desc.numElements = numElements;
 		desc.elementSize = 0;
+		desc.usage = usage;
 
 		return desc;
 	}
 
-	POOLED_STORAGE_BUFFER_DESC POOLED_STORAGE_BUFFER_DESC::createStructured(UINT32 elementSize, UINT32 numElements)
+	POOLED_STORAGE_BUFFER_DESC POOLED_STORAGE_BUFFER_DESC::createStructured(UINT32 elementSize, UINT32 numElements,
+		GpuBufferUsage usage)
 	{
 		POOLED_STORAGE_BUFFER_DESC desc;
 		desc.type = GBT_STRUCTURED;
 		desc.format = BF_UNKNOWN;
 		desc.numElements = numElements;
 		desc.elementSize = elementSize;
+		desc.usage = usage;
 
 		return desc;
 	}

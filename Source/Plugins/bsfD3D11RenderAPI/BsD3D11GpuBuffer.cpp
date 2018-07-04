@@ -54,13 +54,12 @@ namespace bs { namespace ct
 		mBuffer = bs_new<D3D11HardwareBuffer>(bufferType, props.getUsage(), props.getElementCount(), props.getElementSize(),
 			d3d11rs->getPrimaryDevice(), false, false, props.getRandomGpuWrite(), props.getUseCounter());
 
-		SPtr<D3D11GpuBuffer> thisPtr = std::static_pointer_cast<D3D11GpuBuffer>(getThisPtr());
 		UINT32 usage = GVU_DEFAULT;
 		if (props.getRandomGpuWrite())
 			usage |= GVU_RANDOMWRITE;
 
 		// Keep a single view of the entire buffer, we don't support views of sub-sets (yet)
-		mBufferView = requestView(thisPtr, 0, props.getElementCount(), (GpuViewUsage)usage);
+		mBufferView = requestView(this, 0, props.getElementCount(), (GpuViewUsage)usage);
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuBuffer);
 
@@ -117,8 +116,8 @@ namespace bs { namespace ct
 		return mBuffer->getD3DBuffer(); 
 	}
 
-	GpuBufferView* D3D11GpuBuffer::requestView(const SPtr<D3D11GpuBuffer>& buffer, UINT32 firstElement,
-		UINT32 numElements, GpuViewUsage usage)
+	GpuBufferView* D3D11GpuBuffer::requestView(D3D11GpuBuffer* buffer, UINT32 firstElement, UINT32 numElements, 
+		GpuViewUsage usage)
 	{
 		const auto& props = buffer->getProperties();
 
@@ -146,7 +145,7 @@ namespace bs { namespace ct
 
 	void D3D11GpuBuffer::releaseView(GpuBufferView* view)
 	{
-		SPtr<D3D11GpuBuffer> buffer = view->getBuffer();
+		D3D11GpuBuffer* buffer = view->getBuffer();
 
 		auto iterFind = buffer->mBufferViews.find(view->getDesc());
 		if (iterFind == buffer->mBufferViews.end())

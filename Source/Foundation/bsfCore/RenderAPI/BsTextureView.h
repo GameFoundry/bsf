@@ -27,7 +27,7 @@ namespace bs
 		/**
 		 * First array slice the view binds to. This will be array index for 1D and 2D array textures, texture slice index 
 		 * for 3D textures, and face index for cube textures(cube index * 6).
- 		 */
+		 */
 		UINT32 firstArraySlice;
 
 		/**

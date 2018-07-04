@@ -44,18 +44,16 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_ResourceView);
 	}
 
-	void GpuBufferView::initialize(const SPtr<D3D11GpuBuffer>& buffer, GPU_BUFFER_VIEW_DESC& desc)
+	void GpuBufferView::initialize(D3D11GpuBuffer* buffer, GPU_BUFFER_VIEW_DESC& desc)
 	{
 		mBuffer = buffer;
 		mDesc = desc;
 
-		D3D11GpuBuffer* d3d11GpuBuffer = static_cast<D3D11GpuBuffer*>(buffer.get());
-
 		if ((desc.usage & GVU_DEFAULT) != 0)
-			mSRV = createSRV(d3d11GpuBuffer, desc.firstElement, desc.elementWidth, desc.numElements);
+			mSRV = createSRV(buffer, desc.firstElement, desc.elementWidth, desc.numElements);
 
 		if((desc.usage & GVU_RANDOMWRITE) != 0)
-			mUAV = createUAV(d3d11GpuBuffer, desc.firstElement, desc.numElements, desc.useCounter);
+			mUAV = createUAV(buffer, desc.firstElement, desc.numElements, desc.useCounter);
 
 		if((desc.usage & GVU_RENDERTARGET) != 0 || (desc.usage & GVU_DEPTHSTENCIL) != 0)
 		{

@@ -51,13 +51,13 @@ namespace bs { namespace ct
 		 * Initializes a new buffer view for the specified buffer. Descriptor structure defines which portion of the buffer,
 		 * and how will its contents be represented by the view.
 		 */
-		void initialize(const SPtr<D3D11GpuBuffer>& buffer, GPU_BUFFER_VIEW_DESC& desc);
+		void initialize(D3D11GpuBuffer* buffer, GPU_BUFFER_VIEW_DESC& desc);
 
 		/** Returns a descriptor structure used for creating the view. */
 		const GPU_BUFFER_VIEW_DESC& getDesc() const { return mDesc; }
 
 		/**	Returns the buffer this view was created for. */
-		SPtr<D3D11GpuBuffer> getBuffer() const { return mBuffer; }
+		D3D11GpuBuffer* getBuffer() const { return mBuffer; }
 
 		/** Returns index of first element in the buffer that this view provides access to. */
 		UINT32 getFirstElement() const { return mDesc.firstElement; }
@@ -114,7 +114,7 @@ namespace bs { namespace ct
 		ID3D11UnorderedAccessView* mUAV;
 
 		GPU_BUFFER_VIEW_DESC mDesc;
-		SPtr<D3D11GpuBuffer> mBuffer;
+		D3D11GpuBuffer* mBuffer;
 	};
 
 	/** @} */

@@ -14,8 +14,8 @@ namespace bs { namespace ct
 
 	/**	DirectX 11 implementation of a generic GPU buffer. */
 	class D3D11GpuBuffer : public GpuBuffer
-    {
-    public:
+	{
+	public:
 		~D3D11GpuBuffer();
 
 		/** @copydoc GpuBuffer::lock */
@@ -29,7 +29,7 @@ namespace bs { namespace ct
 		void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) override;
 
 		/** @copydoc GpuBuffer::writeData */
-        void writeData(UINT32 offset, UINT32 length, const void* source,
+		void writeData(UINT32 offset, UINT32 length, const void* source,
 			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
 
 		/** @copydoc GpuBuffer::copyData */
@@ -50,8 +50,8 @@ namespace bs { namespace ct
 		 * @note Only Default and RandomWrite views are supported for this type of buffer. 
 		 */
 		// TODO Low Priority: Perhaps reflect usage flag limitation by having an enum with only the supported two options?
-		static GpuBufferView* requestView(const SPtr<D3D11GpuBuffer>& buffer, UINT32 firstElement, 
-			UINT32 numElements, GpuViewUsage usage);
+		static GpuBufferView* requestView(D3D11GpuBuffer* buffer, UINT32 firstElement, UINT32 numElements, 
+			GpuViewUsage usage);
 
 		/**
 		 * Releases a view created with requestView. 
@@ -96,7 +96,7 @@ namespace bs { namespace ct
 		GpuBufferView* mBufferView;
 
 		UnorderedMap<GPU_BUFFER_VIEW_DESC, GpuBufferReference*, GpuBufferView::HashFunction, GpuBufferView::EqualFunction> mBufferViews;
-    };
+	};
 
 	/** @} */
 }}

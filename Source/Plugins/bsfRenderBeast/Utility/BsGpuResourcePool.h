@@ -203,22 +203,27 @@ namespace bs { namespace ct
 		 *
 		 * @param[in]	format		Format of individual buffer entries.
 		 * @param[in]	numElements	Number of elements in the buffer.
+		 * @param[in]	usage		Usage flag hinting the driver how is buffer going to be used.
 		 */
-		static POOLED_STORAGE_BUFFER_DESC createStandard(GpuBufferFormat format, UINT32 numElements);
+		static POOLED_STORAGE_BUFFER_DESC createStandard(GpuBufferFormat format, UINT32 numElements, 
+			GpuBufferUsage usage = GBU_STATIC);
 
 		/**
 		 * Creates a descriptor for a storage buffer containing structures.
 		 *
 		 * @param[in]	elementSize		Size of a single structure in the buffer.
 		 * @param[in]	numElements		Number of elements in the buffer.
+		 * @param[in]	usage		Usage flag hinting the driver how is buffer going to be used.
 		 */
-		static POOLED_STORAGE_BUFFER_DESC createStructured(UINT32 elementSize, UINT32 numElements);
+		static POOLED_STORAGE_BUFFER_DESC createStructured(UINT32 elementSize, UINT32 numElements,
+			GpuBufferUsage usage = GBU_STATIC);
 
 	private:
 		friend class GpuResourcePool;
 
 		GpuBufferType type;
 		GpuBufferFormat format;
+		GpuBufferUsage usage;
 		UINT32 numElements;
 		UINT32 elementSize;
 	};
