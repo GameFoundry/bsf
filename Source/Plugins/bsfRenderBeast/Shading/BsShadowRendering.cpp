@@ -1406,8 +1406,7 @@ namespace bs { namespace ct
 		mapInfo.depthBias = getDepthBias(*light, light->getBounds().getRadius(), mapInfo.depthRange, options.mapSize);
 		mapInfo.subjectBounds = light->getBounds();
 
-		Quaternion lightRotation(BsIdentity);
-		lightRotation.lookRotation(-light->getTransform().getRotation().zAxis());
+		Quaternion lightRotation = light->getTransform().getRotation();
 
 		Matrix4 view = Matrix4::view(rendererLight.getShiftedLightPosition(), lightRotation);
 		Matrix4 proj = Matrix4::projectionPerspective(light->getSpotAngle(), 1.0f, 0.05f, light->getAttenuationRadius());
@@ -1423,7 +1422,7 @@ namespace bs { namespace ct
 		gShadowParamsDef.gNDCZToDeviceZ.set(shadowParamsBuffer, RendererView::getNDCZToDeviceZ());
 
 		const Vector<Plane>& frustumPlanes = localFrustum.getPlanes();
-		Matrix4 worldMatrix = view.transpose();
+		Matrix4 worldMatrix = view.inverseAffine();
 
 		Vector<Plane> worldPlanes(frustumPlanes.size());
 		UINT32 j = 0;
@@ -1600,7 +1599,7 @@ namespace bs { namespace ct
 				frustums[i] = frustum;
 
 				// Register far plane of all frustums
-				boundingPlanes.push_back(worldPlanes.back());
+				boundingPlanes.push_back(worldPlanes[FRUSTUM_PLANE_FAR]);
 				gShadowCubeMatricesDef.gFaceVPMatrices.set(shadowCubeMatricesBuffer, shadowViewProj, i);
 			}
 			else
