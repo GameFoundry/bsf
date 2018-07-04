@@ -171,12 +171,14 @@ namespace bs { namespace ct
 	{
 		VkImageViewType oldViewType = mImageViewCI.viewType;
 
+		const UINT32 numFaces = surface.numFaces == 0 ? mNumFaces : surface.numFaces;
+
 		switch (oldViewType)
 		{
 		case VK_IMAGE_VIEW_TYPE_CUBE:
-			if(surface.numFaces == 1)
+			if(numFaces == 1)
 				mImageViewCI.viewType = VK_IMAGE_VIEW_TYPE_2D;
-			else if(surface.numFaces % 6 == 0)
+			else if(numFaces % 6 == 0)
 			{
 				if(mNumFaces > 6)
 					mImageViewCI.viewType = VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
@@ -185,12 +187,12 @@ namespace bs { namespace ct
 				mImageViewCI.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
 			break;
 		case VK_IMAGE_VIEW_TYPE_1D:
-			if(surface.numFaces > 1)
+			if(numFaces > 1)
 				mImageViewCI.viewType = VK_IMAGE_VIEW_TYPE_1D_ARRAY;
 			break;
 		case VK_IMAGE_VIEW_TYPE_2D:
 		case VK_IMAGE_VIEW_TYPE_3D:
-			if (surface.numFaces > 1)
+			if (numFaces > 1)
 				mImageViewCI.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
 			break;
 		default:
