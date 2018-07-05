@@ -13,37 +13,7 @@
 namespace bs
 {
 	class Random;
-
-	/** @addtogroup Particles-Internal 
-	 *  @{
-	 */
-
 	class ParticleSet;
-
-	/** Contains particle emitter state that varies from frame to frame. */
-	struct ParticleEmitterState
-	{
-		/** Emitter state relevant for skinned mesh emitter shape. */
-		struct SkinnedMesh
-		{
-			Matrix4* bones;
-			UINT32 numBones;
-		};
-
-		union
-		{
-			SkinnedMesh skinnedMesh;
-		};
-
-		float time;
-		float length;
-		float timeStep;
-		UINT32 maxParticles;
-		bool worldSpace;
-		Matrix4 transform;
-	};
-
-	/** @} */
 
 	/** @addtogroup Particles
 	 *  @{
@@ -69,7 +39,7 @@ namespace bs
 		 *							sequentially.
 		 */
 		virtual UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const = 0;
+			const ParticleSystemState& state) const = 0;
 
 	protected:
 		ParticleEmitterShape() = default;
@@ -154,7 +124,7 @@ namespace bs
 
 		/** @copydoc ParticleEmitterShape::spawn */
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override;
+			const ParticleSystemState& state) const override;
 
 		/** Spawns a single particle, generating its position and normal. */
 		void spawn(const Random& random, Vector3& position, Vector3& normal) const;
@@ -191,7 +161,7 @@ namespace bs
 
 		/** @copydoc ParticleEmitterShape::spawn */
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override;
+			const ParticleSystemState& state) const override;
 
 		/** Spawns a single particle, generating its position and normal. */
 		void spawn(const Random& random, Vector3& position, Vector3& normal) const;
@@ -256,7 +226,7 @@ namespace bs
 
 		/** @copydoc ParticleEmitterShape::spawn */
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override;
+			const ParticleSystemState& state) const override;
 
 		/** Spawns a single particle, generating its position and normal. */
 		void spawn(const Random& random, Vector3& position, Vector3& normal) const;
@@ -318,7 +288,7 @@ namespace bs
 
 		/** @copydoc ParticleEmitterShape::spawn */
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override;
+			const ParticleSystemState& state) const override;
 
 		/** Spawns a single particle, generating its position and normal. */
 		void spawn(const Random& random, Vector3& position, Vector3& normal) const;
@@ -396,7 +366,7 @@ namespace bs
 		static UPtr<ParticleEmitterShape> create(const PARTICLE_MESH_SHAPE_DESC& desc);
 	protected:
 		/** Evaluates a blend matrix for a vertex at the specified index. */
-		Matrix4 getBlendMatrix(const ParticleEmitterState& state, UINT32 vertexIdx) const;
+		Matrix4 getBlendMatrix(const ParticleSystemState& state, UINT32 vertexIdx) const;
 
 		PARTICLE_MESH_SHAPE_DESC mInfo;
 		UINT8* mVertices;
@@ -526,7 +496,7 @@ namespace bs
 		 * @param[in]	state			Various per-frame information provided by the parent particle system.
 		 * @param[in]	set				Set to which to append new particles to.
 		 */
-		void spawn(Random& random, const ParticleEmitterState& state, ParticleSet& set) const;
+		void spawn(Random& random, const ParticleSystemState& state, ParticleSet& set) const;
 
 	private:
 		// User-visible properties

@@ -10,6 +10,7 @@
 #include "Material/BsMaterial.h"
 #include "Renderer/BsCamera.h"
 #include "Renderer/BsRenderer.h"
+#include "Physics/BsPhysics.h"
 
 namespace bs
 {
@@ -127,25 +128,39 @@ namespace bs
 			return;
 
 		// Spawn new particles
-		ParticleEmitterState emitterState; // TODO - Needs to be populated with skinning information
-		emitterState.time = newTime;
-		emitterState.length = mDuration;
-		emitterState.timeStep = timeStep;
-		emitterState.maxParticles = mMaxParticles;
-		emitterState.worldSpace = mSimulationSpace == ParticleSimulationSpace::World;
-		emitterState.transform = mTransform.getMatrix();
+		ParticleSystemState state; // TODO - Needs to be populated with skinning information
+		state.time = newTime;
+		state.length = mDuration;
+		state.timeStep = timeStep;
+		state.maxParticles = mMaxParticles;
+		state.worldSpace = mSimulationSpace == ParticleSimulationSpace::World;
+		state.localToWorld = mTransform.getMatrix();
+		state.worldToLocal = state.localToWorld.inverseAffine();
 
 		for(auto& emitter : mEmitters)
-			emitter->spawn(mRandom, emitterState, *mParticleSet);
+			emitter->spawn(mRandom, state, *mParticleSet);
 
-		// Simulate
-		for(auto& evolver : mEvolvers)
-			evolver->evolve(newTime, mRandom, *mParticleSet);
-
-		// Update position
 		UINT32 numParticles = mParticleSet->getParticleCount();
 		const ParticleSetData& particles = mParticleSet->getParticles();
 
+		// Apply gravity
+		if(mGravityScale != 0.0f)
+		{
+			// TODO - If the system is analytic don't apply gravity incrementally
+			Vector3 gravity = gPhysics().getGravity() * mGravityScale;
+
+			if(!state.worldSpace)
+				gravity = state.worldToLocal.multiplyDirection(gravity);
+
+			for (UINT32 i = 0; i < numParticles; i++)
+				particles.velocity[i] += gravity * timeStep;
+		}
+
+		// Simulate
+		for(auto& evolver : mEvolvers)
+			evolver->evolve(mRandom, state, *mParticleSet);
+
+		// Update position
 		for(UINT32 i = 0; i < numParticles; i++)
 			particles.position[i] += particles.velocity[i] * timeStep;
 

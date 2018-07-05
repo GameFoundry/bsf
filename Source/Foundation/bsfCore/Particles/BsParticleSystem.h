@@ -243,6 +243,12 @@ namespace bs
 		/** @copydoc setUseAutomaticSeed */
 		bool getUseAutomaticSeed() const { return mUseAutomaticSeed; }
 
+		/** Scales the gravity (as set in the Physics module) and applies it to particles. */
+		void setGravityScale(float scale) { mGravityScale = scale; }
+
+		/** @copydoc setGravityScale */
+		float getGravityScale() const { return mGravityScale; }
+
 		/** 
 		 * Determines the seed to use for the internal random number generator. Allows you to guarantee identical behaviour
 		 * between different runs. Only relevant if automatic seed is disabled.
@@ -314,6 +320,7 @@ namespace bs
 		bool mIsLooping = true;
 		UINT32 mMaxParticles = 2000;
 		bool mUseAutomaticSeed = true;
+		float mGravityScale = 0.0f;
 		UINT32 mManualSeed = 0;
 		HMaterial mMaterial;
 

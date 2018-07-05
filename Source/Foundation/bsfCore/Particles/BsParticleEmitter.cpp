@@ -130,7 +130,7 @@ namespace bs
 
 		/** @copydoc ParticleEmitterShape::spawn */
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override
+			const ParticleSystemState& state) const override
 		{
 			const UINT32 index = particles.allocParticles(count);
 			ParticleSetData& particleData = particles.getParticles();
@@ -163,7 +163,7 @@ namespace bs
 
 		/** @copydoc ParticleEmitterShape::spawn */
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override
+			const ParticleSystemState& state) const override
 		{
 			const UINT32 index = particles.allocParticles(count);
 			ParticleSetData& particleData = particles.getParticles();
@@ -197,7 +197,7 @@ namespace bs
 
 		/** @copydoc ParticleEmitterShape::spawn */
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override
+			const ParticleSystemState& state) const override
 		{
 			const UINT32 index = particles.allocParticles(count);
 			ParticleSetData& particleData = particles.getParticles();
@@ -230,7 +230,7 @@ namespace bs
 
 		/** @copydoc ParticleEmitterShape::spawn */
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override
+			const ParticleSystemState& state) const override
 		{
 			const UINT32 index = particles.allocParticles(count);
 			ParticleSetData& particleData = particles.getParticles();
@@ -286,7 +286,7 @@ namespace bs
 	{ }
 
 	UINT32 ParticleEmitterSphereShape::spawn(const Random& random, ParticleSet& particles, UINT32 count,
-		const ParticleEmitterState& state) const
+		const ParticleSystemState& state) const
 	{
 		const UINT32 index = particles.allocParticles(count);
 		ParticleSetData& particleData = particles.getParticles();
@@ -316,7 +316,7 @@ namespace bs
 	{ }
 
 	UINT32 ParticleEmitterHemisphereShape::spawn(const Random& random, ParticleSet& particles, UINT32 count,
-		const ParticleEmitterState& state) const
+		const ParticleSystemState& state) const
 	{
 		const UINT32 index = particles.allocParticles(count);
 		ParticleSetData& particleData = particles.getParticles();
@@ -355,7 +355,7 @@ namespace bs
 
 		/** @copydoc ParticleEmitterShape::spawn */
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override
+			const ParticleSystemState& state) const override
 		{
 			const UINT32 index = particles.allocParticles(count);
 			ParticleSetData& particleData = particles.getParticles();
@@ -404,7 +404,7 @@ namespace bs
 
 		/** @copydoc ParticleEmitterShape::spawn */
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override
+			const ParticleSystemState& state) const override
 		{
 			const UINT32 index = particles.allocParticles(count);
 			ParticleSetData& particleData = particles.getParticles();
@@ -486,7 +486,7 @@ namespace bs
 
 		/** @copydoc ParticleEmitterShape::spawn */
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override
+			const ParticleSystemState& state) const override
 		{
 			const UINT32 index = particles.allocParticles(count);
 			ParticleSetData& particleData = particles.getParticles();
@@ -569,7 +569,7 @@ namespace bs
 	{ }
 
 	UINT32 ParticleEmitterLineShape::spawn(const Random& random, ParticleSet& particles, UINT32 count,
-		const ParticleEmitterState& state) const
+		const ParticleSystemState& state) const
 	{
 		const UINT32 index = particles.allocParticles(count);
 		ParticleSetData& particleData = particles.getParticles();
@@ -603,7 +603,7 @@ namespace bs
 		using ParticleEmitterCircleShape::ParticleEmitterCircleShape;
 
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override
+			const ParticleSystemState& state) const override
 		{
 			const UINT32 index = particles.allocParticles(count);
 			ParticleSetData& particleData = particles.getParticles();
@@ -631,7 +631,7 @@ namespace bs
 		using ParticleEmitterCircleShape::ParticleEmitterCircleShape;
 
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override
+			const ParticleSystemState& state) const override
 		{
 			const UINT32 index = particles.allocParticles(count);
 			ParticleSetData& particleData = particles.getParticles();
@@ -672,7 +672,7 @@ namespace bs
 	{ }
 
 	UINT32 ParticleEmitterRectShape::spawn(const Random& random, ParticleSet& particles, UINT32 count,
-		const ParticleEmitterState& state) const
+		const ParticleSystemState& state) const
 	{
 		const UINT32 index = particles.allocParticles(count);
 		ParticleSetData& particleData = particles.getParticles();
@@ -709,7 +709,7 @@ namespace bs
 		using ParticleEmitterStaticMeshShape::ParticleEmitterStaticMeshShape;
 
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override
+			const ParticleSystemState& state) const override
 		{
 			const UINT32 index = particles.allocParticles(count);
 			ParticleSetData& particleData = particles.getParticles();
@@ -747,7 +747,7 @@ namespace bs
 		{ }
 
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override
+			const ParticleSystemState& state) const override
 		{
 			const UINT32 index = particles.allocParticles(count);
 			ParticleSetData& particleData = particles.getParticles();
@@ -826,7 +826,7 @@ namespace bs
 		{ }
 
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override
+			const ParticleSystemState& state) const override
 		{
 			const UINT32 index = particles.allocParticles(count);
 			ParticleSetData& particleData = particles.getParticles();
@@ -934,7 +934,7 @@ namespace bs
 		using ParticleEmitterSkinnedMeshShape::ParticleEmitterSkinnedMeshShape;
 
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override
+			const ParticleSystemState& state) const override
 		{
 			const UINT32 index = particles.allocParticles(count);
 			ParticleSetData& particleData = particles.getParticles();
@@ -946,7 +946,7 @@ namespace bs
 			return index;
 		}
 
-		void spawn(const Random& random, const ParticleEmitterState& state, Vector3& position, 
+		void spawn(const Random& random, const ParticleSystemState& state, Vector3& position, 
 			Vector3& normal) const
 		{
 			const UINT32 vertexIdx = random.get() % mNumVertices;
@@ -979,7 +979,7 @@ namespace bs
 		{ }
 
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override
+			const ParticleSystemState& state) const override
 		{
 			const UINT32 index = particles.allocParticles(count);
 			ParticleSetData& particleData = particles.getParticles();
@@ -991,7 +991,7 @@ namespace bs
 			return index;
 		}
 
-		void spawn(const Random& random, const ParticleEmitterState& state, Vector3& position, 
+		void spawn(const Random& random, const ParticleSystemState& state, Vector3& position, 
 			Vector3& normal) const
 		{
 			UINT32 indices[3];
@@ -1071,7 +1071,7 @@ namespace bs
 		{ }
 
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
-			const ParticleEmitterState& state) const override
+			const ParticleSystemState& state) const override
 		{
 			const UINT32 index = particles.allocParticles(count);
 			ParticleSetData& particleData = particles.getParticles();
@@ -1083,7 +1083,7 @@ namespace bs
 			return index;
 		}
 
-		void spawn(const Random& random, const ParticleEmitterState& state, Vector3& position, 
+		void spawn(const Random& random, const ParticleSystemState& state, Vector3& position, 
 			Vector3& normal) const
 		{
 			UINT32 indices[3];
@@ -1151,7 +1151,7 @@ namespace bs
 		}
 	}
 
-	Matrix4 ParticleEmitterSkinnedMeshShape::getBlendMatrix(const ParticleEmitterState& state, UINT32 vertexIdx) const
+	Matrix4 ParticleEmitterSkinnedMeshShape::getBlendMatrix(const ParticleSystemState& state, UINT32 vertexIdx) const
 	{
 		if(state.skinnedMesh.bones)
 		{
@@ -1195,7 +1195,7 @@ namespace bs
 		:mShape(bs_unique_ptr<ParticleEmitterShape>(nullptr))
 	{ }
 
-	void ParticleEmitter::spawn(Random& random, const ParticleEmitterState& state, ParticleSet& set) const
+	void ParticleEmitter::spawn(Random& random, const ParticleSystemState& state, ParticleSet& set) const
 	{
 		if(!mShape)
 			return;
@@ -1284,7 +1284,7 @@ namespace bs
 		if(state.worldSpace)
 		{
 			for (UINT32 i = firstIdx; i < endIdx; i++)
-				particles.position[i] = state.transform.multiplyAffine(particles.position[i]);
+				particles.position[i] = state.localToWorld.multiplyAffine(particles.position[i]);
 		}
 	}
 }
