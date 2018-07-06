@@ -146,6 +146,8 @@ namespace bs
 		/** Registers a new particle evolver. */
 		void addEvolver(UPtr<ParticleEvolver> evolver)
 		{
+			mSortedEvolvers.insert(evolver.get());
+
 			evolver->setParent(this);
 			mEvolvers.push_back(std::move(evolver));
 		}
@@ -205,6 +207,8 @@ namespace bs
 
 			if(iterFind != mEvolvers.end())
 				mEvolvers.erase(iterFind);
+
+			mSortedEvolvers.erase(evolver);
 		}
 
 		/** Starts the particle system. New particles will be emitted and existing particles will be evolved. */
@@ -324,8 +328,11 @@ namespace bs
 		UINT32 mManualSeed = 0;
 		HMaterial mMaterial;
 
-		Vector<UPtr<ParticleEmitter>> mEmitters;
+		typedef std::function<bool(const ParticleEvolver*, const ParticleEvolver*)> EvolverComparison; 
+		Set<ParticleEvolver*, EvolverComparison> mSortedEvolvers;
+
 		Vector<UPtr<ParticleEvolver>> mEvolvers;
+		Vector<UPtr<ParticleEmitter>> mEmitters;
 
 		// Internal state
 		UINT32 mId = 0;

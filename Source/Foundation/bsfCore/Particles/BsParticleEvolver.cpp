@@ -5,6 +5,10 @@
 #include "Image/BsSpriteTexture.h"
 #include "BsParticleSystem.h"
 #include "Material/BsMaterial.h"
+#include "Math/BsRay.h"
+#include "Physics/BsPhysics.h"
+#include "Physics/BsCollider.h"
+#include "Math/BsLineSegment3.h"
 
 namespace bs
 {
@@ -76,23 +80,15 @@ namespace bs
 		}
 	}
 
-	ParticleCollisions::ParticleCollisions(const PARTICLE_COLLISONS_DESC& desc)
-		:mDesc(desc)
-	{
-		mDesc.restitution = std::max(mDesc.restitution, 0.0f);
-		mDesc.dampening = Math::clamp01(mDesc.dampening);
-		mDesc.lifetimeLoss = Math::clamp01(mDesc.lifetimeLoss);
-		mDesc.radius = std::max(mDesc.radius, 0.0f);
-		mDesc.voxelSize = std::max(mDesc.voxelSize, 0.0001f);
-		mDesc.numPreciseRays = std::max(mDesc.numPreciseRays, 1U);
-	}
-
+	/** Information about a particle collision. */
 	struct ParticleHitInfo
 	{
 		Vector3 position;
 		Vector3 normal;
+		UINT32 idx;
 	};
 
+	/** Calculates the new position and velocity after a particle was detected to be colliding. */
 	void calcCollisionResponse(Vector3& position, Vector3& velocity, const ParticleHitInfo& hitInfo, 
 		const PARTICLE_COLLISONS_DESC& desc)
 	{
@@ -112,6 +108,68 @@ namespace bs
 
 		position = hitInfo.position + reflectedPos;
 		velocity = reflectedVel;
+	}
+
+	UINT32 groupRaycast(LineSegment3* segments, ParticleHitInfo* hits, UINT32 numRays, UINT64 layer)
+	{
+		// Calculate bounds of all rays
+		AABox groupBounds = AABox::INF_BOX;
+		for(UINT32 i = 0; i < numRays; i++)
+		{
+			groupBounds.merge(segments[i].start);
+			groupBounds.merge(segments[i].end);
+		}
+
+		Vector<Collider*> hitColliders = gPhysics()._boxOverlap(groupBounds, Quaternion::IDENTITY, layer);
+		if(hitColliders.empty())
+			return 0;
+
+		UINT32 numHits = 0;
+		for(UINT32 i = 0; i < numRays; i++)
+		{
+			float nearestHit = std::numeric_limits<float>::max();
+			ParticleHitInfo hitInfo;
+			hitInfo.idx = i;
+
+			Vector3 diff = segments[i].end - segments[i].start;
+			const float length = diff.length();
+
+			if(Math::approxEquals(length, 0.0f))
+				continue;
+
+			Ray ray;
+			ray.setOrigin(segments[i].start);
+			ray.setDirection(diff / length);
+
+			for(auto& collider : hitColliders)
+			{
+				PhysicsQueryHit queryHit;
+				if(collider->rayCast(ray, queryHit, length))
+				{
+					if(queryHit.distance < nearestHit)
+					{
+						nearestHit = queryHit.distance;
+
+						hitInfo.position = queryHit.point;
+						hitInfo.normal = queryHit.normal;
+					}
+				}
+			}
+
+			if(nearestHit != std::numeric_limits<float>::max())
+				hits[numHits++] = hitInfo;
+		}
+
+		return numHits;
+	}
+
+	ParticleCollisions::ParticleCollisions(const PARTICLE_COLLISONS_DESC& desc)
+		:mDesc(desc)
+	{
+		mDesc.restitution = std::max(mDesc.restitution, 0.0f);
+		mDesc.dampening = Math::clamp01(mDesc.dampening);
+		mDesc.lifetimeLoss = Math::clamp01(mDesc.lifetimeLoss);
+		mDesc.radius = std::max(mDesc.radius, 0.0f);
 	}
 
 	void ParticleCollisions::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set) const
@@ -165,6 +223,7 @@ namespace bs
 					ParticleHitInfo hitInfo;
 					hitInfo.normal = plane.normal;
 					hitInfo.position = position + velocity * rayT;
+					hitInfo.idx = i;
 
 					calcCollisionResponse(position, velocity, hitInfo, mDesc);
 					particles.lifetime[i] -= mDesc.lifetimeLoss * particles.initialLifetime[i];
@@ -178,7 +237,59 @@ namespace bs
 		}
 		else
 		{
-			// TODO
+			const UINT32 rayStart = 0;
+			const UINT32 rayEnd = numParticles;
+			const UINT32 numRays = rayEnd - rayStart;
+
+			const auto segments = bs_stack_alloc<LineSegment3>(numRays);
+			const auto hits = bs_stack_alloc<ParticleHitInfo>(numRays);
+
+			for(UINT32 i = 0; i < numRays; i++)
+			{
+				Vector3& position = particles.position[rayStart + i];
+				Vector3& velocity = particles.velocity[rayStart + i];
+
+				const Vector3 from = position - velocity * state.timeStep;
+				const Vector3 to = position;
+
+				segments[i] = LineSegment3(from, to);
+			}
+
+			if(!state.worldSpace)
+			{
+				for (UINT32 i = 0; i < numRays; i++)
+				{
+					segments[i].start = state.localToWorld.multiplyAffine(segments[i].start);
+					segments[i].end = state.localToWorld.multiplyAffine(segments[i].end);
+				}
+			}
+
+			const UINT32 numHits = groupRaycast(segments, hits, numRays, mDesc.layer);
+
+			if(!state.worldSpace)
+			{
+				for (UINT32 i = 0; i < numHits; i++)
+				{
+					hits[i].position = state.worldToLocal.multiplyAffine(hits[i].position);
+					hits[i].normal = state.worldToLocal.multiplyDirection(hits[i].normal);
+				}
+			}
+
+			for(UINT32 i = 0; i < numHits; i++)
+			{
+				ParticleHitInfo& hitInfo = hits[i];
+				const UINT32 particleIdx = rayStart + hitInfo.idx;
+				
+				Vector3& position = particles.position[particleIdx];
+				Vector3& velocity = particles.velocity[particleIdx];
+
+				calcCollisionResponse(position, velocity, hitInfo, mDesc);
+
+				particles.lifetime[particleIdx] -= mDesc.lifetimeLoss * particles.initialLifetime[particleIdx];
+			}
+
+			bs_stack_free(hits);
+			bs_stack_free(segments);
 		}
 	}
 }

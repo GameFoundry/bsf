@@ -14,9 +14,9 @@ namespace bs
 		const Vector3& org = ray.getOrigin();
 		const Vector3& dir = ray.getDirection();
 
-		Vector3 segDir = mSegment.getEnd() - mSegment.getStart();
+		Vector3 segDir = mSegment.end - mSegment.start;
 		float segExtent = segDir.normalize() * 0.5f;
-		Vector3 segCenter = mSegment.getStart() + segDir * segExtent;
+		Vector3 segCenter = mSegment.start + segDir * segExtent;
 
 		Vector3 basis[3];
 		basis[0] = segDir;

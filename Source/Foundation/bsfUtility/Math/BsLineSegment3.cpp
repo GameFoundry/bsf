@@ -6,7 +6,7 @@
 namespace bs
 {
 	LineSegment3::LineSegment3(const Vector3& start, const Vector3& end)
-		:mStart(start), mEnd(end)
+		: start(start), end(end)
 	{
 
 	}
@@ -16,9 +16,9 @@ namespace bs
 		const Vector3& org = ray.getOrigin();
 		const Vector3& dir = ray.getDirection();
 
-		Vector3 segDir = mEnd - mStart;
+		Vector3 segDir = end - start;
 		float segExtent = segDir.normalize() * 0.5f;
-		Vector3 segCenter = mStart + segDir * segExtent;
+		Vector3 segCenter = start + segDir * segExtent;
 
 		Vector3 diff = org - segCenter;
 		float a01 = -dir.dot(segDir);

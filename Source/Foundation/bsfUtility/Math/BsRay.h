@@ -22,10 +22,10 @@ namespace bs
 		{ }
 
 		void setOrigin(const Vector3& origin) { mOrigin = origin; } 
-		const Vector3& getOrigin(void) const { return mOrigin; } 
+		const Vector3& getOrigin() const { return mOrigin; } 
 
 		void setDirection(const Vector3& dir) { mDirection = dir; } 
-		const Vector3& getDirection(void) const {return mDirection;} 
+		const Vector3& getDirection() const {return mDirection;} 
 
 		/** Gets the position of a point t units along the ray. */
 		Vector3 getPoint(float t) const 

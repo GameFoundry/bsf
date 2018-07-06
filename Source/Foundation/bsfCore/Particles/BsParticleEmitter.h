@@ -390,7 +390,7 @@ namespace bs
 		/** @copydoc setShape */
 		ParticleEmitterShape* getShape() const { return mShape.get(); }
 
-		/** Determines the constant particle emission rate, per second. */
+		/** Determines the number of particles that are emitted every second. */
 		void setEmissionRate(FloatDistribution value) { mEmissionRate = std::move(value); }
 
 		/** @copydoc setEmissionRate */

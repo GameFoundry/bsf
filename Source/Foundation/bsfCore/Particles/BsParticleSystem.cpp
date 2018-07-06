@@ -16,6 +16,14 @@ namespace bs
 {
 	static constexpr UINT32 INITIAL_PARTICLE_CAPACITY = 1000;
 
+	bool evolverCompareCallback(const ParticleEvolver* a, const ParticleEvolver* b)
+	{
+		if (a->getPriority() == b->getPriority())
+			return a > b; // Use address, at this point it doesn't matter, but std::set requires us to differentiate
+		else
+			return a->getPriority() > b->getPriority();
+	}
+
 	void ParticleSystemBase::setSimulationSpace(ParticleSimulationSpace value)
 	{
 		if(mSimulationSpace == value)
@@ -26,6 +34,7 @@ namespace bs
 	}
 
 	ParticleSystem::ParticleSystem()
+		:mSortedEvolvers(&evolverCompareCallback)
 	{
 		mId = ParticleManager::instance().registerParticleSystem(this);
 		mSeed = rand();
@@ -156,13 +165,27 @@ namespace bs
 				particles.velocity[i] += gravity * timeStep;
 		}
 
-		// Simulate
-		for(auto& evolver : mEvolvers)
-			evolver->evolve(mRandom, state, *mParticleSet);
+		// Evolve pre-simulation
+		auto evolverIter = mSortedEvolvers.begin();
+		for(; evolverIter != mSortedEvolvers.end(); ++evolverIter)
+		{
+			ParticleEvolver* evolver = *evolverIter;
+			if(evolver->getPriority() < 0)
+				break;
 
-		// Update position
+			evolver->evolve(mRandom, state, *mParticleSet);
+		}
+
+		// Simulate
 		for(UINT32 i = 0; i < numParticles; i++)
 			particles.position[i] += particles.velocity[i] * timeStep;
+
+		// Evolve post-simulation
+		for(; evolverIter != mSortedEvolvers.end(); ++evolverIter)
+		{
+			ParticleEvolver* evolver = *evolverIter;
+			evolver->evolve(mRandom, state, *mParticleSet);
+		}
 
 		// Decrement lifetime
 		for(UINT32 i = 0; i < numParticles; i++)

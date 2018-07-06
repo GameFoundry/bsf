@@ -31,6 +31,13 @@ namespace bs
 		 * and will incrementally update the particle state.
 		 */
 		virtual bool isAnalytical() const = 0;
+
+		/** 
+		 * Determines the order in which this evolver will be evaluated relative to other active evolvers. Higher values
+		 * means that the evolver will be executed sooner. Negative values mean the evolver will be executed after
+		 * position/velocity is integrated. 
+		 */
+		virtual INT32 getPriority() const { return 0; }
 	};
 
 	/** Structure used for initializing a ParticleTextureAnimation object. */
@@ -58,7 +65,7 @@ namespace bs
 		/** @copydoc ParticleEvolver::evolve */
 		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set) const override;
 
-		/** @copydoc ParticleEvolver::evolve */
+		/** @copydoc ParticleEvolver::isAnalytical */
 		bool isAnalytical() const override { return true; }
 	private:
 		PARTICLE_TEXTURE_ANIMATION_DESC mDesc;
@@ -106,25 +113,6 @@ namespace bs
 		 * collision mode.
 		 */
 		UINT64 layer = 0xFFFFFFFFFFFFFFFF;
-
-		/** 
-		 * Determines should particle collisions be cached. Caching increases performance but will yield approximate 
-		 * collision results if nearby geometry is changing/moving. Only relevant if using the World collision mode.
-		 */
-		bool useCache = false;
-
-		/**
-		 * When using collision caching, determines how many cache entries should be re-calculated every frame. Higher
-		 * values increase precision but reduce performance. Only relevant when using the World collision mode and caching
-		 * is enabled.
-		 */
-		UINT32 numPreciseRays = 64;
-
-		/**
-		 * Size of individual grid voxel that is used for collision caching. Each voxel is approximated by a single plane
-		 * which is then used for collisions.
-		 */
-		float voxelSize = 0.1f;
 	};
 
 	/** Particle evolver that allows particles to collide with the world. */
@@ -136,8 +124,11 @@ namespace bs
 		/** @copydoc ParticleEvolver::evolve */
 		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set) const override;
 
-		/** @copydoc ParticleEvolver::evolve */
+		/** @copydoc ParticleEvolver::isAnalytical */
 		bool isAnalytical() const override { return false; }
+
+		/** @copydoc ParticleEvolver::getPriority */
+		INT32 getPriority() const override { return -10000; }
 
 		/** 
 		 * Determines a set of planes to use when using the Plane collision mode. Planes are expected to be in world 

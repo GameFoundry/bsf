@@ -8,8 +8,17 @@
 
 namespace bs
 {
-	const AABox AABox::BOX_EMPTY;
+	const AABox AABox::BOX_EMPTY = AABox(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
 	const AABox AABox::UNIT_BOX = AABox(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f));
+	const AABox AABox::INF_BOX = AABox(
+		Vector3(
+			std::numeric_limits<float>::infinity(), 
+			std::numeric_limits<float>::infinity(), 
+			std::numeric_limits<float>::infinity()), 
+		Vector3(
+			-std::numeric_limits<float>::infinity(), 
+			-std::numeric_limits<float>::infinity(), 
+			-std::numeric_limits<float>::infinity()));
 
 	const UINT32 AABox::CUBE_INDICES[36] =
 	{
@@ -40,7 +49,7 @@ namespace bs
 
 	AABox::AABox()
 	{
-		// Default to a null box
+		// Default to a unit box
 		setMin(Vector3(-0.5f, -0.5f, -0.5f));
 		setMax(Vector3(0.5f, 0.5f, 0.5f));
 	}

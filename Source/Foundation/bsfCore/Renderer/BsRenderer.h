@@ -386,13 +386,6 @@ namespace bs
 	protected:
 		friend class RendererTask;
 
-		/**	Contains information about a render callback. */
-		struct RenderCallbackData
-		{
-			bool overlay;
-			std::function<void()> callback;
-		};
-
 		/**
 		 * Executes all renderer tasks queued for this frame.
 		 *
