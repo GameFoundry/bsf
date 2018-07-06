@@ -122,9 +122,12 @@ namespace bs
 		// happens in clear()
 			
 #if BS_DEBUG_MODE
-		data -= sizeof(UINT32);
-		UINT32* storedSize = reinterpret_cast<UINT32*>(data);
-		mTotalAllocBytes -= *storedSize;
+		if(data)
+		{
+			data -= sizeof(UINT32);
+			UINT32* storedSize = reinterpret_cast<UINT32*>(data);
+			mTotalAllocBytes -= *storedSize;
+		}
 #endif
 	}
 
