@@ -90,7 +90,7 @@ namespace bs
 		}
 
 		/**	Returns the null-terminated name of the string id. */
-		const char* cstr() const
+		const char* c_str() const
 		{
 			if (mData == nullptr)
 				return "";
@@ -148,8 +148,8 @@ namespace bs
 
 			if (!isEmpty)
 			{
-				UINT32 length = (UINT32)strlen(data.cstr());
-				memcpy(memory, data.cstr(), length * sizeof(char));
+				UINT32 length = (UINT32)strlen(data.c_str());
+				memcpy(memory, data.c_str(), length * sizeof(char));
 			}
 		}
 
@@ -184,7 +184,7 @@ namespace bs
 			bool isEmpty = data.empty();
 			if (!isEmpty)
 			{
-				UINT32 length = (UINT32)strlen(data.cstr());
+				UINT32 length = (UINT32)strlen(data.c_str());
 				dataSize += length * sizeof(char);
 			}
 

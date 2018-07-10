@@ -23,6 +23,7 @@ Huge thanks to all the patrons, contributors and donators!
 - Serar Tok [Founder]
 - Akaoray [Founder]
 - Thomas Tang [Founder]
+- Nekith [Founder]
 
 # One-time donators
 - Žan Strahija [Founder]

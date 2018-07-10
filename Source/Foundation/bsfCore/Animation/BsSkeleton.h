@@ -80,7 +80,7 @@ namespace bs
 	 */
 	struct LocalSkeletonPose
 	{
-		LocalSkeletonPose();
+		LocalSkeletonPose() = default;
 		LocalSkeletonPose(UINT32 numBones, bool individualOverride = false);
 		LocalSkeletonPose(UINT32 numPos, UINT32 numRot, UINT32 numScale);
 		LocalSkeletonPose(const LocalSkeletonPose& other) = delete;
@@ -90,11 +90,11 @@ namespace bs
 		LocalSkeletonPose& operator=(const LocalSkeletonPose& other) = delete;
 		LocalSkeletonPose& operator=(LocalSkeletonPose&& other);
 
-		Vector3* positions; /**< Local bone positions at specific animation time. */
-		Quaternion* rotations; /**< Local bone rotations at specific animation time. */
-		Vector3* scales; /**< Local bone scales at specific animation time. */
-		bool* hasOverride; /**< True if the bone transform was overriden externally (local pose was ignored). */
-		UINT32 numBones; /**< Number of bones in the pose. */
+		Vector3* positions = nullptr; /**< Local bone positions at specific animation time. */
+		Quaternion* rotations = nullptr; /**< Local bone rotations at specific animation time. */
+		Vector3* scales = nullptr; /**< Local bone scales at specific animation time. */
+		bool* hasOverride = nullptr; /**< True if the bone transform was overriden externally (local pose was ignored). */
+		UINT32 numBones = 0; /**< Number of bones in the pose. */
 	};
 
 	/** Contains internal information about a single bone in a Skeleton. */

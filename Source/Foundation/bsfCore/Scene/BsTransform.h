@@ -20,7 +20,7 @@ namespace bs
 	class BS_CORE_EXPORT Transform : public IReflectable
 	{
 	public:
-		Transform();
+		Transform() = default;
 		Transform(const Vector3& position, const Quaternion& rotation, const Vector3& scale);
 
 		/**	Sets the local position of the object. */
@@ -157,9 +157,9 @@ namespace bs
 
 		static Transform IDENTITY;
 	private:
-		Vector3 mPosition;
-		Quaternion mRotation;
-		Vector3 mScale;
+		Vector3 mPosition = Vector3::ZERO;
+		Quaternion mRotation = Quaternion::IDENTITY;
+		Vector3 mScale = Vector3::ONE;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

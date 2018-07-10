@@ -76,13 +76,13 @@ namespace bs
 			{
 			case Int:
 			case Bool:
-				defines.set(entry.first.cstr(), entry.second.i);
+				defines.set(entry.first.c_str(), entry.second.i);
 				break;
 			case UInt:
-				defines.set(entry.first.cstr(), entry.second.ui);
+				defines.set(entry.first.c_str(), entry.second.ui);
 				break;
 			case Float:
-				defines.set(entry.first.cstr(), entry.second.f);
+				defines.set(entry.first.c_str(), entry.second.f);
 				break;
 			}
 		}

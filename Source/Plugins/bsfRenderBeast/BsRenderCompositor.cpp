@@ -50,7 +50,7 @@ namespace bs { namespace ct
 				auto iterFind = mNodeTypes.find(nodeId);
 				if (iterFind == mNodeTypes.end())
 				{
-					LOGERR("Cannot find render compositor node of type \"" + String(nodeId.cstr()) + "\".");
+					LOGERR("Cannot find render compositor node of type \"" + String(nodeId.c_str()) + "\".");
 					return false;
 				}
 
@@ -106,8 +106,8 @@ namespace bs { namespace ct
 					// Check if invalid
 					if (curIdx == (UINT32)-1)
 					{
-						LOGERR("Render compositor nodes recursion detected. Node \"" + String(nodeId.cstr()) + "\" " +
-							"depends on node \"" + String(iterFind->first.cstr()) + "\" which is not available at " +
+						LOGERR("Render compositor nodes recursion detected. Node \"" + String(nodeId.c_str()) + "\" " +
+							"depends on node \"" + String(iterFind->first.c_str()) + "\" which is not available at " +
 							"this stage.");
 						return false;
 					}
@@ -151,7 +151,7 @@ namespace bs { namespace ct
 				inputs.inputNodes = entry.inputs;
 
 #if BS_PROFILING_ENABLED
-				const ProfilerString sampleName = ProfilerString("RC: ") + entry.nodeType->id.cstr();
+				const ProfilerString sampleName = ProfilerString("RC: ") + entry.nodeType->id.c_str();
 				BS_GPU_PROFILE_BEGIN(sampleName);
 #endif
 

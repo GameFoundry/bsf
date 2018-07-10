@@ -92,7 +92,7 @@ namespace bs
 		 *
 		 * @note	Must be called between beginFrame()/endFrame() calls.
 		 */
-		void beginSample(const ProfilerString& name);
+		void beginSample(ProfilerString name);
 
 		/**
 		 * Ends sample measurement.
@@ -194,20 +194,26 @@ namespace bs
 	 */
 	struct ProfileGPUBlock
 	{
+#if BS_PROFILING_ENABLED
 		ProfileGPUBlock(ProfilerString name)
 		{
-#if BS_PROFILING_ENABLED
 			mSampleName = std::move(name);
 			gProfilerGPU().beginSample(mSampleName);
-#endif
 		}
+#else
+		ProfileGPUBlock(const ProfilerString& name)
+		{
+			mSampleName = std::move(name);
+			gProfilerGPU().beginSample(mSampleName);
+		}
+#endif
 
+#if BS_PROFILING_ENABLED
 		~ProfileGPUBlock()
 		{
-#if BS_PROFILING_ENABLED
 			gProfilerGPU().endSample(mSampleName);
-#endif
 		}
+#endif
 
 	private:
 #if BS_PROFILING_ENABLED

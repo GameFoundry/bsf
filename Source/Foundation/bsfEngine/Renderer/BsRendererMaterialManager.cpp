@@ -58,7 +58,7 @@ namespace bs
 				materials[i].metaData->variations.add(entry->getVariation());
 
 #if BS_PROFILING_ENABLED
-			String filename = materials[i].shaderPath.getFilename(false);
+			const String& filename = materials[i].shaderPath.getFilename(false);
 			materials[i].metaData->profilerSampleName = ProfilerString("RM: ") + 
 				ProfilerString(filename.data(), filename.size());
 #endif

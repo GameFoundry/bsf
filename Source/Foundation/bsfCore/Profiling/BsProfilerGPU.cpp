@@ -61,7 +61,7 @@ namespace bs
 		mIsFrameActive = false;
 	}
 
-	void ProfilerGPU::beginSample(const ProfilerString& name)
+	void ProfilerGPU::beginSample(ProfilerString name)
 	{
 		if (!mIsFrameActive)
 		{
@@ -70,7 +70,7 @@ namespace bs
 		}
 
 		auto sample = mSamplePool.construct<ProfiledSample>();
-		sample->name = name;
+		sample->name = std::move(name);
 		beginSampleInternal(*sample, false);
 
 		if(mActiveSamples.empty())
@@ -176,7 +176,7 @@ namespace bs
 
 	void ProfilerGPU::resolveSample(const ProfiledSample& sample, GPUProfileSample& reportSample)
 	{
-		reportSample.name = String(sample.name.c_str());
+		reportSample.name = String(sample.name.data(), sample.name.size());
 		reportSample.timeMs = sample.activeTimeQuery->getTimeMs();
 
 		if(sample.activeOcclusionQuery)

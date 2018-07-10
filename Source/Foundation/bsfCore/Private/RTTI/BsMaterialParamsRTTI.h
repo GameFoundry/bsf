@@ -239,7 +239,7 @@ namespace bs
 			MaterialParams* paramsObj = static_cast<MaterialParams*>(obj);
 
 			// This field was added in later versions of the file format, so generate valid data for it if loading from
-			// and older serialized version
+			// an older serialized version
 			if(!paramsObj->mDataParams)
 			{
 				paramsObj->mNumDataParams = 0;

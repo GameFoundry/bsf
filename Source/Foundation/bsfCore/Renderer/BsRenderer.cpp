@@ -96,12 +96,11 @@ namespace bs { namespace ct
 
 				entry->mState.store(1);
 
-				bool complete;
-				
+				const bool complete = [&entry]()
 				{
-					ProfileGPUBlock sampleBlock("Renderer task: "+ ProfilerString(entry->mName.data(), entry->mName.size()));
-					complete = entry->mTaskWorker();
-				}
+					ProfileGPUBlock sampleBlock("Renderer task: " + ProfilerString(entry->mName.data(), entry->mName.size()));
+					return entry->mTaskWorker();
+				}();
 
 				if (!complete)
 					mRemainingTasks.push_back(entry);

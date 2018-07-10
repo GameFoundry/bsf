@@ -7,10 +7,6 @@
 
 namespace bs
 {
-	LocalSkeletonPose::LocalSkeletonPose()
-		: positions(nullptr), rotations(nullptr), scales(nullptr), hasOverride(nullptr), numBones(0)
-	{ }
-
 	LocalSkeletonPose::LocalSkeletonPose(UINT32 numBones, bool individualOverride)
 		: numBones(numBones)
 	{
@@ -32,7 +28,6 @@ namespace bs
 	}
 
 	LocalSkeletonPose::LocalSkeletonPose(UINT32 numPos, UINT32 numRot, UINT32 numScale)
-		: hasOverride(nullptr), numBones(0)
 	{
 		UINT32 bufferSize = sizeof(Vector3) * numPos + sizeof(Quaternion) * numRot + sizeof(Vector3) * numScale;
 		UINT8* buffer = (UINT8*)bs_alloc(bufferSize);
@@ -47,15 +42,12 @@ namespace bs
 	}
 
 	LocalSkeletonPose::LocalSkeletonPose(LocalSkeletonPose&& other)
-		: positions(other.positions), rotations(other.rotations), scales(other.scales), hasOverride(other.hasOverride)
-		, numBones(other.numBones)
-	{
-		other.positions = nullptr;
-		other.rotations = nullptr;
-		other.scales = nullptr;
-		other.hasOverride = nullptr;
-		other.numBones = 0;
-	}
+		: positions{std::exchange(other.positions, nullptr)}
+		, rotations{std::exchange(other.rotations, nullptr)}
+		, scales{std::exchange(other.scales, nullptr)}
+		, hasOverride{std::exchange(other.hasOverride, nullptr)}
+		, numBones(std::exchange(other.numBones, 0))
+	{ }
 
 	LocalSkeletonPose::~LocalSkeletonPose()
 	{
@@ -70,17 +62,11 @@ namespace bs
 			if (positions != nullptr)
 				bs_free(positions);
 
-			positions = other.positions;
-			rotations = other.rotations;
-			scales = other.scales;
-			hasOverride = other.hasOverride;
-			numBones = other.numBones;
-
-			other.positions = nullptr;
-			other.rotations = nullptr;
-			other.scales = nullptr;
-			other.hasOverride = nullptr;
-			other.numBones = 0;
+			positions = std::exchange(other.positions, nullptr);
+			rotations = std::exchange(other.rotations, nullptr);
+			scales = std::exchange(other.scales, nullptr);
+			hasOverride = std::exchange(other.hasOverride, nullptr);
+			numBones = std::exchange(other.numBones, 0);
 		}
 
 		return *this;

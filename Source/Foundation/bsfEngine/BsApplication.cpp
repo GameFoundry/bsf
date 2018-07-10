@@ -116,13 +116,7 @@ namespace bs
 
 	void Application::showProfilerOverlay(ProfilerOverlayType type, const SPtr<Camera>& camera)
 	{
-		SPtr<Camera> overlayCamera;
-
-		if(!camera)
-			overlayCamera = gSceneManager().getMainCamera();
-		else
-			overlayCamera = camera;
-
+		SPtr<Camera> overlayCamera = camera ? camera : gSceneManager().getMainCamera();
 		if(!overlayCamera)
 			return;
 
