@@ -87,7 +87,6 @@ namespace bs { namespace ct
 	{
 	public:
 		VulkanQueryManager(VulkanRenderAPI& rapi);
-		~VulkanQueryManager();
 
 		/** @copydoc QueryManager::createEventQuery */
 		SPtr<EventQuery> createEventQuery(UINT32 deviceIdx = 0) const override;
@@ -125,8 +124,7 @@ namespace bs { namespace ct
 
 		VkQueryPool mPool;
 		UINT32 mQueryIdx;
-		bool mFree;
-		bool mNeedsReset;
+		bool mFree = true;
 	};
 
 	/** @} */

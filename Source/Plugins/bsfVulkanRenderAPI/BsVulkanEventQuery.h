@@ -39,7 +39,7 @@ namespace bs { namespace ct
 		~VulkanEventQuery();
 
 		/** @copydoc EventQuery::begin */
-		void begin(const SPtr<CommandBuffer>& cb = nullptr) override;
+		void begin(const SPtr<CommandBuffer>& cb) override;
 
 		/** @copydoc EventQuery::isReady */
 		bool isReady() const override;

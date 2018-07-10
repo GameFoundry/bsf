@@ -147,17 +147,11 @@ namespace bs { namespace ct
 		Lock lock(mMutex);
 
 		query->mFree = true;
-		query->mNeedsReset = true;
 	}
 
 	VulkanQueryManager::VulkanQueryManager(VulkanRenderAPI& rapi)
 		:mRenderAPI(rapi)
 	{ }
-
-	VulkanQueryManager::~VulkanQueryManager()
-	{
-		
-	}
 
 	SPtr<EventQuery> VulkanQueryManager::createEventQuery(UINT32 deviceIdx) const
 	{
@@ -193,7 +187,7 @@ namespace bs { namespace ct
 	}
 
 	VulkanQuery::VulkanQuery(VulkanResourceManager* owner, VkQueryPool pool, UINT32 queryIdx)
-		:VulkanResource(owner, false), mPool(pool), mQueryIdx(queryIdx), mFree(true)
+		:VulkanResource(owner, false), mPool(pool), mQueryIdx(queryIdx)
 	{
 	}
 
@@ -204,7 +198,7 @@ namespace bs { namespace ct
 		// in the pool at once.
 
 		VkDevice vkDevice = mOwner->getDevice().getLogical();
-		VkResult vkResult = vkGetQueryPoolResults(vkDevice, mPool, 0, 1, sizeof(result), &result, sizeof(result),
+		VkResult vkResult = vkGetQueryPoolResults(vkDevice, mPool, mQueryIdx, 1, sizeof(result), &result, sizeof(result),
 												  VK_QUERY_RESULT_64_BIT);
 		assert(vkResult == VK_SUCCESS || vkResult == VK_NOT_READY);
 

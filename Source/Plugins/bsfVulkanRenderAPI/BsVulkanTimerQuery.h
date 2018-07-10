@@ -19,10 +19,10 @@ namespace bs { namespace ct
 		~VulkanTimerQuery();
 
 		/** @copydoc TimerQuery::begin */
-		void begin(const SPtr<CommandBuffer>& cb = nullptr) override;
+		void begin(const SPtr<CommandBuffer>& cb) override;
 
 		/** @copydoc TimerQuery::end */
-		void end(const SPtr<CommandBuffer>& cb = nullptr) override;
+		void end(const SPtr<CommandBuffer>& cb) override;
 
 		/** @copydoc TimerQuery::isReady */
 		bool isReady() const override;

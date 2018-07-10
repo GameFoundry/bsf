@@ -19,10 +19,10 @@ namespace bs { namespace ct
 		~VulkanOcclusionQuery();
 
 		/** @copydoc OcclusionQuery::begin */
-		void begin(const SPtr<CommandBuffer>& cb = nullptr) override;
+		void begin(const SPtr<CommandBuffer>& cb) override;
 
 		/** @copydoc OcclusionQuery::end */
-		void end(const SPtr<CommandBuffer>& cb = nullptr) override;
+		void end(const SPtr<CommandBuffer>& cb) override;
 
 		/** @copydoc OcclusionQuery::isReady */
 		bool isReady() const override;
