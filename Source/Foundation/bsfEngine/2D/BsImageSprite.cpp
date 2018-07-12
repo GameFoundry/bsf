@@ -281,14 +281,14 @@ namespace bs
 			uvScale.x = sourceSize.x / (float)destSize.x;
 			uvScale.y = sourceSize.y / (float)destSize.y;
 
-			if (uvScale.x < uvScale.y)
+			if (uvScale.x > uvScale.y)
 			{
 				uvScale.x = 1.0f;
-				uvScale.y = (destSize.x * (sourceSize.y / (float)sourceSize.x)) / destSize.y;
+				uvScale.y = (destSize.y * (sourceSize.y / (float)sourceSize.x)) / destSize.x;
 			}
 			else
 			{
-				uvScale.x = (destSize.y * (sourceSize.x / (float)sourceSize.y)) / destSize.x;
+				uvScale.x = (destSize.x * (sourceSize.x / (float)sourceSize.y)) / destSize.y;
 				uvScale.y = 1.0f;
 			}
 
@@ -297,15 +297,15 @@ namespace bs
 			uvScale.x = sourceSize.x / (float)destSize.x;
 			uvScale.y = sourceSize.y / (float)destSize.y;
 
-			if (uvScale.x < uvScale.y)
+			if (uvScale.x > uvScale.y)
 			{
-				uvScale.x = (destSize.y * (sourceSize.x / (float)sourceSize.y)) / destSize.x;
+				uvScale.x = (destSize.x * (sourceSize.x / (float)sourceSize.y)) / destSize.y;
 				uvScale.y = 1.0f;
 			}
 			else
 			{
 				uvScale.x = 1.0f;
-				uvScale.y = (destSize.x * (sourceSize.y / (float)sourceSize.x)) / destSize.y;
+				uvScale.y = (destSize.y * (sourceSize.y / (float)sourceSize.x)) / destSize.x;
 			}
 
 			break;
