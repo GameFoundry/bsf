@@ -16,7 +16,7 @@ namespace bs
 	 *			
 	 * Use {0}, {1}, etc. in the string value for values that might change dynamically.
 	 */
-	class BS_CORE_EXPORT HString
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(n:LocString,m:Localization) HString
 	{
 	public:
 		/**
@@ -26,6 +26,7 @@ namespace bs
 		 * @param[in]	identifier		String you can use for later referencing the localized string.
 		 * @param[in]	stringTableId	Unique identifier of the string table to retrieve the string from.
 		 */
+		BS_SCRIPT_EXPORT()
 		explicit HString(const String& identifier, UINT32 stringTableId = 0);
 
 		/**
@@ -37,6 +38,7 @@ namespace bs
 		 *								assigned depends on the StringTable::DEFAULT_LANGUAGE value.
 		 * @param[in]	stringTableId	Unique identifier of the string table to retrieve the string from.
 		 */
+		BS_SCRIPT_EXPORT()
 		explicit HString(const String& identifier, const String& defaultString, UINT32 stringTableId = 0);
 
 		/**
@@ -44,13 +46,21 @@ namespace bs
 		 *
 		 * @param[in]	stringTableId	Unique identifier of the string table to retrieve the string from.
 		 */
-		HString(UINT32 stringTableId = 0);
+		BS_SCRIPT_EXPORT()
+		HString(UINT32 stringTableId);
+
+		/** Creates a new empty localized string. */
+		BS_SCRIPT_EXPORT()
+		HString();
+
 		HString(const HString& copy);
 		~HString();
 
 		HString& operator=(const HString& rhs);
 
 		operator const String& () const;
+
+		BS_SCRIPT_EXPORT(in:true)
 		const String& getValue() const;
 
 		/**
@@ -59,17 +69,18 @@ namespace bs
 		 *
 		 * @note	This is useful for strings that have dynamically changing values, like numbers, embedded in them.
 		 */
+		BS_SCRIPT_EXPORT()
 		void setParameter(UINT32 idx, const String& value);
 		
 		/** Returns an empty string. */
 		static const HString& dummy();
 	private:
 		SPtr<LocalizedStringData> mStringData;
-		String* mParameters;
+		String* mParameters = nullptr;
 
-		mutable bool mIsDirty;
+		mutable bool mIsDirty = true;
 		mutable String mCachedString;
-		mutable String* mStringPtr;
+		mutable String* mStringPtr = nullptr;
 	};
 
 	/** @} */

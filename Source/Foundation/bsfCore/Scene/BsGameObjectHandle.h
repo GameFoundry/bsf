@@ -179,7 +179,7 @@ namespace bs
 		GameObjectHandle(const GameObjectHandle<T>& ptr) = default;
 
 		/**	Move constructor from another handle of the same type. */
-		GameObjectHandle(GameObjectHandle<T>&& ptr) noexcept = default;
+		GameObjectHandle(GameObjectHandle<T>&& ptr) = default;
 
 		/**	Invalidates the handle. */
 		GameObjectHandle<T>& operator=(std::nullptr_t ptr)
@@ -193,7 +193,7 @@ namespace bs
 		GameObjectHandle<T>& operator=(const GameObjectHandle<T>& other) = default;
 
 		/** Move assignment */
-		GameObjectHandle<T>& operator=(GameObjectHandle<T>&& other) noexcept = default;
+		GameObjectHandle<T>& operator=(GameObjectHandle<T>&& other) = default;
 
 		/**
 		 * Returns a pointer to the referenced GameObject.

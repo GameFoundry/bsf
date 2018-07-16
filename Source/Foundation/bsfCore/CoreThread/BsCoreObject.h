@@ -245,7 +245,7 @@ namespace bs
 		virtual void onDependencyDirty(CoreObject* dependency, UINT32 dirtyFlags)
 		{
 			// By default any changes on a dependency mark the parent dirty as well
-			mCoreDirtyFlags |= 0x80000000;
+			mCoreDirtyFlags |= DIRTY_DEPENDENCY_MASK;
 		}
 
 	protected:

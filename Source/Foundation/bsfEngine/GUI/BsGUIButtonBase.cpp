@@ -394,7 +394,7 @@ namespace bs
 
 	String GUIButtonBase::_getTooltip() const
 	{
-		return mContent.getTooltip();
+		return mContent.tooltip;
 	}
 
 	void GUIButtonBase::refreshContentSprite()
@@ -418,7 +418,7 @@ namespace bs
 	TEXT_SPRITE_DESC GUIButtonBase::getTextDesc() const
 	{
 		TEXT_SPRITE_DESC textDesc;
-		textDesc.text = mContent.getText();
+		textDesc.text = mContent.text;
 		textDesc.font = _getStyle()->font;
 		textDesc.fontSize = _getStyle()->fontSize;
 		textDesc.color = getTint() * getActiveTextColor();

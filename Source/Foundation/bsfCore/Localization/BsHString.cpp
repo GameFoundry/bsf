@@ -6,8 +6,15 @@
 
 namespace bs
 {
+	HString::HString()
+	{
+		mStringData = StringTableManager::instance().getTable(0)->getStringData(u8"");
+
+		if (mStringData->numParameters > 0)
+			mParameters = bs_newN<String>(mStringData->numParameters);
+	}
+
 	HString::HString(UINT32 stringTableId)
-		:mParameters(nullptr), mIsDirty(true), mStringPtr(nullptr)
 	{
 		mStringData = StringTableManager::instance().getTable(stringTableId)->getStringData(u8"");
 
@@ -16,7 +23,6 @@ namespace bs
 	}
 
 	HString::HString(const String& identifierString, UINT32 stringTableId)
-		:mParameters(nullptr), mIsDirty(true), mStringPtr(nullptr)
 	{
 		mStringData = StringTableManager::instance().getTable(stringTableId)->getStringData(identifierString);
 
@@ -25,7 +31,6 @@ namespace bs
 	}
 
 	HString::HString(const String& identifierString, const String& defaultString, UINT32 stringTableId)
-		:mParameters(nullptr), mIsDirty(true), mStringPtr(nullptr)
 	{
 		HStringTable table = StringTableManager::instance().getTable(stringTableId);
 		table->setString(identifierString, StringTable::DEFAULT_LANGUAGE, defaultString);

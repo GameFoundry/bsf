@@ -280,18 +280,10 @@ namespace bs
 		 *  @{
 		 */
 
-		/**
-		 * @copydoc	create(const TEXTURE_DESC&)
-		 *
-		 * @note	Internal method. Creates a texture pointer without a handle. Use create() for normal usage.
-		 */
+		/** Same as create() excepts it creates a pointer to the texture instead of a texture handle. */
 		static SPtr<Texture> _createPtr(const TEXTURE_DESC& desc);
 
-		/**
-		 * @copydoc	create(const SPtr<PixelData>&, int, bool)
-		 *
-		 * @note	Internal method. Creates a texture pointer without a handle. Use create() for normal usage.
-		 */
+		/** Same as create() excepts it creates a pointer to the texture instead of a texture handle. */
 		static SPtr<Texture> _createPtr(const SPtr<PixelData>& pixelData, int usage = TU_DEFAULT, 
 			bool hwGammaCorrection = false);
 

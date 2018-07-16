@@ -21,7 +21,7 @@ namespace bs
 	Vector2I GUIHelper::calcOptimalContentsSize(const GUIContent& content, const GUIElementStyle& style, 
 		const GUIDimensions& dimensions, GUIElementState state)
 	{
-		Vector2I contentBounds = calcOptimalContentsSize((const String&)content.getText(), style, dimensions);
+		Vector2I contentBounds = calcOptimalContentsSize((const String&)content.text, style, dimensions);
 
 		const HSpriteTexture& image = content.getImage(state);
 		if (SpriteTexture::checkIsLoaded(image))

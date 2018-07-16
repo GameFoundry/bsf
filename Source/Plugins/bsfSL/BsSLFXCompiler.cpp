@@ -525,7 +525,7 @@ namespace bs
 					if(!entry.spriteUVRef.empty() && (type == GPDT_FLOAT4))
 					{
 						SHADER_PARAM_ATTRIBUTE attribute;
-						attribute.value = String(entry.spriteUVRef.data(), entry.spriteUVRef.size());
+						attribute.value.assign(entry.spriteUVRef.data(), entry.spriteUVRef.size());
 						attribute.nextParamIdx = (UINT32)-1;
 						attribute.type = ShaderParamAttributeType::SpriteUV;
 
