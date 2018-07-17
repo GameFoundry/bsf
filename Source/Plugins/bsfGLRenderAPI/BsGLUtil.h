@@ -45,7 +45,7 @@ namespace bs { namespace ct
 
 #include "MacOS/BsMacOSGLSupport.h"
 
-namespace bs::ct
+namespace bs { namespace ct
 {
 	/** @addtogroup GL
 	 *  @{
@@ -58,5 +58,5 @@ namespace bs::ct
 	}
 
 	/** @} */
-}
+}}
 #endif

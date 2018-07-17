@@ -3,7 +3,7 @@
 #include "MacOS/BsMacOSVideoModeInfo.h"
 #include <IOKit/graphics/IOGraphicsLib.h>
 
-namespace bs::ct
+namespace bs { namespace ct
 {
 	MacOSVideoModeInfo::MacOSVideoModeInfo()
 	{
@@ -123,5 +123,5 @@ namespace bs::ct
 		if(!mIsCustom && mModeRef)
 			CGDisplayModeRelease(mModeRef);
 	}
-}
+}}
 

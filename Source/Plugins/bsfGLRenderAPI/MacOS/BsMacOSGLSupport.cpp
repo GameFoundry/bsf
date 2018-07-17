@@ -7,7 +7,7 @@
 #include "BsGLRenderAPI.h"
 #include <dlfcn.h>
 
-namespace bs::ct
+namespace bs { namespace ct
 {
 	SPtr<bs::RenderWindow> MacOSGLSupport::newWindow(
 		RENDER_WINDOW_DESC& desc,
@@ -59,5 +59,5 @@ namespace bs::ct
 	{
 		return bs_shared_ptr_new<MacOSVideoModeInfo>();
 	}
-}
+}}
 
