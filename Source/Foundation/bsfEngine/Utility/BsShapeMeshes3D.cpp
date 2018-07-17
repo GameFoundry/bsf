@@ -1198,11 +1198,11 @@ namespace bs
 		{
 			UINT8* outNormalsBase = outNormals;
 			UINT8* outNormalsCap = outNormals + (numArcVertices + 1) * vertexStride;
-			for (INT32 i = 0; i < (INT32)numArcVertices + 1; i++)
+			for (UINT32 i = 0; i < numArcVertices + 1; i++)
 			{
-				int offsetA = i == 0 ? numArcVertices - 1 : i - 1;
-				int offsetB = i;
-				int offsetC = i == numArcVertices ? 1 : i + 1;
+				UINT32 offsetA = i == 0 ? numArcVertices - 1 : i - 1;
+				UINT32 offsetB = i;
+				UINT32 offsetC = i == numArcVertices ? 1 : i + 1;
 
 				Vector3* a = (Vector3*)(outVertices + (offsetA * vertexStride));
 				Vector3* b = (Vector3*)(outVertices + (offsetB * vertexStride));
