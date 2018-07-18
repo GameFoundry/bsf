@@ -162,13 +162,13 @@ namespace bs
 		INT32 getZero<INT32>() { return 0; }
 
 		template <class T>
-		static constexpr UINT32 getNumComponents() { return 1; }
+		constexpr UINT32 getNumComponents() { return 1; }
 
 		template<>
-		static constexpr UINT32 getNumComponents<Vector3>() { return 3; }
+		constexpr UINT32 getNumComponents<Vector3>() { return 3; }
 
 		template<>
-		static constexpr UINT32 getNumComponents<Quaternion>() { return 4; }
+		constexpr UINT32 getNumComponents<Quaternion>() { return 4; }
 
 		template <class T>
 		float& getComponent(T& val, UINT32 idx) { return val; }
