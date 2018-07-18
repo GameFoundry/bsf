@@ -6,7 +6,7 @@
 #include "BsGLSupport.h"
 #include "BsGLRenderAPI.h"
 
-namespace bs::ct
+namespace bs { namespace ct
 {
 	class MacOSContext;
 
@@ -38,5 +38,5 @@ namespace bs::ct
 	};
 
 	/** @} */
-}
+}}
 

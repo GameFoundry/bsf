@@ -1202,7 +1202,7 @@ namespace bs
 			{
 				int offsetA = i == 0 ? numArcVertices - 1 : i - 1;
 				int offsetB = i;
-				int offsetC = i == numArcVertices ? 1 : i + 1;
+				int offsetC = i == (INT32)numArcVertices ? 1 : i + 1;
 
 				Vector3* a = (Vector3*)(outVertices + (offsetA * vertexStride));
 				Vector3* b = (Vector3*)(outVertices + (offsetB * vertexStride));

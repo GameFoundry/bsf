@@ -7,7 +7,7 @@
 #include "Private/MacOS/BsMacOSPlatform.h"
 #import <AppKit/AppKit.h>
 
-namespace bs::ct
+namespace bs { namespace ct
 {
 	struct MacOSContext::Pimpl
 	{
@@ -137,5 +137,5 @@ namespace bs::ct
 	{
 		CGLUnlockContext(m->context.CGLContextObj);
 	}
-}
+}}
 
