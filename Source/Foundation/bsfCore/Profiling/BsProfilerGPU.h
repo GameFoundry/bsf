@@ -201,7 +201,8 @@ namespace bs
 			gProfilerGPU().beginSample(mSampleName);
 		}
 #else
-		ProfileGPUBlock(const ProfilerString& name) = default;
+		ProfileGPUBlock(const ProfilerString& name)
+		{ }
 #endif
 
 #if BS_PROFILING_ENABLED

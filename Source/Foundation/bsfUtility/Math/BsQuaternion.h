@@ -23,18 +23,18 @@ namespace bs
 
 	public:
 		Quaternion() = default;
-		Quaternion(const Quaternion&) = default;
-		Quaternion& operator=(const Quaternion&) = default;
+		constexpr Quaternion(const Quaternion&) = default;
+		constexpr Quaternion& operator=(const Quaternion&) = default;
 
-		Quaternion(BS_ZERO zero)
+		constexpr Quaternion(BS_ZERO zero)
 			: x(0.0f), y(0.0f), z(0.0f), w(0.0f)
 		{ }
 
-		Quaternion(BS_IDENTITY)
+		constexpr Quaternion(BS_IDENTITY)
 			: x(0.0f), y(0.0f), z(0.0f), w(1.0f)
 		{ }
 
-		Quaternion(float w, float x, float y, float z)
+		constexpr Quaternion(float w, float x, float y, float z)
 			:x(x), y(y), z(z), w(w)
 		{ }
 
@@ -393,7 +393,7 @@ namespace std
 	template<> class numeric_limits<bs::Quaternion> 
 	{
 	public:
-		static bs::Quaternion infinity() 
+		constexpr static bs::Quaternion infinity() 
 		{
 			return bs::Quaternion(
 				std::numeric_limits<float>::infinity(), 
