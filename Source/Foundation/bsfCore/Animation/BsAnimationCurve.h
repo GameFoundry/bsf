@@ -139,6 +139,12 @@ namespace bs
 		/** Calculates the minimal and maximal value of the curve. */
 		std::pair<T, T> calculateRange() const;
 
+		/** Calculates the minimal and maximal value of the integrated curve. */
+		std::pair<T, T> calculateRangeIntegrated(const TCurveIntegrationCache<T>& cache) const;
+
+		/** Calculates the minimal and maximal value of the doubly integrated curve. */
+		std::pair<T, T> calculateRangeIntegratedDouble(const TCurveIntegrationCache<T>& cache) const;
+
 		/** Returns the length of the animation curve, from time zero to last keyframe. */
 		float getLength() const { return mEnd; }
 
@@ -191,6 +197,12 @@ namespace bs
 		 * @return				Interpolated key value.
 		 */
 		KeyFrame evaluateKey(const KeyFrame& lhs, const KeyFrame& rhs, float time) const;
+
+		/** Creates a cache used for quick evaluation of single integrated curves. */
+		void buildIntegrationCache(const TCurveIntegrationCache<T>& cache) const;
+
+		/** Creates a cache used for quick evaluation of double integrated curves. */
+		void buildDoubleIntegrationCache(const TCurveIntegrationCache<T>& cache) const;
 
 		static const UINT32 CACHE_LOOKAHEAD;
 

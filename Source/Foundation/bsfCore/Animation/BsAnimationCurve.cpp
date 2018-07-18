@@ -162,13 +162,13 @@ namespace bs
 		INT32 getZero<INT32>() { return 0; }
 
 		template <class T>
-		UINT32 getNumComponents() { return 1; }
+		static constexpr UINT32 getNumComponents() { return 1; }
 
 		template<>
-		UINT32 getNumComponents<Vector3>() { return 3; }
+		static constexpr UINT32 getNumComponents<Vector3>() { return 3; }
 
 		template<>
-		UINT32 getNumComponents<Quaternion>() { return 4; }
+		static constexpr UINT32 getNumComponents<Quaternion>() { return 4; }
 
 		template <class T>
 		float& getComponent(T& val, UINT32 idx) { return val; }
@@ -347,50 +347,154 @@ namespace bs
 			coeffs[2] = (T)(coeffs[2] / 2.0f);
 		}
 
-		template <class T, class Eval>
-		struct calcMinMax
+		template <class T>
+		void calcMinMax(std::pair<T, T>& minmax, float start, float end, T(&coeffs)[4])
 		{
-			void operator()(std::pair<T, T>& minmax, float start, float end, const T& a, const T& b, const T& c, T(&coeffs)[4])
+			// Differentiate
+			T a = (T)(3.0f * coeffs[0]);
+			T b = (T)(2.0f * coeffs[1]);
+			T c = (T)(1.0f * coeffs[2]);
+
+			const UINT32 numComponents = getNumComponents<T>();
+
+			for (UINT32 i = 0; i < numComponents; i++)
 			{
-				const UINT32 numComponents = getNumComponents<T>();
+				float roots[2];
+				const UINT32 numRoots = Math::solveQuadratic(
+					getComponent(a, i),
+					getComponent(b, i),
+					getComponent(c, i),
+					roots);
 
-				for (UINT32 i = 0; i < numComponents; i++)
+				for (UINT32 j = 0; j < numRoots; j++)
 				{
-					float roots[2];
-					const UINT32 numRoots = Math::solveQuadratic(getComponent(a, i), getComponent(b, i), getComponent(c, i), roots);
-					for (UINT32 j = 0; j < numRoots; j++)
+					if ((roots[j] >= 0.0f) && ((start + roots[j]) < end))
 					{
-						if ((roots[j] >= 0.0f) && ((start + roots[j]) < end))
+						float fltCoeffs[4] =
 						{
-							float fltCoeffs[4] =
-							{
-								getComponent(coeffs[0], i),
-								getComponent(coeffs[1], i),
-								getComponent(coeffs[2], i),
-								getComponent(coeffs[3], i)
-							};
+							getComponent(coeffs[0], i),
+							getComponent(coeffs[1], i),
+							getComponent(coeffs[2], i),
+							getComponent(coeffs[3], i)
+						};
 
-							Eval eval;
-							float value = eval(roots[j], fltCoeffs);
+						float value = evaluateCubic(roots[j], 0.0f, 0.0f, fltCoeffs);
 
-							getComponent(minmax.first, i) = std::min(getComponent(minmax.first, i), value);
-							getComponent(minmax.second, i) = std::max(getComponent(minmax.second, i), value);
-						}
+						getComponent(minmax.first, i) = std::min(getComponent(minmax.first, i), value);
+						getComponent(minmax.second, i) = std::max(getComponent(minmax.second, i), value);
 					}
 				}
 			}
-		};
+		}
 
-		template <class Eval>
-		struct calcMinMax<INT32, Eval>
+		template <>
+		void calcMinMax(std::pair<INT32, INT32>& minmax, float start, float end, INT32(&coeffs)[4])
 		{
-			void operator()(std::pair<INT32, INT32>& minmax, float start, float end, const INT32& a, const INT32& b,
-				const INT32& c, INT32(&coeffs)[4])
+			getMinMax(minmax, coeffs[0]);
+			getMinMax(minmax, coeffs[1]);
+		}
+
+		template <class T>
+		void calcMinMaxIntegrated(std::pair<T, T>& minmax, float start, float end, const T& sum, T(&coeffs)[4])
+		{
+			// Differentiate
+			T a = 4.0f * coeffs[0];
+			T b = 3.0f * coeffs[1];
+			T c = 2.0f * coeffs[2];
+			T d = 1.0f * coeffs[3];
+
+			const UINT32 numComponents = getNumComponents<T>();
+
+			for (UINT32 i = 0; i < numComponents; i++)
 			{
-				getMinMax(minmax, coeffs[0]);
-				getMinMax(minmax, coeffs[1]);
+				float roots[3];
+				const UINT32 numRoots = Math::solveCubic(
+					getComponent(a, i),
+					getComponent(b, i),
+					getComponent(c, i),
+					getComponent(d, i),
+					roots);
+
+				for (UINT32 j = 0; j < numRoots; j++)
+				{
+					if ((roots[j] >= 0.0f) && ((start + roots[j]) < end))
+					{
+						float fltCoeffs[4] =
+						{
+							getComponent(coeffs[0], i),
+							getComponent(coeffs[1], i),
+							getComponent(coeffs[2], i),
+							getComponent(coeffs[3], i)
+						};
+
+						float value = getComponent(sum, i) + evaluateCubic(roots[j], 0.0f, 0.0f, fltCoeffs) * roots[j];
+
+						getComponent(minmax.first, i) = std::min(getComponent(minmax.first, i), value);
+						getComponent(minmax.second, i) = std::max(getComponent(minmax.second, i), value);
+					}
+				}
 			}
-		};
+		}
+
+		template <>
+		void calcMinMaxIntegrated(std::pair<INT32, INT32>& minmax, float start, float end, const INT32& sum, 
+			INT32(&coeffs)[4])
+		{
+			assert(false && "Not implemented");
+		}
+
+		template <class T>
+		void calcMinMaxIntegratedDouble(std::pair<T, T>& minmax, float start, float end, const T& doubleSum, 
+			const T& sum, T(&coeffs)[4])
+		{
+			// Differentiate
+			T a = 5.0f * coeffs[0];
+			T b = 4.0f * coeffs[1];
+			T c = 3.0f * coeffs[2];
+			T d = 2.0f * coeffs[3];
+
+			const UINT32 numComponents = getNumComponents<T>();
+
+			for (UINT32 i = 0; i < numComponents; i++)
+			{
+				float roots[4];
+				const UINT32 numRoots = Math::solveQuartic(
+					getComponent(a, i),
+					getComponent(b, i),
+					getComponent(c, i),
+					getComponent(d, i),
+					0.0f,
+					roots);
+
+				for (UINT32 j = 0; j < numRoots; j++)
+				{
+					if ((roots[j] >= 0.0f) && ((start + roots[j]) < end))
+					{
+						float fltCoeffs[4] =
+						{
+							getComponent(coeffs[0], i),
+							getComponent(coeffs[1], i),
+							getComponent(coeffs[2], i),
+							getComponent(coeffs[3], i)
+						};
+
+						float root = roots[j];
+						float value = getComponent(doubleSum, i) + getComponent(sum, i) * root + 
+							evaluateCubic(root, 0.0f, 0.0f, fltCoeffs) * root * root;
+
+						getComponent(minmax.first, i) = std::min(getComponent(minmax.first, i), value);
+						getComponent(minmax.second, i) = std::max(getComponent(minmax.second, i), value);
+					}
+				}
+			}
+		}
+
+		template <>
+		void calcMinMaxIntegratedDouble(std::pair<INT32, INT32>& minmax, float start, float end, 
+			const INT32& doubleSum, const INT32& sum, INT32(&coeffs)[4])
+		{
+			assert(false && "Not implemented");
+		}
 	}
 
 	template <class T>
@@ -530,29 +634,7 @@ namespace bs
 
 		// Generate integration cache if required
 		if(!integrationCache.segmentSums)
-		{
-			if (numKeyframes > 1)
-			{
-				integrationCache.init(numKeyframes);
-				integrationCache.segmentSums[0] = impl::getZero<T>();
-
-				for (UINT32 i = 1; i < numKeyframes; i++)
-				{
-					const TKeyframe<T>& lhs = mKeyframes[i - 1];
-					const TKeyframe<T>& rhs = mKeyframes[i];
-
-					T (&coeffs)[4] = integrationCache.coeffs[i - 1];
-					impl::calculateCoeffs(lhs, rhs, lhs.time, coeffs);
-					impl::integrate(coeffs);
-
-					// Evaluate value at the end of the segment and add to the cache (this value is the total area under
-					// the segment)
-					const float t = rhs.time - lhs.time;
-					const T value = (T)(impl::evaluateCubic(t, 0.0f, 0.0f, coeffs) * t);
-					integrationCache.segmentSums[i] = integrationCache.segmentSums[i - 1] + value;
-				}
-			}
-		}
+			buildIntegrationCache(integrationCache);
 
 		if(numKeyframes == 1)
 			return (T)(mKeyframes[0].value * (time - mKeyframes[0].time));
@@ -584,39 +666,7 @@ namespace bs
 
 		// Generate integration cache if required
 		if(!integrationCache.segmentSums)
-		{
-			if (numKeyframes > 1)
-			{
-				integrationCache.initDouble(numKeyframes);
-				integrationCache.segmentSums[0] = impl::getZero<T>();
-				integrationCache.doubleSegmentSums[0] = impl::getZero<T>();
-
-				for (UINT32 i = 1; i < numKeyframes; i++)
-				{
-					const TKeyframe<T>& lhs = mKeyframes[i - 1];
-					const TKeyframe<T>& rhs = mKeyframes[i];
-
-					T (&coeffs)[4] = integrationCache.coeffs[i - 1];
-					impl::calculateCoeffs(lhs, rhs, lhs.time, coeffs);
-					impl::integrate(coeffs);
-
-					// Evaluate value at the end of the segment and add to the cache (this value is the total area under
-					// the segment)
-					const float t = rhs.time - lhs.time;
-					T value = (T)(impl::evaluateCubic(t, 0.0f, 0.0f, coeffs) * t);
-					integrationCache.segmentSums[i] = integrationCache.segmentSums[i - 1] + value;
-
-					// Double integrate the already integrated coeffs
-					coeffs[0] = (T)(coeffs[0] / 5.0f);
-					coeffs[1] = (T)(coeffs[1] / 4.0f);
-					coeffs[2] = (T)(coeffs[2] / 3.0f);
-					coeffs[3] = (T)(coeffs[3] / 2.0f);
-
-					value = (T)(value * t + integrationCache.segmentSums[i - 1] * t);
-					integrationCache.doubleSegmentSums[i] = integrationCache.doubleSegmentSums[i - 1] + value;
-				}
-			}
-		}
+			buildDoubleIntegrationCache(integrationCache);
 
 		if(numKeyframes == 1)
 		{
@@ -884,27 +934,140 @@ namespace bs
 
 			T coeffs[4];
 			impl::calculateCoeffs(lhs, rhs, lhs.time, coeffs);
+			impl::calcMinMax(output, lhs.time, rhs.time, coeffs);
 
-			// Differentiate
-			T a = (T)(3.0f * coeffs[0]);
-			T b = (T)(2.0f * coeffs[1]);
-			T c = (T)(1.0f * coeffs[2]);
-
-			struct EvalFunc
-			{
-				float operator()(float root, float (&coeffs)[4]) const
-				{
-					return impl::evaluateCubic(root, 0.0f, 0.0f, coeffs);
-				}
-			};
-
-			impl::calcMinMax<T, EvalFunc> calcMinMax;
-			calcMinMax(output, lhs.time, rhs.time, a, b, c, coeffs);
-
-			impl::getMinMax(output, impl::evaluateCubic(rhs.time, lhs.time, 0.0f, coeffs));
+			// Evaluate at end for step tangents
+			T endVal = impl::evaluateCubic(rhs.time, lhs.time, 0.0f, coeffs);
+			impl::getMinMax(output, endVal);
 		}
 
 		return output;
+	}
+
+	template <class T>
+	std::pair<T, T> TAnimationCurve<T>::calculateRangeIntegrated(const TCurveIntegrationCache<T>& cache) const
+	{
+		const auto numKeys = (UINT32)mKeyframes.size();
+		if(numKeys == 0)
+			return std::make_pair(impl::getZero<T>(), impl::getZero<T>());
+
+		if(!cache.segmentSums)
+			buildIntegrationCache(cache);
+
+		std::pair<T, T> output = { std::numeric_limits<T>::infinity(), -std::numeric_limits<T>::infinity() };
+		for(UINT32 i = 1; i < numKeys; i++)
+		{
+			const KeyFrame& lhs = mKeyframes[i - 1];
+			const KeyFrame& rhs = mKeyframes[i];
+
+			T (&coeffs)[4] = cache.coeffs[i - 1];
+			impl::calcMinMaxIntegrated(output, lhs.time, rhs.time, cache.segmentSums[i - 1], coeffs);
+
+			// Evaluate at end for step tangents
+			float t = rhs.time - lhs.time;
+			T endVal = (T)(cache.segmentSums[i - 1] + impl::evaluateCubic(t, 0.0f, 0.0f, coeffs) * t);
+			impl::getMinMax(output, endVal);
+		}
+
+		return output;
+	}
+
+	template <class T>
+	std::pair<T, T> TAnimationCurve<T>::calculateRangeIntegratedDouble(const TCurveIntegrationCache<T>& cache) const
+	{
+		const auto numKeys = (UINT32)mKeyframes.size();
+		if(numKeys == 0)
+			return std::make_pair(impl::getZero<T>(), impl::getZero<T>());
+
+		if(!cache.segmentSums)
+			buildDoubleIntegrationCache(cache);
+
+		std::pair<T, T> output = { std::numeric_limits<T>::infinity(), -std::numeric_limits<T>::infinity() };
+		for(UINT32 i = 1; i < numKeys; i++)
+		{
+			const KeyFrame& lhs = mKeyframes[i - 1];
+			const KeyFrame& rhs = mKeyframes[i];
+
+			T (&coeffs)[4] = cache.coeffs[i - 1];
+			impl::calcMinMaxIntegratedDouble(output, lhs.time, rhs.time, cache.doubleSegmentSums[i - 1], 
+				cache.segmentSums[i - 1], coeffs);
+
+			// Evaluate at end for step tangents
+			float t = rhs.time - lhs.time;
+			T endVal = (T)(cache.doubleSegmentSums[i - 1] + cache.segmentSums[i - 1] * t + 
+				impl::evaluateCubic(t, 0.0f, 0.0f, coeffs) * t * t);
+			impl::getMinMax(output, endVal);
+		}
+
+		return output;
+	}
+
+	template <class T>
+	void TAnimationCurve<T>::buildIntegrationCache(const TCurveIntegrationCache<T>& cache) const
+	{
+		assert(!cache.segmentSums);
+
+		const auto numKeyframes = (UINT32)mKeyframes.size();
+		if(numKeyframes <= 1)
+			return;
+
+		cache.init(numKeyframes);
+		cache.segmentSums[0] = impl::getZero<T>();
+
+		for (UINT32 i = 1; i < numKeyframes; i++)
+		{
+			const TKeyframe<T>& lhs = mKeyframes[i - 1];
+			const TKeyframe<T>& rhs = mKeyframes[i];
+
+			T(&coeffs)[4] = cache.coeffs[i - 1];
+			impl::calculateCoeffs(lhs, rhs, lhs.time, coeffs);
+			impl::integrate(coeffs);
+
+			// Evaluate value at the end of the segment and add to the cache (this value is the total area under
+			// the segment)
+			const float t = rhs.time - lhs.time;
+			const T value = (T)(impl::evaluateCubic(t, 0.0f, 0.0f, coeffs) * t);
+			cache.segmentSums[i] = cache.segmentSums[i - 1] + value;
+		}
+	}
+
+	template <class T>
+	void TAnimationCurve<T>::buildDoubleIntegrationCache(const TCurveIntegrationCache<T>& cache) const
+	{
+		assert(!cache.segmentSums);
+
+		const auto numKeyframes = (UINT32)mKeyframes.size();
+		if(numKeyframes <= 1)
+			return;
+
+		cache.initDouble(numKeyframes);
+		cache.segmentSums[0] = impl::getZero<T>();
+		cache.doubleSegmentSums[0] = impl::getZero<T>();
+
+		for (UINT32 i = 1; i < numKeyframes; i++)
+		{
+			const TKeyframe<T>& lhs = mKeyframes[i - 1];
+			const TKeyframe<T>& rhs = mKeyframes[i];
+
+			T(&coeffs)[4] = cache.coeffs[i - 1];
+			impl::calculateCoeffs(lhs, rhs, lhs.time, coeffs);
+			impl::integrate(coeffs);
+
+			// Evaluate value at the end of the segment and add to the cache (this value is the total area under
+			// the segment)
+			const float t = rhs.time - lhs.time;
+			T value = (T)(impl::evaluateCubic(t, 0.0f, 0.0f, coeffs) * t);
+			cache.segmentSums[i] = cache.segmentSums[i - 1] + value;
+
+			// Double integrate the already integrated coeffs
+			coeffs[0] = (T)(coeffs[0] / 5.0f);
+			coeffs[1] = (T)(coeffs[1] / 4.0f);
+			coeffs[2] = (T)(coeffs[2] / 3.0f);
+			coeffs[3] = (T)(coeffs[3] / 2.0f);
+
+			value = (T)(value * t + cache.segmentSums[i - 1] * t);
+			cache.doubleSegmentSums[i] = cache.doubleSegmentSums[i - 1] + value;
+		}
 	}
 
 	template class TAnimationCurve<Vector3>;
