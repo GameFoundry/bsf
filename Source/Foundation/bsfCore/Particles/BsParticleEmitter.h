@@ -41,8 +41,16 @@ namespace bs
 		virtual UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
 			const ParticleSystemState& state) const = 0;
 
+		/** 
+		 * Checks has the emitter been initialized properly. If the emitter is not valid then the spawn() method is
+		 * not allowed to be called.
+		 */
+		bool isValid() const { return mIsValid; }
+
 	protected:
 		ParticleEmitterShape() = default;
+
+		bool mIsValid = true;
 	};
 
 
@@ -405,22 +413,17 @@ namespace bs
 		Triangle
 	};
 
-	/** Information describing a ParticleEmitterStaticMeshShape and ParticleEmitterSkinnedMeshShape. */
-	struct PARTICLE_MESH_SHAPE_DESC
+	/** Information describing a ParticleEmitterStaticMeshShape. */
+	struct PARTICLE_STATIC_MESH_SHAPE_DESC
 	{
 		/** Determines from which portion of the mesh are the particles emitted from. */
 		ParticleEmitterMeshType type = ParticleEmitterMeshType::Triangle;
 
 		/** 
-		 * Data describing the mesh vertices and indices. Must not be null and must at least contain the following
-		 * attributes:
-		 *  - VES_POSITION of VET_FLOAT3 type, representing vertex positions. Required for both static and skinned emitters.
-		 *  - VES_BLEND_INDICES of VET_UBYTE4 type, representing bone indices. Required only for skinned emitters.
-		 *  - VES_BLEND_WEIGHTS of VET_FLOAT4 type, representing bone weights. Required only for skinned emitters.
-		 *  - VES_NORMAL of either VET_FLOAT3 or VET_UBYTE4_NORM type, representing vertex normals. Optional for both
-		 *    static and skinned emitters.
+		 * Mesh to spawn particles on. Must at least contain per-vertex position data encoded as 3D float vectors. Can
+		 * optionally contain per-vertex normals encoded as 3D float vectors or as 4-byte unsigned-normalized format.
 		 */
-		SPtr<MeshData> meshData;
+		HMesh mesh;
 	};
 
 	/** 
@@ -444,10 +447,52 @@ namespace bs
 		void calculate(const MeshData& meshData);
 
 		/** Find a random triangle on the mesh and outputs its vertex indices. */
-		void getTriangle(const Random& random, UINT32 (&indices)[3]) const;
+		void getTriangle(const Random& random, std::array<UINT32, 3>& indices) const;
 
 	private:
 		Vector<TriangleWeight> mWeights;
+	};
+
+	/** Contains common functionality for particle mesh emitters. */
+	class MeshEmissionHelper
+	{
+	public:
+		/** 
+		 * Initializes the emission helper if the provided mesh contains necessary data for particle emission. Otherwise
+		 * reports any issues in the log.
+		 * 
+		 * @param[in]	mesh		Mesh to validate.
+		 * @param[in]	perVertex	Set to true if particle emission is happening on mesh vertices.
+		 * @param[in]	skinning	Set to true if the mesh will be animated using skinning.
+		 * @return					True if initialized, or false if issues were detected.
+		 */
+		bool initialize(const HMesh& mesh, bool perVertex, bool skinning);
+
+		/** Randomly picks a vertex on the mesh and returns its position, normal and index. */
+		void getRandomVertex(const Random& random, Vector3& position, Vector3& normal, UINT32& idx) const;
+
+		/** Randomly picks an edge on the mesh and returns the position, normal and indices of its vertices. */
+		void getRandomEdge(const Random& random, std::array<Vector3, 2>& position, std::array<Vector3, 2>& normal, 
+			std::array<UINT32, 2>& idx) const;
+
+		/** Randomly picks an triangle on the mesh and returns the position, normal and indices of its vertices. */
+		void getRandomTriangle(const Random& random, std::array<Vector3, 3>& position, std::array<Vector3, 3>& normal, 
+			std::array<UINT32, 3>& idx) const;
+
+		/** Evaluates a blend matrix for a vertex at the specified index. */
+		Matrix4 getBlendMatrix(const Matrix4* bones, UINT32 vertexIdx) const;
+
+	private:
+		MeshWeightedTriangles mWeightedTriangles;
+
+		UINT8* mVertices = nullptr;
+		UINT8* mNormals = nullptr;
+		UINT32 mNumVertices = 0;
+		UINT32 mVertexStride = 0;
+		bool m32BitNormals = true;
+
+		UINT8* mBoneIndices = nullptr;
+		UINT8* mBoneWeights = nullptr;
 	};
 
 	/** 
@@ -458,7 +503,7 @@ namespace bs
 	class BS_CORE_EXPORT ParticleEmitterStaticMeshShape : public ParticleEmitterShape
 	{
 	public:
-		ParticleEmitterStaticMeshShape(const PARTICLE_MESH_SHAPE_DESC& desc);
+		ParticleEmitterStaticMeshShape(const PARTICLE_STATIC_MESH_SHAPE_DESC& desc);
 		virtual ~ParticleEmitterStaticMeshShape() = default;
 
 		/** @copydoc ParticleEmitterShape::spawn */
@@ -469,17 +514,11 @@ namespace bs
 		void spawn(const Random& random, Vector3& position, Vector3& normal) const;
 
 		/** Creates a new particle emitter static mesh shape. */
-		static SPtr<ParticleEmitterShape> create(const PARTICLE_MESH_SHAPE_DESC& desc);
+		static SPtr<ParticleEmitterShape> create(const PARTICLE_STATIC_MESH_SHAPE_DESC& desc);
 
 	protected:
-		PARTICLE_MESH_SHAPE_DESC mInfo;
-
-		MeshWeightedTriangles mWeightedTriangles;
-		UINT8* mVertices;
-		UINT8* mNormals;
-		UINT32 mNumVertices;
-		UINT32 mVertexStride;
-		bool m32BitNormals;
+		PARTICLE_STATIC_MESH_SHAPE_DESC mInfo;
+		MeshEmissionHelper mMeshEmissionHelper;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -492,14 +531,30 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 	};
 
-	/** Particle emitter shape that emits particles from a surface of a skinned (animated) mesh. Particles can be
+	/** Information describing a ParticleEmitterSkinnedMeshShape. */
+	struct PARTICLE_SKINNED_MESH_SHAPE_DESC
+	{
+		/** Determines from which portion of the mesh are the particles emitted from. */
+		ParticleEmitterMeshType type = ParticleEmitterMeshType::Triangle;
+
+		/** 
+		 * Renderable object containing a mesh to spawn particles on, as well as the attached Animation object resposible
+		 * for performing skinned animation. Mesh must at least contain per-vertex position data encoded as 3D float
+		 * vectors, blend indices encoded in 4-byte format, and blend weights encoded a 4D float vectors. Can optionally 
+		 * contain per-vertex normals encoded as 3D float vectors or as 4-byte unsigned-normalized format.
+		 */
+		SPtr<Renderable> renderable;
+	};
+
+	/** 
+	 * Particle emitter shape that emits particles from a surface of a skinned (animated) mesh. Particles can be
 	 * emitted from mesh vertices, edges or triangles. If information about normals exists, particles will also inherit
 	 * the normals.
 	 */
-	class BS_CORE_EXPORT ParticleEmitterSkinnedMeshShape : public ParticleEmitterShape
+	class BS_CORE_EXPORT ParticleEmitterSkinnedMeshShape : public ParticleEmitterShape 
 	{
 	public:
-		ParticleEmitterSkinnedMeshShape(const PARTICLE_MESH_SHAPE_DESC& desc);
+		ParticleEmitterSkinnedMeshShape(const PARTICLE_SKINNED_MESH_SHAPE_DESC& desc);
 		virtual ~ParticleEmitterSkinnedMeshShape() = default;
 
 		/** @copydoc ParticleEmitterShape::spawn */
@@ -507,24 +562,13 @@ namespace bs
 			const ParticleSystemState& state) const override;
 
 		/** Spawns a single particle, generating its position and normal. */
-		void spawn(const Random& random, const ParticleSystemState& state, Vector3& position, Vector3& normal) const;
+		void spawn(const Random& random, const Matrix4* bones, Vector3& position, Vector3& normal) const;
 
 		/** Creates a new particle emitter skinned mesh shape. */
-		static SPtr<ParticleEmitterShape> create(const PARTICLE_MESH_SHAPE_DESC& desc);
+		static SPtr<ParticleEmitterShape> create(const PARTICLE_SKINNED_MESH_SHAPE_DESC& desc);
 	protected:
-		/** Evaluates a blend matrix for a vertex at the specified index. */
-		Matrix4 getBlendMatrix(const ParticleSystemState& state, UINT32 vertexIdx) const;
-
-		PARTICLE_MESH_SHAPE_DESC mInfo;
-
-		MeshWeightedTriangles mWeightedTriangles;
-		UINT8* mVertices;
-		UINT8* mNormals;
-		UINT8* mBoneIndices;
-		UINT8* mBoneWeights;
-		UINT32 mNumVertices;
-		UINT32 mVertexStride;
-		bool m32BitNormals;
+		PARTICLE_SKINNED_MESH_SHAPE_DESC mInfo;
+		MeshEmissionHelper mMeshEmissionHelper;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

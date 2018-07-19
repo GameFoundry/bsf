@@ -105,9 +105,6 @@ namespace bs
 		/** Unregisters an animation with the specified ID. Must be called before an Animation is destroyed. */
 		void unregisterAnimation(UINT64 id);
 
-		/** Worker method ran on the animation thread that evaluates all animation at the provided time. */
-		void evaluateAnimation();
-
 		/** 
 		 * Evaluates animation for a single object and writes the result in the currently active write buffer. 
 		 *

@@ -214,6 +214,7 @@ namespace bs
 	private:
 		BS_BEGIN_RTTI_MEMBERS
 			BS_RTTI_MEMBER_PLAIN_NAMED(type, mInfo.type, 0)
+			BS_RTTI_MEMBER_REFL_NAMED(mesh, mInfo.mesh, 1)
 		BS_END_RTTI_MEMBERS
 
 	public:

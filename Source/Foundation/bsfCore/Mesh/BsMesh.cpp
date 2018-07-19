@@ -165,32 +165,6 @@ namespace bs
 		memcpy(dest, src, pixelData.getSize());
 	}
 
-	void Mesh::readCachedData(MeshData& dest)
-	{
-		if ((mUsage & MU_CPUCACHED) == 0)
-		{
-			LOGERR("Attempting to read CPU data from a mesh that is created without CPU caching.");
-			return;
-		}
-
-		if (dest.getNumIndices() != mProperties.getNumIndices() ||
-			dest.getNumVertices() != mProperties.getNumVertices() ||
-			dest.getIndexType() != mIndexType ||
-			dest.getVertexDesc()->getVertexStride() != mVertexDesc->getVertexStride())
-		{
-			LOGERR("Provided buffer is not of valid dimensions or format in order to read from this mesh.");
-			return;
-		}
-
-		if (mCPUData->getSize() != dest.getSize())
-			BS_EXCEPT(InternalErrorException, "Buffer sizes don't match.");
-
-		UINT8* srcPtr = mCPUData->getData();
-		UINT8* destPtr = dest.getData();
-
-		memcpy(destPtr, srcPtr, dest.getSize());
-	}
-
 	void Mesh::createCPUBuffer()
 	{
 		mCPUData = allocBuffer();

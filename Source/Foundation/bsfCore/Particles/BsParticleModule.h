@@ -7,6 +7,8 @@
 
 namespace bs
 {
+	struct EvaluatedAnimationData;
+
 	/** @addtogroup Particles-Internal
 	 *  @{
 	 */
@@ -14,18 +16,6 @@ namespace bs
 	/** Contains particle system state that varies from frame to frame. */
 	struct ParticleSystemState
 	{
-		/** Emitter state relevant for skinned mesh emitter shape. */
-		struct SkinnedMesh
-		{
-			Matrix4* bones;
-			UINT32 numBones;
-		};
-
-		union
-		{
-			SkinnedMesh skinnedMesh;
-		};
-
 		float time;
 		float length;
 		float timeStep;
@@ -33,6 +23,7 @@ namespace bs
 		bool worldSpace;
 		Matrix4 localToWorld;
 		Matrix4 worldToLocal;
+		const EvaluatedAnimationData* animData;
 	};
 
 	/** Module that in some way modified or effects a ParticleSystem. */

@@ -12,6 +12,7 @@
 namespace bs
 {
 	class ParticleSet;
+	struct EvaluatedAnimationData;
 
 	/** @addtogroup Particles-Internal
 	 *  @{
@@ -66,7 +67,7 @@ namespace bs
 		 * Advances the simulation for all particle systems using the current frame time delta. Outputs a set of data
 		 * that can be used for rendering every active particle system.
 		 */
-		ParticleRenderDataGroup* update();
+		ParticleRenderDataGroup* update(const EvaluatedAnimationData& animData);
 
 	private:
 		friend class ParticleSystem;

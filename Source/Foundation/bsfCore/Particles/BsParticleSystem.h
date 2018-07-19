@@ -16,6 +16,7 @@
 
 namespace bs 
 {
+	struct EvaluatedAnimationData;
 	class SkeletonMask;
 	class ParticleSystem;
 	class ParticleEmitter;
@@ -286,7 +287,7 @@ namespace bs
 		 * Updates the particle simulation by advancing it by @p timeDelta. New state will be updated in the internal
 		 * ParticleSet.
 		 */
-		void _simulate(float timeDelta);
+		void _simulate(float timeDelta, const EvaluatedAnimationData* animData);
 
 		/** 
 		 * Calculates the bounds of all the particles in the system. Should be called after a call to _simulate() to get

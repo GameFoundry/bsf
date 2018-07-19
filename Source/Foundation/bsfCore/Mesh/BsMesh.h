@@ -104,18 +104,14 @@ namespace bs
 		SPtr<MeshData> allocBuffer() const;
 
 		/**
-		 * Reads data from the cached system memory mesh buffer into the provided buffer. 
-		 * 		  
-		 * @param[out]	data		Pre-allocated buffer of proper vertex/index format and size where data will be read to. 
-		 *							You can use allocBuffer() to allocate a buffer of a correct format and size.
+		 * Returns mesh data cached in the system memory. If the mesh wasn't created with CPU cached usage flag this 
+		 * method will not return any data. Caller should not modify the returned data.
 		 *
 		 * @note	
 		 * The data read is the cached mesh data. Any data written to the mesh from the GPU or core thread will not be 
 		 * reflected in this data. Use readData() if you require those changes. 
-		 * @note
-		 * The mesh must have been created with MU_CPUCACHED usage otherwise this method will not return any data.
 		 */
-		void readCachedData(MeshData& data);
+		SPtr<MeshData> getCachedData() const { return mCPUData; }
 
 		/** Gets the skeleton required for animation of this mesh, if any is available. */
 		BS_SCRIPT_EXPORT(pr:getter,n:Skeleton)

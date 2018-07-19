@@ -5,8 +5,12 @@
 #include "Mesh/BsMeshUtility.h"
 #include "RenderAPI/BsVertexDataDesc.h"
 #include "Math/BsRandom.h"
+#include "Renderer/BsRenderable.h"
 #include "Private/Particles/BsParticleSet.h"
 #include "Private/RTTI/BsParticleSystemRTTI.h"
+#include "Animation/BsAnimation.h"
+#include "Animation/BsAnimationManager.h"
+#include "Mesh/BsMesh.h"
 
 namespace bs
 {
@@ -77,7 +81,7 @@ namespace bs
 		mWeights[numTriangles - 1].cumulativeWeight = 1.0f;
 	}
 
-	void MeshWeightedTriangles::getTriangle(const Random& random, UINT32(&indices)[3]) const
+	void MeshWeightedTriangles::getTriangle(const Random& random, std::array<UINT32, 3>& indices) const
 	{
 		struct Comp
 		{
@@ -96,9 +100,22 @@ namespace bs
 
 		const auto findIter = std::lower_bound(mWeights.begin(), mWeights.end(), val, Comp());
 		if(findIter != mWeights.end())
-			memcpy(indices, findIter->indices, sizeof(indices));
+			memcpy(indices.data(), findIter->indices, sizeof(indices));
 		else
 			bs_zero_out(indices);
+	}
+
+	template <class T>
+	UINT32 spawnMultiple(T* spawner, const Random& random, ParticleSet& particles, UINT32 count)
+	{
+		const UINT32 index = particles.allocParticles(count);
+		ParticleSetData& particleData = particles.getParticles();
+
+		const UINT32 end = index + count;
+		for (UINT32 i = index; i < end; i++)
+			spawner->spawn(random, particleData.position[i], particleData.velocity[i]);
+
+		return index;
 	}
 
 	ParticleEmitterConeShape::ParticleEmitterConeShape(const PARTICLE_CONE_SHAPE_DESC& desc)
@@ -108,14 +125,7 @@ namespace bs
 	UINT32 ParticleEmitterConeShape::spawn(const Random& random, ParticleSet& particles, UINT32 count,
 		const ParticleSystemState& state) const
 	{
-		const UINT32 index = particles.allocParticles(count);
-		ParticleSetData& particleData = particles.getParticles();
-
-		const UINT32 end = index + count;
-		for (UINT32 i = index; i < end; i++)
-			spawn(random, particleData.position[i], particleData.velocity[i]);
-
-		return index;
+		return spawnMultiple(this, random, particles, count);
 	}
 
 	void ParticleEmitterConeShape::spawn(const Random& random, Vector3& position, Vector3& normal) const
@@ -182,14 +192,7 @@ namespace bs
 	UINT32 ParticleEmitterSphereShape::spawn(const Random& random, ParticleSet& particles, UINT32 count,
 		const ParticleSystemState& state) const
 	{
-		const UINT32 index = particles.allocParticles(count);
-		ParticleSetData& particleData = particles.getParticles();
-
-		const UINT32 end = index + count;
-		for (UINT32 i = index; i < end; i++)
-			spawn(random, particleData.position[i], particleData.velocity[i]);
-
-		return index;
+		return spawnMultiple(this, random, particles, count);
 	}
 
 	void ParticleEmitterSphereShape::spawn(const Random& random, Vector3& position, Vector3& normal) const
@@ -222,14 +225,7 @@ namespace bs
 	UINT32 ParticleEmitterHemisphereShape::spawn(const Random& random, ParticleSet& particles, UINT32 count,
 		const ParticleSystemState& state) const
 	{
-		const UINT32 index = particles.allocParticles(count);
-		ParticleSetData& particleData = particles.getParticles();
-
-		const UINT32 end = index + count;
-		for (UINT32 i = index; i < end; i++)
-			spawn(random, particleData.position[i], particleData.velocity[i]);
-
-		return index;
+		return spawnMultiple(this, random, particles, count);
 	}
 
 	void ParticleEmitterHemisphereShape::spawn(const Random& random, Vector3& position, Vector3& normal) const
@@ -260,7 +256,6 @@ namespace bs
 	ParticleEmitterBoxShape::ParticleEmitterBoxShape(const PARTICLE_BOX_SHAPE_DESC& desc)
 		:mInfo(desc)
 	{
-		
 		switch(mInfo.type)
 		{
 		case ParticleEmitterBoxType::Surface: 
@@ -311,14 +306,7 @@ namespace bs
 	UINT32 ParticleEmitterBoxShape::spawn(const Random& random, ParticleSet& particles, UINT32 count,
 		const ParticleSystemState& state) const
 	{
-		const UINT32 index = particles.allocParticles(count);
-		ParticleSetData& particleData = particles.getParticles();
-
-		const UINT32 end = index + count;
-		for (UINT32 i = index; i < end; i++)
-			spawn(random, particleData.position[i], particleData.velocity[i]);
-
-		return index;
+		return spawnMultiple(this, random, particles, count);
 	}
 
 	void ParticleEmitterBoxShape::spawn(const Random& random, Vector3& position, Vector3& normal) const
@@ -433,14 +421,7 @@ namespace bs
 	UINT32 ParticleEmitterLineShape::spawn(const Random& random, ParticleSet& particles, UINT32 count,
 		const ParticleSystemState& state) const
 	{
-		const UINT32 index = particles.allocParticles(count);
-		ParticleSetData& particleData = particles.getParticles();
-
-		const UINT32 end = index + count;
-		for (UINT32 i = index; i < end; i++)
-			spawn(random, particleData.position[i], particleData.velocity[i]);
-
-		return index;
+		return spawnMultiple(this, random, particles, count);
 	}
 
 	void ParticleEmitterLineShape::spawn(const Random& random, Vector3& position, Vector3& normal) const
@@ -471,14 +452,7 @@ namespace bs
 	UINT32 ParticleEmitterCircleShape::spawn(const Random& random, ParticleSet& particles, UINT32 count,
 		const ParticleSystemState& state) const
 	{
-		const UINT32 index = particles.allocParticles(count);
-		ParticleSetData& particleData = particles.getParticles();
-
-		const UINT32 end = index + count;
-		for (UINT32 i = index; i < end; i++)
-			spawn(random, particleData.position[i], particleData.velocity[i]);
-
-		return index;
+		return spawnMultiple(this, random, particles, count);
 	}
 
 	void ParticleEmitterCircleShape::spawn(const Random& random, Vector3& position, Vector3& normal) const
@@ -516,14 +490,7 @@ namespace bs
 	UINT32 ParticleEmitterRectShape::spawn(const Random& random, ParticleSet& particles, UINT32 count,
 		const ParticleSystemState& state) const
 	{
-		const UINT32 index = particles.allocParticles(count);
-		ParticleSetData& particleData = particles.getParticles();
-
-		const UINT32 end = index + count;
-		for (UINT32 i = index; i < end; i++)
-			spawn(random, particleData.position[i], particleData.velocity[i]);
-
-		return index;
+		return spawnMultiple(this, random, particles, count);
 	}
 
 	void ParticleEmitterRectShape::spawn(const Random& random, Vector3& position, Vector3& normal) const
@@ -550,13 +517,74 @@ namespace bs
 		return getRTTIStatic();
 	}
 
-	ParticleEmitterStaticMeshShape::ParticleEmitterStaticMeshShape(const PARTICLE_MESH_SHAPE_DESC& desc)
-		:mInfo(desc)
+	bool MeshEmissionHelper::initialize(const HMesh& mesh, bool perVertex, bool skinning)
 	{
-		mVertices = desc.meshData->getElementData(VES_POSITION);
-		mNumVertices = desc.meshData->getNumVertices();
-		
-		const SPtr<VertexDataDesc>& vertexDesc = desc.meshData->getVertexDesc();
+		SPtr<MeshData> meshData;
+
+		// Validate
+		if(mesh)
+		{
+			meshData = mesh->getCachedData();
+
+			if(!meshData)
+				LOGWRN_VERBOSE("Particle emitter mesh not created with CPU caching, performing an expensive GPU read.");
+		}
+
+		if(!meshData)
+		{
+			// No warning as user could want to add mesh data later
+			return false;
+		}
+
+		const SPtr<VertexDataDesc>& vertexDesc = meshData->getVertexDesc();
+		const VertexElement* positionElement = vertexDesc->getElement(VES_POSITION);
+		if(positionElement == nullptr)
+		{
+			LOGERR("Mesh particle emitter requires position vertex data to be present in the provided mesh data.");
+			return false;
+		}
+
+		if(positionElement->getType() != VET_FLOAT3)
+		{
+			LOGERR("Mesh particle emitter requires position vertex data to use 3D vectors for individual elements.");
+			return false;
+		}
+
+		if(!perVertex && (meshData->getNumIndices() % 3 != 0))
+		{
+			LOGERR("Unless using the per-vertex emission mode, mesh particle emitter requires the number of indices to be \
+				 divisible by three, using a triangle list layout.");
+			return false;
+		}
+
+		if(skinning)
+		{
+			const VertexElement* blendIdxElement = vertexDesc->getElement(VES_BLEND_INDICES);
+			const VertexElement* blendWeightElement = vertexDesc->getElement(VES_BLEND_WEIGHTS);
+
+			if (blendIdxElement == nullptr || blendWeightElement == nullptr)
+			{
+				LOGERR("Skinned mesh particle emitter requires blend indices and blend weight data to be present in the \
+				provided mesh data.");
+				return false;
+			}
+
+			if (blendIdxElement->getType() != VET_UBYTE4)
+			{
+				LOGERR("Skinned mesh particle emitter requires blend indices to be a 4-byte encoded format.");
+				return false;
+			}
+
+			if (blendWeightElement->getType() != VET_FLOAT4)
+			{
+				LOGERR("Skinned mesh particle emitter requires blend weights to be a 4D vector format.");
+				return false;
+			}
+		}
+
+		// Initialize
+		mVertices = meshData->getElementData(VES_POSITION);
+		mNumVertices = meshData->getNumVertices();
 		mVertexStride = vertexDesc->getVertexStride();
 
 		const VertexElement* normalElement = vertexDesc->getElement(VES_NORMAL);
@@ -566,39 +594,143 @@ namespace bs
 		{
 			if(normalElement->getType() == VET_UBYTE4_NORM)
 			{
-				mNormals = desc.meshData->getElementData(VES_NORMAL);
+				mNormals = meshData->getElementData(VES_NORMAL);
 				m32BitNormals = true;
 			}
 			else if(normalElement->getType() == VET_FLOAT3)
 			{
-				mNormals = desc.meshData->getElementData(VES_NORMAL);
+				mNormals = meshData->getElementData(VES_NORMAL);
 				m32BitNormals = false;
 			}
 		}
 
-		switch(mInfo.type)
+		if(skinning)
 		{
-		case ParticleEmitterMeshType::Edge:
-		case ParticleEmitterMeshType::Triangle: 
-			mWeightedTriangles.calculate(*desc.meshData);
-			break;
+			mBoneIndices = meshData->getElementData(VES_BLEND_INDICES);
+			mBoneWeights = meshData->getElementData(VES_BLEND_WEIGHTS);
+		}
+
+		if(!perVertex)
+			mWeightedTriangles.calculate(*meshData);
+
+
+		return true;
+	}
+
+	void MeshEmissionHelper::getRandomVertex(const Random& random, Vector3& position, Vector3& normal, 
+		UINT32& idx) const
+	{
+		idx = random.get() % mNumVertices;
+		position = *(Vector3*)(mVertices + mVertexStride * idx);
+
+		if (mNormals)
+		{
+			if (m32BitNormals)
+				normal = MeshUtility::unpackNormal(mNormals + mVertexStride * idx);
+			else
+				normal = *(Vector3*)(mNormals + mVertexStride * idx);
+		}
+		else
+			normal = Vector3::UNIT_Z;
+	}
+
+	void MeshEmissionHelper::getRandomEdge(const Random& random, std::array<Vector3, 2>& position, 
+		std::array<Vector3, 2>& normal, std::array<UINT32, 2>& idx) const
+	{
+		std::array<UINT32, 3> triIndices;
+		mWeightedTriangles.getTriangle(random, triIndices);
+
+		// Pick edge
+		// Note: Longer edges should be given higher chance, but we're assuming they are all equal length for performance
+		const int32_t edge = random.getRange(0, 2);
+		switch (edge)
+		{
 		default:
-		case ParticleEmitterMeshType::Vertex: 
+		case 0:
+			idx[0] = triIndices[0];
+			idx[1] = triIndices[1];
+			break;
+		case 1:
+			idx[0] = triIndices[1];
+			idx[1] = triIndices[2];
+			break;
+		case 2:
+			idx[0] = triIndices[2];
+			idx[1] = triIndices[0];
 			break;
 		}
+
+		position[0] = *(Vector3*)(mVertices + mVertexStride * idx[0]);
+		position[1] = *(Vector3*)(mVertices + mVertexStride * idx[1]);
+
+		if (mNormals)
+		{
+			if (m32BitNormals)
+			{
+				normal[0] = MeshUtility::unpackNormal(mNormals + mVertexStride * idx[0]);
+				normal[1] = MeshUtility::unpackNormal(mNormals + mVertexStride * idx[1]);
+			}
+			else
+			{
+				normal[0] = *(Vector3*)(mNormals + mVertexStride * idx[0]);
+				normal[1] = *(Vector3*)(mNormals + mVertexStride * idx[1]);
+			}
+		}
+		else
+		{
+			normal[0] = Vector3::UNIT_Z;
+			normal[1] = Vector3::UNIT_Z;
+		}
+	}
+
+	void MeshEmissionHelper::getRandomTriangle(const Random& random, std::array<Vector3, 3>& position, 
+		std::array<Vector3, 3>& normal, std::array<UINT32, 3>& idx) const
+	{
+		mWeightedTriangles.getTriangle(random, idx);
+
+		for (uint32_t i = 0; i < 3; i++)
+		{
+			position[i] = *(Vector3*)(mVertices + mVertexStride * idx[i]);
+
+			if (mNormals)
+			{
+				if (m32BitNormals)
+					normal[i] = MeshUtility::unpackNormal(mNormals + mVertexStride * idx[i]);
+				else
+					normal[i] = *(Vector3*)(mNormals + mVertexStride * idx[i]);
+			}
+			else
+				normal[i] = Vector3::UNIT_Z;
+		}
+	}
+
+	Matrix4 MeshEmissionHelper::getBlendMatrix(const Matrix4* bones, UINT32 vertexIdx) const
+	{
+		if(bones)
+		{
+			const UINT32 boneIndices = *(UINT32*)(mBoneIndices + vertexIdx * mVertexStride);
+			const Vector4& boneWeights = *(Vector4*)(mBoneWeights + vertexIdx * mVertexStride);
+
+			return
+				bones[boneIndices & 0xFF] * boneWeights[0] +
+				bones[(boneIndices >> 8) & 0xFF] * boneWeights[1] +
+				bones[(boneIndices >> 16) & 0xFF] * boneWeights[2] +
+				bones[(boneIndices >> 24) & 0xFF] * boneWeights[3];
+		}
+		else
+			return Matrix4::IDENTITY;
+	}
+
+	ParticleEmitterStaticMeshShape::ParticleEmitterStaticMeshShape(const PARTICLE_STATIC_MESH_SHAPE_DESC& desc)
+		:mInfo(desc)
+	{
+		mIsValid = mMeshEmissionHelper.initialize(desc.mesh, desc.type == ParticleEmitterMeshType::Vertex, false);
 	}
 
 	UINT32 ParticleEmitterStaticMeshShape::spawn(const Random& random, ParticleSet& particles, UINT32 count,
 		const ParticleSystemState& state) const
 	{
-		const UINT32 index = particles.allocParticles(count);
-		ParticleSetData& particleData = particles.getParticles();
-
-		const UINT32 end = index + count;
-		for (UINT32 i = index; i < end; i++)
-			spawn(random, particleData.position[i], particleData.velocity[i]);
-
-		return index;
+		return spawnMultiple(this, random, particles, count);
 	}
 
 	void ParticleEmitterStaticMeshShape::spawn(const Random& random, Vector3& position, Vector3& normal) const
@@ -607,79 +739,29 @@ namespace bs
 		{
 		case ParticleEmitterMeshType::Vertex: 
 		{
-			const UINT32 vertexIdx = random.get() % mNumVertices;
-			position = *(Vector3*)(mVertices + mVertexStride * vertexIdx);
-
-			if (mNormals)
-			{
-				if (m32BitNormals)
-					normal = MeshUtility::unpackNormal(mNormals + mVertexStride * vertexIdx);
-				else
-					normal = *(Vector3*)(mNormals + mVertexStride * vertexIdx);
-			}
-			else
-				normal = Vector3::UNIT_Z;
+			UINT32 vertexIdx;
+			mMeshEmissionHelper.getRandomVertex(random, position, normal, vertexIdx);
 		}
 			break;
 		case ParticleEmitterMeshType::Edge:
 			{
-				UINT32 indices[3];
-				mWeightedTriangles.getTriangle(random, indices);
+				std::array<Vector3, 2> edgePositions, edgeNormals;
+				std::array<UINT32, 2> edgeIndices;
 
-				// Pick edge
-				UINT32 edgeIndices[2];
-
-				// Note: Longer edges should be given higher chance, but we're assuming they are all equal length for performance
-				const int32_t edge = random.getRange(0, 2);
-				switch (edge)
-				{
-				default:
-				case 0:
-					edgeIndices[0] = indices[0];
-					edgeIndices[1] = indices[1];
-					break;
-				case 1:
-					edgeIndices[0] = indices[1];
-					edgeIndices[1] = indices[2];
-					break;
-				case 2:
-					edgeIndices[0] = indices[2];
-					edgeIndices[1] = indices[0];
-					break;
-				}
-
-				const Vector3& posA = *(Vector3*)(mVertices + mVertexStride * edgeIndices[0]);
-				const Vector3& posB = *(Vector3*)(mVertices + mVertexStride * edgeIndices[1]);
+				mMeshEmissionHelper.getRandomEdge(random, edgePositions, edgeNormals, edgeIndices);
 
 				const float rnd = random.getUNorm();
-				position = Math::lerp(rnd, posA, posB);
-
-				if (mNormals)
-				{
-					if (m32BitNormals)
-					{
-						const Vector3 nrmA = MeshUtility::unpackNormal(mNormals + mVertexStride * edgeIndices[0]);
-						const Vector3 nrmB = MeshUtility::unpackNormal(mNormals + mVertexStride * edgeIndices[1]);
-
-						normal = Math::lerp(rnd, nrmA, nrmB);
-					}
-					else
-					{
-						const Vector3& nrmA = *(Vector3*)(mNormals + mVertexStride * edgeIndices[0]);
-						const Vector3& nrmB = *(Vector3*)(mNormals + mVertexStride * edgeIndices[1]);
-
-						normal = Math::lerp(rnd, nrmA, nrmB);
-					}
-				}
-				else
-					normal = Vector3::UNIT_Z;
+				position = Math::lerp(rnd, edgePositions[0], edgePositions[1]);
+				normal = Math::lerp(rnd, edgeNormals[0], edgeNormals[1]);
 			}
 			break;
 		default:
 		case ParticleEmitterMeshType::Triangle:
 			{
-				UINT32 indices[3];
-				mWeightedTriangles.getTriangle(random, indices);
+				std::array<Vector3, 3> triPositions, triNormals;
+				std::array<UINT32, 3> triIndices;
+
+				mMeshEmissionHelper.getRandomTriangle(random, triPositions, triNormals, triIndices);
 
 				position = Vector3::ZERO;
 				normal = Vector3::ZERO;
@@ -687,35 +769,16 @@ namespace bs
 
 				for (uint32_t i = 0; i < 3; i++)
 				{
-					const Vector3& curPosition = *(Vector3*)(mVertices + mVertexStride * indices[i]);
-					position += curPosition * barycenter[i];
-
-					if (mNormals)
-					{
-						if (m32BitNormals)
-						{
-							const Vector3 curNormal = MeshUtility::unpackNormal(mNormals + mVertexStride * indices[i]);
-							normal += curNormal * barycenter[i];
-						}
-						else
-						{
-							const Vector3& curNormal = *(Vector3*)(mNormals + mVertexStride * indices[i]);
-							normal += curNormal * barycenter[i];
-						}
-					}
-					else
-						normal += Vector3::UNIT_Z * barycenter[i];
+					position += triPositions[i] * barycenter[i];
+					normal += triNormals[i] * barycenter[i];
 				}
 			}
 			break;
 		}
 	}
 
-	SPtr<ParticleEmitterShape> ParticleEmitterStaticMeshShape::create(const PARTICLE_MESH_SHAPE_DESC& desc)
+	SPtr<ParticleEmitterShape> ParticleEmitterStaticMeshShape::create(const PARTICLE_STATIC_MESH_SHAPE_DESC& desc)
 	{
-		// TODO - Only support TRIANGLE_LIST draw operation
-		// TODO - Ensure mesh-data at least has position (with correct type)
-
 		ParticleEmitterStaticMeshShape* output = bs_new<ParticleEmitterStaticMeshShape>(desc);
 		return bs_shared_ptr<ParticleEmitterShape>(output);
 	}
@@ -730,213 +793,112 @@ namespace bs
 		return getRTTIStatic();
 	}
 
-	ParticleEmitterSkinnedMeshShape::ParticleEmitterSkinnedMeshShape(const PARTICLE_MESH_SHAPE_DESC& desc)
+	ParticleEmitterSkinnedMeshShape::ParticleEmitterSkinnedMeshShape(const PARTICLE_SKINNED_MESH_SHAPE_DESC& desc)
 		:mInfo(desc)
 	{
-		mVertices = desc.meshData->getElementData(VES_POSITION);
-		mBoneIndices = desc.meshData->getElementData(VES_BLEND_INDICES);
-		mBoneWeights = desc.meshData->getElementData(VES_BLEND_WEIGHTS);
-		mNumVertices = desc.meshData->getNumVertices();
-		
-		const SPtr<VertexDataDesc>& vertexDesc = desc.meshData->getVertexDesc();
-		mVertexStride = vertexDesc->getVertexStride();
+		HMesh mesh;
+		if(desc.renderable)
+			mesh = desc.renderable->getMesh();
 
-		const VertexElement* normalElement = vertexDesc->getElement(VES_NORMAL);
-
-		mNormals = nullptr;
-		if(normalElement)
-		{
-			if(normalElement->getType() == VET_UBYTE4_NORM)
-			{
-				mNormals = desc.meshData->getElementData(VES_NORMAL);
-				m32BitNormals = true;
-			}
-			else if(normalElement->getType() == VET_FLOAT3)
-			{
-				mNormals = desc.meshData->getElementData(VES_NORMAL);
-				m32BitNormals = false;
-			}
-		}
-
-		switch(mInfo.type)
-		{
-		case ParticleEmitterMeshType::Edge:
-		case ParticleEmitterMeshType::Triangle: 
-			mWeightedTriangles.calculate(*desc.meshData);
-			break;
-		default:
-		case ParticleEmitterMeshType::Vertex: 
-			break;
-		}
-	}
-
-	Matrix4 ParticleEmitterSkinnedMeshShape::getBlendMatrix(const ParticleSystemState& state, UINT32 vertexIdx) const
-	{
-		if(state.skinnedMesh.bones)
-		{
-			const UINT32 boneIndices = *(UINT32*)(mBoneIndices + vertexIdx * mVertexStride);
-			const Vector4& boneWeights = *(Vector4*)(mBoneWeights + vertexIdx * mVertexStride);
-
-			return
-				state.skinnedMesh.bones[boneIndices & 0xFF] * boneWeights[0] +
-				state.skinnedMesh.bones[(boneIndices >> 8) & 0xFF] * boneWeights[1] +
-				state.skinnedMesh.bones[(boneIndices >> 16) & 0xFF] * boneWeights[2] +
-				state.skinnedMesh.bones[(boneIndices >> 24) & 0xFF] * boneWeights[3];
-		}
-		else
-			return Matrix4::IDENTITY;
+		mIsValid = mMeshEmissionHelper.initialize(mesh, desc.type == ParticleEmitterMeshType::Vertex, false);
 	}
 
 	UINT32 ParticleEmitterSkinnedMeshShape::spawn(const Random& random, ParticleSet& particles, UINT32 count,
 		const ParticleSystemState& state) const
 	{
+		const Matrix4* bones = nullptr;
+
+		if(mInfo.renderable)
+		{
+			const SPtr<Animation>& animation = mInfo.renderable->getAnimation();
+			if(animation)
+			{
+				const UINT64 animId = animation->_getId();
+
+				if(state.animData)
+				{
+					const auto iterFind = state.animData->infos.find(animId);
+					if(iterFind != state.animData->infos.end())
+						bones = &state.animData->transforms[iterFind->second.poseInfo.startIdx];
+				}
+			}
+		}
+
 		const UINT32 index = particles.allocParticles(count);
 		ParticleSetData& particleData = particles.getParticles();
 
 		const UINT32 end = index + count;
 		for (UINT32 i = index; i < end; i++)
-			spawn(random, state, particleData.position[i], particleData.velocity[i]);
+			spawn(random, bones, particleData.position[i], particleData.velocity[i]);
 
 		return index;
 	}
 
-	void ParticleEmitterSkinnedMeshShape::spawn(const Random& random, const ParticleSystemState& state, Vector3& position,
+	void ParticleEmitterSkinnedMeshShape::spawn(const Random& random, const Matrix4* bones, Vector3& position,
 		Vector3& normal) const
 	{
 		switch(mInfo.type)
 		{
-		case ParticleEmitterMeshType::Vertex:
-			{
-				const UINT32 vertexIdx = random.get() % mNumVertices;
+		case ParticleEmitterMeshType::Vertex: 
+		{
+			UINT32 vertexIdx;
+			mMeshEmissionHelper.getRandomVertex(random, position, normal, vertexIdx);
 
-				Matrix4 blendMatrix = getBlendMatrix(state, vertexIdx);
-
-				position = *(Vector3*)(mVertices + mVertexStride * vertexIdx);
-				position = blendMatrix.multiplyAffine(position);
-
-				if (mNormals)
-				{
-					if (m32BitNormals)
-						normal = MeshUtility::unpackNormal(mNormals + mVertexStride * vertexIdx);
-					else
-						normal = *(Vector3*)(mNormals + mVertexStride * vertexIdx);
-
-					normal = blendMatrix.multiplyDirection(normal);
-				}
-				else
-					normal = Vector3::UNIT_Z;
-			}
+			Matrix4 blendMatrix = mMeshEmissionHelper.getBlendMatrix(bones, vertexIdx);
+			position = blendMatrix.multiplyAffine(position);
+			normal = blendMatrix.multiplyDirection(normal);
+		}
 			break;
 		case ParticleEmitterMeshType::Edge:
 			{
-				UINT32 indices[3];
-				mWeightedTriangles.getTriangle(random, indices);
+				std::array<Vector3, 2> edgePositions, edgeNormals;
+				std::array<UINT32, 2> edgeIndices;
 
-				// Pick edge
-				UINT32 edgeIndices[2];
+				mMeshEmissionHelper.getRandomEdge(random, edgePositions, edgeNormals, edgeIndices);
 
-				// Note: Longer edges should be given higher chance, but we're assuming they are all equal length for performance
-				const int32_t edge = random.getRange(0, 2);
-				switch (edge)
+				for(uint32_t i = 0; i < 2; i++)
 				{
-				default:
-				case 0:
-					edgeIndices[0] = indices[0];
-					edgeIndices[1] = indices[1];
-					break;
-				case 1:
-					edgeIndices[0] = indices[1];
-					edgeIndices[1] = indices[2];
-					break;
-				case 2:
-					edgeIndices[0] = indices[2];
-					edgeIndices[1] = indices[0];
-					break;
+					Matrix4 blendMatrix = mMeshEmissionHelper.getBlendMatrix(bones, edgeIndices[i]);
+					edgePositions[i] = blendMatrix.multiplyAffine(edgePositions[i]);
+					edgeNormals[i] = blendMatrix.multiplyAffine(edgeNormals[i]);
 				}
-
-				Vector3 posA = *(Vector3*)(mVertices + mVertexStride * edgeIndices[0]);
-				Vector3 posB = *(Vector3*)(mVertices + mVertexStride * edgeIndices[1]);
-
-				Matrix4 blendMatrixA = getBlendMatrix(state, edgeIndices[0]);
-				Matrix4 blendMatrixB = getBlendMatrix(state, edgeIndices[1]);
-
-				posA = blendMatrixA.multiplyAffine(posA);
-				posB = blendMatrixB.multiplyAffine(posB);
 
 				const float rnd = random.getUNorm();
-				position = Math::lerp(rnd, posA, posB);
-
-				Vector3 nrmA = MeshUtility::unpackNormal(mNormals + mVertexStride * edgeIndices[0]);
-				Vector3 nrmB = MeshUtility::unpackNormal(mNormals + mVertexStride * edgeIndices[1]);
-				if (mNormals)
-				{
-					if (m32BitNormals)
-					{
-						nrmA = MeshUtility::unpackNormal(mNormals + mVertexStride * edgeIndices[0]);
-						nrmB = MeshUtility::unpackNormal(mNormals + mVertexStride * edgeIndices[1]);
-
-					}
-					else
-					{
-						nrmA = *(Vector3*)(mNormals + mVertexStride * edgeIndices[0]);
-						nrmB = *(Vector3*)(mNormals + mVertexStride * edgeIndices[1]);
-					}
-				}
-				else
-				{
-					nrmA = Vector3::UNIT_Z;
-					nrmB = Vector3::UNIT_Z;
-				}
-
-				nrmA = blendMatrixA.multiplyDirection(nrmA);
-				nrmB = blendMatrixB.multiplyDirection(nrmB);
-				normal = Math::lerp(rnd, nrmA, nrmB);
+				position = Math::lerp(rnd, edgePositions[0], edgePositions[1]);
+				normal = Math::lerp(rnd, edgeNormals[0], edgeNormals[1]);
 			}
 			break;
 		default:
 		case ParticleEmitterMeshType::Triangle:
 			{
-				UINT32 indices[3];
-				mWeightedTriangles.getTriangle(random, indices);
+				std::array<Vector3, 3> triPositions, triNormals;
+				std::array<UINT32, 3> triIndices;
+
+				mMeshEmissionHelper.getRandomTriangle(random, triPositions, triNormals, triIndices);
 
 				position = Vector3::ZERO;
 				normal = Vector3::ZERO;
 				Vector3 barycenter = random.getBarycentric();
 
+				for(uint32_t i = 0; i < 3; i++)
+				{
+					Matrix4 blendMatrix = mMeshEmissionHelper.getBlendMatrix(bones, triIndices[i]);
+					triPositions[i] = blendMatrix.multiplyAffine(triPositions[i]);
+					triNormals[i] = blendMatrix.multiplyAffine(triNormals[i]);
+				}
+
 				for (uint32_t i = 0; i < 3; i++)
 				{
-					Matrix4 blendMatrix = getBlendMatrix(state, indices[i]);
-
-					Vector3 curPosition = *(Vector3*)(mVertices + mVertexStride * indices[i]);
-					curPosition = blendMatrix.multiplyAffine(curPosition);
-
-					position += curPosition * barycenter[i];
-
-					Vector3 curNormal;
-					if (mNormals)
-					{
-						if (m32BitNormals)
-							curNormal = MeshUtility::unpackNormal(mNormals + mVertexStride * indices[i]);
-						else
-							curNormal = *(Vector3*)(mNormals + mVertexStride * indices[i]);
-					}
-					else
-						curNormal = barycenter[i];
-
-					curNormal = blendMatrix.multiplyDirection(curNormal);
-					normal += curNormal * barycenter[i];
+					position += triPositions[i] * barycenter[i];
+					normal += triNormals[i] * barycenter[i];
 				}
 			}
 			break;
 		}
 	}
 
-	SPtr<ParticleEmitterShape> ParticleEmitterSkinnedMeshShape::create(const PARTICLE_MESH_SHAPE_DESC& desc)
+	SPtr<ParticleEmitterShape> ParticleEmitterSkinnedMeshShape::create(const PARTICLE_SKINNED_MESH_SHAPE_DESC& desc)
 	{
-		// TODO - Only support TRIANGLE_LIST draw operation
-		// TODO - Ensure mesh-data at least has position (with correct type)
-		// TODO - Ensure mesh data has bone weights and indices (with correct types)
-
 		ParticleEmitterSkinnedMeshShape* output = bs_new<ParticleEmitterSkinnedMeshShape>(desc);
 		return bs_shared_ptr<ParticleEmitterShape>(output);
 	}
@@ -953,7 +915,7 @@ namespace bs
 
 	void ParticleEmitter::spawn(Random& random, const ParticleSystemState& state, ParticleSet& set) const
 	{
-		if(!mShape)
+		if(!mShape || !mShape->isValid())
 			return;
 
 		const float t = state.time / state.length;

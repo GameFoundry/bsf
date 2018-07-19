@@ -6,6 +6,7 @@
 #include "Threading/BsTaskScheduler.h"
 #include "Allocators/BsPoolAlloc.h"
 #include "Private/Particles/BsParticleSet.h"
+#include "Animation/BsAnimationManager.h"
 
 namespace bs
 {
@@ -254,7 +255,7 @@ namespace bs
 		bs_delete(m);
 	}
 
-	ParticleRenderDataGroup* ParticleManager::update()
+	ParticleRenderDataGroup* ParticleManager::update(const EvaluatedAnimationData& animData)
 	{
 		// Note: Allow the worker threads to work alongside the main thread? Would require extra synchronization but
 		// potentially no benefit?
@@ -291,10 +292,10 @@ namespace bs
 
 		for (auto& system : mSystems)
 		{
-			const auto evaluateWorker = [this, timeDelta, system, &renderDataPool, &renderDataGroup]()
+			const auto evaluateWorker = [this, timeDelta, system, &animData, &renderDataPool, &renderDataGroup]()
 			{
 				// Advance the simulation
-				system->_simulate(timeDelta);
+				system->_simulate(timeDelta, &animData);
 
 				ParticleRenderData* renderData = nullptr;
 				if(system->mParticleSet)

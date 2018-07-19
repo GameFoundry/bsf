@@ -112,7 +112,7 @@ namespace bs
 		mParticleSet->clear();
 	}
 
-	void ParticleSystem::_simulate(float timeDelta)
+	void ParticleSystem::_simulate(float timeDelta, const EvaluatedAnimationData* animData)
 	{
 		if(mState != State::Playing)
 			return;
@@ -137,7 +137,7 @@ namespace bs
 			return;
 
 		// Spawn new particles
-		ParticleSystemState state; // TODO - Needs to be populated with skinning information
+		ParticleSystemState state;
 		state.time = newTime;
 		state.length = mDuration;
 		state.timeStep = timeStep;
@@ -145,6 +145,7 @@ namespace bs
 		state.worldSpace = mSimulationSpace == ParticleSimulationSpace::World;
 		state.localToWorld = mTransform.getMatrix();
 		state.worldToLocal = state.localToWorld.inverseAffine();
+		state.animData = animData;
 
 		for(auto& emitter : mEmitters)
 			emitter->spawn(mRandom, state, *mParticleSet);
