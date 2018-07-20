@@ -926,10 +926,11 @@ namespace bs
 		{
 			PackedNormal& packed = *(PackedNormal*)ptr;
 
-			destination[i].x = (packed.x * 2.0f - 1.0f);
-			destination[i].y = (packed.y * 2.0f - 1.0f);
-			destination[i].z = (packed.z * 2.0f - 1.0f);
-			destination[i].w = (packed.w * 2.0f - 1.0f);
+			const float inv = (1.0f / 255.0f) * 2.0f;
+			destination[i].x = (packed.x * inv - 1.0f);
+			destination[i].y = (packed.y * inv - 1.0f);
+			destination[i].z = (packed.z * inv - 1.0f);
+			destination[i].w = (packed.w * inv - 1.0f);
 
 			ptr += stride;
 		}

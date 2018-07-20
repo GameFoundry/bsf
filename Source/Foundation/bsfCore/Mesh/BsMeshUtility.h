@@ -185,9 +185,10 @@ namespace bs
 			const PackedNormal& packed = *(PackedNormal*)source;
 			Vector3 output;
 
-			output.x = (packed.x * 2.0f - 1.0f);
-			output.y = (packed.y * 2.0f - 1.0f);
-			output.z = (packed.z * 2.0f - 1.0f);
+			const float inv = (1.0f / 255.0f) * 2.0f;
+			output.x = (packed.x * inv - 1.0f);
+			output.y = (packed.y * inv - 1.0f);
+			output.z = (packed.z * inv - 1.0f);
 
 			return output;
 		}
