@@ -1022,7 +1022,9 @@ namespace bs {	namespace ct
 			const UINT32 rendererId = entry.particleSystem->getRendererId();
 
 			AABox worldBounds = iterFind->second->bounds;
-			worldBounds.transformAffine(entry.particleSystem->getTransform().getMatrix());
+
+			if (entry.particleSystem->getSimulationSpace() == ParticleSimulationSpace::Local)
+				worldBounds.transformAffine(entry.particleSystem->getTransform().getMatrix());
 
 			mInfo.particleSystemBounds[rendererId] = worldBounds;
 		}
