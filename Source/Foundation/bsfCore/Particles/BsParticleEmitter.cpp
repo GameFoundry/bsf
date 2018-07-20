@@ -67,7 +67,9 @@ namespace bs
 			const Vector3& b = *(Vector3*)(vertices + weight.indices[1] * stride);
 			const Vector3& c = *(Vector3*)(vertices + weight.indices[2] * stride);
 
-			weight.cumulativeWeight = Vector3::cross(b - a, c - a).squaredLength();
+			// Note: Using squared length here would be faster, but the weights can be small and squaring them just
+			// makes them smaller, causing precision issues
+			weight.cumulativeWeight = Vector3::cross(b - a, c - a).length();
 			totalArea += weight.cumulativeWeight;
 		}
 
@@ -519,24 +521,29 @@ namespace bs
 
 	bool MeshEmissionHelper::initialize(const HMesh& mesh, bool perVertex, bool skinning)
 	{
-		SPtr<MeshData> meshData;
-
 		// Validate
 		if(mesh)
 		{
-			meshData = mesh->getCachedData();
+			mMeshData = mesh->getCachedData();
 
-			if(!meshData)
+			if(!mMeshData)
+			{
 				LOGWRN_VERBOSE("Particle emitter mesh not created with CPU caching, performing an expensive GPU read.");
+
+				mMeshData = mesh->allocBuffer();
+				mesh->readData(mMeshData);
+
+				gCoreThread().submit(true);
+			}
 		}
 
-		if(!meshData)
+		if(!mMeshData)
 		{
 			// No warning as user could want to add mesh data later
 			return false;
 		}
 
-		const SPtr<VertexDataDesc>& vertexDesc = meshData->getVertexDesc();
+		const SPtr<VertexDataDesc>& vertexDesc = mMeshData->getVertexDesc();
 		const VertexElement* positionElement = vertexDesc->getElement(VES_POSITION);
 		if(positionElement == nullptr)
 		{
@@ -550,7 +557,7 @@ namespace bs
 			return false;
 		}
 
-		if(!perVertex && (meshData->getNumIndices() % 3 != 0))
+		if(!perVertex && (mMeshData->getNumIndices() % 3 != 0))
 		{
 			LOGERR("Unless using the per-vertex emission mode, mesh particle emitter requires the number of indices to be \
 				 divisible by three, using a triangle list layout.");
@@ -583,8 +590,8 @@ namespace bs
 		}
 
 		// Initialize
-		mVertices = meshData->getElementData(VES_POSITION);
-		mNumVertices = meshData->getNumVertices();
+		mVertices = mMeshData->getElementData(VES_POSITION);
+		mNumVertices = mMeshData->getNumVertices();
 		mVertexStride = vertexDesc->getVertexStride();
 
 		const VertexElement* normalElement = vertexDesc->getElement(VES_NORMAL);
@@ -594,25 +601,24 @@ namespace bs
 		{
 			if(normalElement->getType() == VET_UBYTE4_NORM)
 			{
-				mNormals = meshData->getElementData(VES_NORMAL);
+				mNormals = mMeshData->getElementData(VES_NORMAL);
 				m32BitNormals = true;
 			}
 			else if(normalElement->getType() == VET_FLOAT3)
 			{
-				mNormals = meshData->getElementData(VES_NORMAL);
+				mNormals = mMeshData->getElementData(VES_NORMAL);
 				m32BitNormals = false;
 			}
 		}
 
 		if(skinning)
 		{
-			mBoneIndices = meshData->getElementData(VES_BLEND_INDICES);
-			mBoneWeights = meshData->getElementData(VES_BLEND_WEIGHTS);
+			mBoneIndices = mMeshData->getElementData(VES_BLEND_INDICES);
+			mBoneWeights = mMeshData->getElementData(VES_BLEND_WEIGHTS);
 		}
 
 		if(!perVertex)
-			mWeightedTriangles.calculate(*meshData);
-
+			mWeightedTriangles.calculate(*mMeshData);
 
 		return true;
 	}
@@ -1003,6 +1009,9 @@ namespace bs
 		{
 			for (UINT32 i = firstIdx; i < endIdx; i++)
 				particles.position[i] = state.localToWorld.multiplyAffine(particles.position[i]);
+
+			for (UINT32 i = firstIdx; i < endIdx; i++)
+				particles.velocity[i] = state.localToWorld.multiplyDirection(particles.velocity[i]);
 		}
 	}	
 	

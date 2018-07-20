@@ -493,6 +493,8 @@ namespace bs
 
 		UINT8* mBoneIndices = nullptr;
 		UINT8* mBoneWeights = nullptr;
+
+		SPtr<MeshData> mMeshData;
 	};
 
 	/** 
