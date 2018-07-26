@@ -153,13 +153,136 @@ namespace bs
 	 */
 
 	/** Settings used for controlling a ParticleSystem. */
-	struct ParticleSystemSettings : TParticleSystemSettings<false> { };
+	struct BS_CORE_EXPORT ParticleSystemSettings : TParticleSystemSettings<false>, IReflectable
+	{
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class ParticleSystemSettingsRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
 
 	namespace ct
 	{
 		/** Core thread counterpart of bs::ParticleSystemSettings. */
 		struct ParticleSystemSettings : TParticleSystemSettings<true> { };
 	}
+
+	/** Manages a list of all emitters used by a ParticleSystem. */
+	class BS_CORE_EXPORT ParticleSystemEmitters : public IReflectable
+	{
+	public:
+		/** Registers a new particle emitter. */
+		void add(SPtr<ParticleEmitter> emitter)
+		{
+			mList.push_back(std::move(emitter));
+		}
+
+		/** Returns the number of particle emitters present in this system. */
+		UINT32 getCount() const { return (UINT32)mList.size(); }
+
+		/** 
+		 * Returns the particle emitter present at the specified sequential index. Returns null if provided index is 
+		 * invalid. 
+		 */
+		ParticleEmitter* get(UINT32 idx)
+		{
+			if(idx >= (UINT32)mList.size())
+				return nullptr;
+
+			return mList[idx].get();
+		}
+
+		/** Removes a particle emitter. */
+		void remove(ParticleEmitter* emitter)
+		{
+			const auto iterFind = std::find_if(mList.begin(), mList.end(), 
+				[emitter](const SPtr<ParticleEmitter>& curEmitter)
+			{
+				return curEmitter.get() == emitter;
+				
+			});
+
+			if(iterFind != mList.end())
+				mList.erase(iterFind);
+		}
+
+	private:
+		friend class ParticleSystem;
+
+		Vector<SPtr<ParticleEmitter>> mList;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class ParticleSystemEmittersRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
+
+	/** Manages a list of all evolvers used by a ParticleSystem. */
+	class BS_CORE_EXPORT ParticleSystemEvolvers : public IReflectable
+	{
+	public:
+		ParticleSystemEvolvers();
+
+		/** Registers a new particle evolver. */
+		void add(SPtr<ParticleEvolver> evolver)
+		{
+			mSortedList.insert(evolver.get());
+			mList.push_back(std::move(evolver));
+		}
+
+		/** Returns the number of particle evolvers present in this system. */
+		UINT32 getCount() const { return (UINT32)mList.size(); }
+
+		/** 
+		 * Returns the particle evolver present at the specified sequential index. Returns null if provided index is 
+		 * invalid. 
+		 */
+		ParticleEvolver* get(UINT32 idx)
+		{
+			if(idx >= (UINT32)mList.size())
+				return nullptr;
+
+			return mList[idx].get();
+		}
+
+		/** Removes a particle evolver. */
+		void remove(ParticleEvolver* evolver)
+		{
+			const auto iterFind = std::find_if(mList.begin(), mList.end(), 
+				[evolver](const SPtr<ParticleEvolver>& curEvolver)
+			{
+				return curEvolver.get() == evolver;
+				
+			});
+
+			if(iterFind != mList.end())
+				mList.erase(iterFind);
+
+			mSortedList.erase(evolver);
+		}
+
+	private:
+		friend class ParticleSystem;
+
+		typedef std::function<bool(const ParticleEvolver*, const ParticleEvolver*)> EvolverComparison; 
+		Set<ParticleEvolver*, EvolverComparison> mSortedList;
+
+		Vector<SPtr<ParticleEvolver>> mList;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class ParticleSystemEvolversRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
 
 	/** 
 	 * Controls spawning, evolution and rendering of particles. Particles can be 2D or 3D, with a variety of rendering
@@ -180,80 +303,11 @@ namespace bs
 		/** @copydoc setSettings */
 		const ParticleSystemSettings& getSettings() const { return mSettings; }
 
-		/** Registers a new particle emitter. */
-		void addEmitter(SPtr<ParticleEmitter> emitter)
-		{
-			emitter->setParent(this);
-			mEmitters.push_back(std::move(emitter));
-		}
+		/** Returns an object that allows you to modify the list of emitters used by this system. */
+		ParticleSystemEmitters& getEmitters() { return mEmitters; }
 
-		/** Registers a new particle evolver. */
-		void addEvolver(SPtr<ParticleEvolver> evolver)
-		{
-			mSortedEvolvers.insert(evolver.get());
-
-			evolver->setParent(this);
-			mEvolvers.push_back(std::move(evolver));
-		}
-
-		/** Returns the number of particle emitters present in this system. */
-		UINT32 getNumEmitters() const { return (UINT32)mEmitters.size(); }
-
-		/** Returns the number of particle evolvers present in this system. */
-		UINT32 getNumEvolvers() const { return (UINT32)mEvolvers.size(); }
-
-		/** 
-		 * Returns the particle emitter present at the specified sequential index. Returns null if provided index is 
-		 * invalid. 
-		 */
-		ParticleEmitter* getEmitter(UINT32 idx)
-		{
-			if(idx >= (UINT32)mEmitters.size())
-				return nullptr;
-
-			return mEmitters[idx].get();
-		}
-		/** 
-		 * Returns the particle evolver present at the specified sequential index. Returns null if provided index is 
-		 * invalid. 
-		 */
-		ParticleEvolver* getEvolver(UINT32 idx)
-		{
-			if(idx >= (UINT32)mEvolvers.size())
-				return nullptr;
-
-			return mEvolvers[idx].get();
-		}
-
-		/** Removes a particle emitter. */
-		void removeEmitter(ParticleEmitter* emitter)
-		{
-			const auto iterFind = std::find_if(mEmitters.begin(), mEmitters.end(), 
-				[emitter](const SPtr<ParticleEmitter>& curEmitter)
-			{
-				return curEmitter.get() == emitter;
-				
-			});
-
-			if(iterFind != mEmitters.end())
-				mEmitters.erase(iterFind);
-		}
-
-		/** Removes a particle evolver. */
-		void removeEvolver(ParticleEvolver* evolver)
-		{
-			const auto iterFind = std::find_if(mEvolvers.begin(), mEvolvers.end(), 
-				[evolver](const SPtr<ParticleEvolver>& curEvolver)
-			{
-				return curEvolver.get() == evolver;
-				
-			});
-
-			if(iterFind != mEvolvers.end())
-				mEvolvers.erase(iterFind);
-
-			mSortedEvolvers.erase(evolver);
-		}
+		/** Returns an object that allows you to modify the list of evolvers used by this system. */
+		ParticleSystemEvolvers& getEvolvers() { return mEvolvers; }
 
 		/** Starts the particle system. New particles will be emitted and existing particles will be evolved. */
 		void play();
@@ -312,12 +366,8 @@ namespace bs
 		static SPtr<ParticleSystem> createEmpty();
 
 		ParticleSystemSettings mSettings;
-
-		typedef std::function<bool(const ParticleEvolver*, const ParticleEvolver*)> EvolverComparison; 
-		Set<ParticleEvolver*, EvolverComparison> mSortedEvolvers;
-
-		Vector<SPtr<ParticleEvolver>> mEvolvers;
-		Vector<SPtr<ParticleEmitter>> mEmitters;
+		ParticleSystemEmitters mEmitters;
+		ParticleSystemEvolvers mEvolvers;
 
 		// Internal state
 		UINT32 mId = 0;

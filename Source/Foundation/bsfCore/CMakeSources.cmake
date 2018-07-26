@@ -24,6 +24,7 @@ set(BS_CORE_INC_COMPONENTS
 	"bsfCore/Components/BsCReflectionProbe.h"
 	"bsfCore/Components/BsCSkybox.h"
 	"bsfCore/Components/BsCLightProbeVolume.h"
+	"bsfCore/Components/BsCParticleSystem.h"
 )
 
 set(BS_CORE_INC_PHYSICS
@@ -275,6 +276,7 @@ set(BS_CORE_SRC_COMPONENTS
 	"bsfCore/Components/BsCReflectionProbe.cpp"
 	"bsfCore/Components/BsCSkybox.cpp"
 	"bsfCore/Components/BsCLightProbeVolume.cpp"
+	"bsfCore/Components/BsCParticleSystem.cpp"
 )
 
 set(BS_CORE_SRC_IMPORTER
@@ -379,6 +381,7 @@ set(BS_CORE_INC_RTTI
 	"bsfCore/Private/RTTI/BsParticleSystemRTTI.h"
 	"bsfCore/Private/RTTI/BsParticleDistributionRTTI.h"
 	"bsfCore/Private/RTTI/BsSpriteTextureRTTI.h"
+	"bsfCore/Private/RTTI/BsCParticleSystemRTTI.h"
 )
 
 set(BS_CORE_SRC_RENDERER

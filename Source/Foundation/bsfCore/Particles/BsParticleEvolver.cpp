@@ -64,15 +64,12 @@ namespace bs
 		ParticleSetData& particles = set.getParticles();
 
 		SpriteTexture* texture = nullptr;
-		if(mParent)
+		const HMaterial& material = state.system->getSettings().material;
+		if (material.isLoaded(false))
 		{
-			const HMaterial& material = mParent->getSettings().material;
-			if(material.isLoaded(false))
-			{
-				const HSpriteTexture& spriteTex = material->getSpriteTexture("gTexture");
-				if(spriteTex.isLoaded(true))
-					texture = spriteTex.get();
-			}
+			const HSpriteTexture& spriteTex = material->getSpriteTexture("gTexture");
+			if (spriteTex.isLoaded(true))
+				texture = spriteTex.get();
 		}
 
 		bool hasValidAnimation = texture != nullptr;

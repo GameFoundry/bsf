@@ -24,8 +24,41 @@ namespace bs
 			return a->getPriority() > b->getPriority();
 	}
 
+	RTTITypeBase* ParticleSystemSettings::getRTTIStatic()
+	{
+		return ParticleSystemSettingsRTTI::instance();
+	}
+
+	RTTITypeBase* ParticleSystemSettings::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
+	RTTITypeBase* ParticleSystemEmitters::getRTTIStatic()
+	{
+		return ParticleSystemEmittersRTTI::instance();
+	}
+
+	RTTITypeBase* ParticleSystemEmitters::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
+	ParticleSystemEvolvers::ParticleSystemEvolvers()
+		: mSortedList(&evolverCompareCallback)
+	{ }
+
+	RTTITypeBase* ParticleSystemEvolvers::getRTTIStatic()
+	{
+		return ParticleSystemEvolversRTTI::instance();
+	}
+
+	RTTITypeBase* ParticleSystemEvolvers::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
 	ParticleSystem::ParticleSystem()
-		:mSortedEvolvers(&evolverCompareCallback)
 	{
 		mId = ParticleManager::instance().registerParticleSystem(this);
 		mSeed = rand();
@@ -121,7 +154,7 @@ namespace bs
 		if(timeStep < 0.00001f)
 			return;
 
-		// Spawn new particles
+		// Generate per-frame state
 		ParticleSystemState state;
 		state.time = newTime;
 		state.nrmTime = newTime / mSettings.duration;
@@ -131,9 +164,11 @@ namespace bs
 		state.worldSpace = mSettings.simulationSpace == ParticleSimulationSpace::World;
 		state.localToWorld = mTransform.getMatrix();
 		state.worldToLocal = state.localToWorld.inverseAffine();
+		state.system = this;
 		state.animData = animData;
 
-		for(auto& emitter : mEmitters)
+		// Spawn new particles
+		for(auto& emitter : mEmitters.mList)
 			emitter->spawn(mRandom, state, *mParticleSet);
 
 		UINT32 numParticles = mParticleSet->getParticleCount();
@@ -157,8 +192,8 @@ namespace bs
 		}
 
 		// Evolve pre-simulation
-		auto evolverIter = mSortedEvolvers.begin();
-		for(; evolverIter != mSortedEvolvers.end(); ++evolverIter)
+		auto evolverIter = mEvolvers.mSortedList.begin();
+		for(; evolverIter != mEvolvers.mSortedList.end(); ++evolverIter)
 		{
 			ParticleEvolver* evolver = *evolverIter;
 			if(evolver->getPriority() < 0)
@@ -172,7 +207,7 @@ namespace bs
 			particles.position[i] += particles.velocity[i] * timeStep;
 
 		// Evolve post-simulation
-		for(; evolverIter != mSortedEvolvers.end(); ++evolverIter)
+		for(; evolverIter != mEvolvers.mSortedList.end(); ++evolverIter)
 		{
 			ParticleEvolver* evolver = *evolverIter;
 			evolver->evolve(mRandom, state, *mParticleSet);

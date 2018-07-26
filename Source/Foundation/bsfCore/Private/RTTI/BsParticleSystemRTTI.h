@@ -409,24 +409,111 @@ namespace bs
 			return bs_shared_ptr_new<ParticleCollisions>();
 		}
 	};
+
+	class BS_CORE_EXPORT ParticleSystemSettingsRTTI : 
+		public RTTIType<ParticleSystemSettings, IReflectable, ParticleSystemSettingsRTTI>
+	{
+	private:
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_PLAIN(simulationSpace, 0)
+			BS_RTTI_MEMBER_PLAIN(orientation, 1)
+			BS_RTTI_MEMBER_PLAIN(orientationLockY, 2)
+			BS_RTTI_MEMBER_PLAIN(orientationPlane, 3)
+			BS_RTTI_MEMBER_PLAIN(sortMode, 4)
+			BS_RTTI_MEMBER_PLAIN(duration, 5)
+			BS_RTTI_MEMBER_PLAIN(isLooping, 6)
+			BS_RTTI_MEMBER_PLAIN(maxParticles, 7)
+			BS_RTTI_MEMBER_PLAIN(useAutomaticSeed, 8)
+			BS_RTTI_MEMBER_PLAIN(gravityScale, 9)
+			BS_RTTI_MEMBER_PLAIN(manualSeed, 10)
+			BS_RTTI_MEMBER_REFL(material, 11)
+		BS_END_RTTI_MEMBERS
+
+	public:
+		const String& getRTTIName() override
+		{
+			static String name = "ParticleSystemSettings";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_ParticleSystemSettings;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			return bs_shared_ptr_new<ParticleSystemSettings>();
+		}
+	};
+
+	class BS_CORE_EXPORT ParticleSystemEmittersRTTI : 
+		public RTTIType<ParticleSystemEmitters, IReflectable, ParticleSystemEmittersRTTI>
+	{
+	private:
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_REFLPTR_ARRAY(mList, 0)
+		BS_END_RTTI_MEMBERS
+
+	public:
+		const String& getRTTIName() override
+		{
+			static String name = "ParticleSystemEmitters";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_ParticleSystemEmitters;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			return bs_shared_ptr_new<ParticleSystemEmitters>();
+		}
+	};
+
+	class BS_CORE_EXPORT ParticleSystemEvolversRTTI : 
+		public RTTIType<ParticleSystemEvolvers, IReflectable, ParticleSystemEvolversRTTI>
+	{
+	private:
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_REFLPTR_ARRAY(mList, 0)
+		BS_END_RTTI_MEMBERS
+
+	public:
+		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		{
+			auto evolvers = static_cast<ParticleSystemEvolvers*>(obj);
+
+			for(auto& entry : evolvers->mList)
+				evolvers->mSortedList.insert(entry.get());
+		}
+
+		const String& getRTTIName() override
+		{
+			static String name = "ParticleSystemEvolvers";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_ParticleSystemEvolvers;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			return bs_shared_ptr_new<ParticleSystemEvolvers>();
+		}
+	};
+
 	class BS_CORE_EXPORT ParticleSystemRTTI : public RTTIType<ParticleSystem, IReflectable, ParticleSystemRTTI>
 	{
 	private:
 		BS_BEGIN_RTTI_MEMBERS
-			BS_RTTI_MEMBER_PLAIN_NAMED(simulationSpace, mSettings.simulationSpace, 0)
-			BS_RTTI_MEMBER_PLAIN_NAMED(orientation, mSettings.orientation, 1)
-			BS_RTTI_MEMBER_PLAIN_NAMED(orientationLockY, mSettings.orientationLockY, 2)
-			BS_RTTI_MEMBER_PLAIN_NAMED(orientationPlane, mSettings.orientationPlane, 3)
-			BS_RTTI_MEMBER_PLAIN_NAMED(sortMode, mSettings.sortMode, 4)
-			BS_RTTI_MEMBER_PLAIN_NAMED(duration, mSettings.duration, 5)
-			BS_RTTI_MEMBER_PLAIN_NAMED(isLooping, mSettings.isLooping, 6)
-			BS_RTTI_MEMBER_PLAIN_NAMED(maxParticles, mSettings.maxParticles, 7)
-			BS_RTTI_MEMBER_PLAIN_NAMED(useAutomaticSeed, mSettings.useAutomaticSeed, 8)
-			BS_RTTI_MEMBER_PLAIN_NAMED(gravityScale, mSettings.gravityScale, 9)
-			BS_RTTI_MEMBER_PLAIN_NAMED(manualSeed, mSettings.manualSeed, 10)
-			BS_RTTI_MEMBER_REFL_NAMED(material, mSettings.material, 11)
-			BS_RTTI_MEMBER_REFLPTR_ARRAY(mEmitters, 12)
-			BS_RTTI_MEMBER_REFLPTR_ARRAY(mEvolvers, 13)
+			BS_RTTI_MEMBER_REFL(mSettings, 0)
+			BS_RTTI_MEMBER_REFL(mEmitters, 1)
+			BS_RTTI_MEMBER_REFL(mEvolvers, 2)
 		BS_END_RTTI_MEMBERS
 
 	public:

@@ -24,6 +24,7 @@ namespace bs
 		bool worldSpace;
 		Matrix4 localToWorld;
 		Matrix4 worldToLocal;
+		ParticleSystem* system;
 		const EvaluatedAnimationData* animData;
 	};
 
@@ -35,11 +36,6 @@ namespace bs
 
 		ParticleModule() = default;
 		virtual ~ParticleModule() = default;
-
-		/** Assigns the parent ParticleSystem of this module. */
-		void setParent(ParticleSystem* parent) { mParent = parent; }
-
-		ParticleSystem* mParent = nullptr;
 	};
 
 	/** @} */
