@@ -49,12 +49,12 @@ namespace bs
 		 * @param[in]	setter  		The setter method for the field.
 		 * @param[in]	flags			Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
-		void initSingle(const String& name, UINT16 uniqueId, GetterType getter, SetterType setter, UINT64 flags)
+		void initSingle(String name, UINT16 uniqueId, GetterType getter, SetterType setter, UINT64 flags)
 		{
 			this->getter = getter;
 			this->setter = setter;
 
-			init(name, uniqueId, false, SerializableFT_DataBlock, flags);
+			init(std::move(name), uniqueId, false, SerializableFT_DataBlock, flags);
 		}
 
 		/** @copydoc RTTIField::getTypeSize */

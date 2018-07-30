@@ -95,12 +95,12 @@ namespace bs
 		 * @param[in]	setter  	The setter method for the field.
 		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See "RTTIFieldFlag".
 		 */
-		void initSingle(const String& name, UINT16 uniqueId, GetterType getter, SetterType setter, UINT64 flags)
+		void initSingle(String name, UINT16 uniqueId, GetterType getter, SetterType setter, UINT64 flags)
 		{
 			this->getter = getter;
 			this->setter = setter;
 
-			init(name, uniqueId, false, SerializableFT_ReflectablePtr, flags);
+			init(std::move(name), uniqueId, false, SerializableFT_ReflectablePtr, flags);
 		}
 
 		/**
@@ -116,7 +116,7 @@ namespace bs
 		 * @param[in]	setSize 	Setter method that allows you to resize an array. Can be null.
 		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See "RTTIFieldFlag".
 		 */
-		void initArray(const String& name, UINT16 uniqueId, ArrayGetterType getter, ArrayGetSizeType getSize, 
+		void initArray(String name, UINT16 uniqueId, ArrayGetterType getter, ArrayGetSizeType getSize, 
 			ArraySetterType setter, ArraySetSizeType setSize, UINT64 flags)
 		{
 			arrayGetter = getter;
@@ -124,7 +124,7 @@ namespace bs
 			arrayGetSize = getSize;
 			arraySetSize = setSize;
 
-			init(name, uniqueId, true, SerializableFT_ReflectablePtr, flags);
+			init(std::move(name), uniqueId, true, SerializableFT_ReflectablePtr, flags);
 		}
 
 		/** @copydoc RTTIField::getTypeSize */

@@ -175,7 +175,7 @@ namespace bs
 	protected:
 		void init(String name, UINT16 uniqueId, bool isVectorType, SerializableFieldType type, UINT64 flags)
 		{
-			this->mName = name;
+			this->mName = std::move(name);
 			this->mUniqueId = uniqueId;
 			this->mIsVectorType = isVectorType;
 			this->mType = type;

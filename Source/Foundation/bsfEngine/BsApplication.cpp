@@ -128,7 +128,7 @@ namespace bs
 		mProfilerOverlay->show(type);
 	}
 
-	void Application::hideProfileOverlay()
+	void Application::hideProfilerOverlay()
 	{
 		if(mProfilerOverlay)
 			mProfilerOverlay->hide();
