@@ -359,6 +359,7 @@ namespace bs
 	class CoreObjectManager;
 	struct CollisionData;
 	class ParticleSystem;
+	class CParticleSystem;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -714,6 +715,7 @@ namespace bs
 	typedef GameObjectHandle<CLightProbeVolume> HLightProbeVolume;
 	typedef GameObjectHandle<CAudioSource> HAudioSource;
 	typedef GameObjectHandle<CAudioListener> HAudioListener;
+	typedef GameObjectHandle<CParticleSystem> HParticleSystem;
 
 	/** @} */
 }
