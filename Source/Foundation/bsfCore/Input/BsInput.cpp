@@ -185,10 +185,12 @@ namespace bs
 			event.type = PointerEventType::CursorMoved;
 			event.screenPos = pointerPos;
 
-			onPointerMoved(event);
-
 			if (mLastPositionSet)
 				mPointerDelta = event.screenPos - mLastPointerPosition;
+
+			event.delta = mPointerDelta;
+
+			onPointerMoved(event);
 
 			mLastPointerPosition = event.screenPos;
 			mLastPositionSet = true;
