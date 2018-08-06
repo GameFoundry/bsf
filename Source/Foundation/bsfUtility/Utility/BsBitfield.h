@@ -326,7 +326,7 @@ namespace bs
 			// Note: Implement this faster via popcnt and similar instructions
 
 			uint32_t counter = 0;
-			for(auto& entry : *this)
+			for(const auto& entry : *this)
 			{
 				if(entry == value)
 					counter++;
