@@ -24,6 +24,9 @@ namespace bs { namespace ct
 	{
 		VulkanDevice& device = mOwner->getDevice();
 
+		for(auto& entry : mViews)
+			vkDestroyBufferView(device.getLogical(), entry.view, gVulkanAllocator);
+
 		vkDestroyBuffer(device.getLogical(), mBuffer, gVulkanAllocator);
 		device.freeMemory(mAllocation);
 	}
@@ -84,6 +87,84 @@ namespace bs { namespace ct
 	void VulkanBuffer::update(VulkanCmdBuffer* cb, UINT8* data, VkDeviceSize offset, VkDeviceSize length)
 	{
 		vkCmdUpdateBuffer(cb->getHandle(), mBuffer, offset, length, (uint32_t*)data);
+	}
+
+	void VulkanBuffer::notifyDone(UINT32 globalQueueIdx, VulkanUseFlags useFlags)
+	{
+		{
+			Lock lock(mMutex);
+			destroyUnusedViews();
+		}
+
+		VulkanResource::notifyDone(globalQueueIdx, useFlags);
+	}
+
+	void VulkanBuffer::notifyUnbound()
+	{
+		{
+			Lock lock(mMutex);
+			destroyUnusedViews();
+		}
+
+		VulkanResource::notifyUnbound();
+	}
+
+	VkBufferView VulkanBuffer::createView(VkFormat format)
+	{
+		const auto iterFind = std::find_if(mViews.begin(), mViews.end(), 
+			[format](const ViewInfo& x) { return x.format == format; });
+
+		if(iterFind != mViews.end())
+		{
+			iterFind->useCount++;
+			return iterFind->view;
+		}
+
+		VkBufferViewCreateInfo viewCI;
+		viewCI.sType = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO;
+		viewCI.pNext = nullptr;
+		viewCI.flags = 0;
+		viewCI.offset = 0;
+		viewCI.range = VK_WHOLE_SIZE;
+		viewCI.format = format;
+		viewCI.buffer = mBuffer;
+
+		VkBufferView view;
+		VkResult result = vkCreateBufferView(getDevice().getLogical(), &viewCI, gVulkanAllocator, &view);
+		assert(result == VK_SUCCESS);
+
+		mViews.push_back(ViewInfo(format, view));
+		return view;
+	}
+
+	void VulkanBuffer::freeView(VkBufferView view)
+	{
+		const auto iterFind = std::find_if(mViews.begin(), mViews.end(), 
+			[view](const ViewInfo& x) { return x.view == view; });
+
+		if(iterFind != mViews.end())
+		{
+			assert(iterFind->useCount > 0);
+			iterFind->useCount--;
+		}
+		else
+		{
+			assert(false);
+		}
+	}
+	
+	void VulkanBuffer::destroyUnusedViews()
+	{
+		for(auto iter = mViews.begin(); iter != mViews.end();)
+		{
+			if(iter->useCount == 0)
+			{
+				vkDestroyBufferView(getDevice().getLogical(), iter->view, gVulkanAllocator);
+				iter = mViews.erase(iter);
+			}
+			else
+				++iter;
+		}
 	}
 
 	VulkanHardwareBuffer::VulkanHardwareBuffer(BufferType type, GpuBufferFormat format, GpuBufferUsage usage, 

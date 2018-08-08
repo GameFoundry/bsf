@@ -27,7 +27,7 @@ namespace bs { namespace ct
 					continue;
 
 				VulkanBuffer* buffer = static_cast<VulkanHardwareBuffer*>(mBuffer)->getResource(i);
-				vkDestroyBufferView(buffer->getDevice().getLogical(), mBufferViews[i], gVulkanAllocator);
+				buffer->freeView(mBufferViews[i]);
 			}
 
 			if(!mExternalBuffer)
@@ -56,13 +56,6 @@ namespace bs { namespace ct
 			mBuffer = bs_pool_new<VulkanHardwareBuffer>(bufferType, props.getFormat(), props.getUsage(), size, mDeviceMask);
 		}
 
-		mViewCI.sType = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO;
-		mViewCI.pNext = nullptr;
-		mViewCI.flags = 0;
-		mViewCI.format = VulkanUtility::getBufferFormat(props.getFormat());
-		mViewCI.offset = 0;
-		mViewCI.range = VK_WHOLE_SIZE;
-
 		updateViews();
 
 		GpuBuffer::initialize();
@@ -79,6 +72,19 @@ namespace bs { namespace ct
 	void VulkanGpuBuffer::unmap()
 	{
 		GpuBuffer::unmap();
+		updateViews();
+	}
+
+	void VulkanGpuBuffer::readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx, UINT32 queueIdx)
+	{
+		GpuBuffer::readData(offset, length, dest, deviceIdx, queueIdx);
+		updateViews();
+	}
+
+	void VulkanGpuBuffer::writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags, 
+		UINT32 queueIdx)
+	{
+		GpuBuffer::writeData(offset, length, source, writeFlags, queueIdx);
 		updateViews();
 	}
 
@@ -108,20 +114,10 @@ namespace bs { namespace ct
 
 			if (mCachedBuffers[i] != newBufferHandle)
 			{
-				if (mBufferViews[i] != VK_NULL_HANDLE)
-				{
-					vkDestroyBufferView(buffer->getDevice().getLogical(), mBufferViews[i], gVulkanAllocator);
-					mBufferViews[i] = VK_NULL_HANDLE;
-				}
-
 				if(newBufferHandle != VK_NULL_HANDLE)
-				{
-					mViewCI.buffer = newBufferHandle;
-
-					VkResult result = vkCreateBufferView(buffer->getDevice().getLogical(), &mViewCI, gVulkanAllocator,
-						&mBufferViews[i]);
-					assert(result == VK_SUCCESS);
-				}
+					mBufferViews[i] = buffer->createView(VulkanUtility::getBufferFormat(mProperties.getFormat()));
+				else
+					mBufferViews[i] = VK_NULL_HANDLE;
 
 				mCachedBuffers[i] = newBufferHandle;
 			}

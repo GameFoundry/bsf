@@ -67,7 +67,7 @@ namespace bs { namespace ct
 		 * @param[in]	globalQueueIdx	Global index of the queue that finished using the resource.
 		 * @param[in]	useFlags		Use flags that specify how was the resource being used.
 		 */
-		void notifyDone(UINT32 globalQueueIdx, VulkanUseFlags useFlags);
+		virtual void notifyDone(UINT32 globalQueueIdx, VulkanUseFlags useFlags);
 
 		/** 
 		 * Notifies the resource that it is no longer queued on the command buffer. This is similar to notifyDone(), but
@@ -76,7 +76,7 @@ namespace bs { namespace ct
 		 * 
 		 * Must follow a notifyBound() if notifyUsed() wasn't called.
 		 */
-		void notifyUnbound();
+		virtual void notifyUnbound();
 
 		/** 
 		 * Checks is the resource currently used on a device. 

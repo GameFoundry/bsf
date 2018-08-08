@@ -74,8 +74,43 @@ namespace bs { namespace ct
 		 */
 		void update(VulkanCmdBuffer* cb, UINT8* data, VkDeviceSize offset, VkDeviceSize length);
 
+		/** @copydoc VulkanResource::notifyDone */
+		void notifyDone(UINT32 globalQueueIdx, VulkanUseFlags useFlags) override;
+
+		/** @copydoc VulkanResource::notifyUnbound */
+		void notifyUnbound() override;
+
+		/** Creates a new view of this buffer. Only usable on UNIFORM_TEXEL and STORAGE_TEXEL buffer types. */
+		VkBufferView createView(VkFormat format);
+
+		/** 
+		 * Frees a previously allocated buffer view. Calling this is optional as all buffer views will be deallocated
+		 * when the buffer is destroyed.
+		 */
+		void freeView(VkBufferView view);
+
 	private:
+		/** Information about a view of this buffer. */
+		struct ViewInfo
+		{
+			ViewInfo() = default;
+			ViewInfo(VkFormat format, VkBufferView view)
+				: format(format), view(view), useCount(1)
+			{ }
+
+			VkFormat format = VK_FORMAT_UNDEFINED;
+			VkBufferView view = VK_NULL_HANDLE;
+			UINT32 useCount = 0;
+		};
+
+		/** 
+		 * Destroys any buffer views are currently not being used. This must only be called after the buffer is done
+		 * being used on a command buffer.
+		 */
+		void destroyUnusedViews();
+
 		VkBuffer mBuffer;
+		Vector<ViewInfo> mViews;
 		VmaAllocation mAllocation;
 
 		UINT32 mRowPitch;

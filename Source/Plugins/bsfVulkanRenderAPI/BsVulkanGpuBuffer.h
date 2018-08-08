@@ -17,6 +17,13 @@ namespace bs { namespace ct
 	public:
 		~VulkanGpuBuffer();
 
+		/** @copydoc GpuBuffer::readData */
+		void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) override;
+
+		/** @copydoc GpuBuffer::writeData */
+		void writeData(UINT32 offset, UINT32 length, const void* source,
+			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
+
 		/** 
 		 * Gets the resource wrapping the buffer object, on the specified device. If the object wasn't initialized for the
 		 * specified device, null is returned. 
@@ -48,8 +55,6 @@ namespace bs { namespace ct
 	private:
 		VkBuffer mCachedBuffers[BS_MAX_DEVICES] { };
 		VkBufferView mBufferViews[BS_MAX_DEVICES] { };
-
-		VkBufferViewCreateInfo mViewCI;
 	};
 
 	/** @} */
