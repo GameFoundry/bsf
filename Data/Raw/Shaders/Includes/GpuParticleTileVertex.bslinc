@@ -1,0 +1,37 @@
+mixin GpuParticleTileVertex
+{
+	code
+	{	
+		struct VertexInput
+		{
+			uint vertexId : SV_VertexID;
+			uint instanceId : SV_InstanceID;
+			float2 uv0 : TEXCOORD0;
+		};	
+	
+		struct VStoFS
+		{
+			noperspective float4 position : SV_POSITION;
+			noperspective float2 uv0 : TEXCOORD0;
+		};
+
+		Buffer<float2> gTileUVs;
+		
+		cbuffer Input
+		{
+			float4 gUVToNDC;
+		};
+		
+		VStoFS vsmain(VertexInput input)
+		{
+			uint tileId = input.instanceId * TILES_PER_INSTANCE + input.vertexId / 4;
+			float uv = input.uv0 + gTileUVs[tileId];
+		
+			VStoFS output;
+			output.position = float4(uv * gUVToNDC.xy + gUVToNDC.zw, 0.0f, 1.0f);
+			output.uv0 = uv;
+		
+			return output;
+		}	
+	};
+};

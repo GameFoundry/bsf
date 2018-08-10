@@ -188,19 +188,76 @@ namespace bs { namespace ct
 		Vector2 dataUV;
 	};
 
+	struct GpuParticleStateTextures
+	{
+		SPtr<PooledRenderTexture> positionAndTimeTex;
+		SPtr<PooledRenderTexture> velocityTex;
+		SPtr<RenderTexture> renderTarget;
+	};
+
+	class GpuParticleResources;
+
+	BS_PARAM_BLOCK_BEGIN(GpuParticleTileVertexParamsDef)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gUVToNDC)
+	BS_PARAM_BLOCK_END
+
+	GpuParticleTileVertexParamsDef gGpuParticleTileVertexParamsDef;
+	
+	class GpuParticleClearMat : public RendererMaterial<GpuParticleClearMat>
+	{
+		RMAT_DEF_CUSTOMIZED("GpuParticleClear.bsl");
+
+	public:
+		GpuParticleClearMat();
+
+		// Renders to currently bound render target
+		void bind(const SPtr<GpuBuffer>& tileUVs);
+
+	private:
+		GpuParamBuffer mTileUVParam;
+	};
+
+	class GpuParticleInjectMat : public RendererMaterial<GpuParticleInjectMat>
+	{
+		RMAT_DEF("GpuParticleInject.bsl");
+
+	public:
+		GpuParticleInjectMat();
+	};
+
+	class GpuParticleSimulateMat : public RendererMaterial<GpuParticleSimulateMat>
+	{
+		RMAT_DEF_CUSTOMIZED("GpuParticleSimulate.bsl");
+
+	public:
+		GpuParticleSimulateMat();
+
+		// Renders to currently bound render target
+		void bind(GpuParticleResources& resources);
+
+		void setTileUVs(const SPtr<GpuBuffer>& tileUVs);
+
+	private:
+		GpuParamBuffer mTileUVParam;
+		GpuParamTexture mPosAndTimeTexParam;
+		GpuParamTexture mVelocityParam;
+	};
+
+	static constexpr UINT32 PARTICLE_TEX_SIZE = 1024;
+	static constexpr UINT32 PARTICLE_TILE_SIZE = 4;
+	static constexpr UINT32 PARTICLES_PER_TILE = PARTICLE_TILE_SIZE * PARTICLE_TILE_SIZE;
+	static constexpr UINT32 TILE_COUNT_1D = PARTICLE_TEX_SIZE / PARTICLE_TILE_SIZE;
+	static constexpr UINT32 TILE_COUNT = TILE_COUNT_1D * TILE_COUNT_1D;
+	static constexpr UINT32 TILES_PER_INSTANCE = 8;
+	static constexpr UINT32 PARTICLES_PER_INSTANCE = TILES_PER_INSTANCE * PARTICLES_PER_TILE;
+
+	static_assert((PARTICLE_TEX_SIZE & (PARTICLE_TEX_SIZE - 1)) == 0, "Particle texture size not a power of two");
+	static_assert((PARTICLE_TILE_SIZE & (PARTICLE_TILE_SIZE - 1)) == 0, "Particle tile size not a power of two");
+
 	// TODO - Doc
 	class GpuParticleResources
 	{
 	public:
-		static constexpr UINT32 PARTICLE_TEX_SIZE = 1024;
-		static constexpr UINT32 PARTICLE_TILE_SIZE = 4;
-		static constexpr UINT32 PARTICLES_PER_TILE = PARTICLE_TILE_SIZE * PARTICLE_TILE_SIZE;
-		static constexpr UINT32 TILE_COUNT_1D = PARTICLE_TEX_SIZE / PARTICLE_TILE_SIZE;
-		static constexpr UINT32 TILE_COUNT = TILE_COUNT_1D * TILE_COUNT_1D;
-
-		static_assert((PARTICLE_TEX_SIZE & (PARTICLE_TEX_SIZE - 1)) == 0, "Particle texture size not a power of two");
-		static_assert((PARTICLE_TILE_SIZE & (PARTICLE_TILE_SIZE - 1)) == 0, "Particle tile size not a power of two");
-
 		GpuParticleResources()
 		{
 			// Allocate textures
@@ -212,21 +269,37 @@ namespace bs { namespace ct
 
 			for(UINT32 i = 0; i < 2; i++)
 			{
-				mPositionAndTimeTex[i] = GpuResourcePool::instance().get(positionAndTimeDesc);
-				mVelocityTex[i] = GpuResourcePool::instance().get(velocityDesc);
+				mStateTextures[i].positionAndTimeTex = GpuResourcePool::instance().get(positionAndTimeDesc);
+				mStateTextures[i].velocityTex = GpuResourcePool::instance().get(velocityDesc);
+
+				RENDER_TEXTURE_DESC rtDesc;
+				rtDesc.colorSurfaces[0].texture = mStateTextures[i].positionAndTimeTex->texture;
+				rtDesc.colorSurfaces[1].texture = mStateTextures[i].velocityTex->texture;
+
+				mStateTextures[i].renderTarget = RenderTexture::create(rtDesc);
 			}
 
 			// TODO - Allocate textures for other properties (not necessarily double-buffered):
 			//	      size, rotation, etc.
 
-			// Prepare tile list
+			// Clear the free tile linked list
 			for(UINT32 i = 0; i < TILE_COUNT; i++)
 				mFreeTiles[i] = TILE_COUNT - i - 1;
 		}
 
 		void swap()
 		{
-			mActiveBuffer ^= 0x1;
+			mWriteBufferIdx ^= 0x1;
+		}
+
+		GpuParticleStateTextures& getReadState()
+		{
+			return mStateTextures[mWriteBufferIdx ^ 0x1];
+		}
+
+		GpuParticleStateTextures& getWriteState()
+		{
+			return mStateTextures[mWriteBufferIdx];
 		}
 
 		// Returns - 1 if alloc failed
@@ -250,16 +323,6 @@ namespace bs { namespace ct
 			mNumFreeTiles++;
 		}
 
-		void clearTiles(const Vector<UINT32>& tiles)
-		{
-			// TODO - Run a shader that zeroes out all the provided tiles
-		}
-
-		void addParticles(const Vector<GpuParticle>& particles)
-		{
-			// TODO - Run a shader that writes the new particles in the relevant textures
-		}
-
 		static Vector2 getTileCoords(UINT32 tileId)
 		{
 			return Vector2(
@@ -275,18 +338,99 @@ namespace bs { namespace ct
 		}
 
 	private:
-		SPtr<PooledRenderTexture> mPositionAndTimeTex[2];
-		SPtr<PooledRenderTexture> mVelocityTex[2];
+		GpuParticleStateTextures mStateTextures[2];
 
-		UINT32 mActiveBuffer = 0;
+		UINT32 mWriteBufferIdx = 0;
 
 		UINT32 mFreeTiles[TILE_COUNT];
 		UINT32 mNumFreeTiles = TILE_COUNT;
 	};
 
+	struct GpuParticleHelperBuffers
+	{
+		static constexpr UINT32 NUM_SCRATCH_TILES = 512;
+		static constexpr UINT32 NUM_SCRATCH_PARTICLES = 4096;
+
+		GpuParticleHelperBuffers()
+		{
+			// Prepare vertex declaration for rendering tiles
+			SPtr<VertexDataDesc> tileVertexDesc = bs_shared_ptr_new<VertexDataDesc>();
+			tileVertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
+
+			tileVertexDecl = VertexDeclaration::create(tileVertexDesc);
+
+			// Prepare vertex declaration for injecting new particles
+			SPtr<VertexDataDesc> injectVertexDesc = bs_shared_ptr_new<VertexDataDesc>();
+			injectVertexDesc->addVertElem(VET_FLOAT4, VES_TEXCOORD, 0, 0, 1); // Position & time, per instance
+			injectVertexDesc->addVertElem(VET_FLOAT4, VES_TEXCOORD, 1, 0, 1); // Velocity, per instance
+			injectVertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD, 3, 0, 1); // Data UV, per instance
+			injectVertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD, 4, 1); // Sprite texture coordinates
+
+			injectVertexDecl = VertexDeclaration::create(injectVertexDesc);
+
+			// Prepare UV coordinates for rendering tiles & particles
+			VERTEX_BUFFER_DESC spriteUVBufferDesc;
+			spriteUVBufferDesc.numVerts = PARTICLES_PER_INSTANCE * 4;
+			spriteUVBufferDesc.vertexSize = tileVertexDesc->getVertexStride();
+
+			spriteUVs = VertexBuffer::create(spriteUVBufferDesc);
+
+			auto* const uvs = (Vector2*)spriteUVs->lock(GBL_WRITE_ONLY_NO_OVERWRITE);
+			const float scale = PARTICLE_TILE_SIZE / (float)PARTICLE_TEX_SIZE;
+			for(UINT32 i = 0; i < PARTICLES_PER_INSTANCE; i++)
+			{
+				uvs[i*4+0] = Vector2(0.0f, 0.0f) * scale;
+				uvs[i*4+1] = Vector2(1.0f, 0.0f) * scale;
+				uvs[i*4+2] = Vector2(1.0f, 1.0f) * scale;
+				uvs[i*4+3] = Vector2(0.0f, 1.0f) * scale;
+			}
+
+			spriteUVs->unlock();
+
+			// Prepare indices for rendering tiles & particles
+			INDEX_BUFFER_DESC spriteIndexBufferDesc;
+			spriteIndexBufferDesc.indexType = IT_16BIT;
+			spriteIndexBufferDesc.numIndices = PARTICLES_PER_INSTANCE * 6;
+
+			spriteIndices = IndexBuffer::create(spriteIndexBufferDesc);
+
+			auto* const indices = (UINT16*)spriteIndices->lock(GBL_WRITE_ONLY_NO_OVERWRITE);
+			for(UINT32 i = 0; i < PARTICLES_PER_INSTANCE; i++)
+			{
+				indices[i*6+0] = 0; indices[i*6+1] = 1; indices[i*6+2] = 2;
+				indices[i*6+3] = 0; indices[i*6+4] = 2; indices[i*6+5] = 3;
+			}
+
+			spriteIndices->unlock();
+
+			// Prepare a scratch buffer we'll use to clear tiles
+			GPU_BUFFER_DESC tileScratchBufferDesc;
+			tileScratchBufferDesc.type = GBT_STANDARD;
+			tileScratchBufferDesc.format = BF_32X2U;
+			tileScratchBufferDesc.elementCount = NUM_SCRATCH_TILES;
+			tileScratchBufferDesc.usage = GBU_DYNAMIC;
+
+			tileScratch = GpuBuffer::create(tileScratchBufferDesc);
+
+			// Prepare a scratch buffer we'll use to inject new particles
+			VERTEX_BUFFER_DESC injectScratchBufferDesc;
+			injectScratchBufferDesc.numVerts = NUM_SCRATCH_PARTICLES;
+			injectScratchBufferDesc.vertexSize = injectVertexDesc->getVertexStride(0);
+			injectScratchBufferDesc.usage = GBU_DYNAMIC;
+
+			injectScratch = VertexBuffer::create(injectScratchBufferDesc);
+		}
+		
+		SPtr<VertexBuffer> spriteUVs;
+		SPtr<IndexBuffer> spriteIndices;
+		SPtr<VertexDeclaration> tileVertexDecl;
+		SPtr<VertexDeclaration> injectVertexDecl;
+		SPtr<GpuBuffer> tileScratch;
+		SPtr<VertexBuffer> injectScratch;
+	};
+
 	class GpuParticleSystem
 	{
-		static constexpr UINT32 TILES_PER_INSTANCE = 8;
 	public:
 		bool allocateTiles(GpuParticleResources& resources, Vector<GpuParticle>& newParticles, Vector<UINT32>& newTiles)
 		{
@@ -329,7 +473,7 @@ namespace bs { namespace ct
 
 					mLastAllocatedTile = tileIdx;
 					tileUV = GpuParticleResources::getTileCoords(mTiles[tileIdx].id);
-					mTiles[tileIdx].numFreeParticles = GpuParticleResources::PARTICLES_PER_TILE;
+					mTiles[tileIdx].numFreeParticles = PARTICLES_PER_TILE;
 
 					mNumActiveTiles++;
 				}
@@ -337,7 +481,7 @@ namespace bs { namespace ct
 				GpuParticleTile& tile = mTiles[tileIdx];
 				GpuParticle& particle = newParticles[i];
 
-				const UINT32 tileParticleIdx = GpuParticleResources::PARTICLES_PER_TILE - tile.numFreeParticles;
+				const UINT32 tileParticleIdx = PARTICLES_PER_TILE - tile.numFreeParticles;
 				particle.dataUV = tileUV + GpuParticleResources::getParticleCoords(tileParticleIdx);
 
 				tile.numFreeParticles--;
@@ -396,6 +540,9 @@ namespace bs { namespace ct
 			return numFreeTiles > 0;
 		}
 
+		SPtr<GpuBuffer> getTileUVs() const { return mTileOffsets; }
+		UINT32 getNumTiles() const { return (UINT32)mTiles.size(); }
+
 		void updateGpuBuffers()
 		{
 			const auto numTiles = (UINT32)mTiles.size();
@@ -404,7 +551,7 @@ namespace bs { namespace ct
 			// Tile offsets buffer
 			GPU_BUFFER_DESC tilesBufferDesc;
 			tilesBufferDesc.type = GBT_STANDARD;
-			tilesBufferDesc.format = BF_32X2F;
+			tilesBufferDesc.format = BF_32X2U;
 			tilesBufferDesc.elementCount = numTilesToAllocates;
 
 			mTileOffsets = GpuBuffer::create(tilesBufferDesc);
@@ -414,12 +561,12 @@ namespace bs { namespace ct
 				tileUVs[i] = GpuParticleResources::getTileCoords(mTiles[i].id);
 
 			for(UINT32 i = numTiles; i < numTilesToAllocates; i++)
-				tileUVs[i] = Vector2(99.0f, 99.0f); // Out of range
+				tileUVs[i] = Vector2(0.0f, 0.0f); // Out of range
 
 			mTileOffsets->unlock();
 
 			// Particle data UV
-			const UINT32 numParticles = numTiles * GpuParticleResources::PARTICLES_PER_TILE;
+			const UINT32 numParticles = numTiles * PARTICLES_PER_TILE;
 
 			VERTEX_BUFFER_DESC particleUVDesc;
 			particleUVDesc.numVerts = numParticles;
@@ -428,18 +575,18 @@ namespace bs { namespace ct
 			mParticleUVs = VertexBuffer::create(particleUVDesc);
 			auto* particleUVs = (UINT32*)mParticleUVs->lock(GBL_WRITE_ONLY_NO_OVERWRITE);
 
-			const Vector2 halfPixel = Vector2::ONE * (0.5f / (float)GpuParticleResources::PARTICLE_TEX_SIZE);
+			const Vector2 halfPixel = Vector2::ONE * (0.5f / (float)PARTICLE_TEX_SIZE);
 			for(UINT32 i = 0; i < numTiles; i++)
 			{
 				const Vector2 tileUV = GpuParticleResources::getTileCoords(mTiles[i].id);
 
-				for(UINT32 y = 0; y < GpuParticleResources::PARTICLE_TILE_SIZE; y++)
+				for(UINT32 y = 0; y < PARTICLE_TILE_SIZE; y++)
 				{
-					for(UINT32 x = 0; x < GpuParticleResources::PARTICLE_TILE_SIZE; x++)
+					for(UINT32 x = 0; x < PARTICLE_TILE_SIZE; x++)
 					{
 						Vector2 particleUV(
-							x / (float)GpuParticleResources::PARTICLE_TEX_SIZE,
-							y / (float)GpuParticleResources::PARTICLE_TEX_SIZE);
+							x / (float)PARTICLE_TEX_SIZE,
+							y / (float)PARTICLE_TEX_SIZE);
 
 						particleUV += tileUV + halfPixel;
 
@@ -462,7 +609,6 @@ namespace bs { namespace ct
 
 		SPtr<GpuBuffer> mTileOffsets;
 		SPtr<VertexBuffer> mParticleUVs;
-		
 	};
 
 	class GpuParticles
@@ -480,7 +626,7 @@ namespace bs { namespace ct
 
 		void simulate(float dt)
 		{
-			// TODO - Flip the read/write textures
+			mResources.swap();
 
 			Vector<UINT32> newTiles;
 			Vector<GpuParticle> allNewParticles;
@@ -489,6 +635,7 @@ namespace bs { namespace ct
 				entry->detectInactiveTiles(dt);
 
 				// TODO - Convert from ParticleSet to a list of GpuParticle's
+				// TODO - Particle time must be mapped to [0, 1] range
 				Vector<GpuParticle> newParticles;
 
 				bool tilesDirty = entry->allocateTiles(mResources, newParticles, newTiles);
@@ -500,10 +647,36 @@ namespace bs { namespace ct
 				allNewParticles.insert(allNewParticles.end(), newParticles.begin(), newParticles.end());
 			}
 
-			mResources.clearTiles(newTiles);
-			mResources.addParticles(allNewParticles);
+			GpuParticleStateTextures& readState = mResources.getReadState();
+			GpuParticleStateTextures& writeState = mResources.getWriteState();
 
-			// TODO - Run the simulation, per system (render each of the system's tile vertex buffers)
+			RenderAPI& rapi = RenderAPI::instance();
+			rapi.setRenderTarget(readState.renderTarget);
+
+			clearTiles(newTiles);
+			injectParticles(allNewParticles);
+
+			// Simulate
+			rapi.setRenderTarget(writeState.renderTarget);
+
+			GpuParticleSimulateMat* simulateMat = GpuParticleSimulateMat::get();
+			simulateMat->bind(mResources);
+
+			rapi.setVertexDeclaration(mHelperBuffers.tileVertexDecl);
+
+			SPtr<VertexBuffer> buffers[] = { mHelperBuffers.spriteUVs };
+			rapi.setVertexBuffers(0, buffers, bs_size(buffers));
+			rapi.setIndexBuffer(mHelperBuffers.spriteIndices);
+			rapi.setDrawOperation(DOT_TRIANGLE_LIST);
+
+			for(auto& entry : mSystems)
+			{
+				simulateMat->setTileUVs(entry->getTileUVs());
+
+				const UINT32 tileCount = entry->getNumTiles();
+				const UINT32 numInstances = Math::divideAndRoundUp(tileCount, TILES_PER_INSTANCE);
+				rapi.drawIndexed(0, PARTICLES_PER_INSTANCE * 6, 0, PARTICLES_PER_INSTANCE * 4, numInstances);
+			}
 
 			// TODO - (For later) Sort the particles (How to handle this per-simulation?)
 
@@ -511,8 +684,154 @@ namespace bs { namespace ct
 			//   - Or the sorted buffer if available
 		}
 
+		void clearTiles(const Vector<UINT32>& tiles)
+		{
+			const auto numTiles = (UINT32)tiles.size();
+			const UINT32 numIterations = Math::divideAndRoundUp(numTiles, GpuParticleHelperBuffers::NUM_SCRATCH_TILES);
+
+			GpuParticleClearMat* clearMat = GpuParticleClearMat::get();
+			clearMat->bind(mHelperBuffers.tileScratch);
+
+			RenderAPI& rapi = RenderAPI::instance();
+			rapi.setVertexDeclaration(mHelperBuffers.tileVertexDecl);
+
+			SPtr<VertexBuffer> buffers[] = { mHelperBuffers.spriteUVs };
+			rapi.setVertexBuffers(0, buffers, bs_size(buffers));
+			rapi.setIndexBuffer(mHelperBuffers.spriteIndices);
+			rapi.setDrawOperation(DOT_TRIANGLE_LIST);
+
+			UINT32 tileStart = 0;
+			for(UINT32 i = 0; i < numIterations; i++)
+			{
+				const UINT32 tileEnd = std::min(numTiles, tileStart + GpuParticleHelperBuffers::NUM_SCRATCH_TILES);
+
+				auto* tileUVs = (Vector2*)mHelperBuffers.tileScratch->lock(GBL_WRITE_ONLY_DISCARD);
+				for(UINT32 j = tileStart; j < tileEnd; j++)
+					tileUVs[j] = GpuParticleResources::getTileCoords(tiles[j]);
+
+				mHelperBuffers.tileScratch->unlock();
+
+				const UINT32 numInstances = Math::divideAndRoundUp(tileEnd - tileStart, TILES_PER_INSTANCE);
+				rapi.drawIndexed(0, PARTICLES_PER_INSTANCE * 6, 0, PARTICLES_PER_INSTANCE * 4, numInstances);
+
+				tileStart = tileEnd;
+			}
+		}
+
+		void injectParticles(const Vector<GpuParticle>& particles)
+		{
+			const auto numParticles = (UINT32)particles.size();
+			const UINT32 numIterations = Math::divideAndRoundUp(numParticles, GpuParticleHelperBuffers::NUM_SCRATCH_PARTICLES);
+
+			GpuParticleInjectMat* injectMat = GpuParticleInjectMat::get();
+			injectMat->bind();
+
+			RenderAPI& rapi = RenderAPI::instance();
+			rapi.setVertexDeclaration(mHelperBuffers.injectVertexDecl);
+
+			SPtr<VertexBuffer> buffers[] = { mHelperBuffers.injectScratch, mHelperBuffers.spriteUVs };
+			rapi.setVertexBuffers(0, buffers, bs_size(buffers));
+			rapi.setIndexBuffer(mHelperBuffers.spriteIndices);
+			rapi.setDrawOperation(DOT_TRIANGLE_LIST);
+
+			UINT32 particleStart = 0;
+			for(UINT32 i = 0; i < numIterations; i++)
+			{
+				const UINT32 particleEnd = std::min(numParticles, particleStart + GpuParticleHelperBuffers::NUM_SCRATCH_PARTICLES);
+
+				auto* particleData = (GpuParticle*)mHelperBuffers.injectScratch->lock(GBL_WRITE_ONLY_DISCARD);
+				for(UINT32 j = particleStart; j < particleEnd; j++)
+					particleData[j] = particles[j];
+
+				mHelperBuffers.injectScratch->unlock();
+
+				rapi.drawIndexed(0, 6, 0, 4, particleEnd - particleStart);
+				particleStart = particleEnd;
+			}
+		}
+
 	private:
 		GpuParticleResources mResources;
+		GpuParticleHelperBuffers mHelperBuffers;
 		Vector<GpuParticleSystem*> mSystems;
 	};
+
+	SPtr<GpuParamBlockBuffer> createGpuParticleVertexInputBuffer()
+	{
+		SPtr<GpuParamBlockBuffer> inputBuffer = gGpuParticleTileVertexParamsDef.createBuffer();
+
+		// [0, 1] -> [-1, 1] and flip Y
+		Vector4 uvToNdc(2.0f, -2.0f, -1.0f, 1.0f);
+
+		RenderAPI& rapi = RenderAPI::instance();
+		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
+
+		// Either of these flips the Y axis, but if they're both true they cancel out
+		if (rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp) ^ rapiInfo.isFlagSet(RenderAPIFeatureFlag::NDCYAxisDown))
+		{
+			uvToNdc.y = -uvToNdc.y;
+			uvToNdc.w = -uvToNdc.w;
+		}
+
+		gGpuParticleTileVertexParamsDef.gUVToNDC.set(inputBuffer, uvToNdc);
+
+		return inputBuffer;
+	}
+
+	GpuParticleClearMat::GpuParticleClearMat()
+	{
+		const SPtr<GpuParamBlockBuffer> inputBuffer = createGpuParticleVertexInputBuffer();
+
+		mParams->setParamBlockBuffer(GPT_VERTEX_PROGRAM, "Input", inputBuffer);
+		mParams->getBufferParam(GPT_VERTEX_PROGRAM, "gTileUVs", mTileUVParam);
+	}
+
+	void GpuParticleClearMat::_initDefines(ShaderDefines& defines)
+	{
+		defines.set("TILES_PER_INSTANCE", TILES_PER_INSTANCE);
+	}
+
+	void GpuParticleClearMat::bind(const SPtr<GpuBuffer>& tileUVs)
+	{
+		mTileUVParam.set(tileUVs);
+
+		RendererMaterial::bind();
+	}
+
+	GpuParticleInjectMat::GpuParticleInjectMat()
+	{
+		const SPtr<GpuParamBlockBuffer> inputBuffer = createGpuParticleVertexInputBuffer();
+		mParams->setParamBlockBuffer(GPT_VERTEX_PROGRAM, "Input", inputBuffer);
+	}
+
+	GpuParticleSimulateMat::GpuParticleSimulateMat()
+	{
+		const SPtr<GpuParamBlockBuffer> inputBuffer = createGpuParticleVertexInputBuffer();
+		mParams->setParamBlockBuffer(GPT_VERTEX_PROGRAM, "Input", inputBuffer);
+		
+		mParams->getBufferParam(GPT_VERTEX_PROGRAM, "gTileUVs", mTileUVParam);
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gPosAndTimeTex", mPosAndTimeTexParam);
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gVelocityTex", mVelocityParam);
+	}
+
+	void GpuParticleSimulateMat::_initDefines(ShaderDefines& defines)
+	{
+		defines.set("TILES_PER_INSTANCE", TILES_PER_INSTANCE);
+	}
+
+	void GpuParticleSimulateMat::bind(GpuParticleResources& resources)
+	{
+		GpuParticleStateTextures& readState = resources.getReadState();
+		GpuParticleStateTextures& writeState = resources.getWriteState();
+
+		mPosAndTimeTexParam.set(readState.positionAndTimeTex->texture);
+		mVelocityParam.set(readState.velocityTex->texture);
+
+		RendererMaterial::bind();
+	}
+
+	void GpuParticleSimulateMat::setTileUVs(const SPtr<GpuBuffer>& tileUVs)
+	{
+		mTileUVParam.set(tileUVs);
+	}
 }}

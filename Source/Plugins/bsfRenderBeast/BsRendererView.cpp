@@ -511,6 +511,13 @@ namespace bs { namespace ct
 		Vector4 ndcToUV = getNDCToUV();
 		gPerCameraParamDef.gClipToUVScaleOffset.set(mParamBuffer, ndcToUV);
 
+		Vector4 uvToNDC(
+			1.0f / ndcToUV.x,
+			1.0f / ndcToUV.y,
+			-ndcToUV.z / ndcToUV.x,
+			-ndcToUV.w / ndcToUV.y);
+		gPerCameraParamDef.gUVToClipScaleOffset.set(mParamBuffer, uvToNDC);
+
 		if (!mRenderSettings->enableLighting)
 			gPerCameraParamDef.gAmbientFactor.set(mParamBuffer, 100.0f);
 		else

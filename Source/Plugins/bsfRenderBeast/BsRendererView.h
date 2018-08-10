@@ -40,6 +40,7 @@ namespace bs { namespace ct
 		BS_PARAM_BLOCK_ENTRY(Vector2, gNearFar)
 		BS_PARAM_BLOCK_ENTRY(Vector4I, gViewportRectangle)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gClipToUVScaleOffset)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gUVToClipScaleOffset)
 		BS_PARAM_BLOCK_ENTRY(float, gAmbientFactor)
 	BS_PARAM_BLOCK_END
 

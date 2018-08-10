@@ -219,7 +219,7 @@ namespace bs
 	class BS_CORE_EXPORT VertexDeclaration : public CoreObject
 	{
 	public:
-		virtual ~VertexDeclaration() { }
+		virtual ~VertexDeclaration() = default;
 
 		/** @copydoc CoreObject::initialize */
 		void initialize() override;

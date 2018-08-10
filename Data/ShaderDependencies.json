@@ -184,6 +184,17 @@
             "Path": "VertexInput.bslinc"
         }
     ],
+    "GpuParticleClear.bsl": [
+        {
+            "Path": "GpuParticleTileVertex.bslinc"
+        }
+    ],
+    "GpuParticleInject.bsl": null,
+    "GpuParticleSimulate.bsl": [
+        {
+            "Path": "GpuParticleTileVertex.bslinc"
+        }
+    ],
     "IrradianceAccumulateCubeSH.bsl": [
         {
             "Path": "PPBase.bslinc"

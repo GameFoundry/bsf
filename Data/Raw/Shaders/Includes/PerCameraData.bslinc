@@ -36,7 +36,8 @@ mixin PerCameraData
 			
 			// xy - (Viewport size in pixels / 2) / Target size in pixels
 			// zw - (Viewport offset in pixels + (Viewport size in pixels / 2) + Optional pixel center offset) / Target size in pixels
-			float4 	 gClipToUVScaleOffset;	
+			float4 	 gClipToUVScaleOffset;
+			float4 	 gUVToClipScaleOffset;	
 			float	gAmbientFactor;
 		}
 		
@@ -81,7 +82,7 @@ mixin PerCameraData
 		/** Converts position in UV coordinates mapped to screen rectangle to NDC coordinates. */
 		float2 UVToNDC(float2 uvPos)
 		{
-			return (uvPos - gClipToUVScaleOffset.zw) / gClipToUVScaleOffset.xy;
+			return uvPos * gUVToClipScaleOffset.xy + gUVToClipScaleOffset.zw;
 		}
 		
 		/** Converts position in UV coordinates mapped to the screen, to screen coordinates in pixels. */
