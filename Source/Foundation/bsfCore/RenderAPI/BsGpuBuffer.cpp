@@ -75,9 +75,9 @@ namespace bs
 			lookup[BF_8X1U] = 1;
 			lookup[BF_8X2U] = 2;
 			lookup[BF_8X4U] = 4;
-			lookup[BF_16X1U] = 1;
-			lookup[BF_16X2U] = 2;
-			lookup[BF_16X4U] = 4;
+			lookup[BF_16X1U] = 2;
+			lookup[BF_16X2U] = 4;
+			lookup[BF_16X4U] = 8;
 			lookup[BF_32X1U] = 4;
 			lookup[BF_32X2U] = 8;
 			lookup[BF_32X3U] = 12;
