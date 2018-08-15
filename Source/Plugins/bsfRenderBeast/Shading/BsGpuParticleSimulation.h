@@ -96,6 +96,7 @@ namespace bs { namespace ct
 		struct Pimpl;
 	public:
 		GpuParticleSimulation();
+		~GpuParticleSimulation();
 
 		/** 
 		 * Registers a new GPU particle system to simulate. The system will be simulated until removed by a call to
@@ -123,7 +124,7 @@ namespace bs { namespace ct
 		/** Inserts the provided set of particles into the particle textures. */
 		void injectParticles(const Vector<GpuParticle>& particles);
 
-		UPtr<Pimpl> m;
+		Pimpl* m;
 	};
 
 	/** Contains textures that get updated with every run of the GPU particle simulation. */
