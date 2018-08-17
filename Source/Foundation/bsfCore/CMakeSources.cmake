@@ -604,6 +604,7 @@ set(BS_CORE_SRC_PARTICLES
 	"bsfCore/Particles/BsParticleEmitter.cpp"
 	"bsfCore/Particles/BsParticleEvolver.cpp"
 	"bsfCore/Particles/BsParticleManager.cpp"
+	"bsfCore/Particles/BsParticleDistribution.cpp"
 )
 
 set(BS_CORE_INC_PLATFORM

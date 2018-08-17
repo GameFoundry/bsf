@@ -100,4 +100,22 @@ namespace bs
 		mNumKeys = 1;
 		mDuration = 0.0f;
 	}
+
+	std::pair<float, float> ColorGradient::getTimeRange() const
+	{
+		if(mNumKeys == 0)
+			return std::make_pair(0.0f, 0.0f);
+
+		if(mNumKeys == 1)
+		{
+			float time = Bitwise::uintToUnorm<16>(mTimes[0]);
+			return std::make_pair(time, time);
+		}
+
+		return std::make_pair(
+			Bitwise::uintToUnorm<16>(mTimes[0]), 
+			Bitwise::uintToUnorm<16>(mTimes[mNumKeys - 1])
+		);
+	}
+
 }

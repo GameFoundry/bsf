@@ -918,6 +918,18 @@ namespace bs
 	}
 
 	template <class T>
+	std::pair<float, float> TAnimationCurve<T>::getTimeRange() const
+	{
+		if(mKeyframes.empty())
+			return std::make_pair(0.0f, 0.0f);
+
+		if(mKeyframes.size() == 1)
+			return std::make_pair(mKeyframes[0].time, mKeyframes[0].time);
+
+		return std::make_pair(mKeyframes[0].time, mKeyframes[mKeyframes.size() - 1].time);
+	}
+
+	template <class T>
 	std::pair<T, T> TAnimationCurve<T>::calculateRange() const
 	{
 		const auto numKeys = (UINT32)mKeyframes.size();

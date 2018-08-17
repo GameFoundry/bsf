@@ -9,6 +9,7 @@
 #include "Math/BsRandom.h"
 #include "Animation/BsAnimationCurve.h"
 #include "Utility/BsBitwise.h"
+#include "Utility/BsLookupTable.h"
 
 namespace bs 
 {
@@ -125,6 +126,20 @@ namespace bs
 				}
 			}
 		}
+
+		/**
+		 * Converts the distribution into a lookup table that's faster to access. The distribution will be resampled
+		 * using a fixed sample rate with equidistant samples.
+		 * 
+		 * @param[in]	numSamples			Determines how many samples to output in the lookup table. This value is ignored
+		 *									for non-curve distributions in which case there is always just one sample.
+		 * @param[in]	ignoreRange			If the curve represents a range (either between constants or curves), this
+		 *									determines should the other value of the range be included in the lookup table.
+		 *									If true, only the minimum constant/curve will be included, and if false then
+		 *									the maximum curve values will follow the minimum curve values of each sample.
+		 * @return							Resampled lookup table.
+		 */
+		LookupTable toLookupTable(UINT32 numSamples = 128, bool ignoreRange = false) const;
 	private:
 		friend struct RTTIPlainType<ColorDistribution>;
 
@@ -221,6 +236,20 @@ namespace bs
 				}
 			}
 		}
+
+		/**
+		 * Converts the distribution into a lookup table that's faster to access. The distribution will be resampled
+		 * using a fixed sample rate with equidistant samples.
+		 * 
+		 * @param[in]	numSamples			Determines how many samples to output in the lookup table. This value is ignored
+		 *									for non-curve distributions in which case there is always just one sample.
+		 * @param[in]	ignoreRange			If the curve represents a range (either between constants or curves), this
+		 *									determines should the other value of the range be included in the lookup table.
+		 *									If true, only the minimum constant/curve will be included, and if false then
+		 *									the maximum curve values will follow the minimum curve values of each sample.
+		 * @return							Resampled lookup table.
+		 */
+		LookupTable toLookupTable(UINT32 numSamples = 128, bool ignoreRange = false) const;
 	private:
 		friend struct RTTIPlainType<TDistribution<T>>;
 

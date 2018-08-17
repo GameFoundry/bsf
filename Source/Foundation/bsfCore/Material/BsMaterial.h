@@ -112,8 +112,8 @@ namespace bs
 			UINT32 size;
 		};
 
-		MaterialBase() { }
-		virtual ~MaterialBase() { }
+		MaterialBase() = default;
+		virtual ~MaterialBase() = default;
 
 		/** @name Internal
 		 *  @{
@@ -147,8 +147,8 @@ namespace bs
 		typedef typename TGpuParamsSetType<Core>::Type GpuParamsSetType;
 		typedef typename TMaterialParamsType<Core>::Type MaterialParamsType;
 
-		TMaterial() { }
-		virtual ~TMaterial() { }
+		TMaterial() = default;
+		virtual ~TMaterial() = default;
 
 		/** Returns the currently active shader. */
 		BS_SCRIPT_EXPORT(n:Shader,pr:getter)

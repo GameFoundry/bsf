@@ -12,8 +12,8 @@ namespace bs
 
 	/** Timer class used for querying high precision timers. */
 	class BS_UTILITY_EXPORT Timer
-    {
-    public:
+	{
+	public:
 		/** Construct the timer and start timing. */
 		Timer();
 
@@ -36,7 +36,7 @@ namespace bs
 	private:
 		std::chrono::high_resolution_clock mHRClock;
 		std::chrono::time_point<std::chrono::high_resolution_clock> mStartTime;
-    };
+	};
 
 	/** @} */
 }

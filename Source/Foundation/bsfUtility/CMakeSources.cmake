@@ -50,6 +50,7 @@ set(BS_UTILITY_SRC_UTILITY
 	"bsfUtility/Utility/BsCompression.cpp"
 	"bsfUtility/Utility/BsTriangulation.cpp"
 	"bsfUtility/Utility/BsUUID.cpp"
+	"bsfUtility/Utility/BsLookupTable.cpp"
 )
 
 set(BS_UTILITY_INC_DEBUG
@@ -98,6 +99,7 @@ set(BS_UTILITY_INC_UTILITY
 	"bsfUtility/Utility/BsUUID.h"
 	"bsfUtility/Utility/BsOctree.h"
 	"bsfUtility/Utility/BsDataBlob.h"
+	"bsfUtility/Utility/BsLookupTable.h"
 )
 
 set(BS_UTILITY_SRC_ALLOCATORS

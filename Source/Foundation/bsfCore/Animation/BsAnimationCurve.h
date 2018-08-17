@@ -136,6 +136,9 @@ namespace bs
 		 */
 		void makeAdditive();
 
+		/** Returns the time of the first and last keyframe in the curve. */
+		std::pair<float, float> getTimeRange() const;
+
 		/** Calculates the minimal and maximal value of the curve. */
 		std::pair<T, T> calculateRange() const;
 

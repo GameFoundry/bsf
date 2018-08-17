@@ -61,6 +61,10 @@ namespace bs
 		 * final keyframe.
 		 */
 		float getDuration() const { return mDuration; }
+
+		/** Returns the time of the first and last keyframe in the gradient. */
+		std::pair<float, float> getTimeRange() const;
+
 	private:
 		friend struct RTTIPlainType<ColorGradient>;
 
