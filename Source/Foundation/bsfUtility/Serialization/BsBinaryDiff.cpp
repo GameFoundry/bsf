@@ -717,6 +717,8 @@ namespace bs
 					}
 				}
 			}
+
+			commandsPerSubObj.emplace_back(std::move(commands));
 		}
 
 		DiffCommand objStartCommand;

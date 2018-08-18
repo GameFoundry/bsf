@@ -123,7 +123,7 @@ namespace bs
 		SPtr<SerializedObject> generateDiff(const SPtr<SerializedObject>& orgObj, const SPtr<SerializedObject>& newObj, 
 			ObjectMap& objectMap) override;
 
-		/** @copydoc	IDiff::applyDiff(const SPtr<IReflectable>&, const SPtr<SerializedObject>&, DiffObjectMap&, Vector<DiffCommand>&) */
+		/** @copydoc	IDiff::applyDiff(const SPtr<IReflectable>&, const SPtr<SerializedObject>&, FrameAlloc&, DiffObjectMap&, FrameVector<DiffCommand>&) */
 		void applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff, FrameAlloc& alloc, 
 			DiffObjectMap& objectMap, FrameVector<DiffCommand>& diffCommands) override;
 	};
