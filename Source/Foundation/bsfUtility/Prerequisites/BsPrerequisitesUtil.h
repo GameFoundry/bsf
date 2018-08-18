@@ -257,6 +257,12 @@
 	 * by the scripting language.
 	 */
 	#define BS_PARAMS __attribute__((annotate("params")))
+
+	/** 
+	 * When applied to a parameter or a field of ResourceHandle type, makes that element be exported as a raw resource in
+	 * script code.
+	 */
+	#define BS_NORREF __attribute__((annotate("norref")))
 #else
 	/** @ref scriptBindingMacro */
 	#define BS_SCRIPT_EXPORT(...)
@@ -266,6 +272,12 @@
 	 * by the scripting language.
 	 */
 	#define BS_PARAMS
+
+	/** 
+	 * When applied to a parameter or a field of ResourceHandle type, makes that element be exported as a raw resource in
+	 * script code.
+	 */
+	#define BS_NORREF
 #endif
 
 // Short-hand names for various built-in types
