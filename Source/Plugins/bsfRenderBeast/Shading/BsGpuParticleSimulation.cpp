@@ -64,6 +64,44 @@ namespace bs { namespace ct
 		GpuParamTexture mVelocityParam;
 	};
 
+	BS_PARAM_BLOCK_BEGIN(GpuParticleBoundsParamsDef)
+		BS_PARAM_BLOCK_ENTRY(UINT32, gIterationsPerGroup)
+		BS_PARAM_BLOCK_ENTRY(UINT32, gNumExtraIterations)
+		BS_PARAM_BLOCK_ENTRY(UINT32, gNumParticles)
+	BS_PARAM_BLOCK_END
+
+	GpuParticleBoundsParamsDef gGpuParticleBoundsParamsDef;
+
+	/** Material used for calculating particle system bounds. */
+	class GpuParticleBoundsMat : public RendererMaterial<GpuParticleBoundsMat>
+	{
+		static constexpr UINT32 NUM_THREADS = 64;
+		static constexpr UINT32 MAX_NUM_GROUPS = 128;
+
+		RMAT_DEF_CUSTOMIZED("GpuParticleBounds.bsl");
+
+	public:
+		GpuParticleBoundsMat();
+
+		/** Binds the material to the pipeline along with the global input texture containing particle positions and times. */
+		void bind(const SPtr<Texture>& positionAndTime);
+
+		/** 
+		 * Executes the material, calculating the bounds. Note that this function reads back from the GPU and should not
+		 * be called at runtime.
+		 *
+		 * @param[in]	indices			Buffer containing offsets into the position texture for each particle.
+		 * @param[in]	numParticles	Number of particle in the provided indices buffer.
+		 */
+		AABox execute(const SPtr<GpuBuffer>& indices, UINT32 numParticles);
+
+	private:
+		GpuParamBuffer mParticleIndicesParam;
+		GpuParamBuffer mOutputParam;
+		GpuParamTexture mPosAndTimeTexParam;
+		SPtr<GpuParamBlockBuffer> mInputBuffer;
+	};
+
 	static constexpr UINT32 TILES_PER_INSTANCE = 8;
 	static constexpr UINT32 PARTICLES_PER_INSTANCE = TILES_PER_INSTANCE * GpuParticleResources::PARTICLES_PER_TILE;
 
@@ -637,6 +675,68 @@ namespace bs { namespace ct
 	void GpuParticleSimulateMat::setTileUVs(const SPtr<GpuBuffer>& tileUVs)
 	{
 		mTileUVParam.set(tileUVs);
+	}
+
+	GpuParticleBoundsMat::GpuParticleBoundsMat()
+	{
+		mInputBuffer = gGpuParticleBoundsParamsDef.createBuffer();
+		mParams->setParamBlockBuffer(GPT_COMPUTE_PROGRAM, "Input", mInputBuffer);
+		
+		mParams->getBufferParam(GPT_COMPUTE_PROGRAM, "gParticleIndices", mParticleIndicesParam);
+		mParams->getBufferParam(GPT_COMPUTE_PROGRAM, "gOutput", mOutputParam);
+		mParams->getTextureParam(GPT_COMPUTE_PROGRAM, "gPosAndTimeTex", mPosAndTimeTexParam);
+	}
+
+	void GpuParticleBoundsMat::_initDefines(ShaderDefines& defines)
+	{
+		defines.set("NUM_THREADS", NUM_THREADS);
+	}
+
+	void GpuParticleBoundsMat::bind(const SPtr<Texture>& positionAndTime)
+	{
+		mPosAndTimeTexParam.set(positionAndTime);
+
+		RendererMaterial::bind();
+	}
+
+	AABox GpuParticleBoundsMat::execute(const SPtr<GpuBuffer>& indices, UINT32 numParticles)
+	{
+		const UINT32 numIterations = Math::divideAndRoundUp(numParticles, NUM_THREADS);
+		const UINT32 numGroups = std::min(numIterations, MAX_NUM_GROUPS);
+
+		const UINT32 iterationsPerGroup = numIterations / numGroups;
+		const UINT32 extraIterations = numIterations % numGroups;
+
+		gGpuParticleBoundsParamsDef.gIterationsPerGroup.set(mInputBuffer, iterationsPerGroup);
+		gGpuParticleBoundsParamsDef.gNumExtraIterations.set(mInputBuffer, extraIterations);
+		gGpuParticleBoundsParamsDef.gNumParticles.set(mInputBuffer, numParticles);
+
+		GPU_BUFFER_DESC outputDesc;
+		outputDesc.type = GBT_STANDARD;
+		outputDesc.format = BF_32X2U;
+		outputDesc.elementCount = numGroups * 2;
+		outputDesc.usage = GBU_DYNAMIC;
+
+		SPtr<GpuBuffer> output = GpuBuffer::create(outputDesc);
+
+		mParticleIndicesParam.set(indices);
+		mOutputParam.set(output);
+
+		RenderAPI::instance().dispatchCompute(numGroups);
+
+		Vector3 min = Vector3::INF;
+		Vector3 max = -Vector3::INF;
+
+		const Vector3* data = (Vector3*)output->lock(GBL_READ_ONLY);
+		for(UINT32 i = 0; i < numGroups; i++)
+		{
+			min = Vector3::min(min, data[i * 2 + 0]);
+			max = Vector3::min(max, data[i * 2 + 1]);
+		}
+
+		output->unlock();
+
+		return AABox(min, max);
 	}
 
 	/** Information about an allocation in a single row of a texture. */

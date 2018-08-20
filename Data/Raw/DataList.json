@@ -469,6 +469,10 @@
         {
             "Path": "GpuParticleSimulate.bsl",
             "UUID": "95e03c75-4b53-ec71-4686-4b53d4367cd4"
+        },
+        {
+            "Path": "GpuParticleBounds.bsl",
+            "UUID": "ba7c69fd-4b9b-3fc4-888a-4b9b29180376"
         }
     ],
     "Skin": [
