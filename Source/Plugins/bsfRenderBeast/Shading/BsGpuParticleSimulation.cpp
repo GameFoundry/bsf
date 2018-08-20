@@ -76,7 +76,6 @@ namespace bs { namespace ct
 	class GpuParticleBoundsMat : public RendererMaterial<GpuParticleBoundsMat>
 	{
 		static constexpr UINT32 NUM_THREADS = 64;
-		static constexpr UINT32 MAX_NUM_GROUPS = 128;
 
 		RMAT_DEF_CUSTOMIZED("GpuParticleBounds.bsl");
 
@@ -701,6 +700,8 @@ namespace bs { namespace ct
 
 	AABox GpuParticleBoundsMat::execute(const SPtr<GpuBuffer>& indices, UINT32 numParticles)
 	{
+		static constexpr UINT32 MAX_NUM_GROUPS = 128;
+
 		const UINT32 numIterations = Math::divideAndRoundUp(numParticles, NUM_THREADS);
 		const UINT32 numGroups = std::min(numIterations, MAX_NUM_GROUPS);
 
