@@ -159,7 +159,7 @@ namespace bs { namespace ct
 			depthStencilImageCI.flags = 0;
 			depthStencilImageCI.imageType = VK_IMAGE_TYPE_2D;
 			depthStencilImageCI.format = depthFormat;
-			depthStencilImageCI.extent = { width, height, 1 };
+			depthStencilImageCI.extent = { mWidth, mHeight, 1 };
 			depthStencilImageCI.mipLevels = 1;
 			depthStencilImageCI.arrayLayers = 1;
 			depthStencilImageCI.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -189,8 +189,8 @@ namespace bs { namespace ct
 		for (UINT32 i = 0; i < numFramebuffers; i++)
 		{
 			VULKAN_FRAMEBUFFER_DESC& desc = mSurfaces[i].framebufferDesc;
-			desc.width = getWidth();
-			desc.height = getHeight();
+			desc.width = mWidth;
+			desc.height = mHeight;
 			desc.layers = 1;
 			desc.numSamples = 1;
 			desc.offscreen = false;
