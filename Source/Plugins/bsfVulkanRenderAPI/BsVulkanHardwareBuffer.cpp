@@ -93,7 +93,12 @@ namespace bs { namespace ct
 	{
 		{
 			Lock lock(mMutex);
-			destroyUnusedViews();
+
+			// Note: With often used buffers this block might never execute, in which case views won't  get freed.
+			// If that ever becomes an issue (unlikely) then we'll need to track usage per-view.
+			bool isLastHandle = mNumBoundHandles == 1;
+			if (isLastHandle)
+				destroyUnusedViews();
 		}
 
 		VulkanResource::notifyDone(globalQueueIdx, useFlags);
@@ -103,7 +108,12 @@ namespace bs { namespace ct
 	{
 		{
 			Lock lock(mMutex);
-			destroyUnusedViews();
+
+			// Note: With often used buffers this block might never execute, in which case views won't  get freed.
+			// If that ever becomes an issue (unlikely) then we'll need to track usage per-view.
+			bool isLastHandle = mNumBoundHandles == 1;
+			if (isLastHandle)
+				destroyUnusedViews();
 		}
 
 		VulkanResource::notifyUnbound();
