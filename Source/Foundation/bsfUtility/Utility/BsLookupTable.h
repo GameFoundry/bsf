@@ -15,7 +15,7 @@ namespace bs
 	 * for sampling that function at arbitrary time intervals. The sampling is fast but precision is limited to the number
 	 * of samples.
 	 */
-	class LookupTable
+	class BS_UTILITY_EXPORT LookupTable
 	{
 	public:
 		/**
@@ -42,7 +42,7 @@ namespace bs
 		 *							0 corresponds to the @p left value, 1 to the @p right value and values in-between
 		 *							interpolate linearly between the two.
 		 */
-		void evaluate(float t, float const*& left, float const*& right, float& fraction);
+		void evaluate(float t, float*& left, float*& right, float& fraction);
 
 	private:
 		Vector<float> mValues;

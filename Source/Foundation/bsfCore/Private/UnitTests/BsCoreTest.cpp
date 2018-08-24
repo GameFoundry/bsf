@@ -3,6 +3,7 @@
 #include "Testing/BsConsoleTestOutput.h"
 #include "Testing/BsTestSuite.h"
 #include "Animation/BsAnimationCurve.h"
+#include "Particles/BsParticleDistribution.h"
 
 namespace bs
 {
@@ -23,11 +24,13 @@ namespace bs
 
 	private:
 		void testAnimCurveIntegration();
+		void testLookupTable();
 	};
 
 	CoreTestSuite::CoreTestSuite()
 	{
 		BS_ADD_TEST(CoreTestSuite::testAnimCurveIntegration);
+		BS_ADD_TEST(CoreTestSuite::testLookupTable);
 	}
 
 	void CoreTestSuite::testAnimCurveIntegration()
@@ -105,6 +108,39 @@ namespace bs
 			std::pair<float, float> range = curveAcceleration.calculateRangeIntegratedDouble(cache);
 			BS_TEST_ASSERT(Math::approxEquals(range.first, -490.5f, EPSILON));
 			BS_TEST_ASSERT(Math::approxEquals(range.second, 0.0f, EPSILON));
+		}
+	}
+
+	void CoreTestSuite::testLookupTable()
+	{
+		static constexpr float EPSILON = 0.0001f;
+
+		TAnimationCurve<Vector3> curve
+		({
+			TKeyframe<Vector3>{ Vector3(0.0f, 0.0f, 0.0f), Vector3::ZERO, Vector3::ONE, 0.0f },
+			TKeyframe<Vector3>{ Vector3(5.0f, 3.0f, 10.0f), Vector3::ONE, Vector3::ZERO, 10.0f },
+		});
+
+		Vector3Distribution dist = curve;
+		auto lookupTable = dist.toLookupTable(128);
+
+		for(UINT32 i = 0; i < 10; i++)
+		{
+			float* left;
+			float* right;
+			float lerp;
+
+			float t = (i / 9.0f) * 1.0f;
+			lookupTable.evaluate(t, left, right, lerp);
+
+			Vector3* leftVec = (Vector3*)left;
+			Vector3* rightVec = (Vector3*)right;
+
+			Vector3 valueLookup = Vector3::lerp(lerp, *leftVec, *rightVec);
+			Vector3 valueCurve = curve.evaluate(t);
+
+			for(UINT32 j = 0; j < 3; j++)
+				BS_TEST_ASSERT(Math::approxEquals(valueLookup[j], valueCurve[j], EPSILON));
 		}
 	}
 }

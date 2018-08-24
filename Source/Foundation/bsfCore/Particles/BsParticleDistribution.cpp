@@ -152,4 +152,7 @@ namespace bs
 
 		return LookupTable(std::move(values), minT, maxT, sizeof(T) / sizeof(float));
 	}
+
+	template struct BS_CORE_EXPORT TDistribution<float>;
+	template struct BS_CORE_EXPORT TDistribution<Vector3>;
 }
