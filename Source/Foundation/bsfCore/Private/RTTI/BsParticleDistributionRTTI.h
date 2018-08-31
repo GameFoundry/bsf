@@ -133,7 +133,7 @@ namespace bs
 			dataSize += rttiGetElemSize(data.mMinValue);
 			dataSize += rttiGetElemSize(data.mMaxValue);
 			dataSize += rttiGetElemSize(data.mMinCurve);
-			dataSize += rttiGetElemSize(data.mMaxValue);
+			dataSize += rttiGetElemSize(data.mMaxCurve);
 
 			assert(dataSize <= std::numeric_limits<UINT32>::max());
 

@@ -29,10 +29,6 @@ namespace bs
 	 *  @{
 	 */
 
-	template<bool Core> struct TMaterialHandleType { };
-	template<> struct TMaterialHandleType<false> { typedef HMaterial Type; };
-	template<> struct TMaterialHandleType<true> { typedef SPtr<ct::Material> Type; };
-
 	/** @} */
 
 	/** @addtogroup Particles
@@ -89,12 +85,9 @@ namespace bs
 	 *  @{
 	 */
 
-	/** Template version of ParticleSystemSettings used for creating the object for both sim and core threads. */
-	template<bool Core>
-	struct TParticleSystemSettings
+	/** Common base for both sim and core thread variants of ParticleSystemSettings. */
+	struct ParticleSystemSettingsBase
 	{
-		typedef typename TMaterialHandleType<Core>::Type MaterialType;
-
 		/** 
 		 * If true the particle system will be simulated on the GPU. This allows much higher particle counts at lower
 		 * performance cost. GPU simulation ignores any provided evolvers and instead uses ParticleGpuSimulationSettings
@@ -153,13 +146,24 @@ namespace bs
 		 * between different runs. Only relevant if automatic seed is disabled.
 		 */
 		UINT32 manualSeed = 0;
+	};
+
+	/** Templated common base for both sim and core thread variants of ParticleSystemSettings. */
+	template<bool Core>
+	struct TParticleSystemSettings : ParticleSystemSettingsBase
+	{
+		using MaterialType = CoreVariantHandleType<Material, Core>;
 
 		/** Material to render the particles with. */
 		MaterialType material;
+
+		/** Applies an operation over all the serializable fields of this object. */
+		template<class Processor>
+		void rttiProcess(Processor p);
 	};
 
-	/** Common base for both sim and core thread variants of the vector field settings structure. */
-	struct ParticleVectorFieldSettingsCommon
+	/** Common base for both sim and core thread variants of ParticleVectorFieldSettings. */
+	struct ParticleVectorFieldSettingsBase
 	{
 		/** Intensity of the forces and velocities applied by the vector field. */
 		float intensity = 1.0f;
@@ -206,8 +210,16 @@ namespace bs
 		 * infinitely in the Z direction.
 		 */
 		bool tilingZ = false;
+	};
 
-		/** Applies an operation over all the serializable fields of this objet. */
+	/** Templated common base for both sim and core thread variants of ParticleVectorFieldSettings. */
+	template<bool Core>
+	struct TParticleVectorFieldSettings : ParticleVectorFieldSettingsBase
+	{
+		/** Vector field resource used for influencing the particles. */
+		CoreVariantHandleType<VectorField, Core> vectorField;
+		
+		/** Applies an operation over all the serializable fields of this object. */
 		template<class Processor>
 		void rttiProcess(Processor p);
 	};
@@ -231,20 +243,11 @@ namespace bs
 	};
 
 	/** Settings used for controlling a vector field in a GPU simulated particle system. */
-	struct BS_CORE_EXPORT ParticleVectorFieldSettings : ParticleVectorFieldSettingsCommon, IReflectable
+	struct BS_CORE_EXPORT ParticleVectorFieldSettings : TParticleVectorFieldSettings<false>, IReflectable
 	{
-		/** Vector field resource used for influencing the particles. */
-		HVectorField vectorField;
-
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
-
-		/** Converts this object into the core thread variant and encodes it into the provided buffer. */
-		char* syncTo(char* data);
-
-		/** Returns the number of bytes required by the buffer provided to syncTo() */
-		UINT32 getSyncSize();
 
 	public:
 		friend class ParticleVectorFieldSettingsRTTI;
@@ -261,12 +264,6 @@ namespace bs
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
-
-		/** Converts this object into the core thread variant and encodes it into the provided buffer. */
-		char* syncTo(char* data);
-
-		/** Returns the number of bytes required by the buffer provided to syncTo() */
-		UINT32 getSyncSize();
 
 	public:
 		friend class ParticleGpuSimulationSettingsRTTI;
@@ -288,29 +285,14 @@ namespace bs
 		struct ParticleSystemSettings : TParticleSystemSettings<true> { };
 
 		/** Core thread counterpart of bs::ParticleVectorFieldSettings. */
-		struct ParticleVectorFieldSettings : ParticleVectorFieldSettingsCommon
-		{
-			/** @copydoc bs::ParticleVectorFieldSettings::vectorField */
-			SPtr<VectorField> vectorField;
-
-			/** 
-			 * Decodes the contents of this object from the provided data buffer, as encoded by 
-			 * bs::ParticleVectorFieldSettings::syncTo(). 
-			 */
-			char* syncFrom(char* data);
-		};
+		struct ParticleVectorFieldSettings : TParticleVectorFieldSettings<true>
+		{ };
 
 		/** Core thread counterpart of bs::ParticleVectorFieldSettings. */
 		struct ParticleGpuSimulationSettings
 		{
 			/** @copydoc bs::ParticleGpuSimulationSettings::vectorField */
 			ParticleVectorFieldSettings vectorField;
-
-			/** 
-			 * Decodes the contents of this object from the provided data buffer, as encoded by 
-			 * bs::ParticleGpuSimulationSettings::syncTo(). 
-			 */
-			char* syncFrom(char* data);
 		};
 	}
 
@@ -521,6 +503,7 @@ namespace bs
 	private:
 		friend class ParticleManager;
 		friend class ParticleSystemRTTI;
+		friend class ct::ParticleSystem;
 
 		/** States the particle system can be in. */
 		enum class State

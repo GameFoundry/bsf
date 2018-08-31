@@ -59,6 +59,7 @@ set(BS_CORE_INC_CORETHREAD
 	"bsfCore/CoreThread/BsCoreObject.h"
 	"bsfCore/CoreThread/BsCommandQueue.h"
 	"bsfCore/CoreThread/BsCoreObjectCore.h"
+	"bsfCore/CoreThread/BsCoreObjectSync.h"
 )
 
 set(BS_CORE_INC_IMPORTER
