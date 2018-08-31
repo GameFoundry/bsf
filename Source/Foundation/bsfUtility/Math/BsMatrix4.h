@@ -242,9 +242,10 @@ namespace bs
 			m[idx][3] = column.w;
 		}
 
-		/** Extracts the rotation/scaling part of the matrix as a 3x3 matrix. */
-		void extract3x3Matrix(Matrix3& m3x3) const
+		/** Returns the rotation/scaling part of the matrix as a 3x3 matrix. */
+		Matrix3 get3x3() const
 		{
+			Matrix3 m3x3;
 			m3x3.m[0][0] = m[0][0];
 			m3x3.m[0][1] = m[0][1];
 			m3x3.m[0][2] = m[0][2];
@@ -254,6 +255,8 @@ namespace bs
 			m3x3.m[2][0] = m[2][0];
 			m3x3.m[2][1] = m[2][1];
 			m3x3.m[2][2] = m[2][2];
+
+			return m3x3;
 		}
 
 		/** Calculates the adjoint of the matrix. */

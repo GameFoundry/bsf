@@ -67,10 +67,9 @@ namespace bs
 
 	void Transform::setWorldScale(const Vector3& scale, const Transform& parent)
 	{
-		Matrix3 rotScale;
 		Matrix4 parentMatrix = parent.getMatrix();
-		parentMatrix.extract3x3Matrix(rotScale);
-		rotScale.inverse();
+		Matrix3 rotScale = parentMatrix.get3x3();
+		rotScale = rotScale.inverse();
 
 		Matrix3 scaleMat = Matrix3(Quaternion::IDENTITY, scale);
 		scaleMat = rotScale * scaleMat;

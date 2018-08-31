@@ -15,29 +15,12 @@ namespace bs
 	 *  @{
 	 */
 
-	/** Types of simulation a specific evolver type supports. */
-	enum class ParticleEvolverType
-	{
-		/** Evolver can only be used on particle systems simulated on the CPU. */
-		CPU,
-		/** Evolver can only be used on particle systems simulated on the GPU. */
-		GPU,
-		/** Evolver can be used for either CPU or GPU simulation. */
-		CPUAndGPU
-	};
-
 	/** Properties that describe a specific type of ParticleEvolver. */
 	struct ParticleEvolverProperties
 	{
-		ParticleEvolverProperties(ParticleEvolverType type, bool analytical, INT32 priority)
-			: type(type), analytical(analytical), priority(priority)
+		ParticleEvolverProperties(bool analytical, INT32 priority)
+			: analytical(analytical), priority(priority)
 		{ }
-
-		/**
-		 * Determines on what type of a particle system is evolver supported on. Unsupported evolvers will not be
-		 * executed.
-		 */
-		ParticleEvolverType type;
 
 		/** 
 		 * True if the evolver can be evaluated analytically. This means the exact particle state can be retrieved based on 
@@ -96,7 +79,7 @@ namespace bs
 		/** @copydoc ParticleEvolver::getProperties */
 		const ParticleEvolverProperties& getProperties() const override
 		{
-			static const ParticleEvolverProperties sProperties(ParticleEvolverType::CPU, true, 0);
+			static const ParticleEvolverProperties sProperties(true, 0);
 			return sProperties;
 		}
 	private:
@@ -144,7 +127,7 @@ namespace bs
 		/** @copydoc ParticleEvolver::getProperties */
 		const ParticleEvolverProperties& getProperties() const override
 		{
-			static const ParticleEvolverProperties sProperties(ParticleEvolverType::CPU, true, 0);
+			static const ParticleEvolverProperties sProperties(true, 0);
 			return sProperties;
 		}
 	private:
@@ -183,7 +166,7 @@ namespace bs
 		/** @copydoc ParticleEvolver::getProperties */
 		const ParticleEvolverProperties& getProperties() const override
 		{
-			static const ParticleEvolverProperties sProperties(ParticleEvolverType::CPU, true, 0);
+			static const ParticleEvolverProperties sProperties(true, 0);
 			return sProperties;
 		}
 	private:
@@ -219,7 +202,7 @@ namespace bs
 		/** @copydoc ParticleEvolver::getProperties */
 		const ParticleEvolverProperties& getProperties() const override
 		{
-			static const ParticleEvolverProperties sProperties(ParticleEvolverType::CPU, true, 0);
+			static const ParticleEvolverProperties sProperties(true, 0);
 			return sProperties;
 		}
 	private:
@@ -292,7 +275,7 @@ namespace bs
 		/** @copydoc ParticleEvolver::getProperties */
 		const ParticleEvolverProperties& getProperties() const override
 		{
-			static const ParticleEvolverProperties sProperties(ParticleEvolverType::CPU, false, -10000);
+			static const ParticleEvolverProperties sProperties(false, -10000);
 			return sProperties;
 		}
 

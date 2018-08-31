@@ -10,6 +10,7 @@
 
 namespace bs { namespace ct 
 {
+	struct SceneInfo;
 	class GpuParticleResources;
 
 	/** @addtogroup RenderBeast
@@ -28,14 +29,11 @@ namespace bs { namespace ct
 	class GpuParticleSystem
 	{
 	public:
-		GpuParticleSystem(UINT32 id);
+		GpuParticleSystem(ParticleSystem* parent);
 		~GpuParticleSystem();
 
-		/** 
-		 * Returns an ID that uniquely identifies the particle system and can be used for looking up particle data
-		 * originating from the simulation thread.
-		 */
-		UINT32 getId() const { return mId; }
+		/** Returns the non-renderer particle system object that owns this object. */
+		ParticleSystem* getParent() const { return mParent; }
 
 		/**
 		 * Attempts to allocate room for a set of particles. Particles will attempt to be inserted into an existing tile if
@@ -76,15 +74,22 @@ namespace bs { namespace ct
 		void updateGpuBuffers();
 
 		/** Increments the internal time counter. */
-		void advanceTime(float dt) { mTime += dt; }
+		void advanceTime(float dt);
+
+		/** Returns the time since the system was created. */
+		float getTime() const { return mTime; }
+
+		/** Returns the object that can be used for retrieving random numbers when evaluating this particle system. */
+		const Random& getRandom() const { return mRandom; }
 
 	private:
-		UINT32 mId;
+		ParticleSystem* mParent = nullptr;
 		Vector<GpuParticleTile> mTiles;
 		Bitfield mActiveTiles;
 		UINT32 mNumActiveTiles = 0;
 		UINT32 mLastAllocatedTile = (UINT32)-1;
 		float mTime = 0.0f;
+		Random mRandom;
 
 		SPtr<GpuBuffer> mTileUVs;
 		SPtr<GpuBuffer> mParticleIndices;
@@ -110,10 +115,11 @@ namespace bs { namespace ct
 		/** 
 		 * Performs GPU particle simulation on all registered particle systems. 
 		 * 
-		 * @param[in]	simData	Particle simulation data output on the simulation thread.
-		 * @param[in]	dt		Time step to advance the simulation by.
+		 * @param[in]	sceneInfo	Information about the scene currently being rendered.
+		 * @param[in]	simData		Particle simulation data output on the simulation thread.
+		 * @param[in]	dt			Time step to advance the simulation by.
 		 */
-		void simulate(const ParticleSimulationData* simData, float dt);
+		void simulate(const SceneInfo& sceneInfo, const ParticleSimulationData* simData, float dt);
 
 		/** Returns textures used for storing particle data. */
 		GpuParticleResources& getResources() const;
@@ -124,7 +130,7 @@ namespace bs { namespace ct
 		/** Inserts the provided set of particles into the particle textures. */
 		void injectParticles(const Vector<GpuParticle>& particles);
 
-		Pimpl* m;
+		UPtr<Pimpl> m;
 	};
 
 	/** Contains textures that get updated with every run of the GPU particle simulation. */

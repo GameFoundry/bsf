@@ -352,7 +352,7 @@ namespace bs { namespace ct
 		mScene->setParamFrameParams(timings.time);
 
 		// Simulate particles
-		GpuParticleSimulation::instance().simulate(perFrameData.particles, timings.timeDelta);
+		GpuParticleSimulation::instance().simulate(sceneInfo, perFrameData.particles, timings.timeDelta);
 
 		// Update bounds for all particle systems
 		if(perFrameData.particles)

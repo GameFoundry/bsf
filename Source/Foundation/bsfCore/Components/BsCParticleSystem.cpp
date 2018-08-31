@@ -29,6 +29,14 @@ namespace bs
 			mInternal->setSettings(settings);
 	}
 
+	void CParticleSystem::setGpuSimulationSettings(const ParticleGpuSimulationSettings& settings)
+	{
+		mGpuSimulationSettings = settings;
+
+		if(mInternal)
+			mInternal->setGpuSimulationSettings(settings);
+	}
+
 	ParticleSystemEmitters& CParticleSystem::getEmitters()
 	{
 		if(mInternal)
@@ -71,6 +79,7 @@ namespace bs
 		}
 
 		mInternal->setSettings(mSettings);
+		mInternal->setGpuSimulationSettings(mGpuSimulationSettings);
 		mInternal->getEmitters() = mEmitters;
 		mInternal->getEvolvers() = mEvolvers;
 	}

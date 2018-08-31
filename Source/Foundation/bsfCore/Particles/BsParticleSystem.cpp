@@ -11,6 +11,7 @@
 #include "Renderer/BsCamera.h"
 #include "Renderer/BsRenderer.h"
 #include "Physics/BsPhysics.h"
+#include "BsVectorField.h"
 
 namespace bs
 {
@@ -45,7 +46,7 @@ namespace bs
 	}
 
 	ParticleSystemEvolvers::ParticleSystemEvolvers()
-		: mSortedListCPU(&evolverCompareCallback), mSortedListGPU(&evolverCompareCallback)
+		: mSortedList(&evolverCompareCallback)
 	{ }
 
 	RTTITypeBase* ParticleSystemEvolvers::getRTTIStatic()
@@ -54,6 +55,90 @@ namespace bs
 	}
 
 	RTTITypeBase* ParticleSystemEvolvers::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
+	template<class Processor>
+	void ParticleVectorFieldSettingsCommon::rttiProcess(Processor p)
+	{
+		p << intensity;
+		p << tightness;
+		p << scale;
+		p << offset;
+		p << rotation;
+		p << rotationRate;
+		p << tilingX;
+		p << tilingY;
+		p << tilingZ;
+	}
+
+	char* ParticleVectorFieldSettings::syncTo(char* data)
+	{
+		SPtr<ct::VectorField>* vectorFieldCore = new (data) SPtr<ct::VectorField>();
+		if (vectorField.isLoaded(false))
+			*vectorFieldCore = vectorField->getCore();
+		else
+			*vectorFieldCore = nullptr;
+
+		data += sizeof(SPtr<ct::VectorField>);
+
+		rttiProcess(RttiWriter(&data));
+		return data;
+	}
+
+	UINT32 ParticleVectorFieldSettings::getSyncSize()
+	{
+		UINT32 size = 0;
+		size += sizeof(SPtr<ct::VectorField>);
+		rttiProcess(RttiSize(size));
+
+		return size;
+	}
+
+	char* ct::ParticleVectorFieldSettings::syncFrom(char* data)
+	{
+		SPtr<VectorField>* vectorFieldPtr = (SPtr<VectorField>*)data;
+
+		vectorField = *vectorFieldPtr;
+		vectorFieldPtr->~SPtr<VectorField>();
+		data += sizeof(SPtr<VectorField>);
+
+		rttiProcess(RttiReader(&data));
+		return data;
+	}
+
+	char* ParticleGpuSimulationSettings::syncTo(char* data)
+	{
+		return vectorField.syncTo(data);
+	}
+
+	UINT32 ParticleGpuSimulationSettings::getSyncSize()
+	{
+		return vectorField.getSyncSize();
+	}
+
+	char* ct::ParticleGpuSimulationSettings::syncFrom(char* data)
+	{
+		return vectorField.syncFrom(data);
+	}
+
+	RTTITypeBase* ParticleVectorFieldSettings::getRTTIStatic()
+	{
+		return ParticleVectorFieldSettingsRTTI::instance();
+	}
+
+	RTTITypeBase* ParticleVectorFieldSettings::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
+	RTTITypeBase* ParticleGpuSimulationSettings::getRTTIStatic()
+	{
+		return ParticleGpuSimulationSettingsRTTI::instance();
+	}
+
+	RTTITypeBase* ParticleGpuSimulationSettings::getRTTI() const
 	{
 		return getRTTIStatic();
 	}
@@ -99,6 +184,12 @@ namespace bs
 		_markCoreDirty();
 	}
 
+	void ParticleSystem::setGpuSimulationSettings(const ParticleGpuSimulationSettings& settings)
+	{
+		mGpuSimulationSettings = settings;
+		_markCoreDirty();
+	}
+
 	void ParticleSystem::play()
 	{
 		if(mState == State::Playing)
@@ -135,18 +226,8 @@ namespace bs
 		if(mState != State::Playing)
 			return;
 
-		float timeStep = timeDelta;
-		float newTime = mTime + timeStep;
-		if(newTime >= mSettings.duration)
-		{
-			if(mSettings.isLooping)
-				newTime = fmod(newTime, mSettings.duration);
-			else
-			{
-				timeStep = mTime - mSettings.duration;
-				newTime = mSettings.duration;
-			}
-		}
+		float timeStep;
+		const float newTime = _advanceTime(mTime, timeDelta, mSettings.duration, mSettings.isLooping, timeStep);
 
 		if(timeStep < 0.00001f)
 			return;
@@ -182,7 +263,7 @@ namespace bs
 			for (UINT32 i = 0; i < numParticles; i++)
 				particles.prevPosition[i] = particles.position[i];
 
-			const auto& evolverList = mEvolvers.mSortedListCPU;
+			const auto& evolverList = mEvolvers.mSortedList;
 
 			// Evolve pre-simulation
 			auto evolverIter = evolverList.begin();
@@ -248,6 +329,24 @@ namespace bs
 		return bounds;
 	}
 
+	float ParticleSystem::_advanceTime(float time, float timeDelta, float duration, bool loop, float& timeStep)
+	{
+		timeStep = timeDelta;
+		float newTime = time + timeStep;
+		if(newTime >= duration)
+		{
+			if(loop)
+				newTime = fmod(newTime, duration);
+			else
+			{
+				timeStep = time - duration;
+				newTime = duration;
+			}
+		}
+
+		return newTime;
+	}
+
 	SPtr<ct::ParticleSystem> ParticleSystem::getCore() const
 	{
 		return std::static_pointer_cast<ct::ParticleSystem>(mCoreSpecific);
@@ -271,24 +370,30 @@ namespace bs
 	{
 		const UINT32 size = 
 			getActorSyncDataSize() +
+			mGpuSimulationSettings.getSyncSize() +
 			rttiGetElemSize(getCoreDirtyFlags()) +
 			rttiGetElemSize(mSettings.gpuSimulation) +
 			rttiGetElemSize(mSettings.simulationSpace) +
 			rttiGetElemSize(mSettings.orientation) +
 			rttiGetElemSize(mSettings.orientationPlane) +
 			rttiGetElemSize(mSettings.orientationLockY) +
+			rttiGetElemSize(mSettings.duration) +
+			rttiGetElemSize(mSettings.isLooping) +
 			rttiGetElemSize(mSettings.sortMode) + 
 			sizeof(SPtr<ct::Material>);
 
 		UINT8* data = allocator->alloc(size);
 		char* dataPtr = (char*)data;
 		dataPtr = syncActorTo(dataPtr);
+		dataPtr = mGpuSimulationSettings.syncTo(dataPtr);
 		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
 		dataPtr = rttiWriteElem(mSettings.gpuSimulation, dataPtr);
 		dataPtr = rttiWriteElem(mSettings.simulationSpace, dataPtr);
 		dataPtr = rttiWriteElem(mSettings.orientation, dataPtr);
 		dataPtr = rttiWriteElem(mSettings.orientationPlane, dataPtr);
 		dataPtr = rttiWriteElem(mSettings.orientationLockY, dataPtr);
+		dataPtr = rttiWriteElem(mSettings.duration, dataPtr);
+		dataPtr = rttiWriteElem(mSettings.isLooping, dataPtr);
 		dataPtr = rttiWriteElem(mSettings.sortMode, dataPtr);
 
 		SPtr<ct::Material>* material = new (dataPtr) SPtr<ct::Material>();
@@ -347,12 +452,15 @@ namespace bs
 			const bool oldIsActive = mActive;
 
 			dataPtr = syncActorFrom(dataPtr);
+			dataPtr = mGpuSimulationSettings.syncFrom(dataPtr);
 			dataPtr = rttiReadElem(dirtyFlags, dataPtr);
 			dataPtr = rttiReadElem(mSettings.gpuSimulation, dataPtr);
 			dataPtr = rttiReadElem(mSettings.simulationSpace, dataPtr);
 			dataPtr = rttiReadElem(mSettings.orientation, dataPtr);
 			dataPtr = rttiReadElem(mSettings.orientationPlane, dataPtr);
 			dataPtr = rttiReadElem(mSettings.orientationLockY, dataPtr);
+			dataPtr = rttiReadElem(mSettings.duration, dataPtr);
+			dataPtr = rttiReadElem(mSettings.isLooping, dataPtr);
 			dataPtr = rttiReadElem(mSettings.sortMode, dataPtr);
 
 			SPtr<Material>* material = (SPtr<Material>*)dataPtr;

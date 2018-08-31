@@ -29,6 +29,12 @@ namespace bs
 		/** @copydoc ParticleSystem::getSettings */
 		const ParticleSystemSettings& getSettings() const { return mSettings; }
 
+		/** @copydoc ParticleSystem::setGpuSimulationSettings */
+		void setGpuSimulationSettings(const ParticleGpuSimulationSettings& settings);
+
+		/** @copydoc ParticleSystem::getGpuSimulationSettings */
+		const ParticleGpuSimulationSettings& getGpuSimulationSettings() const { return mGpuSimulationSettings; }
+
 		/** @copydoc ParticleSystem::getEmitters */
 		ParticleSystemEmitters& getEmitters();
 
@@ -71,6 +77,7 @@ namespace bs
 		SPtr<ParticleSystem> mInternal;
 
 		ParticleSystemSettings mSettings;
+		ParticleGpuSimulationSettings mGpuSimulationSettings;
 		ParticleSystemEmitters mEmitters;
 		ParticleSystemEvolvers mEvolvers;
 

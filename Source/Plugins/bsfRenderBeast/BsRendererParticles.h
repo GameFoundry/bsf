@@ -113,6 +113,9 @@ namespace bs { namespace ct
 		/** Variant of the particle system used for simulating the particles on the GPU. */
 		GpuParticleSystem* gpuParticleSystem = nullptr;
 
+		/** Matrix that transforms the particle system to world space. */
+		Matrix4 localToWorld = Matrix4::IDENTITY;
+
 		/** Element used for sorting and rendering the particle system. */
 		mutable ParticlesRenderElement renderElement;
 

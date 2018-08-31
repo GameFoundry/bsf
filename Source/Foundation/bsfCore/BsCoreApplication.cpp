@@ -45,6 +45,7 @@
 #include "Animation/BsAnimationManager.h"
 #include "Renderer/BsParamBlocks.h"
 #include "Particles/BsParticleManager.h"
+#include "Particles/BsVectorField.h"
 
 namespace bs
 {
@@ -173,6 +174,10 @@ namespace bs
 
 		for (auto& importerName : mStartUpDesc.importers)
 			loadPlugin(importerName);
+
+		// Built-in importers
+		FGAImporter* fgaImporter = bs_new<FGAImporter>();
+		Importer::instance()._registerAssetImporter(fgaImporter);
 	}
 
 	void CoreApplication::runMainLoop()

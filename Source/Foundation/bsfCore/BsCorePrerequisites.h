@@ -132,7 +132,7 @@
  */
 
 /** @defgroup Particles-Internal Particles
- *	Emission, updated and rendering of particles in the particle system.
+ *	Emission, updates and rendering of particles in the particle system.
  */
 
 /** @defgroup Physics-Internal Physics
@@ -380,6 +380,7 @@ namespace bs
 	class PhysicsMesh;
 	class AudioClip;
 	class SpriteTexture;
+	class VectorField;
 	// Scene
 	class SceneObject;
 	class Component;
@@ -630,6 +631,9 @@ namespace bs
 		TID_ParticleSystemEvolvers = 1177,
 		TID_CParticleSystem = 1178,
 		TID_ParticleGravity = 1179,
+		TID_VectorField = 1180,
+		TID_ParticleVectorFieldSettings = 1181,
+		TID_ParticleGpuSimulationSettings = 1182,
 
 		// Moved from Engine layer
 		TID_CCamera = 30000,
@@ -676,6 +680,7 @@ namespace bs
 	typedef ResourceHandle<AudioClip> HAudioClip;
 	typedef ResourceHandle<AnimationClip> HAnimationClip;
 	typedef ResourceHandle<SpriteTexture> HSpriteTexture;
+	typedef ResourceHandle<VectorField> HVectorField;
 
 	/** @} */
 }

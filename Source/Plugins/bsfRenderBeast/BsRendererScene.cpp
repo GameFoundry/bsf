@@ -646,20 +646,21 @@ namespace bs {	namespace ct
 
 		if(tfrmOnly)
 		{
+			rendererParticles.localToWorld = particleSystem->getTransform().getMatrix();
+
 			SPtr<GpuParamBlockBuffer>& paramBuffer = rendererParticles.particlesParamBuffer;
-			gParticlesParamDef.gWorldTfrm.set(paramBuffer, particleSystem->getTransform().getMatrix());
+			gParticlesParamDef.gWorldTfrm.set(paramBuffer, rendererParticles.localToWorld);
 		}
 		else
 		{
 			const ParticleSystemSettings& settings = particleSystem->getSettings();
-			Matrix4 transform;
 			if (settings.simulationSpace == ParticleSimulationSpace::Local)
-				transform = particleSystem->getTransform().getMatrix();
+				rendererParticles.localToWorld = particleSystem->getTransform().getMatrix();
 			else
-				transform = Matrix4::IDENTITY;
+				rendererParticles.localToWorld = Matrix4::IDENTITY;
 
 			SPtr<GpuParamBlockBuffer> paramBuffer = gParticlesParamDef.createBuffer();
-			gParticlesParamDef.gWorldTfrm.set(paramBuffer, transform);
+			gParticlesParamDef.gWorldTfrm.set(paramBuffer, rendererParticles.localToWorld);
 
 			Vector3 axisForward = settings.orientationPlane.normal;
 
@@ -679,7 +680,7 @@ namespace bs {	namespace ct
 			if(settings.gpuSimulation)
 			{
 				if(!rendererParticles.gpuParticleSystem)
-					rendererParticles.gpuParticleSystem = bs_pool_new<GpuParticleSystem>(particleSystem->getId());
+					rendererParticles.gpuParticleSystem = bs_pool_new<GpuParticleSystem>(particleSystem);
 			}
 			else
 			{

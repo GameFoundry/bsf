@@ -205,8 +205,7 @@ namespace bs
 
 	void Matrix4::decomposition(Vector3& position, Quaternion& rotation, Vector3& scale) const
 	{
-		Matrix3 m3x3;
-		extract3x3Matrix(m3x3);
+		Matrix3 m3x3 = get3x3();
 
 		Matrix3 matQ;
 		Vector3 vecU;

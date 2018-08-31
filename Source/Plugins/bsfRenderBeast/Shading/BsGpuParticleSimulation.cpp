@@ -8,6 +8,11 @@
 #include "RenderAPI/BsIndexBuffer.h"
 #include "RenderAPI/BsGpuBuffer.h"
 #include "RenderAPI/BsVertexDataDesc.h"
+#include "RenderAPI/BsGpuPipelineParamInfo.h"
+#include "Particles/BsVectorField.h"
+#include "Particles/BsParticleDistribution.h"
+#include "BsRendererParticles.h"
+#include "BsRendererScene.h"
 
 namespace bs { namespace ct 
 {
@@ -41,6 +46,25 @@ namespace bs { namespace ct
 		GpuParticleInjectMat();
 	};
 
+	BS_PARAM_BLOCK_BEGIN(VectorFieldParamsDef)
+		BS_PARAM_BLOCK_ENTRY(Vector3, gFieldBounds)
+		BS_PARAM_BLOCK_ENTRY(float, gFieldIntensity)
+		BS_PARAM_BLOCK_ENTRY(Vector3, gFieldTiling)
+		BS_PARAM_BLOCK_ENTRY(float, gFieldTightness)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gWorldToField)
+		BS_PARAM_BLOCK_ENTRY(Matrix3, gFieldToWorld)
+	BS_PARAM_BLOCK_END
+
+	VectorFieldParamsDef gVectorFieldParamsDef;
+
+	BS_PARAM_BLOCK_BEGIN(GpuParticleSimulateParamsDef)
+		BS_PARAM_BLOCK_ENTRY(INT32, gNumVectorFields)
+		BS_PARAM_BLOCK_ENTRY(INT32, gNumIterations)
+		BS_PARAM_BLOCK_ENTRY(float, gDT)
+	BS_PARAM_BLOCK_END
+
+	GpuParticleSimulateParamsDef gGpuParticleSimulateParamsDef;
+
 	/** 
 	 * Material used for performing GPU particle simulation. State is read from the provided input textures and output
 	 * into the output textures bound as render targets.
@@ -52,16 +76,29 @@ namespace bs { namespace ct
 	public:
 		GpuParticleSimulateMat();
 
-		/** Binds the material to the pipeline along with any input textures. */
-		void bind(GpuParticleResources& resources);
+		/** Binds the material to the pipeline along with any frame-static parameters. */
+		void bindGlobal(GpuParticleResources& resources, const SPtr<GpuParamBlockBuffer>& simulationParams);
 
-		/** Sets the UV offsets of individual tiles for a particular particle system that's being rendered. */
-		void setTileUVs(const SPtr<GpuBuffer>& tileUVs);
+		/** 
+		 * Binds parameters that change with every material dispatch. 
+		 *
+		 * @param[in]	tileUVs				Sets the UV offsets of individual tiles for a particular particle system that's 
+		 *									being rendered.
+		 * @param[in]	vectorFieldParams	Information about the currently bound vector field, if any.
+		 * @param[in]	vectorFieldTexture	3D texture representing the vector field, or null if none.
+		 * 
+		 */
+		void bindPerCallParams(const SPtr<GpuBuffer>& tileUVs, const SPtr<GpuParamBlockBuffer>& vectorFieldParams,
+			const SPtr<Texture>& vectorFieldTexture);
 
 	private:
 		GpuParamBuffer mTileUVParam;
 		GpuParamTexture mPosAndTimeTexParam;
 		GpuParamTexture mVelocityParam;
+		GpuParamBinding mParamsBinding;
+
+		GpuParamBinding mVectorFieldBinding;
+		GpuParamTexture mVectorFieldTexParam;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(GpuParticleBoundsParamsDef)
@@ -112,7 +149,7 @@ namespace bs { namespace ct
 
 		GpuParticleHelperBuffers();
 		
-		SPtr<VertexBuffer> spriteUVs;
+		SPtr<VertexBuffer> tileUVs;
 		SPtr<VertexBuffer> particleUVs;
 		SPtr<IndexBuffer> spriteIndices;
 		SPtr<VertexDeclaration> tileVertexDecl;
@@ -215,23 +252,23 @@ namespace bs { namespace ct
 		injectVertexDecl = VertexDeclaration::create(injectVertexDesc);
 
 		// Prepare UV coordinates for rendering tiles
-		VERTEX_BUFFER_DESC spriteUVBufferDesc;
-		spriteUVBufferDesc.numVerts = PARTICLES_PER_INSTANCE * 4;
-		spriteUVBufferDesc.vertexSize = tileVertexDesc->getVertexStride();
+		VERTEX_BUFFER_DESC tileUVBufferDesc;
+		tileUVBufferDesc.numVerts = PARTICLES_PER_INSTANCE * 4;
+		tileUVBufferDesc.vertexSize = tileVertexDesc->getVertexStride();
 
-		spriteUVs = VertexBuffer::create(spriteUVBufferDesc);
+		tileUVs = VertexBuffer::create(tileUVBufferDesc);
 
-		auto* const spriteUVData = (Vector2*)spriteUVs->lock(GBL_WRITE_ONLY_DISCARD);
-		const float spriteUVScale = GpuParticleResources::TILE_SIZE / (float)GpuParticleResources::TEX_SIZE;
+		auto* const tileUVData = (Vector2*)tileUVs->lock(GBL_WRITE_ONLY_DISCARD);
+		const float tileUVScale = GpuParticleResources::TILE_SIZE / (float)GpuParticleResources::TEX_SIZE;
 		for (UINT32 i = 0; i < PARTICLES_PER_INSTANCE; i++)
 		{
-			spriteUVData[i * 4 + 0] = Vector2(0.0f, 0.0f) * spriteUVScale;
-			spriteUVData[i * 4 + 1] = Vector2(1.0f, 0.0f) * spriteUVScale;
-			spriteUVData[i * 4 + 2] = Vector2(1.0f, 1.0f) * spriteUVScale;
-			spriteUVData[i * 4 + 3] = Vector2(0.0f, 1.0f) * spriteUVScale;
+			tileUVData[i * 4 + 0] = Vector2(0.0f, 0.0f) * tileUVScale;
+			tileUVData[i * 4 + 1] = Vector2(1.0f, 0.0f) * tileUVScale;
+			tileUVData[i * 4 + 2] = Vector2(1.0f, 1.0f) * tileUVScale;
+			tileUVData[i * 4 + 3] = Vector2(0.0f, 1.0f) * tileUVScale;
 		}
 
-		spriteUVs->unlock();
+		tileUVs->unlock();
 
 		// Prepare UV coordinates for rendering particles
 		VERTEX_BUFFER_DESC particleUVBufferDesc;
@@ -286,8 +323,8 @@ namespace bs { namespace ct
 		injectScratch = VertexBuffer::create(injectScratchBufferDesc);
 	}
 
-	GpuParticleSystem::GpuParticleSystem(UINT32 id)
-		:mId(id)
+	GpuParticleSystem::GpuParticleSystem(ParticleSystem* parent)
+		:mParent(parent)
 	{
 		GpuParticleSimulation::instance().addSystem(this);
 	}
@@ -356,8 +393,6 @@ namespace bs { namespace ct
 			tile.lifetime = std::max(tile.lifetime, mTime + particle.lifetime);
 
 			cachedTile.numFreeParticles--;
-
-
 		}
 
 		return newTilesAdded;
@@ -431,7 +466,7 @@ namespace bs { namespace ct
 				tileUVs[i] = GpuParticleResources::getTileCoords(mTiles[i].id);
 
 			for (UINT32 i = numTiles; i < numTilesToAllocates; i++)
-				tileUVs[i] = Vector2(0.0f, 0.0f); // Out of range
+				tileUVs[i] = Vector2(2.0f, 2.0f); // Out of range
 
 			mTileUVs->unlock();
 		}
@@ -466,23 +501,33 @@ namespace bs { namespace ct
 
 			mParticleIndices->unlock();
 		}
+	} 
+	
+	void GpuParticleSystem::advanceTime(float dt)
+	{
+		const ParticleSystemSettings& settings = mParent->getSettings();
+
+		float timeStep;
+		mTime = bs::ParticleSystem::_advanceTime(mTime, dt, settings.duration, settings.isLooping, timeStep);
 	}
 
 	struct GpuParticleSimulation::Pimpl
 	{
 		GpuParticleResources resources;
 		GpuParticleHelperBuffers helperBuffers;
+		SPtr<GpuParamBlockBuffer> vectorFieldParams;
+		SPtr<GpuParamBlockBuffer> simulationParams;
 		UnorderedSet<GpuParticleSystem*> systems;
 	};
 
 	GpuParticleSimulation::GpuParticleSimulation()
-		:m(bs_new<Pimpl>())
-	{ }
-
-	GpuParticleSimulation::~GpuParticleSimulation()
+		:m(bs_unique_ptr_new<Pimpl>())
 	{
-		bs_delete(m);		
+		m->vectorFieldParams = gVectorFieldParamsDef.createBuffer();
+		m->simulationParams = gGpuParticleSimulateParamsDef.createBuffer();
 	}
+
+	GpuParticleSimulation::~GpuParticleSimulation() = default;
 
 	void GpuParticleSimulation::addSystem(GpuParticleSystem* system)
 	{
@@ -494,7 +539,7 @@ namespace bs { namespace ct
 		m->systems.erase(system);
 	}
 
-	void GpuParticleSimulation::simulate(const ParticleSimulationData* simData, float dt)
+	void GpuParticleSimulation::simulate(const SceneInfo& sceneInfo, const ParticleSimulationData* simData, float dt)
 	{
 		m->resources.swap();
 
@@ -505,7 +550,7 @@ namespace bs { namespace ct
 			entry->detectInactiveTiles();
 
 			bool tilesDirty = false;
-			const auto iterFind = simData->gpuData.find(entry->getId());
+			const auto iterFind = simData->gpuData.find(entry->getParent()->getId());
 			if(iterFind != simData->gpuData.end())
 			{
 				Vector<GpuParticle>& newParticles = iterFind->second->particles;
@@ -530,15 +575,19 @@ namespace bs { namespace ct
 		clearTiles(newTiles);
 		injectParticles(allNewParticles);
 
-		// Simulate
+		// Simulate 
+		// TODO - Run multiple iterations for more stable simulation at lower/erratic framerates
+		gGpuParticleSimulateParamsDef.gDT.set(m->simulationParams, dt);
+		gGpuParticleSimulateParamsDef.gNumIterations.set(m->simulationParams, 1);
+
 		rapi.setRenderTarget(writeState.renderTarget);
 
 		GpuParticleSimulateMat* simulateMat = GpuParticleSimulateMat::get();
-		simulateMat->bind(m->resources);
+		simulateMat->bindGlobal(m->resources, m->simulationParams);
 
 		rapi.setVertexDeclaration(m->helperBuffers.tileVertexDecl);
 
-		SPtr<VertexBuffer> buffers[] = { m->helperBuffers.spriteUVs };
+		SPtr<VertexBuffer> buffers[] = { m->helperBuffers.tileUVs };
 		rapi.setVertexBuffers(0, buffers, (UINT32)bs_size(buffers));
 		rapi.setIndexBuffer(m->helperBuffers.spriteIndices);
 		rapi.setDrawOperation(DOT_TRIANGLE_LIST);
@@ -548,11 +597,61 @@ namespace bs { namespace ct
 			if(entry->getNumTiles() == 0)
 				continue;
 
-			simulateMat->setTileUVs(entry->getTileUVs());
+			ParticleSystem* parentSystem = entry->getParent();
+			const RendererParticles& rendererParticles = sceneInfo.particleSystems[parentSystem->getRendererId()];
+
+			const ParticleSystemSettings& settings = parentSystem->getSettings();
+			const ParticleGpuSimulationSettings& simSettings = parentSystem->getGpuSimulationSettings();
+
+			const Random& random = entry->getRandom();
+			const float time = entry->getTime();
+			const float nrmTime = time / settings.duration;
+
+			SPtr<Texture> vfTexture;
+			if(simSettings.vectorField.vectorField)
+				vfTexture = simSettings.vectorField.vectorField->getTexture();
+
+			if(vfTexture)
+			{
+				gGpuParticleSimulateParamsDef.gNumVectorFields.set(m->simulationParams, 1);
+				
+				const SPtr<VectorField>& vectorField = simSettings.vectorField.vectorField;
+				const VECTOR_FIELD_DESC& vfDesc = vectorField->getDesc();
+
+				const Vector3 tiling(
+					simSettings.vectorField.tilingX ? 0.0f : 1.0f,
+					simSettings.vectorField.tilingY ? 0.0f : 1.0f,
+					simSettings.vectorField.tilingZ ? 0.0f : 1.0f
+				);
+
+				gVectorFieldParamsDef.gFieldBounds.set(m->vectorFieldParams, vfDesc.bounds.getSize());
+				gVectorFieldParamsDef.gFieldTightness.set(m->vectorFieldParams, simSettings.vectorField.tightness);
+				gVectorFieldParamsDef.gFieldTiling.set(m->vectorFieldParams, tiling);
+				gVectorFieldParamsDef.gFieldIntensity.set(m->vectorFieldParams, simSettings.vectorField.intensity);
+
+				const Vector3 rotationRate = simSettings.vectorField.rotationRate.evaluate(nrmTime, random) * time;
+				const Quaternion addedRotation(Degree(rotationRate.x), Degree(rotationRate.y), Degree(rotationRate.z));
+
+				const Vector3 offset = vfDesc.bounds.getMin() + simSettings.vectorField.offset;
+				const Quaternion rotation = simSettings.vectorField.rotation * addedRotation;
+				const Vector3 scale = vfDesc.bounds.getSize() * simSettings.vectorField.scale;
+
+				Matrix4 fieldToWorld = Matrix4::TRS(offset, rotation, scale);
+				fieldToWorld = rendererParticles.localToWorld * fieldToWorld;
+
+				const Matrix3 fieldToWorld3x3 = fieldToWorld.get3x3();
+
+				gVectorFieldParamsDef.gFieldToWorld.set(m->vectorFieldParams, fieldToWorld3x3);
+				gVectorFieldParamsDef.gWorldToField.set(m->vectorFieldParams, fieldToWorld.inverseAffine());
+			}
+			else
+				gGpuParticleSimulateParamsDef.gNumVectorFields.set(m->simulationParams, 0);
+
+			simulateMat->bindPerCallParams(entry->getTileUVs(), m->vectorFieldParams, vfTexture);
 
 			const UINT32 tileCount = entry->getNumTiles();
 			const UINT32 numInstances = Math::divideAndRoundUp(tileCount, TILES_PER_INSTANCE);
-			rapi.drawIndexed(0, PARTICLES_PER_INSTANCE * 6, 0, PARTICLES_PER_INSTANCE * 4, numInstances);
+			rapi.drawIndexed(0, TILES_PER_INSTANCE * 6, 0, TILES_PER_INSTANCE * 4, numInstances);
 		}
 
 		// TODO - (For later) Sort the particles (How to handle this per-simulation?)
@@ -575,7 +674,7 @@ namespace bs { namespace ct
 		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setVertexDeclaration(m->helperBuffers.tileVertexDecl);
 
-		SPtr<VertexBuffer> buffers[] = { m->helperBuffers.spriteUVs };
+		SPtr<VertexBuffer> buffers[] = { m->helperBuffers.tileUVs };
 		rapi.setVertexBuffers(0, buffers, (UINT32)bs_size(buffers));
 		rapi.setIndexBuffer(m->helperBuffers.spriteIndices);
 		rapi.setDrawOperation(DOT_TRIANGLE_LIST);
@@ -599,7 +698,7 @@ namespace bs { namespace ct
 			m->helperBuffers.tileScratch->unlock();
 
 			const UINT32 numInstances = (alignedTileEnd - tileStart) / TILES_PER_INSTANCE;
-			rapi.drawIndexed(0, PARTICLES_PER_INSTANCE * 6, 0, PARTICLES_PER_INSTANCE * 4, numInstances);
+			rapi.drawIndexed(0, TILES_PER_INSTANCE * 6, 0, TILES_PER_INSTANCE * 4, numInstances);
 
 			tileStart = alignedTileEnd;
 		}
@@ -628,7 +727,7 @@ namespace bs { namespace ct
 
 			auto* particleData = (GpuParticleVertex*)m->helperBuffers.injectScratch->lock(GBL_WRITE_ONLY_DISCARD);
 			for (UINT32 j = particleStart; j < particleEnd; j++)
-				particleData[j] = particles[j].getVertex();
+				particleData[j - particleStart] = particles[j].getVertex();
 
 			m->helperBuffers.injectScratch->unlock();
 
@@ -694,10 +793,25 @@ namespace bs { namespace ct
 	{
 		const SPtr<GpuParamBlockBuffer> inputBuffer = createGpuParticleVertexInputBuffer();
 		mParams->setParamBlockBuffer(GPT_VERTEX_PROGRAM, "Input", inputBuffer);
+
+		mParams->getParamInfo()->getBinding(
+			GPT_FRAGMENT_PROGRAM,
+			GpuPipelineParamInfoBase::ParamType::ParamBlock,
+			"Params",
+			mParamsBinding
+		);
+		
+		mParams->getParamInfo()->getBinding(
+			GPT_FRAGMENT_PROGRAM,
+			GpuPipelineParamInfoBase::ParamType::ParamBlock,
+			"VectorFieldParams",
+			mVectorFieldBinding
+		);
 		
 		mParams->getBufferParam(GPT_VERTEX_PROGRAM, "gTileUVs", mTileUVParam);
 		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gPosAndTimeTex", mPosAndTimeTexParam);
 		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gVelocityTex", mVelocityParam);
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gVectorFieldTex", mVectorFieldTexParam);
 	}
 
 	void GpuParticleSimulateMat::_initDefines(ShaderDefines& defines)
@@ -705,20 +819,25 @@ namespace bs { namespace ct
 		defines.set("TILES_PER_INSTANCE", TILES_PER_INSTANCE);
 	}
 
-	void GpuParticleSimulateMat::bind(GpuParticleResources& resources)
+	void GpuParticleSimulateMat::bindGlobal(GpuParticleResources& resources, const SPtr<GpuParamBlockBuffer>& simulationParams)
 	{
 		GpuParticleStateTextures& readState = resources.getReadState();
-		GpuParticleStateTextures& writeState = resources.getWriteState();
+
+		mParams->setParamBlockBuffer(mParamsBinding.set, mParamsBinding.slot, simulationParams);
 
 		mPosAndTimeTexParam.set(readState.positionAndTimeTex->texture);
 		mVelocityParam.set(readState.velocityTex->texture);
 
-		RendererMaterial::bind();
+		RendererMaterial::bind(false);
 	}
 
-	void GpuParticleSimulateMat::setTileUVs(const SPtr<GpuBuffer>& tileUVs)
+	void GpuParticleSimulateMat::bindPerCallParams(const SPtr<GpuBuffer>& tileUVs, const SPtr<GpuParamBlockBuffer>& vectorFieldParams,
+			const SPtr<Texture>& vectorFieldTexture)
 	{
 		mTileUVParam.set(tileUVs);
+		mParams->setParamBlockBuffer(mVectorFieldBinding.set, mVectorFieldBinding.slot, vectorFieldParams);
+		mVectorFieldTexParam.set(vectorFieldTexture);
+		bindParams();
 	}
 
 	GpuParticleBoundsMat::GpuParticleBoundsMat()
