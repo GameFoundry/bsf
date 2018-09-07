@@ -513,6 +513,30 @@ namespace bs { namespace ct
 		return { RCNodeGBuffer::getNodeId(), RCNodeSceneDepth::getNodeId() };
 	}
 
+	void RCNodeParticleSimulate::render(const RenderCompositorNodeInputs& inputs)
+	{
+		RCNodeGBuffer* gbufferNode = static_cast<RCNodeGBuffer*>(inputs.inputNodes[0]);
+		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[1]);
+
+		GBufferTextures gbuffer;
+		gbuffer.albedo = gbufferNode->albedoTex->texture;
+		gbuffer.normals = gbufferNode->normalTex->texture;
+		gbuffer.roughMetal = gbufferNode->roughMetalTex->texture;
+		gbuffer.depth = sceneDepthNode->depthTex->texture;
+
+		GpuParticleSimulation::instance().simulate(inputs.scene, inputs.frameInfo.perFrameData.particles, 
+			inputs.view.getPerViewBuffer(), gbuffer, inputs.frameInfo.timeDelta);
+	}
+
+	void RCNodeParticleSimulate::clear()
+	{
+		// Do nothing
+	}
+
+	SmallVector<StringID, 4> RCNodeParticleSimulate::getDependencies(const RendererView& view)
+	{
+		return { RCNodeGBuffer::getNodeId(), RCNodeSceneDepth::getNodeId() };
+	}
 	void RCNodeLightAccumulation::render(const RenderCompositorNodeInputs& inputs)
 	{
 		bool supportsTiledDeferred = gRenderBeast()->getFeatureSet() != RenderBeastFeatureSet::DesktopMacOS;
@@ -1422,7 +1446,8 @@ namespace bs { namespace ct
 
 	SmallVector<StringID, 4> RCNodeClusteredForward::getDependencies(const RendererView& view)
 	{
-		return { RCNodeSceneColor::getNodeId(), RCNodeSkybox::getNodeId(), RCNodeSceneDepth::getNodeId() };
+		return { RCNodeSceneColor::getNodeId(), RCNodeSkybox::getNodeId(), RCNodeSceneDepth::getNodeId(),
+			RCNodeParticleSimulate::getNodeId() };
 	}
 
 	void RCNodeSkybox::render(const RenderCompositorNodeInputs& inputs)

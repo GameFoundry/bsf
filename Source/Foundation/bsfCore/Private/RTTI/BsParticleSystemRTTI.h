@@ -469,12 +469,44 @@ namespace bs
 		}
 	};
 
+	class BS_CORE_EXPORT ParticleDepthCollisionSettingsRTTI : 
+	public RTTIType<ParticleDepthCollisionSettings, IReflectable, ParticleDepthCollisionSettingsRTTI>
+	{
+	private:
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_PLAIN(enabled, 0)
+			BS_RTTI_MEMBER_PLAIN(restitution, 1)
+			BS_RTTI_MEMBER_PLAIN(dampening, 2)
+			BS_RTTI_MEMBER_PLAIN(radiusScale, 3)
+		BS_END_RTTI_MEMBERS
+
+	public:
+		const String& getRTTIName() override
+		{
+			static String name = "ParticleDepthCollisionSettings";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_ParticleDepthCollisionSettings;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			return bs_shared_ptr_new<ParticleDepthCollisionSettings>();
+		}
+	};
+
 	class BS_CORE_EXPORT ParticleGpuSimulationSettingsRTTI : 
 	public RTTIType<ParticleGpuSimulationSettings, IReflectable, ParticleGpuSimulationSettingsRTTI>
 	{
 	private:
 		BS_BEGIN_RTTI_MEMBERS
 			BS_RTTI_MEMBER_REFL(vectorField, 0)
+			BS_RTTI_MEMBER_PLAIN(colorOverLifetime, 1)
+			BS_RTTI_MEMBER_PLAIN(sizeScaleOverLifetime, 2)
+			BS_RTTI_MEMBER_REFL(depthCollision, 3)
 		BS_END_RTTI_MEMBERS
 
 	public:

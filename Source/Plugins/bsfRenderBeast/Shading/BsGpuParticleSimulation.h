@@ -11,6 +11,9 @@
 
 namespace bs { namespace ct 
 {
+	struct RendererParticles;
+	class GpuParticleSimulateMat;
+	struct GBufferTextures;
 	struct SceneInfo;
 	class GpuParticleResources;
 
@@ -118,13 +121,19 @@ namespace bs { namespace ct
 		 * 
 		 * @param[in]	sceneInfo	Information about the scene currently being rendered.
 		 * @param[in]	simData		Particle simulation data output on the simulation thread.
+		 * @param[in]	viewParams	Buffer containing properties of the view that's currently being rendered.
+		 * @param[in]	gbuffer		Populated GBuffer with depths and normals.
 		 * @param[in]	dt			Time step to advance the simulation by.
 		 */
-		void simulate(const SceneInfo& sceneInfo, const ParticleSimulationData* simData, float dt);
+		void simulate(const SceneInfo& sceneInfo, const ParticleSimulationData* simData, 
+			const SPtr<GpuParamBlockBuffer>& viewParams, const GBufferTextures& gbuffer, float dt);
 
 		/** Returns textures used for storing particle data. */
 		GpuParticleResources& getResources() const;
 	private:
+		/** Prepares buffer necessary for simulating the provided particle system. */
+		void prepareBuffers(const GpuParticleSystem* system, const RendererParticles& rendererInfo);
+
 		/** Clears out all the areas in particle textures as marked by the provided tiles to their default values. */
 		void clearTiles(const Vector<UINT32>& tiles);
 

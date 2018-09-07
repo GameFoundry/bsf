@@ -1,8 +1,18 @@
 #include "$ENGINE$/GpuParticleTileVertex.bslinc"
+#include "$ENGINE$/PerCameraData.bslinc"
 
 shader GpuParticleSimulate
 {
+	variations
+	{
+		DEPTH_COLLISIONS = { false, true };
+	};
+
 	mixin GpuParticleTileVertex;
+	
+	#if DEPTH_COLLISIONS
+		mixin PerCameraData;
+	#endif
 	
 	code
 	{
@@ -29,6 +39,30 @@ shader GpuParticleSimulate
 			AddressW = CLAMP;
 		};
 		
+		#if DEPTH_COLLISIONS
+		Texture2D gDepthTex;
+		Texture2D gNormalsTex;
+		
+		[alias(gDepthTex)]
+		SamplerState gDepthSampler;
+		
+		[alias(gNormalsTex)]
+		SamplerState gNormalsSampler;
+		
+		Texture2D gSizeRotationTex;
+		[alias(gSizeRotationTex)]
+		SamplerState gSizeRotationSampler
+		{
+            Filter = MIN_MAG_MIP_POINT;
+        };
+		
+		Texture2D gCurvesTex;
+		
+		[alias(gCurvesTex)]
+		SamplerState gCurvesSampler;
+		
+		#endif
+		
 		cbuffer VectorFieldParams
 		{
 			float3 gFieldBounds;
@@ -45,6 +79,79 @@ shader GpuParticleSimulate
 			uint gNumIterations;
 			float gDT;
 		};
+		
+		#if DEPTH_COLLISIONS
+		cbuffer DepthCollisionParams
+		{
+			float gCollisionRange;
+			float gRestitution;
+			float gDampening;
+			float gCollisionRadiusScale;
+			
+			float2 gSizeScaleCurveOffset;
+			float2 gSizeScaleCurveScale;
+		};
+		
+		void integrateWithDepthCollisions(
+			float3 inPosition, float3 inVelocity, 
+			out float3 outPosition, out float3 outVelocity,
+			float dt, 
+			float3 acceleration, float radius)
+		{
+			// Integrate as normal
+			float3 deltaPosPerSec = inVelocity + acceleration * 0.5f;
+			float3 deltaPos = deltaPosPerSec * dt;
+			
+			outPosition = inPosition + deltaPos;
+			outVelocity = inVelocity + acceleration;
+			
+			// Determine potential collision point (edge of the particle sphere in the direction of travel)
+			float3 dirOffset = normalize(deltaPos) * radius;
+			float3 offsetPointWrld = inPosition + dirOffset;
+			float4 offsetPointClip = mul(gMatViewProj, float4(offsetPointWrld, 1.0f));
+			float2 offsetPointNdc = offsetPointClip.xy / offsetPointClip.w;
+			
+			// Potential collision point out of view
+			if(any(abs(offsetPointNdc.xy) > float2(1.0f, 1.0f)))
+				return;
+				
+			float2 offsetPointUV = NDCToUV(offsetPointNdc);
+			float sampledDepth = convertFromDeviceZ(gDepthTex.Sample(gDepthSampler, offsetPointUV).r);
+			
+			// Potential collision point too far away from sampled depth
+			if(abs(-offsetPointClip.w - sampledDepth) >= gCollisionRange)
+				return;
+				
+			float3 hitPointWrld = NDCToWorld(offsetPointNdc.xy, sampledDepth);
+			float3 hitPointNormal = gNormalsTex.Sample(gNormalsSampler, offsetPointUV).xyz * 2.0f - 1.0f;
+			
+			float4 hitPlane = float4(hitPointNormal, dot(hitPointNormal, hitPointWrld));
+			float speedToPlane = dot(hitPlane.xyz, deltaPos);
+			
+			// Moving away from the collision plane
+			if(speedToPlane >= 0.0f)
+				return;
+			
+			// Check if capsule (sweeped sphere) intersects the plane
+			float distToOldPos = dot(inPosition, hitPlane.xyz) - hitPlane.w;
+			float distToNewPos = dot(outPosition, hitPlane.xyz) - hitPlane.w;
+			
+			if(distToOldPos >= -radius && distToNewPos <= radius)
+			{
+				// Separate velocity into perpendicular and tangent velocity
+				// TODO - use outVelocity instead of deltaPosPerSec?
+				//   - But in that case outPOsition calculation might be wrong since it needs to use the 0.5 version
+				float3 perpVelocity = dot(deltaPosPerSec, hitPlane.xyz) * hitPlane.xyz;
+				float3 tanVelocity = deltaPosPerSec - perpVelocity;
+				
+				outVelocity = (1.0f - gDampening) * tanVelocity - gRestitution * perpVelocity;
+				
+				float t = (distToOldPos - radius) / -speedToPlane;
+				outPosition = inPosition + deltaPos * t + outVelocity * (1.0f - t) * dt;
+			}
+		}		
+		
+		#endif
 		
 		float3 evaluateVectorField(float3 pos, float scale, out float3 velocity, out float tightness)
 		{
@@ -91,8 +198,31 @@ shader GpuParticleSimulate
 				
 				// Integrate
 				float3 acceleration = totalForce * gDT;
+				
+#if DEPTH_COLLISIONS
+				float2 size = gSizeRotationTex.Sample(gSizeRotationSampler, input.uv0).xy;
+			
+				float2 sizeScaleCurveUV = gSizeScaleCurveOffset + time * gSizeScaleCurveScale;
+				float2 sizeScale = gCurvesTex.Sample(gCurvesSampler, sizeScaleCurveUV, 0).xy;
+			
+				// TODO - Apply world transform scale
+				size *= sizeScale;
+				float collisionRadius = min(size.x, size.y) * gCollisionRadiusScale;
+
+				float3 outPosition;
+				float3 outVelocity;
+				integrateWithDepthCollisions(
+					position, velocity, 
+					outPosition, outVelocity,
+					gDT, 
+					acceleration, collisionRadius);
+					
+				position = outPosition;
+				velocity = outVelocity;
+#else
 				position += (velocity + acceleration * 0.5f) * gDT;
 				velocity += acceleration;
+#endif
 			}
 
 			outPosAndTime.xyz = position;

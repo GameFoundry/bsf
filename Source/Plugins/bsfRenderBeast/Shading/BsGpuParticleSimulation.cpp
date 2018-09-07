@@ -66,6 +66,17 @@ namespace bs { namespace ct
 
 	VectorFieldParamsDef gVectorFieldParamsDef;
 
+	BS_PARAM_BLOCK_BEGIN(GpuParticleDepthCollisionParamsDef)
+		BS_PARAM_BLOCK_ENTRY(float, gCollisionRange)
+		BS_PARAM_BLOCK_ENTRY(float, gRestitution)
+		BS_PARAM_BLOCK_ENTRY(float, gDampening)
+		BS_PARAM_BLOCK_ENTRY(float, gCollisionRadiusScale)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gSizeScaleCurveOffset)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gSizeScaleCurveScale)
+	BS_PARAM_BLOCK_END
+
+	GpuParticleDepthCollisionParamsDef gGpuParticleDepthCollisionParamsDef;
+
 	BS_PARAM_BLOCK_BEGIN(GpuParticleSimulateParamsDef)
 		BS_PARAM_BLOCK_ENTRY(INT32, gNumVectorFields)
 		BS_PARAM_BLOCK_ENTRY(INT32, gNumIterations)
@@ -82,32 +93,56 @@ namespace bs { namespace ct
 	{
 		RMAT_DEF_CUSTOMIZED("GpuParticleSimulate.bsl");
 
+		/** Helper method used for initializing variations of this material. */
+		template<bool DEPTH_COLLISIONS>
+		static const ShaderVariation& getVariation()
+		{
+			static ShaderVariation variation = ShaderVariation(
+			Vector<ShaderVariation::Param>{
+				ShaderVariation::Param("DEPTH_COLLISIONS", DEPTH_COLLISIONS)
+			});
+
+			return variation;
+		}
 	public:
 		GpuParticleSimulateMat();
 
 		/** Binds the material to the pipeline along with any frame-static parameters. */
-		void bindGlobal(GpuParticleResources& resources, const SPtr<GpuParamBlockBuffer>& simulationParams);
+		void bindGlobal(GpuParticleResources& resources, const SPtr<GpuParamBlockBuffer>& viewParams, 
+			const SPtr<Texture>& depth, const SPtr<Texture>& normals, const SPtr<GpuParamBlockBuffer>& simulationParams);
 
 		/** 
 		 * Binds parameters that change with every material dispatch. 
 		 *
-		 * @param[in]	tileUVs				Sets the UV offsets of individual tiles for a particular particle system that's 
-		 *									being rendered.
-		 * @param[in]	vectorFieldParams	Information about the currently bound vector field, if any.
-		 * @param[in]	vectorFieldTexture	3D texture representing the vector field, or null if none.
+		 * @param[in]	tileUVs					Sets the UV offsets of individual tiles for a particular particle system 
+		 *										that's being rendered.
+		 * @param[in]	vectorFieldParams		Information about the currently bound vector field, if any.
+		 * @param[in]	vectorFieldTexture		3D texture representing the vector field, or null if none.
+		 * @param[in]	depthCollisionParams	Parameter buffer for controlling depth buffer collisions, if enabled.
 		 * 
 		 */
 		void bindPerCallParams(const SPtr<GpuBuffer>& tileUVs, const SPtr<GpuParamBlockBuffer>& vectorFieldParams,
-			const SPtr<Texture>& vectorFieldTexture);
+			const SPtr<Texture>& vectorFieldTexture, const SPtr<GpuParamBlockBuffer>& depthCollisionParams);
 
+		/** Returns the material variation matching the provided parameters. */
+		static GpuParticleSimulateMat* getVariation(bool depthCollisions);
 	private:
 		GpuParamBuffer mTileUVParam;
 		GpuParamTexture mPosAndTimeTexParam;
-		GpuParamTexture mVelocityParam;
+		GpuParamTexture mVelocityTexParam;
+		GpuParamTexture mSizeRotationTexParam;
+		GpuParamTexture mCurvesTexParam;
+		GpuParamTexture mDepthTexParam;
+		GpuParamTexture mNormalsTexParam;
 		GpuParamBinding mParamsBinding;
+		GpuParamBinding mPerCameraBinding;
 
 		GpuParamBinding mVectorFieldBinding;
 		GpuParamTexture mVectorFieldTexParam;
+
+		GpuParamBinding mDepthCollisionBinding;
+
+		bool mSupportsDepthCollisions;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(GpuParticleBoundsParamsDef)
@@ -550,6 +585,7 @@ namespace bs { namespace ct
 		GpuParticleResources resources;
 		GpuParticleHelperBuffers helperBuffers;
 		SPtr<GpuParamBlockBuffer> vectorFieldParams;
+		SPtr<GpuParamBlockBuffer> depthCollisionParams;
 		SPtr<GpuParamBlockBuffer> simulationParams;
 		UnorderedSet<GpuParticleSystem*> systems;
 	};
@@ -558,6 +594,7 @@ namespace bs { namespace ct
 		:m(bs_new<Pimpl>())
 	{
 		m->vectorFieldParams = gVectorFieldParamsDef.createBuffer();
+		m->depthCollisionParams = gGpuParticleDepthCollisionParamsDef.createBuffer();
 		m->simulationParams = gGpuParticleSimulateParamsDef.createBuffer();
 	}
 
@@ -576,7 +613,8 @@ namespace bs { namespace ct
 		m->systems.erase(system);
 	}
 
-	void GpuParticleSimulation::simulate(const SceneInfo& sceneInfo, const ParticleSimulationData* simData, float dt)
+	void GpuParticleSimulation::simulate(const SceneInfo& sceneInfo, const ParticleSimulationData* simData, 
+		const SPtr<GpuParamBlockBuffer>& viewParams, const GBufferTextures& gbuffer, float dt)
 	{
 		m->resources.swap();
 		m->resources.getCurveTexture().applyChanges();
@@ -616,10 +654,6 @@ namespace bs { namespace ct
 		gGpuParticleSimulateParamsDef.gNumIterations.set(m->simulationParams, 1);
 
 		rapi.setRenderTarget(m->resources.getSimulationTarget());
-
-		GpuParticleSimulateMat* simulateMat = GpuParticleSimulateMat::get();
-		simulateMat->bindGlobal(m->resources, m->simulationParams);
-
 		rapi.setVertexDeclaration(m->helperBuffers.tileVertexDecl);
 
 		SPtr<VertexBuffer> buffers[] = { m->helperBuffers.tileUVs };
@@ -627,72 +661,116 @@ namespace bs { namespace ct
 		rapi.setIndexBuffer(m->helperBuffers.spriteIndices);
 		rapi.setDrawOperation(DOT_TRIANGLE_LIST);
 
-		for (auto& entry : m->systems)
+		enum class SimType { Normal, DepthCollisions, Count };
+
+		for(UINT32 i = 0; i < (UINT32)SimType::Count; i++)
 		{
-			if(entry->getNumTiles() == 0)
-				continue;
+			const SimType type = (SimType)i;
+			const bool simulateDepthCollisions = type == SimType::DepthCollisions;
 
-			ParticleSystem* parentSystem = entry->getParent();
-			const RendererParticles& rendererParticles = sceneInfo.particleSystems[parentSystem->getRendererId()];
+			GpuParticleSimulateMat* simulateMat = GpuParticleSimulateMat::getVariation(simulateDepthCollisions);
+			simulateMat->bindGlobal(m->resources, viewParams, gbuffer.depth, gbuffer.normals, m->simulationParams);
 
-			const ParticleSystemSettings& settings = parentSystem->getSettings();
-			const ParticleGpuSimulationSettings& simSettings = parentSystem->getGpuSimulationSettings();
-
-			const Random& random = entry->getRandom();
-			const float time = entry->getTime();
-			const float nrmTime = time / settings.duration;
-
-			SPtr<Texture> vfTexture;
-			if(simSettings.vectorField.vectorField)
-				vfTexture = simSettings.vectorField.vectorField->getTexture();
-
-			if(vfTexture)
+			for (auto& entry : m->systems)
 			{
-				gGpuParticleSimulateParamsDef.gNumVectorFields.set(m->simulationParams, 1);
-				
-				const SPtr<VectorField>& vectorField = simSettings.vectorField.vectorField;
-				const VECTOR_FIELD_DESC& vfDesc = vectorField->getDesc();
+				if (entry->getNumTiles() == 0)
+					continue;
 
-				const Vector3 tiling(
-					simSettings.vectorField.tilingX ? 0.0f : 1.0f,
-					simSettings.vectorField.tilingY ? 0.0f : 1.0f,
-					simSettings.vectorField.tilingZ ? 0.0f : 1.0f
-				);
+				ParticleSystem* parentSystem = entry->getParent();
 
-				gVectorFieldParamsDef.gFieldBounds.set(m->vectorFieldParams, vfDesc.bounds.getSize());
-				gVectorFieldParamsDef.gFieldTightness.set(m->vectorFieldParams, simSettings.vectorField.tightness);
-				gVectorFieldParamsDef.gFieldTiling.set(m->vectorFieldParams, tiling);
-				gVectorFieldParamsDef.gFieldIntensity.set(m->vectorFieldParams, simSettings.vectorField.intensity);
+				const ParticleGpuSimulationSettings& simSettings = parentSystem->getGpuSimulationSettings();
+				if(simSettings.depthCollision.enabled != simulateDepthCollisions)
+					continue;
 
-				const Vector3 rotationRate = simSettings.vectorField.rotationRate.evaluate(nrmTime, random) * time;
-				const Quaternion addedRotation(Degree(rotationRate.x), Degree(rotationRate.y), Degree(rotationRate.z));
+				const RendererParticles& rendererParticles = sceneInfo.particleSystems[parentSystem->getRendererId()];
 
-				const Vector3 offset = vfDesc.bounds.getMin() + simSettings.vectorField.offset;
-				const Quaternion rotation = simSettings.vectorField.rotation * addedRotation;
-				const Vector3 scale = vfDesc.bounds.getSize() * simSettings.vectorField.scale;
+				prepareBuffers(entry, rendererParticles);
 
-				Matrix4 fieldToWorld = Matrix4::TRS(offset, rotation, scale);
-				fieldToWorld = rendererParticles.localToWorld * fieldToWorld;
+				SPtr<Texture> vfTexture;
+				if (simSettings.vectorField.vectorField)
+					vfTexture = simSettings.vectorField.vectorField->getTexture();
 
-				const Matrix3 fieldToWorld3x3 = fieldToWorld.get3x3();
+				simulateMat->bindPerCallParams(entry->getTileUVs(), m->vectorFieldParams, vfTexture, m->depthCollisionParams);
 
-				gVectorFieldParamsDef.gFieldToWorld.set(m->vectorFieldParams, fieldToWorld3x3);
-				gVectorFieldParamsDef.gWorldToField.set(m->vectorFieldParams, fieldToWorld.inverseAffine());
+				const UINT32 tileCount = entry->getNumTiles();
+				const UINT32 numInstances = Math::divideAndRoundUp(tileCount, TILES_PER_INSTANCE);
+				rapi.drawIndexed(0, TILES_PER_INSTANCE * 6, 0, TILES_PER_INSTANCE * 4, numInstances);
 			}
-			else
-				gGpuParticleSimulateParamsDef.gNumVectorFields.set(m->simulationParams, 0);
-
-			simulateMat->bindPerCallParams(entry->getTileUVs(), m->vectorFieldParams, vfTexture);
-
-			const UINT32 tileCount = entry->getNumTiles();
-			const UINT32 numInstances = Math::divideAndRoundUp(tileCount, TILES_PER_INSTANCE);
-			rapi.drawIndexed(0, TILES_PER_INSTANCE * 6, 0, TILES_PER_INSTANCE * 4, numInstances);
 		}
 
-		// TODO - (For later) Sort the particles (How to handle this per-simulation?)
+		// TODO - Sort the particles (How to handle this per-simulation?)
+	}
 
-		// TODO - (In another method) Actually send the particles for rendering using the particle buffer
-		//   - Or the sorted buffer if available
+	void GpuParticleSimulation::prepareBuffers(const GpuParticleSystem* system, const RendererParticles& rendererInfo)
+	{
+		ParticleSystem* parentSystem = system->getParent();
+
+		const ParticleSystemSettings& settings = parentSystem->getSettings();
+		const ParticleGpuSimulationSettings& simSettings = parentSystem->getGpuSimulationSettings();
+
+		const Random& random = system->getRandom();
+		const float time = system->getTime();
+		const float nrmTime = time / settings.duration;
+
+		SPtr<Texture> vfTexture;
+		if(simSettings.vectorField.vectorField)
+			vfTexture = simSettings.vectorField.vectorField->getTexture();
+
+		if(vfTexture)
+		{
+			gGpuParticleSimulateParamsDef.gNumVectorFields.set(m->simulationParams, 1);
+				
+			const SPtr<VectorField>& vectorField = simSettings.vectorField.vectorField;
+			const VECTOR_FIELD_DESC& vfDesc = vectorField->getDesc();
+
+			const Vector3 tiling(
+				simSettings.vectorField.tilingX ? 0.0f : 1.0f,
+				simSettings.vectorField.tilingY ? 0.0f : 1.0f,
+				simSettings.vectorField.tilingZ ? 0.0f : 1.0f
+			);
+
+			gVectorFieldParamsDef.gFieldBounds.set(m->vectorFieldParams, vfDesc.bounds.getSize());
+			gVectorFieldParamsDef.gFieldTightness.set(m->vectorFieldParams, simSettings.vectorField.tightness);
+			gVectorFieldParamsDef.gFieldTiling.set(m->vectorFieldParams, tiling);
+			gVectorFieldParamsDef.gFieldIntensity.set(m->vectorFieldParams, simSettings.vectorField.intensity);
+
+			const Vector3 rotationRate = simSettings.vectorField.rotationRate.evaluate(nrmTime, random) * time;
+			const Quaternion addedRotation(Degree(rotationRate.x), Degree(rotationRate.y), Degree(rotationRate.z));
+
+			const Vector3 offset = vfDesc.bounds.getMin() + simSettings.vectorField.offset;
+			const Quaternion rotation = simSettings.vectorField.rotation * addedRotation;
+			const Vector3 scale = vfDesc.bounds.getSize() * simSettings.vectorField.scale;
+
+			Matrix4 fieldToWorld = Matrix4::TRS(offset, rotation, scale);
+			fieldToWorld = rendererInfo.localToWorld * fieldToWorld;
+
+			const Matrix3 fieldToWorld3x3 = fieldToWorld.get3x3();
+
+			gVectorFieldParamsDef.gFieldToWorld.set(m->vectorFieldParams, fieldToWorld3x3);
+			gVectorFieldParamsDef.gWorldToField.set(m->vectorFieldParams, fieldToWorld.inverseAffine());
+		}
+		else
+			gGpuParticleSimulateParamsDef.gNumVectorFields.set(m->simulationParams, 0);
+
+		const ParticleDepthCollisionSettings& depthCollisionSettings = simSettings.depthCollision;
+		if(depthCollisionSettings.enabled)
+		{
+			gGpuParticleDepthCollisionParamsDef.gCollisionRange.set(m->depthCollisionParams, 2.0f);
+			gGpuParticleDepthCollisionParamsDef.gCollisionRadiusScale.set(m->depthCollisionParams, 
+				depthCollisionSettings.radiusScale);
+			gGpuParticleDepthCollisionParamsDef.gDampening.set(m->depthCollisionParams, 
+				depthCollisionSettings.dampening);
+			gGpuParticleDepthCollisionParamsDef.gRestitution.set(m->depthCollisionParams, 
+				depthCollisionSettings.restitution);
+
+			const Vector2 sizeScaleUVOffset = 
+					GpuParticleCurves::getUVOffset(rendererInfo.sizeScaleFrameIdxCurveAlloc);
+			const float sizeScaleUVScale = 
+					GpuParticleCurves::getUVScale(rendererInfo.sizeScaleFrameIdxCurveAlloc);
+
+			gGpuParticleDepthCollisionParamsDef.gSizeScaleCurveOffset.set(m->depthCollisionParams, sizeScaleUVOffset);
+			gGpuParticleDepthCollisionParamsDef.gSizeScaleCurveScale.set(m->depthCollisionParams, Vector2(sizeScaleUVScale, 0.0f));
+		}
 	}
 
 	void GpuParticleSimulation::clearTiles(const Vector<UINT32>& tiles)
@@ -851,8 +929,31 @@ namespace bs { namespace ct
 		
 		mParams->getBufferParam(GPT_VERTEX_PROGRAM, "gTileUVs", mTileUVParam);
 		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gPosAndTimeTex", mPosAndTimeTexParam);
-		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gVelocityTex", mVelocityParam);
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gVelocityTex", mVelocityTexParam);
 		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gVectorFieldTex", mVectorFieldTexParam);
+
+		mSupportsDepthCollisions = mVariation.getBool("DEPTH_COLLISIONS");
+		if(mSupportsDepthCollisions)
+		{
+			mParams->getParamInfo()->getBinding(
+				GPT_FRAGMENT_PROGRAM,
+				GpuPipelineParamInfoBase::ParamType::ParamBlock,
+				"PerCamera",
+				mPerCameraBinding
+			);
+
+			mParams->getParamInfo()->getBinding(
+				GPT_FRAGMENT_PROGRAM,
+				GpuPipelineParamInfoBase::ParamType::ParamBlock,
+				"DepthCollisionParams",
+				mDepthCollisionBinding
+			);
+		
+			mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSizeRotationTex", mSizeRotationTexParam);
+			mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gCurvesTex", mCurvesTexParam);
+			mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDepthTex", mDepthTexParam);
+			mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gNormalsTex", mNormalsTexParam);
+		}
 	}
 
 	void GpuParticleSimulateMat::_initDefines(ShaderDefines& defines)
@@ -860,25 +961,51 @@ namespace bs { namespace ct
 		defines.set("TILES_PER_INSTANCE", TILES_PER_INSTANCE);
 	}
 
-	void GpuParticleSimulateMat::bindGlobal(GpuParticleResources& resources, const SPtr<GpuParamBlockBuffer>& simulationParams)
+	void GpuParticleSimulateMat::bindGlobal(GpuParticleResources& resources, const SPtr<GpuParamBlockBuffer>& viewParams, 
+		const SPtr<Texture>& depth, const SPtr<Texture>& normals, const SPtr<GpuParamBlockBuffer>& simulationParams)
 	{
 		GpuParticleStateTextures& prevState = resources.getPreviousState();
+		const GpuParticleStaticTextures& staticTextures = resources.getStaticTextures();
+		GpuParticleCurves& curveTexture = resources.getCurveTexture();
 
 		mParams->setParamBlockBuffer(mParamsBinding.set, mParamsBinding.slot, simulationParams);
 
 		mPosAndTimeTexParam.set(prevState.positionAndTimeTex);
-		mVelocityParam.set(prevState.velocityTex);
+		mVelocityTexParam.set(prevState.velocityTex);
+
+		if(mSupportsDepthCollisions)
+		{
+			mParams->setParamBlockBuffer(mPerCameraBinding.set, mPerCameraBinding.slot, viewParams);
+
+			mSizeRotationTexParam.set(staticTextures.sizeAndRotationTex);
+			mCurvesTexParam.set(curveTexture.getTexture());
+			mDepthTexParam.set(depth);
+			mNormalsTexParam.set(normals);
+		}
 
 		RendererMaterial::bind(false);
 	}
 
-	void GpuParticleSimulateMat::bindPerCallParams(const SPtr<GpuBuffer>& tileUVs, const SPtr<GpuParamBlockBuffer>& vectorFieldParams,
-			const SPtr<Texture>& vectorFieldTexture)
+	void GpuParticleSimulateMat::bindPerCallParams(const SPtr<GpuBuffer>& tileUVs, 
+		const SPtr<GpuParamBlockBuffer>& vectorFieldParams, const SPtr<Texture>& vectorFieldTexture, 
+		const SPtr<GpuParamBlockBuffer>& depthCollisionParams)
 	{
 		mTileUVParam.set(tileUVs);
 		mParams->setParamBlockBuffer(mVectorFieldBinding.set, mVectorFieldBinding.slot, vectorFieldParams);
 		mVectorFieldTexParam.set(vectorFieldTexture);
+
+		if(mSupportsDepthCollisions)
+			mParams->setParamBlockBuffer(mDepthCollisionBinding.set, mDepthCollisionBinding.slot, depthCollisionParams);
+
 		bindParams();
+	}
+
+	GpuParticleSimulateMat* GpuParticleSimulateMat::getVariation(bool depthCollisions)
+	{
+		if(depthCollisions)
+			return get(getVariation<true>());
+
+		return get(getVariation<false>());
 	}
 
 	GpuParticleBoundsMat::GpuParticleBoundsMat()

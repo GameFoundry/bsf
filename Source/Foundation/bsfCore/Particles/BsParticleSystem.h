@@ -80,6 +80,41 @@ namespace bs
 		YoungToOld
 	};
 
+	/** Controls depth buffer collisions for GPU simulated particles. */
+	struct ParticleDepthCollisionSettings : IReflectable
+	{
+		/** Determines if depth collisions are enabled. */
+		bool enabled = false;
+
+		/** 
+		 * Determines the elasticity (bounciness) of the particle collision. Lower values make the collision less bouncy
+		 * and higher values more. 
+		 */
+		float restitution = 1.0f;
+
+		/**
+		 * Determines how much velocity should a particle lose after a collision, in percent of its current velocity. In
+		 * range [0, 1].
+		 */
+		float dampening = 0.5f;
+
+		/** Scale which to apply to particle size in order to determine the collision radius. */
+		float radiusScale = 1.0f;
+
+		/** Applies an operation over all the serializable fields of this object. */
+		template<class Processor>
+		void rttiProcess(Processor p);
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+
+	public:
+		friend class ParticleDepthCollisonSettingsRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
+
 	/** @} */
 	/** @addtogroup Implementation
 	 *  @{
@@ -224,6 +259,19 @@ namespace bs
 		void rttiProcess(Processor p);
 	};
 
+	/** Common base for both sim and core threat variants of ParticleGpuSimulationSettings. */
+	struct ParticleGpuSimulationSettingsBase
+	{
+		/** Determines particle color, evaluated over the particle lifetime. */
+		ColorDistribution colorOverLifetime = Color::White;
+
+		/** Determines particle size, evaluated over the particle lifetime. Multiplied by the initial particle size. */
+		Vector2Distribution sizeScaleOverLifetime = Vector2::ONE;
+
+		/** Settings controlling particle depth buffer collisions. */
+		ParticleDepthCollisionSettings depthCollision;
+	};
+
 	/** @} */
 
 	/** @addtogroup Particles
@@ -256,16 +304,10 @@ namespace bs
 	};
 
 	/** Settings used for controlling particle system GPU simulation. */
-	struct BS_CORE_EXPORT ParticleGpuSimulationSettings : IReflectable
+	struct BS_CORE_EXPORT ParticleGpuSimulationSettings : ParticleGpuSimulationSettingsBase, IReflectable
 	{
 		/** Settings used for controlling a vector field. */
 		ParticleVectorFieldSettings vectorField;
-
-		/** Determines particle color, evaluated over the particle lifetime. */
-		ColorDistribution colorOverLifetime = Color::White;
-
-		/** Determines particle size, evaluated over the particle lifetime. Multiplied by the initial particle size. */
-		Vector2Distribution sizeScaleOverLifetime = Vector2::ONE;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -295,16 +337,10 @@ namespace bs
 		{ };
 
 		/** Core thread counterpart of bs::ParticleVectorFieldSettings. */
-		struct ParticleGpuSimulationSettings
+		struct ParticleGpuSimulationSettings : ParticleGpuSimulationSettingsBase
 		{
 			/** @copydoc bs::ParticleGpuSimulationSettings::vectorField */
 			ParticleVectorFieldSettings vectorField;
-
-			/** @copydoc bs::ParticleGpuSimulationSettings::colorOverLifetime */
-			ColorDistribution colorOverLifetime;
-
-			/** @copydoc bs::ParticleGpuSimulationSettings::sizeScaleOverLifetime */
-			Vector2Distribution sizeScaleOverLifetime;
 		};
 	}
 

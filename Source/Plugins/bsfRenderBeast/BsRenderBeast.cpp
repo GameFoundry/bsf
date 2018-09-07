@@ -115,6 +115,7 @@ namespace bs { namespace ct
 		RenderCompositor::registerNodeType<RCNodeClusteredForward>();
 		RenderCompositor::registerNodeType<RCNodeSSR>();
 		RenderCompositor::registerNodeType<RCNodeMSAACoverage>();
+		RenderCompositor::registerNodeType<RCNodeParticleSimulate>();
 	}
 
 	void RenderBeast::destroyCore()
@@ -350,9 +351,6 @@ namespace bs { namespace ct
 
 		// Update global per-frame hardware buffers
 		mScene->setParamFrameParams(timings.time);
-
-		// Simulate particles
-		GpuParticleSimulation::instance().simulate(sceneInfo, perFrameData.particles, timings.timeDelta);
 
 		// Update bounds for all particle systems
 		if(perFrameData.particles)

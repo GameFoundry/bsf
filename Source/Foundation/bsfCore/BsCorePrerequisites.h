@@ -611,6 +611,7 @@ namespace bs
 		TID_VectorField = 1180,
 		TID_ParticleVectorFieldSettings = 1181,
 		TID_ParticleGpuSimulationSettings = 1182,
+		TID_ParticleDepthCollisionSettings = 1183,
 
 		// Moved from Engine layer
 		TID_CCamera = 30000,

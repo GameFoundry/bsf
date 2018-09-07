@@ -101,6 +101,25 @@ namespace bs
 		return getRTTIStatic();
 	}
 
+	template<class Processor>
+	void ParticleDepthCollisionSettings::rttiProcess(Processor p)
+	{
+		p << enabled;
+		p << restitution;
+		p << dampening;
+		p << radiusScale;
+	}
+
+	RTTITypeBase* ParticleDepthCollisionSettings::getRTTIStatic()
+	{
+		return ParticleDepthCollisionSettingsRTTI::instance();
+	}
+
+	RTTITypeBase* ParticleDepthCollisionSettings::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
 	RTTITypeBase* ParticleGpuSimulationSettings::getRTTIStatic()
 	{
 		return ParticleGpuSimulationSettingsRTTI::instance();
@@ -337,11 +356,12 @@ namespace bs
 	CoreSyncData ParticleSystem::syncToCore(FrameAlloc* allocator)
 	{
 		UINT32 size = getActorSyncDataSize() + rttiGetElemSize(getCoreDirtyFlags());
-		size += rttiGetElemSize(mGpuSimulationSettings.colorOverLifetime);
-		size += rttiGetElemSize(mGpuSimulationSettings.sizeScaleOverLifetime);
 
 		mSettings.rttiProcess(RttiCoreSyncSize(size));
 		mGpuSimulationSettings.vectorField.rttiProcess(RttiCoreSyncSize(size));
+		size += rttiGetElemSize(mGpuSimulationSettings.colorOverLifetime);
+		size += rttiGetElemSize(mGpuSimulationSettings.sizeScaleOverLifetime);
+		mGpuSimulationSettings.depthCollision.rttiProcess(RttiCoreSyncSize(size));
 
 		UINT8* data = allocator->alloc(size);
 		char* dataPtr = (char*)data;
@@ -353,6 +373,7 @@ namespace bs
 
 		dataPtr = rttiWriteElem(mGpuSimulationSettings.colorOverLifetime, dataPtr);
 		dataPtr = rttiWriteElem(mGpuSimulationSettings.sizeScaleOverLifetime, dataPtr);
+		mGpuSimulationSettings.depthCollision.rttiProcess(RttiCoreSyncWriter(&dataPtr));
 
 		return CoreSyncData(data, size);
 	}
@@ -412,6 +433,7 @@ namespace bs
 
 			dataPtr = rttiReadElem(mGpuSimulationSettings.colorOverLifetime, dataPtr);
 			dataPtr = rttiReadElem(mGpuSimulationSettings.sizeScaleOverLifetime, dataPtr);
+			mGpuSimulationSettings.depthCollision.rttiProcess(RttiCoreSyncReader(&dataPtr));
 
 			constexpr UINT32 updateEverythingFlag = (UINT32)ActorDirtyFlag::Everything
 				| (UINT32)ActorDirtyFlag::Active

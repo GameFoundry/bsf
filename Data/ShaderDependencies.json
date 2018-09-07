@@ -195,6 +195,9 @@
     "GpuParticleSimulate.bsl": [
         {
             "Path": "GpuParticleTileVertex.bslinc"
+        },
+        {
+            "Path": "PerCameraData.bslinc"
         }
     ],
     "IrradianceAccumulateCubeSH.bsl": [

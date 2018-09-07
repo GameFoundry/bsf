@@ -277,6 +277,24 @@ namespace ct
 	};
 
 	/************************************************************************/
+	/* 							UTILITY NODES                     			*/
+	/************************************************************************/
+
+	/** Simulates GPU particle systems. */
+	class RCNodeParticleSimulate : public RenderCompositorNode
+	{
+	public:
+		static StringID getNodeId() { return "ParticleSimulate"; }
+		static SmallVector<StringID, 4> getDependencies(const RendererView& view);
+	protected:
+		/** @copydoc RenderCompositorNode::render */
+		void render(const RenderCompositorNodeInputs& inputs) override;
+
+		/** @copydoc RenderCompositorNode::clear */
+		void clear() override;
+	};
+
+	/************************************************************************/
 	/* 							LIGHTING NODES                     			*/
 	/************************************************************************/
 
