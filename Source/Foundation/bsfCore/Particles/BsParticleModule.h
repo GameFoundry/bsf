@@ -22,6 +22,7 @@ namespace bs
 		float timeStep;
 		UINT32 maxParticles;
 		bool worldSpace;
+		bool gpuSimulated;
 		Matrix4 localToWorld;
 		Matrix4 worldToLocal;
 		ParticleSystem* system;

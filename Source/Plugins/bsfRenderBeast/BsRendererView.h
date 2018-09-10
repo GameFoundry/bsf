@@ -101,6 +101,12 @@ namespace bs { namespace ct
 		ProjectionType projType;
 
 		/** 
+		 * Determines does this view output to the final render target. If false the view is usually used for some
+		 * sort of helper rendering.
+		 */
+		bool mainView;
+
+		/** 
 		 * When enabled, renderer extension callbacks will be triggered, allowing other systems to inject their own 
 		 * render operations into the view.
 		 */
@@ -431,8 +437,7 @@ namespace bs { namespace ct
 	class RendererViewGroup
 	{
 	public:
-		RendererViewGroup();
-		RendererViewGroup(RendererView** views, UINT32 numViews, UINT32 shadowMapSize);
+		RendererViewGroup(RendererView** views, UINT32 numViews, bool mainPass, UINT32 shadowMapSize = 2048);
 
 		/** 
 		 * Updates the internal list of views. This is more efficient than always constructing a new instance of this class
@@ -445,6 +450,9 @@ namespace bs { namespace ct
 
 		/** Returns the total number of views in the group. */
 		UINT32 getNumViews() const { return (UINT32)mViews.size(); }
+
+		/** Determines is this the primary rendering pass for this frame. There can only be one primary pass per frame. */
+		bool isMainPass() const { return mIsMainPass; }
 
 		/** 
 		 * Returns information about visibility of various scene objects, from the perspective of all the views in the 
@@ -481,6 +489,7 @@ namespace bs { namespace ct
 	private:
 		Vector<RendererView*> mViews;
 		VisibilityInfo mVisibility;
+		bool mIsMainPass = false;
 
 		VisibleLightData mVisibleLightData;
 		VisibleReflProbeData mVisibleReflProbeData;

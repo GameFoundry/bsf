@@ -21,10 +21,6 @@ namespace bs
 		setName("Camera");
 	}
 
-	CCamera::~CCamera()
-	{
-	}
-
 	ConvexVolume CCamera::getWorldFrustum() const
 	{
 		const Vector<Plane>& frustumPlanes = getFrustum().getPlanes();
@@ -49,8 +45,6 @@ namespace bs
 	void CCamera::setMain(bool main)
 	{
 		mInternal->setMain(main);
-
-		gSceneManager()._notifyMainCameraStateChanged(mInternal);
 	}
 
 	void CCamera::_instantiate()

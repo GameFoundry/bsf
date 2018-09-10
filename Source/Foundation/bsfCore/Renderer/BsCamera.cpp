@@ -19,11 +19,7 @@ namespace bs
 	const float CameraBase::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
 
 	CameraBase::CameraBase()
-		: mLayers(0xFFFFFFFFFFFFFFFF), mProjType(PT_PERSPECTIVE), mHorzFOV(Degree(90.0f)), mFarDist(500.0f)
-		, mNearDist(0.05f), mAspect(1.33333333333333f), mOrthoHeight(5), mPriority(0), mCustomViewMatrix(false)
-		, mCustomProjMatrix(false), mMSAA(1), mFrustumExtentsManuallySet(false), mProjMatrixRS(BsZero), mProjMatrix(BsZero)
-		, mViewMatrix(BsZero), mProjMatrixRSInv(BsZero), mProjMatrixInv(BsZero), mViewMatrixInv(BsZero)
-		, mRecalcFrustum(true), mRecalcFrustumPlanes(true), mRecalcView(true)
+		: mRecalcFrustum(true), mRecalcFrustumPlanes(true), mRecalcView(true)
 	{
 		mRenderSettings = bs_shared_ptr_new<RenderSettings>();
 
@@ -670,10 +666,6 @@ namespace bs
 		return Vector3(0.0f, 0.0f, 0.0f);
 	}
 
-	Camera::Camera()
-		:mMain(false)
-	{ }
-
 	SPtr<ct::Camera> Camera::getCore() const
 	{
 		return std::static_pointer_cast<ct::Camera>(mCoreSpecific);
@@ -724,6 +716,12 @@ namespace bs
 		CoreObject::destroy();
 	}
 
+	void Camera::setMain(bool main)
+	{
+		mMain = main;
+		gSceneManager()._notifyMainCameraStateChanged(std::static_pointer_cast<Camera>(getThisPtr()));
+	}
+
 	Rect2I Camera::getViewportRect() const
 	{
 		return mViewport->getPixelArea();
@@ -751,6 +749,7 @@ namespace bs
 			size += rttiGetElemSize(mCustomProjMatrix);
 			size += rttiGetElemSize(mFrustumExtentsManuallySet);
 			size += rttiGetElemSize(mMSAA);
+			size += rttiGetElemSize(mMain);
 			size += sizeof(UINT32);
 
 			if(mRenderSettings != nullptr)
@@ -780,6 +779,7 @@ namespace bs
 			dataPtr = rttiWriteElem(mCustomProjMatrix, dataPtr);
 			dataPtr = rttiWriteElem(mFrustumExtentsManuallySet, dataPtr);
 			dataPtr = rttiWriteElem(mMSAA, dataPtr);
+			dataPtr = rttiWriteElem(mMain, dataPtr);
 
 			dataPtr = rttiWriteElem(ppSize, dataPtr);
 
@@ -869,6 +869,7 @@ namespace bs
 			dataPtr = rttiReadElem(mCustomProjMatrix, dataPtr);
 			dataPtr = rttiReadElem(mFrustumExtentsManuallySet, dataPtr);
 			dataPtr = rttiReadElem(mMSAA, dataPtr);
+			dataPtr = rttiReadElem(mMain, dataPtr);
 
 			UINT32 ppSize = 0;
 			dataPtr = rttiReadElem(ppSize, dataPtr);

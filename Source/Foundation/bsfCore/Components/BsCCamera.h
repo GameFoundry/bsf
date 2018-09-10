@@ -21,7 +21,7 @@ namespace bs
 	{
 	public:
 		CCamera(const HSceneObject& parent);
-		virtual ~CCamera();
+		virtual ~CCamera() = default;
 
 		/** @copydoc Camera::getViewport */
 		BS_SCRIPT_EXPORT(n:Viewport,pr:getter)

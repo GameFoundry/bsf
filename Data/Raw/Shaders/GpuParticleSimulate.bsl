@@ -44,7 +44,10 @@ shader GpuParticleSimulate
 		Texture2D gNormalsTex;
 		
 		[alias(gDepthTex)]
-		SamplerState gDepthSampler;
+		SamplerState gDepthSampler
+		{
+            Filter = MIN_MAG_MIP_POINT;
+        };
 		
 		[alias(gNormalsTex)]
 		SamplerState gNormalsSampler;
@@ -78,6 +81,8 @@ shader GpuParticleSimulate
 			uint gNumVectorFields;
 			uint gNumIterations;
 			float gDT;
+			float gDrag;
+			float3 gAcceleration;
 		};
 		
 		#if DEPTH_COLLISIONS
@@ -139,8 +144,8 @@ shader GpuParticleSimulate
 			if(distToOldPos >= -radius && distToNewPos <= radius)
 			{
 				// Separate velocity into perpendicular and tangent velocity
-				// TODO - use outVelocity instead of deltaPosPerSec?
-				//   - But in that case outPOsition calculation might be wrong since it needs to use the 0.5 version
+				// Note: This is using mid-velocity for both position and velocity integration. Velocity integration should
+				// should use the full acceleration value, but we'll keep it imprecise to avoid another calculation.
 				float3 perpVelocity = dot(deltaPosPerSec, hitPlane.xyz) * hitPlane.xyz;
 				float3 tanVelocity = deltaPosPerSec - perpVelocity;
 				
@@ -189,12 +194,18 @@ shader GpuParticleSimulate
 			{
 				time += gDT * timeScale;
 			
+				// Constant acceleration
+				float3 totalForce = gAcceleration;
+			
 				// Evaluate vector field
 				float3 fieldVelocity;
 				float fieldTightness;
-				float3 totalForce = evaluateVectorField(posAndTime.xyz, 1.0f, fieldVelocity, fieldTightness);
+				totalForce += evaluateVectorField(posAndTime.xyz, 1.0f, fieldVelocity, fieldTightness);
 				
 				velocity = lerp(velocity, fieldVelocity, fieldTightness);
+				
+				// Drag
+				totalForce -= gDrag * velocity;
 				
 				// Integrate
 				float3 acceleration = totalForce * gDT;
@@ -206,7 +217,7 @@ shader GpuParticleSimulate
 				float2 sizeScale = gCurvesTex.Sample(gCurvesSampler, sizeScaleCurveUV, 0).xy;
 			
 				// TODO - Apply world transform scale
-				size *= sizeScale;
+				size *= 0.5f * sizeScale;
 				float collisionRadius = min(size.x, size.y) * gCollisionRadiusScale;
 
 				float3 outPosition;

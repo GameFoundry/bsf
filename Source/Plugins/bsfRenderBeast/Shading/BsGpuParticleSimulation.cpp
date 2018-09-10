@@ -81,6 +81,8 @@ namespace bs { namespace ct
 		BS_PARAM_BLOCK_ENTRY(INT32, gNumVectorFields)
 		BS_PARAM_BLOCK_ENTRY(INT32, gNumIterations)
 		BS_PARAM_BLOCK_ENTRY(float, gDT)
+		BS_PARAM_BLOCK_ENTRY(float, gDrag)
+		BS_PARAM_BLOCK_ENTRY(Vector3, gAcceleration)
 	BS_PARAM_BLOCK_END
 
 	GpuParticleSimulateParamsDef gGpuParticleSimulateParamsDef;
@@ -711,6 +713,9 @@ namespace bs { namespace ct
 		const Random& random = system->getRandom();
 		const float time = system->getTime();
 		const float nrmTime = time / settings.duration;
+
+		gGpuParticleSimulateParamsDef.gDrag.set(m->simulationParams, simSettings.drag);
+		gGpuParticleSimulateParamsDef.gAcceleration.set(m->simulationParams, simSettings.acceleration);
 
 		SPtr<Texture> vfTexture;
 		if(simSettings.vectorField.vectorField)

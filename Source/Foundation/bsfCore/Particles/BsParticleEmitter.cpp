@@ -1049,8 +1049,11 @@ namespace bs
 		mEmitAccumulator -= (float)numToSpawn;
 
 		const UINT32 numPartices = set.getParticleCount() + numToSpawn;
-		if(numPartices > state.maxParticles)
-			numToSpawn = state.maxParticles - set.getParticleCount();
+		if(!state.gpuSimulated)
+		{
+			if (numPartices > state.maxParticles)
+				numToSpawn = state.maxParticles - set.getParticleCount();
+		}
 
 		const UINT32 firstIdx = mShape->spawn(random, set, numToSpawn, state);
 		const UINT32 endIdx = firstIdx + numToSpawn;
@@ -1093,6 +1096,12 @@ namespace bs
 
 				particles.size[i] = size;
 			}
+		}
+
+		if(mRandomOffset > 0.0f)
+		{
+			for (UINT32 i = firstIdx; i < endIdx; i++)
+				particles.position[i] += Vector3(random.getSNorm(), random.getSNorm(), random.getSNorm()) * mRandomOffset;
 		}
 
 		if(!mUse3DRotation)

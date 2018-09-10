@@ -278,6 +278,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mFlipU, 10)
 			BS_RTTI_MEMBER_PLAIN(mFlipV, 11)
 			BS_RTTI_MEMBER_REFLPTR(mShape, 12)
+			BS_RTTI_MEMBER_PLAIN(mRandomOffset, 13)
 		BS_END_RTTI_MEMBERS
 
 	public:
@@ -507,6 +508,8 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(colorOverLifetime, 1)
 			BS_RTTI_MEMBER_PLAIN(sizeScaleOverLifetime, 2)
 			BS_RTTI_MEMBER_REFL(depthCollision, 3)
+			BS_RTTI_MEMBER_PLAIN(acceleration, 4)
+			BS_RTTI_MEMBER_PLAIN(drag, 5)
 		BS_END_RTTI_MEMBERS
 
 	public:

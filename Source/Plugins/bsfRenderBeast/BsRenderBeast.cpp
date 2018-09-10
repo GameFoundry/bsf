@@ -88,7 +88,7 @@ namespace bs { namespace ct
 		mCoreOptions = bs_shared_ptr_new<RenderBeastOptions>(); 
 		mScene = bs_shared_ptr_new<RendererScene>(mCoreOptions);
 
-		mMainViewGroup = bs_new<RendererViewGroup>();
+		mMainViewGroup = bs_new<RendererViewGroup>(nullptr, 0, true);
 
 		StandardDeferred::startUp();
 		ParticleRenderer::startUp();
@@ -655,6 +655,7 @@ namespace bs { namespace ct
 		viewDesc.target.targetHeight = texProps.getHeight();
 		viewDesc.target.numSamples = 1;
 
+		viewDesc.mainView = false;
 		viewDesc.triggerCallbacks = false;
 		viewDesc.runPostProcessing = false;
 		viewDesc.capturingReflections = true;
@@ -756,7 +757,7 @@ namespace bs { namespace ct
 
 		RendererView* viewPtrs[] = { &views[0], &views[1], &views[2], &views[3], &views[4], &views[5] };
 
-		RendererViewGroup viewGroup(viewPtrs, 6, mCoreOptions->shadowMapSize);
+		RendererViewGroup viewGroup(viewPtrs, 6, false, mCoreOptions->shadowMapSize);
 		viewGroup.determineVisibility(sceneInfo);
 
 		FrameInfo frameInfo({ 0.0f, 1.0f / 60.0f, 0 }, PerFrameData());

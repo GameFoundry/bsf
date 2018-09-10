@@ -227,6 +227,7 @@ namespace bs
 		state.timeStep = timeStep;
 		state.maxParticles = mSettings.maxParticles;
 		state.worldSpace = mSettings.simulationSpace == ParticleSimulationSpace::World;
+		state.gpuSimulated = mSettings.gpuSimulation;
 		state.localToWorld = mTransform.getMatrix();
 		state.worldToLocal = state.localToWorld.inverseAffine();
 		state.system = this;
@@ -361,6 +362,8 @@ namespace bs
 		mGpuSimulationSettings.vectorField.rttiProcess(RttiCoreSyncSize(size));
 		size += rttiGetElemSize(mGpuSimulationSettings.colorOverLifetime);
 		size += rttiGetElemSize(mGpuSimulationSettings.sizeScaleOverLifetime);
+		size += rttiGetElemSize(mGpuSimulationSettings.acceleration);
+		size += rttiGetElemSize(mGpuSimulationSettings.drag);
 		mGpuSimulationSettings.depthCollision.rttiProcess(RttiCoreSyncSize(size));
 
 		UINT8* data = allocator->alloc(size);
@@ -373,6 +376,8 @@ namespace bs
 
 		dataPtr = rttiWriteElem(mGpuSimulationSettings.colorOverLifetime, dataPtr);
 		dataPtr = rttiWriteElem(mGpuSimulationSettings.sizeScaleOverLifetime, dataPtr);
+		dataPtr = rttiWriteElem(mGpuSimulationSettings.acceleration, dataPtr);
+		dataPtr = rttiWriteElem(mGpuSimulationSettings.drag, dataPtr);
 		mGpuSimulationSettings.depthCollision.rttiProcess(RttiCoreSyncWriter(&dataPtr));
 
 		return CoreSyncData(data, size);
@@ -433,6 +438,8 @@ namespace bs
 
 			dataPtr = rttiReadElem(mGpuSimulationSettings.colorOverLifetime, dataPtr);
 			dataPtr = rttiReadElem(mGpuSimulationSettings.sizeScaleOverLifetime, dataPtr);
+			dataPtr = rttiReadElem(mGpuSimulationSettings.acceleration, dataPtr);
+			dataPtr = rttiReadElem(mGpuSimulationSettings.drag, dataPtr);
 			mGpuSimulationSettings.depthCollision.rttiProcess(RttiCoreSyncReader(&dataPtr));
 
 			constexpr UINT32 updateEverythingFlag = (UINT32)ActorDirtyFlag::Everything

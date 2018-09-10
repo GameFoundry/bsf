@@ -268,6 +268,12 @@ namespace bs
 		/** Determines particle size, evaluated over the particle lifetime. Multiplied by the initial particle size. */
 		Vector2Distribution sizeScaleOverLifetime = Vector2::ONE;
 
+		/** Constant acceleration to apply for each step of the simulation. */
+		Vector3 acceleration = Vector3::ZERO;
+
+		/** Amount of resistance to apply in the direction opposite of the particle's velocity. */
+		float drag = 0.0f;
+
 		/** Settings controlling particle depth buffer collisions. */
 		ParticleDepthCollisionSettings depthCollision;
 	};

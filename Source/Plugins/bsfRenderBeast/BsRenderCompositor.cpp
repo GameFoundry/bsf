@@ -515,6 +515,10 @@ namespace bs { namespace ct
 
 	void RCNodeParticleSimulate::render(const RenderCompositorNodeInputs& inputs)
 	{
+		// Only simulate particles for the first view in the main render pass
+		if(!inputs.viewGroup.isMainPass() || inputs.view.getViewIdx() != 0)
+			return;
+
 		RCNodeGBuffer* gbufferNode = static_cast<RCNodeGBuffer*>(inputs.inputNodes[0]);
 		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[1]);
 

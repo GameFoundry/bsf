@@ -55,7 +55,7 @@ namespace ct
 	class RenderCompositorNode
 	{
 	public:
-		virtual ~RenderCompositorNode() { }
+		virtual ~RenderCompositorNode() = default;
 
 	protected:
 		friend class RenderCompositor;

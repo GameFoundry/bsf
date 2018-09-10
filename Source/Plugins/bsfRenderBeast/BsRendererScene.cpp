@@ -937,6 +937,7 @@ namespace bs {	namespace ct
 
 		viewDesc.target.numSamples = camera->getMSAACount();
 
+		viewDesc.mainView = camera->isMain();
 		viewDesc.triggerCallbacks = true;
 		viewDesc.runPostProcessing = true;
 		viewDesc.capturingReflections = false;
