@@ -547,6 +547,8 @@ namespace bs
 			//BS_RTTI_MEMBER_PLAIN(gravityScale, 9)
 			BS_RTTI_MEMBER_PLAIN(manualSeed, 10)
 			BS_RTTI_MEMBER_REFL(material, 11)
+			BS_RTTI_MEMBER_PLAIN(useAutomaticBounds, 12)
+			BS_RTTI_MEMBER_PLAIN(customBounds, 13)
 		BS_END_RTTI_MEMBERS
 
 	public:

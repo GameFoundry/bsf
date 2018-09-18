@@ -84,6 +84,12 @@ namespace bs { namespace ct
 		/** Returns the time since the system was created. */
 		float getTime() const { return mTime; }
 
+		/** 
+		 * Returns the bounds of the particle system. These will be user-provided bounds, or infinite bounds if no
+		 * user-provided ones exist.
+		 */
+		AABox getBounds() const;
+
 		/** Returns the object that can be used for retrieving random numbers when evaluating this particle system. */
 		const Random& getRandom() const { return mRandom; }
 

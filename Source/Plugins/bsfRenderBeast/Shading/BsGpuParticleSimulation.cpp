@@ -663,6 +663,16 @@ namespace bs { namespace ct
 		mTime = bs::ParticleSystem::_advanceTime(mTime, dt, settings.duration, settings.isLooping, timeStep);
 	}
 
+	AABox GpuParticleSystem::getBounds() const
+	{
+		const ParticleSystemSettings& settings = mParent->getSettings();
+
+		if(settings.useAutomaticBounds)
+			return AABox::INF_BOX;
+
+		return settings.customBounds;
+	}
+
 	struct GpuParticleSimulation::Pimpl
 	{
 		GpuParticleResources resources;

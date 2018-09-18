@@ -375,19 +375,21 @@ namespace bs
 				{
 					// Generate simulation data to transfer to the core thread
 					const UINT32 numParticles = system->mParticleSet->getParticleCount();
+					const ParticleSystemSettings& settings = system->getSettings();
 
-					if(system->getSettings().gpuSimulation)
-					{
+					if(settings.gpuSimulation)
 						simulationDataGPU = simDataPool.allocGPU(*system->mParticleSet);
-					}
 					else
 					{
 						simulationDataCPU = simDataPool.allocCPU(*system->mParticleSet);
 						simulationDataCPU->numParticles = numParticles;
-						simulationDataCPU->bounds = system->_calculateBounds();
+
+						if(settings.useAutomaticBounds)
+							simulationDataCPU->bounds = system->_calculateBounds();
+						else
+							simulationDataCPU->bounds = settings.customBounds;
 
 						// If using a camera-independant sorting mode, sort the particles right away
-						const ParticleSystemSettings& settings = system->getSettings();
 						switch (settings.sortMode)
 						{
 						default:

@@ -73,6 +73,8 @@ namespace bs
 		p << isLooping;
 		p << sortMode;
 		p << material;
+		p << useAutomaticBounds;
+		p << customBounds;
 	}
 
 	template<bool Core>

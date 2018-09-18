@@ -39,7 +39,7 @@ namespace bs
 		/** Total number of particles in the particle system. */
 		UINT32 numParticles;
 
-		/** Local bounds of the particle system. */
+		/** Bounds of the particle system, in the system's simulation space. */
 		AABox bounds;
 
 		/** 
@@ -85,9 +85,10 @@ namespace bs
 		float initialLifetime;
 	};
 
-	/** Contains new particles that were spawned this frame and should be inserted in the GPU simulation. */
+	/** Contains inputs to the GPU particle simulation as provided by the particle system manager. */
 	struct BS_CORE_EXPORT ParticleGPUSimulationData
 	{
+		/** A set of the particles to be inserted into the simulation. */
 		Vector<GpuParticle> particles;
 	};
 

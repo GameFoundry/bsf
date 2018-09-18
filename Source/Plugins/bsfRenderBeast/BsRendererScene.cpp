@@ -1153,22 +1153,18 @@ namespace bs {	namespace ct
 		{
 			const UINT32 rendererId = entry.particleSystem->getRendererId();
 
+			AABox worldBounds = AABox::INF_BOX;
 			const auto iterFind = particleRenderData->cpuData.find(entry.particleSystem->getId());
 			if(iterFind != particleRenderData->cpuData.end())
-			{
-				AABox worldBounds = iterFind->second->bounds;
-
-				const ParticleSystemSettings& settings = entry.particleSystem->getSettings();
-				if (settings.simulationSpace == ParticleSimulationSpace::Local)
-					worldBounds.transformAffine(entry.particleSystem->getTransform().getMatrix());
-
-				mInfo.particleSystemBounds[rendererId] = worldBounds;
-			}
+				worldBounds = iterFind->second->bounds;
 			else if(entry.gpuParticleSystem)
-			{
-				// TODO - For now we don't cull GPU simulated particle systems
-				mInfo.particleSystemBounds[rendererId] = AABox::INF_BOX;
-			}
+				worldBounds = entry.gpuParticleSystem->getBounds();
+
+			const ParticleSystemSettings& settings = entry.particleSystem->getSettings();
+			if (settings.simulationSpace == ParticleSimulationSpace::Local)
+				worldBounds.transformAffine(entry.localToWorld);
+
+			mInfo.particleSystemBounds[rendererId] = worldBounds;
 		}
 	}
 }}

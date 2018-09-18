@@ -607,8 +607,7 @@ namespace bs { namespace ct
 				keyEnd[threadId] = keyBegin[threadId] + numTiles * TILE_SIZE;
 			}
 
-			auto prefixSum = [&keyBegin, &keyEnd, &sLocalScratch, &sCurrentTileTotal, &sGroupOffsets, &sTileTotals, 
-				&bitOffset, &inputKeys, &sortedKeys]()
+			auto prefixSum = [&sLocalScratch, &sCurrentTileTotal]()
 			{
 				// Upsweep to generate partial sums
 				UINT32 offsets[NUM_THREADS];

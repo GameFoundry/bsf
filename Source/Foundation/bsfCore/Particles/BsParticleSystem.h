@@ -181,6 +181,19 @@ namespace bs
 		 * between different runs. Only relevant if automatic seed is disabled.
 		 */
 		UINT32 manualSeed = 0;
+
+		/**
+		 * Determines should the particle system bounds be automatically calculated, or should the fixed value provided
+		 * be used. Bounds are used primarily for culling purposes. Note that automatic bounds are not supported when GPU
+		 * simulation is enabled.
+		 */
+		bool useAutomaticBounds = true;
+
+		/** 
+		 * Custom bounds to use them @p useAutomaticBounds is disabled. The bounds are in the simulation space of the
+		 * particle system.
+		 */
+		AABox customBounds;
 	};
 
 	/** Templated common base for both sim and core thread variants of ParticleSystemSettings. */
@@ -534,7 +547,7 @@ namespace bs
 
 		/** 
 		 * Calculates the bounds of all the particles in the system. Should be called after a call to _simulate() to get
-		 * up-to-date bounds.
+		 * up-to-date bounds. The bounds are in the simulation space of the particle system.
 		 */
 		AABox _calculateBounds() const;
 
