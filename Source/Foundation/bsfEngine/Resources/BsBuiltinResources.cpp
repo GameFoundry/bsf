@@ -85,11 +85,11 @@ namespace bs
 	const String BuiltinResources::ShaderSpriteImageNoAlphaFile = u8"SpriteImageNoAlpha.bsl";
 	const String BuiltinResources::ShaderSpriteLineFile = u8"SpriteLine.bsl";
 
-	constexpr char* ShaderDiffuseFile = u8"Diffuse.bsl";
-	constexpr char* ShaderTransparentFile = u8"Transparent.bsl";
-	constexpr char* ShaderParticlesUnlitFile = u8"ParticlesUnlit.bsl";
-	constexpr char* ShaderParticlesLitFile = u8"ParticlesLit.bsl";
-	constexpr char* ShaderParticlesLitOpaqueFile = u8"ParticlesLitOpaque.bsl";
+	constexpr const char* ShaderDiffuseFile = u8"Diffuse.bsl";
+	constexpr const char* ShaderTransparentFile = u8"Transparent.bsl";
+	constexpr const char* ShaderParticlesUnlitFile = u8"ParticlesUnlit.bsl";
+	constexpr const char* ShaderParticlesLitFile = u8"ParticlesLit.bsl";
+	constexpr const char* ShaderParticlesLitOpaqueFile = u8"ParticlesLitOpaque.bsl";
 
 	/************************************************************************/
 	/* 								MESHES							  		*/
