@@ -91,14 +91,14 @@ namespace bs
 		 * Undefined if the distribution is represented by a constant or a non-gradient range.
 		 */
 		BS_SCRIPT_EXPORT()
-		const ColorGradient& getMinCurve() const { return mMinGradient; }
+		const ColorGradient& getMinGradient() const { return mMinGradient; }
 
 		/** 
-		 * Returns the curve representing the second curve of a curve range. Only defined if the distribution represents
-		 * a curve range.
+		 * Returns the curve representing the second gradient of a gradient range. Only defined if the distribution 
+		 * represents a gradient range.
 		 */
 		BS_SCRIPT_EXPORT()
-		const ColorGradient& getMaxCurve() const { return mMaxGradient; }
+		const ColorGradient& getMaxGradient() const { return mMaxGradient; }
 
 		/** 
 		 * Evaluates the value of the distribution.

@@ -1127,7 +1127,7 @@ namespace bs
 		}
 
 		// If right click try to open context menu
-		if(buttonStates[2] == true) 
+		if(buttonStates[2])
 		{
 			for(auto& elementInfo : mElementsUnderPointer)
 			{
