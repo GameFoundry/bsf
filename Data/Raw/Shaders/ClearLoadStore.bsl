@@ -2,10 +2,19 @@ shader ClearLoadStore
 {
 	featureset = HighEnd;
 
+	variations
+	{
+		TEX_ARRAY = { false, true };
+	};
+	
 	code
 	{
-		RWTexture2D<float> gOutput;
-		
+		#if TEX_ARRAY
+			RWTexture2DArray<float> gOutput;
+		#else
+			RWTexture2D<float> gOutput;
+		#endif
+	
 		[internal]
 		cbuffer Params : register(b0)
 		{
@@ -30,7 +39,11 @@ shader ClearLoadStore
 					if(pixelPos.x >= gSize.x || pixelPos.y >= gSize.y)
 						continue;
 
-					gOutput[pixelPos] = 0.0f;
+					#if TEX_ARRAY
+						gOutput[uint3(pixelPos, 0)] = 0.0f;
+					#else
+						gOutput[pixelPos] = 0.0f;
+					#endif
 				}
 			}
 		}

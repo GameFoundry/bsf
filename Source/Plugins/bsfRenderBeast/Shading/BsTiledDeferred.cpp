@@ -157,7 +157,7 @@ namespace bs { namespace ct
 
 	ClearLoadStoreParamDef gClearLoadStoreParamDef;
 
-	ClearLoadStore::ClearLoadStore()
+	ClearLoadStoreMat::ClearLoadStoreMat()
 	{
 		mParams->getLoadStoreTextureParam(GPT_COMPUTE_PROGRAM, "gOutput", mOutputParam);
 
@@ -165,13 +165,13 @@ namespace bs { namespace ct
 		mParams->setParamBlockBuffer(GPT_COMPUTE_PROGRAM, "Params", mParamBuffer);
 	}
 
-	void ClearLoadStore::_initDefines(ShaderDefines& defines)
+	void ClearLoadStoreMat::_initDefines(ShaderDefines& defines)
 	{
 		defines.set("TILE_SIZE", TILE_SIZE);
 		defines.set("NUM_THREADS", NUM_THREADS);
 	}
 
-	void ClearLoadStore::execute(const SPtr<Texture>& target, const TextureSurface& surface)
+	void ClearLoadStoreMat::execute(const SPtr<Texture>& target, const TextureSurface& surface)
 	{
 		BS_RENMAT_PROFILE_BLOCK
 
@@ -195,6 +195,14 @@ namespace bs { namespace ct
 		UINT32 numGroupsY = Math::divideAndRoundUp(height, NUM_THREADS * TILE_SIZE);
 		
 		RenderAPI::instance().dispatchCompute(numGroupsX, numGroupsY);
+	}
+
+	ClearLoadStoreMat* ClearLoadStoreMat::getVariation(bool textureArray)
+	{
+		if(textureArray)
+			return get(getVariation<true>());
+
+		return get(getVariation<false>());
 	}
 
 	TiledImageBasedLightingParamDef gTiledImageBasedLightingParamDef;

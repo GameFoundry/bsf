@@ -705,6 +705,8 @@ namespace bs { namespace ct
 			lightAccumulationTexArray = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, 
 				TU_LOADSTORE, 1, false, numSamples));
 
+			ClearLoadStoreMat* clearMat = ClearLoadStoreMat::getVariation(true);
+
 			for(UINT32 i = 0; i < numSamples ; i++)
 			{
 				TextureSurface surface;
@@ -713,7 +715,7 @@ namespace bs { namespace ct
 				surface.mipLevel = 0;
 				surface.numMipLevels = 1;
 
-				ClearLoadStore::get()->execute(lightAccumulationTexArray->texture, surface);
+				clearMat->execute(lightAccumulationTexArray->texture, surface);
 			}
 		}
 		else

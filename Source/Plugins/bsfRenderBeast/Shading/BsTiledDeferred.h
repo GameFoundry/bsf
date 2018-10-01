@@ -92,15 +92,34 @@ namespace bs { namespace ct
 	extern ClearLoadStoreParamDef gClearLoadStoreParamDef;
 
 	/** Clears the provided texture to zero, using a compute shader. */
-	class ClearLoadStore : public RendererMaterial<ClearLoadStore>
+	class ClearLoadStoreMat : public RendererMaterial<ClearLoadStoreMat>
 	{
 		RMAT_DEF_CUSTOMIZED("ClearLoadStore.bsl");
 
+		/** Helper method used for initializing variations of this material. */
+		template<bool TEX_ARRAY>
+		static const ShaderVariation& getVariation()
+		{
+			static ShaderVariation variation = ShaderVariation(
+			Vector<ShaderVariation::Param>{
+				ShaderVariation::Param("TEX_ARRAY", TEX_ARRAY)
+			});
+
+			return variation;
+		}
 	public:
-		ClearLoadStore();
+		ClearLoadStoreMat();
 
 		/** Binds the material for rendering, sets up parameters and executes it. */
 		void execute(const SPtr<Texture>& target, const TextureSurface& surface = TextureSurface::COMPLETE);
+
+		/** 
+		 * Returns the material variation matching the provided parameters. 
+		 * 
+		 * @param[in]	textureArray	If true the material will accept a 2D texture array, otherwise it will accept
+		 *								a normal 2D texture.
+		 */
+		static ClearLoadStoreMat* getVariation(bool textureArray);
 	private:
 		/** TILE_SIZE * TILE_SIZE is the number of pixels to process per thread. */
 		static constexpr UINT32 TILE_SIZE = 4;
