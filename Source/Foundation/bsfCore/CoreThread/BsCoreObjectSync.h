@@ -24,6 +24,17 @@ namespace bs
 		template<typename T> struct is_resource_handle : std::false_type {};
 		template<typename T> struct is_resource_handle<ResourceHandle<T>> : std::true_type {};
 
+		// Returns the underlying type if the provided type is a resource handle, or itself otherwise
+		template<typename T> struct decay_handle { using value = T; };
+		template<typename T> struct decay_handle<ResourceHandle<T>> { using value = T; };
+
+		// Returns the underlying type if the provided type is a shared pointer, or itself otherwise
+		template<typename T> struct decay_sptr { using value = T; };
+		template<typename T> struct decay_sptr<SPtr<T>> { using value = typename SPtr<T>::element_type; };
+
+		template<typename T>
+		using decay_all_t = typename decay_sptr<typename decay_handle<std::decay_t<T>>::value>::value;
+
 		// Converts a ResourceHandle to an underlying SPtr, or if the type is not a ResourceHandle it just passes it
 		// through as is.
 
@@ -98,20 +109,36 @@ namespace bs
 	 */
 
 	/** 
-	 * Overloads operator << and writes the provided values into the underlying buffer using rttiWriteElem(). Each write
-	 * advances the buffer to the next write location. Caller is responsible for not writing out of range.
+	 * Writes the provided values into the underlying buffer using rttiWriteElem(). Each write advances the buffer to the
+	 * next write location. Caller is responsible for not writing out of range.
 	 * 
-	 * As input accepts any trivially copyable types, types with RTTIPlainType specializations, any shared pointer, as well
+	 * As input accepts any trivially copyable types, types with RTTIPlainType specializations, any shared pointer, as well 
 	 * as any resource handle or CoreObject shared ptr which will automatically get converted to their core thread variants.
+	 *
+	 * Types that provide a rttiEnumFields() method will have that method executed with this object provided as the 
+	 * parameter, * allowing the type to recurse over its fields.
 	 */
 	struct RttiCoreSyncWriter
 	{
+		using MyType = RttiCoreSyncWriter;
+
 		RttiCoreSyncWriter(char** data)
 			:mWritePtr(data)
 		{}
 
+		/** If the type offers a rttiEnumFields method, recurse into it. */
 		template<class T>
-		friend RttiCoreSyncWriter& operator<<(RttiCoreSyncWriter&, T&&);
+		void operator()(T&& value, std::enable_if_t<has_rttiEnumFields<T>::value>* = 0)
+		{
+			value.rttiEnumFields(*this);
+		}
+
+		/** If the type doesn't offer a rttiEnumFields method, perform the write using plain serialization. */
+		template<class T>
+		void operator()(T&& value, std::enable_if_t<!has_rttiEnumFields<T>::value>* = 0)
+		{
+			writeInternal(detail::get_core_object(detail::remove_handle(std::forward<T>(value))));
+		}
 
 	private:
 		template<class T>
@@ -136,18 +163,14 @@ namespace bs
 		char** mWritePtr;
 	};
 
-	template<class T>
-	RttiCoreSyncWriter& operator<<(RttiCoreSyncWriter& writer, T&& value)
-	{
-		writer.writeInternal(detail::get_core_object(detail::remove_handle(std::forward<T>(value))));
-		return writer;
-	}
-
 	/** 
-	 * Overloads operator << and reads values from the underlying buffer using rttiReadElem(). Each read advances the buffer
-	 * to the next value. Caller is responsible for not reading out of range.
+	 * Reads values from the underlying buffer and writes them to the output object using rttiReadElem(). Each read advances
+	 * the buffer to the next value. Caller is responsible for not reading out of range.
 	 *
-	 * As output accepts any trivially copyable types, types with RTTIPlainType specializations and any shared pointers.
+	 * As output accepts any trivially copyable types, types with RTTIPlainType specializations and any shared pointers. 
+	 * 
+	 * Types that provide a rttiEnumFields() method will have that method executed with this object provided as the 
+	 * parameter, allowing the type to recurse over its fields.
 	 */
 	struct RttiCoreSyncReader
 	{
@@ -155,8 +178,20 @@ namespace bs
 			:mReadPtr(data)
 		{}
 
+		/** If the type offers a rttiEnumFields method, recurse into it. */
 		template<class T>
-		friend RttiCoreSyncReader& operator<<(RttiCoreSyncReader&, T&&);
+		void operator()(T&& value, std::enable_if_t<has_rttiEnumFields<T>::value>* = 0)
+		{
+			value.rttiEnumFields(*this);
+		}
+
+		/** If the type doesn't offer a rttiEnumFields method, perform the read using plain serialization. */
+		template<class T>
+		void operator()(T&& value, std::enable_if_t<!has_rttiEnumFields<T>::value>* = 0)
+		{
+			readInternal(std::forward<T>(value));
+		}
+
 	private:
 		template<class T>
 		void readInternal(T&& value, std::enable_if_t<
@@ -181,19 +216,16 @@ namespace bs
 		char** mReadPtr;
 	};
 
-	template<class T>
-	RttiCoreSyncReader& operator<<(RttiCoreSyncReader& reader, T&& value)
-	{
-		reader.readInternal(value);
-		return reader;
-	}
-
 	/** 
-	 * Overloads operator << and calculates size of provided values using rttiGetElemSize(). All sizes are accumulated in
-	 * the location provided upon construction.
+	 * Calculates size of provided values using rttiGetElemSize(). All sizes are accumulated in the location provided upon
+	 * construction.
 	 *
-	 * As input accepts any trivially copyable types, types with RTTIPlainType specializations, any shared pointer, as well
-	 * as any resource handle or CoreObject shared ptr which will automatically get converted to their core thread variants.
+	 * As input accepts any trivially copyable types, types with RTTIPlainType specializations, any shared pointers, 
+	 * as well as any resource handle or CoreObject shared ptr which will automatically get converted to
+	 * their core thread variants. 
+	 *
+	 * Types that provide a rttiEnumFields() method will have that method executed with this object provided as the 
+	 * parameter, allowing the type to recurse over its fields.
 	 */
 	struct RttiCoreSyncSize
 	{
@@ -201,8 +233,20 @@ namespace bs
 			:mSize(size)
 		{ }
 
+		/** If the type offers a rttiEnumFields method, recurse into it. */
 		template<class T>
-		friend RttiCoreSyncSize& operator<< (RttiCoreSyncSize&, T&&);
+		void operator()(T&& value, std::enable_if_t<has_rttiEnumFields<T>::value>* = 0)
+		{
+			value.rttiEnumFields(*this);
+		}
+
+		/** If the type doesn't offer a rttiEnumFields method, perform the read using plain serialization. */
+		template<class T>
+		void operator()(T&& value, std::enable_if_t<!has_rttiEnumFields<T>::value>* = 0)
+		{
+			getSizeInternal(detail::get_core_object(detail::remove_handle(std::forward<T>(value))));
+		}
+
 	private:
 		template<class T>
 		void getSizeInternal(T&& value, std::enable_if_t<
@@ -221,13 +265,6 @@ namespace bs
 
 		UINT32& mSize;
 	};
-
-	template<class T>
-	RttiCoreSyncSize& operator<< (RttiCoreSyncSize& sizer, T&& value)
-	{
-		sizer.getSizeInternal(detail::get_core_object(detail::remove_handle(std::forward<T>(value))));
-		return sizer;
-	}
 
 	/** @} */
 }

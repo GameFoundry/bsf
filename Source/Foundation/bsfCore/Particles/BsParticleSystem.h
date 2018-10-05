@@ -111,14 +111,14 @@ namespace bs
 		/** Scale which to apply to particle size in order to determine the collision radius. */
 		float radiusScale = 1.0f;
 
-		/** Applies an operation over all the serializable fields of this object. */
-		template<class Processor>
-		void rttiProcess(Processor p);
-
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P p);
+		void rttiEnumFieldsDbg(ParticleRenderMode rm);
 	public:
 		friend class ParticleDepthCollisonSettingsRTTI;
 		static RTTITypeBase* getRTTIStatic();
@@ -222,9 +222,9 @@ namespace bs
 		/** Mesh used for representing individual particles when using the Mesh rendering mode. */
 		MeshType mesh;
 
-		/** Applies an operation over all the serializable fields of this object. */
-		template<class Processor>
-		void rttiProcess(Processor p);
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P processor);
 	};
 
 	/** Common base for both sim and core thread variants of ParticleVectorFieldSettings. */
@@ -284,10 +284,42 @@ namespace bs
 		/** Vector field resource used for influencing the particles. */
 		CoreVariantHandleType<VectorField, Core> vectorField;
 
-		/** Applies an operation over all the serializable fields of this object. */
-		template<class Processor>
-		void rttiProcess(Processor p);
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P processor);
 	};
+
+	/** @} */
+	/** @addtogroup Particles
+	 *  @{
+	 */
+
+	/** Settings used for controlling a vector field in a GPU simulated particle system. */
+	struct BS_CORE_EXPORT ParticleVectorFieldSettings : TParticleVectorFieldSettings<false>, IReflectable
+	{
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+
+	public:
+		friend class ParticleVectorFieldSettingsRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
+
+	namespace ct
+	{
+		/** Core thread counterpart of bs::ParticleVectorFieldSettings. */
+		struct ParticleVectorFieldSettings : TParticleVectorFieldSettings<true>
+		{ };
+	}
+
+	/** @} */
+	/** @addtogroup Implementation
+	 *  @{
+	 */
+
+	template<> struct CoreThreadType<ParticleVectorFieldSettings> { typedef ct::ParticleVectorFieldSettings Type; };
 
 	/** Common base for both sim and core threat variants of ParticleGpuSimulationSettings. */
 	struct ParticleGpuSimulationSettingsBase
@@ -308,8 +340,18 @@ namespace bs
 		ParticleDepthCollisionSettings depthCollision;
 	};
 
-	/** @} */
+	/** Templated common base for both sim and core threat variants of ParticleGpuSimulationSettings. */
+	template<bool Core>
+	struct TParticleGpuSimulationSettings : ParticleGpuSimulationSettingsBase
+	{
+		CoreVariantType<ParticleVectorFieldSettings, Core> vectorField;
 
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P processor);
+	};
+
+	/** @} */
 	/** @addtogroup Particles
 	 *  @{
 	 */
@@ -326,25 +368,9 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 	};
 
-	/** Settings used for controlling a vector field in a GPU simulated particle system. */
-	struct BS_CORE_EXPORT ParticleVectorFieldSettings : TParticleVectorFieldSettings<false>, IReflectable
-	{
-		/************************************************************************/
-		/* 								RTTI		                     		*/
-		/************************************************************************/
-
-	public:
-		friend class ParticleVectorFieldSettingsRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		RTTITypeBase* getRTTI() const override;
-	};
-
 	/** Settings used for controlling particle system GPU simulation. */
-	struct BS_CORE_EXPORT ParticleGpuSimulationSettings : ParticleGpuSimulationSettingsBase, IReflectable
+	struct BS_CORE_EXPORT ParticleGpuSimulationSettings : TParticleGpuSimulationSettings<false>, IReflectable
 	{
-		/** Settings used for controlling a vector field. */
-		ParticleVectorFieldSettings vectorField;
-
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
@@ -369,15 +395,7 @@ namespace bs
 		struct ParticleSystemSettings : TParticleSystemSettings<true> { };
 
 		/** Core thread counterpart of bs::ParticleVectorFieldSettings. */
-		struct ParticleVectorFieldSettings : TParticleVectorFieldSettings<true>
-		{ };
-
-		/** Core thread counterpart of bs::ParticleVectorFieldSettings. */
-		struct ParticleGpuSimulationSettings : ParticleGpuSimulationSettingsBase
-		{
-			/** @copydoc bs::ParticleGpuSimulationSettings::vectorField */
-			ParticleVectorFieldSettings vectorField;
-		};
+		struct ParticleGpuSimulationSettings : TParticleGpuSimulationSettings<true> { };
 	}
 
 	/** @} */
@@ -626,6 +644,7 @@ namespace bs
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
+
 	public:
 		friend class ParticleSystemRTTI;
 		static RTTITypeBase* getRTTIStatic();

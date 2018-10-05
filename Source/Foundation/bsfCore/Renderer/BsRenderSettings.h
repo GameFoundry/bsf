@@ -89,10 +89,9 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 
-		/** Applies an operation over all the serializable fields of this object. */
-		template<class Processor>
-		void rttiProcess(Processor p);
-
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P processor);
 	public:
 		friend class AutoExposureSettingsRTTI;
 		static RTTITypeBase* getRTTIStatic();
@@ -149,10 +148,9 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 
-		/** Applies an operation over all the serializable fields of this object. */
-		template<class Processor>
-		void rttiProcess(Processor p);
-
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P processor);
 	public:
 		friend class TonemappingSettingsRTTI;
 		static RTTITypeBase* getRTTIStatic();
@@ -187,10 +185,9 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 
-		/** Applies an operation over all the serializable fields of this object. */
-		template<class Processor>
-		void rttiProcess(Processor p);
-
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P processor);
 	public:
 		friend class WhiteBalanceSettingsRTTI;
 		static RTTITypeBase* getRTTIStatic();
@@ -234,10 +231,9 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 
-		/** Applies an operation over all the serializable fields of this object. */
-		template<class Processor>
-		void rttiProcess(Processor p);
-
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P processor);
 	public:
 		friend class ColorGradingSettingsRTTI;
 		static RTTITypeBase* getRTTIStatic();
@@ -311,10 +307,9 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 
-		/** Applies an operation over all the serializable fields of this object. */
-		template<class Processor>
-		void rttiProcess(Processor p);
-
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P processor);
 	public:
 		friend class AmbientOcclusionSettingsRTTI;
 		static RTTITypeBase* getRTTIStatic();
@@ -376,10 +371,9 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 
-		/** Applies an operation over all the serializable fields of this object. */
-		template<class Processor>
-		void rttiProcess(Processor p);
-
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P processor);
 	public:
 		friend class DepthOfFieldSettingsRTTI;
 		static RTTITypeBase* getRTTIStatic();
@@ -426,10 +420,9 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 
-		/** Applies an operation over all the serializable fields of this object. */
-		template<class Processor>
-		void rttiProcess(Processor p);
-
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P processor);
 	public:
 		friend class ScreenSpaceReflectionsRTTI;
 		static RTTITypeBase* getRTTIStatic();
@@ -476,10 +469,9 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 
-		/** Applies an operation over all the serializable fields of this object. */
-		template<class Processor>
-		void rttiProcess(Processor p);
-
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P processor);
 	public:
 		friend class BloomSettingsRTTI;
 		static RTTITypeBase* getRTTIStatic();
@@ -529,10 +521,9 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 
-		/** Applies an operation over all the serializable fields of this object. */
-		template<class Processor>
-		void rttiProcess(Processor p);
-
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P processor);
 	public:
 		friend class ShadowSettingsRTTI;
 		static RTTITypeBase* getRTTIStatic();
@@ -704,9 +695,9 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 
-		/** Applies an operation over all the serializable fields of this object. */
-		template<class Processor>
-		void rttiProcess(Processor p);
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P processor);
 
 	public:
 		friend class RenderSettingsRTTI;

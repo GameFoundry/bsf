@@ -7,16 +7,16 @@
 namespace bs
 {
 	template <class Processor>
-	void AutoExposureSettings::rttiProcess(Processor p)
+	void AutoExposureSettings::rttiEnumFields(Processor p)
 	{
-		p << histogramLog2Min;
-		p << histogramLog2Max;
-		p << histogramPctLow;
-		p << histogramPctHigh;
-		p << minEyeAdaptation;
-		p << maxEyeAdaptation;
-		p << eyeAdaptationSpeedUp;
-		p << eyeAdaptationSpeedDown;
+		p(histogramLog2Min);
+		p(histogramLog2Max);
+		p(histogramPctLow);
+		p(histogramPctHigh);
+		p(minEyeAdaptation);
+		p(maxEyeAdaptation);
+		p(eyeAdaptationSpeedUp);
+		p(eyeAdaptationSpeedDown);
 	}
 
 	RTTITypeBase* AutoExposureSettings::getRTTIStatic()
@@ -30,15 +30,15 @@ namespace bs
 	}
 
 	template <class Processor>
-	void TonemappingSettings::rttiProcess(Processor p)
+	void TonemappingSettings::rttiEnumFields(Processor p)
 	{
-		p << filmicCurveShoulderStrength;
-		p << filmicCurveLinearStrength;
-		p << filmicCurveLinearAngle;
-		p << filmicCurveToeStrength;
-		p << filmicCurveToeNumerator;
-		p << filmicCurveToeDenominator;
-		p << filmicCurveLinearWhitePoint;
+		p(filmicCurveShoulderStrength);
+		p(filmicCurveLinearStrength);
+		p(filmicCurveLinearAngle);
+		p(filmicCurveToeStrength);
+		p(filmicCurveToeNumerator);
+		p(filmicCurveToeDenominator);
+		p(filmicCurveLinearWhitePoint);
 	}
 
 	RTTITypeBase* TonemappingSettings::getRTTIStatic()
@@ -52,10 +52,10 @@ namespace bs
 	}
 
 	template <class Processor>
-	void WhiteBalanceSettings::rttiProcess(Processor p)
+	void WhiteBalanceSettings::rttiEnumFields(Processor p)
 	{
-		p << temperature;
-		p << tint;
+		p(temperature);
+		p(tint);
 	}
 
 	RTTITypeBase* WhiteBalanceSettings::getRTTIStatic()
@@ -69,12 +69,12 @@ namespace bs
 	}
 
 	template <class Processor>
-	void ColorGradingSettings::rttiProcess(Processor p)
+	void ColorGradingSettings::rttiEnumFields(Processor p)
 	{
-		p << saturation;
-		p << gain;
-		p << contrast;
-		p << offset;
+		p(saturation);
+		p(gain);
+		p(contrast);
+		p(offset);
 	}
 
 	RTTITypeBase* ColorGradingSettings::getRTTIStatic()
@@ -88,16 +88,16 @@ namespace bs
 	}
 
 	template <class Processor>
-	void AmbientOcclusionSettings::rttiProcess(Processor p)
+	void AmbientOcclusionSettings::rttiEnumFields(Processor p)
 	{
-		p << enabled;
-		p << radius;
-		p << bias;
-		p << fadeDistance;
-		p << fadeRange;
-		p << intensity;
-		p << power;
-		p << quality;
+		p(enabled);
+		p(radius);
+		p(bias);
+		p(fadeDistance);
+		p(fadeRange);
+		p(intensity);
+		p(power);
+		p(quality);
 	}
 
 	RTTITypeBase* AmbientOcclusionSettings::getRTTIStatic()
@@ -111,15 +111,15 @@ namespace bs
 	}
 
 	template <class Processor>
-	void DepthOfFieldSettings::rttiProcess(Processor p)
+	void DepthOfFieldSettings::rttiEnumFields(Processor p)
 	{
-		p << enabled;
-		p << focalDistance;
-		p << focalRange;
-		p << nearTransitionRange;
-		p << farTransitionRange;
-		p << nearBlurAmount;
-		p << farBlurAmount;
+		p(enabled);
+		p(focalDistance);
+		p(focalRange);
+		p(nearTransitionRange);
+		p(farTransitionRange);
+		p(nearBlurAmount);
+		p(farBlurAmount);
 	}
 
 	RTTITypeBase* DepthOfFieldSettings::getRTTIStatic()
@@ -133,12 +133,12 @@ namespace bs
 	}
 
 	template <class Processor>
-	void ScreenSpaceReflectionsSettings::rttiProcess(Processor p)
+	void ScreenSpaceReflectionsSettings::rttiEnumFields(Processor p)
 	{
-		p << enabled;
-		p << quality;
-		p << intensity;
-		p << maxRoughness;
+		p(enabled);
+		p(quality);
+		p(intensity);
+		p(maxRoughness);
 	}
 
 	RTTITypeBase* ScreenSpaceReflectionsSettings::getRTTIStatic()
@@ -152,13 +152,13 @@ namespace bs
 	}
 
 	template <class Processor>
-	void BloomSettings::rttiProcess(Processor p)
+	void BloomSettings::rttiEnumFields(Processor p)
 	{
-		p << enabled;
-		p << quality;
-		p << threshold;
-		p << intensity;
-		p << tint;
+		p(enabled);
+		p(quality);
+		p(threshold);
+		p(intensity);
+		p(tint);
 	}
 
 	RTTITypeBase* BloomSettings::getRTTIStatic()
@@ -172,12 +172,12 @@ namespace bs
 	}
 
 	template <class Processor>
-	void ShadowSettings::rttiProcess(Processor p)
+	void ShadowSettings::rttiEnumFields(Processor p)
 	{
-		p << directionalShadowDistance;
-		p << numCascades;
-		p << cascadeDistributionExponent;
-		p << shadowFilteringQuality;
+		p(directionalShadowDistance);
+		p(numCascades);
+		p(cascadeDistributionExponent);
+		p(shadowFilteringQuality);
 	}
 
 	RTTITypeBase* ShadowSettings::getRTTIStatic()
@@ -191,19 +191,27 @@ namespace bs
 	}
 
 	template <class Processor>
-	void RenderSettings::rttiProcess(Processor p)
+	void RenderSettings::rttiEnumFields(Processor p)
 	{
-		p << enableAutoExposure;
-		p << enableTonemapping;
-		p << exposureScale;
-		p << gamma;
-		p << enableFXAA;
-		p << enableHDR;
-		p << enableLighting;
-		p << enableShadows;
-		p << enableIndirectLighting;
-		p << overlayOnly;
-		p << enableSkybox;
+		p(enableAutoExposure);
+		p(autoExposure);
+		p(enableTonemapping);
+		p(tonemapping);
+		p(whiteBalance);
+		p(colorGrading);
+		p(depthOfField);
+		p(ambientOcclusion);
+		p(screenSpaceReflections);
+		p(bloom);
+		p(exposureScale);
+		p(gamma);
+		p(enableFXAA);
+		p(enableHDR);
+		p(enableLighting);
+		p(enableShadows);
+		p(enableIndirectLighting);
+		p(overlayOnly);
+		p(enableSkybox);
 	}
 
 	RTTITypeBase* RenderSettings::getRTTIStatic()
@@ -219,19 +227,8 @@ namespace bs
 	void RenderSettings::_getSyncData(UINT8* buffer, UINT32& size)
 	{
 		UINT32 bufferSize = 0;
-		const RttiCoreSyncSize sizer(bufferSize);
+		rttiEnumFields(RttiCoreSyncSize(bufferSize));
 
-		rttiProcess(sizer);
-		autoExposure.rttiProcess(sizer);
-		tonemapping.rttiProcess(sizer);
-		whiteBalance.rttiProcess(sizer);
-		colorGrading.rttiProcess(sizer);
-		depthOfField.rttiProcess(sizer);
-		ambientOcclusion.rttiProcess(sizer);
-		screenSpaceReflections.rttiProcess(sizer);
-		bloom.rttiProcess(sizer);
-		shadowSettings.rttiProcess(sizer);
-		
 		if (buffer == nullptr)
 		{
 			size = bufferSize;
@@ -244,33 +241,11 @@ namespace bs
 			return;
 		}
 
-		const RttiCoreSyncWriter writer((char**)&buffer);
-
-		rttiProcess(writer);
-		autoExposure.rttiProcess(writer);
-		tonemapping.rttiProcess(writer);
-		whiteBalance.rttiProcess(writer);
-		colorGrading.rttiProcess(writer);
-		depthOfField.rttiProcess(writer);
-		ambientOcclusion.rttiProcess(writer);
-		screenSpaceReflections.rttiProcess(writer);
-		bloom.rttiProcess(writer);
-		shadowSettings.rttiProcess(writer);
+		rttiEnumFields(RttiCoreSyncWriter((char**)&buffer));
 	}
 
 	void RenderSettings::_setSyncData(UINT8* buffer, UINT32 size)
 	{
-		const RttiCoreSyncReader reader((char**)&buffer);
-
-		rttiProcess(reader);
-		autoExposure.rttiProcess(reader);
-		tonemapping.rttiProcess(reader);
-		whiteBalance.rttiProcess(reader);
-		colorGrading.rttiProcess(reader);
-		depthOfField.rttiProcess(reader);
-		ambientOcclusion.rttiProcess(reader);
-		screenSpaceReflections.rttiProcess(reader);
-		bloom.rttiProcess(reader);
-		shadowSettings.rttiProcess(reader);
+		rttiEnumFields(RttiCoreSyncReader((char**)&buffer));
 	}
 }

@@ -61,39 +61,39 @@ namespace bs
 		return getRTTIStatic();
 	}
 
-	template<bool Core>
-	template<class Processor>
-	void TParticleSystemSettings<Core>::rttiProcess(Processor p)
+	template <bool Core>
+	template <class P>
+	void TParticleSystemSettings<Core>::rttiEnumFields(P p)
 	{
-		p << gpuSimulation;
-		p << simulationSpace;
-		p << orientation;
-		p << orientationPlane;
-		p << orientationLockY;
-		p << duration;
-		p << isLooping;
-		p << sortMode;
-		p << material;
-		p << useAutomaticBounds;
-		p << customBounds;
-		p << renderMode;
-		p << mesh;
+		p(gpuSimulation);
+		p(simulationSpace);
+		p(orientation);
+		p(orientationPlane);
+		p(orientationLockY);
+		p(duration);
+		p(isLooping);
+		p(sortMode);
+		p(material);
+		p(useAutomaticBounds);
+		p(customBounds);
+		p(renderMode);
+		p(mesh);
 	}
 
 	template<bool Core>
-	template<class Processor>
-	void TParticleVectorFieldSettings<Core>::rttiProcess(Processor p)
+	template<class P>
+	void TParticleVectorFieldSettings<Core>::rttiEnumFields(P p)
 	{
-		p << intensity;
-		p << tightness;
-		p << scale;
-		p << offset;
-		p << rotation;
-		p << rotationRate;
-		p << tilingX;
-		p << tilingY;
-		p << tilingZ;
-		p << vectorField;
+		p(intensity);
+		p(tightness);
+		p(scale);
+		p(offset);
+		p(rotation);
+		p(rotationRate);
+		p(tilingX);
+		p(tilingY);
+		p(tilingZ);
+		p(vectorField);
 	}
 
 	RTTITypeBase* ParticleVectorFieldSettings::getRTTIStatic()
@@ -106,13 +106,13 @@ namespace bs
 		return getRTTIStatic();
 	}
 
-	template<class Processor>
-	void ParticleDepthCollisionSettings::rttiProcess(Processor p)
+	template<class P>
+	void ParticleDepthCollisionSettings::rttiEnumFields(P p)
 	{
-		p << enabled;
-		p << restitution;
-		p << dampening;
-		p << radiusScale;
+		p(enabled);
+		p(restitution);
+		p(dampening);
+		p(radiusScale);
 	}
 
 	RTTITypeBase* ParticleDepthCollisionSettings::getRTTIStatic()
@@ -124,6 +124,18 @@ namespace bs
 	{
 		return getRTTIStatic();
 	}
+
+	template<bool Core>
+	template<class P>
+	void TParticleGpuSimulationSettings<Core>::rttiEnumFields(P p)
+	{
+		p(colorOverLifetime);
+		p(sizeScaleOverLifetime);
+		p(acceleration);
+		p(drag);
+		p(depthCollision);
+		p(vectorField);
+	};
 
 	RTTITypeBase* ParticleGpuSimulationSettings::getRTTIStatic()
 	{
@@ -363,27 +375,16 @@ namespace bs
 	{
 		UINT32 size = getActorSyncDataSize() + rttiGetElemSize(getCoreDirtyFlags());
 
-		mSettings.rttiProcess(RttiCoreSyncSize(size));
-		mGpuSimulationSettings.vectorField.rttiProcess(RttiCoreSyncSize(size));
-		size += rttiGetElemSize(mGpuSimulationSettings.colorOverLifetime);
-		size += rttiGetElemSize(mGpuSimulationSettings.sizeScaleOverLifetime);
-		size += rttiGetElemSize(mGpuSimulationSettings.acceleration);
-		size += rttiGetElemSize(mGpuSimulationSettings.drag);
-		mGpuSimulationSettings.depthCollision.rttiProcess(RttiCoreSyncSize(size));
+		mSettings.rttiEnumFields(RttiCoreSyncSize(size));
+		mGpuSimulationSettings.rttiEnumFields(RttiCoreSyncSize(size));
 
 		UINT8* data = allocator->alloc(size);
 		char* dataPtr = (char*)data;
 		dataPtr = syncActorTo(dataPtr);
 		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
 
-		mSettings.rttiProcess(RttiCoreSyncWriter(&dataPtr));
-		mGpuSimulationSettings.vectorField.rttiProcess(RttiCoreSyncWriter(&dataPtr));
-
-		dataPtr = rttiWriteElem(mGpuSimulationSettings.colorOverLifetime, dataPtr);
-		dataPtr = rttiWriteElem(mGpuSimulationSettings.sizeScaleOverLifetime, dataPtr);
-		dataPtr = rttiWriteElem(mGpuSimulationSettings.acceleration, dataPtr);
-		dataPtr = rttiWriteElem(mGpuSimulationSettings.drag, dataPtr);
-		mGpuSimulationSettings.depthCollision.rttiProcess(RttiCoreSyncWriter(&dataPtr));
+		mSettings.rttiEnumFields(RttiCoreSyncWriter(&dataPtr));
+		mGpuSimulationSettings.rttiEnumFields(RttiCoreSyncWriter(&dataPtr));
 
 		return CoreSyncData(data, size);
 	}
@@ -438,14 +439,8 @@ namespace bs
 			dataPtr = syncActorFrom(dataPtr);
 			dataPtr = rttiReadElem(dirtyFlags, dataPtr);
 
-			mSettings.rttiProcess(RttiCoreSyncReader(&dataPtr));
-			mGpuSimulationSettings.vectorField.rttiProcess(RttiCoreSyncReader(&dataPtr));
-
-			dataPtr = rttiReadElem(mGpuSimulationSettings.colorOverLifetime, dataPtr);
-			dataPtr = rttiReadElem(mGpuSimulationSettings.sizeScaleOverLifetime, dataPtr);
-			dataPtr = rttiReadElem(mGpuSimulationSettings.acceleration, dataPtr);
-			dataPtr = rttiReadElem(mGpuSimulationSettings.drag, dataPtr);
-			mGpuSimulationSettings.depthCollision.rttiProcess(RttiCoreSyncReader(&dataPtr));
+			mSettings.rttiEnumFields(RttiCoreSyncReader(&dataPtr));
+			mGpuSimulationSettings.rttiEnumFields(RttiCoreSyncReader(&dataPtr));
 
 			constexpr UINT32 updateEverythingFlag = (UINT32)ActorDirtyFlag::Everything
 				| (UINT32)ActorDirtyFlag::Active

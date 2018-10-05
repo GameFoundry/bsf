@@ -155,80 +155,21 @@ namespace bs
 		return memory + elemSize;
 	}
 
-	/** 
-	 * Overloads operator << and writes the provided values into the underlying buffer using rttiWriteElem(). Each write
-	 * advances the buffer to the next write location. Caller is responsible for not writing out of range.
-	 */
-	class RttiWriter
+	/** Helper for checking for existance of rttiEnumFields method on a class. */
+	template <class T>  
+	struct has_rttiEnumFields
 	{
-	public:
-		RttiWriter(char** writeDst)
-			:mWritePtr(writeDst)
-		{ }
+		struct dummy {};
 
-	private:
-		template<class T>
-		friend RttiWriter& operator << (RttiWriter&, const T&);
+		template <typename C, typename P>
+		static auto test(P* p) -> decltype(std::declval<C>().rttiEnumFields(*p), std::true_type());  
 
-		char** mWritePtr;
+		template <typename, typename>
+		static std::false_type test(...);
+
+		typedef decltype(test<T, dummy>(nullptr)) type;
+		static const bool value = std::is_same<std::true_type, decltype(test<T, dummy>(nullptr))>::value;
 	};
-
-	template<class T>
-	RttiWriter& operator << (RttiWriter& writer, const T& value)
-	{
-		(*writer.mWritePtr) = rttiWriteElem(value, (*writer.mWritePtr));
-		return writer;
-	}
-
-	/** 
-	 * Overloads operator << and reads values from the underlying buffer using rttiReadElem(). Each read advances the buffer
-	 * to the next value. Caller is responsible for not reading out of range.
-	 */
-	class RttiReader
-	{
-	public:
-		RttiReader(char** readDst)
-			:mReadPtr(readDst)
-		{ }
-
-	private:
-		template<class T>
-		friend RttiReader& operator << (RttiReader&, T&);
-
-		char** mReadPtr;
-	};
-
-	template<class T>
-	RttiReader& operator << (RttiReader& reader, T& value)
-	{
-		(*reader.mReadPtr) = rttiReadElem(value, (*reader.mReadPtr));
-		return reader;
-	}
-
-	/** 
-	 * Overloads operator << and calculates size of provided values using rttiGetElemSize(). All sizes are accumulated in
-	 * the location provided upon construction.
-	 */
-	class RttiSize
-	{
-	public:
-		RttiSize(UINT32& size)
-			:mSize(size)
-		{ }
-
-	private:
-		template<class T>
-		friend RttiSize& operator << (RttiSize&, const T&);
-
-		UINT32& mSize;
-	};
-
-	template<class T>
-	RttiSize& operator << (RttiSize& sizer, const T& value)
-	{
-		sizer.mSize += rttiGetElemSize(value);
-		return sizer;
-	}
 
 	/**
 	 * Notify the RTTI system that the specified type may be serialized just by using a memcpy.
