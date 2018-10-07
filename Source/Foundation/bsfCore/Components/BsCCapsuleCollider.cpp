@@ -7,17 +7,11 @@
 
 namespace bs
 {
-	Quaternion _calculateRotationFromNormal(Vector3 normal)
-	{
-		normal.normalize();
-		return Quaternion::getRotationFromTo(Vector3::UNIT_X, normal);
-	}
-
 	CCapsuleCollider::CCapsuleCollider()
 	{
 		setName("CapsuleCollider");
 
-		mLocalRotation = _calculateRotationFromNormal(mNormal);
+		mLocalRotation = Quaternion::getRotationFromTo(Vector3::UNIT_X, mNormal);
 	}
 
 	CCapsuleCollider::CCapsuleCollider(const HSceneObject& parent, float radius, float halfHeight)
@@ -25,7 +19,7 @@ namespace bs
 	{
 		setName("CapsuleCollider");
 
-		mLocalRotation = _calculateRotationFromNormal(mNormal);
+		mLocalRotation = Quaternion::getRotationFromTo(Vector3::UNIT_X, mNormal);
 	}
 
 	void CCapsuleCollider::setNormal(const Vector3& normal)
@@ -33,8 +27,8 @@ namespace bs
 		if (mNormal == normal)
 			return;
 
-		mNormal = normal;
-		mLocalRotation = _calculateRotationFromNormal(mNormal);
+		mNormal = bs::Vector3::normalize(normal);
+		mLocalRotation = Quaternion::getRotationFromTo(Vector3::UNIT_X, mNormal);
 
 		if (mInternal != nullptr)
 			updateTransform();
