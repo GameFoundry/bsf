@@ -261,6 +261,68 @@ namespace bs
 		}
 	};
 
+	template<> struct RTTIPlainType<ParticleBurst>
+	{
+		enum { id = TID_ParticleBurst }; enum { hasDynamicSize = 1 };
+
+		/** @copydoc RTTIPlainType::toMemory */
+		static void toMemory(const ParticleBurst& data, char* memory)
+		{
+			UINT32 size = sizeof(UINT32);
+			char* memoryStart = memory;
+			memory += sizeof(UINT32);
+
+			UINT32 version = 0; // In case the data structure changes
+			memory = rttiWriteElem(version, memory, size);
+			memory = rttiWriteElem(data.time, memory, size);
+			memory = rttiWriteElem(data.cycles, memory, size);
+			memory = rttiWriteElem(data.count, memory, size);
+			memory = rttiWriteElem(data.interval, memory, size);
+
+			memcpy(memoryStart, &size, sizeof(UINT32));
+		}
+
+		/** @copydoc RTTIPlainType::fromMemory */
+		static UINT32 fromMemory(ParticleBurst& data, char* memory)
+		{
+			UINT32 size = 0;
+			memory = rttiReadElem(size, memory);
+
+			UINT32 version;
+			memory = rttiReadElem(version, memory);
+
+			switch(version)
+			{
+			case 0:
+				memory = rttiReadElem(data.time, memory);
+				memory = rttiReadElem(data.cycles, memory);
+				memory = rttiReadElem(data.count, memory);
+				memory = rttiReadElem(data.interval, memory);
+				break;
+			default:
+				LOGERR("Unknown version of TDistribution<T> data. Unable to deserialize.");
+				break;
+			}
+
+			return size;
+		}
+
+		/** @copydoc RTTIPlainType::getDynamicSize */
+		static UINT32 getDynamicSize(const ParticleBurst& data)
+		{
+			UINT64 dataSize = sizeof(UINT32) + sizeof(UINT32);
+			dataSize += rttiGetElemSize(data.time);
+			dataSize += rttiGetElemSize(data.cycles);
+			dataSize += rttiGetElemSize(data.count);
+			dataSize += rttiGetElemSize(data.interval);
+
+			assert(dataSize <= std::numeric_limits<UINT32>::max());
+
+			return (UINT32)dataSize;
+		}
+	};
+
+
 	class BS_CORE_EXPORT ParticleEmitterRTTI : public RTTIType<ParticleEmitter, IReflectable, ParticleEmitterRTTI>
 	{
 	private:
@@ -279,6 +341,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mFlipV, 11)
 			BS_RTTI_MEMBER_REFLPTR(mShape, 12)
 			BS_RTTI_MEMBER_PLAIN(mRandomOffset, 13)
+			BS_RTTI_MEMBER_PLAIN_ARRAY(mBursts, 14)
 		BS_END_RTTI_MEMBERS
 
 	public:

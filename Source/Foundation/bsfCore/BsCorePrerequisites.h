@@ -613,6 +613,7 @@ namespace bs
 		TID_ParticleGpuSimulationSettings = 1182,
 		TID_ParticleDepthCollisionSettings = 1183,
 		TID_BloomSettings = 1184,
+		TID_ParticleBurst = 1185,
 
 		// Moved from Engine layer
 		TID_CCamera = 30000,

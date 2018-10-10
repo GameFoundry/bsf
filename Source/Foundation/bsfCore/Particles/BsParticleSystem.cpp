@@ -238,8 +238,10 @@ namespace bs
 
 		// Generate per-frame state
 		ParticleSystemState state;
-		state.time = newTime;
-		state.nrmTime = newTime / mSettings.duration;
+		state.timeStart = mTime;
+		state.timeEnd = newTime;
+		state.nrmTimeStart = state.timeStart / mSettings.duration;
+		state.nrmTimeEnd = state.timeEnd / mSettings.duration;
 		state.length = mSettings.duration;
 		state.timeStep = timeStep;
 		state.maxParticles = mSettings.maxParticles;

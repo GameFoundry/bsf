@@ -618,6 +618,30 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 	};
 
+	/** Specifies a burst of particles that occurs at a certain time point. */
+	struct ParticleBurst
+	{
+		ParticleBurst() = default;
+		ParticleBurst(float time, FloatDistribution count, UINT32 cycles = 1, float interval = 1.0f)
+			:time(time), count(std::move(count)), cycles(cycles), interval(interval)
+		{ }
+
+		/** Time at which to trigger the burst, in seconds. */
+		float time = 0.0f;
+
+		/** Number of particles to emit when the burst triggers. */
+		FloatDistribution count = 0;
+
+		/** 
+		 * Determines how many times to trigger the burst. If 0 the burst will trigger infinitely. Use @p interval to
+		 * to control the time between each cycle.
+		 */
+		UINT32 cycles = 1;
+
+		/** Controls how much time needs to pass before triggering another burst cycle, in seconds. */
+		float interval = 1.0f;
+	};
+
 	/** Handles spawning of new particles using the specified parameters and shape. */
 	class BS_CORE_EXPORT ParticleEmitter : public ParticleModule
 	{
@@ -633,6 +657,12 @@ namespace bs
 
 		/** @copydoc setEmissionRate */
 		const FloatDistribution& getEmissionRate() const { return mEmissionRate; }
+
+		/** Determines discrete intervals to emit particles. */
+		void setEmissionBursts(Vector<ParticleBurst> bursts) { mBursts = std::move(bursts); }
+
+		/** @copydoc setEmissionBursts */
+		const Vector<ParticleBurst>& getEmissionBursts() const { return mBursts; }
 
 		/** Determines the lifetime of particles when they are initially spawned, in seconds. */
 		void setInitialLifetime(FloatDistribution value) { mInitialLifetime = std::move(value); }
@@ -750,6 +780,8 @@ namespace bs
 		SPtr<ParticleEmitterShape> mShape;
 
 		FloatDistribution mEmissionRate = 50.0f;
+		Vector<ParticleBurst> mBursts;
+
 		FloatDistribution mInitialLifetime = 10.0f;
 		FloatDistribution mInitialSpeed = 1.0f;
 

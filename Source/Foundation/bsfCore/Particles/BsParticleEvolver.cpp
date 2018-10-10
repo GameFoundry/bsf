@@ -135,7 +135,7 @@ namespace bs
 		const UINT32 count = set.getParticleCount();
 		ParticleSetData& particles = set.getParticles();
 
-		const Vector3 center = evaluateTransformed(mDesc.center, state, state.nrmTime, random, mDesc.worldSpace);
+		const Vector3 center = evaluateTransformed(mDesc.center, state, state.nrmTimeEnd, random, mDesc.worldSpace);
 		for (UINT32 i = 0; i < count; i++)
 		{
 			const float particleT = (particles.initialLifetime[i] - particles.lifetime[i]) / particles.initialLifetime[i];

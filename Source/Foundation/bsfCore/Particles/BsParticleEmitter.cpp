@@ -1038,15 +1038,42 @@ namespace bs
 
 	void ParticleEmitter::spawn(Random& random, const ParticleSystemState& state, ParticleSet& set) const
 	{
+		constexpr float EPSILON = 0.00001f;
+
 		if(!mShape || !mShape->isValid())
 			return;
 
-		const float t = state.nrmTime;
+		const float t = state.nrmTimeEnd;
+
+		// Continous emission rate
 		const float rate = mEmissionRate.evaluate(t, random);
 
 		mEmitAccumulator += rate * state.timeStep;
 		auto numToSpawn = (UINT32)mEmitAccumulator;
 		mEmitAccumulator -= (float)numToSpawn;
+
+		// Bursts
+		for(auto& entry : mBursts)
+		{
+			const float relTime = state.timeStart - entry.time;
+			if(relTime < 0.0f)
+				continue;
+
+			const float interval = std::max(entry.interval, EPSILON);
+			const float cycTime = fmodf(relTime, interval);
+
+			if (cycTime < state.timeStep)
+			{
+				if (entry.cycles > 0)
+				{
+					const auto cycle = (UINT32)(relTime / interval);
+					if (cycle >= entry.cycles)
+						continue;
+				}
+
+				numToSpawn += (UINT32)entry.count.evaluate(t, random);
+			}
+		}
 
 		const UINT32 numPartices = set.getParticleCount() + numToSpawn;
 		if(!state.gpuSimulated)
