@@ -659,7 +659,7 @@ namespace bs
 		const FloatDistribution& getEmissionRate() const { return mEmissionRate; }
 
 		/** Determines discrete intervals to emit particles. */
-		void setEmissionBursts(Vector<ParticleBurst> bursts) { mBursts = std::move(bursts); }
+		void setEmissionBursts(Vector<ParticleBurst> bursts);
 
 		/** @copydoc setEmissionBursts */
 		const Vector<ParticleBurst>& getEmissionBursts() const { return mBursts; }
@@ -802,6 +802,7 @@ namespace bs
 
 		// Internal state
 		mutable float mEmitAccumulator = 0.0f;
+		mutable Vector<float> mBurstAccumulator;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

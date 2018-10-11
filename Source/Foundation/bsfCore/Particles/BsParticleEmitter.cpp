@@ -1034,46 +1034,83 @@ namespace bs
 	RTTITypeBase* ParticleEmitterSkinnedMeshShape::getRTTI() const
 	{
 		return getRTTIStatic();
+	} 
+
+	void ParticleEmitter::setEmissionBursts(Vector<ParticleBurst> bursts)
+	{
+		mBursts = std::move(bursts);
+		mBurstAccumulator.resize(mBursts.size());
+
+		for(auto& entry : mBurstAccumulator)
+			entry = 0.0f;
 	}
 
 	void ParticleEmitter::spawn(Random& random, const ParticleSystemState& state, ParticleSet& set) const
 	{
-		constexpr float EPSILON = 0.00001f;
+		constexpr float MIN_BURST_INTERVAL = 0.01f;
 
 		if(!mShape || !mShape->isValid())
 			return;
 
-		const float t = state.nrmTimeEnd;
+		const float emitterT = state.nrmTimeEnd;
 
 		// Continous emission rate
-		const float rate = mEmissionRate.evaluate(t, random);
+		const float rate = mEmissionRate.evaluate(emitterT, random);
 
 		mEmitAccumulator += rate * state.timeStep;
-		auto numToSpawn = (UINT32)mEmitAccumulator;
-		mEmitAccumulator -= (float)numToSpawn;
+		const auto numContinous = (UINT32)mEmitAccumulator;
+		mEmitAccumulator -= (float)numContinous;
+
+		const float spacing = numContinous > 0 ? 1.0f / (float)numContinous : 1.0f;
 
 		// Bursts
-		for(auto& entry : mBursts)
+		UINT32 numBurst = 0;
+		const auto emitBursts = [this, &emitterT, &random](float start, float end)
 		{
-			const float relTime = state.timeStart - entry.time;
-			if(relTime < 0.0f)
-				continue;
-
-			const float interval = std::max(entry.interval, EPSILON);
-			const float cycTime = fmodf(relTime, interval);
-
-			if (cycTime < state.timeStep)
+			UINT32 numBurst = 0;
+			for (UINT32 i = 0; i < (UINT32)mBursts.size(); i++)
 			{
-				if (entry.cycles > 0)
-				{
-					const auto cycle = (UINT32)(relTime / interval);
-					if (cycle >= entry.cycles)
-						continue;
-				}
+				const ParticleBurst& burst = mBursts[i];
 
-				numToSpawn += (UINT32)entry.count.evaluate(t, random);
+				const float relT0 = std::max(0.0f, start - burst.time);
+				const float relT1 = end - burst.time;
+				if (relT1 <= 0.0f)
+					continue;
+
+				// Handle initial burst cycle
+				if (relT0 == 0.0f)
+					numBurst += (UINT32)burst.count.evaluate(emitterT, random);
+
+				// Handle remaining cycles
+				const float dt = relT1 - relT0;
+				const float interval = std::max(burst.interval, MIN_BURST_INTERVAL);
+
+				const float emitDuration = dt + mBurstAccumulator[i];
+				const UINT32 emitCycles = Math::floorToPosInt(emitDuration / interval);
+				mBurstAccumulator[i] = emitDuration - emitCycles * interval;
+
+				for (UINT32 j = 0; j < emitCycles; j++)
+					numBurst += (UINT32)burst.count.evaluate(emitterT, random);
 			}
+
+			return numBurst;
+		};
+
+		// Handle loop
+		if(state.timeEnd < state.timeStart)
+		{
+			numBurst += emitBursts(state.timeStart, state.length);
+
+			// Reset accumulator
+			for(auto& entry : mBurstAccumulator)
+				entry = 0.0f;
+
+			numBurst += emitBursts(0.0f, state.timeEnd);
 		}
+		else
+			numBurst += emitBursts(state.timeStart, state.timeEnd);
+
+		UINT32 numToSpawn = numContinous + numBurst;
 
 		const UINT32 numPartices = set.getParticleCount() + numToSpawn;
 		if(!state.gpuSimulated)
@@ -1089,20 +1126,20 @@ namespace bs
 
 		for(UINT32 i = firstIdx; i < endIdx; i++)
 		{
-			const float lifetime = mInitialLifetime.evaluate(t, random);
+			const float lifetime = mInitialLifetime.evaluate(emitterT, random);
 
 			particles.initialLifetime[i] = lifetime;
 			particles.lifetime[i] = lifetime;
 		}
 
 		for(UINT32 i = firstIdx; i < endIdx; i++)
-			particles.velocity[i] *= mInitialSpeed.evaluate(t, random);
+			particles.velocity[i] *= mInitialSpeed.evaluate(emitterT, random);
 
 		if(!mUse3DSize)
 		{
 			for (UINT32 i = firstIdx; i < endIdx; i++)
 			{
-				const float size = mInitialSize.evaluate(t, random);
+				const float size = mInitialSize.evaluate(emitterT, random);
 
 				// Encode UV flip in size XY as sign
 				const float flipU = random.getUNorm() < mFlipU ? -1.0f : 1.0f;
@@ -1115,7 +1152,7 @@ namespace bs
 		{
 			for (UINT32 i = firstIdx; i < endIdx; i++)
 			{
-				Vector3 size = mInitialSize3D.evaluate(t, random);
+				Vector3 size = mInitialSize3D.evaluate(emitterT, random);
 
 				// Encode UV flip in size XY as sign
 				size.x *= random.getUNorm() < mFlipU ? -1.0f : 1.0f;
@@ -1135,7 +1172,7 @@ namespace bs
 		{
 			for (UINT32 i = firstIdx; i < endIdx; i++)
 			{
-				const float rotation = mInitialRotation.evaluate(t, random);
+				const float rotation = mInitialRotation.evaluate(emitterT, random);
 				particles.rotation[i] = Vector3(rotation, 0.0f, 0.0f);
 			}
 		}
@@ -1143,13 +1180,13 @@ namespace bs
 		{
 			for (UINT32 i = firstIdx; i < endIdx; i++)
 			{
-				const Vector3 rotation = mInitialRotation3D.evaluate(t, random);
+				const Vector3 rotation = mInitialRotation3D.evaluate(emitterT, random);
 				particles.rotation[i] = rotation;
 			}
 		}
 
 		for(UINT32 i = firstIdx; i < endIdx; i++)
-			particles.color[i] = mInitialColor.evaluate(t, random);
+			particles.color[i] = mInitialColor.evaluate(emitterT, random);
 
 		for(UINT32 i = firstIdx; i < endIdx; i++)
 			particles.seed[i] = random.get();
