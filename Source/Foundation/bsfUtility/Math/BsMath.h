@@ -169,6 +169,12 @@ namespace bs
 
 			return (uint32_t)val;
 		}
+		
+		/** Rounds @p x to the nearest multiple of @p multiple. */
+		static float roundToMultiple(float x, float multiple)
+		{
+			return floor((x + multiple * 0.5f) / multiple) * multiple;
+		}
 
 		/** Clamp a value within an inclusive range. */
 		template <typename T>

@@ -27,6 +27,9 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN_NAMED(length, mInfo.length, 3)
 			BS_RTTI_MEMBER_PLAIN_NAMED(thickness, mInfo.thickness, 4)
 			BS_RTTI_MEMBER_PLAIN_NAMED(arc, mInfo.arc, 5)
+			BS_RTTI_MEMBER_PLAIN_NAMED(modeType, mInfo.mode.type, 6)
+			BS_RTTI_MEMBER_PLAIN_NAMED(modeInterval, mInfo.mode.interval, 7)
+			BS_RTTI_MEMBER_PLAIN_NAMED(modeSpeed, mInfo.mode.speed, 8)
 		BS_END_RTTI_MEMBERS
 
 	public:
@@ -134,6 +137,9 @@ namespace bs
 	private:
 		BS_BEGIN_RTTI_MEMBERS
 			BS_RTTI_MEMBER_PLAIN_NAMED(length, mInfo.length, 0)
+			BS_RTTI_MEMBER_PLAIN_NAMED(modeType, mInfo.mode.type, 1)
+			BS_RTTI_MEMBER_PLAIN_NAMED(modeInterval, mInfo.mode.interval, 2)
+			BS_RTTI_MEMBER_PLAIN_NAMED(modeSpeed, mInfo.mode.speed, 3)
 		BS_END_RTTI_MEMBERS
 
 	public:
@@ -162,6 +168,9 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN_NAMED(radius, mInfo.radius, 0)
 			BS_RTTI_MEMBER_PLAIN_NAMED(thickness, mInfo.thickness, 1)
 			BS_RTTI_MEMBER_PLAIN_NAMED(arc, mInfo.arc, 2)
+			BS_RTTI_MEMBER_PLAIN_NAMED(modeType, mInfo.mode.type, 3)
+			BS_RTTI_MEMBER_PLAIN_NAMED(modeInterval, mInfo.mode.interval, 4)
+			BS_RTTI_MEMBER_PLAIN_NAMED(modeSpeed, mInfo.mode.speed, 5)
 		BS_END_RTTI_MEMBERS
 
 	public:
@@ -215,6 +224,7 @@ namespace bs
 		BS_BEGIN_RTTI_MEMBERS
 			BS_RTTI_MEMBER_PLAIN_NAMED(type, mInfo.type, 0)
 			BS_RTTI_MEMBER_REFL_NAMED(mesh, mInfo.mesh, 1)
+			BS_RTTI_MEMBER_PLAIN_NAMED(sequential, mInfo.sequential, 2)
 		BS_END_RTTI_MEMBERS
 
 	public:
@@ -241,6 +251,7 @@ namespace bs
 	private:
 		BS_BEGIN_RTTI_MEMBERS
 			BS_RTTI_MEMBER_PLAIN_NAMED(type, mInfo.type, 0)
+			BS_RTTI_MEMBER_PLAIN_NAMED(sequential, mInfo.sequential, 1)
 		BS_END_RTTI_MEMBERS
 
 	public:

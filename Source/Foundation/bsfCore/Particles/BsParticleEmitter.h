@@ -19,6 +19,44 @@ namespace bs
 	 *  @{
 	 */
 
+	/** Controls how are particle positions on a shape chosen. */
+	struct ParticleEmissionMode
+	{
+		/** Types of emission modes. */
+		enum class Type
+		{
+			/** Position will be picked randomly on a shape. */
+			Random,
+
+			/** Positions will loop around the shape in a predictable fashion. */
+			Loop,
+
+			/** Similar to Loop, except the order will be reversed when one loop iteration finishes. */
+			PingPong,
+
+			/** 
+			* All particles spawned on the shape at some instant (usually a frame) will be spread around the shape equally. 
+			*/
+			Spread
+		};
+
+
+		/** Type that determines general behaviour. */
+		Type type = Type::Random;
+
+		/** 
+		 * Speed along which particle generation should move around the shape, relevant for Loop and PingPing emission 
+		 * modes. 
+		 */
+		float speed = 1.0f;
+
+		/** 
+		 * Determines the minimum interval allowed between the generated particles. 0 specifies the particles can be 
+		 * generated anywhere on the shape.
+		 */
+		float interval = 0.0f; 
+	};
+
 	/** 
 	 * Base class from all emitter shapes. Emitter shapes determine the position and direction of newly created particles.
 	 */
@@ -61,7 +99,6 @@ namespace bs
 		bool mIsValid = true;
 	};
 
-
 	/** Determines the emission type for the cone particle emitter shape. */
 	enum class ParticleEmitterConeType
 	{
@@ -95,6 +132,9 @@ namespace bs
 
 		/** Angular portion of the cone from which to emit particles from, in degrees. */
 		Degree arc = Degree(360.0f);
+
+		/** Determines how will particle positions on the shape be generated. */
+		ParticleEmissionMode mode;
 	};
 
 	/**
@@ -112,8 +152,11 @@ namespace bs
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
 			const ParticleSystemState& state) const override;
 
-		/** Spawns a single particle, generating its position and normal. */
+		/** Spawns a single particle randomly, generating its position and normal. */
 		void spawn(const Random& random, Vector3& position, Vector3& normal) const;
+
+		/** Spawns a single particle on the specified point on the cone, generating its position and normal. */
+		void spawn(float t, Vector3& position, Vector3& normal) const;
 
 		/** @copydoc ParticleEmitterShape::calcBounds */
 		void calcBounds(AABox& shape, AABox& velocity) const override;
@@ -121,6 +164,9 @@ namespace bs
 		/** Creates a new particle emitter cone shape. */
 		static SPtr<ParticleEmitterConeShape> create(const PARTICLE_CONE_SHAPE_DESC& desc);
 	protected:
+		/** Generates a position and normal of a particle based on the input 2D position on the cone circle base. */
+		void getPointInCone(const Vector2& pos2D, float distance, Vector3& position, Vector3& normal) const;
+
 		PARTICLE_CONE_SHAPE_DESC mInfo;
 
 		/************************************************************************/
@@ -301,6 +347,9 @@ namespace bs
 	{
 		/** Length of the line. */
 		float length = 1.0f;
+
+		/** Determines how will particle positions on the shape be generated. */
+		ParticleEmissionMode mode;
 	};
 
 	/** Particle emitter shape that emits particles from a line segment. */
@@ -313,8 +362,11 @@ namespace bs
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
 			const ParticleSystemState& state) const override;
 
-		/** Spawns a single particle, generating its position and normal. */
+		/** Spawns a single particle randomly, generating its position and normal. */
 		void spawn(const Random& random, Vector3& position, Vector3& normal) const;
+
+		/** Spawns a single particle on the specified point on the line, generating its position and normal. */
+		void spawn(float t, Vector3& position, Vector3& normal) const;
 
 		/** @copydoc ParticleEmitterShape::calcBounds */
 		void calcBounds(AABox& shape, AABox& velocity) const override;
@@ -351,6 +403,9 @@ namespace bs
 
 		/** Angular portion of the cone from which to emit particles from, in degrees. */
 		Degree arc = Degree(360.0f);
+
+		/** Determines how will particle positions on the shape be generated. */
+		ParticleEmissionMode mode;
 	};
 
 	/** 
@@ -368,8 +423,11 @@ namespace bs
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
 			const ParticleSystemState& state) const override;
 
-		/** Spawns a single particle, generating its position and normal. */
+		/** Spawns a single particle randomly, generating its position and normal. */
 		void spawn(const Random& random, Vector3& position, Vector3& normal) const;
+
+		/** Spawns a single particle on the specified point on the circle, generating its position and normal. */
+		void spawn(float t, Vector3& position, Vector3& normal) const;
 
 		/** @copydoc ParticleEmitterShape::calcBounds */
 		void calcBounds(AABox& shape, AABox& velocity) const override;
@@ -449,6 +507,12 @@ namespace bs
 		ParticleEmitterMeshType type = ParticleEmitterMeshType::Triangle;
 
 		/** 
+		 * When enabled the particles will be emitted sequentially from mesh vertices in the order they are defined. 
+		 * Only relevant for the Vertex emit mode.
+		 */
+		bool sequential = false;
+
+		/** 
 		 * Mesh to spawn particles on. Must at least contain per-vertex position data encoded as 3D float vectors. Can
 		 * optionally contain per-vertex normals encoded as 3D float vectors or as 4-byte unsigned-normalized format.
 		 */
@@ -497,6 +561,12 @@ namespace bs
 		 */
 		bool initialize(const HMesh& mesh, bool perVertex, bool skinning);
 
+		/** 
+		 * Picks a vertex on the mesh sequentially using @p t, in range [0, 1] where 0 represents the first vertex and
+		 * 1 the last vertex. Returns vertex position, normal and index.
+		 */
+		void getSequentialVertex(float t, Vector3& position, Vector3& normal, UINT32& idx) const;
+
 		/** Randomly picks a vertex on the mesh and returns its position, normal and index. */
 		void getRandomVertex(const Random& random, Vector3& position, Vector3& normal, UINT32& idx) const;
 
@@ -541,9 +611,6 @@ namespace bs
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
 			const ParticleSystemState& state) const override;
 
-		/** Spawns a single particle, generating its position and normal. */
-		void spawn(const Random& random, Vector3& position, Vector3& normal) const;
-
 		/** @copydoc ParticleEmitterShape::calcBounds */
 		void calcBounds(AABox& shape, AABox& velocity) const override;
 
@@ -572,6 +639,12 @@ namespace bs
 		ParticleEmitterMeshType type = ParticleEmitterMeshType::Triangle;
 
 		/** 
+		 * When enabled the particles will be emitted sequentially from mesh vertices in the order they are defined. 
+		 * Only relevant for the Vertex emit mode.
+		 */
+		bool sequential = false;
+
+		/** 
 		 * Renderable object containing a mesh to spawn particles on, as well as the attached Animation object resposible
 		 * for performing skinned animation. Mesh must at least contain per-vertex position data encoded as 3D float
 		 * vectors, blend indices encoded in 4-byte format, and blend weights encoded a 4D float vectors. Can optionally 
@@ -594,9 +667,6 @@ namespace bs
 		/** @copydoc ParticleEmitterShape::spawn */
 		UINT32 spawn(const Random& random, ParticleSet& particles, UINT32 count, 
 			const ParticleSystemState& state) const override;
-
-		/** Spawns a single particle, generating its position and normal. */
-		void spawn(const Random& random, const Matrix4* bones, Vector3& position, Vector3& normal) const;
 
 		/** @copydoc ParticleEmitterShape::calcBounds */
 		void calcBounds(AABox& shape, AABox& velocity) const override;
