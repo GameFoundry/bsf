@@ -290,6 +290,8 @@ namespace bs
 	 *  @{
 	 */
 
+	struct SerializationContext;
+
 	/**
 	 * Provides an interface for accessing fields of a certain class.
 	 * Data can be easily accessed by getter and setter methods.
@@ -332,19 +334,19 @@ namespace bs
 		 * Called by the serializers when serialization for this object has started. Use this to do any preprocessing on 
 		 * data you might need during serialization itself.
 		 */
-		virtual void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) {}
+		virtual void onSerializationStarted(IReflectable* obj, SerializationContext* context) {}
 
 		/**
 		 * Called by the serializers when serialization for this object has ended. After serialization has ended you can 
 		 * be sure that the type has been fully serialized, and you may clean up any temporary data.
 		 */
-		virtual void onSerializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) {}
+		virtual void onSerializationEnded(IReflectable* obj, SerializationContext* context) {}
 
 		/**
 		 * Called by the serializers when deserialization for this object has started. Use this to do any preprocessing 
 		 * on data you might need during deserialization itself.
 		 */
-		virtual void onDeserializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) {}
+		virtual void onDeserializationStarted(IReflectable* obj, SerializationContext* context) {}
 
 		/**
 		 * Called by the serializers when deserialization for this object has ended. At this point you can be sure the 
@@ -353,7 +355,7 @@ namespace bs
 		 * One exception being are fields you marked with RTTI_Flag_WeakRef, as they might be resolved only after 
 		 * deserialization has fully completed for all objects.
 		 */
-		virtual void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) {}
+		virtual void onDeserializationEnded(IReflectable* obj, SerializationContext* context) {}
 
 		/**
 		 * Returns a handler that determines how are "diffs" generated and applied when it comes to objects of this RTTI 
@@ -662,6 +664,15 @@ namespace bs
 
 	template <typename Type, typename BaseType, typename MyRTTIType>
 	InitRTTIOnStart<Type, BaseType> RTTIType<Type, BaseType, MyRTTIType>::initOnStart;
+
+	/** Extendable class to be used by the user to provide extra information to RTTIType objects during serialization. */
+	struct BS_UTILITY_EXPORT SerializationContext : IReflectable
+	{
+		UINT32 flags = 0;
+
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
 
 	/** Returns true if the provided object can be safely cast into type T. */
 	template<class T>

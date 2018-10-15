@@ -10,6 +10,7 @@
 #include "Scene/BsComponent.h"
 #include "Private/RTTI/BsGameObjectRTTI.h"
 #include "Scene/BsPrefabDiff.h"
+#include "Utility/BsUtility.h"
 
 namespace bs
 {
@@ -17,13 +18,6 @@ namespace bs
 	/** @addtogroup RTTI-Impl-Core
 	 *  @{
 	 */
-
-	/** Provides temporary storage for data used during SceneObject deserialization. */
-	struct SODeserializationData
-	{
-		Vector<SPtr<SceneObject>> children;
-		Vector<SPtr<Component>> components;
-	};
 
 	class BS_CORE_EXPORT SceneObjectRTTI : public RTTIType<SceneObject, GameObject, SceneObjectRTTI>
 	{
@@ -40,16 +34,12 @@ namespace bs
 		SPtr<SceneObject> getChild(SceneObject* obj, UINT32 idx) { return obj->mChildren[idx].getInternalPtr(); }
 		void setChild(SceneObject* obj, UINT32 idx, SPtr<SceneObject> param)
 		{
-			SceneObject* so = static_cast<SceneObject*>(obj);
-			GODeserializationData& goDeserializationData = any_cast_ref<GODeserializationData>(so->mRTTIData);
-			SODeserializationData& soDeserializationData = any_cast_ref<SODeserializationData>(goDeserializationData.moreData);
-
 			// It's important that child indices remain the same after deserialization, as some systems (like SO
 			// record/restore) depend on it
-			if(idx >= soDeserializationData.children.size())
-				soDeserializationData.children.resize(idx + 1);
+			if(idx >= mChildren.size())
+				mChildren.resize(idx + 1);
 
-			soDeserializationData.children[idx] = param;
+			mChildren[idx] = param;
 		}
 
 		UINT32 getNumChildren(SceneObject* obj) { return (UINT32)obj->mChildren.size(); }
@@ -59,16 +49,12 @@ namespace bs
 		SPtr<Component> getComponent(SceneObject* obj, UINT32 idx) { return obj->mComponents[idx].getInternalPtr(); }
 		void setComponent(SceneObject* obj, UINT32 idx, SPtr<Component> param)
 		{
-			SceneObject* so = static_cast<SceneObject*>(obj);
-			GODeserializationData& goDeserializationData = any_cast_ref<GODeserializationData>(so->mRTTIData);
-			SODeserializationData& soDeserializationData = any_cast_ref<SODeserializationData>(goDeserializationData.moreData);
-
 			// It's important that child indices remain the same after deserialization, as some systems (like SO
 			// record/restore) depend on it
-			if(idx >= soDeserializationData.components.size())
-				soDeserializationData.components.resize(idx + 1);
+			if(idx >= mComponents.size())
+				mComponents.resize(idx + 1);
 
-			soDeserializationData.components[idx] = param;
+			mComponents[idx] = param;
 		}
 		UINT32 getNumComponents(SceneObject* obj) { return (UINT32)obj->mComponents.size(); }
 		void setNumComponents(SceneObject* obj, UINT32 size) { /* DO NOTHING */ }
@@ -105,7 +91,7 @@ namespace bs
 			addReflectableField("mLocalTfrm", 12, &SceneObjectRTTI::getLocalTransform, &SceneObjectRTTI::setLocalTransform);
 		}
 
-		void onDeserializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationStarted(IReflectable* obj, SerializationContext* context) override
 		{
 			// If this is the root scene object we're deserializing, activate game object deserialization so the system
 			// can resolve deserialized handles to the newly created objects
@@ -116,24 +102,21 @@ namespace bs
 			if (so->mRTTIData.empty())
 				return;
 
-			// Every GameObject must store GODeserializationData in its RTTI data field during deserialization
-			GODeserializationData& deserializationData = any_cast_ref<GODeserializationData>(so->mRTTIData);
+			if(context == nullptr || !rtti_is_of_type<CoreSerializationContext>(context))
+				return;
 
-			// We delay adding children/components and instead store them here
-			deserializationData.moreData = SODeserializationData();
-
-			if (!GameObjectManager::instance().isGameObjectDeserializationActive())
+			auto coreContext = static_cast<CoreSerializationContext*>(context);
+			if(!coreContext->goDeserializationActive)
 			{
-				GameObjectManager::instance().startDeserialization();
-				
-				// Mark it as the object that started the GO deserialization so it knows to end it
-				deserializationData.isDeserializationParent = true;
+				if (!coreContext->goState)
+					coreContext->goState = bs_shared_ptr_new<GameObjectDeserializationState>();
+
+				mIsDeserializationParent = true;
+				coreContext->goDeserializationActive = true;
 			}
-			else
-				deserializationData.isDeserializationParent = false;
 		}
 
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			SceneObject* so = static_cast<SceneObject*>(obj);
 
@@ -142,21 +125,24 @@ namespace bs
 			if (so->mRTTIData.empty())
 				return;
 
+			BS_ASSERT(context != nullptr && rtti_is_of_type<CoreSerializationContext>(context));
+			auto coreContext = static_cast<CoreSerializationContext*>(context);
+
 			GODeserializationData& goDeserializationData = any_cast_ref<GODeserializationData>(so->mRTTIData);
 
 			// Register the newly created SO with the GameObjectManager and provide it with the original ID so that
 			// deserialized handles pointing to this object can be resolved.
 			SPtr<SceneObject> soPtr = std::static_pointer_cast<SceneObject>(goDeserializationData.ptr);
-			SceneObject::createInternal(soPtr, goDeserializationData.originalId);
+
+			HSceneObject soHandle = SceneObject::createInternal(soPtr);
+			coreContext->goState->registerObject(goDeserializationData.originalId, soHandle);
 
 			// We stored all components and children in a temporary structure because they rely on the SceneObject being
 			// initialized with the GameObjectManager. Now that it is, we add them.
-			SODeserializationData& soDeserializationData = any_cast_ref<SODeserializationData>(goDeserializationData.moreData);
-
-			for (auto& component : soDeserializationData.components)
+			for (auto& component : mComponents)
 				so->addComponentInternal(component);
 
-			for (auto& child : soDeserializationData.children)
+			for (auto& child : mChildren)
 			{
 				if(child != nullptr)
 					child->_setParent(so->mThisHandle, false);
@@ -164,9 +150,10 @@ namespace bs
 
 			// If this is the deserialization parent, end deserialization (which resolves all game object handles, if we 
 			// provided valid IDs), and instantiate (i.e. activate) the deserialized hierarchy.
-			if (goDeserializationData.isDeserializationParent)
+			if (mIsDeserializationParent)
 			{
-				GameObjectManager::instance().endDeserialization();
+				coreContext->goState->resolve();
+				coreContext->goDeserializationActive = false;
 
 				bool parentActive = true;
 				if (so->getParent() != nullptr)
@@ -200,6 +187,11 @@ namespace bs
 
 			return sceneObject;
 		}
+
+	private:
+		bool mIsDeserializationParent = false;
+		Vector<SPtr<SceneObject>> mChildren;
+		Vector<SPtr<Component>> mComponents;
 	};
 
 	/** @} */

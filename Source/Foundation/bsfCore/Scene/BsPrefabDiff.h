@@ -10,6 +10,8 @@
 
 namespace bs
 {
+	struct SerializationContext;
+
 	/** @addtogroup Scene-Internal
 	 *  @{
 	 */
@@ -123,7 +125,7 @@ namespace bs
 		 *
 		 * @see		apply			
 		 */
-		static void applyDiff(const SPtr<PrefabObjectDiff>& diff, const HSceneObject& object);
+		static void applyDiff(const SPtr<PrefabObjectDiff>& diff, const HSceneObject& object, SerializationContext* context);
 
 		/**
 		 * Renames all game objects in the provided instance so that IDs of the objects will match the IDs of their 

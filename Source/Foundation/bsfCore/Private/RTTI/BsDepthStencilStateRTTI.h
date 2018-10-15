@@ -26,7 +26,7 @@ namespace bs
 			addPlainField("mData", 0, &DepthStencilStateRTTI::getData, &DepthStencilStateRTTI::setData);
 		}
 
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			DepthStencilState* depthStencilState = static_cast<DepthStencilState*>(obj);
 			depthStencilState->initialize();

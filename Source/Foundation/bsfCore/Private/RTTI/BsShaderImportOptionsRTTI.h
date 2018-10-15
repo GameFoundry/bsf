@@ -39,7 +39,7 @@ namespace bs
 		}
 
 		/** @copydoc ShaderImportOptionsRTTI::onSerializationStarted */
-		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onSerializationStarted(IReflectable* obj, SerializationContext* context) override
 		{
 			ShaderImportOptions* importOptions = static_cast<ShaderImportOptions*>(obj);
 

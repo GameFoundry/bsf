@@ -206,7 +206,7 @@ namespace bs
 				&SerializedArrayRTTI::setEntry, &SerializedArrayRTTI::setNumEntries);
 		}
 
-		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onSerializationStarted(IReflectable* obj, SerializationContext* context) override
 		{
 			SerializedArray* serializedArray = static_cast<SerializedArray*>(obj);
 
@@ -274,7 +274,7 @@ namespace bs
 				&SerializedSubObjectRTTI::setEntry, &SerializedSubObjectRTTI::setNumEntries);
 		}
 
-		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onSerializationStarted(IReflectable* obj, SerializationContext* context) override
 		{
 			SerializedSubObject* serializableObject = static_cast<SerializedSubObject*>(obj);
 

@@ -50,7 +50,9 @@ namespace bs
 	class BS_CORE_EXPORT GameObjectHandleBase : public IReflectable
 	{
 	public:
-		GameObjectHandleBase();
+		GameObjectHandleBase()
+			: mData(bs_shared_ptr_new<GameObjectHandleData>(nullptr))
+		{ }
 
 		/**
 		 * Returns true if the object the handle is pointing to has been destroyed.
@@ -112,7 +114,7 @@ namespace bs
 		const SPtr<GameObjectHandleData>& _getHandleData() const { return mData; }
 
 		/** Resolves a handle to a proper GameObject in case it was created uninitialized. */
-		void _resolve(const GameObjectHandleBase& object);
+		void _resolve(const GameObjectHandleBase& object) {	mData->mPtr = object.mData->mPtr; }
 
 		/**	Changes the GameObject instance the handle is pointing to. */
 		void _setHandleData(const SPtr<GameObject>& object);
@@ -121,13 +123,20 @@ namespace bs
 
 	protected:
 		friend class GameObjectManager;
+		friend class GameObjectDeserializationState;
 
 		template<class _Ty1, class _Ty2>
 		friend bool operator==(const GameObjectHandle<_Ty1>& _Left, const GameObjectHandle<_Ty2>& _Right);
 
 		GameObjectHandleBase(const SPtr<GameObject>& ptr);
-		GameObjectHandleBase(SPtr<GameObjectHandleData> data);
-		GameObjectHandleBase(std::nullptr_t ptr);
+
+		GameObjectHandleBase(SPtr<GameObjectHandleData> data)
+			: mData(std::move(data))
+		{ }
+
+		GameObjectHandleBase(std::nullptr_t ptr)
+			: mData(bs_shared_ptr_new<GameObjectHandleData>(nullptr))
+		{ }
 
 		/**	Throws an exception if the referenced GameObject has been destroyed. */
 		void throwIfDestroyed() const;

@@ -6,6 +6,7 @@
 #include "Reflection/BsRTTIType.h"
 #include "Scene/BsGameObjectHandle.h"
 #include "Scene/BsGameObjectManager.h"
+#include "Utility/BsUtility.h"
 
 namespace bs
 {
@@ -35,10 +36,17 @@ namespace bs
 			addPlainField("mInstanceID", 0, &GameObjectHandleRTTI::getInstanceId, &GameObjectHandleRTTI::setInstanceId);
 		}
 
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
-			GameObjectHandleBase* gameObjectHandle = static_cast<GameObjectHandleBase*>(obj);
-			GameObjectManager::instance().registerUnresolvedHandle(mOriginalInstanceId, *gameObjectHandle);
+			if(context == nullptr || !rtti_is_of_type<CoreSerializationContext>(context))
+				return;
+
+			auto coreContext = static_cast<CoreSerializationContext*>(context);
+			if(coreContext->goState)
+			{
+				GameObjectHandleBase* gameObjectHandle = static_cast<GameObjectHandleBase*>(obj);
+				coreContext->goState->registerUnresolvedHandle(mOriginalInstanceId, *gameObjectHandle);
+			}
 		}
 
 		const String& getRTTIName() override

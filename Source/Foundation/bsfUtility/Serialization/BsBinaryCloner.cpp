@@ -49,8 +49,6 @@ namespace bs
 
 	void BinaryCloner::gatherReferences(IReflectable* object, FrameAlloc& alloc, ObjectReferenceData& referenceData)
 	{
-		static const UnorderedMap<String, UINT64> dummyParams;
-
 		if (object == nullptr)
 			return;
 
@@ -60,7 +58,7 @@ namespace bs
 		{
 			RTTITypeBase* rttiInstance = rtti->_clone(alloc);
 
-			rttiInstance->onSerializationStarted(object, dummyParams);
+			rttiInstance->onSerializationStarted(object, nullptr);
 			SubObjectReferenceData* subObjectData = nullptr;
 
 			UINT32 numFields = rtti->getNumFields();
@@ -171,15 +169,13 @@ namespace bs
 			RTTITypeBase* rttiInstance = rttiInstances.top();
 			rttiInstances.pop();
 
-			rttiInstance->onSerializationEnded(object, dummyParams);
+			rttiInstance->onSerializationEnded(object, nullptr);
 			alloc.destruct(rttiInstance);
 		}
 	}
 
 	void BinaryCloner::restoreReferences(IReflectable* object, FrameAlloc& alloc, const ObjectReferenceData& referenceData)
 	{
-		static const UnorderedMap<String, UINT64> dummyParams;
-
 		for(auto iter = referenceData.subObjectData.rbegin(); iter != referenceData.subObjectData.rend(); ++iter)
 		{
 			const SubObjectReferenceData& subObject = *iter;
@@ -187,7 +183,7 @@ namespace bs
 			if (!subObject.references.empty())
 			{
 				RTTITypeBase* rttiInstance = subObject.rtti->_clone(alloc);
-				rttiInstance->onDeserializationStarted(object, dummyParams);
+				rttiInstance->onDeserializationStarted(object, nullptr);
 
 				for (auto& reference : subObject.references)
 				{
@@ -199,7 +195,7 @@ namespace bs
 						curField->setValue(rttiInstance, object, reference.object);
 				}
 
-				rttiInstance->onDeserializationEnded(object, dummyParams);
+				rttiInstance->onDeserializationEnded(object, nullptr);
 				alloc.destruct(rttiInstance);
 			}
 		}
@@ -209,7 +205,7 @@ namespace bs
 			if (!subObject.children.empty())
 			{
 				RTTITypeBase* rttiInstance = subObject.rtti->_clone(alloc);
-				rttiInstance->onSerializationStarted(object, dummyParams);
+				rttiInstance->onSerializationStarted(object, nullptr);
 
 				for (auto& childObjectData : subObject.children)
 				{
@@ -224,7 +220,7 @@ namespace bs
 					restoreReferences(childObj, alloc, childObjectData);
 				}
 
-				rttiInstance->onSerializationEnded(object, dummyParams);
+				rttiInstance->onSerializationEnded(object, nullptr);
 				alloc.destruct(rttiInstance);
 			}
 		}

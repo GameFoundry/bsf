@@ -26,7 +26,7 @@ namespace bs
 			addPlainField("mData", 0, &RasterizerStateRTTI::getData, &RasterizerStateRTTI::setData);
 		}
 
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			RasterizerState* rasterizerState = static_cast<RasterizerState*>(obj);
 			rasterizerState->initialize();

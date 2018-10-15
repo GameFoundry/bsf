@@ -165,10 +165,8 @@ namespace bs
 		 * and returns a handle to the object.
 		 *			
 		 * @param[in]	soPtr		Pointer to the scene object register and return a handle to.
-		 * @param[in]	originalId	If the provided pointer was deserialized, this is the original object's ID at the time
-		 * 							of serialization. Used for resolving handles pointing to the object.
 		 */
-		static HSceneObject createInternal(const SPtr<SceneObject>& soPtr, UINT64 originalId = 0);
+		static HSceneObject createInternal(const SPtr<SceneObject>& soPtr);
 
 		/**
 		 * Destroys this object and any of its held components.

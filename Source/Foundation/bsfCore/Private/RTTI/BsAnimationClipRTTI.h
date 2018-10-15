@@ -79,7 +79,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN_NAMED(rootMotionRot, mRootMotion->rotation, 9)
 		BS_END_RTTI_MEMBERS
 	public:
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			AnimationClip* clip = static_cast<AnimationClip*>(obj);
 			clip->initialize();

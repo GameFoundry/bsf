@@ -45,7 +45,7 @@ namespace bs
 			addPlainField("restitutionCoefficient", 2, &PhysicsMaterialRTTI::getRestitutionCoefficient, &PhysicsMaterialRTTI::setRestitutionCoefficient);
 		}
 
-		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onSerializationStarted(IReflectable* obj, SerializationContext* context) override
 		{
 			PhysicsMaterial* material = static_cast<PhysicsMaterial*>(obj);
 

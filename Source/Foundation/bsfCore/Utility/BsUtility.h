@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
+#include "Reflection/BsRTTIType.h"
 
 namespace bs
 {
@@ -46,8 +47,16 @@ namespace bs
 
 		/** Calculates how deep in the scene object hierarchy is the provided object. Zero means root. */
 		static UINT32 getSceneObjectDepth(const HSceneObject& so);
+	};
 
-	private:
+	/** Provides extra information and maintains state during serialization of various RTTI types in the core. */
+	struct BS_CORE_EXPORT CoreSerializationContext : SerializationContext
+	{
+		SPtr<GameObjectDeserializationState> goState;
+		bool goDeserializationActive = false;
+
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/** @} */

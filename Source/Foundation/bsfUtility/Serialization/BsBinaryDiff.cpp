@@ -116,17 +116,16 @@ namespace bs
 		return modification;
 	}
 
-	void IDiff::applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff)
+	void IDiff::applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff, 
+		SerializationContext* context)
 	{
-		static const UnorderedMap<String, UINT64> dummyParams;
-
 		FrameAlloc& alloc = gFrameAlloc();
 		alloc.markFrame();
 
 		FrameVector<DiffCommand> commands;
 
 		DiffObjectMap objectMap;
-		applyDiff(object, diff, alloc, objectMap, commands);
+		applyDiff(object, diff, alloc, objectMap, commands, context);
 
 		IReflectable* destObject = nullptr;
 		RTTITypeBase* rttiInstance = nullptr;
@@ -164,7 +163,7 @@ namespace bs
 					RTTITypeBase* rttiInstance = curRtti->_clone(alloc);
 
 					rttiInstances.push_back(std::make_pair(rttiInstance, destObject));
-					rttiInstance->onDeserializationStarted(destObject, dummyParams);
+					rttiInstance->onDeserializationStarted(destObject, context);
 
 					rttiTypes.pop();
 				}
@@ -195,7 +194,7 @@ namespace bs
 
 					RTTITypeBase* rttiInstance = rttiInstances.back().first;
 
-					rttiInstance->onDeserializationEnded(destObject, dummyParams);
+					rttiInstance->onDeserializationEnded(destObject, context);
 					alloc.destruct(rttiInstance);
 
 					rttiInstances.erase(rttiInstances.end() - 1);
@@ -277,10 +276,10 @@ namespace bs
 	}
 
 	void IDiff::applyDiff(RTTITypeBase* rtti, const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff, 
-		FrameAlloc& alloc, DiffObjectMap& objectMap, FrameVector<DiffCommand>& diffCommands)
+		FrameAlloc& alloc, DiffObjectMap& objectMap, FrameVector<DiffCommand>& diffCommands, SerializationContext* context)
 	{
 		IDiff& diffHandler = rtti->getDiffHandler();
-		diffHandler.applyDiff(object, diff, alloc, objectMap, diffCommands);
+		diffHandler.applyDiff(object, diff, alloc, objectMap, diffCommands, context);
 	}
 
 	SPtr<SerializedObject> BinaryDiff::generateDiff(const SPtr<SerializedObject>& orgObj, 
@@ -425,10 +424,8 @@ namespace bs
 	}
 
 	void BinaryDiff::applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff,
-		FrameAlloc& alloc, DiffObjectMap& objectMap, FrameVector<DiffCommand>& diffCommands)
+		FrameAlloc& alloc, DiffObjectMap& objectMap, FrameVector<DiffCommand>& diffCommands, SerializationContext* context)
 	{
-		static const UnorderedMap<String, UINT64> dummyParams;
-
 		if (object == nullptr || diff == nullptr || object->getTypeId() != diff->getRootTypeId())
 			return;
 
@@ -446,7 +443,7 @@ namespace bs
 				continue;
 
 			RTTITypeBase* rttiInstance = rtti->_clone(alloc);
-			rttiInstance->onSerializationStarted(object.get(), dummyParams);
+			rttiInstance->onSerializationStarted(object.get(), nullptr);
 			rttiInstances.push(rttiInstance);
 
 			FrameVector<DiffCommand> commands;
@@ -510,7 +507,7 @@ namespace bs
 									if (childObj != nullptr)
 									{
 										IDiff::applyDiff(childObj->getRTTI(), childObj, arrayElemData, alloc, objectMap, 
-											commands);
+											commands, context);
 										command.object = childObj;
 									}
 									else
@@ -530,7 +527,7 @@ namespace bs
 										}
 
 										IDiff::applyDiff(childRtti, findObj->second, arrayElemData, alloc, objectMap, 
-											commands);
+											commands, context);
 										command.object = findObj->second;
 										commands.push_back(command);
 									}
@@ -566,7 +563,7 @@ namespace bs
 							{
 								SPtr<IReflectable> childObj = newArrayElements[arrayElem.first];
 								IDiff::applyDiff(childObj->getRTTI(), childObj, arrayElemData, alloc, objectMap, 
-									commands);
+									commands, context);
 							}
 							else
 							{
@@ -574,7 +571,8 @@ namespace bs
 								if (childRtti != nullptr)
 								{
 									SPtr<IReflectable> newObject = childRtti->newRTTIObject();
-									IDiff::applyDiff(childRtti, newObject, arrayElemData, alloc, objectMap, commands);
+									IDiff::applyDiff(childRtti, newObject, arrayElemData, alloc, objectMap, commands, 
+										context);
 
 									newArrayElements[arrayElem.first] = newObject;
 								}
@@ -647,7 +645,7 @@ namespace bs
 									}
 
 									IDiff::applyDiff(childRtti, findObj->second, fieldObjectData, alloc, objectMap, 
-										commands);
+										commands, context);
 									command.object = findObj->second;
 								}
 								else
@@ -658,7 +656,7 @@ namespace bs
 							else
 							{
 								IDiff::applyDiff(childObj->getRTTI(), childObj, fieldObjectData, alloc, objectMap, 
-									commands);
+									commands, context);
 								command.object = childObj;
 							}
 						}
@@ -674,7 +672,8 @@ namespace bs
 						IReflectable& childObj = field->getValue(rttiInstance, object.get());
 						SPtr<IReflectable> clonedObj = BinaryCloner::clone(&childObj, true);
 
-						IDiff::applyDiff(clonedObj->getRTTI(), clonedObj, fieldObjectData, alloc, objectMap, commands);
+						IDiff::applyDiff(clonedObj->getRTTI(), clonedObj, fieldObjectData, alloc, objectMap, commands, 
+							context);
 
 						DiffCommand command;
 						command.field = genericField;
@@ -742,7 +741,7 @@ namespace bs
 		while (!rttiInstances.empty())
 		{
 			RTTITypeBase* rttiInstance = rttiInstances.top();
-			rttiInstance->onSerializationEnded(object.get(), dummyParams);
+			rttiInstance->onSerializationEnded(object.get(), nullptr);
 			alloc.destruct(rttiInstance);
 
 			rttiInstances.pop();

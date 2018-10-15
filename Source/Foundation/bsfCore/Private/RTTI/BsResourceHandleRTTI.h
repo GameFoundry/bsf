@@ -26,7 +26,7 @@ namespace bs
 			addPlainField("mUUID", 0, &ResourceHandleRTTI::getUUID, &ResourceHandleRTTI::setUUID);
 		}
 
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			TResourceHandleBase<false>* resourceHandle = static_cast<TResourceHandleBase<false>*>(obj);
 
@@ -74,7 +74,7 @@ namespace bs
 			addPlainField("mUUID", 0, &WeakResourceHandleRTTI::getUUID, &WeakResourceHandleRTTI::setUUID);
 		}
 
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			TResourceHandleBase<true>* resourceHandle = static_cast<TResourceHandleBase<true>*>(obj);
 

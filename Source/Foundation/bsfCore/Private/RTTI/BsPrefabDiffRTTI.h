@@ -8,6 +8,7 @@
 #include "Serialization/BsSerializedObject.h"
 #include "Scene/BsGameObjectManager.h"
 #include "Serialization/BsBinarySerializer.h"
+#include "Utility/BsUtility.h"
 
 namespace bs
 {
@@ -94,17 +95,25 @@ namespace bs
 			BS_RTTI_MEMBER_REFLPTR(mRoot, 0)
 		BS_END_RTTI_MEMBERS
 	public:
-		void onDeserializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationStarted(IReflectable* obj, SerializationContext* context) override
 		{
 			PrefabDiff* prefabDiff = static_cast<PrefabDiff*>(obj);
 
-			if (GameObjectManager::instance().isGameObjectDeserializationActive())
-				GameObjectManager::instance().registerOnDeserializationEndCallback(std::bind(&PrefabDiffRTTI::delayedOnDeserializationEnded, prefabDiff));
+			BS_ASSERT(context != nullptr && rtti_is_of_type<CoreSerializationContext>(context));
+			auto coreContext = static_cast<CoreSerializationContext*>(context);
+
+			if (coreContext->goState)
+			{
+				coreContext->goState->registerOnDeserializationEndCallback(
+					std::bind(&PrefabDiffRTTI::delayedOnDeserializationEnded, prefabDiff));
+			}
 		}
 
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
-			assert(GameObjectManager::instance().isGameObjectDeserializationActive());
+			BS_ASSERT(context != nullptr && rtti_is_of_type<CoreSerializationContext>(context));
+			const auto coreContext = static_cast<CoreSerializationContext*>(context);
+			BS_ASSERT(coreContext->goState);
 
 			// Make sure to deserialize all game object handles since their IDs need to be updated. Normally they are
 			// updated automatically upon deserialization but since we store them in intermediate form we need to manually
@@ -144,7 +153,7 @@ namespace bs
 				SerializedHandle& handle = handleData[idx];
 
 				handle.object = handleObject;
-				handle.handle = std::static_pointer_cast<GameObjectHandleBase>(handleObject->decode());
+				handle.handle = std::static_pointer_cast<GameObjectHandleBase>(handleObject->decode(context));
 
 				idx++;
 			}

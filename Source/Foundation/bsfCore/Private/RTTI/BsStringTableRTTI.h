@@ -36,7 +36,7 @@ namespace bs
 			addPlainField("mIdentifiers", 2, &StringTableRTTI::getIdentifiers, &StringTableRTTI::setIdentifiers);
 		}
 
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			StringTable* stringTable = static_cast<StringTable*>(obj);
 			stringTable->setActiveLanguage(stringTable->mActiveLanguage);

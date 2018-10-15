@@ -9,34 +9,15 @@
 
 namespace bs
 {
-	GameObjectHandleBase::GameObjectHandleBase(SPtr<GameObjectHandleData> data)
-		:mData(std::move(data))
-	{ }
-
 	GameObjectHandleBase::GameObjectHandleBase(const SPtr<GameObject>& ptr)
 	{
 		mData = bs_shared_ptr_new<GameObjectHandleData>(ptr->mInstanceData);
-	}
-
-	GameObjectHandleBase::GameObjectHandleBase(std::nullptr_t ptr)
-	{
-		mData = bs_shared_ptr_new<GameObjectHandleData>(nullptr);
-	}
-
-	GameObjectHandleBase::GameObjectHandleBase()
-	{
-		mData = bs_shared_ptr_new<GameObjectHandleData>(nullptr);
 	}
 
 	bool GameObjectHandleBase::isDestroyed(bool checkQueued) const
 	{
 		return mData->mPtr == nullptr || mData->mPtr->object == nullptr
 			|| (checkQueued && mData->mPtr->object->_getIsDestroyed());
-	}
-
-	void GameObjectHandleBase::_resolve(const GameObjectHandleBase& object) 
-	{ 
-		mData->mPtr = object.mData->mPtr;
 	}
 
 	void GameObjectHandleBase::_setHandleData(const SPtr<GameObject>& object)

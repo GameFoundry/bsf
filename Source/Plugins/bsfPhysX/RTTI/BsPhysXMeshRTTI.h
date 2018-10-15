@@ -38,8 +38,7 @@ namespace bs
 			addDataBlockField("mCookedData", 0, &FPhysXMeshRTTI::getCookedData, &FPhysXMeshRTTI::setCookedData, 0);
 		}
 
-		/** @copydoc IReflectable::onDeserializationEnded */
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			FPhysXMesh* mesh = static_cast<FPhysXMesh*>(obj);
 			mesh->initialize();

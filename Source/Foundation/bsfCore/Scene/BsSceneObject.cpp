@@ -53,10 +53,10 @@ namespace bs
 		return sceneObject;
 	}
 
-	HSceneObject SceneObject::createInternal(const SPtr<SceneObject>& soPtr, UINT64 originalId)
+	HSceneObject SceneObject::createInternal(const SPtr<SceneObject>& soPtr)
 	{
 		HSceneObject sceneObject = static_object_cast<SceneObject>(
-			GameObjectManager::instance().registerObject(soPtr, originalId));
+			GameObjectManager::instance().registerObject(soPtr));
 		sceneObject->mThisHandle = sceneObject;
 
 		return sceneObject;
@@ -727,7 +727,7 @@ namespace bs
 
 	HSceneObject SceneObject::clone(bool instantiate)
 	{
-		bool isInstantiated = !hasFlag(SOF_DontInstantiate);
+		const bool isInstantiated = !hasFlag(SOF_DontInstantiate);
 
 		if (!instantiate)
 			_setFlags(SOF_DontInstantiate);
@@ -739,8 +739,11 @@ namespace bs
 		MemorySerializer serializer;
 		UINT8* buffer = serializer.encode(this, bufferSize, (void*(*)(size_t))&bs_alloc);
 
-		GameObjectManager::instance().setDeserializationMode(GODM_UseNewIds | GODM_RestoreExternal);
-		SPtr<SceneObject> cloneObj = std::static_pointer_cast<SceneObject>(serializer.decode(buffer, bufferSize));
+		CoreSerializationContext serzContext;
+		serzContext.goState = bs_shared_ptr_new<GameObjectDeserializationState>(GODM_RestoreExternal | GODM_UseNewIds);
+
+		SPtr<SceneObject> cloneObj = std::static_pointer_cast<SceneObject>(
+			serializer.decode(buffer, bufferSize, &serzContext));
 		bs_free(buffer);
 
 		if(isInstantiated)

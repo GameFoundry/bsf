@@ -6,6 +6,8 @@
 
 namespace bs
 {
+	struct SerializationContext;
+
 	/** @addtogroup Serialization
 	 *  @{
 	 */
@@ -33,25 +35,28 @@ namespace bs
 		 * @param[in]	shallow			Determines how to handle referenced objects. If true then references will not be 
 		 *								encoded and will be set to null. If false then references will be encoded as well 
 		 *								and restored upon decoding.
-		 * @param[in]	params			Optional parameters to be passed to the serialization callbacks on the objects being
-		 *								serialized.
+		 * @param[in]	context			Optional object that will be passed along to all serialized objects through
+		 *								their serialization callbacks. Can be used for controlling serialization, 
+		 *								maintaining state or sharing information between objects during 
+		 *								serialization.
 		 *
 		 * @return						A buffer containing the encoded object. It is up to the user to release the buffer 
 		 *								memory when no longer needed.
 		 */
 		UINT8* encode(IReflectable* object, UINT32& bytesWritten, std::function<void*(UINT32)> allocator = nullptr, 
-			bool shallow = false, const UnorderedMap<String, UINT64>& params = UnorderedMap<String, UINT64>());
+			bool shallow = false, SerializationContext* context = nullptr);
 
 		/** 
 		 * Deserializes an IReflectable object by reading the binary data from the provided memory location. 
 		 *
 		 * @param[in]	buffer		Previously allocated buffer to store the data in.
 		 * @param[in]	bufferSize	Size of the @p buffer in bytes.
-		 * @param[in]	params		Optional parameters to be passed to the serialization callbacks on the objects being
-		 *							serialized.
+		 * @param[in]	context		Optional object that will be passed along to all deserialized objects through
+		 *							their deserialization callbacks. Can be used for controlling deserialization, 
+		 *							maintaining state or sharing information between objects during 
+		 *							deserialization.
 		 */
-		SPtr<IReflectable> decode(UINT8* buffer, UINT32 bufferSize, 
-			const UnorderedMap<String, UINT64>& params = UnorderedMap<String, UINT64>());
+		SPtr<IReflectable> decode(UINT8* buffer, UINT32 bufferSize, SerializationContext* context = nullptr);
 
 	private:
 		Vector<BufferPiece> mBufferPieces;

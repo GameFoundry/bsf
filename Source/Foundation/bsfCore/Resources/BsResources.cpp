@@ -16,6 +16,7 @@
 #include "Utility/BsCompression.h"
 #include "FileSystem/BsDataStream.h"
 #include "Serialization/BsBinarySerializer.h"
+#include "Reflection/BsRTTIType.h"
 
 namespace bs
 {
@@ -365,9 +366,8 @@ namespace bs
 				"File size is larger that UINT32 can hold. Ask a programmer to use a bigger data type.");
 		}
 
-		UnorderedMap<String, UINT64> params;
-		if(loadWithSaveData)
-			params["keepSourceData"] = 1;
+		CoreSerializationContext serzContext;
+		serzContext.flags = loadWithSaveData ? SF_KeepResourceSourceData : 0;
 
 		// Read meta-data
 		SPtr<SavedResourceData> metaData;
@@ -378,7 +378,7 @@ namespace bs
 				stream->read(&objectSize, sizeof(objectSize));
 
 				BinarySerializer bs;
-				metaData = std::static_pointer_cast<SavedResourceData>(bs.decode(stream, objectSize, params));
+				metaData = std::static_pointer_cast<SavedResourceData>(bs.decode(stream, objectSize, &serzContext));
 			}
 		}
 
@@ -394,7 +394,7 @@ namespace bs
 					stream = Compression::decompress(stream);
 
 				BinarySerializer bs;
-				loadedData = bs.decode(stream, objectSize, params);
+				loadedData = bs.decode(stream, objectSize, &serzContext);
 			}
 		}
 
@@ -696,6 +696,7 @@ namespace bs
 		const UUID& uuid = handle.getUUID();
 		handle.setHandleData(resource, uuid);
 
+		if(resource)
 		{
 			Lock lock(mLoadedResourceMutex);
 			auto iterFind = mLoadedResources.find(uuid);
@@ -791,8 +792,11 @@ namespace bs
 		{
 			Lock lock(mLoadedResourceMutex);
 
-			LoadedResourceData& resData = mLoadedResources[UUID];
-			resData.resource = newHandle.getWeak();
+			if(obj)
+			{
+				LoadedResourceData& resData = mLoadedResources[UUID];
+				resData.resource = newHandle.getWeak();
+			}
 
 #if BS_DEBUG_MODE
 			const auto iterFind = mHandles.find(UUID);

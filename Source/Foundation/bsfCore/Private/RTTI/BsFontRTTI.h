@@ -99,7 +99,7 @@ namespace bs
 		}
 
 	protected:
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			Font* font = static_cast<Font*>(obj);
 			font->initialize(mFontDataPerSize);

@@ -6,6 +6,8 @@
 
 namespace bs
 {
+	struct SerializationContext;
+
 	/** @addtogroup Internal-Utility
 	 *  @{
 	 */
@@ -35,7 +37,7 @@ namespace bs
 		 * Applies a previously generated per-field differences to the provided object. This will essentially transform the
 		 * original object the differences were generated for into the modified version.
 		 */
-		void applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff);
+		void applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff, SerializationContext* context);
 
 	protected:
 		typedef UnorderedMap<SPtr<SerializedObject>, SPtr<SerializedObject>> ObjectMap;
@@ -99,7 +101,7 @@ namespace bs
 		 * @see		applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff)
 		 */
 		virtual void applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff, FrameAlloc& alloc,
-			DiffObjectMap& objectMap, FrameVector<DiffCommand>& diffCommands) = 0;
+			DiffObjectMap& objectMap, FrameVector<DiffCommand>& diffCommands, SerializationContext* context) = 0;
 
 		/**
 		 * Applies diff according to the diff handler retrieved from the provided RTTI object.
@@ -107,7 +109,8 @@ namespace bs
 		 * @see		applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff)
 		 */
 		void applyDiff(RTTITypeBase* rtti, const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff,
-			FrameAlloc& alloc, DiffObjectMap& objectMap, FrameVector<DiffCommand>& diffCommands);
+			FrameAlloc& alloc, DiffObjectMap& objectMap, FrameVector<DiffCommand>& diffCommands, 
+			SerializationContext* context);
 	};
 
 	/**
@@ -125,7 +128,7 @@ namespace bs
 
 		/** @copydoc	IDiff::applyDiff(const SPtr<IReflectable>&, const SPtr<SerializedObject>&, FrameAlloc&, DiffObjectMap&, FrameVector<DiffCommand>&) */
 		void applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff, FrameAlloc& alloc, 
-			DiffObjectMap& objectMap, FrameVector<DiffCommand>& diffCommands) override;
+			DiffObjectMap& objectMap, FrameVector<DiffCommand>& diffCommands, SerializationContext* context) override;
 	};
 
 	/** @} */

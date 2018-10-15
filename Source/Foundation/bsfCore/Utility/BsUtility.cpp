@@ -38,12 +38,10 @@ namespace bs
 	void findResourceDependenciesInternal(IReflectable& obj, FrameAlloc& alloc, bool recursive, 
 		Map<UUID, ResourceDependency>& dependencies)
 	{
-		static const UnorderedMap<String, UINT64> dummyParams;
-
 		RTTITypeBase* rtti = obj.getRTTI();
 		do {
 			RTTITypeBase* rttiInstance = rtti->_clone(alloc);
-			rttiInstance->onSerializationStarted(&obj, dummyParams);
+			rttiInstance->onSerializationStarted(&obj, nullptr);
 
 			const UINT32 numFields = rtti->getNumFields();
 			for (UINT32 i = 0; i < numFields; i++)
@@ -137,7 +135,7 @@ namespace bs
 				}
 			}
 
-			rttiInstance->onSerializationEnded(&obj, dummyParams);
+			rttiInstance->onSerializationEnded(&obj, nullptr);
 			alloc.destruct(rttiInstance);
 
 			rtti = rtti->getBaseClass();
@@ -204,4 +202,36 @@ namespace bs
 
 		return output;
 	}
+
+	class CoreSerializationContextRTTI : 
+		public RTTIType<CoreSerializationContext, SerializationContext, CoreSerializationContextRTTI>
+	{
+		const String& getRTTIName() override
+		{
+			static String name = "CoreSerializationContext";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_CoreSerializationContext;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			BS_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
+			return nullptr;
+		}
+	};
+
+	inline RTTITypeBase* CoreSerializationContext::getRTTIStatic()
+	{
+		return CoreSerializationContextRTTI::instance();
+	}
+
+	inline RTTITypeBase* CoreSerializationContext::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
 }

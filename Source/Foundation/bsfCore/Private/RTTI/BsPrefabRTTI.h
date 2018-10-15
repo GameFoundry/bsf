@@ -6,6 +6,7 @@
 #include "Reflection/BsRTTIType.h"
 #include "Scene/BsPrefab.h"
 #include "Scene/BsSceneObject.h"
+#include "Utility/BsUtility.h"
 
 namespace bs
 {
@@ -33,12 +34,16 @@ namespace bs
 			addReflectablePtrField("mRoot", 0, &PrefabRTTI::getSceneObject, &PrefabRTTI::setSceneObject);
 		}
 
-		void onDeserializationStarted(IReflectable* ptr, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationStarted(IReflectable* ptr, SerializationContext* context) override
 		{
+			BS_ASSERT(context != nullptr && rtti_is_of_type<CoreSerializationContext>(context));
+			auto coreContext = static_cast<CoreSerializationContext*>(context);
+
 			// Make sure external IDs are broken because we do some ID matching when dealing with prefabs and keeping
 			// the invalid external references could cause it to match invalid objects in case they end up having the
 			// same ID.
-			GameObjectManager::instance().setDeserializationMode(GODM_UseNewIds | GODM_BreakExternal);
+			BS_ASSERT(!coreContext->goState);
+			coreContext->goState = bs_shared_ptr_new<GameObjectDeserializationState>(GODM_BreakExternal | GODM_UseNewIds);
 		}
 
 		const String& getRTTIName() override

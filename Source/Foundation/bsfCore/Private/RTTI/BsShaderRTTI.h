@@ -394,7 +394,7 @@ namespace bs
 				&ShaderRTTI::setParamBlock, &ShaderRTTI::setParamBlocksArraySize);
 		}
 
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			Shader* shader = static_cast<Shader*>(obj);
 			shader->initialize();

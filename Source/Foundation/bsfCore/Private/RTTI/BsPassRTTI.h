@@ -159,7 +159,7 @@ namespace bs
 			addReflectableField("mComputeProgramDesc", 8, &PassRTTI::getComputeProgramDesc, &PassRTTI::setComputeProgramDesc);
 		}
 
-		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onSerializationStarted(IReflectable* obj, SerializationContext* context) override
 		{
 			Pass* pass = static_cast<Pass*>(obj);
 
@@ -194,7 +194,7 @@ namespace bs
 				initBytecode(computePipeline->getProgram(), mComputeProgramDesc);
 		}
 
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			Pass* pass = static_cast<Pass*>(obj);
 			pass->initialize();

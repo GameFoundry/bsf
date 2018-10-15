@@ -5,12 +5,6 @@
 
 namespace bs
 {
-	GameObjectManager::GameObjectManager()
-		:mNextAvailableID(1), mIsDeserializationActive(false), mGODeserializationMode(GODM_UseNewIds | GODM_BreakExternal)
-	{
-
-	}
-
 	GameObjectManager::~GameObjectManager()
 	{
 		destroyQueuedObjects();
@@ -18,8 +12,9 @@ namespace bs
 
 	GameObjectHandleBase GameObjectManager::getObject(UINT64 id) const
 	{
-		auto iterFind = mObjects.find(id);
+		Lock lock(mMutex);
 
+		const auto iterFind = mObjects.find(id);
 		if (iterFind != mObjects.end())
 			return iterFind->second;
 
@@ -28,8 +23,9 @@ namespace bs
 
 	bool GameObjectManager::tryGetObject(UINT64 id, GameObjectHandleBase& object) const
 	{
-		auto iterFind = mObjects.find(id);
+		Lock lock(mMutex);
 
+		const auto iterFind = mObjects.find(id);
 		if (iterFind != mObjects.end())
 		{
 			object = iterFind->second;
@@ -41,6 +37,8 @@ namespace bs
 
 	bool GameObjectManager::objectExists(UINT64 id) const
 	{
+		Lock lock(mMutex);
+
 		return mObjects.find(id) != mObjects.end();
 	}
 
@@ -49,8 +47,14 @@ namespace bs
 		if (oldId == newId)
 			return;
 
+		Lock lock(mMutex);
 		mObjects[newId] = mObjects[oldId];
 		mObjects.erase(oldId);
+	}
+
+	UINT64 GameObjectManager::reserveId()
+	{
+		return mNextAvailableID.fetch_add(1, std::memory_order_relaxed);
 	}
 
 	void GameObjectManager::queueForDestroy(const GameObjectHandleBase& object)
@@ -58,7 +62,7 @@ namespace bs
 		if (object.isDestroyed())
 			return;
 
-		UINT64 instanceId = object->getInstanceId();
+		const UINT64 instanceId = object->getInstanceId();
 		mQueuedForDestroy[instanceId] = object;
 	}
 
@@ -70,129 +74,102 @@ namespace bs
 		mQueuedForDestroy.clear();
 	}
 
-	GameObjectHandleBase GameObjectManager::registerObject(const SPtr<GameObject>& object, UINT64 originalId)
+	GameObjectHandleBase GameObjectManager::registerObject(const SPtr<GameObject>& object)
 	{
-		object->initialize(object, mNextAvailableID);
-
-		// If deserialization is active we must ensure all handles pointing to the same object share GameObjectHandleData,
-		// so check if any handles referencing this object have been created. See ::registerUnresolvedHandle for
-		// further explanation.
-		if (mIsDeserializationActive)
-		{
-			assert(originalId != 0 && "You must provide an original ID when registering a deserialized game object.");
-
-			auto iterFind = mUnresolvedHandleData.find(originalId);
-			if (iterFind != mUnresolvedHandleData.end())
-			{
-				GameObjectHandleBase handle;
-				handle.mData = iterFind->second;
-				handle._setHandleData(object);
-
-				mObjects[mNextAvailableID] = handle;
-				mIdMapping[originalId] = mNextAvailableID;
-				mNextAvailableID++;
-
-				return handle;
-			}
-			else
-			{
-				GameObjectHandleBase handle(object);
-
-				mObjects[mNextAvailableID] = handle;
-				mIdMapping[originalId] = mNextAvailableID;
-				mNextAvailableID++;
-
-				return handle;
-			}
-		}
+		const UINT64 id = mNextAvailableID.fetch_add(1, std::memory_order_relaxed);
+		object->initialize(object, id);
 
 		GameObjectHandleBase handle(object);
-		mObjects[mNextAvailableID] = handle;
-		mNextAvailableID++;
+		{
+			Lock lock(mMutex);
+			mObjects[id] = handle;
+		}
 
 		return handle;
 	}
 
 	void GameObjectManager::unregisterObject(GameObjectHandleBase& object)
 	{
-		mObjects.erase(object->getInstanceId());
+		{
+			Lock lock(mMutex);
+			mObjects.erase(object->getInstanceId());
+		}
 
 		onDestroyed(static_object_cast<GameObject>(object));
 		object.destroy();
 	}
 
-	void GameObjectManager::startDeserialization()
-	{
-		assert(!mIsDeserializationActive);
+	GameObjectDeserializationState::GameObjectDeserializationState(UINT32 options)
+		:mOptions(options)
+	{ }
 
-		mIsDeserializationActive = true;
+	GameObjectDeserializationState::~GameObjectDeserializationState()
+	{
+		BS_ASSERT(mUnresolvedHandles.empty() && "Deserialization state being destroyed before all handles are resolved.");
+		BS_ASSERT(mDeserializedObjects.empty() && "Deserialization state being destroyed before all objects are resolved.");
 	}
 
-	void GameObjectManager::endDeserialization()
+	void GameObjectDeserializationState::resolve()
 	{
-		assert(mIsDeserializationActive);
+		for (auto& entry : mUnresolvedHandles)
+		{
+			UINT64 instanceId = entry.originalInstanceId;
 
-		for (auto& unresolvedHandle : mUnresolvedHandles)
-			resolveDeserializedHandle(unresolvedHandle, mGODeserializationMode);
+			bool isInternalReference = false;
+
+			const auto findIter = mIdMapping.find(instanceId);
+			if (findIter != mIdMapping.end())
+			{
+				if ((mOptions & GODM_UseNewIds) != 0)
+					instanceId = findIter->second;
+
+				isInternalReference = true;
+			}
+
+			if (isInternalReference)
+			{
+				const auto findIterObj = mDeserializedObjects.find(instanceId);
+
+				if (findIterObj != mDeserializedObjects.end())
+					entry.handle._resolve(findIterObj->second);
+				else
+				{
+					if ((mOptions & GODM_KeepMissing) == 0)
+						entry.handle._resolve(nullptr);
+				}
+			}
+			else if (!isInternalReference && (mOptions & GODM_RestoreExternal) != 0)
+			{
+				HGameObject obj;
+				if(GameObjectManager::instance().tryGetObject(instanceId, obj))
+					entry.handle._resolve(obj);
+				else
+				{
+					if ((mOptions & GODM_KeepMissing) == 0)
+						entry.handle._resolve(nullptr);
+				}
+			}
+			else
+			{
+				if ((mOptions & GODM_KeepMissing) == 0)
+					entry.handle._resolve(nullptr);
+			}
+		}
 
 		for (auto iter = mEndCallbacks.rbegin(); iter != mEndCallbacks.rend(); ++iter)
 		{
 			(*iter)();
 		}
 
-		mIsDeserializationActive = false;
-		mActiveDeserializedObject = nullptr;
 		mIdMapping.clear();
 		mUnresolvedHandles.clear();
 		mEndCallbacks.clear();
 		mUnresolvedHandleData.clear();
+		mDeserializedObjects.clear();
 	}
 
-	void GameObjectManager::resolveDeserializedHandle(UnresolvedHandle& data, UINT32 flags)
+	void GameObjectDeserializationState::registerUnresolvedHandle(UINT64 originalId, GameObjectHandleBase& object)
 	{
-		assert(mIsDeserializationActive);
-
-		UINT64 instanceId = data.originalInstanceId;
-
-		bool isInternalReference = false;
-
-		auto findIter = mIdMapping.find(instanceId);
-		if (findIter != mIdMapping.end())
-		{
-			if ((flags & GODM_UseNewIds) != 0)
-				instanceId = findIter->second;
-
-			isInternalReference = true;
-		}
-
-		if (isInternalReference || (!isInternalReference && (flags & GODM_RestoreExternal) != 0))
-		{
-			auto findIterObj = mObjects.find(instanceId);
-
-			if (findIterObj != mObjects.end())
-				data.handle._resolve(findIterObj->second);
-			else
-			{
-				if ((flags & GODM_KeepMissing) == 0)
-					data.handle._resolve(nullptr);
-			}
-		}
-		else
-		{
-			if ((flags & GODM_KeepMissing) == 0)
-				data.handle._resolve(nullptr);
-		}
-	}
-
-	void GameObjectManager::registerUnresolvedHandle(UINT64 originalId, GameObjectHandleBase& object)
-	{
-#if BS_DEBUG_MODE
-		if (!mIsDeserializationActive)
-		{
-			BS_EXCEPT(InvalidStateException, "Unresolved handle queue only be modified while deserialization is active.");
-		}
-#endif
-
 		// All handles that are deserialized during a single begin/endDeserialization session pointing to the same object
 		// must share the same GameObjectHandleData as that makes certain operations in other systems much simpler. 
 		// Therefore we store all the unresolved handles, and if a handle pointing to the same object was already
@@ -202,11 +179,11 @@ namespace bs
 		bool foundHandleData = false;
 
 		// Search object that are currently being deserialized
-		auto iterFind = mIdMapping.find(originalId);
+		const auto iterFind = mIdMapping.find(originalId);
 		if (iterFind != mIdMapping.end())
 		{
-			auto iterFind2 = mObjects.find(iterFind->second);
-			if (iterFind2 != mObjects.end())
+			const auto iterFind2 = mDeserializedObjects.find(iterFind->second);
+			if (iterFind2 != mDeserializedObjects.end())
 			{
 				object.mData = iterFind2->second.mData;
 				foundHandleData = true;
@@ -231,27 +208,26 @@ namespace bs
 		mUnresolvedHandles.push_back({ originalId, object });
 	}
 
-	void GameObjectManager::registerOnDeserializationEndCallback(std::function<void()> callback)
+	void GameObjectDeserializationState::registerObject(UINT64 originalId, GameObjectHandleBase& object)
 	{
-#if BS_DEBUG_MODE
-		if (!mIsDeserializationActive)
-		{
-			BS_EXCEPT(InvalidStateException, "Callback queue only be modified while deserialization is active.");
-		}
-#endif
+		assert(originalId != 0 && "Invalid game object ID.");
 
-		mEndCallbacks.push_back(callback);
+		const auto iterFind = mUnresolvedHandleData.find(originalId);
+		if (iterFind != mUnresolvedHandleData.end())
+		{
+			SPtr<GameObject> ptr = object.getInternalPtr();
+
+			object.mData = iterFind->second;
+			object._setHandleData(ptr);
+		}
+
+		const UINT64 newId = object->getInstanceId();
+		mIdMapping[originalId] = newId;
+		mDeserializedObjects[newId] = object;
 	}
 
-	void GameObjectManager::setDeserializationMode(UINT32 gameObjectDeserializationMode)
+	void GameObjectDeserializationState::registerOnDeserializationEndCallback(std::function<void()> callback)
 	{
-#if BS_DEBUG_MODE
-		if (mIsDeserializationActive)
-		{
-			BS_EXCEPT(InvalidStateException, "Deserialization modes can not be modified when deserialization is not active.");
-		}
-#endif
-
-		mGODeserializationMode = gameObjectDeserializationMode;
+		mEndCallbacks.push_back(callback);
 	}
 }

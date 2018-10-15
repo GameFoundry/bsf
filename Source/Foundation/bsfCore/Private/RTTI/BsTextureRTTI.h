@@ -84,7 +84,7 @@ namespace bs
 				&TextureRTTI::setPixelData, &TextureRTTI::setPixelDataArraySize, RTTI_Flag_SkipInReferenceSearch);
 		}
 
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			Texture* texture = static_cast<Texture*>(obj);
 			TextureProperties& texProps = texture->mProperties;

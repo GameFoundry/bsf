@@ -6,6 +6,7 @@
 #include "Reflection/BsRTTIType.h"
 #include "Scene/BsComponent.h"
 #include "Private/RTTI/BsGameObjectRTTI.h"
+#include "Utility/BsUtility.h"
 
 namespace bs
 {
@@ -17,10 +18,7 @@ namespace bs
 	class BS_CORE_EXPORT ComponentRTTI : public RTTIType<Component, GameObject, ComponentRTTI>
 	{
 	public:
-		ComponentRTTI()
-		{ }
-
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			Component* comp = static_cast<Component*>(obj);
 
@@ -28,6 +26,9 @@ namespace bs
 			// (it's only required for new components).
 			if (comp->mRTTIData.empty())
 				return;
+
+			BS_ASSERT(context != nullptr && rtti_is_of_type<CoreSerializationContext>(context));
+			auto coreContext = static_cast<CoreSerializationContext*>(context);
 
 			GODeserializationData& deserializationData = any_cast_ref<GODeserializationData>(comp->mRTTIData);
 
@@ -39,7 +40,8 @@ namespace bs
 				// deserialized handles pointing to this object can be resolved.
 				SPtr<Component> compPtr = std::static_pointer_cast<Component>(deserializationData.ptr);
 
-				GameObjectManager::instance().registerObject(compPtr, deserializationData.originalId);
+				GameObjectHandleBase handle = GameObjectManager::instance().registerObject(compPtr);
+				coreContext->goState->registerObject(deserializationData.originalId, handle);
 			}
 			
 			comp->mRTTIData = nullptr;

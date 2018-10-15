@@ -29,7 +29,7 @@ namespace bs
 			BS_RTTI_MEMBER_REFLPTR(mFilteredTexture, 8)
 		BS_END_RTTI_MEMBERS
 	public:
-		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onSerializationStarted(IReflectable* obj, SerializationContext* context) override
 		{
 			ReflectionProbe* probe = static_cast<ReflectionProbe*>(obj);
 
@@ -38,7 +38,7 @@ namespace bs
 				probe->mRendererTask->wait();
 		}
 
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			// Note: Since this is a CoreObject I should call initialize() right after deserialization,
 			// but since this specific type is used in Components we delay initialization until Component

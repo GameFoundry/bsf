@@ -63,6 +63,36 @@ namespace bs
 		mFields.push_back(field);
 	}
 
+	class SerializationContextRTTI : public RTTIType<SerializationContext, IReflectable, SerializationContextRTTI>
+	{
+		const String& getRTTIName() override
+		{
+			static String name = "SerializationContext";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_SerializationContext;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			BS_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
+			return nullptr;
+		}
+	};
+
+	inline RTTITypeBase* SerializationContext::getRTTIStatic()
+	{
+		return SerializationContextRTTI::instance();
+	}
+
+	inline RTTITypeBase* SerializationContext::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
 	SPtr<IReflectable> rtti_create(UINT32 rttiId)
 	{
 		return IReflectable::createInstanceFromTypeId(rttiId);

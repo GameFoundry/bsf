@@ -80,7 +80,7 @@ namespace bs
 				&GUISkinRTTI::setStyle, &GUISkinRTTI::setStyleArraySize);
 		}
 
-		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onSerializationStarted(IReflectable* obj, SerializationContext* context) override
 		{
 			GUISkin* skin = static_cast<GUISkin*>(obj);
 

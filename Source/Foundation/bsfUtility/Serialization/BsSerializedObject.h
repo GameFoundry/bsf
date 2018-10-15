@@ -7,6 +7,8 @@
 
 namespace bs
 {
+	struct SerializationContext;
+
 	/** @addtogroup Serialization
 	 *  @{
 	 */
@@ -82,8 +84,15 @@ namespace bs
 		/** @copydoc SerializedInstance::clone */
 		SPtr<SerializedInstance> clone(bool cloneData = true) override;
 
-		/** Decodes the serialized object back into its original IReflectable object form. */
-		SPtr<IReflectable> decode() const;
+		/** 
+		 * Decodes the serialized object back into its original IReflectable object form. 
+		 * 
+		 * @param[in]	context			Optional object that will be passed along to all serialized objects through
+		 *								their serialization callbacks. Can be used for controlling serialization, 
+		 *								maintaining state or sharing information between objects during 
+		 *								serialization.
+		 */
+		SPtr<IReflectable> decode(SerializationContext* context = nullptr) const;
 
 		/** 
 		 * Serializes the provided object and returns its SerializedObject representation. 
@@ -91,9 +100,14 @@ namespace bs
 		 * @param[in]	obj			Object to serialize;
 		 * @param[in]	shallow		If true then pointers to other IReflectable objects will not be followed. If false the
 		 *							entire hierarchy will be serialized.
+		 * @param[in]	context		Optional object that will be passed along to all deserialized objects through
+		 *							their deserialization callbacks. Can be used for controlling deserialization, 
+		 *							maintaining state or sharing information between objects during 
+		 *							deserialization.
 		 * @return					Serialized version of @p obj.
 		 */
-		static SPtr<SerializedObject> create(IReflectable& obj, bool shallow = false);
+		static SPtr<SerializedObject> create(IReflectable& obj, bool shallow = false, 
+			SerializationContext* context = nullptr);
 
 		Vector<SerializedSubObject> subObjects;
 

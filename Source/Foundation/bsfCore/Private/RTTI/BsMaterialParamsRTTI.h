@@ -212,7 +212,7 @@ namespace bs
 				&MaterialParamsRTTI::getDataParamArraySize, &MaterialParamsRTTI::setDataParam, &MaterialParamsRTTI::setDataParamArraySize);
 		}
 
-		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onSerializationStarted(IReflectable* obj, SerializationContext* context) override
 		{
 			MaterialParams* paramsObj = static_cast<MaterialParams*>(obj);
 
@@ -223,7 +223,7 @@ namespace bs
 			}
 		}
 
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			MaterialParams* paramsObj = static_cast<MaterialParams*>(obj);
 

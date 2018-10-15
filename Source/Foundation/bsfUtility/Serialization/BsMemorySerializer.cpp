@@ -12,7 +12,7 @@ using namespace std::placeholders;
 namespace bs
 {
 	UINT8* MemorySerializer::encode(IReflectable* object, UINT32& bytesWritten, 
-		std::function<void*(UINT32)> allocator, bool shallow, const UnorderedMap<String, UINT64>& params)
+		std::function<void*(UINT32)> allocator, bool shallow, SerializationContext* context)
 	{
 		using namespace std::placeholders;
 
@@ -25,7 +25,7 @@ namespace bs
 		mBufferPieces.push_back(piece);
 
 		bs.encode(object, piece.buffer, WRITE_BUFFER_SIZE, &bytesWritten, 
-			std::bind(&MemorySerializer::flushBuffer, this, _1, _2, _3), shallow, params);
+			std::bind(&MemorySerializer::flushBuffer, this, _1, _2, _3), shallow, context);
 
 		UINT8* resultBuffer;
 		if(allocator != nullptr)
@@ -53,12 +53,12 @@ namespace bs
 		return resultBuffer;
 	}
 
-	SPtr<IReflectable> MemorySerializer::decode(UINT8* buffer, UINT32 bufferSize, const UnorderedMap<String, UINT64>& params)
+	SPtr<IReflectable> MemorySerializer::decode(UINT8* buffer, UINT32 bufferSize, SerializationContext* context)
 	{
 		SPtr<MemoryDataStream> stream = bs_shared_ptr_new<MemoryDataStream>(buffer, bufferSize, false);
 
 		BinarySerializer bs;
-		SPtr<IReflectable> object = bs.decode(stream, (UINT32)bufferSize, params);
+		SPtr<IReflectable> object = bs.decode(stream, (UINT32)bufferSize, context);
 
 		return object;
 	}

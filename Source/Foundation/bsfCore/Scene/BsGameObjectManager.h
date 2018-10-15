@@ -12,8 +12,8 @@ namespace bs
 	 *  @{
 	 */
 
-	/**	Possible modes to use when deserializing games objects. */
-	enum GameObjectHandleDeserializationMode
+	/**	Possible modes to use when deserializing game objects. */
+	enum GameObjectDeserializationModeFlags
 	{
 		/** All handles will point to old ID that were restored from the deserialized file. */
 		GODM_UseOriginalIds = 0x01, 
@@ -36,54 +36,65 @@ namespace bs
 	 */
 	class BS_CORE_EXPORT GameObjectManager : public Module<GameObjectManager>
 	{
-		/**	Contains data for an yet unresolved game object handle. */
-		struct UnresolvedHandle
-		{
-			UINT64 originalInstanceId;
-			GameObjectHandleBase handle;
-		};
-
 	public:
-		GameObjectManager();
+		GameObjectManager() = default;
 		~GameObjectManager();
 
 		/**
 		 * Registers a new GameObject and returns the handle to the object.
 		 * 			
 		 * @param[in]	object			Constructed GameObject to wrap in the handle and initialize.
-		 * @param[in]	originalId		If the object is being created due to deserialization you must provide the original
-		 *								object's ID so that deserialized handles can map to it properly.
 		 * @return						Handle to the GameObject.
+		 * 
+		 * @note	Thread safe.
 		 */
-		GameObjectHandleBase registerObject(const SPtr<GameObject>& object, UINT64 originalId = 0);
+		GameObjectHandleBase registerObject(const SPtr<GameObject>& object);
 
 		/**
 		 * Unregisters a GameObject. Handles to this object will no longer be valid after this call. This should be called
 		 * whenever a GameObject is destroyed.
+		 *
+		 * @note	Thread safe.
 		 */
 		void unregisterObject(GameObjectHandleBase& object);
 
 		/**
 		 * Attempts to find a GameObject handle based on the GameObject instance ID. Returns empty handle if ID cannot be 
 		 * found.
+		 *
+		 * @note	Thread safe.
 		 */
 		GameObjectHandleBase getObject(UINT64 id) const;
 
 		/**
 		 * Attempts to find a GameObject handle based on the GameObject instance ID. Returns true if object with the 
 		 * specified ID is found, false otherwise.
+		 *
+		 * @note	Thread safe.
 		 */
 		bool tryGetObject(UINT64 id, GameObjectHandleBase& object) const;
 
-		/**	Checks if the GameObject with the specified instance ID exists. */
+		/**	
+		 * Checks if the GameObject with the specified instance ID exists.
+		 * 
+		 * @note	Thread safe.
+		 */
 		bool objectExists(UINT64 id) const;
 
 		/**
 		 * Changes the instance ID by which an object can be retrieved by. 
 		 *
 		 * @note	Caller is required to update the object itself with the new ID.
+		 * @note	Thread safe.
 		 */
 		void remapId(UINT64 oldId, UINT64 newId);
+
+		/** 
+		 * Allocates a new unique game object ID. 
+		 * 
+		 * @note	Thread safe.
+		 */
+		UINT64 reserveId();
 
 		/**	Queues the object to be destroyed at the end of a GameObject update cycle. */
 		void queueForDestroy(const GameObjectHandleBase& object);
@@ -94,60 +105,54 @@ namespace bs
 		/**	Triggered when a game object is being destroyed. */
 		Event<void(const HGameObject&)> onDestroyed;
 
-		/************************************************************************/
-		/* 							DESERIALIZATION                      		*/
-		/************************************************************************/
-		// Note: GameObjects need a bit of special handling when it comes to deserialization,
-		// which is what this part of the code is used for. It performs two main actions:
-		//  - 1. Resolves all GameObjectHandles on deserialization
-		//    - We can't just resolve them as we go because during deserialization not all objects
-		//      have necessarily been created.
-		//  - 2. Maps serialized IDs to actual in-engine IDs. 
+	private:
+		std::atomic<UINT64> mNextAvailableID = { 1 } ; // 0 is not a valid ID
+		Map<UINT64, GameObjectHandleBase> mObjects;
+		Map<UINT64, GameObjectHandleBase> mQueuedForDestroy;
 
-		/** Needs to be called whenever GameObject deserialization starts. Must be followed by endDeserialization() call. */
-		void startDeserialization();
+		mutable Mutex mMutex;
+	};
 
-		/** Needs to be called whenever GameObject deserialization ends. Must be preceded by startDeserialization() call. */
-		void endDeserialization();
+	/** Resolves game object handles and ID during deserialization of a game object hierarchy. */
+	class BS_CORE_EXPORT GameObjectDeserializationState
+	{
+	private:
+		/**	Contains data for an yet unresolved game object handle. */
+		struct UnresolvedHandle
+		{
+			UINT64 originalInstanceId;
+			GameObjectHandleBase handle;
+		};
 
-		/**	Returns true if GameObject deserialization is currently in progress. */
-		bool isGameObjectDeserializationActive() const { return mIsDeserializationActive; }
+	public:
+		/**
+		 * Starts game object deserialization.
+		 * 
+		 * @param[in]	options		One or a combination of GameObjectDeserializationModeFlags, controlling how
+		 *							are game objects deserialized.
+		 */
+		GameObjectDeserializationState(UINT32 options = GODM_UseNewIds | GODM_BreakExternal);
+		~GameObjectDeserializationState();
 
 		/**	Queues the specified handle and resolves it when deserialization ends. */
 		void registerUnresolvedHandle(UINT64 originalId, GameObjectHandleBase& object);
 
+		/** Notifies the system about a new deserialized game object and its original ID. */
+		void registerObject(UINT64 originalId, GameObjectHandleBase& object);
+
 		/**	Registers a callback that will be triggered when GameObject serialization ends. */
 		void registerOnDeserializationEndCallback(std::function<void()> callback);
 
-		/**
-		 * Changes the deserialization mode for any following GameObject handle.
-		 *
-		 * @param[in]	gameObjectDeserializationMode	Mode that controls how are GameObjects handles resolved when being
-		 *												deserialized.
-		 */
-		void setDeserializationMode(UINT32 gameObjectDeserializationMode);
-
-		/**
-		 * Attempts to update the ID of the provided handle by mapping its old ID to the newly deserialized object and its
-		 * new ID. Game object deserialization must be active.
-		 */
-		void resolveDeserializedHandle(UnresolvedHandle& data, UINT32 flags);
-
-		/**	Gets the currently active flags that control how are game object handles deserialized. */
-		UINT32 getDeserializationFlags() const { return mGODeserializationMode; }
+		/** Resolves all registered handles and objects, and triggers end callbacks. */
+		void resolve();
 
 	private:
-		UINT64 mNextAvailableID; // 0 is not a valid ID
-		Map<UINT64, GameObjectHandleBase> mObjects;
-		Map<UINT64, GameObjectHandleBase> mQueuedForDestroy;
-
-		GameObject* mActiveDeserializedObject;
-		bool mIsDeserializationActive;
-		Map<UINT64, UINT64> mIdMapping;
-		Map<UINT64, SPtr<GameObjectHandleData>> mUnresolvedHandleData;
+		UnorderedMap<UINT64, UINT64> mIdMapping;
+		UnorderedMap<UINT64, SPtr<GameObjectHandleData>> mUnresolvedHandleData;
+		UnorderedMap<UINT64, GameObjectHandleBase> mDeserializedObjects;
 		Vector<UnresolvedHandle> mUnresolvedHandles;
 		Vector<std::function<void()>> mEndCallbacks;
-		UINT32 mGODeserializationMode;
+		UINT32 mOptions;
 	};
 
 	/** @} */

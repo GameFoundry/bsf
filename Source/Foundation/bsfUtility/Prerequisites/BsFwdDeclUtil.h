@@ -121,6 +121,7 @@ namespace bs
 		TID_Flags = 68,
 		TID_IReflectable = 69,
 		TID_DataBlob = 70,
-		TID_ColorGradient = 71
+		TID_ColorGradient = 71,
+		TID_SerializationContext = 72
 	};
 }

@@ -10,11 +10,9 @@ namespace bs
 	 *  @{
 	 */
 
-	// TODO - Low priority. Eventually I'll want to generalize BinarySerializer to Serializer class, then I can make this class accept
-	// a generic Serializer interface so it may write both binary, plain-text or some other form of data.
+	struct SerializationContext;
 
 	/** Encodes the provided object to the specified file using the RTTI system. */
-	
 	class BS_UTILITY_EXPORT FileEncoder
 	{
 		public:
@@ -26,10 +24,12 @@ namespace bs
 		 * data to the provided file location.
 		 *
 		 * @param[in]	object		Object to encode.
-		 * @param[in]	params		Optional parameters to be passed to the serialization callbacks on the objects being
-		 *							serialized.
+		 * @param[in]	context		Optional object that will be passed along to all serialized objects through
+		 *							their serialization callbacks. Can be used for controlling serialization, 
+		 *							maintaining state or sharing information between objects during 
+		 *							serialization.
 		 */
-		void encode(IReflectable* object, const UnorderedMap<String, UINT64>& params = UnorderedMap<String, UINT64>());
+		void encode(IReflectable* object, SerializationContext* context = nullptr);
 
 	private:
 		/** Called by the binary serializer whenever the buffer gets full. */
@@ -50,10 +50,12 @@ namespace bs
 		/**	
 		 * Deserializes an IReflectable object by reading the binary data at the provided file location. 
 		 *
-		 * @param[in]	params		Optional parameters to be passed to the serialization callbacks on the objects being
-		 *							serialized.
+		 * @param[in]	context		Optional object that will be passed along to all deserialized objects through
+		 *							their deserialization callbacks. Can be used for controlling deserialization, 
+		 *							maintaining state or sharing information between objects during 
+		 *							deserialization.
 		 */
-		SPtr<IReflectable> decode(const UnorderedMap<String, UINT64>& params = UnorderedMap<String, UINT64>());
+		SPtr<IReflectable> decode(SerializationContext* context = nullptr);
 
 		/** Skips over than object in the file. Calling decode() will decode the next object. */
 		void skip();

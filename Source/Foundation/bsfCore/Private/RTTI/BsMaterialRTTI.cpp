@@ -6,7 +6,7 @@
 
 namespace bs
 {
-	void MaterialRTTI::onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params)
+	void MaterialRTTI::onDeserializationEnded(IReflectable* obj, SerializationContext* context)
 	{
 		Material* material = static_cast<Material*>(obj);
 		material->initialize();

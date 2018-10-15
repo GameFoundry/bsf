@@ -18,14 +18,8 @@ namespace bs
 	/**	Provides temporary storage for data used during GameObject deserialization. */
 	struct GODeserializationData
 	{
-		GODeserializationData()
-			:isDeserializationParent(false), originalId(0)
-		{ }
-
 		SPtr<GameObject> ptr;
-		bool isDeserializationParent;
-		UINT64 originalId;
-		Any moreData;
+		UINT64 originalId = 0;
 	};
 
 	class BS_CORE_EXPORT GameObjectRTTI : public RTTIType<GameObject, IReflectable, GameObjectRTTI>
@@ -68,7 +62,7 @@ namespace bs
 			addPlainField("mLinkId", 2, &GameObjectRTTI::getLinkId, &GameObjectRTTI::setLinkId);
 		}
 
-		void onDeserializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationStarted(IReflectable* obj, SerializationContext* context) override
 		{
 			GameObject* gameObject = static_cast<GameObject*>(obj);
 

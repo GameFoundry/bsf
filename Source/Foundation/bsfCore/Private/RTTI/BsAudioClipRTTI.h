@@ -52,7 +52,7 @@ namespace bs
 			addDataBlockField("mData", 6, &AudioClipRTTI::getData, &AudioClipRTTI::setData, 0);
 		}
 
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			AudioClip* clip = static_cast<AudioClip*>(obj);
 			clip->initialize();

@@ -32,7 +32,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mShadowBias, 12)
 		BS_END_RTTI_MEMBERS
 	public:
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			// Note: Since this is a CoreObject I should call initialize() right after deserialization,
 			// but since this specific type is used in Components we delay initialization until Component

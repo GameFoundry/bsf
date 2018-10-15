@@ -30,12 +30,14 @@ namespace bs
 			addReflectablePtrField("mMetaData", 1, &ResourceRTTI::getMetaData, &ResourceRTTI::setMetaData);
 		}
 
-		void onDeserializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationStarted(IReflectable* obj, SerializationContext* context) override
 		{
 			Resource* resource = static_cast<Resource*>(obj);
 
-			auto iterFind = params.find("keepSourceData");
-			resource->mKeepSourceData = iterFind != params.end() && iterFind->second > 0;
+			if(context)
+				resource->mKeepSourceData = (context->flags & SF_KeepResourceSourceData) != 0;
+			else
+				resource->mKeepSourceData = false;
 		}
 
 		const String& getRTTIName() override

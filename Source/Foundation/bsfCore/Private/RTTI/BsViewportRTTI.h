@@ -24,7 +24,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mClearFlags, 4)
 		BS_END_RTTI_MEMBERS
 	public:
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			Viewport* viewport = static_cast<Viewport*>(obj);
 			viewport->initialize();

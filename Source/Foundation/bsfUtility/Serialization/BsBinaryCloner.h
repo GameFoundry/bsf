@@ -68,7 +68,7 @@ namespace bs
 		static void gatherReferences(IReflectable* object, FrameAlloc& alloc, ObjectReferenceData& referenceData);
 
 		/**
-		 * Restores a set of references retrieved by gatherReferences() and applies them toa specific object. Type of the 
+		 * Restores a set of references retrieved by gatherReferences() and applies them to a specific object. Type of the 
 		 * object must be the same as the type that was used when calling gatherReferences().
 		 */
 		static void restoreReferences(IReflectable* object, FrameAlloc& alloc, const ObjectReferenceData& referenceData);

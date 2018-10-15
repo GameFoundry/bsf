@@ -13,18 +13,13 @@ namespace bs
 		public:
 			IntermediateSerializer();
 
-			/**
-			 * Encodes an IReflectable object into an intermediate representation.
-			 *
-			 * @param[in]	object		Object to encode.
-			 * @param[in]	shallow		Determines how to handle referenced objects. If true then references will not be encoded
-			 *							and will be set to null. If false then references will be encoded as well and restored
-			 *							upon decoding.
-			 */
-			SPtr<SerializedObject> encode(IReflectable* object, bool shallow = false);
+			/** Encodes an IReflectable object into an intermediate representation. */
+			SPtr<SerializedObject> encode(IReflectable* object, bool shallow = false, 
+				SerializationContext* context = nullptr);
 
 			/** Decodes an intermediate representation of a serialized object into the actual object. */
-			SPtr<IReflectable> decode(const SerializedObject* serializedObject);
+			SPtr<IReflectable> decode(const SerializedObject* serializedObject, 
+				SerializationContext* context = nullptr);
 
 		private:
 			struct ObjectToDecode
@@ -46,7 +41,7 @@ namespace bs
 			SPtr<SerializedObject> encodeEntry(IReflectable* object, bool shallow);
 
 			UnorderedMap<const SerializedObject*, ObjectToDecode> mObjectMap;
-			UnorderedMap<String, UINT64> mParams;
+			SerializationContext* mContext = nullptr;
 			FrameAlloc* mAlloc = nullptr;
 		};
 
@@ -54,8 +49,11 @@ namespace bs
 			:mAlloc(&gFrameAlloc())
 		{ }
 
-		SPtr<IReflectable> IntermediateSerializer::decode(const SerializedObject* serializedObject)
+		SPtr<IReflectable> IntermediateSerializer::decode(const SerializedObject* serializedObject, 
+			SerializationContext* context)
 		{
+			mContext = context;
+
 			mAlloc->markFrame();
 			mObjectMap.clear();
 
@@ -92,8 +90,11 @@ namespace bs
 			return output;
 		}
 
-		SPtr<SerializedObject> IntermediateSerializer::encode(IReflectable* object, bool shallow)
+		SPtr<SerializedObject> IntermediateSerializer::encode(IReflectable* object, bool shallow, 
+			SerializationContext* context)
 		{
+			mContext = context;
+
 			return encodeEntry(object, shallow);
 		}
 
@@ -113,7 +114,7 @@ namespace bs
 					continue;
 
 				RTTITypeBase* rttiInstance = rtti->_clone(*mAlloc);
-				rttiInstance->onDeserializationStarted(object.get(), mParams);
+				rttiInstance->onDeserializationStarted(object.get(), mContext);
 				rttiInstances.push(rttiInstance);
 
 				UINT32 numFields = rtti->getNumFields();
@@ -331,7 +332,7 @@ namespace bs
 			while (!rttiInstances.empty())
 			{
 				RTTITypeBase* rttiInstance = rttiInstances.top();
-				rttiInstance->onDeserializationEnded(object.get(), mParams);
+				rttiInstance->onDeserializationEnded(object.get(), mContext);
 				mAlloc->destruct(rttiInstance);
 
 				rttiInstances.pop();
@@ -348,7 +349,7 @@ namespace bs
 				while (!rttiInstances.empty())
 				{
 					RTTITypeBase* rttiInstance = rttiInstances.top();
-					rttiInstance->onSerializationEnded(object, mParams);
+					rttiInstance->onSerializationEnded(object, mContext);
 					mAlloc->destruct(rttiInstance);
 
 					rttiInstances.pop();
@@ -363,7 +364,7 @@ namespace bs
 				RTTITypeBase* rttiInstance = rtti->_clone(*mAlloc);
 				rttiInstances.push(rttiInstance);
 
-				rttiInstance->onSerializationStarted(object, mParams);
+				rttiInstance->onSerializationStarted(object, mContext);
 
 				output->subObjects.push_back(SerializedSubObject());
 				SerializedSubObject& subObject = output->subObjects.back();
@@ -557,17 +558,17 @@ namespace bs
 		}
 	}
 
-	SPtr<SerializedObject> SerializedObject::create(IReflectable& obj, bool shallow)
+	SPtr<SerializedObject> SerializedObject::create(IReflectable& obj, bool shallow, SerializationContext* context)
 	{
 		detail::IntermediateSerializer is;
-		return is.encode(&obj, shallow);
+		return is.encode(&obj, shallow, context);
 		
 	}
 
-	SPtr<IReflectable> SerializedObject::decode() const
+	SPtr<IReflectable> SerializedObject::decode(SerializationContext* context) const
 	{
 		detail::IntermediateSerializer is;
-		return is.decode(this);
+		return is.decode(this, context);
 	}
 
 	SPtr<SerializedInstance> SerializedObject::clone(bool cloneData)

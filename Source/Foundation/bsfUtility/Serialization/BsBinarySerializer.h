@@ -15,6 +15,7 @@ namespace bs
 	class IReflectable;
 	struct RTTIReflectableFieldBase;
 	struct RTTIReflectablePtrFieldBase;
+	struct SerializationContext;
 
 	/**
 	 * Encodes all the fields of the provided object into a binary format. Fields are encoded using their unique IDs. 
@@ -51,23 +52,25 @@ namespace bs
 		 * @param[in]	shallow					Determines how to handle referenced objects. If true then references will 
 		 *										not be encoded and will be set to null. If false then references will be 
 		 *										encoded as well and restored upon decoding.
-		 * @param[in]	params					Optional parameters to be passed to the serialization callbacks on the
-		 *										objects being serialized.
+		 * @param[in]	context					Optional object that will be passed along to all serialized objects through
+		 *										their serialization callbacks. Can be used for controlling serialization, 
+		 *										maintaining state or sharing information between objects during 
+		 *										serialization.
 		 */
 		void encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, UINT32* bytesWritten,
 			std::function<UINT8*(UINT8* buffer, UINT32 bytesWritten, UINT32& newBufferSize)> flushBufferCallback,
-			bool shallow = false, const UnorderedMap<String, UINT64>& params = UnorderedMap<String, UINT64>());
+			bool shallow = false, SerializationContext* context = nullptr);
 
 		/**
 		 * Decodes an object from binary data.
 		 *
 		 * @param[in]	data  		Binary data to decode.
 		 * @param[in]	dataLength	Length of the data in bytes.
-		 * @param[in]	params		Optional parameters to be passed to the serialization callbacks on the objects being
-		 *							serialized.
+		 * @param[in]	context		Optional object that will be passed along to all serialized objects through
+		 *							their deserialization callbacks. Can be used for controlling deserialization, 
+		 *							maintaining state or sharing information between objects during deserialization.
 		 */
-		SPtr<IReflectable> decode(const SPtr<DataStream>& data, UINT32 dataLength, 
-			const UnorderedMap<String, UINT64>& params = UnorderedMap<String, UINT64>());
+		SPtr<IReflectable> decode(const SPtr<DataStream>& data, UINT32 dataLength, SerializationContext* context = nullptr);
 	private:
 		struct ObjectMetaData
 		{
@@ -153,7 +156,7 @@ namespace bs
 		UINT32 mTotalBytesWritten;
 		FrameAlloc* mAlloc = nullptr;
 
-		UnorderedMap<String, UINT64> mParams;
+		SerializationContext* mContext = nullptr;
 
 		static constexpr const int META_SIZE = 4; // Meta field size
 		static constexpr const int NUM_ELEM_FIELD_SIZE = 4; // Size of the field storing number of array elements

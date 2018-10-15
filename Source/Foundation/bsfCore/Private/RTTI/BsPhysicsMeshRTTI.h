@@ -22,7 +22,7 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			PhysicsMesh* mesh = static_cast<PhysicsMesh*>(obj);
 			mesh->initialize();

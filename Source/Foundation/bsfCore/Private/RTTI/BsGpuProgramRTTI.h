@@ -87,14 +87,14 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 	public:
-		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onSerializationStarted(IReflectable* obj, SerializationContext* context) override
 		{
 			// Need to ensure the core thread object is initialized
 			GpuProgram* gpuProgram = static_cast<GpuProgram*>(obj);
 			gpuProgram->blockUntilCoreInitialized();
 		}
 
-		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
+		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
 		{
 			GpuProgram* gpuProgram = static_cast<GpuProgram*>(obj);
 			gpuProgram->initialize();
