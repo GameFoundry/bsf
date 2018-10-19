@@ -48,7 +48,8 @@ namespace bs { namespace ct
 
 		/** Binds the material for rendering, sets up parameters and executes it. */
 		void execute(const RendererView& view, const VisibleLightData& lightData, const GBufferTextures& gbuffer,
-			const SPtr<Texture>& lightAccumTex, const SPtr<Texture>& lightAccumTexArray, const SPtr<Texture>& msaaCoverage);
+			const SPtr<Texture>& inputTexture, const SPtr<Texture>& lightAccumTex, const SPtr<Texture>& lightAccumTexArray, 
+			const SPtr<Texture>& msaaCoverage);
 
 		/** Returns the material variation matching the provided parameters. */
 		static TiledDeferredLightingMat* getVariation(UINT32 msaaCount);
@@ -59,6 +60,8 @@ namespace bs { namespace ct
 
 		GpuParamBuffer mLightBufferParam;
 		GpuParamLoadStoreTexture mOutputTextureParam;
+
+		GpuParamTexture mInColorTextureParam;
 		GpuParamTexture mMSAACoverageTexParam;
 
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
@@ -81,6 +84,7 @@ namespace bs { namespace ct
 
 		/** Binds the material for rendering, sets up parameters and executes it. */
 		void execute(const SPtr<Texture>& inputArray, const SPtr<Texture>& target);
+
 	private:
 		GpuParamTexture mInputParam;
 	};

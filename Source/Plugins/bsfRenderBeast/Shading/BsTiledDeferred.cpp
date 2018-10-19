@@ -19,6 +19,7 @@ namespace bs { namespace ct
 		mSampleCount = mVariation.getUInt("MSAA_COUNT");
 
 		mParams->getBufferParam(GPT_COMPUTE_PROGRAM, "gLights", mLightBufferParam);
+		mParams->getTextureParam(GPT_COMPUTE_PROGRAM, "gInColor", mInColorTextureParam);
 
 		if (mParams->hasLoadStoreTexture(GPT_COMPUTE_PROGRAM, "gOutput"))
 			mParams->getLoadStoreTextureParam(GPT_COMPUTE_PROGRAM, "gOutput", mOutputTextureParam);
@@ -36,8 +37,8 @@ namespace bs { namespace ct
 	}
 
 	void TiledDeferredLightingMat::execute(const RendererView& view, const VisibleLightData& lightData, 
-		const GBufferTextures& gbuffer, const SPtr<Texture>& lightAccumTex, const SPtr<Texture>& lightAccumTexArray, 
-		const SPtr<Texture>& msaaCoverage)
+		const GBufferTextures& gbuffer, const SPtr<Texture>& inputTexture, const SPtr<Texture>& lightAccumTex, 
+		const SPtr<Texture>& lightAccumTexArray, const SPtr<Texture>& msaaCoverage)
 	{
 		BS_RENMAT_PROFILE_BLOCK
 
@@ -99,6 +100,7 @@ namespace bs { namespace ct
 
 		mGBufferParams.bind(gbuffer);
 		mParams->setParamBlockBuffer("PerCamera", view.getPerViewBuffer());
+		mInColorTextureParam.set(inputTexture);
 
 		if (mSampleCount > 1)
 		{

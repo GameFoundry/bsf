@@ -11,6 +11,7 @@
 #include "Physics/BsPhysics.h"
 #include "Physics/BsCollider.h"
 #include "Math/BsLineSegment3.h"
+#include "Material/BsShader.h"
 
 namespace bs
 {
@@ -68,9 +69,20 @@ namespace bs
 		const HMaterial& material = state.system->getSettings().material;
 		if (material.isLoaded(false))
 		{
-			const HSpriteTexture& spriteTex = material->getSpriteTexture("gTexture");
-			if (spriteTex.isLoaded(true))
-				texture = spriteTex.get();
+			const HShader& shader = material->getShader();
+			if(shader->hasTextureParam("gTexture"))
+			{
+				const HSpriteTexture& spriteTex = material->getSpriteTexture("gTexture");
+				if (spriteTex.isLoaded(true))
+					texture = spriteTex.get();
+			}
+
+			if(shader->hasTextureParam("gAlbedoTex"))
+			{
+				const HSpriteTexture& spriteTex = material->getSpriteTexture("gAlbedoTex");
+				if (spriteTex.isLoaded(true))
+					texture = spriteTex.get();
+			}
 		}
 
 		bool hasValidAnimation = texture != nullptr;

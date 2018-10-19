@@ -273,15 +273,18 @@ namespace bs { namespace ct
 		roughMetalTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RG16F, width, height, TU_RENDERTARGET,
 			numSamples, false)); // Note: Metal doesn't need 16-bit float
 
-		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[0]);
+		auto sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[0]);
+		auto sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[1]);
 		SPtr<PooledRenderTexture> sceneDepthTex = sceneDepthNode->depthTex;
+		SPtr<PooledRenderTexture> sceneColorTex = sceneColorNode->sceneColorTex;
 
 		bool rebuildRT = false;
 		if (renderTarget != nullptr)
 		{
-			rebuildRT |= renderTarget->getColorTexture(0) != albedoTex->texture;
-			rebuildRT |= renderTarget->getColorTexture(1) != normalTex->texture;
-			rebuildRT |= renderTarget->getColorTexture(2) != roughMetalTex->texture;
+			rebuildRT |= renderTarget->getColorTexture(0) != sceneColorTex->texture;
+			rebuildRT |= renderTarget->getColorTexture(1) != albedoTex->texture;
+			rebuildRT |= renderTarget->getColorTexture(2) != normalTex->texture;
+			rebuildRT |= renderTarget->getColorTexture(3) != roughMetalTex->texture;
 			rebuildRT |= renderTarget->getDepthStencilTexture() != sceneDepthTex->texture;
 		}
 		else
@@ -290,20 +293,25 @@ namespace bs { namespace ct
 		if (renderTarget == nullptr || rebuildRT)
 		{
 			RENDER_TEXTURE_DESC gbufferDesc;
-			gbufferDesc.colorSurfaces[0].texture = albedoTex->texture;
+			gbufferDesc.colorSurfaces[0].texture = sceneColorTex->texture;
 			gbufferDesc.colorSurfaces[0].face = 0;
 			gbufferDesc.colorSurfaces[0].numFaces = 1;
 			gbufferDesc.colorSurfaces[0].mipLevel = 0;
 
-			gbufferDesc.colorSurfaces[1].texture = normalTex->texture;
+			gbufferDesc.colorSurfaces[1].texture = albedoTex->texture;
 			gbufferDesc.colorSurfaces[1].face = 0;
 			gbufferDesc.colorSurfaces[1].numFaces = 1;
 			gbufferDesc.colorSurfaces[1].mipLevel = 0;
 
-			gbufferDesc.colorSurfaces[2].texture = roughMetalTex->texture;
+			gbufferDesc.colorSurfaces[2].texture = normalTex->texture;
 			gbufferDesc.colorSurfaces[2].face = 0;
 			gbufferDesc.colorSurfaces[2].numFaces = 1;
 			gbufferDesc.colorSurfaces[2].mipLevel = 0;
+
+			gbufferDesc.colorSurfaces[3].texture = roughMetalTex->texture;
+			gbufferDesc.colorSurfaces[3].face = 0;
+			gbufferDesc.colorSurfaces[3].numFaces = 1;
+			gbufferDesc.colorSurfaces[3].mipLevel = 0;
 
 			gbufferDesc.depthStencilSurface.texture = sceneDepthTex->texture;
 			gbufferDesc.depthStencilSurface.face = 0;
@@ -430,7 +438,7 @@ namespace bs { namespace ct
 
 	SmallVector<StringID, 4> RCNodeGBuffer::getDependencies(const RendererView& view)
 	{
-		return { RCNodeSceneDepth::getNodeId(), RCNodeParticleSort::getNodeId() };
+		return { RCNodeSceneDepth::getNodeId(), RCNodeSceneColor::getNodeId(), RCNodeParticleSort::getNodeId() };
 	}
 
 	void RCNodeSceneColor::render(const RenderCompositorNodeInputs& inputs)
@@ -457,7 +465,7 @@ namespace bs { namespace ct
 
 		if (tiledDeferredSupported && viewProps.numSamples > 1)
 		{
-			sceneColorTexArray = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA32F, width, height, 
+			sceneColorTexArray = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, 
 				TU_LOADSTORE, 1, false, viewProps.numSamples));
 		}
 		else
@@ -796,8 +804,9 @@ namespace bs { namespace ct
 	{
 		output = static_cast<RCNodeLightAccumulation*>(inputs.inputNodes[0]);
 
-		RCNodeGBuffer* gbufferNode = static_cast<RCNodeGBuffer*>(inputs.inputNodes[1]);
-		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[2]);
+		auto gbufferNode = static_cast<RCNodeGBuffer*>(inputs.inputNodes[1]);
+		auto sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[2]);
+		auto sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[3]);
 
 		GBufferTextures gbuffer;
 		gbuffer.albedo = gbufferNode->albedoTex->texture;
@@ -816,7 +825,7 @@ namespace bs { namespace ct
 			SPtr<Texture> msaaCoverage;
 			if(viewProps.numSamples > 1)
 			{
-				RCNodeMSAACoverage* coverageNode = static_cast<RCNodeMSAACoverage*>(inputs.inputNodes[3]);
+				RCNodeMSAACoverage* coverageNode = static_cast<RCNodeMSAACoverage*>(inputs.inputNodes[4]);
 				msaaCoverage = coverageNode->output->texture;
 			}
 
@@ -828,8 +837,8 @@ namespace bs { namespace ct
 			if(output->lightAccumulationTexArray)
 				lightAccumTexArray = output->lightAccumulationTexArray->texture;
 
-			tiledDeferredMat->execute(inputs.view, lightData, gbuffer, output->lightAccumulationTex->texture, 
-				lightAccumTexArray, msaaCoverage);
+			tiledDeferredMat->execute(inputs.view, lightData, gbuffer, sceneColorNode->sceneColorTex->texture, 
+				output->lightAccumulationTex->texture, lightAccumTexArray, msaaCoverage);
 
 			if (viewProps.numSamples > 1)
 				output->resolveMSAA();
@@ -954,6 +963,7 @@ namespace bs { namespace ct
 		deps.push_back(RCNodeLightAccumulation::getNodeId());
 		deps.push_back(RCNodeGBuffer::getNodeId());
 		deps.push_back(RCNodeSceneDepth::getNodeId());
+		deps.push_back(RCNodeSceneColor::getNodeId());
 		deps.push_back(RCNodeMSAACoverage::getNodeId());
 
 		return deps;

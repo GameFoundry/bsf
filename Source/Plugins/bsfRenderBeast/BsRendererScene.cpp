@@ -682,8 +682,8 @@ namespace bs {	namespace ct
 		if (shader->hasTextureParam("gTexture"))
 			spriteTexture = renElement.material->getSpriteTexture("gTexture").get();
 
-		if(!spriteTexture && shader->hasTextureParam("gAlbedo"))
-			spriteTexture = renElement.material->getSpriteTexture("gAlbedo").get();
+		if(!spriteTexture && shader->hasTextureParam("gAlbedoTex"))
+			spriteTexture = renElement.material->getSpriteTexture("gAlbedoTex").get();
 
 		if (spriteTexture)
 		{

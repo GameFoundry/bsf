@@ -5,7 +5,7 @@ shader TextureArrayToMSAATexture
 		read = false;
 		write = false;
 	};
-
+	
 	code
 	{
 		struct VStoFS

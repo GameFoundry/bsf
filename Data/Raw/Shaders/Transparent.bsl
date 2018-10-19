@@ -38,15 +38,20 @@ shader Surface
 		
 		[alias(gMetalnessTex)]
 		SamplerState gMetalnessSamp;
+	
+		[alias(gMetalnessTex)]
+		SamplerState gEmissiveMaskSamp;		
 		
 		Texture2D gAlbedoTex = white;
 		Texture2D gNormalTex = normal;
 		Texture2D gRoughnessTex = white;
 		Texture2D gMetalnessTex = black;
+		Texture2D gEmissiveMaskTex = black;
 		
 		cbuffer MaterialParams
 		{
 			float gOpacity = 1.0f;
+			float3 gEmissiveColor = { 1.0f, 1.0f, 1.0f };
 			float2 gUVOffset = { 0.0f, 0.0f };
 			float2 gUVTile = { 1.0f, 1.0f };
 		}
@@ -66,7 +71,8 @@ shader Surface
 			surfaceData.metalness = gMetalnessTex.Sample(gMetalnessSamp, uv).x;
 			
 			float3 lighting = calcLighting(input.worldPosition.xyz, input.position, uv, surfaceData);
-			return float4(lighting, surfaceData.albedo.a * gOpacity);
+			float3 emissive = gEmissiveColor * gEmissiveMaskTex.Sample(gEmissiveMaskSamp, uv).x;
+			return float4(emissive + lighting, surfaceData.albedo.a * gOpacity);
 		}	
 	};
 };

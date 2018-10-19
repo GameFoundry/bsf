@@ -115,11 +115,12 @@ Due to the way its rendering works, this pipeline is incompatible with transpare
 
 ## Surface {#surfaceShaders_b_a}
 This shader is responsible for writing the surface data into the GBuffer. Its entry point must have the following signature:
- - `void fsmain(in VStoFS input, out float4 OutGBufferA : SV_Target0, out float4 OutGBufferB : SV_Target1, out float2 OutGBufferC : SV_Target2)`
+ - `void fsmain(in VStoFS input, out float3 OutSceneColor : SV_Target0, out float4 OutGBufferA : SV_Target1, out float4 OutGBufferB : SV_Target2, out float2 OutGBufferC : SV_Target3)`
  
 Where:
  - *input* - **VSToFS** structure that gets output from the vertex shader.
- - *OutGBufferA*, *OutGBufferB*, *OutGBufferC* - Textures that make up the GBuffer. this is where the shader outputs will be written.
+ - *OutSceneColor* - Use to write scene color directly. This will be blended as-is with results from the lighting calculations.
+ - *OutGBufferA*, *OutGBufferB*, *OutGBufferC* - Textures that make up the GBuffer. This is where the surface properties like albedo color and roughness will be written.
  
 The shader needs to include the following mixins:
  - **BasePass** (from `BasePass.bslinc`) - Performs the default per-vertex transformations and outputs data in the **VStoFS** structure. Optionally you can provide your own vertex evaluation code, as described earlier.
@@ -138,9 +139,10 @@ shader Surface
 	{
 		void fsmain(
 			in VStoFS input, 
-			out float4 OutGBufferA : SV_Target0,
-			out float4 OutGBufferB : SV_Target1,
-			out float2 OutGBufferC : SV_Target2)
+			out float4 OutSceneColor : SV_Target0,
+			out float4 OutGBufferA : SV_Target1,
+			out float4 OutGBufferB : SV_Target2,
+			out float2 OutGBufferC : SV_Target3)
 		{
 			// ...
 		}	
@@ -181,9 +183,10 @@ shader Surface
 	
 		void fsmain(
 			in VStoFS input, 
-			out float4 OutGBufferA : SV_Target0,
-			out float4 OutGBufferB : SV_Target1,
-			out float2 OutGBufferC : SV_Target2)
+			out float4 OutSceneColor : SV_Target0,
+			out float4 OutGBufferA : SV_Target1,
+			out float4 OutGBufferB : SV_Target2,
+			out float2 OutGBufferC : SV_Target3)
 		{
 			SurfaceData surfaceData;
 			surfaceData.albedo = gAlbedoTex.Sample(gAlbedoSamp, input.uv0);
@@ -192,6 +195,8 @@ shader Surface
 			surfaceData.metalness = 0.0f;
 			
 			encodeGBuffer(surfaceData, OutGBufferA, OutGBufferB, OutGBufferC);
+			
+			OutSceneColor = 0.0f;
 		}	
 	};
 };

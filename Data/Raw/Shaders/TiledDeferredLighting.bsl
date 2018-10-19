@@ -37,9 +37,11 @@ shader TiledDeferredLighting
 		}
 	
 		#if MSAA_COUNT > 1
+		Texture2DMS<float4> gInColor;
 		RWTexture2DArray<float4> gOutput;
 		Texture2D gMSAACoverage;
 		#else
+		Texture2D<float4> gInColor;
 		RWTexture2D<float4>	gOutput;
 		#endif
 					
@@ -49,7 +51,7 @@ shader TiledDeferredLighting
 		groupshared uint sNumLightsPerType[2];
 		groupshared uint sTotalNumLights;
 
-		float4 getLighting(float2 clipSpacePos, SurfaceData surfaceData)
+		float4 getLighting(uint2 pixelPos, float2 clipSpacePos, SurfaceData surfaceData, uint sampleIdx)
 		{
 			// x, y are now in clip space, z, w are in view space
 			// We multiply them by a special inverse view-projection matrix, that had the projection entries that effect
@@ -70,7 +72,14 @@ shader TiledDeferredLighting
 			float3 R = 2 * dot(V, N) * N - V;
 			float3 specR = getSpecularDominantDir(N, R, surfaceData.roughness);
 			
-			return getDirectLighting(worldPosition, V, specR, surfaceData, lightOffsets);				
+			float4 existingColor;
+			#if MSAA_COUNT > 1
+			existingColor = gInColor.Load(pixelPos.xy, sampleIdx);
+			#else
+			existingColor = gInColor.Load(int3(pixelPos.xy, 0));
+			#endif
+			
+			return existingColor + getDirectLighting(worldPosition, V, specR, surfaceData, lightOffsets);				
 		}
 		
 		[numthreads(TILE_SIZE, TILE_SIZE, 1)]
@@ -255,7 +264,7 @@ shader TiledDeferredLighting
 				#if MSAA_COUNT > 1
 				float coverage = gMSAACoverage.Load(int3(pixelPos, 0)).r;
 				
-				float4 lighting = getLighting(clipSpacePos.xy, surfaceData[0]);
+				float4 lighting = getLighting(pixelPos, clipSpacePos.xy, surfaceData[0], 0);
 				gOutput[uint3(pixelPos.xy, 0)] = lighting;
 				
 				bool doPerSampleShading = coverage > 0.5f;
@@ -264,7 +273,7 @@ shader TiledDeferredLighting
 					[unroll]
 					for(uint i = 1; i < MSAA_COUNT; ++i)
 					{
-						lighting = getLighting(clipSpacePos.xy, surfaceData[i]);
+						lighting = getLighting(pixelPos, clipSpacePos.xy, surfaceData[i], i);
 						gOutput[uint3(pixelPos.xy, i)] = lighting;
 					}
 				}
@@ -279,7 +288,7 @@ shader TiledDeferredLighting
 				}
 				
 				#else
-				float4 lighting = getLighting(clipSpacePos.xy, surfaceData[0]);
+				float4 lighting = getLighting(pixelPos, clipSpacePos.xy, surfaceData[0], 0);
 				gOutput[pixelPos] = lighting;
 				#endif
 			}
