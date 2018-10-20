@@ -21,6 +21,7 @@ Data/Raw/*
 !Data/Raw/Shaders/Includes/
 Documentation/Generated
 /Build
+_build
 *.aps
 *.opendb
 BsEngineConfig.h

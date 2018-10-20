@@ -729,6 +729,10 @@ namespace bs
 		}
 	}
 
+	BSView* CocoaWindow::getView() {
+		return m->view;
+	}
+	
 	void CocoaWindow::hide()
 	{
 		@autoreleasepool
