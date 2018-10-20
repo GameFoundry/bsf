@@ -7,6 +7,8 @@
 
 namespace bs
 {
+	class GameObjectDeserializationState;
+	
 	/** @addtogroup Utility-Core-Internal
 	 *  @{
 	 */
