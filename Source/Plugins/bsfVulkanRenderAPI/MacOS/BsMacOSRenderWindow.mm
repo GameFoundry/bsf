@@ -304,17 +304,6 @@ namespace bs
 	{
 		return std::static_pointer_cast<ct::MacOSRenderWindow>(mCoreSpecific);
 	}
-	
-	void MacOSRenderWindow::_windowMovedOrResized()
-	{
-		THROW_IF_NOT_CORE_THREAD;
-		
-		if (!mWindow)
-			return;
-		
-		getCore()->_windowMovedOrResized();
-	}
-
 
 	void MacOSRenderWindow::syncProperties()
 	{

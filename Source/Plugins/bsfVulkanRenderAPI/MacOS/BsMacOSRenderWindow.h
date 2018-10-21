@@ -70,9 +70,6 @@ namespace bs
 		/** @copydoc RenderWindow::getCore */
 		SPtr<ct::MacOSRenderWindow> getCore() const;
 
-		/** Called when window is moved or resized. */
-		void _windowMovedOrResized() override;
-
 	protected:
         friend class VulkanRenderWindowManager;
         friend class ct::MacOSRenderWindow;
