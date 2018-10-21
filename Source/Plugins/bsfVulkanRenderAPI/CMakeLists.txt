@@ -21,6 +21,15 @@ target_compile_definitions(bsfVulkanRenderAPI PRIVATE -DBS_VULKAN_EXPORTS)
 target_link_libraries(bsfVulkanRenderAPI PRIVATE ${Vulkan_LIBRARIES})
 target_link_libraries(bsfVulkanRenderAPI PRIVATE ${glslang_LIBRARIES})
 
+if(APPLE) # MacOS
+	target_link_framework(bsfVulkanRenderAPI Foundation)
+	target_link_framework(bsfVulkanRenderAPI CoreGraphics)
+	target_link_framework(bsfVulkanRenderAPI CoreVideo)
+	target_link_framework(bsfVulkanRenderAPI IOKit)
+	target_link_framework(bsfVulkanRenderAPI AppKit)
+endif()
+
+
 ## Local libs
 target_link_libraries(bsfVulkanRenderAPI PRIVATE bsf)
 
