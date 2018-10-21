@@ -825,7 +825,7 @@ namespace bs { namespace ct
 #elif BS_PLATFORM == BS_PLATFORM_LINUX
 				LinuxRenderWindow* window = static_cast<LinuxRenderWindow*>(rt.get());
 #elif BS_PLATFORM == BS_PLATFORM_OSX
-                MacOSRenderWindow* window = static_cast<MacOSRenderWindow*>(rt.get());
+				MacOSRenderWindow* window = static_cast<MacOSRenderWindow*>(rt.get());
 #endif
 				window->acquireBackBuffer();
 

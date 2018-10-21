@@ -149,7 +149,7 @@ namespace bs { namespace ct
 #elif BS_PLATFORM == BS_PLATFORM_ANDROID
 		extensions[1] = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
 #elif BS_PLATFORM == BS_PLATFORM_OSX
-        extensions[1] = VK_MVK_MACOS_SURFACE_EXTENSION_NAME;
+		extensions[1] = VK_MVK_MACOS_SURFACE_EXTENSION_NAME;
 #else
 		extensions[1] = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
 #endif
@@ -222,7 +222,7 @@ namespace bs { namespace ct
 #elif BS_PLATFORM == BS_PLATFORM_LINUX
 		mVideoModeInfo = bs_shared_ptr_new<LinuxVideoModeInfo>();
 #elif BS_PLATFORM == BS_PLATFORM_OSX
-        mVideoModeInfo = bs_shared_ptr_new<MacOSVideoModeInfo>();
+		mVideoModeInfo = bs_shared_ptr_new<MacOSVideoModeInfo>();
 #else
 		static_assert(false, "mVideoModeInfo needs to be created.");
 #endif
