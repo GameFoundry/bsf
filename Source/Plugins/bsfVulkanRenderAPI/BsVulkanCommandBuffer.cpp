@@ -22,6 +22,8 @@
 #include "Win32/BsWin32RenderWindow.h"
 #elif BS_PLATFORM == BS_PLATFORM_LINUX
 #include "Linux/BsLinuxRenderWindow.h"
+#elif BS_PLATFORM == BS_PLATFORM_OSX
+#include "MacOS/BsMacOSRenderWindow.h"
 #else
 static_assert(false, "Other platforms go here");
 #endif
@@ -822,6 +824,8 @@ namespace bs { namespace ct
 				Win32RenderWindow* window = static_cast<Win32RenderWindow*>(rt.get());
 #elif BS_PLATFORM == BS_PLATFORM_LINUX
 				LinuxRenderWindow* window = static_cast<LinuxRenderWindow*>(rt.get());
+#elif BS_PLATFORM == BS_PLATFORM_OSX
+				MacOSRenderWindow* window = static_cast<MacOSRenderWindow*>(rt.get());
 #endif
 				window->acquireBackBuffer();
 

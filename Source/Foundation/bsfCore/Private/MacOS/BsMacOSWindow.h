@@ -76,6 +76,9 @@ namespace bs
 		/** Returns the current area of the window, relative to the top-left origin of the screen. */
 		Rect2I getArea() const;
 
+#ifdef BS_COCOA_INTERNALS
+		BSView* getView();
+#endif
 		/** Hides the window. */
 		void hide();
 
