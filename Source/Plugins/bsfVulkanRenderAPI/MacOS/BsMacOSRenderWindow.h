@@ -8,16 +8,13 @@
 namespace bs
 {
 	class CocoaWindow;
-	class MacOSRenderWindow;
 
 	namespace ct
 	{
-		class MacOSGLSupport;
-		class MacOSContext;
 		class MacOSRenderWindow;
 	}
 
-	/** @addtogroup GL
+	/** @addtogroup Vulkan
 	 *  @{
 	 */
 
@@ -29,9 +26,9 @@ namespace bs
 	class MacOSRenderWindow : public RenderWindow
 	{
 	public:
-		~MacOSRenderWindow() { }
-
-		/** @copydoc RenderWindow::getCustomAttribute */
+        virtual ~MacOSRenderWindow();
+        
+        /** @copydoc RenderWindow::getCustomAttribute */
 		void getCustomAttribute(const String& name, void* pData) const override;
 
 		/** @copydoc RenderWindow::screenToWindowPos */
@@ -77,6 +74,8 @@ namespace bs
 		void _windowMovedOrResized() override;
 
 	protected:
+        friend class VulkanRenderWindowManager;
+        friend class ct::MacOSRenderWindow;
 
 		MacOSRenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId);
 
@@ -88,9 +87,6 @@ namespace bs
 
 		/** @copydoc RenderWindow::syncProperties */
 		void syncProperties() override;
-
-		/** @copydoc CoreObject::initialize() */
-		void initialize() override;
 
 		/** @copydoc CoreObject::destroy() */
 		void destroy() override;
@@ -135,6 +131,12 @@ namespace bs
 
 			/** @copydoc RenderWindow::getCustomAttribute */
 			void getCustomAttribute(const String& name, void* pData) const override;
+
+            /** @copydoc RenderWindow::getCore */
+            SPtr<ct::MacOSRenderWindow> getCore() const;
+            
+            /** Called when window is moved or resized. */
+            void _windowMovedOrResized() override;
 
 			/** Returns a lock that can be used for accessing synced properties. */
 			SpinLock& _getPropertiesLock() { return mLock;}

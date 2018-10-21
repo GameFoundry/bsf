@@ -18,8 +18,16 @@
 namespace bs
 {
 	MacOSRenderWindow::MacOSRenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId)
-			:RenderWindow(desc, windowId), mProperties(desc)
+        : RenderWindow(desc, windowId), mProperties(desc)
 	{ }
+
+    MacOSRenderWindow::~MacOSRenderWindow()
+    { }
+    
+    void MacOSRenderWindow::getCustomAttribute(const String& name, void* pData) const
+    {
+        return getCore()->getCustomAttribute(name, pData);
+    }
 
 	void MacOSRenderWindow::destroy()
 	{
@@ -45,11 +53,11 @@ namespace bs
 		obj->_setThisPtr(obj);
 		return obj;
 		*/
-
+        
 		ct::VulkanRenderAPI& rapi = static_cast<ct::VulkanRenderAPI&>(ct::RenderAPI::instance());
 
 		RENDER_WINDOW_DESC desc = mDesc;
-		SPtr<ct::CoreObject> coreObj = bs_shared_ptr_new<ct::MacOSRenderWindow>(desc, mWindowId, rapi);
+		SPtr<ct::CoreObject> coreObj = bs_shared_ptr_new<ct::MacOSRenderWindow>(desc, mWindowId, mWindow->_getWindowId(), rapi);
 		coreObj->_setThisPtr(coreObj);
 
 		return coreObj;
@@ -305,6 +313,17 @@ namespace bs
 	{
 		return std::static_pointer_cast<ct::MacOSRenderWindow>(mCoreSpecific);
 	}
+    
+    void MacOSRenderWindow::_windowMovedOrResized()
+    {
+        THROW_IF_NOT_CORE_THREAD;
+        
+        if (!mWindow)
+            return;
+        
+        getCore()->_windowMovedOrResized();
+    }
+
 
 	void MacOSRenderWindow::syncProperties()
 	{
@@ -316,10 +335,9 @@ namespace bs
     
 	namespace ct
 	{
-		MacOSRenderWindow::MacOSRenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, UINT32 cocoaWindowId,
-			VulkanRenderAPI& renderAPI)
-			: RenderWindow(desc, windowId), mProperties(desc), mSyncedProperties(desc), mWindow(nullptr), mIsChild(false)
-		, mShowOnSwap(false), mRenderAPI(renderAPI), mRequiresNewBackBuffer(true), mCocoaWindowId(cocoaWindowId)
+		MacOSRenderWindow::MacOSRenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, UINT32 cocoaWindowId, VulkanRenderAPI& renderAPI)
+			: RenderWindow(desc, windowId), mWindow(nullptr),  mIsChild(false), mShowOnSwap(false)
+		, mRenderAPI(renderAPI), mProperties(desc),mSyncedProperties(desc), mRequiresNewBackBuffer(true), mCocoaWindowId(cocoaWindowId)
 		{
 		
 		}
@@ -378,25 +396,14 @@ namespace bs
 			props.hwGamma = mDesc.gamma;
 			props.multisampleCount = mDesc.multisampleCount;
 
-			//mContext = mGLSupport.createContext(mDesc.depthBuffer, mDesc.multisampleCount);
-
 		// Create Vulkan surface
 
-			/*
-			VkWin32SurfaceCreateInfoKHR surfaceCreateInfo;
-			surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-			surfaceCreateInfo.pNext = nullptr;
-			surfaceCreateInfo.flags = 0;
-			surfaceCreateInfo.hwnd = mWindow->getHWnd();
-			surfaceCreateInfo.hinstance = windowDesc.module;
-			*/
 			VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo;
 			surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
 			surfaceCreateInfo.pNext = nullptr;
 			surfaceCreateInfo.flags = 0;
-			surfaceCreateInfo.pView = mWindow->getView();
+            surfaceCreateInfo.pView = (__bridge const void *)(mWindow->getView());
 			
-
 			VkInstance instance = mRenderAPI._getInstance();
 			VkResult result = vkCreateMacOSSurfaceMVK(instance, &surfaceCreateInfo, gVulkanAllocator, &mSurface);
 			assert(result == VK_SUCCESS);
@@ -432,18 +439,15 @@ namespace bs
 
 			RenderWindow::initialize();
 
-			if(props.isHidden)
-				mWindow->hide();
+            {
+                ScopedSpinLock lock(mLock);
+                mSyncedProperties = props;
+            }
 
-			{
-				ScopedSpinLock lock(getCore()->mLock);
-				getCore()->mSyncedProperties = props;
-			}
+			bs::RenderWindowManager::instance().notifySyncDataDirty(this);
 
-			ct::RenderWindowManager::instance().notifySyncDataDirty(getCore().get());
-
-			// New windows always receive focus, but we don't receive an initial event from the OS, so trigger one manually
-			RenderWindowManager::instance().notifyFocusReceived(getCore().get());
+            // New windows always receive focus, but we don't receive an initial event from bs::the OS, so trigger one manually
+            bs::RenderWindowManager::instance().notifyFocusReceived(this);
 		}
 		
 		void MacOSRenderWindow::acquireBackBuffer()
@@ -468,23 +472,27 @@ namespace bs
 
 		void MacOSRenderWindow::setVSync(bool enabled, UINT32 interval)
 		{
-			THROW_IF_NOT_CORE_THREAD;
-
-			if(!enabled)
-				interval = 0;
-
-			mContext->setVSync(interval);
-
-			mProperties.vsync = enabled;
-			mProperties.vsyncInterval = interval;
-
-			{
-				ScopedSpinLock lock(mLock);
-				mSyncedProperties.vsync = enabled;
-				mSyncedProperties.vsyncInterval = interval;
-			}
-
-			bs::RenderWindowManager::instance().notifySyncDataDirty(this);
+            // Rebuild swap chain
+            
+            //// Need to make sure nothing is using the swap buffer before we re-create it
+            // Note: Optionally I can detect exactly on which queues (if any) are the swap chain images used on, and only wait
+            // on those
+            SPtr<VulkanDevice> presentDevice = mRenderAPI._getPresentDevice();
+            presentDevice->waitIdle();
+            
+            mSwapChain->rebuild(presentDevice, mSurface, mProperties.width, mProperties.height, enabled, mColorFormat, mColorSpace,
+                                mDesc.depthBuffer, mDepthFormat);
+            
+            mProperties.vsync = enabled;
+            mProperties.vsyncInterval = interval;
+            
+            {
+                ScopedSpinLock lock(mLock);
+                mSyncedProperties.vsync = enabled;
+                mSyncedProperties.vsyncInterval = interval;
+            }
+            
+            bs::RenderWindowManager::instance().notifySyncDataDirty(this);
 		}
 
 		void MacOSRenderWindow::swapBuffers(UINT32 syncMask)
@@ -531,42 +539,6 @@ namespace bs
             //LinuxPlatform::unlockX();
 		}
 
-        void MacOSRenderWindow::_windowMovedOrResized()
-        {
-            if (!mWindow)
-                return;
-            
-            RenderWindowProperties& props = mProperties;
-            if (!props.isFullScreen) // Fullscreen is handled directly by this object
-            {
-                Rect2I area = mWindow->getArea();
-                
-                props.top = area.y;
-                props.left = area.x;
-                props.width = area.width;
-                props.height = area.height;
-            }
-            
-            // Resize swap chain
-            
-            //// Need to make sure nothing is using the swap buffer before we re-create it
-            // Note: Optionally I can detect exactly on which queues (if any) are the swap chain images used on, and only wait
-            // on those
-            SPtr<VulkanDevice> presentDevice = mRenderAPI._getPresentDevice();
-            presentDevice->waitIdle();
-            
-            mSwapChain->rebuild(presentDevice, mSurface, props.width, props.height, props.vsync, mColorFormat, mColorSpace,
-                                mDesc.depthBuffer, mDepthFormat);
-            
-            {
-                ScopedSpinLock lock(getCore()->mLock);
-                getCore()->getSyncedProperties().top = props.top;
-                getCore()->getSyncedProperties().left = props.left;
-                getCore()->getSyncedProperties().width = props.width;
-                getCore()->getSyncedProperties().height = props.height;
-            }
-        }
-
         void MacOSRenderWindow::getCustomAttribute(const String& name, void* data) const
         {
             if (name == "FB")
@@ -592,6 +564,27 @@ namespace bs
                 UINT32* windowId = (UINT32*)data;
                 *windowId = mWindow->_getWindowId();
             }
+        }
+
+        void MacOSRenderWindow::_windowMovedOrResized()
+        {
+            THROW_IF_NOT_CORE_THREAD;
+            
+            if (!mWindow)
+                return;
+            
+            RenderWindowProperties& props = mProperties;
+
+            // Resize swap chain
+            
+            //// Need to make sure nothing is using the swap buffer before we re-create it
+            // Note: Optionally I can detect exactly on which queues (if any) are the swap chain images used on, and only wait
+            // on those
+            SPtr<VulkanDevice> presentDevice = mRenderAPI._getPresentDevice();
+            presentDevice->waitIdle();
+            
+            mSwapChain->rebuild(presentDevice, mSurface, props.width, props.height, props.vsync, mColorFormat, mColorSpace,
+                                mDesc.depthBuffer, mDepthFormat);
         }
 
 		void MacOSRenderWindow::syncProperties()
