@@ -22,14 +22,7 @@ if(WIN32)
 		list(APPEND Vulkan_LIBRARY_DEBUG_SEARCH_DIRS "${Vulkan_INSTALL_DIR}/Bin32")
 	endif()
 else()
-	# support of MoltenVK
-	find_library(MoltenVK NAMES MoltenVK)
-
-	if(MoltenVK)
-		set(Vulkan_LIBNAME MoltenVK)
-	else()
-		set(Vulkan_LIBNAME vulkan)
-	endif()
+	set(Vulkan_LIBNAME vulkan)
 endif()
 
 find_imported_includes(Vulkan vulkan/vulkan.h)
