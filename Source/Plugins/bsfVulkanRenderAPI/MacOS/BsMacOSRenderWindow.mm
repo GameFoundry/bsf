@@ -49,7 +49,7 @@ namespace bs
 		ct::VulkanRenderAPI& rapi = static_cast<ct::VulkanRenderAPI&>(ct::RenderAPI::instance());
 
 		RENDER_WINDOW_DESC desc = mDesc;
-		SPtr<ct::CoreObject> coreObj = bs_shared_ptr_new<ct::MacOSRenderWindow>(desc, mWindowId, mWindow->_getWindowId(), rapi);
+		SPtr<ct::CoreObject> coreObj = bs_shared_ptr_new<ct::MacOSRenderWindow>(desc, mWindowId, rapi);
 		coreObj->_setThisPtr(coreObj);
 
 		return coreObj;
@@ -315,9 +315,9 @@ namespace bs
 	
 	namespace ct
 	{
-		MacOSRenderWindow::MacOSRenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, UINT32 cocoaWindowId, VulkanRenderAPI& renderAPI)
+		MacOSRenderWindow::MacOSRenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, VulkanRenderAPI& renderAPI)
 			: RenderWindow(desc, windowId), mWindow(nullptr),  mIsChild(false), mShowOnSwap(false)
-		, mRenderAPI(renderAPI), mProperties(desc),mSyncedProperties(desc), mRequiresNewBackBuffer(true), mCocoaWindowId(cocoaWindowId)
+		, mRenderAPI(renderAPI), mProperties(desc),mSyncedProperties(desc), mRequiresNewBackBuffer(true)
 		{
 		
 		}

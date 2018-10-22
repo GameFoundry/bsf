@@ -108,7 +108,7 @@ namespace bs
 		class MacOSRenderWindow : public RenderWindow
 		{
 		public:
-            MacOSRenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, UINT32 cocoaWindowId, VulkanRenderAPI& renderAPI);
+            MacOSRenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, VulkanRenderAPI& renderAPI);
             ~MacOSRenderWindow();
 
 			/** @copydoc RenderWindow::move */
