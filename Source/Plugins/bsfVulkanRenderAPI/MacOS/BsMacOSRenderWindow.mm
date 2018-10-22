@@ -1,6 +1,7 @@
 //************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #define BS_COCOA_INTERNALS
+#define BS_METAL_INTERNALS
 
 #include "MacOS/BsMacOSRenderWindow.h"
 #include "MacOS/BsMacOSVideoModeInfo.h"
@@ -377,6 +378,17 @@ namespace bs
 			props.multisampleCount = mDesc.multisampleCount;
 
 		// Create Vulkan surface
+
+			// Add a CAMetalLayer to NSView
+			
+			NSView* view = (NSView*)mWindow->getView();
+			assert([view isKindOfClass:[NSView class]]);
+			
+			if (![view.layer isKindOfClass:[CAMetalLayer class]])
+			{
+				[view setLayer:[CAMetalLayer layer]];
+				[view setWantsLayer:YES];
+			}
 
 			VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo;
 			surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;

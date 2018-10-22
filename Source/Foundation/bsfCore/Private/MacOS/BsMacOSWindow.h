@@ -10,6 +10,10 @@
 #import <Cocoa/Cocoa.h>
 #endif
 
+#ifdef BS_METAL_INTERNALS
+#import <QuartzCore/CAMetalLayer.h>
+#endif
+
 #ifdef BS_COCOA_INTERNALS
 @class BSWindowDelegate;
 @class BSWindowListener;
