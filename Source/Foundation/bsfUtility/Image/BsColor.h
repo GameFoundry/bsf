@@ -119,89 +119,40 @@ namespace bs
 
 		Color operator+ (const Color& rhs) const
 		{
-			Color sum;
-
-			sum.r = r + rhs.r;
-			sum.g = g + rhs.g;
-			sum.b = b + rhs.b;
-			sum.a = a + rhs.a;
-
-			return sum;
+			return Color(r + rhs.r, g + rhs.g, b + rhs.b, a + rhs.a);
 		}
 
 		Color operator- (const Color& rhs) const
 		{
-			Color diff;
-
-			diff.r = r - rhs.r;
-			diff.g = g - rhs.g;
-			diff.b = b - rhs.b;
-			diff.a = a - rhs.a;
-
-			return diff;
+			return Color(r - rhs.r, g - rhs.g, b - rhs.b, a - rhs.a);
 		}
 
 		Color operator* (float rhs) const
 		{
-			Color prod;
-
-			prod.r = rhs*r;
-			prod.g = rhs*g;
-			prod.b = rhs*b;
-			prod.a = rhs*a;
-
-			return prod;
+			return Color(rhs * r, rhs * g, rhs * b, rhs * a);
 		}
 
 		Color operator* (const Color& rhs) const
 		{
-			Color prod;
-
-			prod.r = rhs.r * r;
-			prod.g = rhs.g * g;
-			prod.b = rhs.b * b;
-			prod.a = rhs.a * a;
-
-			return prod;
+			return Color(rhs.r * r, rhs.g * g, rhs.b * b, rhs.a * a);
 		}
 
 		Color operator/ (const Color& rhs) const
 		{
-			Color prod;
-
-			prod.r = rhs.r / r;
-			prod.g = rhs.g / g;
-			prod.b = rhs.b / b;
-			prod.a = rhs.a / a;
-
-			return prod;
+			return Color(rhs.r / r, rhs.g / g, rhs.b / b, rhs.a / a);
 		}
 
 		Color operator/ (float rhs) const
 		{
 			assert(rhs != 0.0f);
-
-			Color div;
-
 			float invRhs = 1.0f / rhs;
-			div.r = r * invRhs;
-			div.g = g * invRhs;
-			div.b = b * invRhs;
-			div.a = a * invRhs;
 
-			return div;
+			return Color(r * invRhs, g * invRhs, b * invRhs, a * invRhs);
 		}
 
 		friend Color operator* (float lhs, const Color& rhs)
 		{
-			Color result;
-
-			result.r = lhs * rhs.r;
-			result.g = lhs * rhs.g;
-			result.b = lhs * rhs.b;
-			result.a = lhs * rhs.a;
-
-			return result;
+			return Color(lhs * rhs.r, lhs * rhs.g, lhs * rhs.b, lhs * rhs.a);
 		}
 
 		Color& operator+= (const Color& rhs)
