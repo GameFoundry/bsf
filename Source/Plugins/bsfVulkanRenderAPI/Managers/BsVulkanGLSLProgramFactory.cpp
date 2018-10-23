@@ -13,6 +13,7 @@
 #include "RenderAPI/BsGpuParamDesc.h"
 #include "Math/BsMath.h"
 #include "RenderAPI/BsGpuParams.h"
+#include <glslang/Include/revision.h>
 
 namespace bs { namespace ct
 {
@@ -100,6 +101,17 @@ namespace bs { namespace ct
 		/* .MaxCullDistances = */ 8,
 		/* .MaxCombinedClipAndCullDistances = */ 8,
 		/* .MaxSamples = */ 4,
+		#if GLSLANG_PATCH_LEVEL >= 2892
+		/* .maxMeshOutputVerticesNV = */ 0,
+		/* .maxMeshOutputPrimitivesNV = */ 0,
+		/* .maxMeshWorkGroupSizeX_NV = */ 0,
+		/* .maxMeshWorkGroupSizeY_NV = */ 0,
+		/* .maxMeshWorkGroupSizeZ_NV = */ 0,
+		/* .maxTaskWorkGroupSizeX_NV = */ 0,
+		/* .maxTaskWorkGroupSizeY_NV = */ 0,
+		/* .maxTaskWorkGroupSizeZ_NV = */ 0,
+		/* .maxMeshViewCountNV = */ 0,
+		#endif
 		/* .limits = */{
 		/* .nonInductiveForLoops = */ 1,
 		/* .whileLoops = */ 1,

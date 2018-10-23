@@ -22,5 +22,7 @@ find_imported_library2(glslang HLSL HLSL${glslang_DEBUG_SUFFIX})
 find_imported_library2(glslang OSDependent OSDependent${glslang_DEBUG_SUFFIX})
 find_imported_library2(glslang OGLCompiler OGLCompiler${glslang_DEBUG_SUFFIX})
 find_imported_library2(glslang SPIRV SPIRV${glslang_DEBUG_SUFFIX})
+find_imported_library2(glslang SPIRV-Tools SPIRV-Tools${glslang_DEBUG_SUFFIX})
+find_imported_library2(glslang SPVRemapper SPVRemapper${glslang_DEBUG_SUFFIX})
 
 end_find_package(glslang glslang)
