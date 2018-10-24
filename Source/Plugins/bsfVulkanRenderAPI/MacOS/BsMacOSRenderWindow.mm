@@ -30,6 +30,83 @@ namespace bs
 		return getCore()->getCustomAttribute(name, pData);
 	}
 
+	void MacOSRenderWindow::initialize()
+	{
+		RenderWindowProperties& props = mProperties;
+		mIsChild = false;
+		
+		WINDOW_DESC windowDesc;
+		windowDesc.x = mDesc.left;
+		windowDesc.y = mDesc.top;
+		windowDesc.width = mDesc.videoMode.getWidth();
+		windowDesc.height = mDesc.videoMode.getHeight();
+		windowDesc.title = mDesc.title;
+		windowDesc.showDecorations = mDesc.showTitleBar;
+		windowDesc.allowResize = mDesc.allowResize;
+		windowDesc.modal = mDesc.modal;
+		windowDesc.floating = mDesc.toolWindow;
+		
+		auto iter = mDesc.platformSpecific.find("parentWindowHandle");
+		mIsChild = iter != mDesc.platformSpecific.end();
+		
+		mWindow = bs_new<CocoaWindow>(windowDesc);
+		mWindow->_setUserData(this);
+		
+		props.isFullScreen = mDesc.fullscreen && !mIsChild;
+		props.isHidden = mDesc.hidden;
+		
+		Rect2I area = mWindow->getArea();
+		props.width = area.width;
+		props.height = area.height;
+		props.top = area.y;
+		props.left = area.x;
+		props.hasFocus = true;
+		
+		props.hwGamma = mDesc.gamma;
+		props.multisampleCount = mDesc.multisampleCount;
+
+		// Create Vulkan surface
+		
+		// Add a CAMetalLayer to NSView
+		
+		NSView* view = (NSView*)mWindow->getView();
+		assert([view isKindOfClass:[NSView class]]);
+		
+		if (![view.layer isKindOfClass:[CAMetalLayer class]])
+		{
+			[view setLayer:[CAMetalLayer layer]];
+			[view setWantsLayer:YES];
+		}
+		
+		VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo;
+		surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
+		surfaceCreateInfo.pNext = nullptr;
+		surfaceCreateInfo.flags = 0;
+		surfaceCreateInfo.pView = (__bridge const void *)(mWindow->getView());
+		
+		ct::VulkanRenderAPI& rapi = static_cast<ct::VulkanRenderAPI&>(ct::RenderAPI::instance());
+		VkResult result = vkCreateMacOSSurfaceMVK(rapi._getInstance(), &surfaceCreateInfo, bs::ct::gVulkanAllocator, &mSurface);
+		assert(result == VK_SUCCESS);
+
+		RenderWindow::initialize();
+		
+		if(props.isHidden)
+			mWindow->hide();
+		
+		{
+			ScopedSpinLock lock(getCore()->mLock);
+			getCore()->mSyncedProperties = props;
+		}
+
+		
+		ct::RenderWindowManager::instance().notifySyncDataDirty(getCore().get());
+		
+		// New windows always receive focus, but we don't receive an initial event from the OS, so trigger one manually
+		RenderWindowManager::instance().notifyFocusReceived(getCore().get());
+
+		
+	}
+	
 	void MacOSRenderWindow::destroy()
 	{
 		// Make sure to set the original desktop video mode before we exit
@@ -48,9 +125,9 @@ namespace bs
 	SPtr<ct::CoreObject> MacOSRenderWindow::createCore() const
 	{
 		ct::VulkanRenderAPI& rapi = static_cast<ct::VulkanRenderAPI&>(ct::RenderAPI::instance());
-
+		
 		RENDER_WINDOW_DESC desc = mDesc;
-		SPtr<ct::CoreObject> coreObj = bs_shared_ptr_new<ct::MacOSRenderWindow>(desc, mWindowId, rapi);
+		SPtr<ct::CoreObject> coreObj = bs_shared_ptr_new<ct::MacOSRenderWindow>(desc, mWindowId, mSurface, rapi);
 		coreObj->_setThisPtr(coreObj);
 
 		return coreObj;
@@ -215,7 +292,8 @@ namespace bs
 		mWindow->setFullscreen();
 
 		RenderWindowProperties& props = mProperties;
-		props.isFullScreen = true;
+		
+		props.isFullScreen = mDesc.fullscreen;
 
 		props.top = 0;
 		props.left = 0;
@@ -316,9 +394,9 @@ namespace bs
 	
 	namespace ct
 	{
-		MacOSRenderWindow::MacOSRenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, VulkanRenderAPI& renderAPI)
+		MacOSRenderWindow::MacOSRenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, const VkSurfaceKHR& surface, VulkanRenderAPI& renderAPI)
 			: RenderWindow(desc, windowId), mWindow(nullptr),  mIsChild(false), mShowOnSwap(false)
-		, mRenderAPI(renderAPI), mProperties(desc),mSyncedProperties(desc), mRequiresNewBackBuffer(true)
+		, mSurface(surface), mRenderAPI(renderAPI), mProperties(desc),mSyncedProperties(desc), mRequiresNewBackBuffer(true)
 		{
 		
 		}
@@ -342,72 +420,14 @@ namespace bs
 
 		void MacOSRenderWindow::initialize()
 		{
-			RenderWindowProperties& props = mProperties;
-
-			props.isFullScreen = mDesc.fullscreen;
-			mIsChild = false;
-
-			WINDOW_DESC windowDesc;
-			windowDesc.x = mDesc.left;
-			windowDesc.y = mDesc.top;
-			windowDesc.width = mDesc.videoMode.getWidth();
-			windowDesc.height = mDesc.videoMode.getHeight();
-			windowDesc.title = mDesc.title;
-			windowDesc.showDecorations = mDesc.showTitleBar;
-			windowDesc.allowResize = mDesc.allowResize;
-			windowDesc.modal = mDesc.modal;
-			windowDesc.floating = mDesc.toolWindow;
-
-			auto iter = mDesc.platformSpecific.find("parentWindowHandle");
-			mIsChild = iter != mDesc.platformSpecific.end();
-
-			props.isFullScreen = mDesc.fullscreen && !mIsChild;
-			props.isHidden = mDesc.hidden;
-
-			mWindow = bs_new<CocoaWindow>(windowDesc);
-			mWindow->_setUserData(this);
-
-			Rect2I area = mWindow->getArea();
-			props.width = area.width;
-			props.height = area.height;
-			props.top = area.y;
-			props.left = area.x;
-			props.hasFocus = true;
-
-			props.hwGamma = mDesc.gamma;
-			props.multisampleCount = mDesc.multisampleCount;
-
-		// Create Vulkan surface
-
-			// Add a CAMetalLayer to NSView
-			
-			NSView* view = (NSView*)mWindow->getView();
-			assert([view isKindOfClass:[NSView class]]);
-			
-			if (![view.layer isKindOfClass:[CAMetalLayer class]])
-			{
-				[view setLayer:[CAMetalLayer layer]];
-				[view setWantsLayer:YES];
-			}
-
-			VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo;
-			surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
-			surfaceCreateInfo.pNext = nullptr;
-			surfaceCreateInfo.flags = 0;
-			surfaceCreateInfo.pView = (__bridge const void *)(mWindow->getView());
-			
-			VkInstance instance = mRenderAPI._getInstance();
-			VkResult result = vkCreateMacOSSurfaceMVK(instance, &surfaceCreateInfo, gVulkanAllocator, &mSurface);
-			assert(result == VK_SUCCESS);
-
 			SPtr<VulkanDevice> presentDevice = mRenderAPI._getPresentDevice();
 			VkPhysicalDevice physicalDevice = presentDevice->getPhysical();
-
+			
 			mPresentQueueFamily = presentDevice->getQueueFamily(GQT_GRAPHICS);
 			
 			VkBool32 supportsPresent;
 			vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, mPresentQueueFamily, mSurface, &supportsPresent);
-
+			
 			if(!supportsPresent)
 			{
 				// Note: Not supporting present only queues at the moment
@@ -420,24 +440,26 @@ namespace bs
 			mColorFormat = format.colorFormat;
 			mColorSpace = format.colorSpace;
 			mDepthFormat = format.depthFormat;
+			
+			RenderWindowProperties& props = mProperties;
 
 			// Create swap chain
 			mSwapChain = bs_shared_ptr_new<VulkanSwapChain>();
-			mSwapChain->rebuild(presentDevice, mSurface, props.width, props.height, props.vsync, mColorFormat, mColorSpace, 
-				mDesc.depthBuffer, mDepthFormat);
-
+			mSwapChain->rebuild(presentDevice, mSurface, props.width, props.height, props.vsync, mColorFormat, mColorSpace,
+								mDesc.depthBuffer, mDepthFormat);
+			
 			if(mDesc.fullscreen && !mIsChild)
 				setFullscreen(mDesc.videoMode);
-
+			
 			RenderWindow::initialize();
-
+			
 			{
 				ScopedSpinLock lock(mLock);
 				mSyncedProperties = props;
 			}
-
+			
 			bs::RenderWindowManager::instance().notifySyncDataDirty(this);
-
+			
 			// New windows always receive focus, but we don't receive an initial event from bs::the OS, so trigger one manually
 			bs::RenderWindowManager::instance().notifyFocusReceived(this);
 		}

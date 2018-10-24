@@ -204,7 +204,7 @@ namespace bs { namespace ct
 		mImageViewCI.subresourceRange.levelCount = surface.numMipLevels == 0 ? VK_REMAINING_MIP_LEVELS : surface.numMipLevels;
 		mImageViewCI.subresourceRange.baseArrayLayer = surface.face;
 		mImageViewCI.subresourceRange.layerCount = surface.numFaces == 0 ? VK_REMAINING_ARRAY_LAYERS : surface.numFaces;
-
+		
 		VkImageView view;
 		VkResult result = vkCreateImageView(mOwner->getDevice().getLogical(), &mImageViewCI, gVulkanAllocator, &view);
 		assert(result == VK_SUCCESS);
