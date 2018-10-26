@@ -25,9 +25,9 @@ namespace bs
 	 */
 	class MacOSRenderWindow : public RenderWindow
 	{
-	public:
-        virtual ~MacOSRenderWindow();
-        
+	public:		
+		void initialize() override;
+		
         /** @copydoc RenderWindow::getCustomAttribute */
 		void getCustomAttribute(const String& name, void* pData) const override;
 
@@ -92,7 +92,10 @@ namespace bs
 		SPtr<ct::CoreObject> createCore() const override;
 
 	private:
+		void enableShaderConvertionDebugging();
+
 		CocoaWindow* mWindow = nullptr;
+		VkSurfaceKHR mSurface;
 		bool mIsChild = false;
 
 		RenderWindowProperties mProperties;
@@ -108,7 +111,7 @@ namespace bs
 		class MacOSRenderWindow : public RenderWindow
 		{
 		public:
-            MacOSRenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, VulkanRenderAPI& renderAPI);
+            MacOSRenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, const VkSurfaceKHR& surface, VulkanRenderAPI& renderAPI);
             ~MacOSRenderWindow();
 
 			/** @copydoc RenderWindow::move */

@@ -1,6 +1,7 @@
 //************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #define BS_COCOA_INTERNALS 1
+#define BS_METAL_INTERNALS 1
 #include "Private/MacOS/BsMacOSWindow.h"
 #include "Private/MacOS/BsMacOSPlatform.h"
 #include "Private/MacOS/BsMacOSDropTarget.h"
@@ -49,6 +50,20 @@ static bool keyCodeToInputCommand(uint32_t keyCode, bool shift, bs::InputCommand
 @interface BSView : NSView
 -(void)rightMouseDown:(NSEvent*) event;
 -(void)setBackgroundImage:(NSImage*)image;
+@end
+
+/** The Metal-compatibile Implementation of NSView */
+@interface BSMacOSMetalView : BSView
+@end
+
+@implementation BSMacOSMetalView
+
+-(BOOL) wantsUpdateLayer { return YES; }
+
++(Class) layerClass { return [CAMetalLayer class]; }
+
+-(CALayer*) makeBackingLayer { return [self.class.layerClass layer]; }
+
 @end
 
 @implementation BSView
@@ -639,7 +654,13 @@ namespace bs
 		m->delegate = [[BSWindowDelegate alloc] initWithWindow:window];
 		[m->window setDelegate:m->delegate];
 
-		m->view = [[BSView alloc] init];
+		if(desc.enableMetal) {
+			m->view = [[BSMacOSMetalView alloc] init];
+			[m->view setWantsLayer:YES];
+		}
+		else {
+			m->view = [[BSView alloc] init];
+		}
 		[m->window setContentView:m->view];
 
 		if(desc.background)

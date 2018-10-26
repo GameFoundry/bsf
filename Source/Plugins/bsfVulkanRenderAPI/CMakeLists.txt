@@ -25,10 +25,8 @@ if(APPLE) # MacOS
 	target_link_framework(bsfVulkanRenderAPI Foundation)
 	target_link_framework(bsfVulkanRenderAPI CoreGraphics)
 	target_link_framework(bsfVulkanRenderAPI CoreVideo)
-	target_link_framework(bsfVulkanRenderAPI QuartzCore)
 	target_link_framework(bsfVulkanRenderAPI IOKit)
 	target_link_framework(bsfVulkanRenderAPI AppKit)
-	target_link_framework(bsfVulkanRenderAPI Metal)
 endif()
 
 

@@ -16,13 +16,14 @@
 #include "BsVulkanSwapChain.h"
 #include "BsVulkanQueue.h"
 
+#ifdef BS_DEBUG_MODE
+#include <MoltenVK/vk_mvk_moltenvk.h>
+#endif
+
 namespace bs
 {
 	MacOSRenderWindow::MacOSRenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId)
 		: RenderWindow(desc, windowId), mProperties(desc)
-	{ }
-
-	MacOSRenderWindow::~MacOSRenderWindow()
 	{ }
 	
 	void MacOSRenderWindow::getCustomAttribute(const String& name, void* pData) const
@@ -45,6 +46,7 @@ namespace bs
 		windowDesc.allowResize = mDesc.allowResize;
 		windowDesc.modal = mDesc.modal;
 		windowDesc.floating = mDesc.toolWindow;
+		windowDesc.enableMetal = true;
 		
 		auto iter = mDesc.platformSpecific.find("parentWindowHandle");
 		mIsChild = iter != mDesc.platformSpecific.end();
@@ -66,18 +68,7 @@ namespace bs
 		props.multisampleCount = mDesc.multisampleCount;
 
 		// Create Vulkan surface
-		
-		// Add a CAMetalLayer to NSView
-		
-		NSView* view = (NSView*)mWindow->getView();
-		assert([view isKindOfClass:[NSView class]]);
-		
-		if (![view.layer isKindOfClass:[CAMetalLayer class]])
-		{
-			[view setLayer:[CAMetalLayer layer]];
-			[view setWantsLayer:YES];
-		}
-		
+				
 		VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo;
 		surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
 		surfaceCreateInfo.pNext = nullptr;
@@ -88,6 +79,10 @@ namespace bs
 		VkResult result = vkCreateMacOSSurfaceMVK(rapi._getInstance(), &surfaceCreateInfo, bs::ct::gVulkanAllocator, &mSurface);
 		assert(result == VK_SUCCESS);
 
+		#ifdef BS_DEBUG_MODE
+		enableShaderConvertionDebugging();
+		#endif
+		
 		RenderWindow::initialize();
 		
 		if(props.isHidden)
@@ -390,6 +385,17 @@ namespace bs
 		mProperties = getCore()->mSyncedProperties;
 	}
 
+	void MacOSRenderWindow::enableShaderConvertionDebugging()
+	{
+		ct::VulkanRenderAPI& rapi = static_cast<ct::VulkanRenderAPI&>(ct::RenderAPI::instance());
+		
+		MVKConfiguration mvkConfig;
+		size_t appConfigSize = sizeof(mvkConfig);
+		vkGetMoltenVKConfigurationMVK(rapi._getInstance(), &mvkConfig, &appConfigSize);
+		mvkConfig.debugMode = true;
+		vkSetMoltenVKConfigurationMVK(rapi._getInstance(), &mvkConfig, &appConfigSize);
+	}
+	
 	// ----------------------------------------------------------------------------------------------------------------
 	
 	namespace ct
@@ -398,24 +404,15 @@ namespace bs
 			: RenderWindow(desc, windowId), mWindow(nullptr),  mIsChild(false), mShowOnSwap(false)
 		, mSurface(surface), mRenderAPI(renderAPI), mProperties(desc),mSyncedProperties(desc), mRequiresNewBackBuffer(true)
 		{
-		
 		}
 
 		MacOSRenderWindow::~MacOSRenderWindow()
-		{ 
+		{
 			SPtr<VulkanDevice> presentDevice = mRenderAPI._getPresentDevice();
 			presentDevice->waitIdle();
-			
-			if (mWindow != nullptr)
-			{
-				bs_delete(mWindow);
-				mWindow = nullptr;
-			}
-			
+
 			mSwapChain = nullptr;
 			vkDestroySurfaceKHR(mRenderAPI._getInstance(), mSurface, gVulkanAllocator);
-			
-			Platform::resetNonClientAreas(*this);
 		}
 
 		void MacOSRenderWindow::initialize()
@@ -463,7 +460,7 @@ namespace bs
 			// New windows always receive focus, but we don't receive an initial event from bs::the OS, so trigger one manually
 			bs::RenderWindowManager::instance().notifyFocusReceived(this);
 		}
-		
+
 		void MacOSRenderWindow::acquireBackBuffer()
 		{
 			// We haven't presented the current back buffer yet, so just use that one

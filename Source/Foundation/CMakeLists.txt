@@ -80,6 +80,8 @@ elseif(APPLE) # MacOS
 	target_link_framework(bsf IOKit)
 	target_link_framework(bsf AppKit)
 	target_link_framework(bsf Carbon)
+	target_link_framework(bsf QuartzCore)
+	target_link_framework(bsf Metal)
 endif()
 
 # IDE specific

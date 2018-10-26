@@ -45,6 +45,7 @@ namespace bs
 		bool allowResize = true;
 		bool modal = false;
 		bool floating = false;
+		bool enableMetal = false;
 		SPtr<PixelData> background;
 	};
 
