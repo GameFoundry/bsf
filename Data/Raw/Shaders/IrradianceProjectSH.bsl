@@ -56,8 +56,26 @@ shader IrradianceProjectSH
 			dir = normalize(dir);
 			
 			SHVector shBasis = SHBasis(dir);
-							
-			SHVectorRGB coeffs = SHLoad(gSHCoeffs, int2(0, 0));
+			
+			// workaround for MoltenVK / SPIRV-Cross bug
+			// https://github.com/GameFoundry/bsf/pull/213#issuecomment-433329547
+			// original code:
+			// SHVectorRGB coeffs = SHLoad(gSHCoeffs, int2(0, 0));
+
+			int2 offset = int2(0, 0);				
+			SHVectorRGB coeffs;
+
+			#define SH_NUM_COEFFS SH_ORDER * SH_ORDER
+			for(int i = 0; i < SH_NUM_COEFFS; ++i)
+			{
+				float3 coeff = gSHCoeffs.Load(int3(offset.x + i, offset.y, 0)).rgb;
+			
+				coeffs.R.v[i] = coeff.r;
+				coeffs.G.v[i] = coeff.g;
+				coeffs.B.v[i] = coeff.b;
+			}
+			// end of workaround
+			
 			SHMultiply(coeffs.R, shBasis);
 			SHMultiply(coeffs.G, shBasis);
 			SHMultiply(coeffs.B, shBasis);
