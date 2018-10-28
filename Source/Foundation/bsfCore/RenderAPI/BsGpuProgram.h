@@ -26,7 +26,7 @@ namespace bs
 		bool requiresAdjacency = false; /**< If true then adjacency information will be provided when rendering. */
 
 		/** 
-		 * Optional intermediate version of the GPU program. Can significantly speed up GPU program compilation/creation.
+		 * Optional intermediate version of the GPU program. Can significantly speed up GPU program compilation/creation
 		 * when supported by the render backend. Call ct::GpuProgram::compileBytecode to generate it.
 		 */
 		SPtr<GpuProgramBytecode> bytecode;
