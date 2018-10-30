@@ -26,16 +26,8 @@ namespace bs
 		: RenderWindow(desc, windowId), mProperties(desc)
 	{ }
 	
-	void MacOSRenderWindow::getCustomAttribute(const String& name, void* pData) const
-	{
-		return getCore()->getCustomAttribute(name, pData);
-	}
-
 	void MacOSRenderWindow::initialize()
 	{
-		RenderWindowProperties& props = mProperties;
-		mIsChild = false;
-		
 		WINDOW_DESC windowDesc;
 		windowDesc.x = mDesc.left;
 		windowDesc.y = mDesc.top;
@@ -47,61 +39,23 @@ namespace bs
 		windowDesc.modal = mDesc.modal;
 		windowDesc.floating = mDesc.toolWindow;
 		windowDesc.enableMetal = true;
-		
-		auto iter = mDesc.platformSpecific.find("parentWindowHandle");
-		mIsChild = iter != mDesc.platformSpecific.end();
-		
+
 		mWindow = bs_new<CocoaWindow>(windowDesc);
 		mWindow->_setUserData(this);
 		
-		props.isFullScreen = mDesc.fullscreen && !mIsChild;
-		props.isHidden = mDesc.hidden;
-		
-		Rect2I area = mWindow->getArea();
-		props.width = area.width;
-		props.height = area.height;
-		props.top = area.y;
-		props.left = area.x;
-		props.hasFocus = true;
-		
-		props.hwGamma = mDesc.gamma;
-		props.multisampleCount = mDesc.multisampleCount;
-
-		// Create Vulkan surface
-				
-		VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo;
-		surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
-		surfaceCreateInfo.pNext = nullptr;
-		surfaceCreateInfo.flags = 0;
-		surfaceCreateInfo.pView = (__bridge const void *)(mWindow->getView());
-		
-		ct::VulkanRenderAPI& rapi = static_cast<ct::VulkanRenderAPI&>(ct::RenderAPI::instance());
-		VkResult result = vkCreateMacOSSurfaceMVK(rapi._getInstance(), &surfaceCreateInfo, bs::ct::gVulkanAllocator, &mSurface);
-		assert(result == VK_SUCCESS);
-
-		#ifdef BS_DEBUG_MODE
-		enableShaderConvertionDebugging();
-		#endif
-		
 		RenderWindow::initialize();
-		
-		if(props.isHidden)
-			mWindow->hide();
-		
-		{
-			ScopedSpinLock lock(getCore()->mLock);
-			getCore()->mSyncedProperties = props;
-		}
-
-		
-		ct::RenderWindowManager::instance().notifySyncDataDirty(getCore().get());
-		
-		// New windows always receive focus, but we don't receive an initial event from the OS, so trigger one manually
-		RenderWindowManager::instance().notifyFocusReceived(getCore().get());
-
-		
 	}
-	
+
+	void MacOSRenderWindow::getCustomAttribute(const String& name, void* data) const
+	{
+		if (name == "WINDOW" || name == "COCOA_WINDOW")
+		{
+			blockUntilCoreInitialized();
+			getCore()->getCustomAttribute(name, data);
+			return;
+		}
+	}
+
 	void MacOSRenderWindow::destroy()
 	{
 		// Make sure to set the original desktop video mode before we exit
@@ -122,246 +76,10 @@ namespace bs
 		ct::VulkanRenderAPI& rapi = static_cast<ct::VulkanRenderAPI&>(ct::RenderAPI::instance());
 		
 		RENDER_WINDOW_DESC desc = mDesc;
-		SPtr<ct::CoreObject> coreObj = bs_shared_ptr_new<ct::MacOSRenderWindow>(desc, mWindowId, mSurface, rapi);
+		SPtr<ct::CoreObject> coreObj = bs_shared_ptr_new<ct::MacOSRenderWindow>(desc, mWindowId, mWindow, rapi);
 		coreObj->_setThisPtr(coreObj);
 
 		return coreObj;
-	}
-
-	void MacOSRenderWindow::resize(UINT32 width, UINT32 height)
-	{
-		RenderWindowProperties& props = mProperties;
-		if (!props.isFullScreen)
-		{
-			mWindow->resize(width, height);
-
-			Rect2I area = mWindow->getArea();
-			props.width = area.width;
-			props.height = area.height;
-
-			{
-				ScopedSpinLock lock(getCore()->mLock);
-				getCore()->getSyncedProperties().width = width;
-				getCore()->getSyncedProperties().height = height;
-			}
-
-			ct::RenderWindowManager::instance().notifySyncDataDirty(getCore().get());
-		}
-	}
-
-	void MacOSRenderWindow::move(INT32 left, INT32 top)
-	{
-		RenderWindowProperties& props = mProperties;
-		if (!props.isFullScreen)
-		{
-			mWindow->move(left, top);
-
-			Rect2I area = mWindow->getArea();
-			props.top = area.y;
-			props.left = area.x;
-
-			{
-				ScopedSpinLock lock(getCore()->mLock);
-				getCore()->getSyncedProperties().top = props.top;
-				getCore()->getSyncedProperties().left = props.left;
-			}
-
-			ct::RenderWindowManager::instance().notifySyncDataDirty(getCore().get());
-		}
-	}
-
-	void MacOSRenderWindow::hide()
-	{
-		getMutableProperties().isHidden = true;
-		{
-			ScopedSpinLock lock(getCore()->mLock);
-			getCore()->getSyncedProperties().isHidden = true;
-		}
-
-		ct::RenderWindowManager::instance().notifySyncDataDirty(getCore().get());
-		mWindow->hide();
-	}
-
-	void MacOSRenderWindow::show()
-	{
-		getMutableProperties().isHidden = false;
-		{
-			ScopedSpinLock lock(getCore()->mLock);
-			getCore()->getSyncedProperties().isHidden = false;
-		}
-
-		ct::RenderWindowManager::instance().notifySyncDataDirty(getCore().get());
-		mWindow->show();
-	}
-
-	void MacOSRenderWindow::minimize()
-	{
-		RenderWindowProperties& props = mProperties;
-		props.isMaximized = false;
-		{
-			ScopedSpinLock lock(getCore()->mLock);
-			getCore()->getSyncedProperties().isMaximized = false;
-		}
-
-		ct::RenderWindowManager::instance().notifySyncDataDirty(getCore().get());
-		mWindow->minimize();
-	}
-
-	void MacOSRenderWindow::maximize()
-	{
-		RenderWindowProperties& props = mProperties;
-		props.isMaximized = true;
-		{
-			ScopedSpinLock lock(getCore()->mLock);
-			getCore()->getSyncedProperties().isMaximized = true;
-		}
-
-		ct::RenderWindowManager::instance().notifySyncDataDirty(getCore().get());
-		mWindow->maximize();
-	}
-
-	void MacOSRenderWindow::restore()
-	{
-		RenderWindowProperties& props = mProperties;
-		props.isMaximized = false;
-		{
-			ScopedSpinLock lock(getCore()->mLock);
-			getCore()->getSyncedProperties().isMaximized = false;
-		}
-
-		ct::RenderWindowManager::instance().notifySyncDataDirty(getCore().get());
-		mWindow->restore();
-	}
-
-	void MacOSRenderWindow::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
-	{
-		VideoMode videoMode(width, height, refreshRate, monitorIdx);
-		setFullscreen(videoMode);
-	}
-
-	void MacOSRenderWindow::setFullscreen(const VideoMode& videoMode)
-	{
-		if (mIsChild)
-			return;
-
-		const VideoModeInfo& videoModeInfo = ct::RenderAPI::instance().getVideoModeInfo();
-
-		UINT32 outputIdx = videoMode.getOutputIdx();
-		if(outputIdx >= videoModeInfo.getNumOutputs())
-		{
-			LOGERR("Invalid output device index.")
-			return;
-		}
-
-		const VideoOutputInfo& outputInfo = videoModeInfo.getOutputInfo (outputIdx);
-
-		if(!videoMode.isCustom())
-			setDisplayMode(outputInfo, videoMode);
-		else
-		{
-			// Look for mode matching the requested resolution
-			UINT32 foundMode = (UINT32)-1;
-			UINT32 numModes = outputInfo.getNumVideoModes();
-			for (UINT32 i = 0; i < numModes; i++)
-			{
-				const VideoMode& currentMode = outputInfo.getVideoMode(i);
-
-				if (currentMode.getWidth() == videoMode.getWidth() && currentMode.getHeight() == videoMode.getHeight())
-				{
-					foundMode = i;
-
-					if (Math::approxEquals(currentMode.getRefreshRate(), videoMode.getRefreshRate()))
-						break;
-				}
-			}
-
-			if (foundMode == (UINT32)-1)
-			{
-				LOGERR("Unable to enter fullscreen, unsupported video mode requested.");
-				return;
-			}
-
-			setDisplayMode(outputInfo, outputInfo.getVideoMode(foundMode));
-		}
-
-		mWindow->setFullscreen();
-
-		RenderWindowProperties& props = mProperties;
-		
-		props.isFullScreen = mDesc.fullscreen;
-
-		props.top = 0;
-		props.left = 0;
-		props.width = videoMode.getWidth();
-		props.height = videoMode.getHeight();
-
-		{
-			ScopedSpinLock lock(getCore()->mLock);
-			getCore()->getSyncedProperties().top = props.top;
-			getCore()->getSyncedProperties().left = props.left;
-			getCore()->getSyncedProperties().width = props.width;
-			getCore()->getSyncedProperties().height = props.height;
-		}
-
-		ct::RenderWindowManager::instance().notifySyncDataDirty(getCore().get());
-		_windowMovedOrResized();
-	}
-
-	void MacOSRenderWindow::setWindowed(UINT32 width, UINT32 height)
-	{
-		RenderWindowProperties& props = mProperties;
-
-		if (!props.isFullScreen)
-			return;
-
-		// Restore original display mode
-		const VideoModeInfo& videoModeInfo = ct::RenderAPI::instance().getVideoModeInfo();
-
-		UINT32 outputIdx = 0; // 0 is always primary
-		if(outputIdx >= videoModeInfo.getNumOutputs())
-		{
-			LOGERR("Invalid output device index.")
-			return;
-		}
-
-		const VideoOutputInfo& outputInfo = videoModeInfo.getOutputInfo(outputIdx);
-		setDisplayMode(outputInfo, outputInfo.getDesktopVideoMode());
-
-		mWindow->setWindowed();
-
-		props.isFullScreen = false;
-		props.width = width;
-		props.height = height;
-
-		{
-			ScopedSpinLock lock(getCore()->mLock);
-			getCore()->getSyncedProperties().width = props.width;
-			getCore()->getSyncedProperties().height = props.height;
-		}
-
-		ct::RenderWindowManager::instance().notifySyncDataDirty(getCore().get());
-		_windowMovedOrResized();
-	}
-
-	void MacOSRenderWindow::setDisplayMode(const VideoOutputInfo& output, const VideoMode& mode)
-	{
-		CGDisplayFadeReservationToken fadeToken = kCGDisplayFadeReservationInvalidToken;
-		if (CGAcquireDisplayFadeReservation(5.0f, &fadeToken))
-			CGDisplayFade(fadeToken, 0.3f, kCGDisplayBlendNormal, kCGDisplayBlendSolidColor, 0, 0, 0, TRUE);
-
-		auto& destOutput = static_cast<const ct::MacOSVideoOutputInfo&>(output);
-		auto& newMode = static_cast<const ct::MacOSVideoMode&>(mode);
-
-		// Note: An alternative to changing display resolution would be to only change the back-buffer size. But that doesn't
-		// account for refresh rate, so it's questionable how useful it would be.
-		CGDirectDisplayID displayID = destOutput._getDisplayID();
-		CGDisplaySetDisplayMode(displayID, newMode._getModeRef(), nullptr);
-
-		if (fadeToken != kCGDisplayFadeReservationInvalidToken)
-		{
-			CGDisplayFade(fadeToken, 0.3f, kCGDisplayBlendSolidColor, kCGDisplayBlendNormal, 0, 0, 0, FALSE);
-			CGReleaseDisplayFadeReservation(fadeToken);
-		}
 	}
 
 	Vector2I MacOSRenderWindow::screenToWindowPos(const Vector2I& screenPos) const
@@ -384,25 +102,14 @@ namespace bs
 		ScopedSpinLock lock(getCore()->_getPropertiesLock());
 		mProperties = getCore()->mSyncedProperties;
 	}
-
-	void MacOSRenderWindow::enableShaderConvertionDebugging()
-	{
-		ct::VulkanRenderAPI& rapi = static_cast<ct::VulkanRenderAPI&>(ct::RenderAPI::instance());
-		
-		MVKConfiguration mvkConfig;
-		size_t appConfigSize = sizeof(mvkConfig);
-		vkGetMoltenVKConfigurationMVK(rapi._getInstance(), &mvkConfig, &appConfigSize);
-		mvkConfig.debugMode = true;
-		vkSetMoltenVKConfigurationMVK(rapi._getInstance(), &mvkConfig, &appConfigSize);
-	}
 	
 	// ----------------------------------------------------------------------------------------------------------------
 	
 	namespace ct
 	{
-		MacOSRenderWindow::MacOSRenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, const VkSurfaceKHR& surface, VulkanRenderAPI& renderAPI)
-			: RenderWindow(desc, windowId), mWindow(nullptr),  mIsChild(false), mShowOnSwap(false)
-		, mSurface(surface), mRenderAPI(renderAPI), mProperties(desc),mSyncedProperties(desc), mRequiresNewBackBuffer(true)
+		MacOSRenderWindow::MacOSRenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, CocoaWindow* mWindow, VulkanRenderAPI& renderAPI)
+			: RenderWindow(desc, windowId), mWindow(mWindow),  mIsChild(false), mShowOnSwap(false)
+		, mRenderAPI(renderAPI), mProperties(desc),mSyncedProperties(desc), mRequiresNewBackBuffer(true)
 		{
 		}
 
@@ -417,6 +124,40 @@ namespace bs
 
 		void MacOSRenderWindow::initialize()
 		{
+			RenderWindowProperties& props = mProperties;
+			mIsChild = false;
+			
+			auto iter = mDesc.platformSpecific.find("parentWindowHandle");
+			mIsChild = iter != mDesc.platformSpecific.end();
+			
+			props.isFullScreen = mDesc.fullscreen && !mIsChild;
+			props.isHidden = mDesc.hidden;
+			
+			Rect2I area = mWindow->getArea();
+			props.width = area.width;
+			props.height = area.height;
+			props.top = area.y;
+			props.left = area.x;
+			props.hasFocus = true;
+			
+			props.hwGamma = mDesc.gamma;
+			props.multisampleCount = mDesc.multisampleCount;
+			
+			// Create Vulkan surface
+			
+			VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo;
+			surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
+			surfaceCreateInfo.pNext = nullptr;
+			surfaceCreateInfo.flags = 0;
+			surfaceCreateInfo.pView = (__bridge const void *)(mWindow->getMetalLayer());
+			
+			ct::VulkanRenderAPI& rapi = static_cast<ct::VulkanRenderAPI&>(ct::RenderAPI::instance());
+			VkResult result = vkCreateMacOSSurfaceMVK(rapi._getInstance(), &surfaceCreateInfo, bs::ct::gVulkanAllocator, &mSurface);
+			assert(result == VK_SUCCESS);
+			
+#ifdef BS_DEBUG_MODE
+			//enableShaderConvertionDebugging();
+#endif
 			SPtr<VulkanDevice> presentDevice = mRenderAPI._getPresentDevice();
 			VkPhysicalDevice physicalDevice = presentDevice->getPhysical();
 			
@@ -438,8 +179,6 @@ namespace bs
 			mColorSpace = format.colorSpace;
 			mDepthFormat = format.depthFormat;
 			
-			RenderWindowProperties& props = mProperties;
-
 			// Create swap chain
 			mSwapChain = bs_shared_ptr_new<VulkanSwapChain>();
 			mSwapChain->rebuild(presentDevice, mSurface, props.width, props.height, props.vsync, mColorFormat, mColorSpace,
@@ -448,8 +187,6 @@ namespace bs
 			if(mDesc.fullscreen && !mIsChild)
 				setFullscreen(mDesc.videoMode);
 			
-			RenderWindow::initialize();
-			
 			{
 				ScopedSpinLock lock(mLock);
 				mSyncedProperties = props;
@@ -457,8 +194,7 @@ namespace bs
 			
 			bs::RenderWindowManager::instance().notifySyncDataDirty(this);
 			
-			// New windows always receive focus, but we don't receive an initial event from bs::the OS, so trigger one manually
-			bs::RenderWindowManager::instance().notifyFocusReceived(this);
+			RenderWindow::initialize();
 		}
 
 		void MacOSRenderWindow::acquireBackBuffer()
@@ -471,14 +207,163 @@ namespace bs
 			mRequiresNewBackBuffer = false;
 		}
 
-		void MacOSRenderWindow::move(INT32 left, INT32 top)
-		{
-			// Do nothing
-		}
-
 		void MacOSRenderWindow::resize(UINT32 width, UINT32 height)
 		{
-			// Do nothing
+			THROW_IF_NOT_CORE_THREAD;
+			
+			RenderWindowProperties& props = mProperties;
+			if (!props.isFullScreen)
+			{
+				mWindow->resize(width, height);
+				
+				Rect2I area = mWindow->getArea();
+				props.width = area.width;
+				props.height = area.height;
+				
+				{
+					ScopedSpinLock lock(mLock);
+					getSyncedProperties().width = width;
+					getSyncedProperties().height = height;
+				}
+				
+				bs::RenderWindowManager::instance().notifySyncDataDirty(this);
+			}
+		}
+		
+		void MacOSRenderWindow::move(INT32 left, INT32 top)
+		{
+			THROW_IF_NOT_CORE_THREAD;
+			
+			RenderWindowProperties& props = mProperties;
+			if (!props.isFullScreen)
+			{
+				mWindow->move(left, top);
+				
+				Rect2I area = mWindow->getArea();
+				props.top = area.y;
+				props.left = area.x;
+				
+				{
+					ScopedSpinLock lock(mLock);
+					getSyncedProperties().top = props.top;
+					getSyncedProperties().left = props.left;
+				}
+				
+				bs::RenderWindowManager::instance().notifySyncDataDirty(this);
+			}
+		}
+		
+		void MacOSRenderWindow::minimize()
+		{
+			THROW_IF_NOT_CORE_THREAD;
+			mWindow->minimize();
+		}
+		
+		void MacOSRenderWindow::maximize()
+		{
+			THROW_IF_NOT_CORE_THREAD;
+			mWindow->maximize();
+		}
+		
+		void MacOSRenderWindow::restore()
+		{
+			THROW_IF_NOT_CORE_THREAD;
+			mWindow->restore();
+		}
+		
+		void MacOSRenderWindow::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
+		{
+			VideoMode videoMode(width, height, refreshRate, monitorIdx);
+			setFullscreen(videoMode);
+		}
+		
+		void MacOSRenderWindow::setFullscreen(const VideoMode& videoMode)
+		{
+			if (mIsChild)
+				return;
+			
+			const VideoModeInfo& videoModeInfo = ct::RenderAPI::instance().getVideoModeInfo();
+			
+			UINT32 outputIdx = videoMode.getOutputIdx();
+			if(outputIdx >= videoModeInfo.getNumOutputs())
+			{
+				LOGERR("Invalid output device index.")
+				return;
+			}
+			
+			const VideoOutputInfo& outputInfo = videoModeInfo.getOutputInfo (outputIdx);
+			
+			if(!videoMode.isCustom())
+				setDisplayMode(outputInfo, videoMode);
+			else
+			{
+				// Look for mode matching the requested resolution
+				UINT32 foundMode = (UINT32)-1;
+				UINT32 numModes = outputInfo.getNumVideoModes();
+				for (UINT32 i = 0; i < numModes; i++)
+				{
+					const VideoMode& currentMode = outputInfo.getVideoMode(i);
+					
+					if (currentMode.getWidth() == videoMode.getWidth() && currentMode.getHeight() == videoMode.getHeight())
+					{
+						foundMode = i;
+						
+						if (Math::approxEquals(currentMode.getRefreshRate(), videoMode.getRefreshRate()))
+							break;
+					}
+				}
+				
+				if (foundMode == (UINT32)-1)
+				{
+					LOGERR("Unable to enter fullscreen, unsupported video mode requested.");
+					return;
+				}
+				
+				setDisplayMode(outputInfo, outputInfo.getVideoMode(foundMode));
+			}
+			
+			mWindow->setFullscreen();
+			
+			RenderWindowProperties& props = mProperties;
+			
+			props.isFullScreen = mDesc.fullscreen;
+			
+			props.top = 0;
+			props.left = 0;
+			props.width = videoMode.getWidth();
+			props.height = videoMode.getHeight();
+			
+			{
+				ScopedSpinLock lock(mLock);
+				getSyncedProperties().top = props.top;
+				getSyncedProperties().left = props.left;
+				getSyncedProperties().width = props.width;
+				getSyncedProperties().height = props.height;
+			}
+			
+			ct::RenderWindowManager::instance().notifySyncDataDirty(this);
+			_windowMovedOrResized();
+		}
+		
+		void MacOSRenderWindow::setDisplayMode(const VideoOutputInfo& output, const VideoMode& mode)
+		{
+			CGDisplayFadeReservationToken fadeToken = kCGDisplayFadeReservationInvalidToken;
+			if (CGAcquireDisplayFadeReservation(5.0f, &fadeToken))
+				CGDisplayFade(fadeToken, 0.3f, kCGDisplayBlendNormal, kCGDisplayBlendSolidColor, 0, 0, 0, TRUE);
+			
+			auto& destOutput = static_cast<const ct::MacOSVideoOutputInfo&>(output);
+			auto& newMode = static_cast<const ct::MacOSVideoMode&>(mode);
+			
+			// Note: An alternative to changing display resolution would be to only change the back-buffer size. But that doesn't
+			// account for refresh rate, so it's questionable how useful it would be.
+			CGDirectDisplayID displayID = destOutput._getDisplayID();
+			CGDisplaySetDisplayMode(displayID, newMode._getModeRef(), nullptr);
+			
+			if (fadeToken != kCGDisplayFadeReservationInvalidToken)
+			{
+				CGDisplayFade(fadeToken, 0.3f, kCGDisplayBlendSolidColor, kCGDisplayBlendNormal, 0, 0, 0, FALSE);
+				CGReleaseDisplayFadeReservation(fadeToken);
+			}
 		}
 
 		void MacOSRenderWindow::setVSync(bool enabled, UINT32 interval)
@@ -570,7 +455,15 @@ namespace bs
 			{
 				UINT32* windowId = (UINT32*)data;
 				*windowId = mWindow->_getWindowId();
+				return;
 			}
+			else if(name == "WINDOW")
+			{
+				CocoaWindow** window = (CocoaWindow**)data;
+				*window = mWindow;
+				return;
+			}
+
 		}
 
 		void MacOSRenderWindow::_windowMovedOrResized()
@@ -599,6 +492,18 @@ namespace bs
 			ScopedSpinLock lock(mLock);
 			mProperties = mSyncedProperties;
 		}
+		
+		void MacOSRenderWindow::enableShaderConvertionDebugging()
+		{
+			ct::VulkanRenderAPI& rapi = static_cast<ct::VulkanRenderAPI&>(ct::RenderAPI::instance());
+			
+			MVKConfiguration mvkConfig;
+			size_t appConfigSize = sizeof(mvkConfig);
+			vkGetMoltenVKConfigurationMVK(rapi._getInstance(), &mvkConfig, &appConfigSize);
+			mvkConfig.debugMode = true;
+			vkSetMoltenVKConfigurationMVK(rapi._getInstance(), &mvkConfig, &appConfigSize);
+		}
+
 	}
 }
 

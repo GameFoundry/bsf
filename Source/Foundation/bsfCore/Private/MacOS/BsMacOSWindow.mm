@@ -754,6 +754,13 @@ namespace bs
 		return m->view;
 	}
 	
+	CAMetalLayer* CocoaWindow::getMetalLayer()
+	{
+		if ([ [m->view layer] isKindOfClass:CAMetalLayer.class])
+			return (CAMetalLayer*)[m->view layer];
+		return nullptr;
+	}
+	
 	void CocoaWindow::hide()
 	{
 		@autoreleasepool

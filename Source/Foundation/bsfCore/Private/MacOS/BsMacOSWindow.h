@@ -19,6 +19,7 @@
 @class BSWindowListener;
 @class BSView;
 @class BSWindow;
+@class CAMetalLayer;
 #endif
 
 namespace bs
@@ -83,6 +84,8 @@ namespace bs
 
 #ifdef BS_COCOA_INTERNALS
 		BSView* getView();
+		
+		CAMetalLayer* getMetalLayer();
 #endif
 		/** Hides the window. */
 		void hide();
