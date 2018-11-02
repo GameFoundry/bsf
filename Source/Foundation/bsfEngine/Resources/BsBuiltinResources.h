@@ -48,7 +48,6 @@ namespace bs
 		 * for transparency).
 		 */
 		ParticlesLitOpaque,
-
 	};
 
 	/**	Holds references to built-in resources used by the core engine. */

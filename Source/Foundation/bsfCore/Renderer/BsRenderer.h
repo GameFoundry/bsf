@@ -11,6 +11,7 @@ namespace bs
 { 
 	class RendererExtension;
 	class LightProbeVolume;
+	class Decal;
 	struct RenderSettings;
 	struct EvaluatedAnimationData;
 	struct ParticlePerFrameData;
@@ -290,6 +291,27 @@ namespace bs
 		 * @note	Core thread.
 		 */
 		virtual void notifyParticleSystemRemoved(ParticleSystem* particleSystem) { }
+
+		/**
+		 * Called whenever a new decal is created.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void notifyDecalAdded(Decal* decal) { }
+
+		/**
+		 * Called whenever a decal is updated.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void notifyDecalUpdated(Decal* decal) { }
+
+		/**
+		 * Called whenever a decal is destroyed.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void notifyDecalRemoved(Decal* decal) { }
 
 		/** 
 		 * Captures the scene at the specified location into a cubemap. 

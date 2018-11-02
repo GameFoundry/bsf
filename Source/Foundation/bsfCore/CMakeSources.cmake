@@ -110,6 +110,7 @@ set(BS_CORE_INC_RENDERER
 	"bsfCore/Renderer/BsLightProbeVolume.h"
 	"bsfCore/Renderer/BsIBLUtility.h"
 	"bsfCore/Renderer/BsGpuResourcePool.h"
+	"bsfCore/Renderer/BsDecal.h"
 )
 
 set(BS_CORE_SRC_LOCALIZATION
@@ -384,6 +385,7 @@ set(BS_CORE_INC_RTTI
 	"bsfCore/Private/RTTI/BsSpriteTextureRTTI.h"
 	"bsfCore/Private/RTTI/BsCParticleSystemRTTI.h"
 	"bsfCore/Private/RTTI/BsVectorFieldRTTI.h"
+	"bsfCore/Private/RTTI/BsDecalRTTI.h"
 )
 
 set(BS_CORE_SRC_RENDERER
@@ -401,6 +403,7 @@ set(BS_CORE_SRC_RENDERER
 	"bsfCore/Renderer/BsLightProbeVolume.cpp"
 	"bsfCore/Renderer/BsIBLUtility.cpp"
 	"bsfCore/Renderer/BsGpuResourcePool.cpp"
+	"bsfCore/Renderer/BsDecal.cpp"
 )
 
 set(BS_CORE_SRC_RESOURCES
