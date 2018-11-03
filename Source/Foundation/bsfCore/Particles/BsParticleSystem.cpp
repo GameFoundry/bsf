@@ -194,6 +194,20 @@ namespace bs
 		_markCoreDirty();
 	}
 
+	void ParticleSystem::setLayer(UINT64 layer)
+	{
+		const bool isPow2 = layer && !((layer - 1) & layer);
+
+		if (!isPow2)
+		{
+			LOGWRN("Invalid layer provided. Only one layer bit may be set. Ignoring.");
+			return;
+		}
+
+		mLayer = layer;
+		_markCoreDirty();
+	}	
+
 	void ParticleSystem::play()
 	{
 		if(mState == State::Playing)
@@ -379,6 +393,7 @@ namespace bs
 		size += coreSyncGetElemSize((SceneActor&)*this);
 		size += coreSyncGetElemSize(mSettings);
 		size += coreSyncGetElemSize(mGpuSimulationSettings);
+		size += rttiGetElemSize(mLayer);
 
 		UINT8* data = allocator->alloc(size);
 		char* dataPtr = (char*)data;
@@ -386,6 +401,7 @@ namespace bs
 		dataPtr = coreSyncWriteElem((SceneActor&)*this, dataPtr);
 		dataPtr = coreSyncWriteElem(mSettings, dataPtr);
 		dataPtr = coreSyncWriteElem(mGpuSimulationSettings, dataPtr);
+		dataPtr = rttiWriteElem(mLayer, dataPtr);
 
 		return CoreSyncData(data, size);
 	}
@@ -430,6 +446,20 @@ namespace bs
 			gRenderer()->notifyParticleSystemAdded(this);
 		}
 
+		void ParticleSystem::setLayer(UINT64 layer)
+		{
+			const bool isPow2 = layer && !((layer - 1) & layer);
+
+			if (!isPow2)
+			{
+				LOGWRN("Invalid layer provided. Only one layer bit may be set. Ignoring.");
+				return;
+			}
+
+			mLayer = layer;
+			_markCoreDirty();
+		}
+
 		void ParticleSystem::syncToCore(const CoreSyncData& data)
 		{
 			char* dataPtr = (char*)data.getBuffer();
@@ -441,6 +471,7 @@ namespace bs
 			dataPtr = coreSyncReadElem((SceneActor&)*this, dataPtr);
 			dataPtr = coreSyncReadElem(mSettings, dataPtr);
 			dataPtr = coreSyncReadElem(mGpuSimulationSettings, dataPtr);
+			dataPtr = rttiReadElem(mLayer, dataPtr);
 			
 			constexpr UINT32 updateEverythingFlag = (UINT32)ActorDirtyFlag::Everything
 				| (UINT32)ActorDirtyFlag::Active

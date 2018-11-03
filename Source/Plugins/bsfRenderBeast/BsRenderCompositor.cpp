@@ -377,6 +377,27 @@ namespace bs { namespace ct
 			}
 		}
 
+		//// Prepare decals
+		const auto numDecals = (UINT32)inputs.scene.decals.size();
+		for (UINT32 i = 0; i < numDecals; i++)
+		{
+			if (!visibility.decals[i])
+				continue;
+
+			const RendererDecal& rendererDecal = inputs.scene.decals[i];
+			DecalRenderElement& renderElement = rendererDecal.renderElement;
+
+			rendererDecal.updatePerCallBuffer(viewProps.viewProjTransform);
+
+			SPtr<GpuParams> gpuParams = renderElement.params->getGpuParams();
+			for (UINT32 j = 0; j < GPT_COUNT; j++)
+			{
+				const GpuParamBinding& binding = renderElement.perCameraBindings[j];
+				if (binding.slot != (UINT32)-1)
+					gpuParams->setParamBlockBuffer(binding.set, binding.slot, inputs.view.getPerViewBuffer());
+			}
+		}
+
 		Camera* sceneCamera = inputs.view.getSceneCamera();
 
 		// Trigger prepare callbacks
@@ -1475,7 +1496,7 @@ namespace bs { namespace ct
 				else
 				{
 					// Populate light & probe buffers
-					const Bounds& bounds = sceneInfo.renderableCullInfos[i].bounds;
+					const Bounds& bounds = sceneInfo.particleSystemCullInfos[i].bounds;
 					bindParamsForStandardForward(*gpuParams, bounds, renderElement.forwardLightingParams, renderElement.imageBasedParams);
 				}
 

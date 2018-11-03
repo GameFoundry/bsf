@@ -6,8 +6,8 @@
 #include "Reflection/BsIReflectable.h"
 #include "CoreThread/BsCoreObject.h"
 #include "Math/BsVector2.h"
-#include "Math/BsAABox.h"
 #include "Scene/BsSceneActor.h"
+#include "Math/BsBounds.h"
 
 namespace bs
 {
@@ -44,14 +44,27 @@ namespace bs
 		/** @copydoc getSize */
 		float getMaxDistance() const { return mMaxDistance * mTransform.getScale().z; }
 
+		/**
+		 * Determines the layer bitfield that controls whether a system is considered visible in a specific camera. 
+		 * Layer must match camera layer in order for the camera to render the component.
+		 */
+		void setLayer(UINT64 layer);
+
+		/** @copydoc setLayer() */
+		UINT64 getLayer() const { return mLayer; }
+
+		/**	Gets world bounds of this object. */
+		Bounds getBounds() const { return mBounds; }
+
 	protected:
 		/** Updates the internal bounds for the decal. Call this whenever a property affecting the bounds changes. */
 		void updateBounds();
 
 		Vector2 mSize = Vector2::ONE;
 		float mMaxDistance = 10.0f;
+		UINT64 mLayer = 1;
 
-		AABox mBounds;
+		Bounds mBounds;
 	};
 
 	/** Templated base class for both core and sim thread implementations of Decal. */

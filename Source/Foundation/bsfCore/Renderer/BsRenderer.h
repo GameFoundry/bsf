@@ -11,7 +11,6 @@ namespace bs
 { 
 	class RendererExtension;
 	class LightProbeVolume;
-	class Decal;
 	struct RenderSettings;
 	struct EvaluatedAnimationData;
 	struct ParticlePerFrameData;
@@ -27,6 +26,7 @@ namespace bs
 	{
 	class RendererTask;
 	class LightProbeVolume;
+	class Decal;
 
 	/** @addtogroup Renderer-Internal
 	 *  @{

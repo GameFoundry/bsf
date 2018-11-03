@@ -20,16 +20,30 @@ namespace bs
 		updateBounds();
 	}
 
+	void DecalBase::setLayer(UINT64 layer)
+	{
+		const bool isPow2 = layer && !((layer - 1) & layer);
+
+		if (!isPow2)
+		{
+			LOGWRN("Invalid layer provided. Only one layer bit may be set. Ignoring.");
+			return;
+		}
+
+		mLayer = layer;
+		_markCoreDirty();
+	}	
+	
 	void DecalBase::updateBounds()
 	{
-		AABox localBounds(
+		AABox localAABB(
 			Vector3(-mSize.x, -mSize.y, 0.0f),
 			Vector3(mSize.x, mSize.y, mMaxDistance)
 		);
 
-		localBounds.transformAffine(mTransform.getMatrix());
+		localAABB.transformAffine(mTransform.getMatrix());
 
-		mBounds = localBounds;
+		mBounds = Bounds(localAABB, Sphere(localAABB.getCenter(), localAABB.getRadius()));
 	}
 
 	template <bool Core>
@@ -40,6 +54,7 @@ namespace bs
 		p(mMaxDistance);
 		p(mMaterial);
 		p(mBounds);
+		p(mLayer);
 	}
 
 	Decal::Decal(const HMaterial& material, const Vector2& size, float maxDistance)

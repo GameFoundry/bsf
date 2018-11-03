@@ -13,8 +13,11 @@
 #include "Utility/BsSamplerOverrides.h"
 #include "BsRenderBeastOptions.h"
 #include "BsRenderBeast.h"
+#include "BsRendererDecal.h"
 #include "Image/BsSpriteTexture.h"
 #include "Shading/BsGpuParticleSimulation.h"
+#include "Renderer/BsDecal.h"
+#include "Renderer/BsRendererUtility.h"
 
 namespace bs {	namespace ct
 {
@@ -368,24 +371,7 @@ namespace bs {	namespace ct
 				renElement.material->updateParamsSet(renElement.params, 0.0f, true);
 
 				// Generate or assign sampler state overrides
-				SamplerOverrideKey samplerKey(renElement.material, techniqueIdx);
-				auto iterFind = mSamplerOverrides.find(samplerKey);
-				if (iterFind != mSamplerOverrides.end())
-				{
-					renElement.samplerOverrides = iterFind->second;
-					iterFind->second->refCount++;
-				}
-				else
-				{
-					SPtr<Shader> shader = renElement.material->getShader();
-					MaterialSamplerOverrides* samplerOverrides = SamplerOverrideUtility::generateSamplerOverrides(shader,
-						renElement.material->_getInternalParams(), renElement.params, mOptions);
-
-					mSamplerOverrides[samplerKey] = samplerOverrides;
-
-					renElement.samplerOverrides = samplerOverrides;
-					samplerOverrides->refCount++;
-				}
+				renElement.samplerOverrides = allocSamplerStateOverrides(renElement);
 			}
 		}
 
@@ -448,19 +434,7 @@ namespace bs {	namespace ct
 		Vector<RenderableElement>& elements = rendererRenderable->elements;
 		for (auto& element : elements)
 		{
-			SamplerOverrideKey samplerKey(element.material, element.techniqueIdx);
-
-			auto iterFind = mSamplerOverrides.find(samplerKey);
-			assert(iterFind != mSamplerOverrides.end());
-
-			MaterialSamplerOverrides* samplerOverrides = iterFind->second;
-			samplerOverrides->refCount--;
-			if (samplerOverrides->refCount == 0)
-			{
-				SamplerOverrideUtility::destroySamplerOverrides(samplerOverrides);
-				mSamplerOverrides.erase(iterFind);
-			}
-
+			freeSamplerStateOverrides(element);
 			element.samplerOverrides = nullptr;
 		}
 
@@ -600,7 +574,7 @@ namespace bs {	namespace ct
 		particleSystem->setRendererId(rendererId);
 
 		mInfo.particleSystems.push_back(RendererParticles());
-		mInfo.particleSystemBounds.push_back(AABox());
+		mInfo.particleSystemCullInfos.push_back(CullInfo(Bounds(), particleSystem->getLayer()));
 
 		RendererParticles& rendererParticles = mInfo.particleSystems.back();
 		rendererParticles.particleSystem = particleSystem;
@@ -926,14 +900,106 @@ namespace bs {	namespace ct
 		{
 			// Swap current last element with the one we want to erase
 			std::swap(mInfo.particleSystems[rendererId], mInfo.particleSystems[lastRendererId]);
-			std::swap(mInfo.particleSystemBounds[rendererId], mInfo.particleSystemBounds[lastRendererId]);
+			std::swap(mInfo.particleSystemCullInfos[rendererId], mInfo.particleSystemCullInfos[lastRendererId]);
 
 			particleSystem->setRendererId(rendererId);
 		}
 
 		// Last element is the one we want to erase
 		mInfo.particleSystems.erase(mInfo.particleSystems.end() - 1);
-		mInfo.particleSystemBounds.erase(mInfo.particleSystemBounds.end() - 1);
+		mInfo.particleSystemCullInfos.erase(mInfo.particleSystemCullInfos.end() - 1);
+	}
+
+	void RendererScene::registerDecal(Decal* decal)
+	{
+		const auto renderableId = (UINT32)mInfo.decals.size();
+		decal->setRendererId(renderableId);
+
+		mInfo.decals.emplace_back();
+		mInfo.decalCullInfos.push_back(CullInfo(decal->getBounds(), decal->getLayer()));
+
+		RendererDecal& rendererDecal = mInfo.decals.back();
+		rendererDecal.decal = decal;
+		rendererDecal.updatePerObjectBuffer();
+
+		DecalRenderElement& renElement = rendererDecal.renderElement;
+		renElement.type = (UINT32)RenderElementType::Decal;
+		renElement.mesh = RendererUtility::instance().getBoxStencil();
+		renElement.subMesh = renElement.mesh->getProperties().getSubMesh();
+
+		renElement.material = decal->getMaterial();
+
+		if (renElement.material != nullptr && renElement.material->getShader() == nullptr)
+			renElement.material = nullptr;
+
+		// If no material use the default material
+		if (renElement.material == nullptr)
+			renElement.material = Material::create(DefaultDecalMat::get()->getShader());
+
+		renElement.techniqueIdx = renElement.material->getDefaultTechnique();
+
+		// Make sure the technique shaders are compiled
+		const SPtr<Technique>& technique = renElement.material->getTechnique(renElement.techniqueIdx);
+		if (technique)
+			technique->compile();
+
+		// Generate or assigned renderer specific data for the material
+		renElement.params = renElement.material->createParamsSet(renElement.techniqueIdx);
+		renElement.material->updateParamsSet(renElement.params, 0.0f, true);
+
+		// Generate or assign sampler state overrides
+		renElement.samplerOverrides = allocSamplerStateOverrides(renElement);
+
+		// Prepare all parameter bindings
+		SPtr<GpuParams> gpuParams = renElement.params->getGpuParams();
+
+		// Note: Perhaps perform buffer validation to ensure expected buffer has the same size and layout as the 
+		// provided buffer, and show a warning otherwise. But this is perhaps better handled on a higher level.
+		gpuParams->setParamBlockBuffer("PerFrame", mPerFrameParamBuffer);
+		gpuParams->setParamBlockBuffer("DecalParams", rendererDecal.decalParamBuffer);
+		gpuParams->setParamBlockBuffer("PerObject", rendererDecal.perObjectParamBuffer);
+		gpuParams->setParamBlockBuffer("PerCall", rendererDecal.perCallParamBuffer);
+
+		gpuParams->getParamInfo()->getBindings(
+			GpuPipelineParamInfoBase::ParamType::ParamBlock,
+			"PerCamera",
+			renElement.perCameraBindings
+		);
+	}
+
+	void RendererScene::updateDecal(Decal* decal)
+	{
+		const UINT32 rendererId = decal->getRendererId();
+
+		mInfo.decals[rendererId].updatePerObjectBuffer();
+		mInfo.decalCullInfos[rendererId].bounds = decal->getBounds();
+	}
+
+	void RendererScene::unregisterDecal(Decal* decal)
+	{
+		const UINT32 rendererId = decal->getRendererId();
+		Decal* lastDecal = mInfo.decals.back().decal;
+		const UINT32 lastDecalId = lastDecal->getRendererId();
+
+		RendererDecal& rendererDecal = mInfo.decals[rendererId];
+		DecalRenderElement& renElement = rendererDecal.renderElement;
+
+		// Unregister sampler overrides
+		freeSamplerStateOverrides(renElement);
+		renElement.samplerOverrides = nullptr;
+
+		if (rendererId != lastDecalId)
+		{
+			// Swap current last element with the one we want to erase
+			std::swap(mInfo.decals[rendererId], mInfo.decals[lastDecalId]);
+			std::swap(mInfo.decalCullInfos[rendererId], mInfo.decalCullInfos[lastDecalId]);
+
+			lastDecal->setRendererId(rendererId);
+		}
+
+		// Last element is the one we want to erase
+		mInfo.decals.erase(mInfo.decals.end() - 1);
+		mInfo.decalCullInfos.erase(mInfo.decalCullInfos.end() - 1);
 	}
 
 	void RendererScene::setOptions(const SPtr<RenderBeastOptions>& options)
@@ -1197,18 +1263,57 @@ namespace bs {	namespace ct
 		{
 			const UINT32 rendererId = entry.particleSystem->getRendererId();
 
-			AABox worldBounds = AABox::INF_BOX;
+			AABox worldAABox = AABox::INF_BOX;
 			const auto iterFind = particleRenderData->cpuData.find(entry.particleSystem->getId());
 			if(iterFind != particleRenderData->cpuData.end())
-				worldBounds = iterFind->second->bounds;
+				worldAABox = iterFind->second->bounds;
 			else if(entry.gpuParticleSystem)
-				worldBounds = entry.gpuParticleSystem->getBounds();
+				worldAABox = entry.gpuParticleSystem->getBounds();
 
 			const ParticleSystemSettings& settings = entry.particleSystem->getSettings();
 			if (settings.simulationSpace == ParticleSimulationSpace::Local)
-				worldBounds.transformAffine(entry.localToWorld);
+				worldAABox.transformAffine(entry.localToWorld);
 
-			mInfo.particleSystemBounds[rendererId] = worldBounds;
+			const Sphere worldSphere(worldAABox.getCenter(), worldAABox.getRadius());
+			mInfo.particleSystemCullInfos[rendererId] = Bounds(worldAABox, worldSphere);
+		}
+	}
+
+	MaterialSamplerOverrides* RendererScene::allocSamplerStateOverrides(RenderElement& elem)
+	{
+		SamplerOverrideKey samplerKey(elem.material, elem.techniqueIdx);
+		auto iterFind = mSamplerOverrides.find(samplerKey);
+		if (iterFind != mSamplerOverrides.end())
+		{
+			iterFind->second->refCount++;
+			return iterFind->second;
+		}
+		else
+		{
+			SPtr<Shader> shader = elem.material->getShader();
+			MaterialSamplerOverrides* samplerOverrides = SamplerOverrideUtility::generateSamplerOverrides(shader,
+				elem.material->_getInternalParams(), elem.params, mOptions);
+
+			mSamplerOverrides[samplerKey] = samplerOverrides;
+
+			samplerOverrides->refCount++;
+			return iterFind->second;
+		}
+	}
+
+	void RendererScene::freeSamplerStateOverrides(RenderElement& elem)
+	{
+		SamplerOverrideKey samplerKey(elem.material, elem.techniqueIdx);
+
+		auto iterFind = mSamplerOverrides.find(samplerKey);
+		assert(iterFind != mSamplerOverrides.end());
+
+		MaterialSamplerOverrides* samplerOverrides = iterFind->second;
+		samplerOverrides->refCount--;
+		if (samplerOverrides->refCount == 0)
+		{
+			SamplerOverrideUtility::destroySamplerOverrides(samplerOverrides);
+			mSamplerOverrides.erase(iterFind);
 		}
 	}
 }}

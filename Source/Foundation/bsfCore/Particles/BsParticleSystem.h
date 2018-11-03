@@ -554,6 +554,15 @@ namespace bs
 		/** Returns an object that allows you to modify the list of evolvers used by this system. */
 		ParticleSystemEvolvers& getEvolvers() { return mEvolvers; }
 
+		/**
+		 * Determines the layer bitfield that controls whether a system is considered visible in a specific camera. 
+		 * Layer must match camera layer in order for the camera to render the component.
+		 */
+		void setLayer(UINT64 layer);
+
+		/** @copydoc setLayer() */
+		UINT64 getLayer() const { return mLayer; }
+
 		/** Starts the particle system. New particles will be emitted and existing particles will be evolved. */
 		void play();
 
@@ -630,6 +639,7 @@ namespace bs
 		ParticleGpuSimulationSettings mGpuSimulationSettings;
 		ParticleSystemEmitters mEmitters;
 		ParticleSystemEvolvers mEvolvers;
+		UINT64 mLayer = 1;
 
 		// Internal state
 		UINT32 mId = 0;
@@ -670,6 +680,15 @@ namespace bs
 			/** @copydoc bs::ParticleSystem::setGpuSimulationSettings */
 			const ParticleGpuSimulationSettings& getGpuSimulationSettings() const { return mGpuSimulationSettings; }
 
+			/**
+			 * Determines the layer bitfield that controls whether a system is considered visible in a specific camera.
+			 * Layer must match camera layer in order for the camera to render the component.
+			 */
+			void setLayer(UINT64 layer);
+
+			/** @copydoc setLayer() */
+			UINT64 getLayer() const { return mLayer; }
+
 			/**	Sets an ID that can be used for uniquely identifying this object by the renderer. */
 			void setRendererId(UINT32 id) { mRendererId = id; }
 
@@ -699,6 +718,7 @@ namespace bs
 
 			ParticleSystemSettings mSettings;
 			ParticleGpuSimulationSettings mGpuSimulationSettings;
+			UINT64 mLayer = 1;
 		};
 	}
 

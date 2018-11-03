@@ -16,6 +16,8 @@ namespace bs
 
 	namespace ct
 	{
+		struct RendererDecal;
+		class Decal;
 		struct FrameInfo;
 
 	/** @addtogroup RenderBeast
@@ -55,7 +57,11 @@ namespace bs
 
 		// Particles
 		Vector<RendererParticles> particleSystems;
-		Vector<AABox> particleSystemBounds;
+		Vector<CullInfo> particleSystemCullInfos;
+
+		// Decals
+		Vector<RendererDecal> decals;
+		Vector<CullInfo> decalCullInfos;
 
 		// Sky
 		Skybox* skybox = nullptr;
@@ -141,6 +147,15 @@ namespace bs
 		/** Removes a particle system from the scene. */
 		void unregisterParticleSystem(ParticleSystem* particleSystem);
 
+		/** Registers a new decal object in the scene. */
+		void registerDecal(Decal* decal);
+
+		/** Updates information about a previously registered decal object. */
+		void updateDecal(Decal* decal);
+
+		/** Removes a decal object from the scene. */
+		void unregisterDecal(Decal* decal);
+
 		/** Returns a container with all relevant scene objects. */
 		const SceneInfo& getSceneInfo() const { return mInfo; }
 
@@ -182,6 +197,15 @@ namespace bs
 		 * registered with some other render target it will be removed from it and added to the new target.
 		 */
 		void updateCameraRenderTargets(Camera* camera, bool remove = false);
+
+		/** 
+		 * Allocates (or returns existing) set of sampler state overrides that can be used for the provided render 
+		 * element. 
+		 */
+		MaterialSamplerOverrides* allocSamplerStateOverrides(RenderElement& elem);
+
+		/** Frees sampler state overrides previously allocated with allocSamplerStateOverrides(). */
+		void freeSamplerStateOverrides(RenderElement& elem);
 
 		SceneInfo mInfo;
 		SPtr<GpuParamBlockBuffer> mPerFrameParamBuffer;

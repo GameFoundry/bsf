@@ -245,6 +245,20 @@ namespace bs { namespace ct
 		mScene->unregisterParticleSystem(particleSystem);
 	}
 
+	void RenderBeast::notifyDecalAdded(Decal* decal)
+	{
+		mScene->registerDecal(decal);
+	}
+
+	void RenderBeast::notifyDecalRemoved(Decal* decal)
+	{
+		mScene->unregisterDecal(decal);
+	}
+
+	void RenderBeast::notifyDecalUpdated(Decal* decal)
+	{
+		mScene->updateDecal(decal);
+	}
 	void RenderBeast::setOptions(const SPtr<RendererOptions>& options)
 	{
 		mOptions = std::static_pointer_cast<RenderBeastOptions>(options);

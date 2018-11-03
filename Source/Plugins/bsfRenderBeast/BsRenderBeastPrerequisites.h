@@ -35,7 +35,9 @@ namespace bs { namespace ct
 		/** See RenderableElement. */
 		Renderable,
 		/** See ParticlesRenderElement. */
-		Particle
+		Particle,
+		/** See DecalRenderElement. */
+		Decal
 	};
 
 	struct RenderBeastOptions;

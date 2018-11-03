@@ -14,6 +14,7 @@
 #include "BsRendererRenderable.h"
 #include "BsRenderCompositor.h"
 #include "BsRendererParticles.h"
+#include "BsRendererDecal.h"
 
 namespace bs { namespace ct
 {
@@ -202,6 +203,7 @@ namespace bs { namespace ct
 		Vector<bool> spotLights;
 		Vector<bool> reflProbes;
 		Vector<bool> particleSystems;
+		Vector<bool> decals;
 	};
 
 	/** Information used for culling an object against a view. */
@@ -292,8 +294,8 @@ namespace bs { namespace ct
 		 * Populates view render queues by determining visible particle systems. 
 		 *
 		 * @param[in]	particleSystems		A set of particle systems to iterate over and determine visibility for.
-		 * @param[in]	bounds				A set of world bounds for the particle systems. Must be the same size as the
-		 *									@p particleSystems array.
+		 * @param[in]	cullInfos			A set of world bounds & other information relevant for culling the provided
+		 *									renderable objects. Must be the same size as the @p particleSystems array.
 		 * @param[out]	visibility			Output parameter that will have the true bit set for any visible particle system
 		 *									object. If the bit for an object is already set to true, the method will never
 		 *									change it to false which allows the same bitfield to be provided to multiple
@@ -302,7 +304,24 @@ namespace bs { namespace ct
 		 *									As a side-effect, per-view visibility data is also calculated and can be
 		 *									retrieved by calling getVisibilityMask().
 		 */
-		void determineVisible(const Vector<RendererParticles>& particleSystems, const Vector<AABox>& bounds,
+		void determineVisible(const Vector<RendererParticles>& particleSystems, const Vector<CullInfo>& cullInfos,
+			Vector<bool>* visibility = nullptr);
+
+		/**
+		 * Populates view render queues by determining visible decals. 
+		 *
+		 * @param[in]	decals				A set of decals to iterate over and determine visibility for.
+		 * @param[in]	cullInfos			A set of world bounds & other information relevant for culling the provided
+		 *									renderable objects. Must be the same size as the @p decals array.
+		 * @param[out]	visibility			Output parameter that will have the true bit set for any visible decal
+		 *									object. If the bit for an object is already set to true, the method will never
+		 *									change it to false which allows the same bitfield to be provided to multiple
+		 *									renderer views. Must be the same size as the @p decals array.
+		 *									
+		 *									As a side-effect, per-view visibility data is also calculated and can be
+		 *									retrieved by calling getVisibilityMask().
+		 */
+		void determineVisible(const Vector<RendererDecal>& decals, const Vector<CullInfo>& cullInfos,
 			Vector<bool>* visibility = nullptr);
 
 		/**
