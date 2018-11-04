@@ -542,7 +542,7 @@ function(run_import_tool _PREFIX _FOLDER _ARGS)
 	
 	if(${UPLOAD_ASSETS})	
 		if(IMPORT_STATUS_CODE EQUAL 1)
-			update_data_file_package("${_PREFIX}CompiledData_Master" ${FOLDER}/Data Raw/DataPackageContents.txt)
+			update_data_file_package("${_PREFIX}CompiledData_Master" ${_FOLDER}/Data Raw/DataPackageContents.txt)
 		endif()
 	endif()
 endfunction()
