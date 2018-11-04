@@ -527,7 +527,7 @@ function(run_import_tool _PREFIX _FOLDER _ARGS)
 		RESULT_VARIABLE IMPORT_STATUS_CODE
 	)
 	
-	if(IMPORT_STATUS_CODE GREATER 1)
+	if((NOT IMPORT_STATUS_CODE EQUAL 0) AND (NOT IMPORT_STATUS_CODE EQUAL 1))
 		message("Failed to import built-in assets. Error code: ${IMPORT_STATUS_CODE}")
 		message(STATUS "...aborting data file packaging.")
 		return()

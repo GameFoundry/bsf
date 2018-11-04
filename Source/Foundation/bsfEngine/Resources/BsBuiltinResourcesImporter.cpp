@@ -293,6 +293,7 @@ namespace bs
 		json skinJSON = dataListJSON["Skin"];
 		json cursorsJSON = dataListJSON["Cursors"];
 		json iconsJSON = dataListJSON["Icons"];
+		json spriteIconsJSON = dataListJSON["SpriteIcons"];
 		json includesJSON = dataListJSON["Includes"];
 		json shadersJSON = dataListJSON["Shaders"];
 		json fontsJSON = dataListJSON["Fonts"];
@@ -322,6 +323,14 @@ namespace bs
 				rawIconFolder,
 				BuiltinResourcesHelper::AssetType::Normal,
 				iconsJSON);
+		}
+
+		if(!spriteIconsJSON.is_null())
+		{
+			updatedDataLists |= BuiltinResourcesHelper::updateJSON(
+				rawIconFolder,
+				BuiltinResourcesHelper::AssetType::Sprite,
+				spriteIconsJSON);
 		}
 
 		if(!includesJSON.is_null())
@@ -362,6 +371,9 @@ namespace bs
 
 			if(!iconsJSON.is_null())
 				dataListJSON["Icons"] = iconsJSON;
+
+			if(!spriteIconsJSON.is_null())
+				dataListJSON["SpriteIcons"] = spriteIconsJSON;
 
 			if(!includesJSON.is_null())
 				dataListJSON["Includes"] = includesJSON;
@@ -467,6 +479,30 @@ namespace bs
 				iconFolder,
 				sManifest,
 				BuiltinResourcesHelper::AssetType::Normal);
+		}
+
+		// Import sprite icons
+		if(!spriteIconsJSON.is_null())
+		{
+			BuiltinResourcesHelper::updateManifest(
+				iconFolder,
+				spriteIconsJSON,
+				sManifest,
+				BuiltinResourcesHelper::AssetType::Sprite);
+
+			Vector<bool> importFlags = BuiltinResourcesHelper::generateImportFlags(
+				spriteIconsJSON,
+				rawIconFolder,
+				lastUpdateTime,
+				forceImport);
+
+			BuiltinResourcesHelper::importAssets(
+				spriteIconsJSON,
+				importFlags,
+				rawIconFolder,
+				iconFolder,
+				sManifest,
+				BuiltinResourcesHelper::AssetType::Sprite);
 		}
 
 		// Import shaders
