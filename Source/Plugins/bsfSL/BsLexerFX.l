@@ -217,14 +217,22 @@ RGBA			{ yylval->intValue = 0xF; return TOKEN_COLORMASK; }
 <UNDEF_COND>.					{ return yytext[0]; }
 
 #if								{ BEGIN(CONDITIONAL_IF); }
-<CONDITIONAL_IF>{WS}			{ /* Skip blank */ }
-<CONDITIONAL_IF>{IDENTIFIER}	{ 
-	int isEnabled = pushConditional(yyextra, isDefineEnabled(yyextra, yytext));
+<CONDITIONAL_IF>{IDENTIFIER}	{ pushConditional(yyextra, true); }
+<CONDITIONAL_IF>==				{ setConditionalOp(yyextra, CO_Equals); }
+<CONDITIONAL_IF>!=				{ setConditionalOp(yyextra, CO_NotEquals); }
+<CONDITIONAL_IF>>				{ setConditionalOp(yyextra, CO_Greater); }
+<CONDITIONAL_IF><				{ setConditionalOp(yyextra, CO_Lesser); }
+<CONDITIONAL_IF>>=				{ setConditionalOp(yyextra, CO_GreaterEqual); }
+<CONDITIONAL_IF><=				{ setConditionalOp(yyextra, CO_LesserEqual); }
+<CONDITIONAL_IF>{INTEGER}		{ setConditionalVal(yyextra, yytext); }
+<CONDITIONAL_IF>{ENDLINE}		{ 
+	bool isEnabled = evalConditional();
 	if(!isEnabled)
 		BEGIN(CONDITIONAL_IGNORE);
 	else
 		BEGIN(INITIAL);
 }
+<CONDITIONAL_IF>{WS}			{ /* Skip blank */ }
 <CONDITIONAL_IF>.
 
 #ifdef							{ BEGIN(CONDITIONAL_IFDEF); }
@@ -272,14 +280,22 @@ RGBA			{ yylval->intValue = 0xF; return TOKEN_COLORMASK; }
 }
 <CONDITIONAL_IGNORE>.			{ /* Skip */ }
 
-<CONDITIONAL_ELIF>{WS}			{ /* Skip blank */ }
-<CONDITIONAL_ELIF>{IDENTIFIER}	{ 
-	int isEnabled = setConditional(yyextra, hasDefine(yyextra, yytext));
+<CONDITIONAL_ELIF>{IDENTIFIER}	{ setConditional(yyextra, yytext); }
+<CONDITIONAL_ELIF>==			{ setConditionalOp(yyextra, CO_Equals); }
+<CONDITIONAL_ELIF>!=			{ setConditionalOp(yyextra, CO_NotEquals); }
+<CONDITIONAL_ELIF>>				{ setConditionalOp(yyextra, CO_Greater); }
+<CONDITIONAL_ELIF><				{ setConditionalOp(yyextra, CO_Lesser); }
+<CONDITIONAL_ELIF>>=			{ setConditionalOp(yyextra, CO_GreaterEqual); }
+<CONDITIONAL_ELIF><=			{ setConditionalOp(yyextra, CO_LesserEqual); }
+<CONDITIONAL_ELIF>{INTEGER}		{ setConditionalVal(yyextra, yytext); }
+<CONDITIONAL_ELIF>{ENDLINE}		{ 
+	bool isEnabled = evalConditional();
 	if(!isEnabled)
 		BEGIN(CONDITIONAL_IGNORE);
 	else
 		BEGIN(INITIAL);
 }
+<CONDITIONAL_ELIF>{WS}			{ /* Skip blank */ }
 <CONDITIONAL_ELIF>.				{ return yytext[0]; }
 
 	/* Code block */

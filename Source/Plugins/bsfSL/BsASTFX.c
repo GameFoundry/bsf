@@ -328,11 +328,14 @@ void removeDefine(ParseState* parseState, const char* value)
 	}
 }
 
-int pushConditional(ParseState* parseState, int state)
+int pushConditionalDef(ParseState* parseState, int state)
 {
 	ConditionalData* conditional = mmalloc(parseState->memContext, sizeof(ConditionalData));
 	conditional->enabled = state && (parseState->conditionalStack == 0 || parseState->conditionalStack->enabled);
 	conditional->selfEnabled = state;
+	conditional->name = NULL;
+	conditional->op = CO_None;
+	conditional->value = NULL;
 	conditional->next = parseState->conditionalStack;
 
 	parseState->conditionalStack = conditional;
@@ -340,16 +343,89 @@ int pushConditional(ParseState* parseState, int state)
 	return conditional->enabled;
 }
 
-int switchConditional(ParseState* parseState)
+void pushConditional(ParseState* parseState, const char* name)
 {
-	if (parseState->conditionalStack == 0)
-		return 1;
+	ConditionalData* conditional = mmalloc(parseState->memContext, sizeof(ConditionalData));
+	conditional->enabled = (parseState->conditionalStack == 0 || parseState->conditionalStack->enabled);
+	conditional->selfEnabled = 0;
+	conditional->name = mmalloc_strdup(parseState->memContext, name);
+	conditional->op = CO_None;
+	conditional->value = NULL;
+	conditional->next = parseState->conditionalStack;
 
-	ConditionalData* conditional = parseState->conditionalStack;
-	return setConditional(parseState, !conditional->selfEnabled);
+	parseState->conditionalStack = conditional;
 }
 
-int setConditional(ParseState* parseState, int state)
+void setConditional(ParseState* parseState, const char* name)
+{
+	assert(parseState->conditionalStack > 0);
+
+	ConditionalData* conditional = parseState->conditionalStack;
+	ConditionalData* parent = conditional->next;
+
+	conditional->name = mmalloc_strdup(parseState->memContext, name);
+	conditional->enabled = (parent == 0 || parent->enabled);
+	conditional->selfEnabled = 0;
+}
+
+void setConditionalOp(ParseState* parseState, ConditionalOp op)
+{
+	assert(parseState->conditionalStack > 0);
+
+	ConditionalData* conditional = parseState->conditionalStack;
+	conditional->op = op;
+}
+
+void setConditionalVal(ParseState* parseState, const char* value)
+{
+	assert(parseState->conditionalStack > 0);
+
+	ConditionalData* conditional = parseState->conditionalStack;
+	conditional->value = mmalloc_strdup(parseState->memContext, value);
+}
+
+int evalConditional(ParseState* parseState)
+{
+	assert(parseState->conditionalStack > 0);
+
+	ConditionalData* conditional = parseState->conditionalStack;
+	if(!conditional->name)
+	{
+		conditional->enabled = 0;
+		return 0;
+	}
+
+	int myVal = 1;
+	if(conditional->value)
+		myVal = atoi(conditional->value);
+
+	for (int i = 0; i < parseState->numDefines; i++)
+	{
+		if (strcmp(parseState->defines[i].name, conditional->name) == 0)
+		{
+			int val = 0;
+			if(parseState->defines[i].expr)
+				val = atoi(parseState->defines[i].expr);
+
+			switch(conditional->op)
+			{
+			default:
+			case CO_None: conditional->selfEnabled = val != 0; break;
+			case CO_Equals: conditional->selfEnabled = myVal == val; break;
+			case CO_NotEquals: conditional->selfEnabled = myVal != val; break;
+			case CO_Lesser: conditional->selfEnabled = val < myVal; break;
+			case CO_Greater: conditional->selfEnabled = val > myVal; break;
+			case CO_LesserEqual: conditional->selfEnabled = val <= myVal; break;
+			case CO_GreaterEqual: conditional->selfEnabled = val >= myVal; break;
+			}
+		}
+	}
+
+	conditional->enabled &= conditional->selfEnabled;
+	return conditional->enabled;
+}
+
+int setConditionalState(ParseState* parseState, int state)
 {
 	if (parseState->conditionalStack == 0)
 		return 1;
@@ -363,6 +439,15 @@ int setConditional(ParseState* parseState, int state)
 	return conditional->enabled;
 }
 
+int switchConditional(ParseState* parseState)
+{
+	if (parseState->conditionalStack == 0)
+		return 1;
+
+	ConditionalData* conditional = parseState->conditionalStack;
+	return setConditionalState(parseState, !conditional->selfEnabled);
+}
+
 int popConditional(ParseState* parseState)
 {
 	if (parseState->conditionalStack == 0)
@@ -370,6 +455,12 @@ int popConditional(ParseState* parseState)
 
 	ConditionalData* conditional = parseState->conditionalStack;
 	parseState->conditionalStack = conditional->next;
+
+	if(conditional->value)
+		mmfree(conditional->value);
+
+	if(conditional->name)
+		mmfree(conditional->name);
 
 	mmfree(conditional);
 

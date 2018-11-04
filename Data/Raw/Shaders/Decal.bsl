@@ -6,6 +6,7 @@ shader Surface
 {
 	mixin BasePass;
 	mixin GBufferOutput;
+	mixin DepthInput;
 
 	variations
 	{
@@ -75,6 +76,10 @@ shader Surface
 	
 	code
 	{
+		#ifndef MSAA_COUNT
+			#define MSAA_COUNT 1
+		#endif
+	
 		[alias(gOpacityTex)]
 		SamplerState gOpacitySamp;	
 	
@@ -171,7 +176,7 @@ shader Surface
 			float2 decalUV = (decalPos + 1.0f) * 0.5f;
 						
 			float alpha = 0.0f;
-			if(decalUV < 0.0f || decalUV > 1.0f)
+			if(any(decalUV < 0.0f) || any(decalUV > 1.0f))
 				return;
 				
 			// TODO - Clip based on normal direction
