@@ -192,7 +192,7 @@ namespace bs { namespace ct
 			break;
 		case VK_IMAGE_VIEW_TYPE_2D:
 		case VK_IMAGE_VIEW_TYPE_3D:
-			if (numFaces > 1)
+			if (numFaces > 1 || mNumFaces > 1)
 				mImageViewCI.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
 			break;
 		default:
