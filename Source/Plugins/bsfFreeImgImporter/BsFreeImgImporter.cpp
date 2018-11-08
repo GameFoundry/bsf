@@ -369,11 +369,11 @@ namespace bs
 			srcElemSize = 4;
 			break;
 		case FIT_RGB16:
-			format = PF_RGBA16F;
+			format = PF_RGBA16;
 			srcElemSize = 2 * 3;
 			break;
 		case FIT_RGBA16:
-			format = PF_RGBA16F;
+			format = PF_RGBA16;
 			srcElemSize = 2 * 4;
 			break;
 		case FIT_RGBF:
