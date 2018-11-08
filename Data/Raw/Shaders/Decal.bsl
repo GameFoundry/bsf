@@ -198,7 +198,12 @@ shader Surface
 				
 			float3x3 worldToTangent = getWorldToTangent(worldNormal, worldPosition, decalUV.xy);
 				
-			float2 uv = (decalUV.xy * gUVTile + gUVOffset) * gSpriteUV.zw + gSpriteUV.xy;
+			float2 uv = (decalUV.xy * gUVTile + gUVOffset);
+
+			#if BLEND_MODE == 0 || BLEND_MODE == 1
+				uv = uv * gSpriteUV.zw + gSpriteUV.xy;
+			#endif
+			
 			float opacity = gOpacityTex.Sample(gOpacitySamp, uv);
 				
 			#if BLEND_MODE == 3
