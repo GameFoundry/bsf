@@ -48,6 +48,12 @@ User manuals									{#manuals}
  - [Playing animation](@ref animation)
  - [Bones](@ref bones)
  - [Advanced animation](@ref advancedAnimation)
+- **Particles**
+ - [Setting up a particle system](@ref particleSystem)
+ - [Emitter shapes](@ref particleEmitters)
+ - [Evolvers](@ref particleEvolvers)
+ - [Other settings](@ref particleSettings)
+ - [GPU particles](@ref gpuParticles)
 - **Advanced rendering**
  - [Renderer settings](@ref renderSettings)
  - [Skybox](@ref skybox)
@@ -73,3 +79,6 @@ User manuals									{#manuals}
  - [Measuring time](@ref time)
  - [Cursors](@ref cursors)
  - [Profiling](@ref cpuProfiling)
+ - [Animation curves](@ref animCurves)
+ - [Color gradient](@ref colorGradient)
+ - [Distributions](@ref distributions)
