@@ -98,7 +98,7 @@ namespace bs { namespace ct
 		gProfilerGPU().endFrame();
 
 		RenderCompositor::registerNodeType<RCNodeSceneDepth>();
-		RenderCompositor::registerNodeType<RCNodeGBuffer>();
+		RenderCompositor::registerNodeType<RCNodeBasePass>();
 		RenderCompositor::registerNodeType<RCNodeLightAccumulation>();
 		RenderCompositor::registerNodeType<RCNodeSceneColor>();
 		RenderCompositor::registerNodeType<RCNodeDeferredDirectLighting>();

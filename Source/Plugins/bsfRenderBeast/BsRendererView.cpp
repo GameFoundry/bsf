@@ -337,11 +337,11 @@ namespace bs { namespace ct
 				ShaderFlags shaderFlags = renderElem.material->getShader()->getFlags();
 
 				if (shaderFlags.isSet(ShaderFlag::Transparent))
-					mTransparentQueue->add(&renderElem, distanceToCamera);
+					mTransparentQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
 				else if (shaderFlags.isSet(ShaderFlag::Forward))
-					mForwardOpaqueQueue->add(&renderElem, distanceToCamera);
+					mForwardOpaqueQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
 				else
-					mDeferredOpaqueQueue->add(&renderElem, distanceToCamera);
+					mDeferredOpaqueQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
 			}
 		}
 
@@ -361,21 +361,19 @@ namespace bs { namespace ct
 			ShaderFlags shaderFlags = renderElem.material->getShader()->getFlags();
 
 			if (shaderFlags.isSet(ShaderFlag::Transparent))
-				mTransparentQueue->add(&renderElem, distanceToCamera);
+				mTransparentQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
 			else if (shaderFlags.isSet(ShaderFlag::Forward))
-				mForwardOpaqueQueue->add(&renderElem, distanceToCamera);
+				mForwardOpaqueQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
 			else
-				mDeferredOpaqueQueue->add(&renderElem, distanceToCamera);
+				mDeferredOpaqueQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
 		}
 
 		// Queue decals
+		const bool isMSAA = mProperties.numSamples > 1;
 		for(UINT32 i = 0; i < (UINT32)sceneInfo.decals.size(); i++)
 		{
 			if (!mVisibility.decals[i])
 				continue;
-
-			const AABox& boundingBox = sceneInfo.decalCullInfos[i].bounds.getBox();
-			const float distanceToCamera = (mProperties.viewOrigin - boundingBox.getCenter()).length();
 
 			const DecalRenderElement& renderElem = sceneInfo.decals[i].renderElement;
 
@@ -386,7 +384,24 @@ namespace bs { namespace ct
 			if (shaderFlags.isSetAny(ShaderFlag::Transparent | ShaderFlag::Forward))
 				continue;
 
-			mDecalQueue->add(&renderElem, distanceToCamera);
+			const AABox& boundingBox = sceneInfo.decalCullInfos[i].bounds.getBox();
+			const float distanceToCamera = (mProperties.viewOrigin - boundingBox.getCenter()).length();
+
+			// Check if viewer is inside the decal volume
+
+			// Extend the bounds slighty to cover the case when the viewer is outside, but the near plane is intersecting
+			// the decal bounds. We need to be conservative since the material for rendering outside will not properly
+			// render the inside of the decal volume.
+			const bool isInside = boundingBox.contains(mProperties.viewOrigin, mProperties.nearPlane * 3.0f);
+			const UINT32* techniqueIndices = renderElem.techniqueIndices[(INT32)isInside];
+
+			// No MSAA evaluation, or same value for all samples (no divergence between samples)
+			mDecalQueue->add(&renderElem, distanceToCamera, 
+				techniqueIndices[(INT32)(isMSAA ? MSAAMode::Single : MSAAMode::None)]);
+
+			// Evaluates all MSAA samples for pixels that are marked as divergent
+			if(isMSAA)
+				mDecalQueue->add(&renderElem, distanceToCamera, techniqueIndices[(INT32)MSAAMode::Full]);
 		}
 
 		mForwardOpaqueQueue->sort();

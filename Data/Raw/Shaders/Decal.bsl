@@ -1,7 +1,13 @@
 #define CLIP_POS 1
+#define NO_ANIMATION 1
 #include "$ENGINE$\BasePass.bslinc"
-#include "$ENGINE$\GBufferOutput.bslinc"
+
+#if MSAA_MODE != 0
+	#define MSAA_COUNT 2
+#endif
 #include "$ENGINE$\DepthInput.bslinc"
+
+#include "$ENGINE$\GBufferOutput.bslinc"
 
 shader Surface
 {
@@ -16,6 +22,11 @@ shader Surface
 		// 2 - Normal
 		// 3 - Emissive
 		BLEND_MODE = { 0, 1, 2, 3 };
+		INSIDE_GEOMETRY = { true, false };
+		// 0 - None
+		// 1 - Resolve single sample only
+		// 2 - Resolve all samples
+		MSAA_MODE = { 0, 1, 2 };
 	};
 	
 	blend
@@ -72,19 +83,50 @@ shader Surface
 			#endif
 			#endif
 		};
-	};	
+	};
 	
 	depth
 	{
 		write = false;
+		
+		#if INSIDE_GEOMETRY
+		read = false;
+		#else
+		read = true;
+		#endif
 	};
+	
+	raster
+	{
+		#if INSIDE_GEOMETRY
+		cull = cw;
+		#else
+		cull = ccw;
+		#endif
+	};
+	
+	#if MSAA_MODE > 0
+	stencil
+	{
+		enabled = true;
+		readmask = 0x80;
+		
+		#if INSIDE_GEOMETRY
+		back = { keep, keep, keep, eq };
+		#else
+		front = { keep, keep, keep, eq };
+		#endif
+		
+		#if MSAA_MODE == 1
+		reference = 0;
+		#else
+		reference = 0x80;
+		#endif
+	};
+	#endif
 	
 	code
 	{
-		#ifndef MSAA_COUNT
-			#define MSAA_COUNT 1
-		#endif
-	
 		[alias(gOpacityTex)]
 		SamplerState gOpacitySamp;	
 	
@@ -162,16 +204,20 @@ shader Surface
 		void fsmain(
 			in VStoFS input, 
 			in float4 screenPos : SV_Position,
+			#if MSAA_MODE == 2
+			uint sampleIdx : SV_SampleIndex,
+			#endif
 			out float4 OutSceneColor : SV_Target0,
 			out float4 OutGBufferA : SV_Target1,
 			out float4 OutGBufferB : SV_Target2,
-			out float2 OutGBufferC : SV_Target3)
+			out float4 OutGBufferC : SV_Target3)
 		{		
-			#if MSAA_COUNT > 1
-				// Note: Always sampling from 0th MSAA sample, could impact quality/aliasing
+			#if MSAA_MODE == 0
+				float deviceZ = gDepthBufferTex.Load(int3(screenPos.xy, 0)).r;
+			#elif MSAA_MODE == 1
 				float deviceZ = gDepthBufferTex.Load(screenPos.xy, 0).r;
 			#else
-				float deviceZ = gDepthBufferTex.Load(int3(screenPos.xy, 0)).r;
+				float deviceZ = gDepthBufferTex.Load(screenPos.xy, sampleIdx).r;
 			#endif	
 		
 			float depth = convertFromDeviceZ(deviceZ);
@@ -191,7 +237,7 @@ shader Surface
 			float alpha = 0.0f;
 			if(any(decalUV < 0.0f) || any(decalUV > 1.0f))
 				discard;
-				
+			
 			float3 worldNormal = normalize(cross(ddy(worldPosition), ddx(worldPosition)));
 			if(dot(worldNormal, gDecalNormal) > gNormalTolerance)
 				discard;
@@ -215,7 +261,9 @@ shader Surface
 				worldNormal = mul(normal, worldToTangent);
 				OutGBufferB = float4(worldNormal * 0.5f + 0.5f, opacity);
 			#else
-				OutGBufferA = float4(gAlbedoTex.Sample(gAlbedoSamp, uv).xyz, opacity);
+				float4 albedo = gAlbedoTex.Sample(gAlbedoSamp, uv);
+				opacity *= albedo.a;
+				OutGBufferA = float4(albedo.xyz, opacity);
 				
 				float3 normal = normalize(gNormalTex.Sample(gNormalSamp, uv) * 2.0f - float3(1, 1, 1));
 				

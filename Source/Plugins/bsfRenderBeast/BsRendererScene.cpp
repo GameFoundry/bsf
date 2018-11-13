@@ -23,6 +23,20 @@ namespace bs {	namespace ct
 {
 	PerFrameParamDef gPerFrameParamDef;
 
+	static const ShaderVariation* DECAL_VAR_LOOKUP[2][3] = 
+	{
+		{
+			&getDecalShaderVariation<false, MSAAMode::None>(),
+			&getDecalShaderVariation<false, MSAAMode::Single>(),
+			&getDecalShaderVariation<false, MSAAMode::Full>()
+		},
+		{
+			&getDecalShaderVariation<true, MSAAMode::None>(),
+			&getDecalShaderVariation<true, MSAAMode::Single>(),
+			&getDecalShaderVariation<true, MSAAMode::Full>()
+		}
+	};
+
 	RendererScene::RendererScene(const SPtr<RenderBeastOptions>& options)
 		:mOptions(options)
 	{
@@ -936,14 +950,27 @@ namespace bs {	namespace ct
 		if (renElement.material == nullptr)
 			renElement.material = Material::create(DefaultDecalMat::get()->getShader());
 
-		renElement.techniqueIdx = renElement.material->getDefaultTechnique();
+		for(UINT32 i = 0; i < 2; i++)
+		{
+			for(UINT32 j = 0; j < 3; j++)
+			{
+				FIND_TECHNIQUE_DESC findDesc;
+				findDesc.variation = DECAL_VAR_LOOKUP[i][j];
+				findDesc.override = true;
 
-		// Make sure the technique shaders are compiled
-		const SPtr<Technique>& technique = renElement.material->getTechnique(renElement.techniqueIdx);
-		if (technique)
-			technique->compile();
+				const UINT32 techniqueIdx = renElement.material->findTechnique(findDesc);
+				const SPtr<Technique>& technique = renElement.material->getTechnique(techniqueIdx);
+				if (technique)
+					technique->compile();
+
+				renElement.techniqueIndices[i][j] = techniqueIdx;
+			}
+		}
+
+		renElement.techniqueIdx = renElement.techniqueIndices[0][0];
 
 		// Generate or assigned renderer specific data for the material
+		// Note: This makes the assumption that all variations of the material share the same parameter set
 		renElement.params = renElement.material->createParamsSet(renElement.techniqueIdx);
 		renElement.material->updateParamsSet(renElement.params, 0.0f, true);
 

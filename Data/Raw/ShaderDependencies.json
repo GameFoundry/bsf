@@ -5,6 +5,15 @@
     "DebugDraw.bsl": null,
     "Decal.bsl": [
         {
+            "Path": "BasePass.bslinc"
+        },
+        {
+            "Path": "GBufferOutput.bslinc"
+        },
+        {
+            "Path": "SurfaceData.bslinc"
+        },
+        {
             "Path": "PerCameraData.bslinc"
         },
         {
@@ -15,15 +24,6 @@
         },
         {
             "Path": "DepthInput.bslinc"
-        },
-        {
-            "Path": "BasePass.bslinc"
-        },
-        {
-            "Path": "GBufferOutput.bslinc"
-        },
-        {
-            "Path": "SurfaceData.bslinc"
         },
         {
             "Path": "VertexCommon.bslinc"

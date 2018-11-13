@@ -481,6 +481,13 @@ namespace bs
 				mMinimum.z <= v.z && v.z <= mMaximum.z;
 	}
 
+	bool AABox::contains(const Vector3& v, float extra) const
+	{
+		return (mMinimum.x - extra) <= v.x && v.x <= (mMaximum.x + extra) &&
+			   (mMinimum.y - extra) <= v.y && v.y <= (mMaximum.y + extra) &&
+			   (mMinimum.z - extra) <= v.z && v.z <= (mMaximum.z + extra);
+	}
+
 	bool AABox::contains(const AABox& other) const
 	{
 		return this->mMinimum.x <= other.mMinimum.x &&

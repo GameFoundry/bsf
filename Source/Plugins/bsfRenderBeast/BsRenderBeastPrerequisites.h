@@ -40,6 +40,17 @@ namespace bs { namespace ct
 		Decal
 	};
 
+	/** Types of ways for shaders to handle MSAA. */
+	enum class MSAAMode
+	{
+		/** No MSAA supported. */
+		None,
+		/** Single MSAA sample will be resolved. */
+		Single,
+		/** All MSAA samples will be resolved. */
+		Full,
+	};
+
 	struct RenderBeastOptions;
 	struct PooledRenderTexture;
 	class RenderTargets;

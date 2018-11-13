@@ -11,12 +11,6 @@
 
 namespace bs
 {
-	/** @addtogroup Renderer-Internal
-	 *  @{
-	 */
-
-	/** @} */
-
 	/** @addtogroup Implementation
 	 *  @{
 	 */

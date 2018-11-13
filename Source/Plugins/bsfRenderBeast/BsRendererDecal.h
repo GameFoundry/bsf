@@ -30,6 +30,32 @@ namespace bs { namespace ct
 	/** Default material used for rendering decals, when no other is available. */
 	class DefaultDecalMat : public RendererMaterial<DefaultDecalMat> { RMAT_DEF("Decal.bsl"); };
 
+	/** Determines how is decal blended with the underlying surface. */
+	enum class DecalBlendMode
+	{
+		/** All decal textures are blended with the underlying surface, using alpha to determine blend amount. */
+		Transparent,
+		/** Albedo texture is multiplied with the underlying surface albedo, while all other textures are blended. */
+		Stain,
+		/** Only the normal texture is blended with the underlying surface. */
+		Normal,
+		/** Adds light contribution directly, without writing any other surface data. */
+		Emissive
+	};
+
+	/** Returns a specific decal shader variation. */
+	template<bool INSIDE_GEOMETRY, MSAAMode MSAA_MODE>
+	static const ShaderVariation& getDecalShaderVariation()
+	{
+		static ShaderVariation variation = ShaderVariation(
+		{
+			ShaderVariation::Param("INSIDE_GEOMETRY", INSIDE_GEOMETRY),
+			ShaderVariation::Param("MSAA_MODE", (INT32)MSAA_MODE),
+		});
+
+		return variation;
+	}
+
 	/** Contains information required for rendering a single Decal. */
 	class DecalRenderElement : public RenderElement
 	{
@@ -42,6 +68,9 @@ namespace bs { namespace ct
 
 		/** Binding indices representing where should the per-camera param block buffer be bound to. */
 		GpuParamBinding perCameraBindings[GPT_COUNT];
+
+		/** Indices for different variations of the used material. */
+		UINT32 techniqueIndices[2][3];
 
 		/** Time to used for evaluating material animation. */
 		float materialAnimationTime = 0.0f;
