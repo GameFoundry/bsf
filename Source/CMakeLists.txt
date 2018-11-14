@@ -48,6 +48,8 @@ endif()
 
 # Ensure dependencies are up to date
 ## Check prebuilt dependencies that are downloaded in a .zip
+# FIXME: should be disable if(USE_BUNDLED_LIBRARIES), but not all libraries can
+# be found as system libraries
 check_and_update_binary_deps(bsf ${BSF_SOURCE_DIR}/../Dependencies/ ${BS_FRAMEWORK_PREBUILT_DEPENDENCIES_VERSION})
 
 ## Check dependencies built from source

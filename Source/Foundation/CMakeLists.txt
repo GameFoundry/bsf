@@ -4,13 +4,13 @@ include(bsfCore/CMakeSources.cmake)
 include(bsfEngine/CMakeSources.cmake)
 
 # Packages
-find_package(snappy REQUIRED)
-find_package(nvtt REQUIRED)
+find_package(Snappy REQUIRED)
+find_package(nvtt 2.1.0 REQUIRED)
 
 if(LINUX)
 	find_package(X11 REQUIRED)
-	find_package(LibUUID REQUIRED)
-	find_package(LibICU REQUIRED)
+	find_package(uuid REQUIRED)
+	find_package(ICU REQUIRED COMPONENTS data uc)
 
 	if(NOT X11_Xcursor_FOUND)
 		message(FATAL_ERROR "Could not find XCursor library.")
@@ -49,10 +49,10 @@ target_compile_definitions(bsf PRIVATE
 
 # Libraries
 ## External lib: NVTT
-target_link_libraries(bsf PRIVATE ${nvtt_LIBRARIES})	
+target_link_libraries(bsf PRIVATE nvtt::nvtt)
 
 ## External lib: Snappy
-target_link_libraries(bsf PRIVATE ${snappy_LIBRARIES})
+target_link_libraries(bsf PRIVATE Snappy::snappy)
 
 ## External libs: Header only libraries
 target_link_libraries(bsf PUBLIC ThirdParty)
@@ -60,8 +60,8 @@ target_link_libraries(bsf PUBLIC ThirdParty)
 if(LINUX)
 	## External lib: X11, LibUUID, LibICU
 	target_link_libraries(bsf PUBLIC ${X11_LIBRARIES} ${X11_Xcursor_LIB} ${X11_Xrandr_LIB} ${X11_Xi_LIB})
-	target_link_libraries(bsf PRIVATE ${LibUUID_LIBRARIES})
-	target_link_libraries(bsf PRIVATE ${LibICU_LIBRARIES})
+	target_link_libraries(bsf PRIVATE uuid::uuid)
+	target_link_libraries(bsf PRIVATE ICU::data ICU::uc)
 endif()
 
 if(APPLE)

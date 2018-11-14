@@ -20,4 +20,6 @@ find_imported_library(nvtt nvmath)
 find_imported_library(nvtt nvthread)
 find_imported_library(nvtt squish)
 
+target_link_libraries(nvtt::nvtt INTERFACE nvtt::nvimage nvtt::bc6h nvtt::bc7 nvtt::nvcore nvtt::nvmath nvtt::nvthread nvtt::squish)
+
 end_find_package(nvtt nvtt)

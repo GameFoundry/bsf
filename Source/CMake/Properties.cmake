@@ -12,8 +12,14 @@ if(NOT CMAKE_CONFIGURATION_TYPES) # Multiconfig generator?
 	endif()
 endif()
 
+set(USE_BUNDLED_LIBRARIES ON CACHE BOOL "Download and use pre-build third-party libraries")
 # Includes required for various find_package calls
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${BSF_SOURCE_DIR}/CMake/Modules/")
+if(USE_BUNDLED_LIBRARIES)
+	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${BSF_SOURCE_DIR}/CMake/BundledModules/")
+else()
+	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${BSF_SOURCE_DIR}/CMake/OSModules/")
+endif()
 
 if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
 	set(BS_64BIT true)

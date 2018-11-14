@@ -2,7 +2,7 @@
 include(CMakeSources.cmake)
 
 # Packages
-find_package(freeimg REQUIRED)
+find_package(freeimage REQUIRED)
 	
 # Target
 add_library(bsfFreeImgImporter SHARED ${BS_FREEIMGIMPORTER_SRC})
@@ -15,7 +15,7 @@ target_compile_definitions(bsfFreeImgImporter PRIVATE -DBS_FREEIMG_EXPORTS -D_MB
 
 # Libraries
 ## External lib: FreeImage
-target_link_libraries(bsfFreeImgImporter ${freeimg_LIBRARIES})
+target_link_libraries(bsfFreeImgImporter freeimage::freeimage)
 
 ## Local libs
 target_link_libraries(bsfFreeImgImporter bsf)

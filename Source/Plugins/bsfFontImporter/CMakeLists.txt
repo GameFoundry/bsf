@@ -2,7 +2,7 @@
 include(CMakeSources.cmake)
 
 # Packages
-find_package(freetype REQUIRED)
+find_package(Freetype REQUIRED)
 	
 # Target
 add_library(bsfFontImporter SHARED ${BS_FONTIMPORTER_SRC})
@@ -11,11 +11,11 @@ add_library(bsfFontImporter SHARED ${BS_FONTIMPORTER_SRC})
 target_include_directories(bsfFontImporter PRIVATE "./")
 
 # Defines
-target_compile_definitions(bsfFontImporter PRIVATE -DBS_FONT_EXPORTS -DUSE_FREETYPE2_STATIC)
+target_compile_definitions(bsfFontImporter PRIVATE -DBS_FONT_EXPORTS)
 
 # Libraries
 ## External lib: FreeType
-target_link_libraries(bsfFontImporter ${freetype_LIBRARIES})
+target_link_libraries(bsfFontImporter Freetype::Freetype)
 
 ## Local libs
 target_link_libraries(bsfFontImporter bsf)
