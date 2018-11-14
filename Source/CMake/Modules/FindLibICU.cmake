@@ -7,7 +7,9 @@
 
 start_find_package(LibICU)
 
-set(LibICU_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/libICU CACHE PATH "")
+if(USE_BUNDLED_LIBRARIES)
+	set(LibICU_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/libICU CACHE PATH "")
+endif()
 gen_default_lib_search_dirs(LibICU)
 
 find_imported_includes(LibICU unicode/utypes.h)

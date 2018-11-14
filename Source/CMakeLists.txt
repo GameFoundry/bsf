@@ -46,6 +46,8 @@ if(ENABLE_COTIRE)
 	include(${BSF_SOURCE_DIR}/CMake/cotire.cmake)
 endif()
 
+set(USE_BUNDLED_LIBRARIES ON CACHE BOOL "Use and install bundled libraries")
+
 # Ensure dependencies are up to date
 ## Check prebuilt dependencies that are downloaded in a .zip
 check_and_update_binary_deps(bsf ${BSF_SOURCE_DIR}/../Dependencies/ ${BS_FRAMEWORK_PREBUILT_DEPENDENCIES_VERSION})

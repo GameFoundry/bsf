@@ -7,6 +7,7 @@
 
 start_find_package(FBXSDK)
 
+# Always use bundled version as package is not easily available
 set(FBXSDK_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/FBXSDK CACHE PATH "")
 gen_default_lib_search_dirs(FBXSDK)
 

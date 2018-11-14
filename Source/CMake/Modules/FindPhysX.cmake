@@ -7,6 +7,7 @@
 
 start_find_package(PhysX)
 
+# Always use bundled library as it is not commonly available
 set(PhysX_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/PhysX CACHE PATH "")
 gen_default_lib_search_dirs(PhysX)
 
