@@ -542,7 +542,7 @@ namespace bs { namespace ct
 			}
 			else // Uniform buffer
 			{
-				int size = program->getUniformBlockSize(i);
+				int size = Math::divideAndRoundUp(program->getUniformBlockSize(i), 16) * 16;
 
 				GpuParamBlockDesc blockDesc;
 				blockDesc.name = name;
