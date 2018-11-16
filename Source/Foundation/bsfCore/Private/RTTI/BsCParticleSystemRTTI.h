@@ -19,8 +19,8 @@ namespace bs
 	private:
 		BS_BEGIN_RTTI_MEMBERS
 			BS_RTTI_MEMBER_REFL(mSettings, 0)
-			BS_RTTI_MEMBER_REFL(mEmitters, 1)
-			BS_RTTI_MEMBER_REFL(mEvolvers, 2)
+			BS_RTTI_MEMBER_REFLPTR_ARRAY(mEmitters, 1)
+			BS_RTTI_MEMBER_REFLPTR_ARRAY(mEvolvers, 2)
 			BS_RTTI_MEMBER_REFL(mGpuSimulationSettings, 3)
 			BS_RTTI_MEMBER_PLAIN(mLayer, 4)
 		BS_END_RTTI_MEMBERS

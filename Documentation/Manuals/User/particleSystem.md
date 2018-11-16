@@ -38,7 +38,7 @@ PARTICLE_SPHERE_SHAPE_DESC sphereShape;
 sphereShape.radius = 0.3f;
 emitter->setShape(ParticleEmitterSphereShape::create(sphereShape));
 
-particleSystem->getEmitters()->add(emitter);
+particleSystem->setEmitters({emitter});
 ~~~~~~~~~~~~~
 
 As we see in the example above the basic system needs two things at minimum:
@@ -74,11 +74,11 @@ You may also create your own particle shaders, as we will show later.
 
 Emitters determine where are new particles spawned, along with other properties that are assigned to newly spawned particles. They are represented using the @ref bs::ParticleEmitter "ParticleEmitter" class.
 
-Once created they can be registered with the particle system by retrieving the @ref bs::ParticleSystemEmitters "ParticleSystemEmitters" object from @ref bs::ParticleSystem::getEmitters "ParticleSystem::getEmitters()" and calling its @ref bs::ParticleSystemEmitters::add "ParticleSystemEmitters::add()" method.
+Once created they can be registered with the particle system by setting a list of emitters through @ref bs::ParticleSystem::setEmitters "ParticleSystem::setEmitters()".
 
 ~~~~~~~~~~~~~{.cpp}
 SPtr<ParticleEmitter> emitter = bs_shared_ptr_new<ParticleEmitter>();
-particleSystem->getEmitters()->add(emitter);
+particleSystem->setEmitters({emitter});
 ~~~~~~~~~~~~~
 
 ## Shape {#particleSystem_b_a}

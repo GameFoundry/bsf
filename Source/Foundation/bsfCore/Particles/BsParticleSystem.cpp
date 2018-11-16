@@ -19,44 +19,12 @@ namespace bs
 {
 	static constexpr UINT32 INITIAL_PARTICLE_CAPACITY = 1000;
 
-	bool evolverCompareCallback(const ParticleEvolver* a, const ParticleEvolver* b)
-	{
-		if (a->getProperties().priority == b->getProperties().priority)
-			return a > b; // Use address, at this point it doesn't matter, but std::set requires us to differentiate
-		else
-			return a->getProperties().priority > b->getProperties().priority;
-	}
-
 	RTTITypeBase* ParticleSystemSettings::getRTTIStatic()
 	{
 		return ParticleSystemSettingsRTTI::instance();
 	}
 
 	RTTITypeBase* ParticleSystemSettings::getRTTI() const
-	{
-		return getRTTIStatic();
-	}
-
-	RTTITypeBase* ParticleSystemEmitters::getRTTIStatic()
-	{
-		return ParticleSystemEmittersRTTI::instance();
-	}
-
-	RTTITypeBase* ParticleSystemEmitters::getRTTI() const
-	{
-		return getRTTIStatic();
-	}
-
-	ParticleSystemEvolvers::ParticleSystemEvolvers()
-		: mSortedList(&evolverCompareCallback)
-	{ }
-
-	RTTITypeBase* ParticleSystemEvolvers::getRTTIStatic()
-	{
-		return ParticleSystemEvolversRTTI::instance();
-	}
-
-	RTTITypeBase* ParticleSystemEvolvers::getRTTI() const
 	{
 		return getRTTIStatic();
 	}
@@ -208,6 +176,28 @@ namespace bs
 		_markCoreDirty();
 	}	
 
+	void ParticleSystem::setEmitters(const Vector<SPtr<ParticleEmitter>>& emitters)
+	{
+		mEmitters = emitters;
+		_markCoreDirty();
+	}
+
+	void ParticleSystem::setEvolvers(const Vector<SPtr<ParticleEvolver>>& evolvers)
+	{
+		mEvolvers = evolvers;
+
+		std::sort(mEvolvers.begin(), mEvolvers.end(), 
+			[](const SPtr<ParticleEvolver>& a, const SPtr<ParticleEvolver>& b)
+		{
+			if (a->getProperties().priority == b->getProperties().priority)
+				return a > b; // Use address, at this point it doesn't matter, but sorting requires us to differentiate
+			else
+				return a->getProperties().priority > b->getProperties().priority;
+		});
+
+		_markCoreDirty();
+	}
+
 	void ParticleSystem::play()
 	{
 		if(mState == State::Playing)
@@ -271,7 +261,7 @@ namespace bs
 			mParticleSet->clear();
 
 		// Spawn new particles
-		for(auto& emitter : mEmitters.mList)
+		for(auto& emitter : mEmitters)
 			emitter->spawn(mRandom, state, *mParticleSet);
 
 		// Simulate if running on CPU, otherwise just pass the spawned particles off to the core thread
@@ -284,13 +274,11 @@ namespace bs
 			for (UINT32 i = 0; i < numParticles; i++)
 				particles.prevPosition[i] = particles.position[i];
 
-			const auto& evolverList = mEvolvers.mSortedList;
-
 			// Evolve pre-simulation
-			auto evolverIter = evolverList.begin();
-			for (; evolverIter != evolverList.end(); ++evolverIter)
+			auto evolverIter = mEvolvers.begin();
+			for (; evolverIter != mEvolvers.end(); ++evolverIter)
 			{
-				ParticleEvolver* evolver = *evolverIter;
+				ParticleEvolver* evolver = evolverIter->get();
 				const ParticleEvolverProperties& props = evolver->getProperties();
 
 				if (props.priority < 0)
@@ -304,9 +292,9 @@ namespace bs
 				particles.position[i] += particles.velocity[i] * timeStep;
 
 			// Evolve post-simulation
-			for (; evolverIter != evolverList.end(); ++evolverIter)
+			for (; evolverIter != mEvolvers.end(); ++evolverIter)
 			{
-				ParticleEvolver* evolver = *evolverIter;
+				ParticleEvolver* evolver = evolverIter->get();
 				evolver->evolve(mRandom, state, *mParticleSet);
 			}
 

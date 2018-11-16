@@ -10,7 +10,7 @@ Evolvers can provide various functionality such as:
  - Colliding particles with the world
  - Animating particle textures
 
-All evolvers derive from @ref bs::ParticleEvolver "ParticleEvolver". They are created and registered with the particle system similarly to emitters. Use @ref bs::ParticleSystem::getEvolvers() "ParticleSystem::getEvolvers()" to retrieve a list of evolvers in the form of @ref bs::ParticleSystemEvolvers "ParticleSystemEvolvers" to which you can then add a new evolver to by calling @ref bs::ParticleSystemEvolvers::add() "ParticleSystemEvolvers::add()". All evolver types have a **create()** method and accept a descriptor structure that allows you to customize their properties.
+All evolvers derive from @ref bs::ParticleEvolver "ParticleEvolver". They are created and registered with the particle system similarly to emitters. Use @ref bs::ParticleSystem::setEvolvers() "ParticleSystem::setEvolvers()" to set a list of evolvers to use for a particular particle system. All evolver types have a **create()** method and accept a descriptor structure that allows you to customize their properties.
 
 ~~~~~~~~~~~~~{.cpp}
 // An example creating and registering an evolver that modifies particle size over lifetime
@@ -22,7 +22,7 @@ desc.size = TAnimationCurve<float>(
 });
 
 SPtr<ParticleEvolver> evolver = ParticleSize::create(desc);
-particleSystem->getEvolvers().add(evolver);
+particleSystem->setEvolvers({evolver});
 ~~~~~~~~~~~~~
 
 Lets go over all the available evolver types.
@@ -228,5 +228,5 @@ PARTICLE_TEXTURE_ANIMATION_DESC desc;
 desc.numCycles = 5;
 
 auto evolver = ParticleTextureAnimation::create(desc);
-particleSystem->getEvolvers().add(evolver);
+particleSystem->setEvolvers({evolver});
 ~~~~~~~~~~~~~

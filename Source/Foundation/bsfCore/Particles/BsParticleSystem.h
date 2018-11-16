@@ -445,126 +445,6 @@ namespace bs
 	 *  @{
 	 */
 
-	/** Manages a list of all emitters used by a ParticleSystem. */
-	class BS_CORE_EXPORT ParticleSystemEmitters : public IReflectable
-	{
-	public:
-		/** Registers a new particle emitter. */
-		void add(SPtr<ParticleEmitter> emitter)
-		{
-			mList.push_back(std::move(emitter));
-		}
-
-		/** Returns the number of particle emitters present in this system. */
-		UINT32 getCount() const { return (UINT32)mList.size(); }
-
-		/** 
-		 * Returns the particle emitter present at the specified sequential index. Returns null if provided index is 
-		 * invalid. 
-		 */
-		ParticleEmitter* get(UINT32 idx)
-		{
-			if(idx >= (UINT32)mList.size())
-				return nullptr;
-
-			return mList[idx].get();
-		}
-
-		/** Removes a particle emitter. */
-		void remove(ParticleEmitter* emitter)
-		{
-			const auto iterFind = std::find_if(mList.begin(), mList.end(), 
-				[emitter](const SPtr<ParticleEmitter>& curEmitter)
-			{
-				return curEmitter.get() == emitter;
-				
-			});
-
-			if(iterFind != mList.end())
-				mList.erase(iterFind);
-		}
-
-	private:
-		friend class ParticleSystem;
-
-		Vector<SPtr<ParticleEmitter>> mList;
-
-		/************************************************************************/
-		/* 								RTTI		                     		*/
-		/************************************************************************/
-	public:
-		friend class ParticleSystemEmittersRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		RTTITypeBase* getRTTI() const override;
-	};
-
-	/** Manages a list of all evolvers used by a ParticleSystem. */
-	class BS_CORE_EXPORT ParticleSystemEvolvers : public IReflectable
-	{
-	public:
-		ParticleSystemEvolvers();
-
-		/** Registers a new particle evolver. */
-		void add(SPtr<ParticleEvolver> evolver)
-		{
-			addToSortedList(evolver.get());
-			mList.push_back(std::move(evolver));
-		}
-
-		/** Returns the number of particle evolvers present in this system. */
-		UINT32 getCount() const { return (UINT32)mList.size(); }
-
-		/** 
-		 * Returns the particle evolver present at the specified sequential index. Returns null if provided index is 
-		 * invalid. 
-		 */
-		ParticleEvolver* get(UINT32 idx)
-		{
-			if(idx >= (UINT32)mList.size())
-				return nullptr;
-
-			return mList[idx].get();
-		}
-
-		/** Removes a particle evolver. */
-		void remove(ParticleEvolver* evolver)
-		{
-			const auto iterFind = std::find_if(mList.begin(), mList.end(), 
-				[evolver](const SPtr<ParticleEvolver>& curEvolver)
-			{
-				return curEvolver.get() == evolver;
-				
-			});
-
-			if(iterFind != mList.end())
-				mList.erase(iterFind);
-
-			mSortedList.erase(evolver);
-		}
-
-	private:
-		friend class ParticleSystem;
-
-		/** Registers the particle evolver in one or multiple sorted lists, depending on its type. */
-		void addToSortedList(ParticleEvolver* evolver)
-		{
-			mSortedList.insert(evolver);
-		}
-
-		typedef std::function<bool(const ParticleEvolver*, const ParticleEvolver*)> EvolverComparison; 
-		Set<ParticleEvolver*, EvolverComparison> mSortedList;
-
-		Vector<SPtr<ParticleEvolver>> mList;
-
-		/************************************************************************/
-		/* 								RTTI		                     		*/
-		/************************************************************************/
-	public:
-		friend class ParticleSystemEvolversRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		RTTITypeBase* getRTTI() const override;
-	};
-
 	/** 
 	 * Controls spawning, evolution and rendering of particles. Particles can be 2D or 3D, with a variety of rendering
 	 * options. Particle system should be used for rendering objects that cannot properly be represented using static or
@@ -590,11 +470,23 @@ namespace bs
 		/** @copydoc setGpuSimulationSettings */
 		const ParticleGpuSimulationSettings& getGpuSimulationSettings() const { return mGpuSimulationSettings; }
 
-		/** Returns an object that allows you to modify the list of emitters used by this system. */
-		ParticleSystemEmitters& getEmitters() { return mEmitters; }
+		/** 
+		 * Set of objects that determine initial position, normal and other properties of newly spawned particles. Each
+		 * particle system must have at least one emitter.
+		 */
+		void setEmitters(const Vector<SPtr<ParticleEmitter>>& emitters);
 
-		/** Returns an object that allows you to modify the list of evolvers used by this system. */
-		ParticleSystemEvolvers& getEvolvers() { return mEvolvers; }
+		/** @copydoc setEmitters */
+		const Vector<SPtr<ParticleEmitter>>& getEmitters() const { return mEmitters; }
+
+		/** 
+		 * Set of objects that determine how particle properties change during their lifetime. Evolvers only affect
+		 * CPU simulated particles.
+		 */
+		void setEvolvers(const Vector<SPtr<ParticleEvolver>>& evolvers);
+
+		/** @copydoc setEmitters */
+		const Vector<SPtr<ParticleEvolver>>& getEvolvers() const { return mEvolvers; }
 
 		/**
 		 * Determines the layer bitfield that controls whether a system is considered visible in a specific camera. 
@@ -679,8 +571,8 @@ namespace bs
 
 		ParticleSystemSettings mSettings;
 		ParticleGpuSimulationSettings mGpuSimulationSettings;
-		ParticleSystemEmitters mEmitters;
-		ParticleSystemEvolvers mEvolvers;
+		Vector<SPtr<ParticleEmitter>> mEmitters;
+		Vector<SPtr<ParticleEvolver>> mEvolvers;
 		UINT64 mLayer = 1;
 
 		// Internal state
