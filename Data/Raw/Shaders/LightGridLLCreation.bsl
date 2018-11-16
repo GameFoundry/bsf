@@ -19,16 +19,16 @@ shader LightGridLLCreation
 		StructuredBuffer<ReflProbeData> gReflectionProbes;
 	
 		[layout(r32ui)]
-		RWBuffer<uint> gLightsCounter;
+		RWStructuredBuffer<uint> gLightsCounter;
 		[layout(r32ui)]
-		RWBuffer<uint> gLightsLLHeads;
-		RWBuffer<uint4> gLightsLL;
+		RWStructuredBuffer<uint> gLightsLLHeads;
+		RWStructuredBuffer<uint4> gLightsLL;
 		
 		[layout(r32ui)]
-		RWBuffer<uint> gProbesCounter;
+		RWStructuredBuffer<uint> gProbesCounter;
 		[layout(r32ui)]
-		RWBuffer<uint> gProbesLLHeads;
-		RWBuffer<uint2> gProbesLL;
+		RWStructuredBuffer<uint> gProbesLLHeads;
+		RWStructuredBuffer<uint2> gProbesLL;
 			
 		// Generates a an axis aligned bounding box in NDC and transforms it to view space.
 		// Note: This will overlap other cells, so it might be better to use frustum planes

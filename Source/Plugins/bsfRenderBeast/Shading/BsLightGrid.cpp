@@ -32,10 +32,10 @@ namespace bs { namespace ct
 
 		GPU_BUFFER_DESC desc;
 		desc.elementCount = 1;
-		desc.format = BF_32X1U;
+		desc.format = BF_UNKNOWN;
 		desc.usage = GBU_LOADSTORE;
-		desc.type = GBT_STANDARD;
-		desc.elementSize = 0;
+		desc.type = GBT_STRUCTURED;
+		desc.elementSize = bs::GpuBuffer::getFormatSize(BF_32X1U);
 
 		mLightsCounter = GpuBuffer::create(desc);
 		mLightsCounterParam.set(mLightsCounter);
@@ -59,10 +59,10 @@ namespace bs { namespace ct
 		{
 			GPU_BUFFER_DESC desc;
 			desc.elementCount = numCells;
-			desc.format = BF_32X1U;
+			desc.format = BF_UNKNOWN;
 			desc.usage = GBU_LOADSTORE;
-			desc.type = GBT_STANDARD;
-			desc.elementSize = 0;
+			desc.type = GBT_STRUCTURED;
+			desc.elementSize = bs::GpuBuffer::getFormatSize(BF_32X1U);
 
 			mLightsLLHeads = GpuBuffer::create(desc);
 			mLightsLLHeadsParam.set(mLightsLLHeads);
@@ -70,13 +70,13 @@ namespace bs { namespace ct
 			mProbesLLHeads = GpuBuffer::create(desc);
 			mProbesLLHeadsParam.set(mProbesLLHeads);
 
-			desc.format = BF_32X4U;
 			desc.elementCount = numCells * MAX_LIGHTS_PER_CELL;
+			desc.elementSize = bs::GpuBuffer::getFormatSize(BF_32X4U);
 
 			mLightsLL = GpuBuffer::create(desc);
 			mLightsLLParam.set(mLightsLL);
 
-			desc.format = BF_32X2U;
+			desc.elementSize = bs::GpuBuffer::getFormatSize(BF_32X2U);
 			mProbesLL = GpuBuffer::create(desc);
 			mProbesLLParam.set(mProbesLL);
 
@@ -147,10 +147,10 @@ namespace bs { namespace ct
 
 		GPU_BUFFER_DESC desc;
 		desc.elementCount = 2;
-		desc.format = BF_32X1U;
+		desc.format = BF_UNKNOWN;
 		desc.usage = GBU_LOADSTORE;
-		desc.type = GBT_STANDARD;
-		desc.elementSize = 0;
+		desc.type = GBT_STRUCTURED;
+		desc.elementSize = bs::GpuBuffer::getFormatSize(BF_32X1U);
 
 		mGridDataCounter = GpuBuffer::create(desc);
 		mGridDataCounterParam.set(mGridDataCounter);
@@ -172,21 +172,22 @@ namespace bs { namespace ct
 		{
 			GPU_BUFFER_DESC desc;
 			desc.elementCount = numCells;
-			desc.format = BF_32X4U;
+			desc.format = BF_UNKNOWN;
 			desc.usage = GBU_LOADSTORE;
-			desc.type = GBT_STANDARD;
-			desc.elementSize = 0;
+			desc.type = GBT_STRUCTURED;
+			desc.elementSize = bs::GpuBuffer::getFormatSize(BF_32X4U);
 
 			mGridLightOffsetAndSize = GpuBuffer::create(desc);
 			mGridLightOffsetAndSizeParam.set(mGridLightOffsetAndSize);
 
-			desc.format = BF_32X2U;
+			desc.elementSize = bs::GpuBuffer::getFormatSize(BF_32X2U);
 
 			mGridProbeOffsetAndSize = GpuBuffer::create(desc);
 			mGridProbeOffsetAndSizeParam.set(mGridProbeOffsetAndSize);
 
-			desc.format = BF_32X1U;
+			desc.elementSize = bs::GpuBuffer::getFormatSize(BF_32X1U);
 			desc.elementCount = numCells * MAX_LIGHTS_PER_CELL;
+			
 			mGridLightIndices = GpuBuffer::create(desc);
 			mGridLightIndicesParam.set(mGridLightIndices);
 

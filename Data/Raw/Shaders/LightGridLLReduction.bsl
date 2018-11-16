@@ -10,20 +10,20 @@ shader LightGridLLReduction
 	
 	code
 	{
-		Buffer<uint> gLightsLLHeads;
-		Buffer<uint4> gLightsLL;
+		StructuredBuffer<uint> gLightsLLHeads;
+		StructuredBuffer<uint4> gLightsLL;
 					
-		Buffer<uint> gProbesLLHeads;
-		Buffer<uint2> gProbesLL;
+		StructuredBuffer<uint> gProbesLLHeads;
+		StructuredBuffer<uint2> gProbesLL;
 		
 		[layout(r32ui)]
-		RWBuffer<uint> gGridDataCounter;
+		RWStructuredBuffer<uint> gGridDataCounter;
 		
-		RWBuffer<uint4> gGridLightOffsetAndSize;
-		RWBuffer<uint> gGridLightIndices;
+		RWStructuredBuffer<uint4> gGridLightOffsetAndSize;
+		RWStructuredBuffer<uint> gGridLightIndices;
 
-		RWBuffer<uint2> gGridProbeOffsetAndSize;
-		RWBuffer<uint> gGridProbeIndices;
+		RWStructuredBuffer<uint2> gGridProbeOffsetAndSize;
+		RWStructuredBuffer<uint> gGridProbeIndices;
 		
 		[numthreads(THREADGROUP_SIZE, THREADGROUP_SIZE, THREADGROUP_SIZE)]
 		void csmain(

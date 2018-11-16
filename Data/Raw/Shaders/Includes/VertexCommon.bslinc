@@ -72,7 +72,7 @@ mixin VertexCommon
 		};
 		
 		#if SKINNED
-		Buffer<float4> boneMatrices;
+		StructuredBuffer<float4> boneMatrices;
 		
 		float3x4 getBoneMatrix(uint idx)
 		{
