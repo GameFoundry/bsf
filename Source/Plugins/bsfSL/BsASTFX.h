@@ -132,6 +132,11 @@ enum tagRawCodeType
 	RCT_Count
 };
 
+enum tagConditionalOp
+{
+	CO_None, CO_Equals, CO_NotEquals, CO_Lesser, CO_Greater, CO_LesserEqual, CO_GreaterEqual
+};
+
 typedef enum tagNodeType NodeType;
 typedef enum tagOptionType OptionType;
 typedef enum tagOptionDataType OptionDataType;
@@ -153,6 +158,7 @@ typedef enum tagCompFuncValue CompFuncValue;
 typedef enum tagOpValue OpValue;
 typedef enum tagBlendOpValue BlendOpValue;
 typedef enum tagRawCodeType RawCodeType;
+typedef enum tagConditionalOp ConditionalOp;
 
 struct tagNodeLink
 {
@@ -174,8 +180,11 @@ struct tagIncludeLink
 
 struct tagConditionalData
 {
+	char* name;
 	int selfEnabled;
 	int enabled;
+	ConditionalOp op;
+	char* value;
 
 	ConditionalData* next;
 };
@@ -279,12 +288,15 @@ int getCodeBlockIndex(ParseState* parseState, RawCodeType type);
 void addDefine(ParseState* parseState, const char* value);
 void addDefineExpr(ParseState* parseState, const char* value);
 int hasDefine(ParseState* parseState, const char* value);
-int isDefineEnabled(ParseState* parseState, const char* value);
 void removeDefine(ParseState* parseState, const char* value);
 
-int pushConditional(ParseState* parseState, int state);
+int pushConditionalDef(ParseState* parseState, int state);
+void pushConditional(ParseState* parseState, const char* name);
+void setConditionalOp(ParseState* parseState, ConditionalOp op);
+void setConditionalVal(ParseState* parseState, const char* value);
+int evalConditional(ParseState* parseState);
 int switchConditional(ParseState* parseState);
-int setConditional(ParseState* parseState, int state);
+void setConditional(ParseState* parseState, const char* name);
 int popConditional(ParseState* parseState);
 
 char* getCurrentFilename(ParseState* parseState);

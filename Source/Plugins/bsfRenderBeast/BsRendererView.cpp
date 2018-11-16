@@ -10,6 +10,7 @@
 #include "BsRendererLight.h"
 #include "BsRendererScene.h"
 #include "BsRenderBeast.h"
+#include <BsRendererDecal.h>
 
 namespace bs { namespace ct
 {
@@ -94,6 +95,7 @@ namespace bs { namespace ct
 			transparentStateReduction = StateReduction::Distance; // Transparent object MUST be sorted by distance
 
 		mTransparentQueue = bs_shared_ptr_new<RenderQueue>(transparentStateReduction);
+		mDecalQueue = bs_shared_ptr_new<RenderQueue>(StateReduction::Material);
 	}
 
 	void RendererView::setRenderSettings(const SPtr<RenderSettings>& settings)
@@ -155,6 +157,7 @@ namespace bs { namespace ct
 		mDeferredOpaqueQueue->clear();
 		mForwardOpaqueQueue->clear();
 		mTransparentQueue->clear();
+		mDecalQueue->clear();
 	}
 
 	void RendererView::determineVisible(const Vector<RendererRenderable*>& renderables, const Vector<CullInfo>& cullInfos,
@@ -179,7 +182,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void RendererView::determineVisible(const Vector<RendererParticles>& particleSystems, const Vector<AABox>& bounds, 
+	void RendererView::determineVisible(const Vector<RendererParticles>& particleSystems, const Vector<CullInfo>& cullInfos, 
 		Vector<bool>* visibility)
 	{
 		mVisibility.particleSystems.clear();
@@ -188,7 +191,7 @@ namespace bs { namespace ct
 		if (mRenderSettings->overlayOnly)
 			return;
 
-		calculateVisibility(bounds, mVisibility.particleSystems);
+		calculateVisibility(cullInfos, mVisibility.particleSystems);
 
 		if(visibility != nullptr)
 		{
@@ -197,6 +200,28 @@ namespace bs { namespace ct
 				bool visible = (*visibility)[i];
 
 				(*visibility)[i] = visible || mVisibility.particleSystems[i];
+			}
+		}
+	}
+
+	void RendererView::determineVisible(const Vector<RendererDecal>& decals, const Vector<CullInfo>& cullInfos, 
+		Vector<bool>* visibility)
+	{
+		mVisibility.decals.clear();
+		mVisibility.decals.resize(decals.size(), false);
+
+		if (mRenderSettings->overlayOnly)
+			return;
+
+		calculateVisibility(cullInfos, mVisibility.decals);
+
+		if(visibility != nullptr)
+		{
+			for (UINT32 i = 0; i < (UINT32)decals.size(); i++)
+			{
+				bool visible = (*visibility)[i];
+
+				(*visibility)[i] = visible || mVisibility.decals[i];
 			}
 		}
 	}
@@ -297,7 +322,7 @@ namespace bs { namespace ct
 		if (mRenderSettings->overlayOnly)
 			return;
 
-		// Update per-object param buffers and queue render elements
+		// Queue renderables
 		for(UINT32 i = 0; i < (UINT32)sceneInfo.renderables.size(); i++)
 		{
 			if (!mVisibility.renderables[i])
@@ -312,15 +337,15 @@ namespace bs { namespace ct
 				ShaderFlags shaderFlags = renderElem.material->getShader()->getFlags();
 
 				if (shaderFlags.isSet(ShaderFlag::Transparent))
-					mTransparentQueue->add(&renderElem, distanceToCamera);
+					mTransparentQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
 				else if (shaderFlags.isSet(ShaderFlag::Forward))
-					mForwardOpaqueQueue->add(&renderElem, distanceToCamera);
+					mForwardOpaqueQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
 				else
-					mDeferredOpaqueQueue->add(&renderElem, distanceToCamera);
+					mDeferredOpaqueQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
 			}
 		}
 
-		// Queue render elements
+		// Queue particle systems
 		for(UINT32 i = 0; i < (UINT32)sceneInfo.particleSystems.size(); i++)
 		{
 			if (!mVisibility.particleSystems[i])
@@ -330,22 +355,59 @@ namespace bs { namespace ct
 			if (!renderElem.isValid())
 				continue;
 
-			const AABox& boundingBox = sceneInfo.particleSystemBounds[i];
+			const AABox& boundingBox = sceneInfo.particleSystemCullInfos[i].bounds.getBox();
 			const float distanceToCamera = (mProperties.viewOrigin - boundingBox.getCenter()).length();
 
 			ShaderFlags shaderFlags = renderElem.material->getShader()->getFlags();
 
 			if (shaderFlags.isSet(ShaderFlag::Transparent))
-				mTransparentQueue->add(&renderElem, distanceToCamera);
+				mTransparentQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
 			else if (shaderFlags.isSet(ShaderFlag::Forward))
-				mForwardOpaqueQueue->add(&renderElem, distanceToCamera);
+				mForwardOpaqueQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
 			else
-				mDeferredOpaqueQueue->add(&renderElem, distanceToCamera);
+				mDeferredOpaqueQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
+		}
+
+		// Queue decals
+		const bool isMSAA = mProperties.numSamples > 1;
+		for(UINT32 i = 0; i < (UINT32)sceneInfo.decals.size(); i++)
+		{
+			if (!mVisibility.decals[i])
+				continue;
+
+			const DecalRenderElement& renderElem = sceneInfo.decals[i].renderElement;
+
+			// Note: I could keep renderables in multiple separate arrays, so I don't need to do the check here
+			ShaderFlags shaderFlags = renderElem.material->getShader()->getFlags();
+
+			// Decals are only supported using deferred rendering
+			if (shaderFlags.isSetAny(ShaderFlag::Transparent | ShaderFlag::Forward))
+				continue;
+
+			const AABox& boundingBox = sceneInfo.decalCullInfos[i].bounds.getBox();
+			const float distanceToCamera = (mProperties.viewOrigin - boundingBox.getCenter()).length();
+
+			// Check if viewer is inside the decal volume
+
+			// Extend the bounds slighty to cover the case when the viewer is outside, but the near plane is intersecting
+			// the decal bounds. We need to be conservative since the material for rendering outside will not properly
+			// render the inside of the decal volume.
+			const bool isInside = boundingBox.contains(mProperties.viewOrigin, mProperties.nearPlane * 3.0f);
+			const UINT32* techniqueIndices = renderElem.techniqueIndices[(INT32)isInside];
+
+			// No MSAA evaluation, or same value for all samples (no divergence between samples)
+			mDecalQueue->add(&renderElem, distanceToCamera, 
+				techniqueIndices[(INT32)(isMSAA ? MSAAMode::Single : MSAAMode::None)]);
+
+			// Evaluates all MSAA samples for pixels that are marked as divergent
+			if(isMSAA)
+				mDecalQueue->add(&renderElem, distanceToCamera, techniqueIndices[(INT32)MSAAMode::Full]);
 		}
 
 		mForwardOpaqueQueue->sort();
 		mDeferredOpaqueQueue->sort();
 		mTransparentQueue->sort();
+		mDecalQueue->sort();
 	}
 
 	Vector2 RendererView::getDeviceZToViewZ(const Matrix4& projMatrix)
@@ -608,10 +670,14 @@ namespace bs { namespace ct
 		mVisibility.particleSystems.resize(sceneInfo.particleSystems.size(), false);
 		mVisibility.particleSystems.assign(sceneInfo.particleSystems.size(), false);
 
+		mVisibility.decals.resize(sceneInfo.decals.size(), false);
+		mVisibility.decals.assign(sceneInfo.decals.size(), false);
+
 		for(UINT32 i = 0; i < numViews; i++)
 		{
 			mViews[i]->determineVisible(sceneInfo.renderables, sceneInfo.renderableCullInfos, &mVisibility.renderables);
-			mViews[i]->determineVisible(sceneInfo.particleSystems, sceneInfo.particleSystemBounds, &mVisibility.particleSystems);
+			mViews[i]->determineVisible(sceneInfo.particleSystems, sceneInfo.particleSystemCullInfos, &mVisibility.particleSystems);
+			mViews[i]->determineVisible(sceneInfo.decals, sceneInfo.decalCullInfos, &mVisibility.decals);
 		}
 		
 		// Generate render queues per camera

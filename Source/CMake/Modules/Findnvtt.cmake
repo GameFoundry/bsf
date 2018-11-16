@@ -7,6 +7,7 @@
 
 start_find_package(nvtt)
 
+# Use bundled library, as there is no common packaging for nvtt
 set(nvtt_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/nvtt CACHE PATH "")
 gen_default_lib_search_dirs(nvtt)
 

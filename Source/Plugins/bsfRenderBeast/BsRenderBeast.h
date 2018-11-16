@@ -149,6 +149,15 @@ namespace bs
 		/** @copydoc Renderer::notifyParticleSystemRemoved */
 		void notifyParticleSystemRemoved(ParticleSystem* particleSystem) override;
 
+		/** @copydoc Renderer::notifyDecalAdded */
+		void notifyDecalAdded(Decal* decal) override;
+
+		/** @copydoc Renderer::notifyDecalUpdated */
+		void notifyDecalUpdated(Decal* decal) override;
+
+		/** @copydoc Renderer::notifyDecalRemoved */
+		void notifyDecalRemoved(Decal* decal) override;
+
 		/**
 		 * Updates the render options on the core thread.
 		 *

@@ -5,11 +5,13 @@ mixin VertexInput
 {
 	mixin VertexCommon;
 
+	#ifndef NO_ANIMATION
 	variations
 	{
 		SKINNED = { false, true };
 		MORPH = { false, true };
 	};
+	#endif
 
 	code
 	{

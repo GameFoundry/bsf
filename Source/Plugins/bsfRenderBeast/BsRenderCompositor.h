@@ -203,17 +203,19 @@ namespace ct
 	 * Initializes the GBuffer textures and renders the base pass into the GBuffer. The base pass includes all the opaque
 	 * objects visible to the view.
 	 */
-	class RCNodeGBuffer : public RenderCompositorNode
+	class RCNodeBasePass : public RenderCompositorNode
 	{
 	public:
 		// Outputs
 		SPtr<PooledRenderTexture> albedoTex;
 		SPtr<PooledRenderTexture> normalTex;
 		SPtr<PooledRenderTexture> roughMetalTex;
+		SPtr<PooledRenderTexture> idTex;
 
 		SPtr<RenderTexture> renderTarget;
+		SPtr<RenderTexture> renderTargetNoMask;
 
-		static StringID getNodeId() { return "GBuffer"; }
+		static StringID getNodeId() { return "BasePass"; }
 		static SmallVector<StringID, 4> getDependencies(const RendererView& view);
 	protected:
 		/** @copydoc RenderCompositorNode::render */

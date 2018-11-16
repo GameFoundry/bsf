@@ -4,7 +4,9 @@
 #  bison_EXECUTABLE
 #  bison_FOUND
 
-set(bison_INSTALL_DIRS ${BSF_SOURCE_DIR}/../Dependencies/tools/bison CACHE PATH "")
+if(USE_BUNDLED_LIBRARIES)
+	set(bison_INSTALL_DIRS ${BSF_SOURCE_DIR}/../Dependencies/tools/bison CACHE PATH "")
+endif()
 
 message(STATUS "Looking for bison installation...")
 

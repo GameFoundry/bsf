@@ -7,7 +7,9 @@
 
 start_find_package(freeimg)
 
-set(freeimg_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/freeimg CACHE PATH "")
+if(USE_BUNDLED_LIBRARIES)
+	set(freeimg_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/freeimg CACHE PATH "")
+endif()
 gen_default_lib_search_dirs(freeimg)
 
 find_imported_includes(freeimg FreeImage.h)

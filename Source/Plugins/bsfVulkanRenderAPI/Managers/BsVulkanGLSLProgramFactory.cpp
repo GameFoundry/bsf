@@ -554,9 +554,9 @@ namespace bs { namespace ct
 			}
 			else // Uniform buffer
 			{
-				int size = ((program->getUniformBlockSize(i) + 15) / 16) * 16;
-				
-				GpuParamBlockDesc blockDesc;
+				int size = Math::divideAndRoundUp(program->getUniformBlockSize(i), 16) * 16;
+
+        GpuParamBlockDesc blockDesc;
 				blockDesc.name = name;
 				blockDesc.blockSize = size / 4;
 				blockDesc.isShareable = true;

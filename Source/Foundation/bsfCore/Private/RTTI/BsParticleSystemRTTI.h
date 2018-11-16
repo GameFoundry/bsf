@@ -750,74 +750,15 @@ namespace bs
 		}
 	};
 
-	class BS_CORE_EXPORT ParticleSystemEmittersRTTI : 
-		public RTTIType<ParticleSystemEmitters, IReflectable, ParticleSystemEmittersRTTI>
-	{
-	private:
-		BS_BEGIN_RTTI_MEMBERS
-			BS_RTTI_MEMBER_REFLPTR_ARRAY(mList, 0)
-		BS_END_RTTI_MEMBERS
-
-	public:
-		const String& getRTTIName() override
-		{
-			static String name = "ParticleSystemEmitters";
-			return name;
-		}
-
-		UINT32 getRTTIId() override
-		{
-			return TID_ParticleSystemEmitters;
-		}
-
-		SPtr<IReflectable> newRTTIObject() override
-		{
-			return bs_shared_ptr_new<ParticleSystemEmitters>();
-		}
-	};
-
-	class BS_CORE_EXPORT ParticleSystemEvolversRTTI : 
-		public RTTIType<ParticleSystemEvolvers, IReflectable, ParticleSystemEvolversRTTI>
-	{
-	private:
-		BS_BEGIN_RTTI_MEMBERS
-			BS_RTTI_MEMBER_REFLPTR_ARRAY(mList, 0)
-		BS_END_RTTI_MEMBERS
-
-	public:
-		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
-		{
-			auto evolvers = static_cast<ParticleSystemEvolvers*>(obj);
-
-			for(auto& entry : evolvers->mList)
-				evolvers->addToSortedList(entry.get());
-		}
-
-		const String& getRTTIName() override
-		{
-			static String name = "ParticleSystemEvolvers";
-			return name;
-		}
-
-		UINT32 getRTTIId() override
-		{
-			return TID_ParticleSystemEvolvers;
-		}
-
-		SPtr<IReflectable> newRTTIObject() override
-		{
-			return bs_shared_ptr_new<ParticleSystemEvolvers>();
-		}
-	};
-
 	class BS_CORE_EXPORT ParticleSystemRTTI : public RTTIType<ParticleSystem, IReflectable, ParticleSystemRTTI>
 	{
 	private:
 		BS_BEGIN_RTTI_MEMBERS
 			BS_RTTI_MEMBER_REFL(mSettings, 0)
-			BS_RTTI_MEMBER_REFL(mEmitters, 1)
-			BS_RTTI_MEMBER_REFL(mEvolvers, 2)
+			BS_RTTI_MEMBER_REFLPTR_ARRAY(mEmitters, 1)
+			BS_RTTI_MEMBER_REFLPTR_ARRAY(mEvolvers, 2)
 			BS_RTTI_MEMBER_REFL(mGpuSimulationSettings, 3)
+			BS_RTTI_MEMBER_PLAIN(mLayer, 4)
 		BS_END_RTTI_MEMBERS
 
 	public:

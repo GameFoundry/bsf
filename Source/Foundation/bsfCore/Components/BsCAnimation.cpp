@@ -161,7 +161,7 @@ namespace bs
 		{
 			if(mAnimatedRenderable != nullptr)
 			{
-				SPtr<Renderable> renderable = mAnimatedRenderable->_getRenderable();
+				SPtr<Renderable> renderable = mAnimatedRenderable->_getInternal();
 				if (renderable != nullptr)
 					renderable->setOverrideBounds(bounds);
 
@@ -475,7 +475,7 @@ namespace bs
 	{
 		SPtr<Renderable> renderable;
 		if (updateRenderable && mAnimatedRenderable != nullptr)
-			renderable = mAnimatedRenderable->_getRenderable();
+			renderable = mAnimatedRenderable->_getInternal();
 
 		if (mUseBounds)
 		{

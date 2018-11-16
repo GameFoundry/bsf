@@ -275,6 +275,7 @@ namespace bs { namespace ct
 
 	VulkanImageSubresource* VulkanImage::getSubresource(UINT32 face, UINT32 mipLevel)
 	{
+		assert(mipLevel * mNumFaces + face < mNumFaces * mNumMipLevels);
 		return mSubresources[mipLevel * mNumFaces + face];
 	}
 
@@ -971,9 +972,6 @@ namespace bs { namespace ct
 			vkCmdCopyImage(vkCmdBuf, srcImage->getHandle(), transferSrcLayout, dstImage->getHandle(), transferDstLayout, 
 				1, &imageRegion);
 		}
-
-		// Transfer back to optimal layouts
-		srcLayout = srcImage->getOptimalLayout();
 
 		// Notify the command buffer that these resources are being used on it
 		vkCB->registerResource(srcImage, srcRange, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VulkanUseFlag::Read, ResourceUsage::Transfer);

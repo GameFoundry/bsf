@@ -38,31 +38,11 @@ namespace bs { namespace ct
 		for(auto& entry : elements)
 		{
 			if (entry.applyPass)
-				gRendererUtility().setPass(entry.renderElem->material, entry.passIdx, entry.renderElem->techniqueIdx);
+				gRendererUtility().setPass(entry.renderElem->material, entry.passIdx, entry.techniqueIdx);
 
 			gRendererUtility().setPassParams(entry.renderElem->params, entry.passIdx);
 
-			if (entry.renderElem->type == (UINT32)RenderElementType::Particle)
-			{
-				const auto& renderElem = static_cast<const ParticlesRenderElement*>(entry.renderElem);
-
-				if (renderElem->numParticles > 0)
-				{
-					if (renderElem->is3D)
-						gRendererUtility().draw(renderElem->mesh, renderElem->numParticles);
-					else
-						ParticleRenderer::instance().drawBillboards(renderElem->numParticles);
-				}
-			}
-			else // Renderable
-			{
-				const auto& renderElem = static_cast<const RenderableElement*>(entry.renderElem);
-				if (renderElem->morphVertexDeclaration == nullptr)
-					gRendererUtility().draw(renderElem->mesh, renderElem->subMesh);
-				else
-					gRendererUtility().drawMorph(renderElem->mesh, renderElem->subMesh, renderElem->morphShapeBuffer,
-						renderElem->morphVertexDeclaration);
-			}
+			entry.renderElem->draw();
 		}
 	}
 
@@ -132,7 +112,7 @@ namespace bs { namespace ct
 						iterFind2 = processedNodes.find(depId);
 
 						NodeInfo& depNodeInfo = mNodeInfos[iterFind2->second];
-						nodeInfo.inputs.push_back(depNodeInfo.node);
+						nodeInfo.inputs.add(depNodeInfo.node);
 					}
 				}
 				else // Existing node
@@ -255,15 +235,15 @@ namespace bs { namespace ct
 		return {};
 	}
 
-	void RCNodeGBuffer::render(const RenderCompositorNodeInputs& inputs)
+	void RCNodeBasePass::render(const RenderCompositorNodeInputs& inputs)
 	{
 		// Allocate necessary textures & targets
 		GpuResourcePool& resPool = GpuResourcePool::instance();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 
-		UINT32 width = viewProps.viewRect.width;
-		UINT32 height = viewProps.viewRect.height;
-		UINT32 numSamples = viewProps.numSamples;
+		const UINT32 width = viewProps.viewRect.width;
+		const UINT32 height = viewProps.viewRect.height;
+		const UINT32 numSamples = viewProps.numSamples;
 
 		// Note: Consider customizable formats. e.g. for testing if quality can be improved with higher precision normals.
 		albedoTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA8, width, height, TU_RENDERTARGET,
@@ -272,6 +252,8 @@ namespace bs { namespace ct
 			numSamples, false));
 		roughMetalTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RG16F, width, height, TU_RENDERTARGET,
 			numSamples, false)); // Note: Metal doesn't need 16-bit float
+		idTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8U, width, height, TU_RENDERTARGET,
+			numSamples, false));
 
 		auto sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[0]);
 		auto sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[1]);
@@ -285,6 +267,7 @@ namespace bs { namespace ct
 			rebuildRT |= renderTarget->getColorTexture(1) != albedoTex->texture;
 			rebuildRT |= renderTarget->getColorTexture(2) != normalTex->texture;
 			rebuildRT |= renderTarget->getColorTexture(3) != roughMetalTex->texture;
+			rebuildRT |= renderTarget->getColorTexture(4) != idTex->texture;
 			rebuildRT |= renderTarget->getDepthStencilTexture() != sceneDepthTex->texture;
 		}
 		else
@@ -316,6 +299,13 @@ namespace bs { namespace ct
 			gbufferDesc.depthStencilSurface.texture = sceneDepthTex->texture;
 			gbufferDesc.depthStencilSurface.face = 0;
 			gbufferDesc.depthStencilSurface.mipLevel = 0;
+
+			renderTargetNoMask = RenderTexture::create(gbufferDesc);
+
+			gbufferDesc.colorSurfaces[4].texture = idTex->texture;
+			gbufferDesc.colorSurfaces[4].face = 0;
+			gbufferDesc.colorSurfaces[4].numFaces = 1;
+			gbufferDesc.colorSurfaces[4].mipLevel = 0;
 
 			renderTarget = RenderTexture::create(gbufferDesc);
 		}
@@ -377,6 +367,30 @@ namespace bs { namespace ct
 			}
 		}
 
+		//// Prepare decals
+		const auto numDecals = (UINT32)inputs.scene.decals.size();
+		for (UINT32 i = 0; i < numDecals; i++)
+		{
+			if (!visibility.decals[i])
+				continue;
+
+			const RendererDecal& rendererDecal = inputs.scene.decals[i];
+			DecalRenderElement& renderElement = rendererDecal.renderElement;
+
+			rendererDecal.updatePerCallBuffer(viewProps.viewProjTransform);
+
+			SPtr<GpuParams> gpuParams = renderElement.params->getGpuParams();
+			for (UINT32 j = 0; j < GPT_COUNT; j++)
+			{
+				const GpuParamBinding& binding = renderElement.perCameraBindings[j];
+				if (binding.slot != (UINT32)-1)
+					gpuParams->setParamBlockBuffer(binding.set, binding.slot, inputs.view.getPerViewBuffer());
+			}
+
+			renderElement.depthInputTexture.set(sceneDepthTex->texture);
+			renderElement.maskInputTexture.set(idTex->texture);
+		}
+
 		Camera* sceneCamera = inputs.view.getSceneCamera();
 
 		// Trigger prepare callbacks
@@ -413,6 +427,32 @@ namespace bs { namespace ct
 		const Vector<RenderQueueElement>& opaqueElements = inputs.view.getOpaqueQueue(false)->getSortedElements();
 		renderQueueElements(opaqueElements);
 
+		// Determine MSAA coverage if required
+		if (viewProps.numSamples > 1)
+		{
+			auto msaaCoverageNode = static_cast<RCNodeMSAACoverage*>(inputs.inputNodes[3]);
+
+			GBufferTextures gbuffer;
+			gbuffer.albedo = albedoTex->texture;
+			gbuffer.normals = normalTex->texture;
+			gbuffer.roughMetal = roughMetalTex->texture;
+			gbuffer.depth = sceneDepthNode->depthTex->texture;
+
+			MSAACoverageMat* mat = MSAACoverageMat::getVariation(viewProps.numSamples);
+			rapi.setRenderTarget(msaaCoverageNode->output->renderTexture);
+			mat->execute(inputs.view, gbuffer);
+
+			MSAACoverageStencilMat* stencilMat = MSAACoverageStencilMat::get();
+			rapi.setRenderTarget(sceneDepthNode->depthTex->renderTexture);
+			stencilMat->execute(inputs.view, msaaCoverageNode->output->texture);
+		}
+
+		// Render decals after all normal objects, using a read-only depth buffer
+		rapi.setRenderTarget(renderTargetNoMask, FBT_DEPTH, RT_ALL);
+
+		const Vector<RenderQueueElement>& decalElements = inputs.view.getDecalQueue()->getSortedElements();
+		renderQueueElements(decalElements);
+
 		// Make sure that any compute shaders are able to read g-buffer by unbinding it
 		rapi.setRenderTarget(nullptr);
 
@@ -427,18 +467,21 @@ namespace bs { namespace ct
 		}
 	}
 
-	void RCNodeGBuffer::clear()
+	void RCNodeBasePass::clear()
 	{
 		GpuResourcePool& resPool = GpuResourcePool::instance();
 
 		resPool.release(albedoTex);
 		resPool.release(normalTex);
 		resPool.release(roughMetalTex);
+		resPool.release(idTex);
 	}
 
-	SmallVector<StringID, 4> RCNodeGBuffer::getDependencies(const RendererView& view)
+	SmallVector<StringID, 4> RCNodeBasePass::getDependencies(const RendererView& view)
 	{
-		return { RCNodeSceneDepth::getNodeId(), RCNodeSceneColor::getNodeId(), RCNodeParticleSort::getNodeId() };
+		return { 
+			RCNodeSceneDepth::getNodeId(), RCNodeSceneColor::getNodeId(), RCNodeParticleSort::getNodeId(), 
+			RCNodeMSAACoverage::getNodeId() };
 	}
 
 	void RCNodeSceneColor::render(const RenderCompositorNodeInputs& inputs)
@@ -538,28 +581,8 @@ namespace bs { namespace ct
 		UINT32 width = viewProps.viewRect.width;
 		UINT32 height = viewProps.viewRect.height;
 
+		// We just allocate the texture, while the base pass is responsible for filling it out
 		output = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, width, height, TU_RENDERTARGET));
-
-		RCNodeGBuffer* gbufferNode = static_cast<RCNodeGBuffer*>(inputs.inputNodes[0]);
-		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[1]);
-
-		GBufferTextures gbuffer;
-		gbuffer.albedo = gbufferNode->albedoTex->texture;
-		gbuffer.normals = gbufferNode->normalTex->texture;
-		gbuffer.roughMetal = gbufferNode->roughMetalTex->texture;
-		gbuffer.depth = sceneDepthNode->depthTex->texture;
-
-		MSAACoverageMat* mat = MSAACoverageMat::getVariation(viewProps.numSamples);
-
-		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(output->renderTexture);
-		mat->execute(inputs.view, gbuffer);
-
-		MSAACoverageStencilMat* stencilMat = MSAACoverageStencilMat::get();
-		rapi.setRenderTarget(sceneDepthNode->depthTex->renderTexture);
-		stencilMat->execute(inputs.view, output->texture);
-
-		rapi.setRenderTarget(nullptr);
 	}
 
 	void RCNodeMSAACoverage::clear()
@@ -573,7 +596,7 @@ namespace bs { namespace ct
 
 	SmallVector<StringID, 4> RCNodeMSAACoverage::getDependencies(const RendererView& view)
 	{
-		return { RCNodeGBuffer::getNodeId(), RCNodeSceneDepth::getNodeId() };
+		return { };
 	}
 
 	void RCNodeParticleSimulate::render(const RenderCompositorNodeInputs& inputs)
@@ -581,7 +604,7 @@ namespace bs { namespace ct
 		// Only simulate particles for the first view in the main render pass
 		if(inputs.viewGroup.isMainPass() && inputs.view.getViewIdx() == 0)
 		{
-			RCNodeGBuffer* gbufferNode = static_cast<RCNodeGBuffer*>(inputs.inputNodes[0]);
+			RCNodeBasePass* gbufferNode = static_cast<RCNodeBasePass*>(inputs.inputNodes[0]);
 			RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[1]);
 
 			GBufferTextures gbuffer;
@@ -604,7 +627,7 @@ namespace bs { namespace ct
 
 	SmallVector<StringID, 4> RCNodeParticleSimulate::getDependencies(const RendererView& view)
 	{
-		return { RCNodeGBuffer::getNodeId(), RCNodeSceneDepth::getNodeId() };
+		return { RCNodeBasePass::getNodeId(), RCNodeSceneDepth::getNodeId() };
 	}
 
 	void RCNodeParticleSort::render(const RenderCompositorNodeInputs& inputs)
@@ -791,11 +814,11 @@ namespace bs { namespace ct
 	{
 		SmallVector<StringID, 4> deps;
 
-		bool supportsTiledDeferred = gRenderBeast()->getFeatureSet() != RenderBeastFeatureSet::DesktopMacOS;
+		const bool supportsTiledDeferred = gRenderBeast()->getFeatureSet() != RenderBeastFeatureSet::DesktopMacOS;
 		if(!supportsTiledDeferred)
-			deps.push_back(RCNodeSceneColor::getNodeId());
+			deps.add(RCNodeSceneColor::getNodeId());
 		else
-			deps.push_back(RCNodeSceneDepth::getNodeId());
+			deps.add(RCNodeSceneDepth::getNodeId());
 
 		return deps;
 	}
@@ -804,7 +827,7 @@ namespace bs { namespace ct
 	{
 		output = static_cast<RCNodeLightAccumulation*>(inputs.inputNodes[0]);
 
-		auto gbufferNode = static_cast<RCNodeGBuffer*>(inputs.inputNodes[1]);
+		auto gbufferNode = static_cast<RCNodeBasePass*>(inputs.inputNodes[1]);
 		auto sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[2]);
 		auto sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[3]);
 
@@ -960,11 +983,11 @@ namespace bs { namespace ct
 	SmallVector<StringID, 4> RCNodeDeferredDirectLighting::getDependencies(const RendererView& view)
 	{
 		SmallVector<StringID, 4> deps;
-		deps.push_back(RCNodeLightAccumulation::getNodeId());
-		deps.push_back(RCNodeGBuffer::getNodeId());
-		deps.push_back(RCNodeSceneDepth::getNodeId());
-		deps.push_back(RCNodeSceneColor::getNodeId());
-		deps.push_back(RCNodeMSAACoverage::getNodeId());
+		deps.add(RCNodeLightAccumulation::getNodeId());
+		deps.add(RCNodeBasePass::getNodeId());
+		deps.add(RCNodeSceneDepth::getNodeId());
+		deps.add(RCNodeSceneColor::getNodeId());
+		deps.add(RCNodeMSAACoverage::getNodeId());
 
 		return deps;
 	}
@@ -974,7 +997,7 @@ namespace bs { namespace ct
 		if (!inputs.view.getRenderSettings().enableIndirectLighting)
 			return;
 
-		RCNodeGBuffer* gbufferNode = static_cast<RCNodeGBuffer*>(inputs.inputNodes[0]);
+		RCNodeBasePass* gbufferNode = static_cast<RCNodeBasePass*>(inputs.inputNodes[0]);
 		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[1]);
 		RCNodeLightAccumulation* lightAccumNode = static_cast <RCNodeLightAccumulation*>(inputs.inputNodes[2]);
 		RCNodeSSAO* ssaoNode = static_cast<RCNodeSSAO*>(inputs.inputNodes[3]);
@@ -1049,12 +1072,11 @@ namespace bs { namespace ct
 	SmallVector<StringID, 4> RCNodeIndirectDiffuseLighting::getDependencies(const RendererView& view)
 	{
 		SmallVector<StringID, 4> deps;
-
-		deps.push_back(RCNodeGBuffer::getNodeId());
-		deps.push_back(RCNodeSceneDepth::getNodeId());
-		deps.push_back(RCNodeLightAccumulation::getNodeId());
-		deps.push_back(RCNodeSSAO::getNodeId());
-		deps.push_back(RCNodeDeferredDirectLighting::getNodeId());
+		deps.add(RCNodeBasePass::getNodeId());
+		deps.add(RCNodeSceneDepth::getNodeId());
+		deps.add(RCNodeLightAccumulation::getNodeId());
+		deps.add(RCNodeSSAO::getNodeId());
+		deps.add(RCNodeDeferredDirectLighting::getNodeId());
 
 		return deps;
 	}
@@ -1062,7 +1084,7 @@ namespace bs { namespace ct
 	void RCNodeDeferredIndirectSpecularLighting::render(const RenderCompositorNodeInputs& inputs)
 	{
 		RCNodeSceneColor* sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[0]);
-		RCNodeGBuffer* gbufferNode = static_cast<RCNodeGBuffer*>(inputs.inputNodes[1]);
+		RCNodeBasePass* gbufferNode = static_cast<RCNodeBasePass*>(inputs.inputNodes[1]);
 		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[2]);
 		RCNodeLightAccumulation* lightAccumNode = static_cast <RCNodeLightAccumulation*>(inputs.inputNodes[3]);
 		RCNodeSSR* ssrNode = static_cast<RCNodeSSR*>(inputs.inputNodes[4]);
@@ -1227,15 +1249,14 @@ namespace bs { namespace ct
 	SmallVector<StringID, 4> RCNodeDeferredIndirectSpecularLighting::getDependencies(const RendererView& view)
 	{
 		SmallVector<StringID, 4> deps;
-
-		deps.push_back(RCNodeSceneColor::getNodeId());
-		deps.push_back(RCNodeGBuffer::getNodeId());
-		deps.push_back(RCNodeSceneDepth::getNodeId());
-		deps.push_back(RCNodeLightAccumulation::getNodeId());
-		deps.push_back(RCNodeSSR::getNodeId());
-		deps.push_back(RCNodeSSAO::getNodeId());
-		deps.push_back(RCNodeMSAACoverage::getNodeId());
-		deps.push_back(RCNodeIndirectDiffuseLighting::getNodeId());
+		deps.add(RCNodeSceneColor::getNodeId());
+		deps.add(RCNodeBasePass::getNodeId());
+		deps.add(RCNodeSceneDepth::getNodeId());
+		deps.add(RCNodeLightAccumulation::getNodeId());
+		deps.add(RCNodeSSR::getNodeId());
+		deps.add(RCNodeSSAO::getNodeId());
+		deps.add(RCNodeMSAACoverage::getNodeId());
+		deps.add(RCNodeIndirectDiffuseLighting::getNodeId());
 
 		return deps;
 	}
@@ -1379,6 +1400,36 @@ namespace bs { namespace ct
 			iblParams.preintegratedEnvBRDFParam.set(RendererTextures::preintegratedEnvGF);
 		};
 
+		// Prepare render target
+		auto sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[0]);
+		auto sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[2]);
+		auto resolvedSceneDepthNode = static_cast<RCNodeResolvedSceneDepth*>(inputs.inputNodes[5]);
+
+		bool rebuildRT;
+		if (renderTarget != nullptr)
+		{
+			rebuildRT = renderTarget->getColorTexture(0) != sceneColorNode->sceneColorTex->texture;
+			rebuildRT |= renderTarget->getDepthStencilTexture() != sceneDepthNode->depthTex->texture;
+		}
+		else
+			rebuildRT = true;
+
+		if (rebuildRT)
+		{
+			RENDER_TEXTURE_DESC rtDesc;
+			rtDesc.colorSurfaces[0].texture = sceneColorNode->sceneColorTex->texture;
+			rtDesc.colorSurfaces[0].face = 0;
+			rtDesc.colorSurfaces[0].numFaces = 1;
+			rtDesc.colorSurfaces[0].mipLevel = 0;
+
+			rtDesc.depthStencilSurface.texture = sceneDepthNode->depthTex->texture;
+			rtDesc.depthStencilSurface.face = 0;
+			rtDesc.depthStencilSurface.numFaces = 1;
+			rtDesc.depthStencilSurface.mipLevel = 0;
+
+			renderTarget = RenderTexture::create(rtDesc);
+		}
+
 		// Prepare objects for rendering by binding forward lighting data
 		//// Normal renderables
 		const VisibilityInfo& visibility = inputs.view.getVisibilityMasks();
@@ -1427,6 +1478,10 @@ namespace bs { namespace ct
 				ParticlesRenderElement& renderElement = rendererParticles.renderElement;
 
 				ShaderFlags shaderFlags = renderElement.material->getShader()->getFlags();
+
+				if(shaderFlags.isSet(ShaderFlag::Transparent))
+					renderElement.depthInputTexture.set(resolvedSceneDepthNode->output->texture);
+
 				const bool requiresForwardLighting = shaderFlags.isSet(ShaderFlag::Forward);
 				if (!requiresForwardLighting)
 					continue;
@@ -1443,7 +1498,7 @@ namespace bs { namespace ct
 				else
 				{
 					// Populate light & probe buffers
-					const Bounds& bounds = sceneInfo.renderableCullInfos[i].bounds;
+					const Bounds& bounds = sceneInfo.particleSystemCullInfos[i].bounds;
 					bindParamsForStandardForward(*gpuParams, bounds, renderElement.forwardLightingParams, renderElement.imageBasedParams);
 				}
 
@@ -1455,46 +1510,17 @@ namespace bs { namespace ct
 		// occlusion for all lights affecting this object into a single (or a few) textures. I can likely use texture 
 		// arrays for this, or to avoid sampling many textures, perhaps just jam it all in one or few texture channels. 
 
-		RCNodeSceneColor* sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[0]);
-		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[2]);
-
-		bool rebuildRT;
-		if (renderTarget != nullptr)
-		{
-			rebuildRT = renderTarget->getColorTexture(0) != sceneColorNode->sceneColorTex->texture;
-			rebuildRT |= renderTarget->getDepthStencilTexture() != sceneDepthNode->depthTex->texture;
-		}
-		else
-			rebuildRT = true;
-
-		if (rebuildRT)
-		{
-			RENDER_TEXTURE_DESC rtDesc;
-			rtDesc.colorSurfaces[0].texture = sceneColorNode->sceneColorTex->texture;
-			rtDesc.colorSurfaces[0].face = 0;
-			rtDesc.colorSurfaces[0].numFaces = 1;
-			rtDesc.colorSurfaces[0].mipLevel = 0;
-
-			rtDesc.depthStencilSurface.texture = sceneDepthNode->depthTex->texture;
-			rtDesc.depthStencilSurface.face = 0;
-			rtDesc.depthStencilSurface.numFaces = 1;
-			rtDesc.depthStencilSurface.mipLevel = 0;
-
-			renderTarget = RenderTexture::create(rtDesc);
-		}
-
-		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(renderTarget, 0, RT_ALL);
-
-		RenderQueue* queues[] =
-		{
-			inputs.view.getOpaqueQueue(true).get(),
-			inputs.view.getTransparentQueue().get()
-		};
-
 		// Render everything
-		for(UINT32 i = 0; i < bs_size(queues); i++)
-			renderQueueElements(queues[i]->getSortedElements());
+		RenderAPI& rapi = RenderAPI::instance();
+
+		RenderQueue* opaqueQueue = inputs.view.getOpaqueQueue(true).get();
+		RenderQueue* transparentQueue = inputs.view.getTransparentQueue().get();
+
+		rapi.setRenderTarget(renderTarget, 0, RT_ALL);
+		renderQueueElements(opaqueQueue->getSortedElements());
+
+		rapi.setRenderTarget(renderTarget, FBT_DEPTH, RT_ALL);
+		renderQueueElements(transparentQueue->getSortedElements());
 
 		// Note: Perhaps delay clearing this one frame, so previous frame textures have a better chance of being done
 		ParticleRenderer::instance().getTexturePool().clear();
@@ -1523,7 +1549,8 @@ namespace bs { namespace ct
 			RCNodeSkybox::getNodeId(), 
 			RCNodeSceneDepth::getNodeId(),
 			RCNodeParticleSimulate::getNodeId(),
-			RCNodeParticleSort::getNodeId()
+			RCNodeParticleSort::getNodeId(),
+			RCNodeResolvedSceneDepth::getNodeId()
 		};
 	}
 
@@ -1567,8 +1594,8 @@ namespace bs { namespace ct
 	SmallVector<StringID, 4> RCNodeSkybox::getDependencies(const RendererView& view)
 	{
 		SmallVector<StringID, 4> deps;
-		deps.push_back(RCNodeSceneColor::getNodeId());
-		deps.push_back(RCNodeDeferredIndirectSpecularLighting::getNodeId());
+		deps.add(RCNodeSceneColor::getNodeId());
+		deps.add(RCNodeDeferredIndirectSpecularLighting::getNodeId());
 
 		return deps;
 	}
@@ -1630,17 +1657,17 @@ namespace bs { namespace ct
 		SmallVector<StringID, 4> deps;
 		if(viewProps.runPostProcessing)
 		{
-			deps.push_back(RCNodePostProcess::getNodeId());
-			deps.push_back(RCNodeFXAA::getNodeId());
+			deps.add(RCNodePostProcess::getNodeId());
+			deps.add(RCNodeFXAA::getNodeId());
 		}
 		else
 		{
-			deps.push_back(RCNodeSceneColor::getNodeId());
-			deps.push_back(RCNodeClusteredForward::getNodeId());
+			deps.add(RCNodeSceneColor::getNodeId());
+			deps.add(RCNodeClusteredForward::getNodeId());
 		}
 
 		if(viewProps.encodeDepth)
-			deps.push_back(RCNodeResolvedSceneDepth::getNodeId());
+			deps.add(RCNodeResolvedSceneDepth::getNodeId());
 
 		return deps;
 	}
@@ -1841,11 +1868,11 @@ namespace bs { namespace ct
 	SmallVector<StringID, 4> RCNodeEyeAdaptation::getDependencies(const RendererView& view)
 	{
 		SmallVector<StringID, 4> deps;
-		deps.push_back(RCNodeClusteredForward::getNodeId());
+		deps.add(RCNodeClusteredForward::getNodeId());
 
 		const RenderSettings& settings = view.getRenderSettings();
 		if(settings.enableHDR && settings.enableAutoExposure)
-			deps.push_back(RCNodeHalfSceneColor::getNodeId());
+			deps.add(RCNodeHalfSceneColor::getNodeId());
 
 		return deps;
 	}
@@ -1959,7 +1986,7 @@ namespace bs { namespace ct
 		};
 
 		if(view.getRenderSettings().bloom.enabled)
-			deps.push_back(RCNodeBloom::getNodeId());
+			deps.add(RCNodeBloom::getNodeId());
 
 		return deps;
 	}
@@ -2146,7 +2173,7 @@ namespace bs { namespace ct
 	SmallVector<StringID, 4> RCNodeResolvedSceneDepth::getDependencies(const RendererView& view)
 	{
 		// GBuffer require because it renders the base pass (populates the depth buffer)
-		return { RCNodeSceneDepth::getNodeId(), RCNodeGBuffer::getNodeId() };
+		return { RCNodeSceneDepth::getNodeId(), RCNodeBasePass::getNodeId() };
 	}
 
 	void RCNodeHiZ::render(const RenderCompositorNodeInputs& inputs)
@@ -2239,7 +2266,7 @@ namespace bs { namespace ct
 		// Note: This doesn't actually use any gbuffer textures, but node is a dependency because it renders to the depth
 		// buffer. In order to avoid keeping gbuffer textures alive I could separate out the base pass into its own node
 		// perhaps. But at the moment it doesn't matter, as anything using HiZ also needs gbuffer.
-		return { RCNodeResolvedSceneDepth::getNodeId(), RCNodeGBuffer::getNodeId() };
+		return { RCNodeResolvedSceneDepth::getNodeId(), RCNodeBasePass::getNodeId() };
 	}
 
 	void RCNodeSSAO::render(const RenderCompositorNodeInputs& inputs)
@@ -2259,7 +2286,7 @@ namespace bs { namespace ct
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 
 		RCNodeResolvedSceneDepth* resolvedDepthNode = static_cast<RCNodeResolvedSceneDepth*>(inputs.inputNodes[0]);
-		RCNodeGBuffer* gbufferNode = static_cast<RCNodeGBuffer*>(inputs.inputNodes[1]);
+		RCNodeBasePass* gbufferNode = static_cast<RCNodeBasePass*>(inputs.inputNodes[1]);
 
 		SPtr<Texture> sceneDepth = resolvedDepthNode->output->texture;
 		SPtr<Texture> sceneNormals = gbufferNode->normalTex->texture;
@@ -2440,7 +2467,7 @@ namespace bs { namespace ct
 
 	SmallVector<StringID, 4> RCNodeSSAO::getDependencies(const RendererView& view)
 	{
-		return { RCNodeResolvedSceneDepth::getNodeId(), RCNodeGBuffer::getNodeId() };
+		return { RCNodeResolvedSceneDepth::getNodeId(), RCNodeBasePass::getNodeId() };
 	}
 
 	RCNodeSSR::~RCNodeSSR()
@@ -2464,7 +2491,7 @@ namespace bs { namespace ct
 
 		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[0]);
 		RCNodeLightAccumulation* lightAccumNode = static_cast<RCNodeLightAccumulation*>(inputs.inputNodes[1]);
-		RCNodeGBuffer* gbufferNode = static_cast<RCNodeGBuffer*>(inputs.inputNodes[2]);
+		RCNodeBasePass* gbufferNode = static_cast<RCNodeBasePass*>(inputs.inputNodes[2]);
 		RCNodeHiZ* hiZNode = static_cast<RCNodeHiZ*>(inputs.inputNodes[3]);
 		RCNodeResolvedSceneDepth* resolvedSceneDepthNode = static_cast<RCNodeResolvedSceneDepth*>(inputs.inputNodes[4]);
 
@@ -2575,12 +2602,12 @@ namespace bs { namespace ct
 		SmallVector<StringID, 4> deps;
 		if (view.getRenderSettings().screenSpaceReflections.enabled)
 		{
-			deps.push_back(RCNodeSceneDepth::getNodeId());
-			deps.push_back(RCNodeLightAccumulation::getNodeId());
-			deps.push_back(RCNodeGBuffer::getNodeId());
-			deps.push_back(RCNodeHiZ::getNodeId());
-			deps.push_back(RCNodeResolvedSceneDepth::getNodeId());
-			deps.push_back(RCNodeIndirectDiffuseLighting::getNodeId());
+			deps.add(RCNodeSceneDepth::getNodeId());
+			deps.add(RCNodeLightAccumulation::getNodeId());
+			deps.add(RCNodeBasePass::getNodeId());
+			deps.add(RCNodeHiZ::getNodeId());
+			deps.add(RCNodeResolvedSceneDepth::getNodeId());
+			deps.add(RCNodeIndirectDiffuseLighting::getNodeId());
 		}
 
 		return deps;

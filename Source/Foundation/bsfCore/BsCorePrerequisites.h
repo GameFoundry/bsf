@@ -221,6 +221,7 @@
 
 namespace bs 
 {
+	// Core objects
 	template<class T>
 	struct CoreThreadType
 	{ };
@@ -263,6 +264,65 @@ namespace bs
 	CORE_OBJECT_FORWARD_DECLARE(Mesh)
 	CORE_OBJECT_FORWARD_DECLARE(VectorField)
 	CORE_OBJECT_FORWARD_DECLARE(Skybox)
+	CORE_OBJECT_FORWARD_DECLARE(Decal)
+
+	class Collider;
+	class Rigidbody;
+	class BoxCollider;
+	class SphereCollider;
+	class PlaneCollider;
+	class CapsuleCollider;
+	class MeshCollider;
+	class Joint;
+	class FixedJoint;
+	class DistanceJoint;
+	class HingeJoint;
+	class SphericalJoint;
+	class SliderJoint;
+	class D6Joint;
+	class CharacterController;
+	class AudioListener;
+	class AudioSource;
+	class Animation;
+	class Bone;
+	class LightProbeVolume;
+
+	// Components
+	template<class T>
+	struct ComponentType
+	{ };
+
+#define COMPONENT_FORWARD_DECLARE(TYPE)								\
+	class C##TYPE;													\
+	template<> struct ComponentType<TYPE> { typedef C##TYPE Type; };
+
+	COMPONENT_FORWARD_DECLARE(Collider)
+	COMPONENT_FORWARD_DECLARE(Rigidbody)
+	COMPONENT_FORWARD_DECLARE(BoxCollider)
+	COMPONENT_FORWARD_DECLARE(SphereCollider)
+	COMPONENT_FORWARD_DECLARE(PlaneCollider)
+	COMPONENT_FORWARD_DECLARE(CapsuleCollider)
+	COMPONENT_FORWARD_DECLARE(MeshCollider)
+	COMPONENT_FORWARD_DECLARE(Joint)
+	COMPONENT_FORWARD_DECLARE(HingeJoint)
+	COMPONENT_FORWARD_DECLARE(DistanceJoint)
+	COMPONENT_FORWARD_DECLARE(FixedJoint)
+	COMPONENT_FORWARD_DECLARE(SphericalJoint)
+	COMPONENT_FORWARD_DECLARE(SliderJoint)
+	COMPONENT_FORWARD_DECLARE(D6Joint)
+	COMPONENT_FORWARD_DECLARE(CharacterController)
+	COMPONENT_FORWARD_DECLARE(Camera)
+	COMPONENT_FORWARD_DECLARE(Renderable)
+	COMPONENT_FORWARD_DECLARE(Light)
+	COMPONENT_FORWARD_DECLARE(Animation)
+	COMPONENT_FORWARD_DECLARE(Bone)
+	COMPONENT_FORWARD_DECLARE(AudioSource)
+	COMPONENT_FORWARD_DECLARE(AudioListener)
+	COMPONENT_FORWARD_DECLARE(ReflectionProbe)
+	COMPONENT_FORWARD_DECLARE(Skybox)
+	COMPONENT_FORWARD_DECLARE(LightProbeVolume)
+	COMPONENT_FORWARD_DECLARE(ParticleSystem)
+	COMPONENT_FORWARD_DECLARE(Decal)
 
 	class Color;
 	class GpuProgramManager;
@@ -315,66 +375,22 @@ namespace bs
 	class PhysicsManager;
 	class Physics;
 	class FCollider;
-	class Collider;
-	class Rigidbody;
 	class PhysicsMaterial;
-	class BoxCollider;
-	class SphereCollider;
-	class PlaneCollider;
-	class CapsuleCollider;
-	class MeshCollider;
-	class CCollider;
-	class CRigidbody;
-	class CBoxCollider;
-	class CSphereCollider;
-	class CPlaneCollider;
-	class CCapsuleCollider;
-	class CMeshCollider;
-	class Joint;
-	class FixedJoint;
-	class DistanceJoint;
-	class HingeJoint;
-	class SphericalJoint;
-	class SliderJoint;
-	class D6Joint;
-	class CharacterController;
-	class CJoint;
-	class CHingeJoint;
-	class CDistanceJoint;
-	class CFixedJoint;
-	class CSphericalJoint;
-	class CSliderJoint;
-	class CD6Joint;
-	class CCharacterController;
 	class ShaderDefines;
 	class ShaderImportOptions;
-	class AudioListener;
-	class AudioSource;
 	class AudioClipImportOptions;
 	class AnimationClip;
-	class CCamera;
-	class CRenderable;
-	class CLight;
-	class CAnimation;
-	class CBone;
-	class CAudioSource;
-	class CAudioListener;
 	class GpuPipelineParamInfo;
 	template <class T> class TAnimationCurve;
 	struct AnimationCurves;
 	class Skeleton;
-	class Animation;
 	class MorphShapes;
 	class MorphShape;
 	class MorphChannel;
-	class CReflectionProbe;
-	class CSkybox;
-	class CLightProbeVolume;
 	class Transform;
 	class SceneActor;
 	class CoreObjectManager;
 	struct CollisionData;
-	class CParticleSystem;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -619,6 +635,8 @@ namespace bs
 		TID_ParticleSize = 1188,
 		TID_ParticleColor = 1189,
 		TID_ParticleRotation = 1190,
+		TID_Decal = 1191,
+		TID_CDecal = 1192,
 
 		// Moved from Engine layer
 		TID_CCamera = 30000,
@@ -707,6 +725,7 @@ namespace bs
 	typedef GameObjectHandle<CAudioSource> HAudioSource;
 	typedef GameObjectHandle<CAudioListener> HAudioListener;
 	typedef GameObjectHandle<CParticleSystem> HParticleSystem;
+	typedef GameObjectHandle<CDecal> HDecal;
 
 	/** @} */
 }
@@ -798,6 +817,42 @@ namespace bs
 		 * be required if the resource needs to be serialized.
 		 */
 		SF_KeepResourceSourceData
+	};
+
+	/** Helper type that can contain either a component or scene actor version of an object. */
+	template<class T>
+	struct ComponentOrActor
+	{
+		using ComponentType = typename ComponentType<T>::Type;
+
+		ComponentOrActor() = default;
+
+		ComponentOrActor(const GameObjectHandle<ComponentType>& component)
+			:mComponent(component)
+		{ }
+
+		ComponentOrActor(const SPtr<T>& actor)
+			:mActor(actor)
+		{ }
+
+		/** Returns true if both the component and the actor fields are not assigned. */
+		bool empty() const
+		{
+			return !mActor && !mComponent;
+		}
+
+		/** Returns the assigned value as a scene actor. */
+		SPtr<T> getActor() const
+		{
+			if(mActor)
+				return mActor;
+
+			return mComponent->_getInternal();
+		}
+
+	private:
+		GameObjectHandle<ComponentType> mComponent;
+		SPtr<T> mActor;
 	};
 }
 

@@ -65,6 +65,10 @@ namespace bs
 		/** Adds a time offset to all keyframes in the provided curve. */
 		template<class T>
 		static TAnimationCurve<T> offsetCurve(const TAnimationCurve<T>& curve, float offset);
+
+		/** Updates the provided list of keyframes by automatically calculating their tangents. */
+		template<class T>
+		static void calculateTangents(Vector<TKeyframe<T>>& keyframes);
 	};
 
 	/** Type of tangent on a keyframe in an animation curve. */

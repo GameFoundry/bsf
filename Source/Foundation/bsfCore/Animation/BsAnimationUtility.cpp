@@ -413,11 +413,88 @@ namespace bs
 		return TAnimationCurve<T>(newKeyframes);
 	}
 
+	template <class T>
+	T getZero() { return 0.0f; }
+
+	template<>
+	float getZero<float>() { return 0.0f; }
+
+	template<>
+	Vector3 getZero<Vector3>() { return Vector3(BsZero); }
+
+	template<>
+	Vector2 getZero<Vector2>() { return Vector2(BsZero); }
+
+	template<>
+	Quaternion getZero<Quaternion>() { return Quaternion(BsZero); }
+
+	template <class T>
+	void AnimationUtility::calculateTangents(Vector<TKeyframe<T>>& keyframes)
+	{
+		using Keyframe = TKeyframe<T>;
+		if (keyframes.empty())
+			return;
+
+		if (keyframes.size() == 1)
+		{
+			keyframes[0].inTangent = getZero<T>();
+			keyframes[0].outTangent = getZero<T>();
+
+			return;
+		}
+
+		auto calcTangent = [](const Keyframe& left, const Keyframe& right)
+		{
+			float diff = right.time - left.time;
+
+			if (!Math::approxEquals(diff, 0.0f))
+				return (right.value - left.value) / diff;
+
+			return std::numeric_limits<T>::infinity();
+		};
+
+		// First keyframe
+		{
+			Keyframe& keyThis = keyframes[0];
+			const Keyframe& keyNext = keyframes[1];
+
+			keyThis.inTangent = getZero<T>();
+			keyThis.outTangent = calcTangent(keyThis, keyNext);
+		}
+
+		// Inner keyframes
+		for (int i = 1; i < keyframes.size() - 1; i++)
+		{
+			const Keyframe& keyPrev = keyframes[i - 1];
+			Keyframe& keyThis = keyframes[i];
+			const Keyframe& keyNext = keyframes[i + 1];
+
+			keyThis.outTangent = calcTangent(keyPrev, keyNext);
+			keyThis.inTangent = keyThis.outTangent;
+		}
+
+		// Last keyframe
+		{
+			Keyframe& keyThis = keyframes[keyframes.size() - 1];
+			const Keyframe& keyPrev = keyframes[keyframes.size() - 2];
+
+			keyThis.outTangent = getZero<T>();
+			keyThis.inTangent = calcTangent(keyPrev, keyThis);
+		}
+	}
+
 	template BS_CORE_EXPORT TAnimationCurve<Vector3> AnimationUtility::scaleCurve(const TAnimationCurve<Vector3>& curve, float factor);
+	template BS_CORE_EXPORT TAnimationCurve<Vector2> AnimationUtility::scaleCurve(const TAnimationCurve<Vector2>& curve, float factor);
 	template BS_CORE_EXPORT TAnimationCurve<Quaternion> AnimationUtility::scaleCurve(const TAnimationCurve<Quaternion>& curve, float factor);
 	template BS_CORE_EXPORT TAnimationCurve<float> AnimationUtility::scaleCurve(const TAnimationCurve<float>& curve, float factor);
 
 	template BS_CORE_EXPORT TAnimationCurve<Vector3> AnimationUtility::offsetCurve(const TAnimationCurve<Vector3>& curve, float offset);
+	template BS_CORE_EXPORT TAnimationCurve<Vector2> AnimationUtility::offsetCurve(const TAnimationCurve<Vector2>& curve, float offset);
 	template BS_CORE_EXPORT TAnimationCurve<Quaternion> AnimationUtility::offsetCurve(const TAnimationCurve<Quaternion>& curve, float offset);
 	template BS_CORE_EXPORT TAnimationCurve<float> AnimationUtility::offsetCurve(const TAnimationCurve<float>& curve, float offset);
+
+	template BS_CORE_EXPORT void AnimationUtility::calculateTangents(Vector<TKeyframe<Vector3>>& keyframes);
+	template BS_CORE_EXPORT void AnimationUtility::calculateTangents(Vector<TKeyframe<Vector2>>& keyframes);
+	template BS_CORE_EXPORT void AnimationUtility::calculateTangents(Vector<TKeyframe<Quaternion>>& keyframes);
+	template BS_CORE_EXPORT void AnimationUtility::calculateTangents(Vector<TKeyframe<float>>& keyframes);
 }
