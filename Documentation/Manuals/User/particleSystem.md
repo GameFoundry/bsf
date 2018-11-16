@@ -74,7 +74,7 @@ You may also create your own particle shaders, as we will show later.
 
 Emitters determine where are new particles spawned, along with other properties that are assigned to newly spawned particles. They are represented using the @ref bs::ParticleEmitter "ParticleEmitter" class.
 
-Once created they can be registered with the particle system by setting a list of emitters through @ref bs::ParticleSystem::setEmitters "ParticleSystem::setEmitters()".
+Once created they can be registered with the particle system by setting a list of emitters through @ref bs::CParticleSystem::setEmitters "CParticleSystem::setEmitters()".
 
 ~~~~~~~~~~~~~{.cpp}
 SPtr<ParticleEmitter> emitter = bs_shared_ptr_new<ParticleEmitter>();

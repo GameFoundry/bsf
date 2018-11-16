@@ -52,7 +52,7 @@ User manuals									{#manuals}
  - [Setting up a particle system](@ref particleSystem)
  - [Emitter shapes](@ref particleEmitters)
  - [Evolvers](@ref particleEvolvers)
- - [Other settings](@ref particleSettings)
+ - [More settings](@ref particleSettings)
  - [GPU particles](@ref gpuParticles)
 - **Advanced rendering**
  - [Renderer settings](@ref renderSettings)
