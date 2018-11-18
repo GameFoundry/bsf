@@ -8,6 +8,7 @@
 #include "RenderAPI/BsRasterizerState.h"
 #include "RenderAPI/BsDepthStencilState.h"
 #include "RenderAPI/BsBlendState.h"
+#include "Importer/BsShaderImportOptions.h"
 
 extern "C" {
 #include "BsASTFX.h"
@@ -99,7 +100,7 @@ namespace bs
 	public:
 		/**	Transforms a source file written in BSL FX syntax into a Shader object. */
 		static BSLFXCompileResult compile(const String& name, const String& source, 
-			const UnorderedMap<String, String>& defines);
+			const UnorderedMap<String, String>& defines, ShadingLanguageFlags languages);
 
 	private:
 		/** Converts the provided source into an abstract syntax tree using the lexer & parser for BSL FX syntax. */
@@ -241,13 +242,15 @@ namespace bs
 		 * @param[in]	source				BSL source that needs to be parsed.
 		 * @param[in]	defines				An optional set of defines to set before parsing the source, that is to be
 		 *									applied to all variations.
+		 * @param[in]	languages			Shading languages to generate techniques for. Each shader variation will be
+		 *									compiled into a separate technique for each of the provided languages.
 		 * @param[out]	shaderDesc			Shader descriptor that resulting techniques, sub-shaders, and parameters will be
 		 *									registered with.
 		 * @param[out]	includes			A list of all include files included by the BSL source.
 		 * @return							A result object containing an error message if not successful.
 		 */
 		static BSLFXCompileResult compileShader(String source, const UnorderedMap<String, String>& defines, 
-				SHADER_DESC& shaderDesc, Vector<String>& includes);
+				ShadingLanguageFlags languages, SHADER_DESC& shaderDesc, Vector<String>& includes);
 
 		/**
 		 * Uses the provided list of shaders/mixins to generate a list of techniques. A technique is generated for
@@ -259,14 +262,16 @@ namespace bs
 		 *									needs to be re-parsed due to variations.
 		 * @param[in]	defines				An optional set of defines to set before parsing the source, that is to be
 		 *									applied to all variations.
+		 * @param[in]	languages			Shading languages to generate techniques for. Each shader variation will be
+		 *									compiled into a separate technique for each of the provided languages.
 		 * @param[out]	shaderDesc			Shader descriptor that resulting techniques, and non-internal parameters will be
 		 *									registered with.
 		 * @param[out]	includes			A list of all include files included by the BSL source.
 		 * @return							A result object containing an error message if not successful.
 		 */
 		static BSLFXCompileResult compileTechniques(const Vector<std::pair<ASTFXNode*, ShaderMetaData>>& shaderMetaData,
-			const String& source, const UnorderedMap<String, String>& defines, SHADER_DESC& shaderDesc, 
-			Vector<String>& includes);
+			const String& source, const UnorderedMap<String, String>& defines, ShadingLanguageFlags languages, 
+			SHADER_DESC& shaderDesc, Vector<String>& includes);
 
 		/**
 		 * Generates a set of techniques for a single variation. Uses AST parse state as input, which must be created using
@@ -277,14 +282,16 @@ namespace bs
 		 * @param[in]	name			Name of the shader to generate the variation for.
 		 * @param[in]	codeBlocks		Blocks containing GPU program source code that are referenced by the AST.
 		 * @param[in]	variation		Shader variation the AST was parsed with.
+		 * @param[in]	languages		Shading languages to generate techniques for. Each shader variation will be
+		 *								compiled into a separate technique for each of the provided languages.
 		 * @param[out]	includes		Set to append newly found includes to.
 		 * @param[out]	shaderDesc		Shader descriptor that resulting techniques, and non-internal parameters will be
 		 *								registered with.
 		 * @return						A result object containing an error message if not successful.
 		 */
 		static BSLFXCompileResult compileTechniques(ParseState* parseState, const String& name, 
-			const Vector<String>& codeBlocks, const ShaderVariation& variation, UnorderedSet<String>& includes, 
-			SHADER_DESC& shaderDesc);
+			const Vector<String>& codeBlocks, const ShaderVariation& variation, ShadingLanguageFlags languages, 
+			UnorderedSet<String>& includes, SHADER_DESC& shaderDesc);
 
 		/**
 		 * Converts a null-terminated string into a standard string, and eliminates quotes that are assumed to be at the 

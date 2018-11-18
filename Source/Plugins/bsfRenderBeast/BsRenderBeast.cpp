@@ -98,7 +98,7 @@ namespace bs { namespace ct
 		gProfilerGPU().endFrame();
 
 		RenderCompositor::registerNodeType<RCNodeSceneDepth>();
-		RenderCompositor::registerNodeType<RCNodeGBuffer>();
+		RenderCompositor::registerNodeType<RCNodeBasePass>();
 		RenderCompositor::registerNodeType<RCNodeLightAccumulation>();
 		RenderCompositor::registerNodeType<RCNodeSceneColor>();
 		RenderCompositor::registerNodeType<RCNodeDeferredDirectLighting>();
@@ -245,6 +245,20 @@ namespace bs { namespace ct
 		mScene->unregisterParticleSystem(particleSystem);
 	}
 
+	void RenderBeast::notifyDecalAdded(Decal* decal)
+	{
+		mScene->registerDecal(decal);
+	}
+
+	void RenderBeast::notifyDecalRemoved(Decal* decal)
+	{
+		mScene->unregisterDecal(decal);
+	}
+
+	void RenderBeast::notifyDecalUpdated(Decal* decal)
+	{
+		mScene->updateDecal(decal);
+	}
 	void RenderBeast::setOptions(const SPtr<RendererOptions>& options)
 	{
 		mOptions = std::static_pointer_cast<RenderBeastOptions>(options);
@@ -381,6 +395,14 @@ namespace bs { namespace ct
 				element.materialAnimationTime += timings.timeDelta;
 		}
 
+		for (UINT32 i = 0; i < sceneInfo.decals.size(); i++)
+		{
+			const RendererDecal& decal = sceneInfo.decals[i];
+			decal.renderElement.materialAnimationTime += timings.timeDelta;
+
+			mScene->prepareDecal(i, frameInfo);
+		}
+
 		// Gather all views
 		for (auto& rtInfo : sceneInfo.renderTargets)
 		{
@@ -469,19 +491,19 @@ namespace bs { namespace ct
 				switch(location)
 				{
 				case RenderLocation::Prepare:
-					inputs.extPrepare.push_back(extension);
+					inputs.extPrepare.add(extension);
 					break;
 				case RenderLocation::PreBasePass: 
-					inputs.extPreBasePass.push_back(extension);
+					inputs.extPreBasePass.add(extension);
 					break;
 				case RenderLocation::PostBasePass:
-					inputs.extPostBasePass.push_back(extension);
+					inputs.extPostBasePass.add(extension);
 					break;
 				case RenderLocation::PostLightPass:
-					inputs.extPostLighting.push_back(extension);
+					inputs.extPostLighting.add(extension);
 					break;
 				case RenderLocation::Overlay:
-					inputs.extOverlay.push_back(extension);
+					inputs.extOverlay.add(extension);
 					break;
 				}
 			}

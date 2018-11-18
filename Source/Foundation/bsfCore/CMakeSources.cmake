@@ -25,6 +25,7 @@ set(BS_CORE_INC_COMPONENTS
 	"bsfCore/Components/BsCSkybox.h"
 	"bsfCore/Components/BsCLightProbeVolume.h"
 	"bsfCore/Components/BsCParticleSystem.h"
+	"bsfCore/Components/BsCDecal.h"
 )
 
 set(BS_CORE_INC_PHYSICS
@@ -110,6 +111,7 @@ set(BS_CORE_INC_RENDERER
 	"bsfCore/Renderer/BsLightProbeVolume.h"
 	"bsfCore/Renderer/BsIBLUtility.h"
 	"bsfCore/Renderer/BsGpuResourcePool.h"
+	"bsfCore/Renderer/BsDecal.h"
 )
 
 set(BS_CORE_SRC_LOCALIZATION
@@ -195,7 +197,6 @@ set(BS_CORE_INC_MATERIAL
 	"bsfCore/Material/BsTechnique.h"
 	"bsfCore/Material/BsShader.h"
 	"bsfCore/Material/BsPass.h"
-	"bsfCore/Material/BsMaterialManager.h"
 	"bsfCore/Material/BsMaterial.h"
 	"bsfCore/Material/BsMaterialParam.h"
 	"bsfCore/Material/BsShaderManager.h"
@@ -279,6 +280,7 @@ set(BS_CORE_SRC_COMPONENTS
 	"bsfCore/Components/BsCSkybox.cpp"
 	"bsfCore/Components/BsCLightProbeVolume.cpp"
 	"bsfCore/Components/BsCParticleSystem.cpp"
+	"bsfCore/Components/BsCDecal.cpp"
 )
 
 set(BS_CORE_SRC_IMPORTER
@@ -385,6 +387,8 @@ set(BS_CORE_INC_RTTI
 	"bsfCore/Private/RTTI/BsSpriteTextureRTTI.h"
 	"bsfCore/Private/RTTI/BsCParticleSystemRTTI.h"
 	"bsfCore/Private/RTTI/BsVectorFieldRTTI.h"
+	"bsfCore/Private/RTTI/BsDecalRTTI.h"
+	"bsfCore/Private/RTTI/BsCDecalRTTI.h"
 )
 
 set(BS_CORE_SRC_RENDERER
@@ -402,6 +406,7 @@ set(BS_CORE_SRC_RENDERER
 	"bsfCore/Renderer/BsLightProbeVolume.cpp"
 	"bsfCore/Renderer/BsIBLUtility.cpp"
 	"bsfCore/Renderer/BsGpuResourcePool.cpp"
+	"bsfCore/Renderer/BsDecal.cpp"
 )
 
 set(BS_CORE_SRC_RESOURCES
@@ -433,7 +438,6 @@ set(BS_CORE_SRC_IMAGE
 
 set(BS_CORE_SRC_MATERIAL
 	"bsfCore/Material/BsMaterial.cpp"
-	"bsfCore/Material/BsMaterialManager.cpp"
 	"bsfCore/Material/BsPass.cpp"
 	"bsfCore/Material/BsShader.cpp"
 	"bsfCore/Material/BsTechnique.cpp"

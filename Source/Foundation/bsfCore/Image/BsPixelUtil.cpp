@@ -1148,6 +1148,20 @@ namespace bs
 		0, 16, 0, 0
 		},
 	//-----------------------------------------------------------------------
+		{ "PF_RGB16",
+		/* Bytes per element */
+		6,
+		/* Flags */
+		PFF_INTEGER | PFF_NORMALIZED,
+		/* Component type and count */
+		PCT_SHORT, 3,
+		/* rbits, gbits, bbits, abits */
+		16, 16, 16, 0,
+		/* Masks and shifts */
+		0x0000FFFF, 0xFFFF0000, 0x0000FFFF, 0,
+		0, 16, 0, 0
+		},
+	//-----------------------------------------------------------------------
 		{ "PF_RGBA16",
 		/* Bytes per element */
 		8,

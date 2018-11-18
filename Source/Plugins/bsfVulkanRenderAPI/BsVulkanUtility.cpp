@@ -377,6 +377,17 @@ namespace bs { namespace ct
 		return VK_SAMPLER_ADDRESS_MODE_REPEAT;
 	}
 
+	VkBorderColor VulkanUtility::getBorderColor(const Color& color)
+	{
+		if(color.r > 0.0f || color.g > 0.0f || color.b > 0.0f)
+			return VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+
+		if(color.a > 0.0f)
+			return VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK;
+
+		return VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;
+	}
+
 	VkBlendFactor VulkanUtility::getBlendFactor(BlendFactor factor)
 	{
 		switch (factor)

@@ -224,7 +224,7 @@
  *  - f - Specify the name of the output file(s) for the script object and its potential wrappers. If not specified
  *		  the name of the type will be used for the file. Usable on types only.
  *	- pl - Specify whether the type is plain or not (default is false). Supported values are "true" or "false". Plain
- *		  types don't have script interop objects generated, instead their are generated in script code as plain data
+ *		  types don't have script interop objects generated, instead they are generated in script code as plain data
  *		  types. No methods are exposed, but all data members and constructors are copied. Usable on types only.
  *	- e - Specify that a method is external and is to be appended to some script class. Such methods must be static
  *		  and as the first parameter accept the instance of the class they operate on. Value of this option should be
@@ -269,7 +269,7 @@
 
 	/** 
 	 * When applied to a parameter, makes it a variable argument parameter in the scripting interface (if supported
-	 * by the scripting language.
+	 * by the scripting language).
 	 */
 	#define BS_PARAMS
 
@@ -303,5 +303,6 @@
 #include "Utility/BsEvent.h"
 #include "Utility/BsPlatformUtility.h"
 #include "Utility/BsNonCopyable.h"
+#include "Utility/BsSmallVector.h"
 #include "FileSystem/BsPath.h"
 #include "Error/BsCrashHandler.h"

@@ -18,8 +18,8 @@ namespace bs
 	class SLImporter : public SpecificImporter
 	{
 	public:
-		SLImporter();
-		virtual ~SLImporter();
+		SLImporter() = default;
+		virtual ~SLImporter() = default;
 
 		/** @copydoc SpecificImporter::isExtensionSupported */
 		bool isExtensionSupported(const String& ext) const override;

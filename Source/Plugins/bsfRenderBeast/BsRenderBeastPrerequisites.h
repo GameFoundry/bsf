@@ -35,7 +35,20 @@ namespace bs { namespace ct
 		/** See RenderableElement. */
 		Renderable,
 		/** See ParticlesRenderElement. */
-		Particle
+		Particle,
+		/** See DecalRenderElement. */
+		Decal
+	};
+
+	/** Types of ways for shaders to handle MSAA. */
+	enum class MSAAMode
+	{
+		/** No MSAA supported. */
+		None,
+		/** Single MSAA sample will be resolved. */
+		Single,
+		/** All MSAA samples will be resolved. */
+		Full,
 	};
 
 	struct RenderBeastOptions;

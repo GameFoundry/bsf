@@ -41,6 +41,21 @@
             "UUID": "7ad1fc24-5e08-489c-8cd4-02b4e452a412"
         }
     ],
+    "Fonts": [
+        {
+            "Antialiasing": false,
+            "Name": "arial.ttf",
+            "Path": "arial.ttf",
+            "Sizes": [
+                8
+            ],
+            "UUID": "c9f08cab-f9c9-47c4-96e0-1066a8d4455b"
+        }
+    ],
+    "GUISkin": {
+        "Path": "GUISkin.json",
+        "UUID": "c1bf9a9d-4355-4841-a538-25e67730ec4b"
+    },
     "Icons": [
         {
             "Path": "bsfIcon.png",
@@ -183,6 +198,14 @@
         {
             "Path": "VertexCommon.bslinc",
             "UUID": "7f6cf98d-48da-efc9-c1a2-48da18703e92"
+        },
+        {
+            "Path": "DepthInput.bslinc",
+            "UUID": "06b077c9-432d-43b1-8884-432d5ddfe878"
+        },
+        {
+            "Path": "MaskInput.bslinc",
+            "UUID": "e69b8e15-4301-f0fb-11ad-430140d3a7d6"
         }
     ],
     "Shaders": [
@@ -501,6 +524,10 @@
         {
             "Path": "PPBloomClip.bsl",
             "UUID": "0a832da9-47df-8c7d-268a-47dfcd36cc48"
+        },
+        {
+            "Path": "Decal.bsl",
+            "UUID": "8d448d61-463b-84fe-d0a1-463b897090a3"
         }
     ],
     "Skin": [
@@ -869,5 +896,7 @@
             "SpriteUUID": "6ff54b8e-4f01-bc8c-fd8d-4f01a316065b",
             "TextureUUID": "138dc6d2-497e-8376-bc87-497e0cafc1d1"
         }
-    ]
+    ],
+    "SplashScreen": null,
+    "SpriteIcons": null
 }

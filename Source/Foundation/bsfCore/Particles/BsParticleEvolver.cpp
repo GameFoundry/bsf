@@ -12,6 +12,7 @@
 #include "Physics/BsCollider.h"
 #include "Math/BsLineSegment3.h"
 #include "Material/BsShader.h"
+#include "Scene/BsSceneObject.h"
 
 namespace bs
 {
@@ -132,6 +133,11 @@ namespace bs
 		}
 	}
 
+	SPtr<ParticleTextureAnimation> ParticleTextureAnimation::create(const PARTICLE_TEXTURE_ANIMATION_DESC& desc)
+	{
+		return bs_shared_ptr_new<ParticleTextureAnimation>(desc);
+	}
+
 	RTTITypeBase* ParticleTextureAnimation::getRTTIStatic()
 	{
 		return ParticleTextureAnimationRTTI::instance();
@@ -178,6 +184,11 @@ namespace bs
 		}
 	}
 
+	SPtr<ParticleOrbit> ParticleOrbit::create(const PARTICLE_ORBIT_DESC& desc)
+	{
+		return bs_shared_ptr_new<ParticleOrbit>(desc);
+	}
+
 	RTTITypeBase* ParticleOrbit::getRTTIStatic()
 	{
 		return ParticleOrbitRTTI::instance();
@@ -207,6 +218,11 @@ namespace bs
 
 			particles.position[i] += velocity;
 		}
+	}
+
+	SPtr<ParticleVelocity> ParticleVelocity::create(const PARTICLE_VELOCITY_DESC& desc)
+	{
+		return bs_shared_ptr_new<ParticleVelocity>(desc);
 	}
 
 	RTTITypeBase* ParticleVelocity::getRTTIStatic()
@@ -240,6 +256,11 @@ namespace bs
 		}
 	}
 
+	SPtr<ParticleForce> ParticleForce::create(const PARTICLE_FORCE_DESC& desc)
+	{
+		return bs_shared_ptr_new<ParticleForce>(desc);
+	}
+
 	RTTITypeBase* ParticleForce::getRTTIStatic()
 	{
 		return ParticleForceRTTI::instance();
@@ -268,6 +289,11 @@ namespace bs
 			particles.velocity[i] += gravity * state.timeStep;
 	}
 
+	SPtr<ParticleGravity> ParticleGravity::create(const PARTICLE_GRAVITY_DESC& desc)
+	{
+		return bs_shared_ptr_new<ParticleGravity>(desc);
+	}
+
 	RTTITypeBase* ParticleGravity::getRTTIStatic()
 	{
 		return ParticleGravityRTTI::instance();
@@ -294,6 +320,11 @@ namespace bs
 
 			particles.color[i] = mDesc.color.evaluate(particleT, Random(colorSeed));
 		}
+	}
+
+	SPtr<ParticleColor> ParticleColor::create(const PARTICLE_COLOR_DESC& desc)
+	{
+		return bs_shared_ptr_new<ParticleColor>(desc);
 	}
 
 	RTTITypeBase* ParticleColor::getRTTIStatic()
@@ -338,6 +369,11 @@ namespace bs
 		}
 	}
 
+	SPtr<ParticleSize> ParticleSize::create(const PARTICLE_SIZE_DESC& desc)
+	{
+		return bs_shared_ptr_new<ParticleSize>(desc);
+	}
+
 	RTTITypeBase* ParticleSize::getRTTIStatic()
 	{
 		return ParticleSizeRTTI::instance();
@@ -380,6 +416,11 @@ namespace bs
 		}
 	}
 
+	SPtr<ParticleRotation> ParticleRotation::create(const PARTICLE_ROTATION_DESC& desc)
+	{
+		return bs_shared_ptr_new<ParticleRotation>(desc);
+	}
+
 	RTTITypeBase* ParticleRotation::getRTTIStatic()
 	{
 		return ParticleRotationRTTI::instance();
@@ -400,7 +441,7 @@ namespace bs
 
 	/** Calculates the new position and velocity after a particle was detected to be colliding. */
 	void calcCollisionResponse(Vector3& position, Vector3& velocity, const ParticleHitInfo& hitInfo, 
-		const PARTICLE_COLLISONS_DESC& desc)
+		const PARTICLE_COLLISIONS_DESC& desc)
 	{
 		Vector3 diff = position - hitInfo.position;
 
@@ -476,7 +517,7 @@ namespace bs
 		return numHits;
 	}
 
-	ParticleCollisions::ParticleCollisions(const PARTICLE_COLLISONS_DESC& desc)
+	ParticleCollisions::ParticleCollisions(const PARTICLE_COLLISIONS_DESC& desc)
 		:mDesc(desc)
 	{
 		mDesc.restitution = std::max(mDesc.restitution, 0.0f);
@@ -492,58 +533,88 @@ namespace bs
 
 		if(mDesc.mode == ParticleCollisionMode::Plane)
 		{
-			const auto numPlanes = (UINT32)mCollisionPlanes.size();
+			UINT32 numPlanes[2] = { 0, 0 };
+			Plane* planes[2];
 
-			Plane* planes;
-			Plane* localPlanes = nullptr;
+			// Extract planes from scene objects
+			Plane* objPlanes = nullptr;
+			
+			if(!mCollisionPlaneObjects.empty())
+			{
+				objPlanes = bs_stack_alloc<Plane>((UINT32)mCollisionPlaneObjects.size());
+				for (auto& entry : mCollisionPlaneObjects)
+				{
+					if(entry.isDestroyed())
+						continue;
+
+					const Transform& tfrm = entry->getTransform();
+					Plane plane = Plane(tfrm.getForward(), tfrm.getPosition());
+
+					if(!state.worldSpace)
+						plane = state.worldToLocal.multiplyAffine(plane);
+						
+					objPlanes[numPlanes[0]++] = plane;
+				}
+			}
+
+			planes[0] = objPlanes;
 
 			// If particles are in world space, we can just use collision planes as is
-			if(state.worldSpace)
-				planes = (Plane*)mCollisionPlanes.data();
+			Plane* localPlanes = nullptr;
+			if (state.worldSpace)
+				planes[1] = (Plane*)mCollisionPlanes.data();
 			else
 			{
 				const Matrix4& worldToLocal = state.worldToLocal;
 				localPlanes = bs_stack_alloc<Plane>(numParticles);
 
-				for (UINT32 i = 0; i < numPlanes; i++)
+				for (UINT32 i = 0; i < (UINT32)mCollisionPlanes.size(); i++)
 					localPlanes[i] = worldToLocal.multiplyAffine(mCollisionPlanes[i]);
 
-				planes = localPlanes;
+				planes[1] = localPlanes;
 			}
+
+			numPlanes[1] = (UINT32)mCollisionPlanes.size();
 
 			for(UINT32 i = 0; i < numParticles; i++)
 			{
 				Vector3& position = particles.position[i];
 				Vector3& velocity = particles.velocity[i];
 
-				for (UINT32 j = 0; j < numPlanes; j++)
+				for(UINT32 j = 0; j < bs_size(planes); j++)
 				{
-					const Plane& plane = planes[j];
+					for (UINT32 k = 0; k < numPlanes[j]; k++)
+					{
+						const Plane& plane = planes[j][k];
 
-					const float dist = plane.getDistance(position);
-					if(dist > mDesc.radius)
-						continue;
+						const float dist = plane.getDistance(position);
+						if (dist > mDesc.radius)
+							continue;
 
-					const float distToTravelAlongNormal = plane.normal.dot(velocity);
+						const float distToTravelAlongNormal = plane.normal.dot(velocity);
 
-					// Ignore movement parallel to the plane
-					if (Math::approxEquals(distToTravelAlongNormal, 0.0f))
-						continue;
+						// Ignore movement parallel to the plane
+						if (Math::approxEquals(distToTravelAlongNormal, 0.0f))
+							continue;
 
-					const float distFromBoundary = mDesc.radius - dist;
-					const float rayT = distFromBoundary / distToTravelAlongNormal;
+						const float distFromBoundary = mDesc.radius - dist;
+						const float rayT = distFromBoundary / distToTravelAlongNormal;
 
-					ParticleHitInfo hitInfo;
-					hitInfo.normal = plane.normal;
-					hitInfo.position = position + velocity * rayT;
-					hitInfo.idx = i;
+						ParticleHitInfo hitInfo;
+						hitInfo.normal = plane.normal;
+						hitInfo.position = position + velocity * rayT;
+						hitInfo.idx = i;
 
-					calcCollisionResponse(position, velocity, hitInfo, mDesc);
-					particles.lifetime[i] -= mDesc.lifetimeLoss * particles.initialLifetime[i];
+						calcCollisionResponse(position, velocity, hitInfo, mDesc);
+						particles.lifetime[i] -= mDesc.lifetimeLoss * particles.initialLifetime[i];
 
-					break;
+						break;
+					}
 				}
 			}
+
+			if(objPlanes)
+				bs_stack_free(objPlanes);
 
 			if(localPlanes)
 				bs_stack_free(localPlanes);
@@ -601,6 +672,11 @@ namespace bs
 			bs_stack_free(hits);
 			bs_stack_free(segments);
 		}
+	}
+
+	SPtr<ParticleCollisions> ParticleCollisions::create(const PARTICLE_COLLISIONS_DESC& desc)
+	{
+		return bs_shared_ptr_new<ParticleCollisions>(desc);
 	}
 
 	RTTITypeBase* ParticleCollisions::getRTTIStatic()

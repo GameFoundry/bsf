@@ -77,22 +77,22 @@ namespace bs { namespace ct
 	static const ShaderVariation& getParticleShaderVariation()
 	{
 		static bool initialized = false;
-		static Vector<ShaderVariation::Param> params{
+		static SmallVector<ShaderVariation::Param, 4> params({
 			ShaderVariation::Param("ORIENT", (UINT32)ORIENT),
 			ShaderVariation::Param("LOCK_Y", LOCK_Y),
 			ShaderVariation::Param("GPU", GPU),
 			ShaderVariation::Param("IS_3D", IS_3D),
-		};
+		});
 
 		if(!initialized)
 		{
 			switch(FWD)
 			{
 			case ParticleForwardLightingType::Clustered:
-				params.push_back(ShaderVariation::Param("CLUSTERED", true));
+				params.add(ShaderVariation::Param("CLUSTERED", true));
 				break;
 			case ParticleForwardLightingType::Standard:
-				params.push_back(ShaderVariation::Param("CLUSTERED", false));
+				params.add(ShaderVariation::Param("CLUSTERED", false));
 				break;
 			case ParticleForwardLightingType::None:
 				break;
@@ -172,6 +172,9 @@ namespace bs { namespace ct
 		/** Binding spot for the buffer containing instance id -> particle index mapping. */
 		GpuParamBuffer indicesBuffer;
 
+		/** Optional texture input for the depth buffer. */
+		GpuParamTexture depthInputTexture;
+
 		/** Parameters relevant for billboard rendering of the outputs of the particle CPU simulation. */
 		CpuBillboardSimulationParams paramsCPUBillboard;
 
@@ -195,6 +198,9 @@ namespace bs { namespace ct
 
 		/** Checks if the element has all the properties required for rendering. */
 		bool isValid() const { return !is3D || mesh != nullptr; }
+
+		/** @copydoc RenderElement::draw */
+		void draw() const override;
 	};
 
 	/** Contains information about a ParticleSystem, used by the Renderer. */

@@ -7,7 +7,9 @@
 
 start_find_package(snappy)
 
-set(snappy_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/snappy CACHE PATH "")
+if(USE_BUNDLED_LIBRARIES)
+	set(snappy_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/snappy CACHE PATH "")
+endif()
 gen_default_lib_search_dirs(snappy)
 
 find_imported_includes(snappy snappy.h)

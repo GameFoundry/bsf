@@ -128,6 +128,12 @@ namespace bs
 		/** Returns true if the provided point is inside the bounding box. */
 		bool contains(const Vector3& v) const;
 
+		/** 
+		 * Returns true if the provided point is inside the bounding box while expanding the bounds by @p extra in every 
+		 * direction. 
+		 */
+		bool contains(const Vector3& v, float extra) const;
+
 		/** Returns true if the provided bounding box is completely inside the bounding box. */
 		bool contains(const AABox& other) const;
 

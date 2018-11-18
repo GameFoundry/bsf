@@ -16,6 +16,8 @@ namespace bs
 
 	namespace ct
 	{
+		struct RendererDecal;
+		class Decal;
 		struct FrameInfo;
 
 	/** @addtogroup RenderBeast
@@ -55,7 +57,11 @@ namespace bs
 
 		// Particles
 		Vector<RendererParticles> particleSystems;
-		Vector<AABox> particleSystemBounds;
+		Vector<CullInfo> particleSystemCullInfos;
+
+		// Decals
+		Vector<RendererDecal> decals;
+		Vector<CullInfo> decalCullInfos;
 
 		// Sky
 		Skybox* skybox = nullptr;
@@ -141,6 +147,15 @@ namespace bs
 		/** Removes a particle system from the scene. */
 		void unregisterParticleSystem(ParticleSystem* particleSystem);
 
+		/** Registers a new decal object in the scene. */
+		void registerDecal(Decal* decal);
+
+		/** Updates information about a previously registered decal object. */
+		void updateDecal(Decal* decal);
+
+		/** Removes a decal object from the scene. */
+		void unregisterDecal(Decal* decal);
+
 		/** Returns a container with all relevant scene objects. */
 		const SceneInfo& getSceneInfo() const { return mInfo; }
 
@@ -159,7 +174,7 @@ namespace bs
 		void setParamFrameParams(float time);
 
 		/**
-		 * Performs necessary steps to make a renderable ready for rendering. This must be called at least once every frame,
+		 * Performs necessary steps to make a renderable ready for rendering. This must be called at least once every frame
 		 * for every renderable that will be drawn. Multiple calls for the same renderable during a single frame will result
 		 * in a no-op.
 		 * 
@@ -167,6 +182,15 @@ namespace bs
 		 * @param[in]	frameInfo	Global information describing the current frame.
 		 */
 		void prepareRenderable(UINT32 idx, const FrameInfo& frameInfo);
+
+		/**
+		 * Performs necessary steps to make a decal ready for rendering. This must be called at least once every frame
+		 * for every decal that will be drawn. 
+		 * 
+		 * @param[in]	idx			Index of the decal to prepare.
+		 * @param[in]	frameInfo	Global information describing the current frame.
+		 */
+		void prepareDecal(UINT32 idx, const FrameInfo& frameInfo);
 
 		/** Updates the bounds for all the particle systems from the provided object. */
 		void updateParticleSystemBounds(const ParticlePerFrameData* particleRenderData);
@@ -182,6 +206,15 @@ namespace bs
 		 * registered with some other render target it will be removed from it and added to the new target.
 		 */
 		void updateCameraRenderTargets(Camera* camera, bool remove = false);
+
+		/** 
+		 * Allocates (or returns existing) set of sampler state overrides that can be used for the provided render 
+		 * element. 
+		 */
+		MaterialSamplerOverrides* allocSamplerStateOverrides(RenderElement& elem);
+
+		/** Frees sampler state overrides previously allocated with allocSamplerStateOverrides(). */
+		void freeSamplerStateOverrides(RenderElement& elem);
 
 		SceneInfo mInfo;
 		SPtr<GpuParamBlockBuffer> mPerFrameParamBuffer;

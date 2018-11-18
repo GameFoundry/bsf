@@ -83,12 +83,12 @@ namespace bs
 		}
 	};
 
-	inline RTTITypeBase* SerializationContext::getRTTIStatic()
+	RTTITypeBase* SerializationContext::getRTTIStatic()
 	{
 		return SerializationContextRTTI::instance();
 	}
 
-	inline RTTITypeBase* SerializationContext::getRTTI() const
+	RTTITypeBase* SerializationContext::getRTTI() const
 	{
 		return getRTTIStatic();
 	}
