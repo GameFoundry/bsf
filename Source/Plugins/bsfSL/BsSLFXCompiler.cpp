@@ -19,6 +19,8 @@
 #include "FileSystem/BsFileSystem.h"
 #include "FileSystem/BsDataStream.h"
 
+//#define BSF_DUMP_SHADERS 1
+
 #define XSC_ENABLE_LANGUAGE_EXT 1
 #include "Xsc/Xsc.h"
 
@@ -1949,6 +1951,16 @@ namespace bs
 		return output;
 	}
 
+	#if BSF_DUMP_SHADERS
+	void dumpShader(const Path& baseShaderDumpPath, const String& postFix, const String& shaderCode) {
+		String fname(baseShaderDumpPath.toString());
+		fname += postFix;
+		std::ofstream f(fname.c_str(), std::ios::out | std::ios::trunc);
+		f << shaderCode;
+		f.close();
+	}
+	#endif
+
 	BSLFXCompileResult BSLFXCompiler::compileTechniques(ParseState* parseState, const String& name,
 		const Vector<String>& codeBlocks, const ShaderVariation& variation, ShadingLanguageFlags languages,
 		UnorderedSet<String>& includes, SHADER_DESC& shaderDesc)
@@ -2106,6 +2118,11 @@ namespace bs
 			ShaderData vkslShaderData = shaderData[i].second;
 			vkslShaderData.metaData.language = "vksl";
 
+			#if BSF_DUMP_SHADERS
+			Path baseShaderDumpPath = FileSystem::getTempDirectoryPath();
+			baseShaderDumpPath.setFilename(metaData.name);
+			#endif
+
 			const auto numPasses = (UINT32)shaderDataEntry.passes.size();
 			for(UINT32 j = 0; j < numPasses; j++)
 			{
@@ -2155,6 +2172,12 @@ namespace bs
 							break;
 						}
 					}
+
+					#if BSF_DUMP_SHADERS
+					dumpShader(baseShaderDumpPath, toString(j) + ".vs.glsl", glslPassData.vertexCode);
+					dumpShader(baseShaderDumpPath, toString(j) + ".fs.glsl", glslPassData.fragmentCode);
+					dumpShader(baseShaderDumpPath, toString(j) + ".cp.glsl", glslPassData.computeCode);
+					#endif
 				}
 
 				if(languages.isSet(ShadingLanguageFlag::VKSL))
@@ -2194,6 +2217,12 @@ namespace bs
 							break;
 						}
 					}
+
+					#if BSF_DUMP_SHADERS
+					dumpShader(baseShaderDumpPath, toString(j) + ".vs.vksl", vkslPassData.vertexCode);
+					dumpShader(baseShaderDumpPath, toString(j) + ".fs.vksl", vkslPassData.fragmentCode);
+					dumpShader(baseShaderDumpPath, toString(j) + ".cp.vksl", vkslPassData.computeCode);
+					#endif		
 				}
 
 				if(languages.isSet(ShadingLanguageFlag::HLSL))
@@ -2241,6 +2270,12 @@ namespace bs
 							break;
 						}
 					}
+
+					#if BSF_DUMP_SHADERS
+					dumpShader(baseShaderDumpPath, toString(j) + ".vs.hlsl", hlslPassData.vertexCode);
+					dumpShader(baseShaderDumpPath, toString(j) + ".fs.hlsl", hlslPassData.fragmentCode);
+					dumpShader(baseShaderDumpPath, toString(j) + ".cp.hlsl", hlslPassData.computeCode);
+					#endif
 				}
 			}
 
