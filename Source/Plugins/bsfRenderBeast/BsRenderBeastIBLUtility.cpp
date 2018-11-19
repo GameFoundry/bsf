@@ -402,7 +402,7 @@ namespace bs { namespace ct
 		}
 
 		// We sample the cubemaps using importance sampling to generate roughness
-		UINT32 numMips = props.getNumMipmaps();
+		UINT32 numMips = props.getNumMipmaps() + 1;
 
 		// Before importance sampling the cubemaps we first create box filtered versions for each mip level. This helps fix
 		// the aliasing artifacts that would otherwise be noticeable on importance sampled cubemaps. The aliasing happens
