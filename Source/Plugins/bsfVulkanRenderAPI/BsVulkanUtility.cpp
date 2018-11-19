@@ -620,10 +620,10 @@ namespace bs { namespace ct
 	{
 		numAreas = 0;
 
-		INT32 leftCut = cutWith.baseArrayLayer - toCut.baseArrayLayer;
-		INT32 rightCut = (cutWith.baseArrayLayer + cutWith.layerCount) - toCut.baseArrayLayer;
+		INT32 leftCut = Math::clamp((INT32)cutWith.baseArrayLayer - (INT32)toCut.baseArrayLayer, 0, (INT32)toCut.layerCount);
+		INT32 rightCut = Math::clamp((INT32)(cutWith.baseArrayLayer + cutWith.layerCount) - (INT32)toCut.baseArrayLayer, 0, (INT32)toCut.layerCount);
 
-		if (leftCut > 0 && leftCut < (INT32)(toCut.baseArrayLayer + toCut.layerCount))
+		if (leftCut > 0 && leftCut < (INT32)toCut.layerCount)
 		{
 			output[numAreas] = toCut;
 			VkImageSubresourceRange& range = output[numAreas];
@@ -645,8 +645,8 @@ namespace bs { namespace ct
 			numAreas++;
 		}
 
-		// If we made both left and right cuts, this means we need a middle one as well
-		if (numAreas == 2)
+		// Middle cut
+		if (rightCut > leftCut)
 		{
 			output[numAreas] = toCut;
 			VkImageSubresourceRange& range = output[numAreas];
@@ -670,10 +670,10 @@ namespace bs { namespace ct
 	{
 		numAreas = 0;
 
-		INT32 topCut = cutWith.baseMipLevel - toCut.baseMipLevel;
-		INT32 bottomCut = (cutWith.baseMipLevel + cutWith.levelCount) - toCut.baseMipLevel;
+		INT32 topCut = Math::clamp((INT32)cutWith.baseMipLevel - (INT32)toCut.baseMipLevel, 0, (INT32)toCut.levelCount);
+		INT32 bottomCut = Math::clamp((INT32)(cutWith.baseMipLevel + cutWith.levelCount) - (INT32)toCut.baseMipLevel, 0, (INT32)toCut.levelCount);
 
-		if (topCut > 0 && topCut < (INT32)(toCut.baseMipLevel + toCut.levelCount))
+		if (topCut > 0 && topCut < (INT32)toCut.levelCount)
 		{
 			output[numAreas] = toCut;
 			VkImageSubresourceRange& range = output[numAreas];
@@ -695,8 +695,8 @@ namespace bs { namespace ct
 			numAreas++;
 		}
 
-		// If we made both top and bottom cuts, this means we need a middle one as well
-		if (numAreas == 2)
+		// Middle cut
+		if (bottomCut > topCut)
 		{
 			output[numAreas] = toCut;
 			VkImageSubresourceRange& range = output[numAreas];
