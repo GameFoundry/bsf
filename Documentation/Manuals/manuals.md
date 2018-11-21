@@ -59,6 +59,7 @@ User manuals									{#manuals}
  - [Skybox](@ref skybox)
  - [Reflection environment](@ref reflectionProbes)
  - [Indirect lighting](@ref indirectLighting)
+ - [Decals](@ref decals)
  - [Advanced textures](@ref advancedTextures)
  - [Advanced meshes](@ref creatingMeshes)
  - [Offscreen rendering](@ref offscreenRendering)

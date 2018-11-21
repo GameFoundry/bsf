@@ -65,6 +65,8 @@ gpuSimSettings.drag = 0.1f;
 # Collisions {#gpuParticles_d}
 GPU simulated particles support a specialized depth collision mode for simulating world collisions. This is an extremely fast collision approach that supports collisions with arbitrary world geometry for thousands of particles with minimal performance impact. It uses visual geometry, not physical geometry, for determining collisions. Note this system performs collisions in screen-space, meaning it only has the information currently shown on the screen - collisions cannot occur with geometry not currently visible.
 
+![Depth buffer collisions](depthBufferCollisions.gif)
+
 All depth collision options are controlled through a @ref bs::ParticleDepthCollisionSettings "ParticleDepthCollisionSettings" that's available on @ref bs::ParticleGpuSimulationSettings::depthCollision "ParticleGpuSimulationSettings::depthCollision".
 
 ~~~~~~~~~~~~~{.cpp}
@@ -82,6 +84,8 @@ Use @ref bs::ParticleDepthCollisionSettings::restitution "ParticleDepthCollision
 
 # Vector field {#gpuParticles_e}
 Vector fields are perhaps the most important feature of a GPU simulated particle system, giving you very detailed control of the behavior of particles in the system. Each vector field is represented as a 3D grid of vectors. This grid is placed relative to the particle system and as particles pass through the grid they will inherit force (and optionally velocity) from the grid cell the particle is located at. This gives the user a lot of control over the movement of the particles. This is especially useful for simulating things like fluids or smoke.
+
+![Particle system with a vector field](vectorField.gif)  
 
 All vector field properties are controlled through a @ref bs::ParticleVectorFieldSettings "ParticleVectorFieldSettings" object, accessible from @ref bs::TParticleGpuSimulationSettings<Core>::vectorField "ParticleGpuSimulationSettings::vectorField".
 

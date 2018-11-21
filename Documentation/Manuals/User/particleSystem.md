@@ -114,6 +114,8 @@ emitter->setEmissionBursts(
 });
 ~~~~~~~~~~~~~
 
+![Emission bursts](emissionBurst.gif)  
+
 ### Lifetime {#particle_system_b_b_b}
 Controls how long should each individual particle live, in seconds. After the lifetime expires the particle disappears. Set it through @ref bs::ParticleEmitter::setInitialLifetime "ParticleEmitter::setInitialLifetime()".
 
