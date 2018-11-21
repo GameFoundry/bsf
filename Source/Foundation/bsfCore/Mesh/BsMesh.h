@@ -64,7 +64,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering) Mesh : public MeshBase
 	{
 	public:
-		virtual ~Mesh();
+		virtual ~Mesh() = default;
 
 		/** @copydoc MeshBase::initialize */
 		void initialize() override;
@@ -152,8 +152,8 @@ namespace bs
 		mutable SPtr<MeshData> mCPUData;
 
 		SPtr<VertexDataDesc> mVertexDesc;
-		int mUsage;
-		IndexType mIndexType;
+		int mUsage = MU_STATIC;
+		IndexType mIndexType = IT_32BIT;
 		SPtr<Skeleton> mSkeleton; // Immutable
 		SPtr<MorphShapes> mMorphShapes; // Immutable
 

@@ -148,7 +148,7 @@ namespace bs
 		 */
 		SPtr<GpuBuffer> getView(GpuBufferType type, GpuBufferFormat format, UINT32 elementSize = 0);
 
-		/** @copydoc HardwareBufferManager::createGpuBuffer */
+		/** @copydoc bs::HardwareBufferManager::createGpuBuffer */
 		static SPtr<GpuBuffer> create(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/** 

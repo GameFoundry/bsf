@@ -352,7 +352,7 @@ namespace bs { namespace ct
 		 *								Should be in the simulation space of the particle system.
 		 * @param[in]	positions		Buffer containing positions of individual particles.
 		 * @param[in]	numParticles	Number of particles in the provided position and indices buffers.
-		 * @param[in]	stride			Offset between positions in the @positions buffer, in number of floats.
+		 * @param[in]	stride			Offset between positions in the @p positions buffer, in number of floats.
 		 * @param[out]	indices			Index buffer that will be sorted according to the particle distance, in descending
 		 *								order.
 		 */

@@ -81,7 +81,7 @@ importOptions->setImportTangents(true);
 ## Caching {#importingMeshes_d_d}
 Sometimes you need to import a mesh you don't want to only use for rendering, but rather for manually reading its contents. When that's the case you can enable the @ref bs::MeshImportOptions::setCPUCached "MeshImportOptions::setCPUCached()" option.
 
-This will allow you to call @ref bs::Mesh::readCachedData "Mesh::readCachedData()" and to manually read individual vertices and indices of the mesh.
+This will allow you to call @ref bs::Mesh::getCachedData "Mesh::getCachedData()" and to manually read individual vertices and indices of the mesh.
 
 Note that caching a mesh means its data will be available in system memory, essentially doubling its memory usage.
 
@@ -101,7 +101,7 @@ vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 SPtr<MeshData> meshData = MeshData::create(8, 36, vertexDesc);
 
 // Read cached data
-mesh->readCachedData(*meshData);
+mesh->getCachedData(*meshData);
 
 // Read vertex positions
 Vector<Vector3> vertices(8);
