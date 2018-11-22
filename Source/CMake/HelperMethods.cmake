@@ -464,7 +464,7 @@ function(add_common_flags target)
 		set_property(TARGET ${target} PROPERTY SOVERSION ${BS_FRAMEWORK_VERSION_MAJOR})
 	endif()
 
-	set_property(TARGET ${target} PROPERTY INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib/bsf-${BS_FRAMEWORK_VERSION_MAJOR}.${BS_FRAMEWORK_VERSION_MINOR}.${BS_FRAMEWORK_VERSION_PATCH})
+	set_property(TARGET ${target} PROPERTY INSTALL_RPATH "\$ORIGIN:\$ORIGIN/bsf-${BS_FRAMEWORK_VERSION_MAJOR}.${BS_FRAMEWORK_VERSION_MINOR}.${BS_FRAMEWORK_VERSION_PATCH}")
 endfunction()
 
 #######################################################################################
