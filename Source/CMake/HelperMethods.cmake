@@ -358,7 +358,7 @@ endfunction()
 function(copyBsfBinaries target srcDir)
 	if(WIN32)
 		set(BIN_SRC_DIR "${srcDir}/bin")
-		set(BIN_DST_DIR ${PROJECT_SOURCE_DIR}/bin)
+		set(BIN_DST_DIR ${PROJECT_BINARY_DIR}/bin)
 		
 		file(GLOB_RECURSE BIN_FILES RELATIVE ${BIN_SRC_DIR} "${BIN_SRC_DIR}/*.dll")
 
