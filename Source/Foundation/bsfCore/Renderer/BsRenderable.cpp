@@ -501,9 +501,9 @@ namespace bs
 			{
 				GPU_BUFFER_DESC desc;
 				desc.elementCount = numBones * 3;
-				desc.elementSize = bs::GpuBuffer::getFormatSize(BF_32X4F);
-				desc.type = GBT_STRUCTURED;
-				desc.format = BF_UNKNOWN;
+				desc.elementSize = 0;
+				desc.type = GBT_STANDARD;
+				desc.format = BF_32X4F;
 				desc.usage = GBU_DYNAMIC;
 
 				SPtr<GpuBuffer> buffer = GpuBuffer::create(desc);
