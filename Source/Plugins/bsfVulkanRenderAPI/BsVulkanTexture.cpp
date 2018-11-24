@@ -187,12 +187,12 @@ namespace bs { namespace ct
 				mImageViewCI.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
 			break;
 		case VK_IMAGE_VIEW_TYPE_1D:
-			if(numFaces > 1 || mNumFaces > 1)
+			if(mNumFaces > 1)
 				mImageViewCI.viewType = VK_IMAGE_VIEW_TYPE_1D_ARRAY;
 			break;
 		case VK_IMAGE_VIEW_TYPE_2D:
 		case VK_IMAGE_VIEW_TYPE_3D:
-			if (numFaces > 1 || mNumFaces > 1)
+			if (mNumFaces > 1)
 				mImageViewCI.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
 			break;
 		default:
@@ -204,7 +204,7 @@ namespace bs { namespace ct
 		mImageViewCI.subresourceRange.levelCount = surface.numMipLevels == 0 ? VK_REMAINING_MIP_LEVELS : surface.numMipLevels;
 		mImageViewCI.subresourceRange.baseArrayLayer = surface.face;
 		mImageViewCI.subresourceRange.layerCount = surface.numFaces == 0 ? VK_REMAINING_ARRAY_LAYERS : surface.numFaces;
-		
+
 		VkImageView view;
 		VkResult result = vkCreateImageView(mOwner->getDevice().getLogical(), &mImageViewCI, gVulkanAllocator, &view);
 		assert(result == VK_SUCCESS);

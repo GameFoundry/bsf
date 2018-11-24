@@ -824,6 +824,7 @@ namespace bs
 	struct ComponentOrActor
 	{
 		using ComponentType = typename ComponentType<T>::Type;
+		using HandleType = GameObjectHandle<ComponentType>;
 
 		ComponentOrActor() = default;
 
@@ -848,6 +849,12 @@ namespace bs
 				return mActor;
 
 			return mComponent->_getInternal();
+		}
+
+		/** Returns the assigned value as a component. */
+		HandleType getComponent() const
+		{
+			return mComponent;
 		}
 
 	private:

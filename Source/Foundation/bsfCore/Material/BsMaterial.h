@@ -143,7 +143,12 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:Shader,pr:getter)
 		ShaderType getShader() const { return mShader; }
 
-		/** @copydoc Material::setVariation */
+		/** 
+		 * Set of parameters that determine which subset of techniques in the assigned shader should be used. Only the 
+		 * techniques that have the provided parameters with the provided values will match. This will control which 
+		 * technique is considered the default technique and which subset of techniques are searched during a call to 
+		 * findTechnique().
+		 */
 		const ShaderVariation& getVariation() const { return mVariation; }
 
 		/** Returns the total number of techniques supported by this material. */
@@ -222,7 +227,7 @@ namespace bs
 		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
 		BS_SCRIPT_EXPORT()
-		void setFloatCurve(const String& name, TAnimationCurve<float> value, UINT32 arrayIdx = 0)	
+		void setFloatCurve(const String& name, TAnimationCurve<float> value, UINT32 arrayIdx = 0)
 		{ return getParamFloatCurve(name).set(std::move(value), arrayIdx); }
 
 		/**
@@ -736,12 +741,7 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:Shader,pr:setter)
 		void setShader(const HShader& shader);
 
-		/** 
-		 * Set of parameters that determine which subset of techniques in the assigned shader should be used. Only the 
-		 * techniques that have the provided parameters with the provided values will match. This will control which 
-		 * technique is considered the default technique and which subset of techniques are searched during a call to 
-		 * findTechnique().
-		 */
+		/** @copydoc TMaterial<Core>::getVariation */
 		void setVariation(const ShaderVariation& variation);
 
 		/** Retrieves an implementation of a material usable only from the core thread. */

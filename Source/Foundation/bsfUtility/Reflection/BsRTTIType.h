@@ -560,6 +560,7 @@ namespace bs
 		typedef Type OwnerType;
 		typedef MyRTTIType MyType;
 
+		/** Registers a field referencing a plain type. */
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addPlainField(const String& name, UINT32 uniqueId, 
 			DataType& (InterfaceType::*getter)(ObjectType*),
@@ -577,6 +578,7 @@ namespace bs
 			addNewField(newField);
 		}
 
+		/** Registers a field referencing an IReflectable type passed by value. */
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addReflectableField(const String& name, UINT32 uniqueId, 
 			DataType& (InterfaceType::*getter)(ObjectType*), 
@@ -590,6 +592,7 @@ namespace bs
 			addNewField(newField);
 		}
 
+		/** Registers a field referencing an IReflectable type passed by pointer. */
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addReflectablePtrField(const String& name, UINT32 uniqueId, 
 			SPtr<DataType> (InterfaceType::*getter)(ObjectType*), 
@@ -603,6 +606,7 @@ namespace bs
 			addNewField(newField);
 		}
 
+		/** Registers a field referencing an array of plain types. */
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addPlainArrayField(const String& name, UINT32 uniqueId, 
 			DataType& (InterfaceType::*getter)(ObjectType*, UINT32),
@@ -622,6 +626,7 @@ namespace bs
 			addNewField(newField);
 		}	
 
+		/** Registers a field referencing an array of IReflectable objects. */
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addReflectableArrayField(const String& name, UINT32 uniqueId, 
 			DataType& (InterfaceType::*getter)(ObjectType*, UINT32), 
@@ -637,6 +642,7 @@ namespace bs
 			addNewField(newField);
 		}
 
+		/** Registers a field referencing an array of IReflectable pointers. */
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId, 
 			SPtr<DataType> (InterfaceType::*getter)(ObjectType*, UINT32), 
@@ -652,6 +658,7 @@ namespace bs
 			addNewField(newField);
 		}
 
+		/** Registers a field referencing a blob of memory. */
 		template<class InterfaceType, class ObjectType>
 		void addDataBlockField(const String& name, UINT32 uniqueId, SPtr<DataStream> (InterfaceType::*getter)(ObjectType*, UINT32&), 
 			void (InterfaceType::*setter)(ObjectType*, const SPtr<DataStream>&, UINT32), UINT64 flags = 0)

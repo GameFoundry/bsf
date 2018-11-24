@@ -81,6 +81,8 @@ psSettings.renderMode = ParticleRenderMode::Mesh;
 psSettings.mesh = mesh;
 ~~~~~~~~~~~~~
 
+![3D particles](3dparticles.gif)  
+
 # Sorting {#particleSettings_e}
 
 Certain particle shaders might require particles to be sorted in a particular order to work properly. You can control particle sorting through the @ref bs::ParticleSystemSettings::sortMode "ParticleSystemSettings::sortMode" field. It has the following options:

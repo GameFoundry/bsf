@@ -124,6 +124,8 @@ auto evolver = ParticleForce::create(desc);
 # Velocity {#particleEvolvers_f}
 Sets the velocity of particles over their lifetime.
 
+![Velocity evolver](velocityEvolver.gif)  
+
 Represented with the @ref bs::ParticleVelocity "ParticleVelocity" and initialization options provided through @ref bs::PARTICLE_VELOCITY_DESC "PARTICLE_VELOCITY_DESC".
 
 Use @ref bs::PARTICLE_VELOCITY_DESC::velocity "PARTICLE_VELOCITY_DESC::velocity" to specify the velocity direction and intensity. If @ref bs::PARTICLE_VELOCITY_DESC::worldSpace "PARTICLE_VELOCITY_DESC::worldSpace" is true the velocity direction is assumed to be provided in world space, otherwise it is assumed to be relative to the transform of the parent particle system.
@@ -159,6 +161,8 @@ auto evolver = ParticleOrbit::create(desc);
 
 # Collision {#particleEvolvers_h}
 Makes the particles collide with the world or a user-provided set of planes.
+
+![Particle collisions](particleCollision.gif)  
 
 Represented with the @ref bs::ParticleCollisions "ParticleCollisions" and initialization options provided through @ref bs::PARTICLE_COLLISIONS_DESC "PARTICLE_COLLISIONS_DESC".
 

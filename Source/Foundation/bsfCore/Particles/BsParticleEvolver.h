@@ -49,12 +49,27 @@ namespace bs
 	protected:
 		friend class ParticleSystem;
 
-		/** Updates properties of all particles in the @p set according to the ruleset of the evolver. */
-		virtual void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set) const = 0;
+		/** 
+		 * Updates properties of particles in the provided range according to the ruleset of the evolver. 
+		 * 
+		 * @param[in]	random			Utility class for generating random numbers.
+		 * @param[in]	state			Particle system state for this frame.
+		 * @param[in]	set				Set containing the particles to update.
+		 * @param[in]	startIdx		Index of the first particle in @p set to update.
+		 * @param[in]	count			Number of particles to update, starting from @p startIdx.
+		 * @param[in]	spacing			When false all particles will use the same time-step as provided by @p state. If
+		 *								true the time-step will be divided by @p count so particles are uniformly
+		 *								distributed over the time-step.
+		 * @param[in]	spacingOffset	Extra offset that controls the starting position of the first particle when
+		 *								calculating spacing. Should be in range [0, 1). 0 = beginning of the current
+		 *								time step, 1 = start of next particle.
+		 */
+		virtual void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
+			UINT32 count, bool spacing, float spacingOffset) const = 0;
 	};
 
 	/** Structure used for initializing a ParticleTextureAnimation object. */
-	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,name:ParticleTextureAnimationOptions) PARTICLE_TEXTURE_ANIMATION_DESC
+	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,n:ParticleTextureAnimationOptions) PARTICLE_TEXTURE_ANIMATION_DESC
 	{
 		/**
 		 * Randomly pick a row to use for animation when the particle is first spawned. This implies that only a single row
@@ -95,7 +110,8 @@ namespace bs
 		static SPtr<ParticleTextureAnimation> create(const PARTICLE_TEXTURE_ANIMATION_DESC& desc);
 	private:
 		/** @copydoc ParticleEvolver::evolve */
-		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set) const override;
+		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
+			UINT32 count, bool spacing, float spacingOffset) const override;
 
 		PARTICLE_TEXTURE_ANIMATION_DESC mDesc;
 
@@ -111,7 +127,7 @@ namespace bs
 	};
 
 	/** Structure used for initializing a ParticleOrbit object. */
-	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,name:ParticleOrbitOptions) PARTICLE_ORBIT_DESC
+	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,n:ParticleOrbitOptions) PARTICLE_ORBIT_DESC
 	{
 		/** Position of the center around which to orbit. Evaluated over particle system lifetime. */
 		Vector3Distribution center = Vector3(0.0f, 0.0f, 0.0f);
@@ -155,7 +171,8 @@ namespace bs
 		static SPtr<ParticleOrbit> create(const PARTICLE_ORBIT_DESC& desc);
 	private:
 		/** @copydoc ParticleEvolver::evolve */
-		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set) const override;
+		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
+			UINT32 count, bool spacing, float spacingOffset) const override;
 
 		PARTICLE_ORBIT_DESC mDesc;
 
@@ -171,7 +188,7 @@ namespace bs
 	};
 
 	/** Structure used for initializing a ParticleVelocity object. */
-	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,name:ParticleVelocityOptions) PARTICLE_VELOCITY_DESC
+	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,n:ParticleVelocityOptions) PARTICLE_VELOCITY_DESC
 	{
 		/** Determines the velocity of the particles evaluated over particle lifetime. */
 		Vector3Distribution velocity = Vector3(0.0f, 1.0f, 0.0f);
@@ -206,7 +223,8 @@ namespace bs
 		static SPtr<ParticleVelocity> create(const PARTICLE_VELOCITY_DESC& desc);
 	private:
 		/** @copydoc ParticleEvolver::evolve */
-		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set) const override;
+		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
+			UINT32 count, bool spacing, float spacingOffset) const override;
 
 		PARTICLE_VELOCITY_DESC mDesc;
 
@@ -222,7 +240,7 @@ namespace bs
 	};
 
 	/** Structure used for initializing a ParticleForce object. */
-	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,name:ParticleForceOptions) PARTICLE_FORCE_DESC
+	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,n:ParticleForceOptions) PARTICLE_FORCE_DESC
 	{
 		/** Determines the force of the particles evaluated over particle lifetime. */
 		Vector3Distribution force = Vector3(0.0f, 0.0f, 0.0f);
@@ -257,7 +275,8 @@ namespace bs
 		static SPtr<ParticleForce> create(const PARTICLE_FORCE_DESC& desc);
 	private:
 		/** @copydoc ParticleEvolver::evolve */
-		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set) const override;
+		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
+			UINT32 count, bool spacing, float spacingOffset) const override;
 
 		PARTICLE_FORCE_DESC mDesc;
 
@@ -273,7 +292,7 @@ namespace bs
 	};
 
 	/** Structure used for initializing a ParticleGravity object. */
-	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,name:ParticleGravityOptions) PARTICLE_GRAVITY_DESC
+	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,n:ParticleGravityOptions) PARTICLE_GRAVITY_DESC
 	{
 		/** Scale which to apply to the gravity value retrieved from the physics sub-system. */
 		float scale = 1.0f;
@@ -305,7 +324,8 @@ namespace bs
 		static SPtr<ParticleGravity> create(const PARTICLE_GRAVITY_DESC& desc);
 	private:
 		/** @copydoc ParticleEvolver::evolve */
-		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set) const override;
+		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
+			UINT32 count, bool spacing, float spacingOffset) const override;
 
 		PARTICLE_GRAVITY_DESC mDesc;
 
@@ -321,7 +341,7 @@ namespace bs
 	};
 
 	/** Structure used for initializing a ParticleColor object. */
-	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,name:ParticleColorOptions) PARTICLE_COLOR_DESC
+	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,n:ParticleColorOptions) PARTICLE_COLOR_DESC
 	{
 		/** Determines the color of the particles evaluated over particle lifetime. */
 		ColorDistribution color = Color::White;
@@ -353,7 +373,8 @@ namespace bs
 		static SPtr<ParticleColor> create(const PARTICLE_COLOR_DESC& desc);
 	private:
 		/** @copydoc ParticleEvolver::evolve */
-		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set) const override;
+		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
+			UINT32 count, bool spacing, float spacingOffset) const override;
 
 		PARTICLE_COLOR_DESC mDesc;
 
@@ -369,7 +390,7 @@ namespace bs
 	};
 
 	/** Structure used for initializing a ParticleSize object. */
-	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,name:ParticleSizeOptions) PARTICLE_SIZE_DESC
+	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,n:ParticleSizeOptions) PARTICLE_SIZE_DESC
 	{
 		/** 
 		 * Determines the uniform size of the particles evaluated over particle lifetime. Only used if 3D size is disabled.
@@ -415,7 +436,8 @@ namespace bs
 		static SPtr<ParticleSize> create(const PARTICLE_SIZE_DESC& desc);
 	private:
 		/** @copydoc ParticleEvolver::evolve */
-		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set) const override;
+		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
+			UINT32 count, bool spacing, float spacingOffset) const override;
 
 		PARTICLE_SIZE_DESC mDesc;
 
@@ -431,7 +453,7 @@ namespace bs
 	};
 
 	/** Structure used for initializing a ParticleRotation object. */
-	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,name:ParticleRotationOptions) PARTICLE_ROTATION_DESC
+	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,n:ParticleRotationOptions) PARTICLE_ROTATION_DESC
 	{
 		/** 
 		 * Determines the rotation of the particles in degrees, applied around the particle's local Z axis. Only used if 
@@ -475,7 +497,8 @@ namespace bs
 		static SPtr<ParticleRotation> create(const PARTICLE_ROTATION_DESC& desc);
 	private:
 		/** @copydoc ParticleEvolver::evolve */
-		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set) const override;
+		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
+			UINT32 count, bool spacing, float spacingOffset) const override;
 
 		PARTICLE_ROTATION_DESC mDesc;
 
@@ -501,7 +524,7 @@ namespace bs
 	};
 
 	/** Structure used for initializing a ParticleCollisions object. */
-	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,name:ParticleCollisionsOptions) PARTICLE_COLLISIONS_DESC
+	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,n:ParticleCollisionsOptions) PARTICLE_COLLISIONS_DESC
 	{
 		/** Collision mode determining with which geometry the particles will interact with. */
 		ParticleCollisionMode mode = ParticleCollisionMode::Plane;
@@ -582,7 +605,8 @@ namespace bs
 		static SPtr<ParticleCollisions> create(const PARTICLE_COLLISIONS_DESC& desc);
 	private:
 		/** @copydoc ParticleEvolver::evolve */
-		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set) const override;
+		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
+			UINT32 count, bool spacing, float spacingOffset) const override;
 
 		PARTICLE_COLLISIONS_DESC mDesc;
 

@@ -28,20 +28,11 @@ namespace bs
 		mCPUData(initialMeshData), mVertexDesc(initialMeshData->getVertexDesc()),
 		mUsage(desc.usage), mIndexType(initialMeshData->getIndexType()), mSkeleton(desc.skeleton),
 		mMorphShapes(desc.morphShapes)
-	{
-
-	}
+	{ }
 
 	Mesh::Mesh()
-		:MeshBase(0, 0, DOT_TRIANGLE_LIST), mUsage(MU_STATIC), mIndexType(IT_32BIT)
-	{
-
-	}
-
-	Mesh::~Mesh()
-	{
-
-	}
+		:MeshBase(0, 0, DOT_TRIANGLE_LIST)
+	{ }
 
 	AsyncOp Mesh::writeData(const SPtr<MeshData>& data, bool discardEntireBuffer)
 	{
