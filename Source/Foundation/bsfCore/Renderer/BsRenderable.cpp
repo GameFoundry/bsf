@@ -27,16 +27,8 @@ namespace bs
 
 	template<bool Core>
 	TRenderable<Core>::TRenderable()
-		: mLayer(1), mUseOverrideBounds(false), mTfrmMatrix(BsIdentity), mTfrmMatrixNoScale(BsIdentity)
-		, mAnimType(RenderableAnimType::None)
 	{
 		mMaterials.resize(1);
-	}
-
-	template<bool Core>
-	TRenderable<Core>::~TRenderable()
-	{
-
 	}
 
 	template <bool Core>
@@ -109,7 +101,7 @@ namespace bs
 	template<bool Core>
 	void TRenderable<Core>::setLayer(UINT64 layer)
 	{
-		bool isPow2 = layer && !((layer - 1) & layer);
+		const bool isPow2 = layer && !((layer - 1) & layer);
 
 		if (!isPow2)
 		{

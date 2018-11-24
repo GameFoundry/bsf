@@ -356,7 +356,7 @@ namespace bs
 						const auto findIterParam = mParamLookup.find(entry.first);
 						if (findIterTex != mParamLookup.end() && findIterParam != mParamLookup.end())
 						{
-							ParamData& paramData = mParams[findIterTex->second];
+							ParamData& paramData = mParams[findIterParam->second];
 
 							DataParamInfo& dataParamInfo = mDataParams[paramData.index];
 							dataParamInfo.spriteTextureIdx = findIterTex->second;

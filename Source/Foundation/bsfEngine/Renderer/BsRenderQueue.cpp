@@ -26,12 +26,10 @@ namespace bs { namespace ct
 		mSortedRenderElements.clear();
 	}
 
-	void RenderQueue::add(const RenderElement* element, float distFromCamera)
+	void RenderQueue::add(const RenderElement* element, float distFromCamera, UINT32 techniqueIdx)
 	{
 		SPtr<Material> material = element->material;
 		SPtr<Shader> shader = material->getShader();
-
-		mElements.push_back(element);
 		
 		UINT32 queuePriority = shader->getQueuePriority();
 		QueueSortType sortType = shader->getQueueSortType();
@@ -50,7 +48,7 @@ namespace bs { namespace ct
 			break;
 		}
 
-		UINT32 numPasses = material->getNumPasses();
+		UINT32 numPasses = material->getNumPasses(techniqueIdx);
 		if (!separablePasses)
 			numPasses = std::min(1U, numPasses);
 
@@ -65,8 +63,11 @@ namespace bs { namespace ct
 			sortableElem.seqIdx = idx;
 			sortableElem.priority = queuePriority;
 			sortableElem.shaderId = shaderId;
+			sortableElem.techniqueIdx = techniqueIdx;
 			sortableElem.passIdx = i;
 			sortableElem.distFromCamera = distFromCamera;
+
+			mElements.push_back(element);
 		}
 	}
 
@@ -91,60 +92,58 @@ namespace bs { namespace ct
 		std::sort(mSortableElementIdx.begin(), mSortableElementIdx.end(), std::bind(sortMethod, _1, _2, mSortableElements));
 
 		UINT32 prevShaderId = (UINT32)-1;
+		UINT32 prevTechniqueIdx = (UINT32)-1;
 		UINT32 prevPassIdx = (UINT32)-1;
-		const RenderElement* renderElem = nullptr;
-		INT32 currentElementIdx = -1;
-		UINT32 numPassesInCurrentElement = 0;
-		bool separablePasses = true;
 		for (UINT32 i = 0; i < (UINT32)mSortableElementIdx.size(); i++)
 		{
-			UINT32 idx = mSortableElementIdx[i];
-
-			while (numPassesInCurrentElement == 0)
-			{
-				currentElementIdx++;
-				renderElem = mElements[currentElementIdx];
-				numPassesInCurrentElement = renderElem->material->getNumPasses();
-				separablePasses = renderElem->material->getShader()->getAllowSeparablePasses();
-			}
-
+			const UINT32 idx = mSortableElementIdx[i];
 			const SortableElement& elem = mSortableElements[idx];
+			const RenderElement* renderElem = mElements[idx];
+
+			const bool separablePasses = renderElem->material->getShader()->getAllowSeparablePasses();
+
 			if (separablePasses)
 			{
 				mSortedRenderElements.push_back(RenderQueueElement());
 
 				RenderQueueElement& sortedElem = mSortedRenderElements.back();
 				sortedElem.renderElem = renderElem;
+				sortedElem.techniqueIdx = elem.techniqueIdx;
 				sortedElem.passIdx = elem.passIdx;
 
-				if (prevShaderId != elem.shaderId || prevPassIdx != elem.passIdx)
+				if (prevShaderId != elem.shaderId || prevTechniqueIdx != elem.techniqueIdx ||  prevPassIdx != elem.passIdx)
 				{
 					sortedElem.applyPass = true;
 					prevShaderId = elem.shaderId;
+					prevTechniqueIdx = elem.techniqueIdx;
 					prevPassIdx = elem.passIdx;
 				}
 				else
 					sortedElem.applyPass = false;
-
-				numPassesInCurrentElement--;
 			}
 			else
 			{
-				for (UINT32 j = 0; j < numPassesInCurrentElement; j++)
+				const UINT32 numPasses = renderElem->material->getNumPasses(elem.techniqueIdx);
+				for (UINT32 j = 0; j < numPasses; j++)
 				{
 					mSortedRenderElements.push_back(RenderQueueElement());
 
 					RenderQueueElement& sortedElem = mSortedRenderElements.back();
 					sortedElem.renderElem = renderElem;
+					sortedElem.techniqueIdx = elem.techniqueIdx;
 					sortedElem.passIdx = j;
-					sortedElem.applyPass = true;
 
-					prevShaderId = elem.shaderId;
-					prevPassIdx = j;
+					if (prevShaderId != elem.shaderId || prevTechniqueIdx != elem.techniqueIdx || prevPassIdx != j)
+					{
+						sortedElem.applyPass = true;
+						prevShaderId = elem.shaderId;
+						prevTechniqueIdx = elem.techniqueIdx;
+						prevPassIdx = j;
+					}
+					else
+						sortedElem.applyPass = false;
 				}
-
-				numPassesInCurrentElement = 0;
-			}			
+			}
 		}
 	}
 
@@ -169,14 +168,16 @@ namespace bs { namespace ct
 		const SortableElement& a = lookup[aIdx];
 		const SortableElement& b = lookup[bIdx];
 		
-		UINT8 isHigher = (a.priority > b.priority) << 4 |
-			(a.shaderId < b.shaderId) << 3 |
+		UINT8 isHigher = (a.priority > b.priority) << 5 |
+			(a.shaderId < b.shaderId) << 4 |
+			(a.techniqueIdx < b.techniqueIdx) << 3 |
 			(a.passIdx < b.passIdx) << 2 |
 			(a.distFromCamera < b.distFromCamera) << 1 |
 			(a.seqIdx < b.seqIdx);
 
-		UINT8 isLower = (a.priority < b.priority) << 4 |
-			(a.shaderId > b.shaderId) << 3 |
+		UINT8 isLower = (a.priority < b.priority) << 5 |
+			(a.shaderId > b.shaderId) << 4 |
+			(a.techniqueIdx > b.techniqueIdx) << 3 |
 			(a.passIdx > b.passIdx) << 2 |
 			(a.distFromCamera > b.distFromCamera) << 1 |
 			(a.seqIdx > b.seqIdx);
@@ -189,15 +190,17 @@ namespace bs { namespace ct
 		const SortableElement& a = lookup[aIdx];
 		const SortableElement& b = lookup[bIdx];
 
-		UINT8 isHigher = (a.priority > b.priority) << 4 | 
-			(a.distFromCamera < b.distFromCamera) << 3 | 
-			(a.shaderId < b.shaderId) << 2 | 
+		UINT8 isHigher = (a.priority > b.priority) << 5 | 
+			(a.distFromCamera < b.distFromCamera) << 4 | 
+			(a.shaderId < b.shaderId) << 3 | 
+			(a.techniqueIdx < b.techniqueIdx) << 2 |
 			(a.passIdx < b.passIdx) << 1 | 
 			(a.seqIdx < b.seqIdx);
 
-		UINT8 isLower = (a.priority < b.priority) << 4 |
-			(a.distFromCamera > b.distFromCamera) << 3 |
-			(a.shaderId > b.shaderId) << 2 |
+		UINT8 isLower = (a.priority < b.priority) << 5 |
+			(a.distFromCamera > b.distFromCamera) << 4 |
+			(a.shaderId > b.shaderId) << 3 |
+			(a.techniqueIdx > b.techniqueIdx) << 2 |
 			(a.passIdx > b.passIdx) << 1 |
 			(a.seqIdx > b.seqIdx);
 

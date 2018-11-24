@@ -59,7 +59,7 @@ namespace bs { namespace ct
 		samplerInfo.compareOp = VulkanUtility::getCompareOp(compareFunc);
 		samplerInfo.minLod = mProperties.getMinimumMip();
 		samplerInfo.maxLod = mProperties.getMaximumMip();
-		samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+		samplerInfo.borderColor = VulkanUtility::getBorderColor(getProperties().getBorderColor());
 		samplerInfo.unnormalizedCoordinates = false;
 
 		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPI::instance());

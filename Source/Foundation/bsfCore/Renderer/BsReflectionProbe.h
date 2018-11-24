@@ -16,7 +16,7 @@ namespace bs
 	 *  @{
 	 */
 
-	/** Light type that determines how is light information parsed by the renderer and other systems. */
+	/** Probe type that determines the shape of the probe and how is it interpreted by the renderer. */
 	enum BS_SCRIPT_EXPORT(m:Rendering) class ReflectionProbeType
 	{
 		/**
@@ -84,7 +84,7 @@ namespace bs
 		Vector3 mExtents; /**< Extents used by box reflection probe. */
 		float mTransitionDistance; /**< Extra distance to used for fading out box probes. */
 
-		Sphere mBounds; /**< Sphere that bounds the light area of influence. */
+		Sphere mBounds; /**< Sphere that bounds the probe area of influence. */
 	};
 
 	/** Templated base class for both core and sim thread implementations of a reflection probe. */
@@ -191,7 +191,7 @@ namespace bs
 		 */
 		void captureAndFilter();
 
-		/**	Creates a light with without initializing it. Used for serialization. */
+		/**	Creates a probe with without initializing it. Used for serialization. */
 		static SPtr<ReflectionProbe> createEmpty();
 
 		HTexture mCustomTexture;

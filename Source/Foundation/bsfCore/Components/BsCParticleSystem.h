@@ -24,22 +24,44 @@ namespace bs
 		virtual ~CParticleSystem() = default;
 		
 		/** @copydoc ParticleSystem::setSettings */
+		BS_SCRIPT_EXPORT(pr:setter,n:Settings)
 		void setSettings(const ParticleSystemSettings& settings);
 
 		/** @copydoc ParticleSystem::getSettings */
+		BS_SCRIPT_EXPORT(pr:getter,n:Settings)
 		const ParticleSystemSettings& getSettings() const { return mSettings; }
 
 		/** @copydoc ParticleSystem::setGpuSimulationSettings */
+		BS_SCRIPT_EXPORT(pr:setter,n:GpuSimulationSettings)
 		void setGpuSimulationSettings(const ParticleGpuSimulationSettings& settings);
 
 		/** @copydoc ParticleSystem::getGpuSimulationSettings */
+		BS_SCRIPT_EXPORT(pr:getter,n:GpuSimulationSettings)
 		const ParticleGpuSimulationSettings& getGpuSimulationSettings() const { return mGpuSimulationSettings; }
 
+		/** @copydoc ParticleSystem::setEmitters */
+		BS_SCRIPT_EXPORT(pr:setter,n:Emitters)
+		void setEmitters(const Vector<SPtr<ParticleEmitter>>& emitters);
+
 		/** @copydoc ParticleSystem::getEmitters */
-		ParticleSystemEmitters& getEmitters();
+		BS_SCRIPT_EXPORT(pr:getter,n:Emitters)
+		const Vector<SPtr<ParticleEmitter>>& getEmitters() const { return mEmitters; }
+
+		/** @copydoc ParticleSystem::setEvolvers */
+		BS_SCRIPT_EXPORT(pr:setter,n:Evolvers)
+		void setEvolvers(const Vector<SPtr<ParticleEvolver>>& evolvers);
 
 		/** @copydoc ParticleSystem::getEvolvers */
-		ParticleSystemEvolvers& getEvolvers();
+		BS_SCRIPT_EXPORT(pr:getter,n:Evolvers)
+		const Vector<SPtr<ParticleEvolver>>& getEvolvers() const { return mEvolvers; }
+
+		/** @copydoc ParticleSystem::setLayer() */
+		BS_SCRIPT_EXPORT(pr:setter,n:Layer)
+		void setLayer(UINT64 layer);
+
+		/** @copydoc ParticleSystem::getLayer() */
+		BS_SCRIPT_EXPORT(pr:getter,n:Layer)
+		UINT64 getLayer() const { return mLayer; }
 
 		/** @name Internal
 		 *  @{
@@ -78,8 +100,9 @@ namespace bs
 
 		ParticleSystemSettings mSettings;
 		ParticleGpuSimulationSettings mGpuSimulationSettings;
-		ParticleSystemEmitters mEmitters;
-		ParticleSystemEvolvers mEvolvers;
+		Vector<SPtr<ParticleEmitter>> mEmitters;
+		Vector<SPtr<ParticleEvolver>> mEvolvers;
+		UINT64 mLayer = 1;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

@@ -7,7 +7,9 @@
 
 start_find_package(FLAC)
 
-set(FLAC_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/libFLAC CACHE PATH "")
+if(USE_BUNDLED_LIBRARIES)
+	set(FLAC_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/libFLAC CACHE PATH "")
+endif()
 gen_default_lib_search_dirs(FLAC)
 
 if(WIN32)
@@ -54,6 +56,8 @@ if(WIN32)
 	)
 endif()
 
-install_dependency_binaries(FLAC)
+if(USE_BUNDLED_LIBRARIES)
+	install_dependency_binaries(FLAC)
+endif()
 
 end_find_package(FLAC ${FLAC_LIBNAME})

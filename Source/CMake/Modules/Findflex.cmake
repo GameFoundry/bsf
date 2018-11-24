@@ -4,7 +4,9 @@
 #  flex_EXECUTABLE
 #  flex_FOUND
 
-set(flex_INSTALL_DIRS ${BSF_SOURCE_DIR}/../Dependencies/tools/flex CACHE PATH "")
+if(USE_BUNDLED_LIBRARIES)
+	set(flex_INSTALL_DIRS ${BSF_SOURCE_DIR}/../Dependencies/tools/flex CACHE PATH "")
+endif()
 
 message(STATUS "Looking for flex installation...")
 

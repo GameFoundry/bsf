@@ -8,17 +8,6 @@
 
 namespace bs
 {
-	SLImporter::SLImporter()
-		:SpecificImporter()
-	{
-
-	}
-
-	SLImporter::~SLImporter()
-	{
-
-	}
-
 	bool SLImporter::isExtensionSupported(const String& ext) const
 	{
 		String lowerCaseExt = ext;
@@ -44,7 +33,7 @@ namespace bs
 
 		SPtr<const ShaderImportOptions> io = std::static_pointer_cast<const ShaderImportOptions>(importOptions);
 		String shaderName = filePath.getFilename(false);
-		BSLFXCompileResult result = BSLFXCompiler::compile(shaderName, source, io->getDefines());
+		BSLFXCompileResult result = BSLFXCompiler::compile(shaderName, source, io->getDefines(), io->getLanguages());
 
 		if (result.shader != nullptr)
 			result.shader->setName(shaderName);

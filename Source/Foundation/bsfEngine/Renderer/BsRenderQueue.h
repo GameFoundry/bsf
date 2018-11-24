@@ -27,6 +27,7 @@ namespace bs { namespace ct
 	{
 		const RenderElement* renderElem = nullptr;
 		UINT32 passIdx = 0;
+		UINT32 techniqueIdx = 0;
 		bool applyPass = true;
 	};
 
@@ -44,6 +45,7 @@ namespace bs { namespace ct
 			INT32 priority;
 			float distFromCamera;
 			UINT32 shaderId;
+			UINT32 techniqueIdx;
 			UINT32 passIdx;
 		};
 
@@ -56,8 +58,10 @@ namespace bs { namespace ct
 		 *
 		 * @param[in]	element			Renderable element to add to the queue.
 		 * @param[in]	distFromCamera	Distance of this object from the camera. Used for distance sorting.
+		 * @param[in]	techniqueIdx	Index of the technique within @p element's material that's to be used to render the 
+		 *								element with.
 		 */
-		void add(const RenderElement* element, float distFromCamera);
+		void add(const RenderElement* element, float distFromCamera, UINT32 techniqueIdx);
 
 		/**	Clears all render operations from the queue. */
 		void clear();

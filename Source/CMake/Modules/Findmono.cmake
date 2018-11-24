@@ -7,9 +7,11 @@
 
 start_find_package(mono)
 
-set(mono_INSTALL_DIR ${PROJECT_SOURCE_DIR}/Dependencies/mono CACHE PATH "")
+if(USE_BUNDLED_LIBRARIES)
+	set(mono_INSTALL_DIR ${PROJECT_SOURCE_DIR}/Dependencies/mono CACHE PATH "")
+endif()
 gen_default_lib_search_dirs(mono)
-list(APPEND mono_INCLUDE_SEARCH_DIRS ${mono_INSTALL_DIR}/include/mono-2.0)
+list(APPEND mono_INCLUDE_SEARCH_DIRS ${mono_INSTALL_DIR}/include/mono-2.0 /usr/include/mono-2.0)
 
 find_imported_includes(mono mono/jit/jit.h)
 find_imported_library_shared(mono mono-2.0)

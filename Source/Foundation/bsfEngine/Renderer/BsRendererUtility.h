@@ -26,7 +26,7 @@ namespace bs { namespace ct
 		static const ShaderVariation& getVariation()
 		{
 			static ShaderVariation variation = ShaderVariation(
-			Vector<ShaderVariation::Param>{
+			{
 				ShaderVariation::Param("MSAA_COUNT", msaa),
 				ShaderVariation::Param("COLOR", color),
 			});
@@ -83,7 +83,7 @@ namespace bs { namespace ct
 	{
 	public:
 		RendererUtility();
-		~RendererUtility();
+		~RendererUtility() = default;
 
 		/**
 		 * Activates the specified material pass for rendering. Any further draw calls will be executed using this pass.

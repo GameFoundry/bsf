@@ -40,7 +40,7 @@ namespace bs
 
 	public:
 		TRenderable();
-		virtual ~TRenderable();
+		virtual ~TRenderable() = default;
 
 		/** @copydoc bs::SceneActor::setTransform */
 		void setTransform(const Transform& transform) override;
@@ -129,12 +129,12 @@ namespace bs
 
 		MeshType mMesh;
 		Vector<MaterialType> mMaterials;
-		UINT64 mLayer;
+		UINT64 mLayer = 1;
 		AABox mOverrideBounds;
-		bool mUseOverrideBounds;
-		Matrix4 mTfrmMatrix;
-		Matrix4 mTfrmMatrixNoScale;
-		RenderableAnimType mAnimType;
+		bool mUseOverrideBounds = false;
+		Matrix4 mTfrmMatrix = BsIdentity;
+		Matrix4 mTfrmMatrixNoScale = BsIdentity;
+		RenderableAnimType mAnimType = RenderableAnimType::None;
 	};
 
 	/** @} */
