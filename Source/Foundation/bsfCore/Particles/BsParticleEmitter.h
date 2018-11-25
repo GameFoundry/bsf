@@ -153,6 +153,7 @@ namespace bs
 	{
 	public:
 		ParticleEmitterConeShape(const PARTICLE_CONE_SHAPE_DESC& desc);
+		ParticleEmitterConeShape() = default;
 		virtual ~ParticleEmitterConeShape() = default;
 
 		/** Options describing the shape. */
@@ -166,6 +167,10 @@ namespace bs
 		/** Creates a new particle emitter cone shape. */
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterConeShape> create(const PARTICLE_CONE_SHAPE_DESC& desc);
+
+		/** Creates a new particle emitter cone shape. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleEmitterConeShape> create();
 
 		/** 
 		 * @name Internal
@@ -196,8 +201,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleEmitterConeShape() = default; // RTTI only
-
 		friend class ParticleEmitterConeShapeRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -225,6 +228,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleEmitterSphereShape : public ParticleEmitterShape
 	{
 	public:
+		ParticleEmitterSphereShape() = default;
 		ParticleEmitterSphereShape(const PARTICLE_SPHERE_SHAPE_DESC& desc);
 
 		/** Options describing the shape. */
@@ -238,6 +242,10 @@ namespace bs
 		/** Creates a new particle emitter sphere shape. */
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterSphereShape> create(const PARTICLE_SPHERE_SHAPE_DESC& desc);
+
+		/** Creates a new particle emitter sphere shape. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleEmitterSphereShape> create();
 
 		/** 
 		 * @name Internal
@@ -262,8 +270,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleEmitterSphereShape() = default; // RTTI only
-
 		friend class ParticleEmitterSphereShapeRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -291,6 +297,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleEmitterHemisphereShape : public ParticleEmitterShape
 	{
 	public:
+		ParticleEmitterHemisphereShape() = default;
 		ParticleEmitterHemisphereShape(const PARTICLE_HEMISPHERE_SHAPE_DESC& desc);
 
 		/** Options describing the shape. */
@@ -304,6 +311,10 @@ namespace bs
 		/** Creates a new particle emitter sphere shape. */
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterHemisphereShape> create(const PARTICLE_HEMISPHERE_SHAPE_DESC& desc);
+
+		/** Creates a new particle emitter sphere shape. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleEmitterHemisphereShape> create();
 
 		/** 
 		 * @name Internal
@@ -328,8 +339,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleEmitterHemisphereShape() = default; // RTTI only
-
 		friend class ParticleEmitterHemisphereShapeRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -363,8 +372,8 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleEmitterBoxShape : public ParticleEmitterShape
 	{
 	public:
+		ParticleEmitterBoxShape() = default;
 		ParticleEmitterBoxShape(const PARTICLE_BOX_SHAPE_DESC& desc);
-		virtual ~ParticleEmitterBoxShape() = default;
 
 		/** Options describing the shape. */
 		BS_SCRIPT_EXPORT(pr:setter,n:Options)
@@ -377,6 +386,10 @@ namespace bs
 		/** Creates a new particle emitter box shape. */
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterBoxShape> create(const PARTICLE_BOX_SHAPE_DESC& desc);
+
+		/** Creates a new particle emitter box shape. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleEmitterBoxShape> create();
 
 		/** 
 		 * @name Internal
@@ -404,8 +417,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleEmitterBoxShape() = default; // RTTI only
-
 		friend class ParticleEmitterBoxShapeRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -425,6 +436,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleEmitterLineShape : public ParticleEmitterShape
 	{
 	public:
+		ParticleEmitterLineShape() = default;
 		ParticleEmitterLineShape(const PARTICLE_LINE_SHAPE_DESC& desc);
 
 		/** Options describing the shape. */
@@ -438,6 +450,10 @@ namespace bs
 		/** Creates a new particle emitter edge shape. */
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterLineShape> create(const PARTICLE_LINE_SHAPE_DESC& desc);
+
+		/** Creates a new particle emitter edge shape. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleEmitterLineShape> create();
 
 		/** 
 		 * @name Internal
@@ -465,8 +481,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleEmitterLineShape() = default; // RTTI only
-
 		friend class ParticleEmitterLineShapeRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -500,6 +514,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleEmitterCircleShape : public ParticleEmitterShape
 	{
 	public:
+		ParticleEmitterCircleShape() = default;
 		ParticleEmitterCircleShape(const PARTICLE_CIRCLE_SHAPE_DESC& desc);
 		virtual ~ParticleEmitterCircleShape() = default;
 
@@ -514,6 +529,10 @@ namespace bs
 		/** Creates a new particle emitter circle shape. */
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterCircleShape> create(const PARTICLE_CIRCLE_SHAPE_DESC& desc);
+
+		/** Creates a new particle emitter circle shape. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleEmitterCircleShape> create();
 
 		/** 
 		 * @name Internal
@@ -541,8 +560,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleEmitterCircleShape() = default; // RTTI only
-
 		friend class ParticleEmitterCircleShapeRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -559,6 +576,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleEmitterRectShape : public ParticleEmitterShape
 	{
 	public:
+		ParticleEmitterRectShape() = default;
 		ParticleEmitterRectShape(const PARTICLE_RECT_SHAPE_DESC& desc);
 
 		/** Options describing the shape. */
@@ -572,6 +590,10 @@ namespace bs
 		/** Creates a new particle emitter rectangle shape. */
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterRectShape> create(const PARTICLE_RECT_SHAPE_DESC& desc);
+
+		/** Creates a new particle emitter rectangle shape. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleEmitterRectShape> create();
 
 		/** 
 		 * @name Internal
@@ -596,8 +618,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleEmitterRectShape() = default; // RTTI only
-
 		friend class ParticleEmitterRectShapeRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -722,11 +742,12 @@ namespace bs
 	{
 	public:
 		ParticleEmitterStaticMeshShape(const PARTICLE_STATIC_MESH_SHAPE_DESC& desc);
+		ParticleEmitterStaticMeshShape();
 		virtual ~ParticleEmitterStaticMeshShape() = default;
 
 		/** Options describing the shape. */
 		BS_SCRIPT_EXPORT(pr:setter,n:Options)
-		void setOptions(const PARTICLE_STATIC_MESH_SHAPE_DESC& options) { mInfo = options; }
+		void setOptions(const PARTICLE_STATIC_MESH_SHAPE_DESC& options);
 
 		/** @copydoc setOptions */
 		BS_SCRIPT_EXPORT(pr:getter,n:Options)
@@ -735,6 +756,10 @@ namespace bs
 		/** Creates a new particle emitter static mesh shape. */
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterStaticMeshShape> create(const PARTICLE_STATIC_MESH_SHAPE_DESC& desc);
+
+		/** Creates a new particle emitter static mesh shape. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleEmitterStaticMeshShape> create();
 
 		/** 
 		 * @name Internal
@@ -757,8 +782,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleEmitterStaticMeshShape() = default; // RTTI only
-
 		friend class ParticleEmitterStaticMeshShapeRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -794,11 +817,12 @@ namespace bs
 	{
 	public:
 		ParticleEmitterSkinnedMeshShape(const PARTICLE_SKINNED_MESH_SHAPE_DESC& desc);
+		ParticleEmitterSkinnedMeshShape();
 		virtual ~ParticleEmitterSkinnedMeshShape() = default;
 
 		/** Options describing the shape. */
 		BS_SCRIPT_EXPORT(pr:setter,n:Options)
-		void setOptions(const PARTICLE_SKINNED_MESH_SHAPE_DESC& options) { mInfo = options; }
+		void setOptions(const PARTICLE_SKINNED_MESH_SHAPE_DESC& options);
 
 		/** @copydoc setOptions */
 		BS_SCRIPT_EXPORT(pr:getter,n:Options)
@@ -807,6 +831,10 @@ namespace bs
 		/** Creates a new particle emitter skinned mesh shape. */
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterSkinnedMeshShape> create(const PARTICLE_SKINNED_MESH_SHAPE_DESC& desc);
+
+		/** Creates a new particle emitter skinned mesh shape. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleEmitterSkinnedMeshShape> create();
 
 		/** 
 		 * @name Internal
@@ -829,8 +857,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleEmitterSkinnedMeshShape() = default; // RTTI only
-
 		friend class ParticleEmitterSkinnedMeshShapeRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -1013,6 +1039,10 @@ namespace bs
 		/** @copydoc setFlipV */
 		BS_SCRIPT_EXPORT(pr:getter,n:FlipV)
 		float getFlipV() const { return mFlipV; }
+
+		/** Creates a new emitter. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleEmitter> create();
 	private:
 		friend class ParticleSystem;
 

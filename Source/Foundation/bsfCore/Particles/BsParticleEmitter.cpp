@@ -280,8 +280,12 @@ namespace bs
 
 	SPtr<ParticleEmitterConeShape> ParticleEmitterConeShape::create(const PARTICLE_CONE_SHAPE_DESC& desc)
 	{
-		ParticleEmitterConeShape* output = bs_new<ParticleEmitterConeShape>(desc);
-		return bs_shared_ptr(output);
+		return bs_shared_ptr_new<ParticleEmitterConeShape>(desc);
+	}
+
+	SPtr<ParticleEmitterConeShape> ParticleEmitterConeShape::create()
+	{
+		return bs_shared_ptr_new<ParticleEmitterConeShape>();
 	}
 
 	void ParticleEmitterConeShape::calcBounds(AABox& shape, AABox& velocity) const
@@ -349,6 +353,11 @@ namespace bs
 		return bs_shared_ptr_new<ParticleEmitterSphereShape>(desc);
 	}
 
+	SPtr<ParticleEmitterSphereShape> ParticleEmitterSphereShape::create()
+	{
+		return bs_shared_ptr_new<ParticleEmitterSphereShape>();
+	}
+
 	RTTITypeBase* ParticleEmitterSphereShape::getRTTIStatic()
 	{
 		return ParticleEmitterSphereShapeRTTI::instance();
@@ -391,6 +400,11 @@ namespace bs
 	SPtr<ParticleEmitterHemisphereShape> ParticleEmitterHemisphereShape::create(const PARTICLE_HEMISPHERE_SHAPE_DESC& desc)
 	{
 		return bs_shared_ptr_new<ParticleEmitterHemisphereShape>(desc);
+	}
+
+	SPtr<ParticleEmitterHemisphereShape> ParticleEmitterHemisphereShape::create()
+	{
+		return bs_shared_ptr_new<ParticleEmitterHemisphereShape>();
 	}
 
 	RTTITypeBase* ParticleEmitterHemisphereShape::getRTTIStatic()
@@ -562,6 +576,11 @@ namespace bs
 		return bs_shared_ptr_new<ParticleEmitterBoxShape>(desc);
 	}
 
+	SPtr<ParticleEmitterBoxShape> ParticleEmitterBoxShape::create()
+	{
+		return bs_shared_ptr_new<ParticleEmitterBoxShape>();
+	}
+
 	RTTITypeBase* ParticleEmitterBoxShape::getRTTIStatic()
 	{
 		return ParticleEmitterBoxShapeRTTI::instance();
@@ -607,6 +626,11 @@ namespace bs
 	SPtr<ParticleEmitterLineShape> ParticleEmitterLineShape::create(const PARTICLE_LINE_SHAPE_DESC& desc)
 	{
 		return bs_shared_ptr_new<ParticleEmitterLineShape>(desc);
+	}
+
+	SPtr<ParticleEmitterLineShape> ParticleEmitterLineShape::create()
+	{
+		return bs_shared_ptr_new<ParticleEmitterLineShape>();
 	}
 
 	RTTITypeBase* ParticleEmitterLineShape::getRTTIStatic()
@@ -664,6 +688,11 @@ namespace bs
 		return bs_shared_ptr_new<ParticleEmitterCircleShape>(desc);
 	}
 
+	SPtr<ParticleEmitterCircleShape> ParticleEmitterCircleShape::create()
+	{
+		return bs_shared_ptr_new<ParticleEmitterCircleShape>();
+	}
+
 	RTTITypeBase* ParticleEmitterCircleShape::getRTTIStatic()
 	{
 		return ParticleEmitterCircleShapeRTTI::instance();
@@ -705,6 +734,11 @@ namespace bs
 	SPtr<ParticleEmitterRectShape> ParticleEmitterRectShape::create(const PARTICLE_RECT_SHAPE_DESC& desc)
 	{
 		return bs_shared_ptr_new<ParticleEmitterRectShape>(desc);
+	}
+
+	SPtr<ParticleEmitterRectShape> ParticleEmitterRectShape::create()
+	{
+		return bs_shared_ptr_new<ParticleEmitterRectShape>();
 	}
 
 	RTTITypeBase* ParticleEmitterRectShape::getRTTIStatic()
@@ -949,6 +983,17 @@ namespace bs
 		mIsValid = mMeshEmissionHelper.initialize(desc.mesh, desc.type == ParticleEmitterMeshType::Vertex, false);
 	}
 
+	ParticleEmitterStaticMeshShape::ParticleEmitterStaticMeshShape()
+	{
+		mIsValid = false;
+	}
+
+	void ParticleEmitterStaticMeshShape::setOptions(const PARTICLE_STATIC_MESH_SHAPE_DESC& options)
+	{
+		mInfo = options;
+		mIsValid = mMeshEmissionHelper.initialize(options.mesh, options.type == ParticleEmitterMeshType::Vertex, false);
+	}
+
 	UINT32 ParticleEmitterStaticMeshShape::_spawn(const Random& random, ParticleSet& particles, UINT32 count,
 		const ParticleSystemState& state) const
 	{
@@ -1024,6 +1069,11 @@ namespace bs
 		return bs_shared_ptr_new<ParticleEmitterStaticMeshShape>(desc);
 	}
 
+	SPtr<ParticleEmitterStaticMeshShape> ParticleEmitterStaticMeshShape::create()
+	{
+		return bs_shared_ptr_new<ParticleEmitterStaticMeshShape>();
+	}
+
 	RTTITypeBase* ParticleEmitterStaticMeshShape::getRTTIStatic()
 	{
 		return ParticleEmitterStaticMeshShapeRTTI::instance();
@@ -1034,6 +1084,11 @@ namespace bs
 		return getRTTIStatic();
 	}
 
+	ParticleEmitterSkinnedMeshShape::ParticleEmitterSkinnedMeshShape()
+	{
+		mIsValid = false;
+	}
+
 	ParticleEmitterSkinnedMeshShape::ParticleEmitterSkinnedMeshShape(const PARTICLE_SKINNED_MESH_SHAPE_DESC& desc)
 		:mInfo(desc)
 	{
@@ -1042,6 +1097,17 @@ namespace bs
 			mesh = desc.renderable.getActor()->getMesh();
 
 		mIsValid = mMeshEmissionHelper.initialize(mesh, desc.type == ParticleEmitterMeshType::Vertex, false);
+	}
+
+	void ParticleEmitterSkinnedMeshShape::setOptions(const PARTICLE_SKINNED_MESH_SHAPE_DESC& options)
+	{
+		mInfo = options;
+
+		HMesh mesh;
+		if(!options.renderable.empty())
+			mesh = options.renderable.getActor()->getMesh();
+
+		mIsValid = mMeshEmissionHelper.initialize(mesh, options.type == ParticleEmitterMeshType::Vertex, false);
 	}
 
 	UINT32 ParticleEmitterSkinnedMeshShape::_spawn(const Random& random, ParticleSet& particles, UINT32 count,
@@ -1181,6 +1247,11 @@ namespace bs
 	SPtr<ParticleEmitterSkinnedMeshShape> ParticleEmitterSkinnedMeshShape::create(const PARTICLE_SKINNED_MESH_SHAPE_DESC& desc)
 	{
 		return bs_shared_ptr_new<ParticleEmitterSkinnedMeshShape>(desc);
+	}
+
+	SPtr<ParticleEmitterSkinnedMeshShape> ParticleEmitterSkinnedMeshShape::create()
+	{
+		return bs_shared_ptr_new<ParticleEmitterSkinnedMeshShape>();
 	}
 
 	RTTITypeBase* ParticleEmitterSkinnedMeshShape::getRTTIStatic()
@@ -1389,6 +1460,11 @@ namespace bs
 		bs_stack_free(emitterT);
 	}	
 	
+	SPtr<ParticleEmitter> ParticleEmitter::create()
+	{
+		return bs_shared_ptr_new<ParticleEmitter>();
+	}
+
 	RTTITypeBase* ParticleEmitter::getRTTIStatic()
 	{
 		return ParticleEmitterRTTI::instance();
