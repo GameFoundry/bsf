@@ -5,6 +5,7 @@
 #include "Utility/BsOctree.h"
 #include "Utility/BsBitfield.h"
 #include "Utility/BsDynArray.h"
+#include "Utility/BsComplex.h"
 
 namespace bs
 {
@@ -422,5 +423,86 @@ namespace bs
 		BS_TEST_ASSERT(v3[0].a == 10);
 		BS_TEST_ASSERT(v3[3].a == 10);
 		BS_TEST_ASSERT(v3[3].b == 0);
+	}
+	
+	void UtilityTestSuite::testComplex()
+	{
+		Complex<double> c(10.0, 4.0);
+		BS_TEST_ASSERT(c.real() == 10.0);
+		BS_TEST_ASSERT(c.imag() == 4.0);
+
+		Complex<double> c2(15.0, 5.0);
+		BS_TEST_ASSERT(c2.real() == 15.0);
+		BS_TEST_ASSERT(c2.imag() == 5.0);
+
+		Complex<double> c3 = c1 + c2;
+		BS_TEST_ASSERT(c3.real() == 25.0);
+		BS_TEST_ASSERT(c3.imag() == 9.0);
+
+		Complex<double> c4 = c1 - c2;
+		BS_TEST_ASSERT(c4.real() == -5.0);
+		BS_TEST_ASSERT(c4.imag() == -1.0);
+
+		Complex<double> c5 = c1 * c2;
+		BS_TEST_ASSERT(c5.real() == 130.0);
+		BS_TEST_ASSERT(c5.imag() == 110.0);
+
+		Complex<double> c6 = c1 / c2;
+		BS_TEST_ASSERT(c6.real() == 0.68);
+		BS_TEST_ASSERT(c6.imag() == 0.04);
+
+		BS_TEST_ASSERT(Complex<double>::abs(c) == 10.7703);
+		BS_TEST_ASSERT(Complex<double>::arg(c) == 0.380506);
+		BS_TEST_ASSERT(Complex<double>::norm(c) == 116);
+
+		Complex<double> c7 = Complex<double>::conj(c);
+		BS_TEST_ASSERT(c7.real() == 10);
+		BS_TEST_ASSERT(c7.imag() == 4);
+		c7 = 0;
+
+		c7 = Complex<double>::polar(2.0, 0.5);
+		BS_TEST_ASSERT(c7.real() == 1.75517);
+		BS_TEST_ASSERT(c7.imag() == 0.958851);
+		c7 = 0;
+
+		c7 = Complex<double>::cos(c);
+		BS_TEST_ASSERT(c7.real() == -22.9136);
+		BS_TEST_ASSERT(c7.imag() == 14.8463);
+		c7 = 0;
+
+		c7 = Complex<double>::cosh(c);
+		BS_TEST_ASSERT(c7.real() == -7198.73);
+		BS_TEST_ASSERT(c7.imag() == -8334.84);
+		c7 = 0;
+
+		c7 = Complex<double>::exp(c);
+		BS_TEST_ASSERT(c7.real() == -14397.5);
+		BS_TEST_ASSERT(c7.imag() == -16669.7);
+		c7 = 0;
+
+		c7 = Complex<double>::log(c);
+		BS_TEST_ASSERT(c7.real() == 2.3768);
+		BS_TEST_ASSERT(c7.imag() == 0.380506);
+		c7 = 0;
+
+		c7 = Complex<double>::pow(c, 2.0);
+		BS_TEST_ASSERT(c7.real() == 84);
+		BS_TEST_ASSERT(c7.imag() == 80);
+		c7 = 0;
+
+		c7 = Complex<double>::sin(c);
+		BS_TEST_ASSERT(c7.real() == -14.8563);
+		BS_TEST_ASSERT(c7.imag() == -22.8982);
+		c7 = 0;
+
+		c7 = Complex<double>::sinh(c);
+		BS_TEST_ASSERT(c7.real() == -7198.73);
+		BS_TEST_ASSERT(c7.imag() == -8334.84);
+		c7 = 0;
+
+		c7 = Complex<double>::sqrt(c);
+		BS_TEST_ASSERT(c7.real() == 3.2226);
+		BS_TEST_ASSERT(c7.imag() == 0.620616);
+		c7 = 0;
 	}
 }
