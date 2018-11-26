@@ -38,7 +38,7 @@ First create a new directory where you would like your project to live. Grab the
 In your project folder create `CMakeLists.txt`, and fill it out like so:
 ```
 # Minimum version of CMake as required by bsf
-cmake_minimum_required (VERSION 3.12.4)
+cmake_minimum_required (VERSION 3.12.0)
 
 # Name of your project
 project (myProject)
@@ -117,7 +117,7 @@ Before you can run the application you must first copy the data files and dynami
  - Copy the `bin/Data` folder to the location where is your executable is located
  - If on Windows you should also copy any .dll files in the `bin` folder to where your executable is located. Note that precompiled binaries package comes with separate set of dynamic libraries for Debug and Release builds in `bin/Debug` and `bin/Release` folders. You should copy them to the appropriate folder depending on the configuration you are building with. 
  
-For example in Visual Studio the executable will be placed at `x64/Release/` within your project root, for a 64-bit Release configuration. This is where you should place the dynamic libraries and the data files.
+For example in Visual Studio the executable will be placed at `Release/` folder within your project root, for a Release configuration. This is where you should place the dynamic libraries and the data files.
 
 ![Structure of the executable folder on Windows](BuildStructure.png)
 
@@ -134,7 +134,7 @@ First make sure to follow the compilation guide on [GitHub](https://github.com/G
 Create a new project folder, with a `CMakeLists.txt` file with the following contents:
 ```
 # Minimum version of CMake as required by bsf
-cmake_minimum_required (VERSION 3.12.4)
+cmake_minimum_required (VERSION 3.12.0)
 
 # Name of your project
 project (myProject)
@@ -201,6 +201,6 @@ Your build files will be output to the `build` folder.
  - If you are using XCode open up the project in the `build` folder and proceed building as normal
  - If you are using Makefiles simply run `make` within the `build` folder
  
-After building any executables/dynamic libraries will be placed in the `bin` sub-folder in your project root, and any static/shared libraries will be placed in the `lib` sub-folder.
+After building any executables/dynamic libraries will be placed in the `bin` sub-folder in your `build` folder, and any static/shared libraries will be placed in the `lib` sub-folder.
 
 Unlike with **Link with binaries** approach you do not need to do any file copying, until you are ready to send the application to your users. After the build the application is ready to run.
