@@ -11,7 +11,7 @@ endif()
 add_library(bsfVulkanRenderAPI SHARED ${BS_VULKANRENDERAPI_SRC})
 
 # Common flags
-add_common_flags(bsfD3D11RenderAPI)
+add_common_flags(bsfVulkanRenderAPI)
 
 # Includes
 target_include_directories(bsfVulkanRenderAPI PRIVATE "./")
