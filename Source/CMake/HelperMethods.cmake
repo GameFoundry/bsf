@@ -205,7 +205,7 @@ MACRO(install_dependency_binaries FOLDER_NAME)
 			set(DEBUG_FILENAME ${DEBUG_FILENAME}.so)		
 			set(SRC_RELEASE ${${LOOP_ENTRY}_LIBRARY_RELEASE})
 			set(SRC_DEBUG ${${LOOP_ENTRY}_LIBRARY_DEBUG})
-			set(DESTINATION_DIR lib)
+			set(DESTINATION_DIR lib/bsf-${BS_FRAMEWORK_VERSION_MAJOR}.${BS_FRAMEWORK_VERSION_MINOR}.${BS_FRAMEWORK_VERSION_PATCH})
 		endif()
 		
 		install(
@@ -335,6 +335,7 @@ function(install_bsf_target targetName)
 	
 	install(
 		TARGETS ${targetName}
+		EXPORT bsf
 		RUNTIME DESTINATION bin
 		LIBRARY DESTINATION lib
 		ARCHIVE DESTINATION lib
@@ -357,7 +358,7 @@ endfunction()
 function(copyBsfBinaries target srcDir)
 	if(WIN32)
 		set(BIN_SRC_DIR "${srcDir}/bin")
-		set(BIN_DST_DIR ${PROJECT_SOURCE_DIR}/bin)
+		set(BIN_DST_DIR ${PROJECT_BINARY_DIR}/bin)
 		
 		file(GLOB_RECURSE BIN_FILES RELATIVE ${BIN_SRC_DIR} "${BIN_SRC_DIR}/*.dll")
 
@@ -378,6 +379,92 @@ function(copyBsfBinaries target srcDir)
 			   )
 		endforeach()
 	endif()
+endfunction()
+
+function(add_common_flags target)
+	get_target_property(target_type ${target} TYPE)
+
+	if(MSVC)
+		# Linker
+		# The VS generator seems picky about how the linker flags are passed: we have to make sure
+		# the options are quoted correctly and with append_string or random semicolons will be
+		# inserted in the command line; and unrecognised options are only treated as warnings
+		# and not errors so they won't be caught by CI. Make sure the options are separated by
+		# spaces too.
+		# For some reason this does not apply to the compiler options...
+
+		set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS "/DYNAMICBASE /NOLOGO")
+
+		set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS_DEBUG "/DEBUG")
+		set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS_RELWITHDEBINFO "/DEBUG /LTCG:incremental /INCREMENTAL:NO /OPT:REF")
+		set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS_MINSIZEREL "/DEBUG /LTCG /INCREMENTAL:NO /OPT:REF")
+		set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS_RELEASE "/DEBUG /LTCG /INCREMENTAL:NO /OPT:REF")
+
+		if(BS_64BIT)
+			set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS_RELWITHDEBINFO " /OPT:ICF")
+			set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS_MINSIZEREL " /OPT:ICF")
+			set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS_RELEASE " /OPT:ICF")
+		endif()
+
+		if (${target_type} STREQUAL "SHARED_LIBRARY" OR ${target_type} STREQUAL "MODULE_LIBRARY")
+			set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS " /DLL")
+		endif()
+
+		# Compiler
+		set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS /GS- /W3 /WX- /MP /nologo /bigobj /wd4577 /wd4530)
+		set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS -DWIN32 -D_WINDOWS)
+
+		set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS $<$<CONFIG:Debug>:/Od /RTC1 /MDd -DDEBUG>)
+
+		if(BS_64BIT) # Debug edit and continue for 64-bit
+			set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS $<$<CONFIG:Debug>:/ZI>)
+		else() # Normal debug for 32-bit
+			set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS $<$<CONFIG:Debug>:/Zi>)
+		endif()
+
+		set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS $<$<CONFIG:RelWithDebInfo>:/GL /Gy /Zi /O2 /Oi /MD -DDEBUG>)
+		set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS $<$<CONFIG:MinSizeRel>:/GL /Gy /Zi /O2 /Oi /MD -DNDEBUG>)
+		set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS $<$<CONFIG:Release>:/GL /Gy /Zi /O2 /Oi /MD -DNDEBUG>)
+
+		# Global defines
+		#add_definitions(-D_HAS_EXCEPTIONS=0)
+
+	elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "AppleClang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+		# Note: Optionally add -ffunction-sections, -fdata-sections, but with linker option --gc-sections
+		# TODO: Use link-time optimization -flto. Might require non-default linker.
+		set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS -Wall -Wextra -Wno-unused-parameter -fPIC -fno-strict-aliasing -msse4.1)
+
+		if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
+			set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS -fno-ms-compatibility)
+
+			if(APPLE)
+				set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS -fobjc-arc $<$<COMPILE_LANGUAGE:CXX>:-std=c++1z>)
+			endif()
+		endif()
+
+		set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS $<$<CONFIG:Debug>:-ggdb -O0 -DDEBUG>)
+		set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS $<$<CONFIG:RelWithDebInfo>:-ggdb -O2 -DDEBUG -Wno-unused-variable>)
+		set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS $<$<CONFIG:MinSizeRel>:-ggdb -O2 -DNDEBUG -Wno-unused-variable>)
+		set_property(TARGET ${target} APPEND PROPERTY COMPILE_OPTIONS $<$<CONFIG:Release>:-ggdb -O2 -DNDEBUG -Wno-unused-variable>)
+
+		if (${target_type} STREQUAL "EXECUTABLE")
+			if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+				set_property(TARGET ${target} APPEND PROPERTY LINK_FLAGS_DEBUG -no-pie)
+				set_property(TARGET ${target} APPEND PROPERTY LINK_FLAGS_RELWITHDEBINFO -no-pie)
+				set_property(TARGET ${target} APPEND PROPERTY LINK_FLAGS_MINSIZEREL -no-pie)
+				set_property(TARGET ${target} APPEND PROPERTY LINK_FLAGS_RELEASE -no-pie)
+			endif()
+		endif()
+	else()
+		# TODO_OTHER_COMPILERS_GO_HERE
+	endif()
+
+	if (${target_type} STREQUAL "SHARED_LIBRARY")
+		set_property(TARGET ${target} PROPERTY VERSION ${BS_FRAMEWORK_VERSION_MAJOR}.${BS_FRAMEWORK_VERSION_MINOR}.${BS_FRAMEWORK_VERSION_PATCH})
+		set_property(TARGET ${target} PROPERTY SOVERSION ${BS_FRAMEWORK_VERSION_MAJOR})
+	endif()
+
+	set_property(TARGET ${target} PROPERTY INSTALL_RPATH "\$ORIGIN:\$ORIGIN/bsf-${BS_FRAMEWORK_VERSION_MAJOR}.${BS_FRAMEWORK_VERSION_MINOR}.${BS_FRAMEWORK_VERSION_PATCH}")
 endfunction()
 
 #######################################################################################

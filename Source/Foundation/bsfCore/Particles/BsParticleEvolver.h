@@ -88,6 +88,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleTextureAnimation : public ParticleEvolver
 	{
 	public:
+		ParticleTextureAnimation() = default;
 		ParticleTextureAnimation(const PARTICLE_TEXTURE_ANIMATION_DESC& desc);
 
 		/** Options describing the evolver. */
@@ -106,8 +107,12 @@ namespace bs
 		}
 
 		/** Creates a new particle texture animation evolver. */
-		BS_SCRIPT_EXPORT(ec:true)
+		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleTextureAnimation> create(const PARTICLE_TEXTURE_ANIMATION_DESC& desc);
+
+		/** Creates a new particle texture animation evolver. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleTextureAnimation> create();
 	private:
 		/** @copydoc ParticleEvolver::evolve */
 		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
@@ -119,8 +124,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleTextureAnimation() = default; // RTTI only
-
 		friend class ParticleTextureAnimationRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -149,6 +152,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleOrbit : public ParticleEvolver
 	{
 	public:
+		ParticleOrbit() = default;
 		ParticleOrbit(const PARTICLE_ORBIT_DESC& desc);
 
 		/** Options describing the evolver. */
@@ -167,8 +171,12 @@ namespace bs
 		}
 
 		/** Creates a new particle orbit evolver. */
-		BS_SCRIPT_EXPORT(ec:true)
+		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleOrbit> create(const PARTICLE_ORBIT_DESC& desc);
+
+		/** Creates a new particle orbit evolver. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleOrbit> create();
 	private:
 		/** @copydoc ParticleEvolver::evolve */
 		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
@@ -180,8 +188,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleOrbit() = default; // RTTI only
-
 		friend class ParticleOrbitRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -201,6 +207,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleVelocity : public ParticleEvolver
 	{
 	public:
+		ParticleVelocity() = default;
 		ParticleVelocity(const PARTICLE_VELOCITY_DESC& desc);
 
 		/** Options describing the evolver. */
@@ -219,8 +226,12 @@ namespace bs
 		}
 
 		/** Creates a new particle velocity evolver. */
-		BS_SCRIPT_EXPORT(ec:true)
+		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleVelocity> create(const PARTICLE_VELOCITY_DESC& desc);
+
+		/** Creates a new particle velocity evolver. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleVelocity> create();
 	private:
 		/** @copydoc ParticleEvolver::evolve */
 		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
@@ -232,8 +243,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleVelocity() = default; // RTTI only
-
 		friend class ParticleVelocityRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -253,6 +262,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleForce : public ParticleEvolver
 	{
 	public:
+		ParticleForce() = default;
 		ParticleForce(const PARTICLE_FORCE_DESC&desc);
 
 		/** Options describing the evolver. */
@@ -271,8 +281,12 @@ namespace bs
 		}
 
 		/** Creates a new particle force evolver. */
-		BS_SCRIPT_EXPORT(ec:true)
+		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleForce> create(const PARTICLE_FORCE_DESC& desc);
+
+		/** Creates a new particle force evolver. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleForce> create();
 	private:
 		/** @copydoc ParticleEvolver::evolve */
 		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
@@ -284,8 +298,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleForce() = default; // RTTI only
-
 		friend class ParticleForceRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -302,6 +314,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleGravity : public ParticleEvolver
 	{
 	public:
+		ParticleGravity() = default;
 		ParticleGravity(const PARTICLE_GRAVITY_DESC& desc);
 
 		/** Options describing the evolver. */
@@ -320,8 +333,12 @@ namespace bs
 		}
 
 		/** Creates a new particle gravity evolver. */
-		BS_SCRIPT_EXPORT(ec:true)
+		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleGravity> create(const PARTICLE_GRAVITY_DESC& desc);
+
+		/** Creates a new particle gravity evolver. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleGravity> create();
 	private:
 		/** @copydoc ParticleEvolver::evolve */
 		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
@@ -333,8 +350,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleGravity() = default;
-
 		friend class ParticleGravityRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -351,6 +366,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleColor : public ParticleEvolver
 	{
 	public:
+		ParticleColor() = default; // RTTI only
 		ParticleColor(const PARTICLE_COLOR_DESC& desc);
 
 		/** Options describing the evolver. */
@@ -369,8 +385,12 @@ namespace bs
 		}
 
 		/** Creates a new particle color evolver. */
-		BS_SCRIPT_EXPORT(ec:true)
+		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleColor> create(const PARTICLE_COLOR_DESC& desc);
+
+		/** Creates a new particle color evolver. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleColor> create();
 	private:
 		/** @copydoc ParticleEvolver::evolve */
 		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
@@ -382,8 +402,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleColor() = default; // RTTI only
-
 		friend class ParticleColorRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -414,6 +432,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleSize : public ParticleEvolver
 	{
 	public:
+		ParticleSize() = default;
 		ParticleSize(const PARTICLE_SIZE_DESC& desc);
 
 		/** Options describing the evolver. */
@@ -432,8 +451,12 @@ namespace bs
 		}
 
 		/** Creates a new particle size evolver. */
-		BS_SCRIPT_EXPORT(ec:true)
+		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleSize> create(const PARTICLE_SIZE_DESC& desc);
+
+		/** Creates a new particle size evolver. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleSize> create();
 	private:
 		/** @copydoc ParticleEvolver::evolve */
 		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
@@ -445,8 +468,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleSize() = default; // RTTI only
-
 		friend class ParticleSizeRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -475,6 +496,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleRotation : public ParticleEvolver
 	{
 	public:
+		ParticleRotation() = default;
 		ParticleRotation(const PARTICLE_ROTATION_DESC& desc);
 
 		/** Options describing the evolver. */
@@ -493,8 +515,12 @@ namespace bs
 		}
 
 		/** Creates a new particle rotation evolver. */
-		BS_SCRIPT_EXPORT(ec:true)
+		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleRotation> create(const PARTICLE_ROTATION_DESC& desc);
+
+		/** Creates a new particle rotation evolver. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleRotation> create();
 	private:
 		/** @copydoc ParticleEvolver::evolve */
 		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
@@ -506,8 +532,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleRotation() = default; // RTTI only
-
 		friend class ParticleRotationRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
@@ -561,6 +585,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleCollisions : public ParticleEvolver
 	{
 	public:
+		ParticleCollisions() = default;
 		ParticleCollisions(const PARTICLE_COLLISIONS_DESC& desc);
 
 		/** 
@@ -601,8 +626,12 @@ namespace bs
 		}
 
 		/** Creates a new particle collision evolver. */
-		BS_SCRIPT_EXPORT(ec:true)
+		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleCollisions> create(const PARTICLE_COLLISIONS_DESC& desc);
+
+		/** Creates a new particle collision evolver. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ParticleCollisions> create();
 	private:
 		/** @copydoc ParticleEvolver::evolve */
 		void evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, UINT32 startIdx, 
@@ -617,8 +646,6 @@ namespace bs
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		ParticleCollisions() = default; // RTTI only
-
 		friend class ParticleCollisionsRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
