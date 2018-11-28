@@ -126,6 +126,11 @@ namespace bs { namespace ct
 
 		VkCommandBuffer vkCmdBuf = cb->getHandle();
 		cb->resetQuery(query);
+		
+		// solves: https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-vkCmdBeginQuery-queryType-00800
+		if(!mDevice.getDeviceFeatures().occlusionQueryPrecise || query->mPool != (VkQueryPool)VK_QUERY_TYPE_OCCLUSION) {
+			precise = false;
+		}
 		vkCmdBeginQuery(vkCmdBuf, query->mPool, query->mQueryIdx, precise ? VK_QUERY_CONTROL_PRECISE_BIT : 0);
 
 		// Note: Must happen only here because we need to check VulkanResource::isBound under the same mutex
