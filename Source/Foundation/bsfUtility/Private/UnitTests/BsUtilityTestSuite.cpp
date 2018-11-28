@@ -457,7 +457,7 @@ namespace bs
 
 		Complex<double> c7 = Complex<double>::conj(c);
 		BS_TEST_ASSERT(c7.real() == 10);
-		BS_TEST_ASSERT(c7.imag() == 4);
+		BS_TEST_ASSERT(c7.imag() == -4);
 		c7 = 0;
 
 		c7 = Complex<double>::polar(2.0, 0.5);
