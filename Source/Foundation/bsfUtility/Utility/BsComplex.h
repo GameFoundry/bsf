@@ -171,7 +171,6 @@ namespace bs
 		const Type& real() const { return mReal; }
 		const Type& imag() const { return mImag; }
 
-		template <typename Type>
 		static Type abs(const Complex<Type>& other)
 		{
 			Type x = other.real();
@@ -186,13 +185,11 @@ namespace bs
 			return s * std::sqrt(x * x + y * y);
 		}
 
-		template <typename Type>
 		static Type arg(const Complex<Type>& other)
 		{
 			return std::atan2(other.imag(), other.real());
 		}
 
-		template <typename Type>
 		static Type norm(const Complex<Type>& other)
 		{
 			const Type x = other.real();
@@ -201,19 +198,16 @@ namespace bs
 			return x * x + y * y;
 		}
 
-		template <typename Type>
 		static Complex<Type> conj(const Complex<Type>& other)
 		{
 			return Complex(other.real(), -other.imag());
 		}
 
-		template <typename Type>
 		static Complex<Type> polar(const Type& r, const Type& t = 0)
 		{
 			return Complex(r * std::cos(t), r * std::sin(t));
 		}
 
-		template <typename Type>
 		static Complex<Type> cos(const Complex<Type>& other)
 		{
 			const Type x = other.real();
@@ -222,7 +216,6 @@ namespace bs
 			return Complex(std::cos(x) * std::cosh(y), -std::sin(x) * std::sinh(y));
 		}
 
-		template <typename Type>
 		static Complex<Type> cosh(const Complex<Type>& other)
 		{
 			const Type x = other.real();
@@ -231,25 +224,21 @@ namespace bs
 			return Complex(std::cosh(x) * std::cos(y), std::sinh(x) * std::sin(y));
 		}
 
-		template <typename Type>
 		static Complex<Type> exp(const Complex<Type>& other)
 		{
 			return Complex::polar(std::exp(other.real()), other.imag());
 		}
 
-		template <typename Type>
 		static Complex<Type> log(const Complex<Type>& other)
 		{
 			return Complex(std::log(Complex::abs(other)), Complex::arg(other));
 		}
 
-		template <typename Type>
 		static Complex<Type> log10(const Complex<Type>& other)
 		{
 			return Complex::log(other) / std::log(Type(10));
 		}
 
-		template <typename Type>
 		static Complex<Type> pow(const Complex<Type>& other, const Type& i)
 		{
 			if (other.imag() == Type() && other.real() > Type())
@@ -259,13 +248,11 @@ namespace bs
 			return Complex::polar(std::exp(i * t.real()), i * t.imag());
 		}
 
-		template <typename Type>
 		static Complex<Type> pow(const Complex<Type>& x, const Complex<Type>& y)
 		{
 			return Complex::exp(y * Complex::log(x));
 		}
 
-		template <typename Type>
 		static Complex<Type> pow(const Type& i, const Complex<Type>& other)
 		{
 			return i > Type() ?
@@ -273,7 +260,6 @@ namespace bs
 				: Complex::pow(Complex(i, Type()), other);
 		}
 
-		template <typename Type>
 		static Complex<Type> sin(const Complex<Type>& other)
 		{
 			const Type x = other.real();
@@ -282,7 +268,6 @@ namespace bs
 			return Complex(std::sin(x) * std::cosh(y), std::cos(x) * std::sinh(y));
 		}
 
-		template <typename Type>
 		static Complex<Type> sinh(const Complex<Type>& other)
 		{
 			const Type x = other.real();
@@ -291,7 +276,6 @@ namespace bs
 			return Complex(std::sinh(x) * std::cos(y), std::cosh(x) * std::sin(y));
 		}
 
-		template <typename Type>
 		static Complex<Type> sqrt(const Complex<Type>& other)
 		{
 			const Type x = other.real();
@@ -311,13 +295,11 @@ namespace bs
 			}
 		}
 
-		template <typename Type>
 		static Complex<Type> tan(const Complex<Type>& other)
 		{
 			return Complex::sin(other) / Complex::cos(other);
 		}
 
-		template <typename Type>
 		static Complex<Type> tanh(const Complex<Type>& other)
 		{
 			return Complex::sinh(other) / Complex::cosh(other);
