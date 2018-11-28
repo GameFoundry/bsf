@@ -211,7 +211,10 @@ namespace bs { namespace ct
 		}
 
 		if (mPrimaryDevices.size() == 0)
+		{
+			mDevices[0]->setIsPrimary();
 			mPrimaryDevices.push_back(mDevices[0]);
+		}
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 		mVideoModeInfo = bs_shared_ptr_new<Win32VideoModeInfo>();
