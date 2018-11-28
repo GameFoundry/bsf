@@ -118,7 +118,7 @@ namespace bs
 			SPtr<VulkanDevice> presentDevice = mRenderAPI._getPresentDevice();
 			presentDevice->waitIdle();
 
-			mSwapChain = nullptr;
+			mSwapChain->destroy();
 			vkDestroySurfaceKHR(mRenderAPI._getInstance(), mSurface, gVulkanAllocator);
 		}
 
@@ -180,10 +180,7 @@ namespace bs
 			mDepthFormat = format.depthFormat;
 			
 			// Create swap chain
-			mSwapChain = bs_shared_ptr_new<VulkanSwapChain>();
-			mSwapChain->rebuild(presentDevice, mSurface, props.width, props.height, props.vsync, mColorFormat, mColorSpace,
-								mDesc.depthBuffer, mDepthFormat);
-			
+			mSwapChain = presentDevice->getResourceManager().create<VulkanSwapChain>(mSurface, props.width, props.height,props.vsync, mColorFormat, mColorSpace, mDesc.depthBuffer, mDepthFormat);
 			if(mDesc.fullscreen && !mIsChild)
 				setFullscreen(mDesc.videoMode);
 			
@@ -203,7 +200,14 @@ namespace bs
 			if (!mRequiresNewBackBuffer)
 				return;
 
-			mSwapChain->acquireBackBuffer();
+			VkResult acquireResult = mSwapChain->acquireBackBuffer();
+			if(acquireResult == VK_SUBOPTIMAL_KHR || acquireResult == VK_ERROR_OUT_OF_DATE_KHR)
+			{
+				rebuildSwapChain();
+				
+				mSwapChain->acquireBackBuffer();
+			}
+
 			mRequiresNewBackBuffer = false;
 		}
 
@@ -373,22 +377,11 @@ namespace bs
 			//// Need to make sure nothing is using the swap buffer before we re-create it
 			// Note: Optionally I can detect exactly on which queues (if any) are the swap chain images used on, and only wait
 			// on those
-			SPtr<VulkanDevice> presentDevice = mRenderAPI._getPresentDevice();
-			presentDevice->waitIdle();
-			
-			mSwapChain->rebuild(presentDevice, mSurface, mProperties.width, mProperties.height, enabled, mColorFormat, mColorSpace,
-								mDesc.depthBuffer, mDepthFormat);
-			
 			mProperties.vsync = enabled;
 			mProperties.vsyncInterval = interval;
-			
-			{
-				ScopedSpinLock lock(mLock);
-				mSyncedProperties.vsync = enabled;
-				mSyncedProperties.vsyncInterval = interval;
-			}
-			
-			bs::RenderWindowManager::instance().notifySyncDataDirty(this);
+
+			rebuildSwapChain();
+
 		}
 
 		void MacOSRenderWindow::swapBuffers(UINT32 syncMask)
@@ -427,7 +420,10 @@ namespace bs
 				mSwapChain->notifyBackBufferWaitIssued();
 			}
 			
-			queue->present(mSwapChain.get(), mSemaphoresTemp, numSemaphores);
+			VkResult presentResult = queue->present(mSwapChain, mSemaphoresTemp, numSemaphores);
+			if(presentResult == VK_SUBOPTIMAL_KHR || presentResult == VK_ERROR_OUT_OF_DATE_KHR)
+				rebuildSwapChain();
+
 			mRequiresNewBackBuffer = true;
 		}
 
@@ -442,7 +438,7 @@ namespace bs
 			else if(name == "SC")
 			{
 				VulkanSwapChain** sc = (VulkanSwapChain**)data;
-				*sc = mSwapChain.get();
+				*sc = mSwapChain;
 				return;
 			}
 			else if(name == "COCOA_WINDOW")
@@ -475,17 +471,26 @@ namespace bs
 			
 			RenderWindowProperties& props = mProperties;
 
-			// Resize swap chain
-			
+			rebuildSwapChain();
+		}
+		
+		void MacOSRenderWindow::rebuildSwapChain()
+		{
 			//// Need to make sure nothing is using the swap buffer before we re-create it
 			// Note: Optionally I can detect exactly on which queues (if any) are the swap chain images used on, and only wait
 			// on those
 			SPtr<VulkanDevice> presentDevice = mRenderAPI._getPresentDevice();
 			presentDevice->waitIdle();
 			
-			mSwapChain->rebuild(presentDevice, mSurface, props.width, props.height, props.vsync, mColorFormat, mColorSpace,
-								mDesc.depthBuffer, mDepthFormat);
+			VulkanSwapChain* oldSwapChain = mSwapChain;
+			
+			mSwapChain = presentDevice->getResourceManager().create<VulkanSwapChain>(
+																					 mSurface, mProperties.width, mProperties.height, mProperties.vsync, mColorFormat, mColorSpace,
+																					 mDesc.depthBuffer, mDepthFormat, oldSwapChain);
+			
+			oldSwapChain->destroy();
 		}
+
 
 		void MacOSRenderWindow::syncProperties()
 		{

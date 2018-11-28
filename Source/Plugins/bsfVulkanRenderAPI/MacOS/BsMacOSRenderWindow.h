@@ -139,6 +139,9 @@ namespace bs
 			void setDisplayMode(const VideoOutputInfo& output, const VideoMode& mode);
 
 			void enableShaderConvertionDebugging();
+			
+			/** Rebuilds the swap chain according to the currently set properties. */
+			void rebuildSwapChain();
 
 		protected:
 			friend class bs::MacOSRenderWindow;
@@ -149,7 +152,7 @@ namespace bs
             VkFormat mColorFormat;
             VkFormat mDepthFormat;
             UINT32 mPresentQueueFamily;
-            SPtr<VulkanSwapChain> mSwapChain;
+            VulkanSwapChain* mSwapChain;
             VulkanSemaphore* mSemaphoresTemp[BS_MAX_UNIQUE_QUEUES + 1]; // +1 for present semaphore
             bool mRequiresNewBackBuffer;
 			UINT32 mCocoaWindowId;
