@@ -171,7 +171,7 @@ namespace bs { namespace ct
 
 		// Set up debugging
 #if BS_DEBUG_MODE && USE_VALIDATION_LAYERS
-		VkDebugReportFlagsEXT debugFlags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | 
+		VkDebugReportFlagsEXT debugFlags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT |
 			VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
 
 		GET_INSTANCE_PROC_ADDR(mInstance, CreateDebugReportCallbackEXT);
@@ -215,7 +215,10 @@ namespace bs { namespace ct
 		}
 
 		if (mPrimaryDevices.size() == 0)
+		{
+			mDevices[0]->setIsPrimary();
 			mPrimaryDevices.push_back(mDevices[0]);
+		}
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 		mVideoModeInfo = bs_shared_ptr_new<Win32VideoModeInfo>();
@@ -307,12 +310,8 @@ namespace bs { namespace ct
 		mMainCommandBuffer = nullptr;
 
 		// Make sure everything finishes and all resources get freed
-		VulkanCommandBufferManager& cmdBufManager = static_cast<VulkanCommandBufferManager&>(CommandBufferManager::instance());
 		for (UINT32 i = 0; i < (UINT32)mDevices.size(); i++)
-		{
 			mDevices[i]->waitIdle();
-			cmdBufManager.refreshStates(i);
-		}
 
 		CommandBufferManager::shutDown();
 
@@ -525,10 +524,8 @@ namespace bs { namespace ct
 		target->swapBuffers(syncMask);
 
 		// See if any command buffers finished executing
-		VulkanCommandBufferManager& cbm = static_cast<VulkanCommandBufferManager&>(CommandBufferManager::instance());
-		
 		for (UINT32 i = 0; i < (UINT32)mDevices.size(); i++)
-			cbm.refreshStates(i);
+			mDevices[i]->refreshStates();
 
 		BS_INC_RENDER_STAT(NumPresents);
 	}

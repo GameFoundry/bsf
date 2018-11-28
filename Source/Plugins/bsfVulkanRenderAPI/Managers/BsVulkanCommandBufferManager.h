@@ -108,12 +108,6 @@ namespace bs { namespace ct
 		void getSyncSemaphores(UINT32 deviceIdx, UINT32 syncMask, VulkanSemaphore** semaphores, UINT32& count);
 
 		/** 
-		 * Checks if any of the active command buffers finished executing on the device and updates their states 
-		 * accordingly. 
-		 */
-		void refreshStates(UINT32 deviceIdx, bool forceWait = false);
-
-		/** 
 		 * Returns an command buffer that can be used for executing transfer operations on the specified queue. 
 		 * Transfer buffers are automatically flushed (submitted) whenever a new (normal) command buffer is about to
 		 * execute.

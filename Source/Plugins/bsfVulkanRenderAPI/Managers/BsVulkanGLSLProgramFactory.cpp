@@ -246,7 +246,9 @@ namespace bs { namespace ct
 						case 4:    return GPDT_MATRIX_4X4;
 						default:   return GPDT_UNKNOWN;
 					}
+				default: break;
 				}
+				break;
 			default:
 				return GPDT_UNKNOWN;
 			}

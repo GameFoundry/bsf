@@ -40,7 +40,13 @@ namespace bs { namespace ct
 		UINT32 getIndex() const { return mDeviceIdx; }
 
 		/** Blocks the calling thread until all operations on the device finish. */
-		void waitIdle() const;
+		void waitIdle();
+
+		/** 
+		 * Checks if any of the active command buffers finished executing on the device and updates their states 
+		 * accordingly. 
+		 */
+		void refreshStates(bool forceWait = false);
 
 		/** Returns a set of properties describing the physical device. */
 		const VkPhysicalDeviceProperties& getDeviceProperties() const { return mDeviceProperties; }

@@ -163,7 +163,8 @@ namespace bs { namespace ct
 
 	VulkanDevice::~VulkanDevice()
 	{
-		waitIdle();
+		VkResult result = vkDeviceWaitIdle(mLogicalDevice);
+		assert(result == VK_SUCCESS);
 
 		for (UINT32 i = 0; i < GQT_COUNT; i++)
 		{
@@ -186,10 +187,25 @@ namespace bs { namespace ct
 		vkDestroyDevice(mLogicalDevice, gVulkanAllocator);
 	}
 
-	void VulkanDevice::waitIdle() const
+	void VulkanDevice::waitIdle()
 	{
 		VkResult result = vkDeviceWaitIdle(mLogicalDevice);
 		assert(result == VK_SUCCESS);
+
+		refreshStates(true);
+	}
+
+	void VulkanDevice::refreshStates(bool forceWait)
+	{
+		for (UINT32 i = 0; i < GQT_COUNT; i++)
+		{
+			UINT32 numQueues = getNumQueues((GpuQueueType)i);
+			for (UINT32 j = 0; j < numQueues; j++)
+			{
+				VulkanQueue* queue = getQueue((GpuQueueType)i, j);
+				queue->refreshStates(forceWait, false);
+			}
+		}
 	}
 
 	UINT32 VulkanDevice::getQueueMask(GpuQueueType type, UINT32 queueIdx) const

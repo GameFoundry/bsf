@@ -113,7 +113,7 @@ namespace bs { namespace ct
 		SPtr<VulkanDevice> _getDevice(UINT32 idx) const { return mDevices[idx]; }
 
 		/** Returns the primary device that supports swap chain present operations. */
-		SPtr<VulkanDevice> _getPresentDevice() const { return mPrimaryDevices[0]; }
+		const SPtr<VulkanDevice>& _getPresentDevice() const { return mPrimaryDevices[0]; }
 
 		/** Gets the total number of Vulkan compatible devices available on this system. */
 		UINT32 _getNumDevices() const { return (UINT32)mDevices.size(); }

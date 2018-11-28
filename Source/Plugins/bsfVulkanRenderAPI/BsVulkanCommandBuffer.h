@@ -245,6 +245,12 @@ namespace bs { namespace ct
 		 */
 		void registerResource(VulkanFramebuffer* res, RenderSurfaceMask loadMask, UINT32 readMask);
 
+		/** 
+		 * Lets the command buffer know that the provided swap chain resource has been queued on it, and will be used by
+		 * the device when the command buffer is submitted.
+		 */
+		void registerResource(VulkanSwapChain* res);
+
 		/** Notifies the command buffer that the provided query has been queued on it. */
 		void registerQuery(VulkanOcclusionQuery* query) { mOcclusionQueries.insert(query); }
 
@@ -486,6 +492,7 @@ namespace bs { namespace ct
 		UnorderedMap<VulkanResource*, ResourceUseHandle> mResources;
 		UnorderedMap<VulkanResource*, UINT32> mImages;
 		UnorderedMap<VulkanResource*, BufferInfo> mBuffers;
+		UnorderedMap<VulkanSwapChain*, ResourceUseHandle> mSwapChains;
 		UnorderedSet<VulkanOcclusionQuery*> mOcclusionQueries;
 		UnorderedSet<VulkanTimerQuery*> mTimerQueries;
 		Vector<ImageInfo> mImageInfos;
@@ -523,7 +530,7 @@ namespace bs { namespace ct
 		UnorderedMap<VulkanImage*, UINT32> mQueuedLayoutTransitions;
 		Vector<VulkanEvent*> mQueuedEvents;
 		Vector<VulkanQuery*> mQueuedQueryResets;
-		UnorderedSet<VulkanSwapChain*> mSwapChains;
+		UnorderedSet<VulkanSwapChain*> mActiveSwapChains;
 	};
 
 	/** CommandBuffer implementation for Vulkan. */
