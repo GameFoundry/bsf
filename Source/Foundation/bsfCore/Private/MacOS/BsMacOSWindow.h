@@ -62,6 +62,7 @@ namespace bs
 		{
 			NSWindow* window = nil;
 			BSView* view = nil;
+			CAMetalLayer* metalLayer = nil;
 			BSWindowListener* responder = nil;
 			BSWindowDelegate* delegate = nil;
 			UINT32 numDropTargets = 0;

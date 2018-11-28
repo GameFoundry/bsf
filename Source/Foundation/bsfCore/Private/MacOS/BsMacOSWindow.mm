@@ -657,6 +657,10 @@ namespace bs
 		if(desc.enableMetal) {
 			m->view = [[BSMacOSMetalView alloc] init];
 			[m->view setWantsLayer:YES];
+			
+			if ([ [m->view layer] isKindOfClass:CAMetalLayer.class])
+				m->metalLayer = (CAMetalLayer*)[m->view layer];
+
 		}
 		else {
 			m->view = [[BSView alloc] init];
@@ -756,9 +760,7 @@ namespace bs
 	
 	CAMetalLayer* CocoaWindow::getMetalLayer()
 	{
-		if ([ [m->view layer] isKindOfClass:CAMetalLayer.class])
-			return (CAMetalLayer*)[m->view layer];
-		return nullptr;
+		return m->metalLayer;
 	}
 	
 	void CocoaWindow::hide()
