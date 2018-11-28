@@ -54,8 +54,9 @@ namespace bs { namespace ct
 		 * @param[in]	swapChain			Swap chain whose back buffer to present.
 		 * @param[in]	waitSemaphores		Optional semaphores to wait on before presenting the queue.
 		 * @param[in]	semaphoresCount		Number of semaphores in the @p semaphores array.
+		 * @return							Return code of the present operation.
 		 */
-		void present(VulkanSwapChain* swapChain, VulkanSemaphore** waitSemaphores, UINT32 semaphoresCount);
+		VkResult present(VulkanSwapChain* swapChain, VulkanSemaphore** waitSemaphores, UINT32 semaphoresCount);
 
 		/** Blocks the calling thread until all operations on the queue finish. */
 		void waitIdle() const;

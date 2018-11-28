@@ -8,18 +8,16 @@
 
 namespace bs { namespace ct
 {
-	VulkanSwapChain::~VulkanSwapChain()
+	VulkanSwapChain::VulkanSwapChain(VulkanResourceManager* owner, VkSurfaceKHR surface, UINT32 width, UINT32 height, 
+		bool vsync, VkFormat colorFormat, VkColorSpaceKHR colorSpace, bool createDepth, VkFormat depthFormat, 
+		VulkanSwapChain* oldSwapChain)
+		: VulkanResource(owner, false)
 	{
-		clear(mSwapChain);
-	}
-
-	void VulkanSwapChain::rebuild(const SPtr<VulkanDevice>& device, VkSurfaceKHR surface, UINT32 width, UINT32 height, 
-		bool vsync, VkFormat colorFormat, VkColorSpaceKHR colorSpace, bool createDepth, VkFormat depthFormat)
-	{
-		mDevice = device;
+		VulkanDevice& device = owner->getDevice();
+		mDevice = device.getLogical();
 
 		VkResult result;
-		VkPhysicalDevice physicalDevice = device->getPhysical();
+		VkPhysicalDevice physicalDevice = device.getPhysical();
 
 		// Determine swap chain dimensions
 		VkSurfaceCapabilitiesKHR surfaceCaps;
@@ -105,28 +103,22 @@ namespace bs { namespace ct
 		swapChainCI.imageArrayLayers = 1;
 		swapChainCI.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		swapChainCI.queueFamilyIndexCount = 0;
-		swapChainCI.pQueueFamilyIndices = NULL;
+		swapChainCI.pQueueFamilyIndices = nullptr;
 		swapChainCI.presentMode = presentMode;
-		swapChainCI.oldSwapchain = mSwapChain;
+		swapChainCI.oldSwapchain = oldSwapChain ? oldSwapChain->mSwapChain : VK_NULL_HANDLE;
 		swapChainCI.clipped = VK_TRUE;
 		swapChainCI.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 
-		VkSwapchainKHR oldSwapChain = mSwapChain;
-		VkDevice logicalDevice = device->getLogical();
-		result = vkCreateSwapchainKHR(logicalDevice, &swapChainCI, gVulkanAllocator, &mSwapChain);
+		result = vkCreateSwapchainKHR(mDevice, &swapChainCI, gVulkanAllocator, &mSwapChain);
 		assert(result == VK_SUCCESS);
 
-		clear(oldSwapChain);
-
-		result = vkGetSwapchainImagesKHR(logicalDevice, mSwapChain, &numImages, nullptr);
+		result = vkGetSwapchainImagesKHR(mDevice, mSwapChain, &numImages, nullptr);
 		assert(result == VK_SUCCESS);
 
 		// Get the swap chain images
 		VkImage* images = bs_stack_alloc<VkImage>(numImages);
-		result = vkGetSwapchainImagesKHR(logicalDevice, mSwapChain, &numImages, images);
+		result = vkGetSwapchainImagesKHR(mDevice, mSwapChain, &numImages, images);
 		assert(result == VK_SUCCESS);
-
-		VulkanResourceManager& resManager = device->getResourceManager();
 
 		VULKAN_IMAGE_DESC imageDesc;
 		imageDesc.format = colorFormat;
@@ -144,8 +136,8 @@ namespace bs { namespace ct
 
 			mSurfaces[i].acquired = false;
 			mSurfaces[i].needsWait = false;
-			mSurfaces[i].image = resManager.create<VulkanImage>(imageDesc, false);
-			mSurfaces[i].sync = resManager.create<VulkanSemaphore>();
+			mSurfaces[i].image = owner->create<VulkanImage>(imageDesc, false);
+			mSurfaces[i].sync = owner->create<VulkanSemaphore>();
 		}
 
 		bs_stack_free(images);
@@ -171,15 +163,15 @@ namespace bs { namespace ct
 			depthStencilImageCI.queueFamilyIndexCount = 0;
 
 			VkImage depthStencilImage;
-			result = vkCreateImage(logicalDevice, &depthStencilImageCI, gVulkanAllocator, &depthStencilImage);
+			result = vkCreateImage(mDevice, &depthStencilImageCI, gVulkanAllocator, &depthStencilImage);
 			assert(result == VK_SUCCESS);
 
 			imageDesc.image = depthStencilImage;
 			imageDesc.usage = TU_DEPTHSTENCIL;
 			imageDesc.format = depthFormat;
-			imageDesc.allocation = mDevice->allocateMemory(depthStencilImage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+			imageDesc.allocation = device.allocateMemory(depthStencilImage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-			mDepthStencilImage = resManager.create<VulkanImage>(imageDesc, true);
+			mDepthStencilImage = owner->create<VulkanImage>(imageDesc, true);
 		}
 		else
 			mDepthStencilImage = nullptr;
@@ -203,17 +195,50 @@ namespace bs { namespace ct
 			desc.depth.surface = TextureSurface::COMPLETE;
 			desc.depth.baseLayer = 0;
 
-			mSurfaces[i].framebuffer = resManager.create<VulkanFramebuffer>(desc);
+			mSurfaces[i].framebuffer = owner->create<VulkanFramebuffer>(desc);
 		}
 	}
 
-	void VulkanSwapChain::acquireBackBuffer()
+	VulkanSwapChain::~VulkanSwapChain()
+	{
+		if (mSwapChain != VK_NULL_HANDLE)
+		{
+			for (auto& surface : mSurfaces)
+			{
+				// Swap chain images only live as long as the swap chain, so its invalid if they are being used somewhere,
+				// and same goes for the framebuffer since it depends on those images.
+				assert(!surface.image->isBound());
+				assert(!surface.framebuffer->isBound());
+
+				surface.framebuffer->destroy();
+				surface.framebuffer = nullptr;
+
+				surface.image->destroy();
+				surface.image = nullptr;
+
+				surface.sync->destroy();
+				surface.sync = nullptr;
+			}
+
+			vkDestroySwapchainKHR(mDevice, mSwapChain, gVulkanAllocator);
+		}
+
+		if (mDepthStencilImage != nullptr)
+		{
+			mDepthStencilImage->destroy();
+			mDepthStencilImage = nullptr;
+		}
+	}
+
+	VkResult VulkanSwapChain::acquireBackBuffer()
 	{
 		uint32_t imageIndex;
 
-		VkResult result = vkAcquireNextImageKHR(mDevice->getLogical(), mSwapChain, UINT64_MAX,
+		VkResult result = vkAcquireNextImageKHR(mDevice, mSwapChain, UINT64_MAX,
 			mSurfaces[mCurrentSemaphoreIdx].sync->getHandle(), VK_NULL_HANDLE, &imageIndex);
-		assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
+
+		if(result != VK_SUCCESS)
+			return result;
 
 		// In case surfaces aren't being distributed in round-robin fashion the image and semaphore indices might not match,
 		// in which case just move the semaphores
@@ -227,6 +252,8 @@ namespace bs { namespace ct
 		mSurfaces[imageIndex].needsWait = true;
 
 		mCurrentBackBufferIdx = imageIndex;
+
+		return VK_SUCCESS;
 	}
 
 	bool VulkanSwapChain::prepareForPresent(UINT32& backBufferIdx)
@@ -247,32 +274,5 @@ namespace bs { namespace ct
 			return;
 
 		mSurfaces[mCurrentBackBufferIdx].needsWait = false;
-	}
-
-	void VulkanSwapChain::clear(VkSwapchainKHR swapChain)
-	{
-		VkDevice logicalDevice = mDevice->getLogical();
-		if (swapChain != VK_NULL_HANDLE)
-		{
-			for (auto& surface : mSurfaces)
-			{
-				surface.framebuffer->destroy();
-				surface.framebuffer = nullptr;
-
-				surface.image->destroy();
-				surface.image = nullptr;
-
-				surface.sync->destroy();
-				surface.sync = nullptr;
-			}
-
-			vkDestroySwapchainKHR(logicalDevice, swapChain, gVulkanAllocator);
-		}
-
-		if (mDepthStencilImage != nullptr)
-		{
-			mDepthStencilImage->destroy();
-			mDepthStencilImage = nullptr;
-		}
 	}
 }}

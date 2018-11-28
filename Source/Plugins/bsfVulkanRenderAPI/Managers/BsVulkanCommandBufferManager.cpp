@@ -109,7 +109,7 @@ namespace bs { namespace ct
 		if (wait)
 		{
 			mQueue->waitIdle();
-			gVulkanCBManager().refreshStates(mDevice->getIndex(), true);
+			mDevice->refreshStates(true);
 
 			assert(!mCB->isSubmitted());
 		}
@@ -205,21 +205,6 @@ namespace bs { namespace ct
 				"will not be fulfilled. This happened because a command buffer has too many dependant command "
 				"buffers. The maximum allowed number is " + toString(BS_MAX_VULKAN_CB_DEPENDENCIES) + " but can be "
 				"increased by incrementing the value of BS_MAX_VULKAN_CB_DEPENDENCIES.");
-		}
-	}
-
-	void VulkanCommandBufferManager::refreshStates(UINT32 deviceIdx, bool forceWait)
-	{
-		SPtr<VulkanDevice> device = mRapi._getDevice(deviceIdx);
-
-		for (UINT32 i = 0; i < GQT_COUNT; i++)
-		{
-			UINT32 numQueues = device->getNumQueues((GpuQueueType)i);
-			for (UINT32 j = 0; j < numQueues; j++)
-			{
-				VulkanQueue* queue = device->getQueue((GpuQueueType)i, j);
-				queue->refreshStates(forceWait, false);
-			}
 		}
 	}
 

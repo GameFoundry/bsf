@@ -264,6 +264,15 @@ namespace bs { namespace ct
 
 				entry.first->notifyUnbound();
 			}
+
+			// Must be done after images & framebuffer because swap chain does error checking if those were freed
+			for (auto& entry : mSwapChains)
+			{
+				ResourceUseHandle& useHandle = entry.second;
+				assert(!useHandle.used);
+
+				entry.first->notifyUnbound();
+			}
 		}
 
 		if (mIntraQueueSemaphore != nullptr)
@@ -638,7 +647,7 @@ namespace bs { namespace ct
 		cbm.getSyncSemaphores(deviceIdx, syncMask, mSemaphoresTemp.data(), numSemaphores);
 
 		// Wait on present (i.e. until the back buffer becomes available) for any swap chains
-		for(auto& entry : mSwapChains)
+		for(auto& entry : mActiveSwapChains)
 		{
 			const SwapChainSurface& surface = entry->getBackBuffer();
 			if (surface.needsWait)
@@ -720,6 +729,15 @@ namespace bs { namespace ct
 			entry.first->notifyUsed(mGlobalQueueIdx, mQueueFamily, useHandle.flags);
 		}
 
+		for (auto& entry : mSwapChains)
+		{
+			ResourceUseHandle& useHandle = entry.second;
+			assert(!useHandle.used);
+
+			useHandle.used = true;
+			entry.first->notifyUsed(mGlobalQueueIdx, mQueueFamily, useHandle.flags);
+		}
+
 		// Note: Uncomment for debugging only, prevents any device concurrency issues.
 		// vkQueueWaitIdle(queue->getHandle());
 
@@ -739,7 +757,7 @@ namespace bs { namespace ct
 		mDescriptorSetsBindState = DescriptorSetBindFlag::Graphics | DescriptorSetBindFlag::Compute;
 		mQueuedLayoutTransitions.clear();
 		mBoundParams = nullptr;
-		mSwapChains.clear();
+		mActiveSwapChains.clear();
 	}
 
 	bool VulkanCmdBuffer::checkFenceStatus(bool block) const
@@ -785,6 +803,15 @@ namespace bs { namespace ct
 
 				entry.first->notifyDone(mGlobalQueueIdx, useHandle.flags);
 			}
+
+			// Must be done after images & framebuffer because swap chain does error checking if those were freed
+			for (auto& entry : mSwapChains)
+			{
+				ResourceUseHandle& useHandle = entry.second;
+				assert(useHandle.used);
+
+				entry.first->notifyDone(mGlobalQueueIdx, useHandle.flags);
+			}
 		}
 		else
 		{
@@ -796,11 +823,16 @@ namespace bs { namespace ct
 
 			for (auto& entry : mBuffers)
 				entry.first->notifyUnbound();
+
+			// Must be done after images & framebuffer because swap chain does error checking if those were freed
+			for (auto& entry : mSwapChains)
+				entry.first->notifyUnbound();
 		}
 
 		mResources.clear();
 		mImages.clear();
 		mBuffers.clear();
+		mSwapChains.clear();
 		mOcclusionQueries.clear();
 		mTimerQueries.clear();
 		mImageInfos.clear();
@@ -814,6 +846,7 @@ namespace bs { namespace ct
 		assert(mState != State::Submitted);
 
 		VulkanFramebuffer* newFB;
+		VulkanSwapChain* swapChain = nullptr;
 		if(rt != nullptr)
 		{
 			if (rt->getProperties().isWindow)
@@ -825,10 +858,8 @@ namespace bs { namespace ct
 #endif
 				window->acquireBackBuffer();
 
-				VulkanSwapChain* swapChain;
 				rt->getCustomAttribute("SC", &swapChain);
-
-				mSwapChains.insert(swapChain);
+				mActiveSwapChains.insert(swapChain);
 			}
 
 			rt->getCustomAttribute("FB", &newFB);
@@ -916,8 +947,13 @@ namespace bs { namespace ct
 		// Re-set the params as they will need to be re-bound
 		setGpuParams(mBoundParams);
 
-		if (mFramebuffer != nullptr)
+		if (mFramebuffer)
+		{
 			registerResource(mFramebuffer, loadMask, readOnlyFlags);
+
+			if(swapChain)
+				registerResource(swapChain);
+		}
 
 		mGfxPipelineRequiresBind = true;
 	}
@@ -2120,6 +2156,26 @@ namespace bs { namespace ct
 		}
 	}
 
+	void VulkanCmdBuffer::registerResource(VulkanSwapChain* res)
+	{
+		auto insertResult = mSwapChains.insert(std::make_pair(res, ResourceUseHandle()));
+		if (insertResult.second) // New element
+		{
+			ResourceUseHandle& useHandle = insertResult.first->second;
+			useHandle.used = false;
+			useHandle.flags = VulkanUseFlag::Write;
+
+			res->notifyBound();
+		}
+		else // Existing element
+		{
+			ResourceUseHandle& useHandle = insertResult.first->second;
+
+			assert(!useHandle.used);
+			useHandle.flags |= VulkanUseFlag::Write;
+		}
+	}
+
 	bool VulkanCmdBuffer::updateSubresourceInfo(VulkanImage* image, UINT32 imageInfoIdx, 
 			ImageSubresourceInfo& subresourceInfo, VkImageLayout newLayout, VkImageLayout finalLayout, VulkanUseFlags flags, 
 			ResourceUsage usage)
@@ -2415,7 +2471,7 @@ namespace bs { namespace ct
 			mBuffer->submit(mQueue, mQueueIdx, syncMask);
 			acquireNewBuffer();
 
-			gVulkanCBManager().refreshStates(mDeviceIdx);
+			mDevice.refreshStates(false);
 		}
 
 		// Resume interrupted queries on the new command buffer

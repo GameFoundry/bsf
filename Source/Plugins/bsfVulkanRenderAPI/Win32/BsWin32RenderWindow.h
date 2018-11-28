@@ -130,6 +130,9 @@ namespace bs
 		/** @copydoc RenderWindow::syncProperties */
 		void syncProperties() override;
 
+		/** Rebuilds the swap chain according to the currently set properties. */
+		void rebuildSwapChain();
+
 	protected:
 		Win32Window* mWindow;
 		bool mIsChild;
@@ -142,7 +145,7 @@ namespace bs
 		VkFormat mColorFormat;
 		VkFormat mDepthFormat;
 		UINT32 mPresentQueueFamily;
-		SPtr<VulkanSwapChain> mSwapChain;
+		VulkanSwapChain* mSwapChain = nullptr;
 		VulkanSemaphore* mSemaphoresTemp[BS_MAX_UNIQUE_QUEUES + 1]; // +1 for present semaphore
 		bool mRequiresNewBackBuffer;
 

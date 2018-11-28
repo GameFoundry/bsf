@@ -143,11 +143,11 @@ namespace bs { namespace ct
 		}
 	}
 
-	void VulkanQueue::present(VulkanSwapChain* swapChain, VulkanSemaphore** waitSemaphores, UINT32 semaphoresCount)
+	VkResult VulkanQueue::present(VulkanSwapChain* swapChain, VulkanSemaphore** waitSemaphores, UINT32 semaphoresCount)
 	{
 		UINT32 backBufferIdx;
 		if (!swapChain->prepareForPresent(backBufferIdx))
-			return; // Nothing to present (back buffer wasn't even acquired)
+			return VK_SUCCESS; // Nothing to present (back buffer wasn't even acquired)
 
 		mSemaphoresTemp.resize(semaphoresCount + 1); // +1 for self semaphore
 		prepareSemaphores(waitSemaphores, mSemaphoresTemp.data(), semaphoresCount);
@@ -174,9 +174,10 @@ namespace bs { namespace ct
 		}
 
 		VkResult result = vkQueuePresentKHR(mQueue, &presentInfo);
-		assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
+		assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR || result == VK_ERROR_OUT_OF_DATE_KHR);
 
 		mActiveSubmissions.push_back(SubmitInfo(nullptr, mNextSubmitIdx++, semaphoresCount, 0));
+		return result;
 	}
 
 	void VulkanQueue::waitIdle() const
