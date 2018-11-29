@@ -435,19 +435,19 @@ namespace bs
 		BS_TEST_ASSERT(c2.real() == 15.0);
 		BS_TEST_ASSERT(c2.imag() == 5.0);
 
-		Complex<double> c3 = c1 + c2;
+		Complex<double> c3 = c + c2;
 		BS_TEST_ASSERT(c3.real() == 25.0);
 		BS_TEST_ASSERT(c3.imag() == 9.0);
 
-		Complex<double> c4 = c1 - c2;
+		Complex<double> c4 = c - c2;
 		BS_TEST_ASSERT(c4.real() == -5.0);
 		BS_TEST_ASSERT(c4.imag() == -1.0);
 
-		Complex<double> c5 = c1 * c2;
+		Complex<double> c5 = c * c2;
 		BS_TEST_ASSERT(c5.real() == 130.0);
 		BS_TEST_ASSERT(c5.imag() == 110.0);
 
-		Complex<double> c6 = c1 / c2;
+		Complex<double> c6 = c / c2;
 		BS_TEST_ASSERT(c6.real() == 0.68);
 		BS_TEST_ASSERT(c6.imag() == 0.04);
 
