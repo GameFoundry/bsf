@@ -496,7 +496,7 @@ namespace bs { namespace ct
 		UINT32 usageFlags = TU_RENDERTARGET;
 
 		bool tiledDeferredSupported = inputs.featureSet != RenderBeastFeatureSet::DesktopMacOS;
-		if(tiledDeferredSupported)
+		if(tiledDeferredSupported && numSamples == 1)
 			usageFlags |= TU_LOADSTORE;
 
 		// Note: Consider customizable HDR format via options? e.g. smaller PF_FLOAT_R11G11B10 or larger 32-bit format
@@ -734,6 +734,7 @@ namespace bs { namespace ct
 		UINT32 height = viewProps.viewRect.height;
 		UINT32 numSamples = viewProps.numSamples;
 
+		UINT32 usage = TU_RENDERTARGET;
 		if (numSamples > 1)
 		{
 			lightAccumulationTexArray = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, 
@@ -753,10 +754,13 @@ namespace bs { namespace ct
 			}
 		}
 		else
+		{
+			usage |= TU_LOADSTORE;
 			lightAccumulationTexArray = nullptr;
+		}
 
 		lightAccumulationTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width,
-			height, TU_LOADSTORE | TU_RENDERTARGET, numSamples, false));
+			height, usage, numSamples, false));
 
 		bool rebuildRT;
 		if (renderTarget != nullptr)
