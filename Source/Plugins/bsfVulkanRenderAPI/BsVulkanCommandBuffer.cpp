@@ -519,43 +519,44 @@ namespace bs { namespace ct
 			{
 				ImageSubresourceInfo& subresourceInfo = subresourceInfos[i];
 
-				VkImageLayout initialLayout = subresourceInfo.initialLayout;
-				if (initialLayout == VK_IMAGE_LAYOUT_UNDEFINED)
-					continue;
-
 				const VkImageSubresourceRange& range = subresourceInfo.range;
 				UINT32 mipEnd = range.baseMipLevel + range.levelCount;
 				UINT32 faceEnd = range.baseArrayLayer + range.layerCount;
-				if(!subresourceInfo.hasExternalTransition)
+
+				VkImageLayout initialLayout = subresourceInfo.initialLayout;
+				if (initialLayout != VK_IMAGE_LAYOUT_UNDEFINED)
 				{
-					bool layoutMismatch = false;
-					for (UINT32 mip = range.baseMipLevel; mip < mipEnd; mip++)
+					if (!subresourceInfo.hasExternalTransition)
 					{
-						for (UINT32 face = range.baseArrayLayer; face < faceEnd; face++)
+						bool layoutMismatch = false;
+						for (UINT32 mip = range.baseMipLevel; mip < mipEnd; mip++)
 						{
-							VulkanImageSubresource* subresource = resource->getSubresource(face, mip);
-							if (subresource->getLayout() != initialLayout)
+							for (UINT32 face = range.baseArrayLayer; face < faceEnd; face++)
 							{
-								layoutMismatch = true;
-								break;
+								VulkanImageSubresource* subresource = resource->getSubresource(face, mip);
+								if (subresource->getLayout() != initialLayout)
+								{
+									layoutMismatch = true;
+									break;
+								}
 							}
+
+							if (layoutMismatch)
+								break;
 						}
 
 						if (layoutMismatch)
-							break;
-					}
-
-					if (layoutMismatch)
-					{
-						UINT32 startIdx = (UINT32)localBarriers.size();
-						resource->getBarriers(subresourceInfo.range, localBarriers);
-
-						for (UINT32 j = startIdx; j < (UINT32)localBarriers.size(); j++)
 						{
-							VkImageMemoryBarrier& barrier = localBarriers[j];
+							UINT32 startIdx = (UINT32)localBarriers.size();
+							resource->getBarriers(subresourceInfo.range, localBarriers);
 
-							barrier.dstAccessMask = resource->getAccessFlags(initialLayout, subresourceInfo.isInitialReadOnly);
-							barrier.newLayout = initialLayout;
+							for (UINT32 j = startIdx; j < (UINT32)localBarriers.size(); j++)
+							{
+								VkImageMemoryBarrier& barrier = localBarriers[j];
+
+								barrier.dstAccessMask = resource->getAccessFlags(initialLayout, subresourceInfo.isInitialReadOnly);
+								barrier.newLayout = initialLayout;
+							}
 						}
 					}
 				}
@@ -1464,6 +1465,7 @@ namespace bs { namespace ct
 			ImageSubresourceInfo& subresourceInfo = findSubresourceInfo(fbAttachment.image, fbAttachment.surface.face,
 																		fbAttachment.surface.mipLevel);
 
+			subresourceInfo.finalLayout = subresourceInfo.renderPassLayout;
 			subresourceInfo.currentLayout = subresourceInfo.finalLayout;
 			subresourceInfo.requiredLayout = subresourceInfo.finalLayout;
 			subresourceInfo.hasTransitioned = true;
@@ -1475,6 +1477,7 @@ namespace bs { namespace ct
 			ImageSubresourceInfo& subresourceInfo = findSubresourceInfo(fbAttachment.image, fbAttachment.surface.face,
 																		fbAttachment.surface.mipLevel);
 
+			subresourceInfo.finalLayout = subresourceInfo.renderPassLayout;
 			subresourceInfo.currentLayout = subresourceInfo.finalLayout;
 			subresourceInfo.requiredLayout = subresourceInfo.finalLayout;
 			subresourceInfo.hasTransitioned = true;
@@ -1853,7 +1856,8 @@ namespace bs { namespace ct
 			subresourceInfo.currentLayout = newLayout;
 			subresourceInfo.initialLayout = newLayout;
 			subresourceInfo.requiredLayout = newLayout;
-			subresourceInfo.finalLayout = finalLayout;
+			subresourceInfo.finalLayout = isFBAttachment ? newLayout : finalLayout;
+			subresourceInfo.renderPassLayout = finalLayout;
 			subresourceInfo.range = subresourceRange;
 			subresourceInfo.isFBAttachment = isFBAttachment;
 			subresourceInfo.isShaderInput = isShaderBind;
@@ -2222,13 +2226,10 @@ namespace bs { namespace ct
 
 		// If attached to FB, then the final layout is set by the FB (provided as layout param here), otherwise its
 		// the same as required layout
-		if (!isFBAttachment && !subresourceInfo.isFBAttachment)
-			subresourceInfo.finalLayout = subresourceInfo.requiredLayout;
-		else
-		{
-			if (isFBAttachment)
-				subresourceInfo.finalLayout = finalLayout;
-		}
+		subresourceInfo.finalLayout = subresourceInfo.requiredLayout;
+
+		if (isFBAttachment)
+			subresourceInfo.renderPassLayout = finalLayout;
 
 		// Queue layout transition, if not transfer. Transfer handle layout transitions externally.
 		if (!isTransfer)

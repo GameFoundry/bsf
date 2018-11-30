@@ -403,9 +403,25 @@ namespace bs { namespace ct
 			VkImageSubresourceRange range;
 
 			// Only relevant for layout transitions
+			/** 
+			 * Layout transition performed during the submit() call. Doesn't require ending the render pass since it
+			 * will be delayed until submit().
+			 */
 			VkImageLayout initialLayout;
 			VkImageLayout currentLayout;
 			VkImageLayout requiredLayout;
+
+			/** 
+			 * Layout the image will have after the render pass executes, taking account automatic transitions render pass
+			 * does on its attachments. Only relevant for FB attachments. Ignored if render pass doesn't execute.
+			 */
+			VkImageLayout renderPassLayout;
+
+			/** 
+			 * Final layout the image will have after a queue submission. This will be equivalent to renderPassLayout
+			 * if the image is a FB attachment and the pass was executed. Otherwise it will be equal to the explicitly
+			 * set layout when image was bound.
+			 */
 			VkImageLayout finalLayout;
 
 			bool isFBAttachment : 1;
