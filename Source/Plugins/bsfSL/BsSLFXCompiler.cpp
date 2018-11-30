@@ -621,6 +621,10 @@ namespace bs
 			break;
 		case CrossCompileOutput::VKSL45:
 			outputDesc.shaderVersion = Xsc::OutputShaderVersion::VKSL450;
+			#if BS_PLATFORM == BS_PLATFORM_OSX
+			outputDesc.options.moltenVKConvert = true;
+			#endif
+
 			break;
 		}
 

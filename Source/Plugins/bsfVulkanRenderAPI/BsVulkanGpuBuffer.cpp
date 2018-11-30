@@ -105,6 +105,11 @@ namespace bs { namespace ct
 	{
 		if(mProperties.getType() == GBT_STRUCTURED)
 			return;
+		
+		#if BS_PLATFORM == BS_PLATFORM_OSX
+		if((mProperties.getUsage() & GBU_LOADSTORE) == GBU_LOADSTORE)
+			return;
+		#endif
 
 		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
 		{

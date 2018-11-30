@@ -30,6 +30,7 @@ find_imported_library_shared(Vulkan ${Vulkan_LIBNAME})
 
 if(APPLE)
 	find_imported_library_shared(Vulkan MoltenVK)
+	find_imported_library_shared(Vulkan SPIRV-Tools-opt)
 endif()
 
 end_find_package(Vulkan ${Vulkan_LIBNAME})

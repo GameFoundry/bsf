@@ -51,7 +51,11 @@ namespace bs { namespace ct
 				mDummyReadBufferViews[i] = VK_NULL_HANDLE;
 
 			VulkanBuffer* storageBuffer = mDummyStorageBuffer->getResource(i);
+			#if BS_PLATFORM == BS_PLATFORM_OSX
+			if(false)
+			#else
 			if(storageBuffer)
+			#endif
 			{
 				viewCI.buffer = storageBuffer->getHandle();
 
