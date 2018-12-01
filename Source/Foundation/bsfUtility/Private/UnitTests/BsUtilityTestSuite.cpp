@@ -450,7 +450,7 @@ namespace bs
 
 		Complex<float> c6 = c / c2;
 		BS_TEST_ASSERT(c6.real() == 0.680000007f);
-		BS_TEST_ASSERT(c6.imag() == 0.0399999991);
+		BS_TEST_ASSERT(c6.imag() == 0.0399999991f);
 
 		BS_TEST_ASSERT(Complex<float>::abs(c) == 10.7703295f);
 		BS_TEST_ASSERT(Complex<float>::arg(c) == 0.380506366f);
