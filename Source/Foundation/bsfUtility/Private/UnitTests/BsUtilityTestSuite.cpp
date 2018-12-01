@@ -57,6 +57,7 @@ namespace bs
 		BS_ADD_TEST(UtilityTestSuite::testBitfield)
 		BS_ADD_TEST(UtilityTestSuite::testSmallVector)
 		BS_ADD_TEST(UtilityTestSuite::testDynArray)
+		BS_ADD_TEST(UtilityTestSuite::testComplex)
 	}
 
 	void UtilityTestSuite::testBitfield()
@@ -427,82 +428,82 @@ namespace bs
 	
 	void UtilityTestSuite::testComplex()
 	{
-		Complex<double> c(10.0, 4.0);
+		Complex<float> c(10.0, 4.0);
 		BS_TEST_ASSERT(c.real() == 10.0);
 		BS_TEST_ASSERT(c.imag() == 4.0);
 
-		Complex<double> c2(15.0, 5.0);
+		Complex<float> c2(15.0, 5.0);
 		BS_TEST_ASSERT(c2.real() == 15.0);
 		BS_TEST_ASSERT(c2.imag() == 5.0);
 
-		Complex<double> c3 = c + c2;
+		Complex<float> c3 = c + c2;
 		BS_TEST_ASSERT(c3.real() == 25.0);
 		BS_TEST_ASSERT(c3.imag() == 9.0);
 
-		Complex<double> c4 = c - c2;
+		Complex<float> c4 = c - c2;
 		BS_TEST_ASSERT(c4.real() == -5.0);
 		BS_TEST_ASSERT(c4.imag() == -1.0);
 
-		Complex<double> c5 = c * c2;
+		Complex<float> c5 = c * c2;
 		BS_TEST_ASSERT(c5.real() == 130.0);
 		BS_TEST_ASSERT(c5.imag() == 110.0);
 
-		Complex<double> c6 = c / c2;
-		BS_TEST_ASSERT(c6.real() == 0.68);
-		BS_TEST_ASSERT(c6.imag() == 0.04);
+		Complex<float> c6 = c / c2;
+		BS_TEST_ASSERT(c6.real() == 0.680000007f);
+		BS_TEST_ASSERT(c6.imag() == 0.0399999991);
 
-		BS_TEST_ASSERT(Complex<double>::abs(c) == 10.7703);
-		BS_TEST_ASSERT(Complex<double>::arg(c) == 0.380506);
-		BS_TEST_ASSERT(Complex<double>::norm(c) == 116);
+		BS_TEST_ASSERT(Complex<float>::abs(c) == 10.7703295f);
+		BS_TEST_ASSERT(Complex<float>::arg(c) == 0.380506366f);
+		BS_TEST_ASSERT(Complex<float>::norm(c) == 116);
 
-		Complex<double> c7 = Complex<double>::conj(c);
+		Complex<float> c7 = Complex<float>::conj(c);
 		BS_TEST_ASSERT(c7.real() == 10);
 		BS_TEST_ASSERT(c7.imag() == -4);
 		c7 = 0;
 
-		c7 = Complex<double>::polar(2.0, 0.5);
-		BS_TEST_ASSERT(c7.real() == 1.75517);
-		BS_TEST_ASSERT(c7.imag() == 0.958851);
+		c7 = Complex<float>::polar(2.0, 0.5);
+		BS_TEST_ASSERT(c7.real() == 1.75516510f);
+		BS_TEST_ASSERT(c7.imag() == 0.958851099f);
 		c7 = 0;
 
-		c7 = Complex<double>::cos(c);
-		BS_TEST_ASSERT(c7.real() == -22.9136);
-		BS_TEST_ASSERT(c7.imag() == 14.8463);
+		c7 = Complex<float>::cos(c);
+		BS_TEST_ASSERT(c7.real() == -22.9135609f);
+		BS_TEST_ASSERT(c7.imag() == 14.8462915f);
 		c7 = 0;
 
-		c7 = Complex<double>::cosh(c);
-		BS_TEST_ASSERT(c7.real() == -7198.73);
-		BS_TEST_ASSERT(c7.imag() == -8334.84);
+		c7 = Complex<float>::cosh(c);
+		BS_TEST_ASSERT(c7.real() == -7198.72949f);
+		BS_TEST_ASSERT(c7.imag() == -8334.84180f);
 		c7 = 0;
 
-		c7 = Complex<double>::exp(c);
-		BS_TEST_ASSERT(c7.real() == -14397.5);
-		BS_TEST_ASSERT(c7.imag() == -16669.7);
+		c7 = Complex<float>::exp(c);
+		BS_TEST_ASSERT(c7.real() == -14397.4580f);
+		BS_TEST_ASSERT(c7.imag() == -16669.6836f);
 		c7 = 0;
 
-		c7 = Complex<double>::log(c);
-		BS_TEST_ASSERT(c7.real() == 2.3768);
-		BS_TEST_ASSERT(c7.imag() == 0.380506);
+		c7 = Complex<float>::log(c);
+		BS_TEST_ASSERT(c7.real() == 2.37679505f);
+		BS_TEST_ASSERT(c7.imag() == 0.380506366f);
 		c7 = 0;
 
-		c7 = Complex<double>::pow(c, 2.0);
-		BS_TEST_ASSERT(c7.real() == 84);
-		BS_TEST_ASSERT(c7.imag() == 80);
+		c7 = Complex<float>::pow(c, 2.0);
+		BS_TEST_ASSERT(c7.real() == 84.0000000f);
+		BS_TEST_ASSERT(c7.imag() == 79.9999924f);
 		c7 = 0;
 
-		c7 = Complex<double>::sin(c);
-		BS_TEST_ASSERT(c7.real() == -14.8563);
-		BS_TEST_ASSERT(c7.imag() == -22.8982);
+		c7 = Complex<float>::sin(c);
+		BS_TEST_ASSERT(c7.real() == -14.8562555f);
+		BS_TEST_ASSERT(c7.imag() == -22.8981915f);
 		c7 = 0;
 
-		c7 = Complex<double>::sinh(c);
-		BS_TEST_ASSERT(c7.real() == -7198.73);
-		BS_TEST_ASSERT(c7.imag() == -8334.84);
+		c7 = Complex<float>::sinh(c);
+		BS_TEST_ASSERT(c7.real() == -7198.72900f);
+		BS_TEST_ASSERT(c7.imag() == -8334.84277f);
 		c7 = 0;
 
-		c7 = Complex<double>::sqrt(c);
-		BS_TEST_ASSERT(c7.real() == 3.2226);
-		BS_TEST_ASSERT(c7.imag() == 0.620616);
+		c7 = Complex<float>::sqrt(c);
+		BS_TEST_ASSERT(c7.real() == 3.22260213f);
+		BS_TEST_ASSERT(c7.imag() == 0.620616496f);
 		c7 = 0;
 	}
 }
