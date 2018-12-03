@@ -719,7 +719,7 @@ namespace bs { namespace ct
 
 			// Keep dynamic textures in general layout, so they can be easily mapped by CPU
 			VkImageLayout layout;
-			if (props.getUsage() & TU_DYNAMIC)
+			if (props.getUsage() & TU_DYNAMIC || props.getUsage() & TU_LOADSTORE)
 				layout = VK_IMAGE_LAYOUT_GENERAL;
 			else
 				layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
