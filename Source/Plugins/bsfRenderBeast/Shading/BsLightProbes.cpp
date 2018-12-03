@@ -130,12 +130,19 @@ namespace bs { namespace ct
 		mParamSkyIrradianceTex.set(skyIrradiance);
 		mParamAmbientOcclusionTex.set(ambientOcclusion);
 
+		RenderSurfaceMask loadMask = RT_COLOR0;
 		if(!mSkyOnly)
 		{
 			mParamInputTex.set(lightProbeIndices);
 			mParamSHCoeffsTexture.set(lightProbesInfo.shCoefficients);
 			mParamTetrahedraBuffer.set(lightProbesInfo.tetrahedra);
 			mParamTetFacesBuffer.set(lightProbesInfo.faces);
+		}
+		else
+		{
+			// No need to load depth/stencil when rendering light probes as we'll be using a newly created intermediate
+			// depth buffer
+			loadMask |= RT_DEPTH_STENCIL;
 		}
 
 		gIrradianceEvaluateParamDef.gSkyBrightness.set(mParamBuffer, skyBrightness);
@@ -146,7 +153,7 @@ namespace bs { namespace ct
 
 		// Render
 		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(output, FBT_DEPTH | FBT_STENCIL, RT_COLOR0);
+		rapi.setRenderTarget(output, FBT_DEPTH | FBT_STENCIL, loadMask);
 
 		bind();
 

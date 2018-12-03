@@ -2351,42 +2351,109 @@ namespace bs
 		}
 	}
 
-	void PixelUtil::applyGamma(UINT8* buffer, float gamma, UINT32 size, UINT8 bpp)
+	float linearToSRGB(float x)
 	{
-		if(gamma == 1.0f)
-			return;
+		if (x <= 0.0f)
+			return 0.0f;
+		else if (x >= 1.0f)
+			return 1.0f;
+		else if (x < 0.0031308f)
+			return x * 12.92f;
+		else
+			return std::pow(x, 1.0f / 2.4f) * 1.055f - 0.055f;
+	}
 
-		UINT32 stride = bpp >> 3;
+	float SRGBToLinear(float x)
+	{
+		if (x <= 0.0f)
+			return 0.0f;
+		else if (x >= 1.0f)
+			return 1.0f;
+		else if (x < 0.04045f)
+			return x / 12.92f;
+		else
+			return std::pow((x + 0.055f) / 1.055f, 2.4f);
+	}
 
-		for(size_t i = 0, j = size / stride; i < j; i++, buffer += stride)
+	Color PixelUtil::linearToSRGB(const bs::Color& color)
+	{
+		return Color(
+				bs::linearToSRGB(color.r),
+				bs::linearToSRGB(color.g),
+				bs::linearToSRGB(color.b),
+				color.a);
+	}
+
+	Color PixelUtil::SRGBToLinear(const bs::Color& color)
+	{
+		return Color(
+				bs::SRGBToLinear(color.r),
+				bs::SRGBToLinear(color.g),
+				bs::SRGBToLinear(color.b),
+				color.a);
+	}
+
+	void PixelUtil::linearToSRGB(PixelData& pixelData)
+	{
+		UINT32 depth = pixelData.getDepth();
+		UINT32 height = pixelData.getHeight();
+		UINT32 width = pixelData.getWidth();
+
+		UINT32 pixelSize = PixelUtil::getNumElemBytes(pixelData.getFormat());
+		UINT8* data = pixelData.getData();
+
+		for (UINT32 z = 0; z < depth; z++)
 		{
-			float r = (float)buffer[0];
-			float g = (float)buffer[1];
-			float b = (float)buffer[2];
+			UINT32 zDataIdx = z * pixelData.getSlicePitch() * pixelSize;
 
-			r = r * gamma;
-			g = g * gamma;
-			b = b * gamma;
+			for (UINT32 y = 0; y < height; y++)
+			{
+				UINT32 yDataIdx = y * pixelData.getRowPitch() * pixelSize;
 
-			float scale = 1.0f;
-			float tmp = 0.0f;
+				for (UINT32 x = 0; x < width; x++)
+				{
+					UINT32 dataIdx = x * pixelSize + yDataIdx + zDataIdx;
+					UINT8* dest = data + dataIdx;
 
-			if(r > 255.0f && (tmp=(255.0f/r)) < scale)
-				scale = tmp;
+					Color color;
 
-			if(g > 255.0f && (tmp=(255.0f/g)) < scale)
-				scale = tmp;
+					PixelUtil::unpackColor(&color, pixelData.getFormat(), dest);
+					color = linearToSRGB(color);
+					PixelUtil::packColor(color, pixelData.getFormat(), dest);
+				}
+			}
+		}
+	}
 
-			if(b > 255.0f && (tmp=(255.0f/b)) < scale)
-				scale = tmp;
+	void PixelUtil::SRGBToLinear(PixelData& pixelData)
+	{
+		UINT32 depth = pixelData.getDepth();
+		UINT32 height = pixelData.getHeight();
+		UINT32 width = pixelData.getWidth();
 
-			r *= scale;
-			g *= scale;
-			b *= scale;
+		UINT32 pixelSize = PixelUtil::getNumElemBytes(pixelData.getFormat());
+		UINT8* data = pixelData.getData();
 
-			buffer[0] = (UINT8)r;
-			buffer[1] = (UINT8)g;
-			buffer[2] = (UINT8)b;
+		for (UINT32 z = 0; z < depth; z++)
+		{
+			UINT32 zDataIdx = z * pixelData.getSlicePitch() * pixelSize;
+
+			for (UINT32 y = 0; y < height; y++)
+			{
+				UINT32 yDataIdx = y * pixelData.getRowPitch() * pixelSize;
+
+				for (UINT32 x = 0; x < width; x++)
+				{
+					UINT32 dataIdx = x * pixelSize + yDataIdx + zDataIdx;
+					UINT8* dest = data + dataIdx;
+
+					Color color;
+
+					PixelUtil::unpackColor(&color, pixelData.getFormat(), dest);
+					color = SRGBToLinear(color);
+					PixelUtil::packColor(color, pixelData.getFormat(), dest);
+				}
+			}
 		}
 	}
 

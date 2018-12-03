@@ -277,15 +277,17 @@ namespace bs
 		 */
 		static void copy(const PixelData& src, PixelData& dst, UINT32 offsetX = 0, UINT32 offsetY = 0, UINT32 offsetZ = 0);
 
-		/**
-		 * Applies gamma correction to the pixels in the provided buffer.
-		 *
-		 * @param[in]	buffer	Pointer to the buffer containing the pixels.
-		 * @param[in]	gamma	Gamma value to apply.
-		 * @param[in]	size	Size of the buffer in bytes.
-		 * @param[in]	bpp		Number of bits per pixel of the pixels in the buffer.
-		 */
-		static void applyGamma(UINT8* buffer, float gamma, UINT32 size, UINT8 bpp);
+		/** Converts a color in linear space to a color in sRGB space. Only converts the RGB components. */
+		static Color linearToSRGB(const Color& color);
+
+		/** Converts a color in sRGB space to a color in linear space. Only converts the RGB components. */
+		static Color SRGBToLinear(const Color& color);
+
+		/** Converts pixel data in linear space to one in sRGB space. Only converts the RGB components. */
+		static void linearToSRGB(PixelData& pixelData);
+
+		/** Converts pixel data in sRGB space to one in linear space. Only converts the RGB components. */
+		static void SRGBToLinear(PixelData& pixelData);
 	};
 
 	/** @} */
