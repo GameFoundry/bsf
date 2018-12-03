@@ -401,9 +401,6 @@ namespace bs
 
 	void Platform::setIcon(const PixelData& pixelData)
 	{
-		SPtr<PixelData> resizedData = PixelData::create(32, 32, 1, PF_RGBA8);
-		PixelUtil::scale(pixelData, *resizedData);
-
 		if(!mData->mainXWindow)
 			return;
 
