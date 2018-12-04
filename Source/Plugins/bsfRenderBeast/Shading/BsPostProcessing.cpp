@@ -1590,7 +1590,7 @@ namespace bs { namespace ct
 		SPtr<GpuParamBlockBuffer> perView = view.getPerViewBuffer();
 		mParams->setParamBlockBuffer("PerCamera", perView);
 
-		rapi.setRenderTarget(destination, FBT_DEPTH);
+		rapi.setRenderTarget(destination, FBT_DEPTH | FBT_STENCIL, RT_DEPTH_STENCIL);
 
 		bind();
 
