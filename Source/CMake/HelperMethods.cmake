@@ -540,117 +540,46 @@ function(check_and_update_builtin_assets ASSET_PREFIX ASSET_FOLDER FOLDER_NAME A
 	endif()
 endfunction()
 
-set(BS_FTP_CREDENTIALS_FILE "${PROJECT_SOURCE_DIR}/../ftp_credentials" CACHE STRING "The location containing the FTP server credentials to use for uploading packages. The file is expected to contain three lines: URL/Username/Password, in that order.")
-mark_as_advanced(BS_FTP_CREDENTIALS_FILE)
-
-function(update_data_file_package _NAME _FOLDER _FILES)
-	message(STATUS "Updating data files package...")
-
-	# Get FTP credentials needed for upload
-	if(NOT EXISTS ${BS_FTP_CREDENTIALS_FILE})
-		message("FTP credentials are missing at ${BS_FTP_CREDENTIALS_FILE}.")
-		message(STATUS "...aborting data file packaging.")
-		return()
-	endif()
-	
-	file (STRINGS ${BS_FTP_CREDENTIALS_FILE} FTP_CREDENTIALS)
-
-	list(GET FTP_CREDENTIALS 0 FTP_URL)
-	list(GET FTP_CREDENTIALS 1 FTP_USER)
-	list(GET FTP_CREDENTIALS 2 FTP_PW)
-	
-	# Get current version
-	set(REQUESTED_VERSION_FILE ${_FOLDER}/.reqversion)
-	set(CURRENT_VERSION_FILE ${_FOLDER}/.version)
-
-	file (STRINGS ${REQUESTED_VERSION_FILE} CURRENT_VERSION_NUM)
-	math(EXPR NEW_VERSION_NUM "${CURRENT_VERSION_NUM}+1")
-	
-	# Clean and create a temporary folder
-	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)	
-	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/Temp)	
-
-	# Update version number in the package
-	file(WRITE ${CURRENT_VERSION_FILE} ${NEW_VERSION_NUM})
-	
-	# Generate an archive with data files
-	set(ARCHIVE_FILENAME ${_NAME}_${NEW_VERSION_NUM}.zip)
-	set(ARCHIVE_PATH ${PROJECT_SOURCE_DIR}/Temp/${ARCHIVE_FILENAME})
-
-	execute_process(
-		COMMAND
-			${CMAKE_COMMAND} -E tar 
-			"cf" "${ARCHIVE_PATH}" --format=zip
-		    --files-from=${_FOLDER}/${_FILES}
-		WORKING_DIRECTORY "${_FOLDER}/.."
-		RESULT_VARIABLE ARCHIVE_STATUS_CODE
-		ERROR_VARIABLE ARCHIVE_ERROR_MESSAGE
-	)
-
-	if(NOT ARCHIVE_STATUS_CODE EQUAL 0)
-		message("Failed to create archive file: ${ARCHIVE_PATH}. Error: ${ARCHIVE_ERROR_MESSAGE}")
-		message(STATUS "...aborting data file packaging.")
-		return()
-	endif()
-	
-	# Upload the package
-	message(STATUS "   Uploading data package: ${ARCHIVE_FILENAME}")
-	file(
-		UPLOAD "${ARCHIVE_PATH}" "${FTP_URL}/${ARCHIVE_FILENAME}"
-		USERPWD ${FTP_USER}:${FTP_PW}
-		STATUS UPLOAD_STATUS_CODE
-		SHOW_PROGRESS)
-		
-	if(NOT UPLOAD_STATUS_CODE EQUAL 0)
-		message("Failed to upload file: ${ARCHIVE_PATH}. Error code: ${UPLOAD_STATUS_CODE}")
-		message(STATUS "...aborting data file packaging.")
-	endif()
-
-	# Update active version number (only if everything else succeeds)
-	file(WRITE ${REQUESTED_VERSION_FILE} ${NEW_VERSION_NUM})
-
-	# Clean up
-	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)
-	
-	message(STATUS "...data file packaging succesful, new version is ${NEW_VERSION_NUM}.")
-endfunction()
-
-function(run_import_tool _PREFIX _FOLDER _ARGS)
+function(add_run_asset_import_target _PREFIX _FOLDER _WORKING_DIR _ARGS)
 	find_package(bsfImportTool)
 
-	message(STATUS "Checking built-in assets for modifications for '${_PREFIX}'...")
-	
-	# Cannot find binaries, see if we can compile them
 	if(NOT bsfImportTool_FOUND)
-		message("...bsfImportTool binaries cannot be found. Build the bsfImportTool target and install it to Dependencies/tools/bsfImportTool.")
-		message(STATUS "...aborting data file packaging.")
-		return()
+		message("Cannot add asset import target because bsfImportTool binaries cannot be found. Build the bsfImportTool target and install it to Dependencies/tools/bsfImportTool.")
+	else()
+		set(RunAssetImport_EXECUTABLE ${bsfImportTool_EXECUTABLE})
+		set(RunAssetImport_INPUT_FOLDER ${_FOLDER})
+		set(RunAssetImport_CMD_ARGS ${__ARGS})
+		set(RunAssetImport_PREFIX ${_PREFIX})
+		set(RunAssetImport_WORKING_DIR ${_WORKING_DIR})
+		
+		configure_file(
+			${BSF_SOURCE_DIR}/CMake/Scripts/RunAssetImport.cmake.in
+			${CMAKE_CURRENT_BINARY_DIR}/RunAssetImport_${_PREFIX}.cmake
+			@ONLY)
+		
+		add_custom_target(RunAssetImport_${_PREFIX} COMMAND ${CMAKE_COMMAND} -P
+			${CMAKE_CURRENT_BINARY_DIR}/RunAssetImport_${_PREFIX}.cmake)
+			
+		set_property(TARGET RunAssetImport_${_PREFIX} PROPERTY FOLDER Scripts)
 	endif()
+endfunction()
+
+function(add_upload_assets_target _PREFIX _NAME _FOLDER _FILES)
+	set(UploadAssets_FTP_CREDENTIALS_FILE ${BS_FTP_CREDENTIALS_FILE})
+	set(UploadAssets_INPUT_FOLDER ${_FOLDER})
+	set(UploadAssets_INPUT_FILES ${_FILES})
+	set(UploadAssets_ARCHIVE_NAME ${_NAME})
+	set(UploadAssets_TEMP_FOLDER ${PROJECT_SOURCE_DIR}/Temp)
+
+	configure_file(
+		${BSF_SOURCE_DIR}/CMake/Scripts/UploadAssets.cmake.in
+		${CMAKE_CURRENT_BINARY_DIR}/UploadAssets_${_PREFIX}.cmake
+		@ONLY)
 	
-	execute_process(
-		COMMAND ${bsfImportTool_EXECUTABLE} ${_FOLDER}/Data/Raw/ ${_FOLDER}/Data/ ${_ARGS}
-		COMMENT "...importing files, please wait."
-		RESULT_VARIABLE IMPORT_STATUS_CODE
-	)
-	
-	if((NOT IMPORT_STATUS_CODE EQUAL 0) AND (NOT IMPORT_STATUS_CODE EQUAL 1))
-		message("Failed to import built-in assets. Error code: ${IMPORT_STATUS_CODE}")
-		message(STATUS "...aborting data file packaging.")
-		return()
-	endif()
-	
-	if(IMPORT_STATUS_CODE EQUAL 0)
-		message(STATUS "...done, no built-in assets modifications detected.")
-		return()
-	endif()
-	
-	message(STATUS "...built-in asset import successful.")
-	
-	if(${UPLOAD_ASSETS})	
-		if(IMPORT_STATUS_CODE EQUAL 1)
-			update_data_file_package("${_PREFIX}CompiledData_Master" ${_FOLDER}/Data Raw/DataPackageContents.txt)
-		endif()
-	endif()
+	add_custom_target(UploadAssets_${_PREFIX} COMMAND ${CMAKE_COMMAND} -P
+		${CMAKE_CURRENT_BINARY_DIR}/UploadAssets_${_PREFIX}.cmake)
+		
+	set_property(TARGET UploadAssets_${_PREFIX} PROPERTY FOLDER Scripts)
 endfunction()
 
 #######################################################################################

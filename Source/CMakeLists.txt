@@ -35,7 +35,7 @@ set(BUILD_TESTS OFF CACHE BOOL "If true, build targets for running unit tests wi
 
 set(BUILD_BSL OFF CACHE BOOL "If true, build lexer & parser for BSL. Requires flex & bison dependencies.")
 
-set(BUILD_ASSETS OFF CACHE BOOL "If true, built-in assets will be imported from raw assets. Enable this if modifying any of the built-in raw assets. Otherwise the assets will be retrieved from an online repository.")
+set(INCLUDE_ASSET_PACKAGING_SCRIPTS OFF CACHE BOOL "If true, generate helper targets that allow you to import built-in assets as well as upload new package versions.")
 
 set(UPLOAD_ASSETS OFF CACHE BOOL "Only relevant if BUILD_ASSETS is true. When enabled the system will upload a package with the latest assets whenever assets are built, provided valid server and credentials are present.")
 
@@ -183,22 +183,18 @@ set_property(TARGET bsfImportTool PROPERTY FOLDER Utilities)
 
 install(TARGETS bsfImportTool RUNTIME DESTINATION bin)	
 
-if(${BUILD_ASSETS})
-	run_import_tool(bsf ${BSF_SOURCE_DIR}/.. "")
+set(BS_FTP_CREDENTIALS_FILE "${PROJECT_SOURCE_DIR}/../ftp_credentials" CACHE STRING "The location containing the FTP server credentials to use for uploading packages. The file is expected to contain three lines: URL/Username/Password, in that order.")
+mark_as_advanced(BS_FTP_CREDENTIALS_FILE)
+
+if(${INCLUDE_ASSET_PACKAGING_SCRIPTS})
+	add_run_asset_import_target(bsfBuiltinAssets ${BSF_SOURCE_DIR}/../Data ${BSF_SOURCE_DIR}/.. "")
+	add_upload_assets_target(bsfBuiltinAssets "bsfCompiledData_Master" ${BSF_SOURCE_DIR}/../Data Raw/DataPackageContents.txt)
+	add_upload_assets_target(bsfDocImages "bsfDocImagesData_Master" ${BSF_SOURCE_DIR}/../Documentation DataPackageContents.txt)
 endif()
 
 set(COMPILED_ASSETS_VERSION_FILE ${BSF_SOURCE_DIR}/../Data/.reqversion)
 file (STRINGS ${COMPILED_ASSETS_VERSION_FILE} COMPILED_ASSETS_VERSION)
 check_and_update_builtin_assets(bsfCompiled ${BSF_SOURCE_DIR}/../Data Data ${COMPILED_ASSETS_VERSION} NO)
-
-## Documentation images
-if(${UPLOAD_ASSETS})
-	check_for_changes(${BSF_SOURCE_DIR}/../Documentation/Manuals/Images *.* ${BSF_SOURCE_DIR}/../Documentation/Timestamp.asset IS_CHANGED)
-	if(${IS_CHANGED})
-		execute_process(COMMAND ${CMAKE_COMMAND} -E touch ${BSF_SOURCE_DIR}/../Documentation/Timestamp.asset)
-		update_data_file_package("bsfDocImagesData_Master" ${BSF_SOURCE_DIR}/../Documentation DataPackageContents.txt)
-	endif()
-endif()
 
 set(DOC_IMAGES_VERSION_FILE ${BSF_SOURCE_DIR}/../Documentation/.reqversion)
 file (STRINGS ${DOC_IMAGES_VERSION_FILE} DOC_IMAGES_VERSION)
