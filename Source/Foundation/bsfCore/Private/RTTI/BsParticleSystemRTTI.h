@@ -717,7 +717,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(simulationSpace, 0)
 			BS_RTTI_MEMBER_PLAIN(orientation, 1)
 			BS_RTTI_MEMBER_PLAIN(orientationLockY, 2)
-			BS_RTTI_MEMBER_PLAIN(orientationPlane, 3)
+			BS_RTTI_MEMBER_PLAIN(orientationPlaneNormal, 3)
 			BS_RTTI_MEMBER_PLAIN(sortMode, 4)
 			BS_RTTI_MEMBER_PLAIN(duration, 5)
 			BS_RTTI_MEMBER_PLAIN(isLooping, 6)

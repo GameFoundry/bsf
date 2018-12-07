@@ -629,7 +629,7 @@ namespace bs {	namespace ct
 		SPtr<GpuParamBlockBuffer> particlesParamBuffer = gParticlesParamDef.createBuffer();
 		PerObjectBuffer::update(perObjectParamBuffer, rendererParticles.localToWorld, localToWorldNoScale, layer);
 
-		Vector3 axisForward = settings.orientationPlane.normal;
+		Vector3 axisForward = settings.orientationPlaneNormal;
 
 		Vector3 axisUp = Vector3::UNIT_Y;
 		if (axisForward.dot(axisUp) > 0.9998f)

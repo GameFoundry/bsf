@@ -36,7 +36,7 @@ namespace bs
 		p(gpuSimulation);
 		p(simulationSpace);
 		p(orientation);
-		p(orientationPlane);
+		p(orientationPlaneNormal);
 		p(orientationLockY);
 		p(duration);
 		p(isLooping);

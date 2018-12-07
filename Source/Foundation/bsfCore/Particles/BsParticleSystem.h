@@ -44,7 +44,7 @@ namespace bs
 		/** Orient towards view (camera) position. */
 		ViewPosition,
 
-		/** Orient with a user-provided plane. */
+		/** Orient with a user-provided axis. */
 		Plane
 	};
 
@@ -163,11 +163,11 @@ namespace bs
 		bool orientationLockY = false;
 
 		/** 
-		 * Determines a plane to orient particles towards. Only used if particle orientation mode is set to 
+		 * Determines a normal of the plane to orient particles towards. Only used if particle orientation mode is set to 
 		 * ParticleOrientation::Plane. 
 		 */
 		BS_SCRIPT_EXPORT()
-		Plane orientationPlane = Plane(Vector3::UNIT_Z, Vector3::ZERO);
+		Vector3 orientationPlaneNormal = Vector3::UNIT_Z;
 
 		/** 
 		 * Determines how (and if) are particles sorted. Sorting controls in what order are particles rendered. 
