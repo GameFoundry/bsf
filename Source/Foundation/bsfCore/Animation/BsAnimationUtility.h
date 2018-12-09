@@ -11,6 +11,53 @@ namespace bs
 	 *  @{
 	 */
 
+	/** Contains information and helper methods for various curve types. */
+	template<class T>
+	struct TCurveProperties {};
+
+	template<>
+	struct TCurveProperties<float>
+	{
+		enum { NumComponents = 1 };
+		static float getZero() { return 0.0f; }
+		static float getComponent(float val, UINT32 i) { return val; }
+		static void setComponent(float& val, UINT32 i, float newVal) { val = newVal; }
+	};
+
+	template<>
+	struct TCurveProperties<INT32>
+	{
+		enum { NumComponents = 1 };
+		static INT32 getZero() { return 0; }
+	};
+
+	template<>
+	struct TCurveProperties<Vector2>
+	{
+		enum { NumComponents = 2 };
+		static Vector2 getZero() { return Vector2::ZERO; }
+		static float getComponent(const Vector2& val, UINT32 i) { return val[i]; }
+		static void setComponent(Vector2& val, UINT32 i, float newVal) { val[i] = newVal; }
+	};
+
+	template<>
+	struct TCurveProperties<Vector3>
+	{
+		enum { NumComponents = 3 };
+		static Vector3 getZero() { return Vector3::ZERO; }
+		static float getComponent(const Vector3& val, UINT32 i) { return val[i]; }
+		static void setComponent(Vector3& val, UINT32 i, float newVal) { val[i] = newVal; }
+	};
+
+	template<>
+	struct TCurveProperties<Quaternion>
+	{
+		enum { NumComponents = 4 };
+		static Quaternion getZero() { return Quaternion::ZERO; }
+		static float getComponent(const Quaternion& val, UINT32 i) { return val[i]; }
+		static void setComponent(Quaternion& val, UINT32 i, float newVal) { val[i] = newVal; }
+	};
+
 	/** Helper class for dealing with animations, animation clips and curves. */
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Animation) AnimationUtility
 	{
@@ -35,12 +82,29 @@ namespace bs
 
 		/** Splits a Vector3 curve into three individual curves, one for each component. */
 		BS_SCRIPT_EXPORT()
-		static Vector<SPtr<TAnimationCurve<float>>> splitCurve(const SPtr<TAnimationCurve<Vector3>>& compoundCurve);
+		static Vector<SPtr<TAnimationCurve<float>>> splitCurve3D(const SPtr<TAnimationCurve<Vector3>>& compoundCurve);
 
 		/** Combines three single component curves into a Vector3 curve. */
 		BS_SCRIPT_EXPORT()
-		static SPtr<TAnimationCurve<Vector3>> combineCurve(const Vector<SPtr<TAnimationCurve<float>>>& curveComponents);
+		static SPtr<TAnimationCurve<Vector3>> combineCurve3D(const Vector<SPtr<TAnimationCurve<float>>>& curveComponents);
 
+		/** Splits a Vector2 curve into two individual curves, one for each component. */
+		BS_SCRIPT_EXPORT()
+		static Vector<SPtr<TAnimationCurve<float>>> splitCurve2D(const SPtr<TAnimationCurve<Vector2>>& compoundCurve);
+
+		/** Combines two single component curves into a Vector2 curve. */
+		BS_SCRIPT_EXPORT()
+		static SPtr<TAnimationCurve<Vector2>> combineCurve2D(const Vector<SPtr<TAnimationCurve<float>>>& curveComponents);
+
+		/** Splits a multi-component curve into multiple individual curves, one for each component. */
+		template<class T>
+		static void splitCurve(const TAnimationCurve<T>& compoundCurve, 
+			TAnimationCurve<float> (&output)[TCurveProperties<T>::NumComponents]);
+
+		/** Combines multiple single component curves into a multi-component curve. */
+		template<class T>
+		static void combineCurve(const TAnimationCurve<float> (&curveComponents)[TCurveProperties<T>::NumComponents], 
+			TAnimationCurve<T>& output);
 		/**
 		 * Calculates the total range covered by a set of curves.
 		 *

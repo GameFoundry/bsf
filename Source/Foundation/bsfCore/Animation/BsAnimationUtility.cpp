@@ -223,58 +223,57 @@ namespace bs
 		return bs_shared_ptr_new<TAnimationCurve<Vector3>>(eulerKeyframes);
 	}
 
-	Vector<SPtr<TAnimationCurve<float>>> AnimationUtility::splitCurve(const SPtr<TAnimationCurve<Vector3>>& compoundCurve)
+	template <class T>
+	void splitCurve(
+		const TAnimationCurve<T>& compoundCurve, 
+		Vector<TKeyframe<float>> (&keyFrames)[TCurveProperties<T>::NumComponents])
 	{
-		UINT32 numKeyFrames = compoundCurve->getNumKeyFrames();
-		Vector<TKeyframe<float>> keyFrames[3];
+		constexpr UINT32 NUM_COMPONENTS = TCurveProperties<T>::NumComponents;
 
+		const UINT32 numKeyFrames = compoundCurve.getNumKeyFrames();
 		for (UINT32 i = 0; i < numKeyFrames; i++)
 		{
-			const TKeyframe<Vector3>& key = compoundCurve->getKeyFrame(i);
+			const TKeyframe<T>& key = compoundCurve.getKeyFrame(i);
 
 			TKeyframe<float> newKey;
 			newKey.time = key.time;
 
-			for (UINT32 j = 0; j < 3; j++)
+			for (UINT32 j = 0; j < NUM_COMPONENTS; j++)
 			{
 				bool addNew = true;
 				if (i > 0)
 				{
 					const TKeyframe<float>& prevKey = keyFrames[j].back();
 
-					bool isEqual = Math::approxEquals(prevKey.value, key.value[j]) &&
-						Math::approxEquals(prevKey.outTangent, key.inTangent[j]);
+					bool isEqual = Math::approxEquals(prevKey.value, TCurveProperties<T>::getComponent(key.value, j)) &&
+						Math::approxEquals(prevKey.outTangent, TCurveProperties<T>::getComponent(key.inTangent, j));
 
 					addNew = !isEqual;
 				}
 
 				if (addNew)
 				{
-					newKey.value = key.value[j];
-					newKey.inTangent = key.inTangent[j];
-					newKey.outTangent = key.outTangent[j];
+					newKey.value = TCurveProperties<T>::getComponent(key.value, j);
+					newKey.inTangent = TCurveProperties<T>::getComponent(key.inTangent, j);
+					newKey.outTangent = TCurveProperties<T>::getComponent(key.outTangent, j);
 
 					keyFrames[j].push_back(newKey);
 				}
 			}
 		}
-
-		Vector<SPtr<TAnimationCurve<float>>> output(3);
-		for (UINT32 i = 0; i < 3; i++)
-			output[i] = bs_shared_ptr_new<TAnimationCurve<float>>(keyFrames[i]);
-
-		return output;
 	}
 
-	SPtr<TAnimationCurve<Vector3>> AnimationUtility::combineCurve(const Vector<SPtr<TAnimationCurve<float>>>& curveComponents)
+	template <class T>
+	void combineCurve(
+		const TAnimationCurve<float>* (& curveComponents)[TCurveProperties<T>::NumComponents], 
+		Vector<TKeyframe<T>>& output)
 	{
-		// Find unique keyframe times
-		Map<float, TKeyframe<Vector3>> keyFrames;
-		for(UINT32 i = 0; i < 3; i++)
-		{
-			if (i >= (UINT32)curveComponents.size())
-				break;
+		constexpr UINT32 NUM_COMPONENTS = TCurveProperties<T>::NumComponents;
 
+		// Find unique keyframe times
+		Map<float, TKeyframe<T>> keyFrames;
+		for(UINT32 i = 0; i < NUM_COMPONENTS; i++)
+		{
 			UINT32 numKeyFrames = curveComponents[i]->getNumKeyFrames();
 			for (UINT32 j = 0; j < numKeyFrames; j++)
 			{
@@ -283,7 +282,7 @@ namespace bs
 				auto iterFind = keyFrames.find(keyFrame.time);
 				if (iterFind == keyFrames.end())
 				{
-					TKeyframe<Vector3> newKeyFrame;
+					TKeyframe<T> newKeyFrame;
 					newKeyFrame.time = keyFrame.time;
 
 					keyFrames.insert(std::make_pair(keyFrame.time, newKeyFrame));
@@ -292,25 +291,109 @@ namespace bs
 		}
 
 		// Populate keyframe values
-		Vector<TKeyframe<Vector3>> keyframeList(keyFrames.size());
+		output.resize(keyFrames.size());
 		UINT32 idx = 0;
 		for(auto& entry : keyFrames)
 		{
-			TKeyframe<Vector3>& keyFrame = entry.second;
+			TKeyframe<T>& keyFrame = entry.second;
 			
-			for(UINT32 j = 0; j < 3; j++)
+			for(UINT32 j = 0; j < NUM_COMPONENTS; j++)
 			{
 				TKeyframe<float> currentKey = curveComponents[j]->evaluateKey(keyFrame.time, false);
-				keyFrame.value[j] = currentKey.value;
-				keyFrame.inTangent[j] = currentKey.inTangent;
-				keyFrame.outTangent[j] = currentKey.outTangent;
+				TCurveProperties<T>::setComponent(keyFrame.value, j, currentKey.value);
+				TCurveProperties<T>::setComponent(keyFrame.inTangent, j, currentKey.inTangent);
+				TCurveProperties<T>::setComponent(keyFrame.outTangent, j, currentKey.outTangent);
 			}
 
-			keyframeList[idx] = keyFrame;
+			output[idx] = keyFrame;
 			idx++;
 		}
+	}
 
-		return bs_shared_ptr_new<TAnimationCurve<Vector3>>(keyframeList);
+	Vector<SPtr<TAnimationCurve<float>>> AnimationUtility::splitCurve3D(const SPtr<TAnimationCurve<Vector3>>& compoundCurve)
+	{
+		Vector<TKeyframe<float>> keyFrames[3];
+
+		if(compoundCurve)
+			bs::splitCurve(*compoundCurve, keyFrames);
+
+		Vector<SPtr<TAnimationCurve<float>>> output(3);
+		for (UINT32 i = 0; i < 3; i++)
+			output[i] = bs_shared_ptr_new<TAnimationCurve<float>>(keyFrames[i]);
+
+		return output;
+	}
+
+	SPtr<TAnimationCurve<Vector3>> AnimationUtility::combineCurve3D(const Vector<SPtr<TAnimationCurve<float>>>& curveComponents)
+	{
+		Vector<TKeyframe<Vector3>> keyFrames;
+		if(curveComponents.size() >= 3)
+		{
+			const TAnimationCurve<float>* curves[] =
+				{ curveComponents[0].get(), curveComponents[1].get(), curveComponents[2].get() };
+
+			bs::combineCurve(curves, keyFrames);
+		}
+
+		return bs_shared_ptr_new<TAnimationCurve<Vector3>>(keyFrames);
+	}
+
+	Vector<SPtr<TAnimationCurve<float>>> AnimationUtility::splitCurve2D(const SPtr<TAnimationCurve<Vector2>>& compoundCurve)
+	{
+		Vector<TKeyframe<float>> keyFrames[2];
+
+		if(compoundCurve)
+			bs::splitCurve(*compoundCurve, keyFrames);
+
+		Vector<SPtr<TAnimationCurve<float>>> output(2);
+		for (UINT32 i = 0; i < 2; i++)
+			output[i] = bs_shared_ptr_new<TAnimationCurve<float>>(keyFrames[i]);
+
+		return output;
+	}
+
+	SPtr<TAnimationCurve<Vector2>> AnimationUtility::combineCurve2D(const Vector<SPtr<TAnimationCurve<float>>>& curveComponents)
+	{
+		Vector<TKeyframe<Vector2>> keyFrames;
+		if(curveComponents.size() >= 2)
+		{
+			const TAnimationCurve<float>* curves[] =
+				{ curveComponents[0].get(), curveComponents[1].get() };
+
+			bs::combineCurve(curves, keyFrames);
+		}
+
+		return bs_shared_ptr_new<TAnimationCurve<Vector2>>(keyFrames);
+	}
+
+	template <class T>
+	void AnimationUtility::splitCurve(const TAnimationCurve<T>& compoundCurve, 
+		TAnimationCurve<float> (& output)[TCurveProperties<T>::NumComponents])
+	{
+		constexpr UINT32 NUM_COMPONENTS = TCurveProperties<T>::NumComponents;
+
+		Vector<TKeyframe<float>> keyFrames[NUM_COMPONENTS];
+		bs::splitCurve(compoundCurve, keyFrames);
+
+		for (UINT32 i = 0; i < NUM_COMPONENTS; i++)
+			output[i] = TAnimationCurve<float>(keyFrames[i]);
+	}
+
+	template <class T>
+	void AnimationUtility::combineCurve(
+		const TAnimationCurve<float> (& curveComponents)[TCurveProperties<T>::NumComponents], 
+		TAnimationCurve<T>& output)
+	{
+		constexpr UINT32 NUM_COMPONENTS = TCurveProperties<T>::NumComponents;
+
+		const TAnimationCurve<float>* curves[NUM_COMPONENTS];
+		for(UINT32 i = 0; i < NUM_COMPONENTS; i++)
+			curves[i] = &curveComponents[i];
+
+		Vector<TKeyframe<T>> keyFrames;
+		bs::combineCurve(curves, keyFrames);
+
+		output = TAnimationCurve<T>(keyFrames);
 	}
 
 	void AnimationUtility::calculateRange(const Vector<TAnimationCurve<float>>& curves, float& xMin, float& xMax, 
@@ -414,21 +497,6 @@ namespace bs
 	}
 
 	template <class T>
-	T getZero() { return 0.0f; }
-
-	template<>
-	float getZero<float>() { return 0.0f; }
-
-	template<>
-	Vector3 getZero<Vector3>() { return Vector3(BsZero); }
-
-	template<>
-	Vector2 getZero<Vector2>() { return Vector2(BsZero); }
-
-	template<>
-	Quaternion getZero<Quaternion>() { return Quaternion(BsZero); }
-
-	template <class T>
 	void AnimationUtility::calculateTangents(Vector<TKeyframe<T>>& keyframes)
 	{
 		using Keyframe = TKeyframe<T>;
@@ -437,8 +505,8 @@ namespace bs
 
 		if (keyframes.size() == 1)
 		{
-			keyframes[0].inTangent = getZero<T>();
-			keyframes[0].outTangent = getZero<T>();
+			keyframes[0].inTangent = TCurveProperties<T>::getZero();
+			keyframes[0].outTangent = TCurveProperties<T>::getZero();
 
 			return;
 		}
@@ -458,7 +526,7 @@ namespace bs
 			Keyframe& keyThis = keyframes[0];
 			const Keyframe& keyNext = keyframes[1];
 
-			keyThis.inTangent = getZero<T>();
+			keyThis.inTangent = TCurveProperties<T>::getZero();
 			keyThis.outTangent = calcTangent(keyThis, keyNext);
 		}
 
@@ -478,7 +546,7 @@ namespace bs
 			Keyframe& keyThis = keyframes[keyframes.size() - 1];
 			const Keyframe& keyPrev = keyframes[keyframes.size() - 2];
 
-			keyThis.outTangent = getZero<T>();
+			keyThis.outTangent = TCurveProperties<T>::getZero();
 			keyThis.inTangent = calcTangent(keyPrev, keyThis);
 		}
 	}
@@ -497,4 +565,12 @@ namespace bs
 	template BS_CORE_EXPORT void AnimationUtility::calculateTangents(Vector<TKeyframe<Vector2>>& keyframes);
 	template BS_CORE_EXPORT void AnimationUtility::calculateTangents(Vector<TKeyframe<Quaternion>>& keyframes);
 	template BS_CORE_EXPORT void AnimationUtility::calculateTangents(Vector<TKeyframe<float>>& keyframes);
+
+	template BS_CORE_EXPORT void AnimationUtility::splitCurve(const TAnimationCurve<float>&, TAnimationCurve<float> (&)[1]);
+	template BS_CORE_EXPORT void AnimationUtility::splitCurve(const TAnimationCurve<Vector2>&, TAnimationCurve<float> (&)[2]);
+	template BS_CORE_EXPORT void AnimationUtility::splitCurve(const TAnimationCurve<Vector3>&, TAnimationCurve<float> (&)[3]);
+
+	template BS_CORE_EXPORT void AnimationUtility::combineCurve(const TAnimationCurve<float> (&)[1], TAnimationCurve<float>&);
+	template BS_CORE_EXPORT void AnimationUtility::combineCurve(const TAnimationCurve<float> (&)[2], TAnimationCurve<Vector2>&);
+	template BS_CORE_EXPORT void AnimationUtility::combineCurve(const TAnimationCurve<float> (&)[3], TAnimationCurve<Vector3>&);
 }
