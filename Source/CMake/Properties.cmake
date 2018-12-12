@@ -35,8 +35,6 @@ if (MSVC)
 	endif()
 endif()
 
-set(CMAKE_INSTALL_RPATH "\$ORIGIN")
-
 # Enable colored output
 if (CMAKE_GENERATOR STREQUAL "Ninja")
 	check_cxx_compiler_flag("-fdiagnostics-color=always" F_DIAGNOSTIC_COLOR_ALWAYS)

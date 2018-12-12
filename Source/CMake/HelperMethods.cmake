@@ -182,45 +182,67 @@ MACRO(end_find_package FOLDER_NAME MAIN_LIB_NAME)
 	set(${FOLDER_NAME}_INCLUDE_DIRS ${${FOLDER_NAME}_INCLUDE_DIR})
 ENDMACRO()
 
+function(install_dependency_binary FILE_PATH CONFIG)
+	if(NOT EXISTS ${FILE_PATH})
+		return()
+	endif()
+
+	get_filename_component(FILE_NAME ${FILE_PATH} NAME_WE)
+
+	if(WIN32)
+		if(BS_64BIT)
+			set(PLATFORM "x64")
+		else()
+			set(PLATFORM "x86")
+		endif()
+
+		set(FULL_FILE_NAME ${FILE_NAME}.dll)
+
+		set(SRC_PATH "${PROJECT_SOURCE_DIR}/bin/${PLATFORM}/${CONFIG}/${FULL_FILE_NAME}")
+		set(DEST_DIR bin)
+	else()
+		# Check if there are so-versioned files in the source directory, and if so use the filename including
+		# the major soversion, because that's what the linker will use.
+		get_filename_component(SRC_DIR ${FILE_PATH} DIRECTORY)
+		file(GLOB_RECURSE ALL_FILES RELATIVE ${SRC_DIR} "${SRC_DIR}/*.so.*")
+
+		foreach(CUR_PATH ${ALL_FILES})
+			get_filename_component(EXTENSION ${CUR_PATH} EXT)
+
+			if(EXTENSION MATCHES "^\\.so\\.([0-9]+)$")
+				set(SO_VERSION ${CMAKE_MATCH_1})
+				break()
+			endif()
+		endforeach()
+
+		if(DEFINED SO_VERSION)
+			set(FULL_FILE_NAME ${FILE_NAME}.so.${SO_VERSION})
+		else()
+			set(FULL_FILE_NAME ${FILE_NAME}.so)
+		endif()
+
+		set(SRC_PATH ${FILE_PATH})
+		set(DEST_DIR lib/bsf-${BS_FRAMEWORK_VERSION_MAJOR}.${BS_FRAMEWORK_VERSION_MINOR}.${BS_FRAMEWORK_VERSION_PATCH})
+	endif()
+
+	if(CONFIG MATCHES "Release")
+		set(CONFIGS Release RelWithDebInfo MinSizeRel)
+	else()
+		set(CONFIGS Debug)
+	endif()
+
+	install(
+		FILES ${SRC_PATH}
+		DESTINATION ${DEST_DIR}
+		CONFIGURATIONS ${CONFIGS}
+		RENAME ${FULL_FILE_NAME}
+		OPTIONAL)
+endfunction()
+
 MACRO(install_dependency_binaries FOLDER_NAME)
 	foreach(LOOP_ENTRY ${${FOLDER_NAME}_SHARED_LIBS})
-		get_filename_component(RELEASE_FILENAME ${${LOOP_ENTRY}_LIBRARY_RELEASE} NAME_WE)
-		get_filename_component(DEBUG_FILENAME ${${LOOP_ENTRY}_LIBRARY_DEBUG} NAME_WE)
-		
-		if(WIN32)
-			if(BS_64BIT)
-				set(PLATFORM "x64")
-			else()
-				set(PLATFORM "x86")
-			endif()
-			
-			set(RELEASE_FILENAME ${RELEASE_FILENAME}.dll)
-			set(DEBUG_FILENAME ${DEBUG_FILENAME}.dll)
-		
-			set(SRC_RELEASE "${PROJECT_SOURCE_DIR}/bin/${PLATFORM}/Release/${RELEASE_FILENAME}")
-			set(SRC_DEBUG "${PROJECT_SOURCE_DIR}/bin/${PLATFORM}/Debug/${DEBUG_FILENAME}")
-			set(DESTINATION_DIR bin)
-		else()
-			set(RELEASE_FILENAME ${RELEASE_FILENAME}.so)
-			set(DEBUG_FILENAME ${DEBUG_FILENAME}.so)		
-			set(SRC_RELEASE ${${LOOP_ENTRY}_LIBRARY_RELEASE})
-			set(SRC_DEBUG ${${LOOP_ENTRY}_LIBRARY_DEBUG})
-			set(DESTINATION_DIR lib/bsf-${BS_FRAMEWORK_VERSION_MAJOR}.${BS_FRAMEWORK_VERSION_MINOR}.${BS_FRAMEWORK_VERSION_PATCH})
-		endif()
-		
-		install(
-			FILES ${SRC_RELEASE}
-			DESTINATION ${DESTINATION_DIR}
-			CONFIGURATIONS Release RelWithDebInfo MinSizeRel
-			RENAME ${RELEASE_FILENAME}
-			OPTIONAL)
-			
-		install(
-			FILES ${SRC_DEBUG}
-			DESTINATION ${DESTINATION_DIR}
-			CONFIGURATIONS Debug
-			RENAME ${DEBUG_FILENAME}
-			OPTIONAL)
+		install_dependency_binary(${${LOOP_ENTRY}_LIBRARY_RELEASE} Release)
+		install_dependency_binary(${${LOOP_ENTRY}_LIBRARY_DEBUG} Debug)
 	endforeach()
 ENDMACRO()
 
@@ -464,7 +486,11 @@ function(add_common_flags target)
 		set_property(TARGET ${target} PROPERTY SOVERSION ${BS_FRAMEWORK_VERSION_MAJOR})
 	endif()
 
-	set_property(TARGET ${target} PROPERTY INSTALL_RPATH "\$ORIGIN:\$ORIGIN/bsf-${BS_FRAMEWORK_VERSION_MAJOR}.${BS_FRAMEWORK_VERSION_MINOR}.${BS_FRAMEWORK_VERSION_PATCH}")
+	if (${target_type} STREQUAL "EXECUTABLE")
+		set_property(TARGET ${target} PROPERTY INSTALL_RPATH "\$ORIGIN/../lib:\$ORIGIN/../lib/bsf-${BS_FRAMEWORK_VERSION_MAJOR}.${BS_FRAMEWORK_VERSION_MINOR}.${BS_FRAMEWORK_VERSION_PATCH}")
+	else()
+		set_property(TARGET ${target} PROPERTY INSTALL_RPATH "\$ORIGIN:\$ORIGIN/bsf-${BS_FRAMEWORK_VERSION_MAJOR}.${BS_FRAMEWORK_VERSION_MINOR}.${BS_FRAMEWORK_VERSION_PATCH}")
+	endif()
 endfunction()
 
 #######################################################################################
