@@ -7,6 +7,7 @@
 #include "BsRendererView.h"
 #include "BsRendererLight.h"
 #include "BsRendererReflectionProbe.h"
+#include "BsTiledDeferred.h"
 
 namespace bs { namespace ct
 {
@@ -83,22 +84,22 @@ namespace bs { namespace ct
 			mBufferNumCells = numCells;
 		}
 
-		UINT32 zero = 0;
-		mLightsCounter->writeData(0, sizeof(UINT32), &zero, BWT_DISCARD);
-		mProbesCounter->writeData(0, sizeof(UINT32), &zero, BWT_DISCARD);
+		ClearLoadStoreMat* clearMat = ClearLoadStoreMat::getVariation(
+			ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Int, 1
+		);
 
-		// Note: Add a method to clear buffer data directly? e.g. GpuBuffer->clear(value);
-		UINT32* headsClearData = (UINT32*)bs_stack_alloc(mLightsLLHeads->getSize());
-		memset(headsClearData, 0xFFFFFFFF, mLightsLLHeads->getSize());
+		clearMat->execute(mLightsCounter);
+		clearMat->execute(mProbesCounter);
 
-		mLightsLLHeads->writeData(0, mLightsLLHeads->getSize(), headsClearData, BWT_DISCARD);
-		bs_stack_free(headsClearData);
+		UINT32 clearValue = 0xFFFFFFFF;
+		Color clearColor;
+		clearColor.r = *(float*) &clearValue;
+		clearColor.g = *(float*) &clearValue;
+		clearColor.b = *(float*) &clearValue;
+		clearColor.a = *(float*) &clearValue;
 
-		headsClearData = (UINT32*)bs_stack_alloc(mProbesLLHeads->getSize());
-		memset(headsClearData, 0xFFFFFFFF, mProbesLLHeads->getSize());
-
-		mProbesLLHeads->writeData(0, mProbesLLHeads->getSize(), headsClearData, BWT_DISCARD);
-		bs_stack_free(headsClearData);
+		clearMat->execute(mLightsLLHeads, clearColor);
+		clearMat->execute(mProbesLLHeads, clearColor);
 
 		mParams->setParamBlockBuffer("GridParams", gridParams);
 		mLightBufferParam.set(lightsBuffer);
@@ -119,7 +120,7 @@ namespace bs { namespace ct
 		RenderAPI::instance().dispatchCompute(numGroupsX, numGroupsY, numGroupsZ);
 	}
 
-	void LightGridLLCreationMat::getOutputs(SPtr<GpuBuffer>& lightsLLHeads, SPtr<GpuBuffer>& lightsLL, 
+	void LightGridLLCreationMat::getOutputs(SPtr<GpuBuffer>& lightsLLHeads, SPtr<GpuBuffer>& lightsLL,
 		SPtr<GpuBuffer>& probesLLHeads, SPtr<GpuBuffer>& probesLL) const
 	{
 		lightsLLHeads = mLightsLLHeads;
@@ -196,9 +197,10 @@ namespace bs { namespace ct
 			mBufferNumCells = numCells;
 		}
 
-		// Note: Add a method to clear buffer data directly? e.g. GpuBuffer->clear(value);
-		UINT32 zeros[] = { 0, 0 };
-		mGridDataCounter->writeData(0, sizeof(UINT32) * 2, zeros, BWT_DISCARD);
+		ClearLoadStoreMat* clearMat = ClearLoadStoreMat::getVariation(
+			ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Int, 1
+		);
+		clearMat->execute(mGridDataCounter);
 
 		mParams->setParamBlockBuffer("GridParams", gridParams);
 
@@ -304,10 +306,11 @@ namespace bs { namespace ct
 
 		LightGridLLReductionMat* reductionMat = LightGridLLReductionMat::get();
 		reductionMat->getOutputs(
-			outputs.gridLightOffsetsAndSize, 
-			outputs.gridLightIndices, 
-			outputs.gridProbeOffsetsAndSize, 
-			outputs.gridProbeIndices);
+			outputs.gridLightOffsetsAndSize,
+			outputs.gridLightIndices,
+			outputs.gridProbeOffsetsAndSize,
+			outputs.gridProbeIndices
+		);
 
 		outputs.gridParams = mGridParamBuffer;
 

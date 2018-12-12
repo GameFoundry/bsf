@@ -161,7 +161,12 @@ namespace bs { namespace ct
 
 	ClearLoadStoreMat::ClearLoadStoreMat()
 	{
-		mParams->getLoadStoreTextureParam(GPT_COMPUTE_PROGRAM, "gOutput", mOutputParam);
+		INT32 objType = mVariation.getInt("OBJ_TYPE");
+
+		if(objType == 0 || objType == 1)
+			mParams->getLoadStoreTextureParam(GPT_COMPUTE_PROGRAM, "gOutput", mOutputTextureParam);
+		else
+			mParams->getBufferParam(GPT_COMPUTE_PROGRAM, "gOutput", mOutputBufferParam);
 
 		mParamBuffer = gClearLoadStoreParamDef.createBuffer();
 		mParams->setParamBlockBuffer(GPT_COMPUTE_PROGRAM, "Params", mParamBuffer);
@@ -173,7 +178,8 @@ namespace bs { namespace ct
 		defines.set("NUM_THREADS", NUM_THREADS);
 	}
 
-	void ClearLoadStoreMat::execute(const SPtr<Texture>& target, const TextureSurface& surface)
+	void ClearLoadStoreMat::execute(const SPtr<Texture>& target, const Color& clearValue,
+			const TextureSurface& surface)
 	{
 		BS_RENMAT_PROFILE_BLOCK
 
@@ -182,16 +188,17 @@ namespace bs { namespace ct
 
 		assert(!PixelUtil::isCompressed(pf));
 
-		UINT32 numBytes = PixelUtil::getNumElemBytes(pf);
-		assert(numBytes % 4 == 0);
+		mOutputTextureParam.set(target, surface);
 
-		mOutputParam.set(target, surface);
+		UINT32 width = props.getWidth();
+		UINT32 height = props.getHeight();
+		gClearLoadStoreParamDef.gSize.set(mParamBuffer, Vector2I((INT32)width, (INT32)height));
+		gClearLoadStoreParamDef.gFloatClearVal.set(mParamBuffer,
+			Vector4(clearValue.r, clearValue.g, clearValue.a, clearValue.a));
+		gClearLoadStoreParamDef.gIntClearVal.set(mParamBuffer,
+			Vector4I(*(INT32*)&clearValue.r, *(INT32*)&clearValue.g, *(INT32*)&clearValue.a, *(INT32*)&clearValue.a));
 
 		bind();
-
-		UINT32 numElements = numBytes / 4;
-		UINT32 width = props.getWidth() * numElements;
-		UINT32 height = props.getHeight() * numElements;
 
 		UINT32 numGroupsX = Math::divideAndRoundUp(width, NUM_THREADS * TILE_SIZE);
 		UINT32 numGroupsY = Math::divideAndRoundUp(height, NUM_THREADS * TILE_SIZE);
@@ -199,12 +206,126 @@ namespace bs { namespace ct
 		RenderAPI::instance().dispatchCompute(numGroupsX, numGroupsY);
 	}
 
-	ClearLoadStoreMat* ClearLoadStoreMat::getVariation(bool textureArray)
+	void ClearLoadStoreMat::execute(const SPtr<GpuBuffer>& target, const Color& clearValue)
 	{
-		if(textureArray)
-			return get(getVariation<true>());
+		BS_RENMAT_PROFILE_BLOCK
 
-		return get(getVariation<false>());
+		mOutputBufferParam.set(target);
+
+		UINT32 width = target->getProperties().getElementCount();
+		UINT32 height = 1;
+		gClearLoadStoreParamDef.gSize.set(mParamBuffer, Vector2I((INT32)width, (INT32)height));
+		gClearLoadStoreParamDef.gFloatClearVal.set(mParamBuffer,
+			Vector4(clearValue.r, clearValue.g, clearValue.a, clearValue.a));
+		gClearLoadStoreParamDef.gIntClearVal.set(mParamBuffer,
+			Vector4I(*(INT32*)&clearValue.r, *(INT32*)&clearValue.g, *(INT32*)&clearValue.a, *(INT32*)&clearValue.a));
+
+		bind();
+
+		UINT32 numGroupsX = Math::divideAndRoundUp(width, NUM_THREADS * (TILE_SIZE * TILE_SIZE));
+		RenderAPI::instance().dispatchCompute(numGroupsX, 1);
+	}
+
+	ClearLoadStoreMat* ClearLoadStoreMat::getVariation(ClearLoadStoreType objType, ClearLoadStoreDataType dataType,
+									UINT32 numComponents)
+	{
+		switch(objType)
+		{
+		default:
+		case ClearLoadStoreType::Texture:
+			if(dataType == ClearLoadStoreDataType::Float)
+			{
+				switch(numComponents)
+				{
+				default:
+				case 1:
+					return get(getVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Float, 0>());
+				case 2:
+					return get(getVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Float, 1>());
+				case 3:
+					return get(getVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Float, 2>());
+				case 4:
+					return get(getVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Float, 3>());
+				}
+			}
+			else
+			{
+				switch(numComponents)
+				{
+				default:
+				case 1:
+					return get(getVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Int, 0>());
+				case 2:
+					return get(getVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Int, 1>());
+				case 3:
+					return get(getVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Int, 2>());
+				case 4:
+					return get(getVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Int, 3>());
+				}
+			}
+		case ClearLoadStoreType::TextureArray:
+			if(dataType == ClearLoadStoreDataType::Float)
+			{
+				switch(numComponents)
+				{
+				default:
+				case 1:
+					return get(getVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Float, 0>());
+				case 2:
+					return get(getVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Float, 1>());
+				case 3:
+					return get(getVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Float, 2>());
+				case 4:
+					return get(getVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Float, 3>());
+				}
+			}
+			else
+			{
+				switch(numComponents)
+				{
+				default:
+				case 1:
+					return get(getVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Int, 0>());
+				case 2:
+					return get(getVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Int, 1>());
+				case 3:
+					return get(getVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Int, 2>());
+				case 4:
+					return get(getVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Int, 3>());
+				}
+			}
+		case ClearLoadStoreType::Buffer:
+			if(dataType == ClearLoadStoreDataType::Float)
+			{
+				switch(numComponents)
+				{
+				default:
+				case 1:
+					return get(getVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Float, 0>());
+				case 2:
+					return get(getVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Float, 1>());
+				case 3:
+					return get(getVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Float, 2>());
+				case 4:
+					return get(getVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Float, 3>());
+				}
+			}
+			else
+			{
+				switch(numComponents)
+				{
+				default:
+				case 1:
+					return get(getVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Int, 0>());
+				case 2:
+					return get(getVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Int, 1>());
+				case 3:
+					return get(getVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Int, 2>());
+				case 4:
+					return get(getVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Int, 3>());
+				}
+			}
+		}
 	}
 
 	TiledImageBasedLightingParamDef gTiledImageBasedLightingParamDef;

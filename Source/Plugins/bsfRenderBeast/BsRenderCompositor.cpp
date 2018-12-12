@@ -740,9 +740,10 @@ namespace bs { namespace ct
 			lightAccumulationTexArray = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, 
 				TU_LOADSTORE, 1, false, numSamples));
 
-			ClearLoadStoreMat* clearMat = ClearLoadStoreMat::getVariation(true);
+			ClearLoadStoreMat* clearMat = ClearLoadStoreMat::getVariation(ClearLoadStoreType::TextureArray,
+					ClearLoadStoreDataType::Float, 4);
 
-			for(UINT32 i = 0; i < numSamples ; i++)
+			for(UINT32 i = 0; i < numSamples; i++)
 			{
 				TextureSurface surface;
 				surface.face = i;
@@ -750,7 +751,7 @@ namespace bs { namespace ct
 				surface.mipLevel = 0;
 				surface.numMipLevels = 1;
 
-				clearMat->execute(lightAccumulationTexArray->texture, surface);
+				clearMat->execute(lightAccumulationTexArray->texture, Color::ZERO, surface);
 			}
 		}
 		else
@@ -864,7 +865,7 @@ namespace bs { namespace ct
 			if(output->lightAccumulationTexArray)
 				lightAccumTexArray = output->lightAccumulationTexArray->texture;
 
-			tiledDeferredMat->execute(inputs.view, lightData, gbuffer, sceneColorNode->sceneColorTex->texture, 
+			tiledDeferredMat->execute(inputs.view, lightData, gbuffer, sceneColorNode->sceneColorTex->texture,
 				output->lightAccumulationTex->texture, lightAccumTexArray, msaaCoverage);
 
 			if (viewProps.numSamples > 1)
@@ -1061,7 +1062,7 @@ namespace bs { namespace ct
 		if(inputs.view.getRenderSettings().enableSkybox)
 			skybox = inputs.scene.skybox;
 
-		evaluateMat->execute(inputs.view, gbuffer, volumeIndicesTex, lpInfo, skybox, ssaoNode->output, 
+		evaluateMat->execute(inputs.view, gbuffer, volumeIndicesTex, lpInfo, skybox, ssaoNode->output,
 			lightAccumNode->renderTarget);
 
 		if(volumeIndices)
@@ -1550,7 +1551,7 @@ namespace bs { namespace ct
 	{
 		return { 
 			RCNodeSceneColor::getNodeId(), 
-			RCNodeSkybox::getNodeId(), 
+			RCNodeSkybox::getNodeId(),
 			RCNodeSceneDepth::getNodeId(),
 			RCNodeParticleSimulate::getNodeId(),
 			RCNodeParticleSort::getNodeId(),
@@ -1635,7 +1636,7 @@ namespace bs { namespace ct
 			RCNodeResolvedSceneDepth* resolvedSceneDepthNode = static_cast<RCNodeResolvedSceneDepth*>(inputs.inputNodes[0]);
 
 			EncodeDepthMat* encodeDepthMat = EncodeDepthMat::get();
-			encodeDepthMat->execute(resolvedSceneDepthNode->output->texture, viewProps.depthEncodeNear, 
+			encodeDepthMat->execute(resolvedSceneDepthNode->output->texture, viewProps.depthEncodeNear,
 				viewProps.depthEncodeFar, target);
 		}
 

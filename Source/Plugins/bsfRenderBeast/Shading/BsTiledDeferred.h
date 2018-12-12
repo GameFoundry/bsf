@@ -91,9 +91,17 @@ namespace bs { namespace ct
 
 	BS_PARAM_BLOCK_BEGIN(ClearLoadStoreParamDef)
 		BS_PARAM_BLOCK_ENTRY(Vector2I, gSize)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gFloatClearVal)
+		BS_PARAM_BLOCK_ENTRY(Vector4I, gIntClearVal)
 	BS_PARAM_BLOCK_END
 
 	extern ClearLoadStoreParamDef gClearLoadStoreParamDef;
+
+	/** Possible object types used as clear destinations by ClearLoadStoreMat. */
+	enum class ClearLoadStoreType { Texture, TextureArray, Buffer };
+
+	/** Possible data types used in destination objects in ClearLoadStoreMat. */
+	enum class ClearLoadStoreDataType { Float, Int };
 
 	/** Clears the provided texture to zero, using a compute shader. */
 	class ClearLoadStoreMat : public RendererMaterial<ClearLoadStoreMat>
@@ -101,12 +109,15 @@ namespace bs { namespace ct
 		RMAT_DEF_CUSTOMIZED("ClearLoadStore.bsl");
 
 		/** Helper method used for initializing variations of this material. */
-		template<bool TEX_ARRAY>
+		template<ClearLoadStoreType OBJ_TYPE, ClearLoadStoreDataType DATA_TYPE, UINT32 NUM_COMPONENTS>
 		static const ShaderVariation& getVariation()
 		{
 			static ShaderVariation variation = ShaderVariation(
 			{
-				ShaderVariation::Param("TEX_ARRAY", TEX_ARRAY)
+				ShaderVariation::Param("OBJ_TYPE", (int)OBJ_TYPE),
+				ShaderVariation::Param("DATA_TYPE", (int)DATA_TYPE),
+				ShaderVariation::Param("NUM_COMPONENTS", NUM_COMPONENTS),
+
 			});
 
 			return variation;
@@ -114,16 +125,30 @@ namespace bs { namespace ct
 	public:
 		ClearLoadStoreMat();
 
-		/** Binds the material for rendering, sets up parameters and executes it. */
-		void execute(const SPtr<Texture>& target, const TextureSurface& surface = TextureSurface::COMPLETE);
+		/**
+		 * Binds the material for rendering, sets up parameters and executes it. Only works on variations of
+		 * this material intended for textures and texture arrays.
+		 */
+		void execute(const SPtr<Texture>& target, const Color& clearValue = Color::ZERO,
+				const TextureSurface& surface = TextureSurface::COMPLETE);
 
-		/** 
+		/**
+		 * Binds the material for rendering, sets up parameters and executes it. Only works on variations of
+		 * this material intended for buffers.
+		 */
+		void execute(const SPtr<GpuBuffer>& target, const Color& clearValue = Color::ZERO);
+
+		/**
 		 * Returns the material variation matching the provided parameters. 
 		 * 
-		 * @param[in]	textureArray	If true the material will accept a 2D texture array, otherwise it will accept
-		 *								a normal 2D texture.
+		 * @param[in]		objType			Type of object used for clear source.
+		 * @param[in]		dataType		Base data type stored in the clear source object.
+		 * @param[in]		numComponents	Number of components in the source objects's data type (e.g. float2, float4).
+		 * 									In range [1, 4].
+		 * @return							Material variation matching the provided values.
 		 */
-		static ClearLoadStoreMat* getVariation(bool textureArray);
+		static ClearLoadStoreMat* getVariation(ClearLoadStoreType objType, ClearLoadStoreDataType dataType,
+				UINT32 numComponents);
 	private:
 		/** TILE_SIZE * TILE_SIZE is the number of pixels to process per thread. */
 		static constexpr UINT32 TILE_SIZE = 4;
@@ -131,7 +156,8 @@ namespace bs { namespace ct
 		/** Number of threads to launch per work group. */
 		static constexpr UINT32 NUM_THREADS = 128;
 
-		GpuParamLoadStoreTexture mOutputParam;
+		GpuParamLoadStoreTexture mOutputTextureParam;
+		GpuParamBuffer mOutputBufferParam;
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 	};
 
