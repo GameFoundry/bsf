@@ -251,11 +251,11 @@ namespace bs
 		ReverseIterator rbegin() { return ReverseIterator(end()); }
 		ReverseIterator rend() { return ReverseIterator(begin()); }
 
-		ConstReverseIterator rbegin() const { return ReverseIterator(end()); }
-		ConstReverseIterator rend() const { return ReverseIterator(begin()); }
+		ConstReverseIterator rbegin() const { return ConstReverseIterator(end()); }
+		ConstReverseIterator rend() const { return ConstReverseIterator(begin()); }
 
-		ConstReverseIterator crbegin() const { return ReverseIterator(end()); }
-		ConstReverseIterator crend() const { return ReverseIterator(begin()); }
+		ConstReverseIterator crbegin() const { return ConstReverseIterator(end()); }
+		ConstReverseIterator crend() const { return ConstReverseIterator(begin()); }
 
 		UINT32 size() const { return mSize; }
 		UINT32 capacity() const { return mCapacity; }
@@ -266,13 +266,13 @@ namespace bs
 		Type& front()
 		{
 			assert(!empty());
-			return *mElements[0];
+			return mElements[0];
 		}
 
 		Type& back()
 		{
 			assert(!empty());
-			return *mElements[mSize - 1];
+			return mElements[mSize - 1];
 		}
 
 		const Type& front() const
