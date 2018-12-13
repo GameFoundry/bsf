@@ -117,6 +117,9 @@ namespace bs { namespace ct
 		/** Marks the device as a primary device. */
 		void setIsPrimary() { mIsPrimary = true; }
 
+		/** Changes the index of the device in the global device list. */
+		void setIndex(UINT32 index) { mDeviceIdx = index; }
+
 		VkPhysicalDevice mPhysicalDevice;
 		VkDevice mLogicalDevice;
 		bool mIsPrimary;

@@ -206,6 +206,16 @@ namespace bs { namespace ct
 			{
 				mDevices[i]->setIsPrimary();
 				mPrimaryDevices.push_back(mDevices[i]);
+
+				// Make sure the primary device is first in the list
+				if(i != 0)
+				{
+					mDevices[0]->setIndex(i);
+					mDevices[i]->setIndex(0);
+
+					std::swap(mDevices[0], mDevices[i]);
+				}
+
 				break;
 			}
 		}
