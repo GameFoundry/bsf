@@ -4,7 +4,6 @@
 /**
  * This Header file is used on Windows-based systems to force the operating system
  * to use discrete graphics chips on laptops instead of the integrated graphics chips.
- * This only affects Direct3D and OpenGL based RenderAPI back-ends.
  * @note This header shouldn't be used on non-Windows based operating systems and
  *        and it should only be included by final executables.
  *        Incorrect usage will cause error during compilation.
