@@ -163,6 +163,7 @@ set(BS_CORE_INC_RENDERAPI
 	"bsfCore/RenderAPI/BsGpuPipelineState.h"
 	"bsfCore/RenderAPI/BsGpuPipelineParamInfo.h"
 	"bsfCore/RenderAPI/BsVertexDataDesc.h"
+	"bsfCore/RenderAPI/BsWin32DiscreteGpuForce.h"
 )
 
 set(BS_CORE_INC_RENDERAPI_MANAGERS

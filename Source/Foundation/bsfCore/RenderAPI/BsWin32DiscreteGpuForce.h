@@ -12,7 +12,7 @@
  
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #if defined(BS_FORCE_DISCRETE_GPUS_INCLUDE_CHECK)
-	#error GPU force header file already included. Please, only include it in the program's executable. Aborting compilation.
+	#error GPU force header file already included. Please, only include it once and preferably in the program's executable. Aborting compilation.
 #else
 #define BS_FORCE_DISCRETE_GPUS_INCLUDE_CHECK
  
