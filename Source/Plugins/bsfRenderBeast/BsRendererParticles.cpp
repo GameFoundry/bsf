@@ -11,6 +11,7 @@
 #include "Shading/BsGpuParticleSimulation.h"
 #include "Material/BsGpuParamsSet.h"
 #include "BsRendererView.h"
+#include "Mesh/BsMeshUtility.h"
 
 namespace bs { namespace ct
 {
@@ -350,6 +351,8 @@ namespace bs { namespace ct
 		SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 		vertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
+		vertexDesc->addVertElem(VET_UBYTE4_NORM, VES_NORMAL);
+		vertexDesc->addVertElem(VET_UBYTE4_NORM, VES_TANGENT);
 
 		m->billboardVD = VertexDeclaration::create(vertexDesc);
 
@@ -370,6 +373,25 @@ namespace bs { namespace ct
 		uvIter.addValue(Vector2(0.0f, 0.0f));
 		uvIter.addValue(Vector2(1.0f, 1.0f));
 		uvIter.addValue(Vector2(1.0f, 0.0f));
+
+		UINT32 stride = meshData.getVertexDesc()->getVertexStride(0);
+
+		Vector3 normal = Vector3::UNIT_Y;
+		Vector4 tangent(1.0f, 0.0f, 0.0f, 1.0f);
+
+		UINT8* normalDst = meshData.getElementData(VES_NORMAL);
+		for(UINT32 i = 0; i < 4; i++)
+		{
+			MeshUtility::packNormals(&normal, normalDst, 1, sizeof(Vector3), stride);
+			normalDst += stride;
+		}
+
+		UINT8* tangentDst = meshData.getElementData(VES_TANGENT);
+		for(UINT32 i = 0; i < 4; i++)
+		{
+			MeshUtility::packNormals(&tangent, tangentDst, 1, sizeof(Vector4), stride);
+			tangentDst += stride;
+		}
 
 		m->billboardVB->writeData(0, meshData.getStreamSize(0), meshData.getStreamData(0), BWT_DISCARD);
 	}
