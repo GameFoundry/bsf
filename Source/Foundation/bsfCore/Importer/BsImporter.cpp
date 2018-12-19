@@ -18,6 +18,8 @@ namespace bs
 {
 	Importer::Importer()
 	{
+		mAsyncOpSyncData = bs_shared_ptr_new<AsyncOpSyncData>();
+
 		_registerAssetImporter(bs_new<ShaderIncludeImporter>());
 	}
 
@@ -67,7 +69,7 @@ namespace bs
 	AsyncOp Importer::importAsync(const Path& inputFilePath, SPtr<const ImportOptions> importOptions, const UUID& UUID,
 		bool handle)
 	{
-		AsyncOp output;
+		AsyncOp output(mAsyncOpSyncData);
 
 		SpecificImporter* importer = prepareForImport(inputFilePath, importOptions);
 		if(!importer)
@@ -96,7 +98,7 @@ namespace bs
 
 	AsyncOp Importer::importAllAsync(const Path& inputFilePath, SPtr<const ImportOptions> importOptions, bool handle)
 	{
-		AsyncOp output;
+		AsyncOp output(mAsyncOpSyncData);
 
 		SpecificImporter* importer = prepareForImport(inputFilePath, importOptions);
 		if(!importer)
