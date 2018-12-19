@@ -449,10 +449,24 @@ namespace bs { namespace ct
 		spriteIndices = IndexBuffer::create(spriteIndexBufferDesc);
 
 		auto* const indices = (UINT16*)spriteIndices->lock(GBL_WRITE_ONLY_DISCARD);
+
+		RenderAPI& rapi = RenderAPI::instance();
+		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
+
 		for (UINT32 i = 0; i < PARTICLES_PER_INSTANCE; i++)
 		{
-			indices[i * 6 + 0] = i * 4 + 0; indices[i * 6 + 1] = i * 4 + 1; indices[i * 6 + 2] = i * 4 + 2;
-			indices[i * 6 + 3] = i * 4 + 0; indices[i * 6 + 4] = i * 4 + 2; indices[i * 6 + 5] = i * 4 + 3;
+			// If UV is flipped, then our tile will be upside down so we need to change index order so it doesn't
+			// get culled.
+			if (rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp))
+			{
+				indices[i * 6 + 0] = i * 4 + 2; indices[i * 6 + 1] = i * 4 + 1; indices[i * 6 + 2] = i * 4 + 0;
+				indices[i * 6 + 3] = i * 4 + 3; indices[i * 6 + 4] = i * 4 + 2; indices[i * 6 + 5] = i * 4 + 0;
+			}
+			else
+			{
+				indices[i * 6 + 0] = i * 4 + 0; indices[i * 6 + 1] = i * 4 + 1; indices[i * 6 + 2] = i * 4 + 2;
+				indices[i * 6 + 3] = i * 4 + 0; indices[i * 6 + 4] = i * 4 + 2; indices[i * 6 + 5] = i * 4 + 3;
+			}
 		}
 
 		spriteIndices->unlock();
@@ -1336,9 +1350,23 @@ namespace bs { namespace ct
 
 		mInjectIndices = IndexBuffer::create(injectIndexBufferDesc);
 
+		RenderAPI& rapi = RenderAPI::instance();
+		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
+
 		auto* const indices = (UINT16*)mInjectIndices->lock(GBL_WRITE_ONLY_DISCARD);
-		indices[0] = 0; indices[1] = 1; indices[2] = 2;
-		indices[3] = 0; indices[4] = 2; indices[5] = 3;
+
+		// If UV is flipped, then our tile will be upside down so we need to change index order so it doesn't
+		// get culled.
+		if (rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp))
+		{
+			indices[0] = 2; indices[1] = 1; indices[2] = 0;
+			indices[3] = 3; indices[4] = 2; indices[5] = 0;
+		}
+		else
+		{
+			indices[0] = 0; indices[1] = 1; indices[2] = 2;
+			indices[3] = 0; indices[4] = 2; indices[5] = 3;
+		}
 
 		mInjectIndices->unlock();
 
