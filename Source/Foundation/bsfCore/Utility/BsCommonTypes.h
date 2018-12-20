@@ -549,7 +549,7 @@ namespace bs
 		RT_DEPTH = 1 << 30,
 		RT_STENCIL = 1 << 31,
 		RT_DEPTH_STENCIL = (1 << 30) | (1 << 31),
-		RT_ALL = 0xFF
+		RT_ALL = 0xFFFFFFFF
 	};
 
 	typedef Flags<RenderSurfaceMaskBits> RenderSurfaceMask;
