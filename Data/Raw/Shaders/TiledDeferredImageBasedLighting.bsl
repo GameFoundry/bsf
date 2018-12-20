@@ -102,7 +102,7 @@ shader TiledDeferredImageBasedLighting
 		
 			// Flip Y depending on render API, depending if Y in NDC is facing up or down
 			// (We negate the value because we want NDC with Y flipped, so origin is top left)
-			float flipY = -sign(gMatProj[1][1]);
+			float flipY = -sign(gMatProj[1].y);
 			ndcMin.y *= flipY;
 			ndcMax.y *= flipY;
 		

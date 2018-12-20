@@ -265,7 +265,7 @@ mixin ParticleVertex
 				#elif ORIENT == 1 // Towards camera origin
 					float3 diff = gViewOrigin - worldPosition.xyz;
 					
-					float3 cameraUp = float3(gMatView[1][0], gMatView[1][1], gMatView[1][2]);
+					float3 cameraUp = float3(gMatView[1].x, gMatView[1].y, gMatView[1].z);
 					axisRight = normalize(cross(diff, cameraUp));
 					
 					#if LOCK_Y
@@ -274,12 +274,12 @@ mixin ParticleVertex
 						axisUp = normalize(cross(axisRight, diff));
 					#endif
 				#else // Towards camera plane
-					axisRight = float3(gMatView[0][0], gMatView[0][1], gMatView[0][2]);
+					axisRight = float3(gMatView[0].x, gMatView[0].y, gMatView[0].z);
 					
 					#if LOCK_Y
 						axisUp = float3(0, 1, 0);				
 					#else
-						axisUp = float3(gMatView[1][0], gMatView[1][1], gMatView[1][2]);
+						axisUp = float3(gMatView[1].x, gMatView[1].y, gMatView[1].z);
 					#endif
 				#endif
 

@@ -176,19 +176,19 @@ shader TiledDeferredLighting
 				flipSign = -1;
 			#endif
 			
-			float At = gMatProj[0][0] * tileScale.x;
-			float Ctt = gMatProj[0][2] * tileScale.x - tileBias.x;
+			float At = gMatProj[0].x * tileScale.x;
+			float Ctt = gMatProj[0].z * tileScale.x - tileBias.x;
 			
-			float Bt = gMatProj[1][1] * tileScale.y * flipSign;
-			float Dtt = (gMatProj[1][2] * tileScale.y + flipSign * tileBias.y) * flipSign;
+			float Bt = gMatProj[1].y * tileScale.y * flipSign;
+			float Dtt = (gMatProj[1].z * tileScale.y + flipSign * tileBias.y) * flipSign;
 			
 			// Extract left/right/top/bottom frustum planes from scaled projection matrix
 			// Note: Do this on the CPU? Since they're shared among all entries in a tile. Plus they don't change across frames.
 			float4 frustumPlanes[6];
-			frustumPlanes[0] = float4(At, 0.0f, gMatProj[3][2] + Ctt, 0.0f);
-			frustumPlanes[1] = float4(-At, 0.0f, gMatProj[3][2] - Ctt, 0.0f);
-			frustumPlanes[2] = float4(0.0f, -Bt, gMatProj[3][2] - Dtt, 0.0f);
-			frustumPlanes[3] = float4(0.0f, Bt, gMatProj[3][2] + Dtt, 0.0f);
+			frustumPlanes[0] = float4(At, 0.0f, gMatProj[3].z + Ctt, 0.0f);
+			frustumPlanes[1] = float4(-At, 0.0f, gMatProj[3].z - Ctt, 0.0f);
+			frustumPlanes[2] = float4(0.0f, -Bt, gMatProj[3].z - Dtt, 0.0f);
+			frustumPlanes[3] = float4(0.0f, Bt, gMatProj[3].z + Dtt, 0.0f);
 			
 			// Normalize
 			[unroll]
