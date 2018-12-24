@@ -32,8 +32,12 @@ namespace bs
 	{
 		Queue<QueuedCommand>* commands = mCommandQueue->flush();
 
-		gCoreThread().queueCommand(std::bind(&CommandQueueBase::playback, mCommandQueue, commands), 
-			CTQF_InternalQueue | CTQF_BlockUntilComplete);
+		CoreThreadQueueFlags flags = CTQF_InternalQueue;
+
+		if(blockUntilComplete)
+			flags |= CTQF_BlockUntilComplete;
+
+		gCoreThread().queueCommand(std::bind(&CommandQueueBase::playback, mCommandQueue, commands), flags);
 	}
 
 	void CoreThreadQueueBase::cancelAll()
