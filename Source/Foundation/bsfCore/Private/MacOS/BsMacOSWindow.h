@@ -151,6 +151,9 @@ namespace bs
 		 */
 		void _unregisterForDragAndDrop();
 
+		/** Lets the window know that the provided OpenGL context will be rendering to it. */
+		void _registerGLContext(void* context);
+
 		/** Returns internal private data for use by friends. */
 		Pimpl* _getPrivateData() const { return m; }
 

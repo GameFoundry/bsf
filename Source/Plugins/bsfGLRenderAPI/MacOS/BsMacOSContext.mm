@@ -78,8 +78,9 @@ namespace bs::ct
 			return;
 		}
 
-		NSWindow* nsWindow = window->_getPrivateData()->window;
+		window->_registerGLContext((__bridge_retained void*) m->context);
 
+		NSWindow* nsWindow = window->_getPrivateData()->window;
 		[m->context setView:[nsWindow contentView]];
 		[m->context makeCurrentContext];
 		[m->context update];

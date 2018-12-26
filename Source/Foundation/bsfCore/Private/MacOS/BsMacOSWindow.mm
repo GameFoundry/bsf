@@ -1,6 +1,7 @@
 //************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #define BS_COCOA_INTERNALS 1
+#define GL_SILENCE_DEPRECATION 1
 #include "Private/MacOS/BsMacOSWindow.h"
 #include "Private/MacOS/BsMacOSPlatform.h"
 #include "Private/MacOS/BsMacOSDropTarget.h"
@@ -49,12 +50,14 @@ static bool keyCodeToInputCommand(uint32_t keyCode, bool shift, bs::InputCommand
 @interface BSView : NSView
 -(void)rightMouseDown:(NSEvent*) event;
 -(void)setBackgroundImage:(NSImage*)image;
+-(void)setGLContext:(NSOpenGLContext*)context;
 @end
 
 @implementation BSView
 {
 	NSTrackingArea* mTrackingArea;
 	NSImageView* mImageView;
+	NSOpenGLContext* mGLContext;
 }
 
 -(id)init
@@ -63,8 +66,22 @@ static bool keyCodeToInputCommand(uint32_t keyCode, bool shift, bs::InputCommand
 
 	mTrackingArea = nil;
 	mImageView = nil;
+	mGLContext = nil;
 
 	return self;
+}
+
+-(void)setLayer:(CALayer*)layer
+{
+	[super setLayer:layer];
+
+	if(mGLContext)
+		[mGLContext update];
+}
+
+-(void)setGLContext:(NSOpenGLContext*)context
+{
+	mGLContext = context;
 }
 
 -(void)resetCursorRects
@@ -882,5 +899,11 @@ namespace bs
 
 		if(m->numDropTargets == 0)
 			[m->window unregisterDraggedTypes];
+	}
+
+	void CocoaWindow::_registerGLContext(void* context)
+	{
+		NSOpenGLContext* glContext = (__bridge_transfer NSOpenGLContext* )context;
+		[m->view setGLContext:glContext];
 	}
 }
