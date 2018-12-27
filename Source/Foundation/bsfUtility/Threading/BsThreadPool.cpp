@@ -302,13 +302,13 @@ namespace bs
 
 	UINT32 ThreadPool::getNumAvailable() const
 	{
-		UINT32 numAvailable = 0;
+		UINT32 numAvailable = mMaxCapacity;
 
 		Lock lock(mMutex);
 		for(auto& thread : mThreads)
 		{
-			if(thread->isIdle())
-				numAvailable++;
+			if(!thread->isIdle())
+				numAvailable--;
 		}
 
 		return numAvailable;

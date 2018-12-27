@@ -196,6 +196,16 @@ namespace bs
 					continue;
 				}
 
+				// Spin until a thread becomes available. This happens primarily because our mActiveTask count and
+				// ThreadPool's thread idle count aren't synced, so while the task manager thinks it's free to run new
+				// tasks, the ThreadPool might still have those threads as running, meaning their allocation will fail.
+				// So we just spin here for a bit, in that rare case.
+				if(ThreadPool::instance().getNumAvailable() == 0)
+				{
+					mCheckTasks = true;
+					break;
+				}
+
 				iter = mTaskQueue.erase(iter);
 
 				curTask->mState.store(1);
