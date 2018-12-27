@@ -275,11 +275,11 @@ namespace bs
 
 	bool TaskScheduler::taskCompare(const SPtr<Task>& lhs, const SPtr<Task>& rhs)
 	{
-		// If one tasks priority is higher, that one goes first
-		if(lhs->mPriority > rhs->mPriority)
-			return true;
+		// If priority is the same, sort by the order the tasks were queued
+		if(lhs->mPriority == rhs->mPriority)
+			return lhs->mTaskId < rhs->mTaskId;
 
-		// Otherwise we go by smaller id, as that task was queued earlier than the other
-		return lhs->mTaskId < rhs->mTaskId;
+		// Otherwise the task with the higher priority always goes first
+		return lhs->mPriority > rhs->mPriority;
 	}
 }
