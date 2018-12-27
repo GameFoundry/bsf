@@ -124,7 +124,7 @@ namespace bs
 	{
 	public:
 		RenderTarget();
-		virtual ~RenderTarget() { }
+		virtual ~RenderTarget() = default;
 
 		/** Queries the render target for a custom attribute. This may be anything and is implementation specific. */
 		virtual void getCustomAttribute(const String& name, void* pData) const;

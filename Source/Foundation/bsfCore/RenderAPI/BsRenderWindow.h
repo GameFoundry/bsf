@@ -112,7 +112,7 @@ namespace bs
 	class BS_CORE_EXPORT RenderWindow : public RenderTarget
 	{
 	public:
-		virtual ~RenderWindow() { }
+		virtual ~RenderWindow() = default;
 
 		/**	Converts screen position into window local position. */
 		virtual Vector2I screenToWindowPos(const Vector2I& screenPos) const = 0;

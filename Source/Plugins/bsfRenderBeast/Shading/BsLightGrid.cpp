@@ -244,8 +244,8 @@ namespace bs { namespace ct
 	{
 		const RendererViewProperties& viewProps = view.getProperties();
 
-		UINT32 width = viewProps.viewRect.width;
-		UINT32 height = viewProps.viewRect.height;
+		UINT32 width = viewProps.target.viewRect.width;
+		UINT32 height = viewProps.target.viewRect.height;
 
 		Vector3I gridSize;
 		gridSize[0] = (width + CELL_XY_SIZE - 1) / CELL_XY_SIZE;

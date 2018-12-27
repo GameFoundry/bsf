@@ -1221,7 +1221,7 @@ namespace bs { namespace ct
 
 		// Downsampled AO uses a larger AO radius (in higher resolutions this would cause too much cache trashing). This
 		// means if only full res AO is used, then only AO from nearby geometry will be calculated.
-		float viewScale = viewProps.viewRect.width / (float)rtProps.width;
+		float viewScale = viewProps.target.viewRect.width / (float)rtProps.width;
 
 		// Ramp up the radius exponentially. c^log2(x) function chosen arbitrarily, as it ramps up the radius in a nice way
 		float scale = pow(DOWNSAMPLE_SCALE, Math::log2(viewScale)); 
@@ -1369,7 +1369,7 @@ namespace bs { namespace ct
 		pixelSize.x = 1.0f / rtProps.width;
 		pixelSize.y = 1.0f / rtProps.height;
 
-		float scale = viewProps.viewRect.width / (float)rtProps.width;
+		float scale = viewProps.target.viewRect.width / (float)rtProps.width;
 
 		gSSAODownsampleParamDef.gPixelSize.set(mParamBuffer, pixelSize);
 		gSSAODownsampleParamDef.gInvDepthThreshold.set(mParamBuffer, (1.0f / depthRange) / scale);
@@ -1433,7 +1433,7 @@ namespace bs { namespace ct
 		else
 			pixelOffset.y = pixelSize.y;
 
-		float scale = viewProps.viewRect.width / (float)texProps.getWidth();
+		float scale = viewProps.target.viewRect.width / (float)texProps.getWidth();
 
 		gSSAOBlurParamDef.gPixelSize.set(mParamBuffer, pixelSize);
 		gSSAOBlurParamDef.gPixelOffset.set(mParamBuffer, pixelOffset);
@@ -1483,10 +1483,10 @@ namespace bs { namespace ct
 		mParams->setParamBlockBuffer("PerCamera", perView);
 
 		const RendererViewProperties& viewProps = view.getProperties();
-		const Rect2I& viewRect = viewProps.viewRect;
+		const Rect2I& viewRect = viewProps.target.viewRect;
 		bind();
 
-		if(viewProps.numSamples > 1)
+		if(viewProps.target.numSamples > 1)
 			gRendererUtility().drawScreenQuad(Rect2(0.0f, 0.0f, (float)viewRect.width, (float)viewRect.height));
 		else
 			gRendererUtility().drawScreenQuad();
@@ -1547,7 +1547,7 @@ namespace bs { namespace ct
 		mSceneColorTexture.set(sceneColor);
 		mHiZTexture.set(hiZ);
 		
-		Rect2I viewRect = viewProps.viewRect;
+		Rect2I viewRect = viewProps.target.viewRect;
 
 		// Maps from NDC to UV [0, 1]
 		Vector4 ndcToHiZUV;
@@ -1594,7 +1594,7 @@ namespace bs { namespace ct
 
 		bind();
 
-		if(viewProps.numSamples > 1)
+		if(viewProps.target.numSamples > 1)
 			gRendererUtility().drawScreenQuad(Rect2(0.0f, 0.0f, (float)viewRect.width, (float)viewRect.height));
 		else
 			gRendererUtility().drawScreenQuad();
@@ -1797,11 +1797,11 @@ namespace bs { namespace ct
 		rapi.setRenderTarget(destination);
 
 		const RendererViewProperties& viewProps = view.getProperties();
-		const Rect2I& viewRect = viewProps.viewRect;
+		const Rect2I& viewRect = viewProps.target.viewRect;
 
 		bind();
 
-		if(viewProps.numSamples > 1)
+		if(viewProps.target.numSamples > 1)
 			gRendererUtility().drawScreenQuad(Rect2(0.0f, 0.0f, (float)viewRect.width, (float)viewRect.height));
 		else
 			gRendererUtility().drawScreenQuad();
@@ -1862,7 +1862,7 @@ namespace bs { namespace ct
 
 		mGBufferParams.bind(gbuffer);
 
-		const Rect2I& viewRect = view.getProperties().viewRect;
+		const Rect2I& viewRect = view.getProperties().target.viewRect;
 		SPtr<GpuParamBlockBuffer> perView = view.getPerViewBuffer();
 		mParams->setParamBlockBuffer("PerCamera", perView);
 
@@ -1893,7 +1893,7 @@ namespace bs { namespace ct
 	{
 		BS_RENMAT_PROFILE_BLOCK
 
-		const Rect2I& viewRect = view.getProperties().viewRect;
+		const Rect2I& viewRect = view.getProperties().target.viewRect;
 		mCoverageTexParam.set(coverage);
 
 		bind();

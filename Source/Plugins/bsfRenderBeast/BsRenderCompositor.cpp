@@ -216,9 +216,9 @@ namespace bs { namespace ct
 		GpuResourcePool& resPool = GpuResourcePool::instance();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 
-		UINT32 width = viewProps.viewRect.width;
-		UINT32 height = viewProps.viewRect.height;
-		UINT32 numSamples = viewProps.numSamples;
+		UINT32 width = viewProps.target.viewRect.width;
+		UINT32 height = viewProps.target.viewRect.height;
+		UINT32 numSamples = viewProps.target.numSamples;
 
 		depthTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_D32_S8X24, width, height, TU_DEPTHSTENCIL,
 			numSamples, false));
@@ -241,9 +241,9 @@ namespace bs { namespace ct
 		GpuResourcePool& resPool = GpuResourcePool::instance();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 
-		const UINT32 width = viewProps.viewRect.width;
-		const UINT32 height = viewProps.viewRect.height;
-		const UINT32 numSamples = viewProps.numSamples;
+		const UINT32 width = viewProps.target.viewRect.width;
+		const UINT32 height = viewProps.target.viewRect.height;
+		const UINT32 numSamples = viewProps.target.numSamples;
 
 		// Note: Consider customizable formats. e.g. for testing if quality can be improved with higher precision normals.
 		albedoTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA8, width, height, TU_RENDERTARGET,
@@ -428,7 +428,7 @@ namespace bs { namespace ct
 		renderQueueElements(opaqueElements);
 
 		// Determine MSAA coverage if required
-		if (viewProps.numSamples > 1)
+		if (viewProps.target.numSamples > 1)
 		{
 			auto msaaCoverageNode = static_cast<RCNodeMSAACoverage*>(inputs.inputNodes[3]);
 
@@ -438,7 +438,7 @@ namespace bs { namespace ct
 			gbuffer.roughMetal = roughMetalTex->texture;
 			gbuffer.depth = sceneDepthNode->depthTex->texture;
 
-			MSAACoverageMat* mat = MSAACoverageMat::getVariation(viewProps.numSamples);
+			MSAACoverageMat* mat = MSAACoverageMat::getVariation(viewProps.target.numSamples);
 			rapi.setRenderTarget(msaaCoverageNode->output->renderTexture);
 			mat->execute(inputs.view, gbuffer);
 
@@ -489,9 +489,9 @@ namespace bs { namespace ct
 		GpuResourcePool& resPool = GpuResourcePool::instance();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 
-		UINT32 width = viewProps.viewRect.width;
-		UINT32 height = viewProps.viewRect.height;
-		UINT32 numSamples = viewProps.numSamples;
+		UINT32 width = viewProps.target.viewRect.width;
+		UINT32 height = viewProps.target.viewRect.height;
+		UINT32 numSamples = viewProps.target.numSamples;
 
 		UINT32 usageFlags = TU_RENDERTARGET;
 
@@ -506,10 +506,10 @@ namespace bs { namespace ct
 		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[0]);
 		SPtr<PooledRenderTexture> sceneDepthTex = sceneDepthNode->depthTex;
 
-		if (tiledDeferredSupported && viewProps.numSamples > 1)
+		if (tiledDeferredSupported && viewProps.target.numSamples > 1)
 		{
 			sceneColorTexArray = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, 
-				TU_LOADSTORE, 1, false, viewProps.numSamples));
+				TU_LOADSTORE, 1, false, viewProps.target.numSamples));
 		}
 		else
 			sceneColorTexArray = nullptr;
@@ -569,7 +569,7 @@ namespace bs { namespace ct
 	void RCNodeMSAACoverage::render(const RenderCompositorNodeInputs& inputs)
 	{
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
-		if(viewProps.numSamples <= 1)
+		if(viewProps.target.numSamples <= 1)
 		{
 			// No need for MSAA coverage
 			output = nullptr;
@@ -578,8 +578,8 @@ namespace bs { namespace ct
 
 		GpuResourcePool& resPool = GpuResourcePool::instance();
 
-		UINT32 width = viewProps.viewRect.width;
-		UINT32 height = viewProps.viewRect.height;
+		UINT32 width = viewProps.target.viewRect.width;
+		UINT32 height = viewProps.target.viewRect.height;
 
 		// We just allocate the texture, while the base pass is responsible for filling it out
 		output = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, width, height, TU_RENDERTARGET));
@@ -730,9 +730,9 @@ namespace bs { namespace ct
 
 		RCNodeSceneDepth* depthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[0]);
 
-		UINT32 width = viewProps.viewRect.width;
-		UINT32 height = viewProps.viewRect.height;
-		UINT32 numSamples = viewProps.numSamples;
+		UINT32 width = viewProps.target.viewRect.width;
+		UINT32 height = viewProps.target.viewRect.height;
+		UINT32 numSamples = viewProps.target.numSamples;
 
 		UINT32 usage = TU_RENDERTARGET;
 		if (numSamples > 1)
@@ -851,13 +851,14 @@ namespace bs { namespace ct
 		if(tiledDeferredSupported)
 		{
 			SPtr<Texture> msaaCoverage;
-			if(viewProps.numSamples > 1)
+			if(viewProps.target.numSamples > 1)
 			{
 				RCNodeMSAACoverage* coverageNode = static_cast<RCNodeMSAACoverage*>(inputs.inputNodes[4]);
 				msaaCoverage = coverageNode->output->texture;
 			}
 
-			TiledDeferredLightingMat* tiledDeferredMat = TiledDeferredLightingMat::getVariation(viewProps.numSamples);
+			TiledDeferredLightingMat* tiledDeferredMat = 
+				TiledDeferredLightingMat::getVariation(viewProps.target.numSamples);
 
 			const VisibleLightData& lightData = inputs.viewGroup.getVisibleLightData();
 
@@ -868,7 +869,7 @@ namespace bs { namespace ct
 			tiledDeferredMat->execute(inputs.view, lightData, gbuffer, sceneColorNode->sceneColorTex->texture,
 				output->lightAccumulationTex->texture, lightAccumTexArray, msaaCoverage);
 
-			if (viewProps.numSamples > 1)
+			if (viewProps.target.numSamples > 1)
 				output->resolveMSAA();
 
 			// If shadows are disabled we handle all lights through tiled deferred so we can exit immediately
@@ -879,9 +880,9 @@ namespace bs { namespace ct
 		// Standard deferred used for shadowed lights, or when tiled deferred isn't supported
 		GpuResourcePool& resPool = GpuResourcePool::instance();
 
-		UINT32 width = viewProps.viewRect.width;
-		UINT32 height = viewProps.viewRect.height;
-		UINT32 numSamples = viewProps.numSamples;
+		UINT32 width = viewProps.target.viewRect.width;
+		UINT32 height = viewProps.target.viewRect.height;
+		UINT32 numSamples = viewProps.target.numSamples;
 
 		const VisibleLightData& lightData = inputs.viewGroup.getVisibleLightData();
 
@@ -1035,17 +1036,18 @@ namespace bs { namespace ct
 			rapi.clearRenderTarget(FBT_DEPTH);
 			gRendererUtility().clear(-1);
 
-			TetrahedraRenderMat* renderTetrahedra = TetrahedraRenderMat::getVariation(viewProps.numSamples > 1, true);
+			TetrahedraRenderMat* renderTetrahedra = 
+				TetrahedraRenderMat::getVariation(viewProps.target.numSamples > 1, true);
 			renderTetrahedra->execute(inputs.view, sceneDepthNode->depthTex->texture, lpInfo.tetrahedraVolume, rt);
 
 			rt = nullptr;
 			resPool.release(depthTex);
 
-			evaluateMat = IrradianceEvaluateMat::getVariation(viewProps.numSamples > 1, true, false);
+			evaluateMat = IrradianceEvaluateMat::getVariation(viewProps.target.numSamples > 1, true, false);
 		}
 		else // Sky only
 		{
-			evaluateMat = IrradianceEvaluateMat::getVariation(viewProps.numSamples > 1, true, true);
+			evaluateMat = IrradianceEvaluateMat::getVariation(viewProps.target.numSamples > 1, true, true);
 		}
 
 		GBufferTextures gbuffer;
@@ -1107,13 +1109,14 @@ namespace bs { namespace ct
 		if(tiledDeferredSupported)
 		{
 			SPtr<Texture> msaaCoverage;
-			if (viewProps.numSamples > 1)
+			if (viewProps.target.numSamples > 1)
 			{
 				RCNodeMSAACoverage* coverageNode = static_cast<RCNodeMSAACoverage*>(inputs.inputNodes[6]);
 				msaaCoverage = coverageNode->output->texture;
 			}
 
-			TiledDeferredImageBasedLightingMat* material = TiledDeferredImageBasedLightingMat::getVariation(viewProps.numSamples);
+			TiledDeferredImageBasedLightingMat* material = 
+				TiledDeferredImageBasedLightingMat::getVariation(viewProps.target.numSamples);
 
 			TiledDeferredImageBasedLightingMat::Inputs iblInputs;
 			iblInputs.gbuffer = gbuffer;
@@ -1129,7 +1132,7 @@ namespace bs { namespace ct
 
 			material->execute(inputs.view, inputs.scene, inputs.viewGroup.getVisibleReflProbeData(), iblInputs);
 
-			if(viewProps.numSamples > 1)
+			if(viewProps.target.numSamples > 1)
 				sceneColorNode->resolveMSAA();
 		}
 		else // Standard deferred
@@ -1138,13 +1141,13 @@ namespace bs { namespace ct
 
 			GpuResourcePool& resPool = GpuResourcePool::instance();
 
-			UINT32 width = viewProps.viewRect.width;
-			UINT32 height = viewProps.viewRect.height;
-			UINT32 numSamples = viewProps.numSamples;
+			UINT32 width = viewProps.target.viewRect.width;
+			UINT32 height = viewProps.target.viewRect.height;
+			UINT32 numSamples = viewProps.target.numSamples;
 
 			RenderAPI& rapi = RenderAPI::instance();
 
-			bool isMSAA = viewProps.numSamples > 1;
+			bool isMSAA = viewProps.target.numSamples > 1;
 
 			SPtr<PooledRenderTexture> iblRadianceTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width,
 				height, TU_RENDERTARGET, numSamples, false));
@@ -1574,7 +1577,7 @@ namespace bs { namespace ct
 		}
 		else
 		{
-			Color clearColor = inputs.view.getProperties().clearColor;
+			Color clearColor = inputs.view.getProperties().target.clearColor;
 
 			SkyboxMat* material = SkyboxMat::getVariation(true);
 			material->bind(inputs.view.getPerViewBuffer(), nullptr, clearColor);
@@ -1623,11 +1626,11 @@ namespace bs { namespace ct
 			input = sceneColorNode->sceneColorTex->texture;
 		}
 
-		SPtr<RenderTarget> target = viewProps.target;
+		SPtr<RenderTarget> target = viewProps.target.target;
 
 		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setRenderTarget(target);
-		rapi.setViewport(viewProps.nrmViewRect);
+		rapi.setViewport(viewProps.target.nrmViewRect);
 
 		gRendererUtility().blit(input, Rect2I::EMPTY, viewProps.flipView);
 
@@ -1686,8 +1689,8 @@ namespace bs { namespace ct
 		GpuResourcePool& resPool = GpuResourcePool::instance();
 
 		const RendererViewProperties& viewProps = view.getProperties();
-		UINT32 width = viewProps.viewRect.width;
-		UINT32 height = viewProps.viewRect.height;
+		UINT32 width = viewProps.target.viewRect.width;
+		UINT32 height = viewProps.target.viewRect.height;
 
 		if(!mAllocated[mCurrentIdx])
 		{
@@ -1903,7 +1906,7 @@ namespace bs { namespace ct
 		const SPtr<Texture>& sceneColor = sceneColorNode->sceneColorTex->texture;
 
 		const bool hdr = settings.enableHDR;
-		const bool msaa = viewProps.numSamples > 1;
+		const bool msaa = viewProps.target.numSamples > 1;
 
 		const bool volumeLUT = inputs.featureSet == RenderBeastFeatureSet::Desktop;
 		bool gammaOnly;
@@ -2115,7 +2118,7 @@ namespace bs { namespace ct
 		const SPtr<Texture>& input = sceneColorNode->sceneColorTex->texture;
 
 		// Downsample scene
-		const bool msaa = viewProps.numSamples > 1;
+		const bool msaa = viewProps.target.numSamples > 1;
 		DownsampleMat* downsampleMat = DownsampleMat::getVariation(1, msaa);
 
 		GpuResourcePool& resPool = GpuResourcePool::instance();
@@ -2141,10 +2144,10 @@ namespace bs { namespace ct
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[0]);
 
-		if (viewProps.numSamples > 1)
+		if (viewProps.target.numSamples > 1)
 		{
-			UINT32 width = viewProps.viewRect.width;
-			UINT32 height = viewProps.viewRect.height;
+			UINT32 width = viewProps.target.viewRect.width;
+			UINT32 height = viewProps.target.viewRect.height;
 
 			output = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_D32_S8X24, width, height, 
 				TU_DEPTHSTENCIL, 1, false)); 
@@ -2188,8 +2191,8 @@ namespace bs { namespace ct
 
 		RCNodeResolvedSceneDepth* resolvedSceneDepth = static_cast<RCNodeResolvedSceneDepth*>(inputs.inputNodes[0]);
 
-		UINT32 width = viewProps.viewRect.width;
-		UINT32 height = viewProps.viewRect.height;
+		UINT32 width = viewProps.target.viewRect.width;
+		UINT32 height = viewProps.target.viewRect.height;
 
 		UINT32 size = Bitwise::nextPow2(std::max(width, height));
 		UINT32 numMips = PixelUtil::getMaxMipmaps(size, size, 1, PF_R32F);
@@ -2201,11 +2204,11 @@ namespace bs { namespace ct
 		output = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_R32F, size, size, TU_RENDERTARGET, 1, false, 1, 
 			numMips));
 
-		Rect2 srcRect = viewProps.nrmViewRect;
+		Rect2 srcRect = viewProps.target.nrmViewRect;
 
 		// If viewport size is odd, adjust UV
-		srcRect.width += (viewProps.viewRect.width % 2) * (1.0f / viewProps.viewRect.width);
-		srcRect.height += (viewProps.viewRect.height % 2) * (1.0f / viewProps.viewRect.height);
+		srcRect.width += (viewProps.target.viewRect.width % 2) * (1.0f / viewProps.target.viewRect.width);
+		srcRect.height += (viewProps.target.viewRect.height % 2) * (1.0f / viewProps.target.viewRect.height);
 
 		const RenderAPIInfo& rapiInfo = RenderAPI::instance().getAPIInfo();
 		bool noTextureViews = !rapiInfo.isFlagSet(RenderAPIFeatureFlag::TextureViews);
@@ -2225,26 +2228,26 @@ namespace bs { namespace ct
 		{
 			// Make sure that 1 pixel in HiZ maps to a 2x2 block in source
 			destRect = Rect2(0, 0,
-				Math::ceilToInt(viewProps.viewRect.width / 2.0f) / (float)size,
-				Math::ceilToInt(viewProps.viewRect.height / 2.0f) / (float)size);
+				Math::ceilToInt(viewProps.target.viewRect.width / 2.0f) / (float)size,
+				Math::ceilToInt(viewProps.target.viewRect.height / 2.0f) / (float)size);
 
 			material->execute(resolvedSceneDepth->output->texture, 0, srcRect, destRect, rt);
 		}
 		else // First level is just a copy of the depth buffer
 		{
 			destRect = Rect2(0, 0,
-				viewProps.viewRect.width / (float)size,
-				viewProps.viewRect.height / (float)size);
+				viewProps.target.viewRect.width / (float)size,
+				viewProps.target.viewRect.height / (float)size);
 
 			RenderAPI& rapi = RenderAPI::instance();
 			rapi.setRenderTarget(rt);
 			rapi.setViewport(destRect);
 
 			Rect2I srcAreaInt;
-			srcAreaInt.x = (INT32)(srcRect.x * viewProps.viewRect.width);
-			srcAreaInt.y = (INT32)(srcRect.y * viewProps.viewRect.height);
-			srcAreaInt.width = (UINT32)(srcRect.width * viewProps.viewRect.width);
-			srcAreaInt.height = (UINT32)(srcRect.height * viewProps.viewRect.height);
+			srcAreaInt.x = (INT32)(srcRect.x * viewProps.target.viewRect.width);
+			srcAreaInt.y = (INT32)(srcRect.y * viewProps.target.viewRect.height);
+			srcAreaInt.width = (UINT32)(srcRect.width * viewProps.target.viewRect.width);
+			srcAreaInt.height = (UINT32)(srcRect.height * viewProps.target.viewRect.height);
 
 			gRendererUtility().blit(resolvedSceneDepth->output->texture, srcAreaInt);
 			rapi.setViewport(Rect2(0, 0, 1, 1));
@@ -2327,8 +2330,8 @@ namespace bs { namespace ct
 		if(numDownsampleLevels > 0)
 		{
 			Vector2I downsampledSize(
-				std::max(1, Math::divideAndRoundUp((INT32)viewProps.viewRect.width, 2)),
-				std::max(1, Math::divideAndRoundUp((INT32)viewProps.viewRect.height, 2))
+				std::max(1, Math::divideAndRoundUp((INT32)viewProps.target.viewRect.width, 2)),
+				std::max(1, Math::divideAndRoundUp((INT32)viewProps.target.viewRect.height, 2))
 			);
 
 			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, downsampledSize.x, 
@@ -2342,8 +2345,8 @@ namespace bs { namespace ct
 		if(numDownsampleLevels > 1)
 		{
 			Vector2I downsampledSize(
-				std::max(1, Math::divideAndRoundUp((INT32)viewProps.viewRect.width, 4)),
-				std::max(1, Math::divideAndRoundUp((INT32)viewProps.viewRect.height, 4))
+				std::max(1, Math::divideAndRoundUp((INT32)viewProps.target.viewRect.width, 4)),
+				std::max(1, Math::divideAndRoundUp((INT32)viewProps.target.viewRect.height, 4))
 			);
 
 			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, downsampledSize.x, 
@@ -2364,8 +2367,8 @@ namespace bs { namespace ct
 			textures.aoSetup = setupTex1->texture;
 
 			Vector2I downsampledSize(
-				std::max(1, Math::divideAndRoundUp((INT32)viewProps.viewRect.width, 4)),
-				std::max(1, Math::divideAndRoundUp((INT32)viewProps.viewRect.height, 4))
+				std::max(1, Math::divideAndRoundUp((INT32)viewProps.target.viewRect.width, 4)),
+				std::max(1, Math::divideAndRoundUp((INT32)viewProps.target.viewRect.height, 4))
 			);
 
 			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, downsampledSize.x, 
@@ -2388,8 +2391,8 @@ namespace bs { namespace ct
 				textures.aoDownsampled = downAOTex1->texture;
 
 			Vector2I downsampledSize(
-				std::max(1, Math::divideAndRoundUp((INT32)viewProps.viewRect.width, 2)),
-				std::max(1, Math::divideAndRoundUp((INT32)viewProps.viewRect.height, 2))
+				std::max(1, Math::divideAndRoundUp((INT32)viewProps.target.viewRect.width, 2)),
+				std::max(1, Math::divideAndRoundUp((INT32)viewProps.target.viewRect.height, 2))
 			);
 
 			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, downsampledSize.x, 
@@ -2407,8 +2410,8 @@ namespace bs { namespace ct
 			}
 		}
 
-		UINT32 width = viewProps.viewRect.width;
-		UINT32 height = viewProps.viewRect.height;
+		UINT32 width = viewProps.target.viewRect.width;
+		UINT32 height = viewProps.target.viewRect.height;
 		mPooledOutput = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, width, height, TU_RENDERTARGET));
 
 		{
@@ -2503,8 +2506,8 @@ namespace bs { namespace ct
 		GpuResourcePool& resPool = GpuResourcePool::instance();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 
-		UINT32 width = viewProps.viewRect.width;
-		UINT32 height = viewProps.viewRect.height;
+		UINT32 width = viewProps.target.viewRect.width;
+		UINT32 height = viewProps.target.viewRect.height;
 
 		SPtr<Texture> hiZ = hiZNode->output->texture;
 
@@ -2513,7 +2516,7 @@ namespace bs { namespace ct
 
 		// Resolve multiple samples if MSAA is used
 		SPtr<PooledRenderTexture> resolvedSceneColor;
-		if (viewProps.numSamples > 1)
+		if (viewProps.target.numSamples > 1)
 		{
 			resolvedSceneColor = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height,
 				TU_RENDERTARGET));
@@ -2530,7 +2533,7 @@ namespace bs { namespace ct
 		gbuffer.roughMetal = gbufferNode->roughMetalTex->texture;
 		gbuffer.depth = sceneDepthNode->depthTex->texture;
 
-		SSRStencilMat* stencilMat = SSRStencilMat::getVariation(viewProps.numSamples > 1, true);
+		SSRStencilMat* stencilMat = SSRStencilMat::getVariation(viewProps.target.numSamples > 1, true);
 
 		// Note: Making the assumption that the stencil buffer is clear at this point
 		rapi.setRenderTarget(resolvedSceneDepthNode->output->renderTexture, FBT_DEPTH, RT_DEPTH_STENCIL);
@@ -2548,7 +2551,7 @@ namespace bs { namespace ct
 		rapi.setRenderTarget(traceRt, FBT_DEPTH | FBT_STENCIL, RT_DEPTH_STENCIL);
 		rapi.clearRenderTarget(FBT_COLOR, Color::ZERO);
 
-		SSRTraceMat* traceMat = SSRTraceMat::getVariation(settings.quality, viewProps.numSamples > 1, true);
+		SSRTraceMat* traceMat = SSRTraceMat::getVariation(settings.quality, viewProps.target.numSamples > 1, true);
 		traceMat->execute(inputs.view, gbuffer, sceneColor, hiZ, settings, traceRt);
 
 		if (resolvedSceneColor)
@@ -2564,7 +2567,7 @@ namespace bs { namespace ct
 			rapi.setRenderTarget(mPooledOutput->renderTexture);
 			rapi.clearRenderTarget(FBT_COLOR);
 
-			SSRResolveMat* resolveMat = SSRResolveMat::getVariation(viewProps.numSamples > 1);
+			SSRResolveMat* resolveMat = SSRResolveMat::getVariation(viewProps.target.numSamples > 1);
 			resolveMat->execute(inputs.view, mPrevFrame->texture, traceOutput->texture, sceneDepthNode->depthTex->texture,
 				mPooledOutput->renderTexture);
 

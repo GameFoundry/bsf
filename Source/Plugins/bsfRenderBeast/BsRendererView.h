@@ -182,17 +182,9 @@ namespace bs { namespace ct
 
 		Matrix4 viewProjTransform;
 		Matrix4 prevViewProjTransform;
-
-		SPtr<RenderTarget> target;
-		Rect2I viewRect;
-		Rect2 nrmViewRect;
-		UINT32 numSamples;
 		UINT32 frameIdx;
 
-		UINT32 clearFlags;
-		Color clearColor;
-		float clearDepthValue;
-		UINT16 clearStencilValue;
+		RendererViewTargetData target;
 	};
 
 	/** Information whether certain scene objects are visible in a view, per object type. */
@@ -441,7 +433,6 @@ namespace bs { namespace ct
 		static Vector2 getNDCZToDeviceZ();
 	private:
 		RendererViewProperties mProperties;
-		RENDERER_VIEW_TARGET_DESC mTargetDesc;
 		Camera* mCamera;
 
 		SPtr<RenderQueue> mDeferredOpaqueQueue;

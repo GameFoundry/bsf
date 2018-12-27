@@ -63,9 +63,9 @@ namespace bs { namespace ct
 		POOLED_RENDER_TEXTURE_DESC& depthDesc)
 	{
 		const RendererViewProperties& viewProps = view.getProperties();
-		UINT32 width = viewProps.viewRect.width;
-		UINT32 height = viewProps.viewRect.height;
-		UINT32 numSamples = viewProps.numSamples;
+		UINT32 width = viewProps.target.viewRect.width;
+		UINT32 height = viewProps.target.viewRect.height;
+		UINT32 numSamples = viewProps.target.numSamples;
 
 		colorDesc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R16U, width, height, TU_RENDERTARGET, numSamples);
 		depthDesc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_D32, width, height, TU_DEPTHSTENCIL, numSamples);
@@ -157,8 +157,8 @@ namespace bs { namespace ct
 
 		bind();
 
-		gRendererUtility().drawScreenQuad(Rect2(0.0f, 0.0f, (float)viewProps.viewRect.width, 
-			(float)viewProps.viewRect.height));
+		gRendererUtility().drawScreenQuad(Rect2(0.0f, 0.0f, (float)viewProps.target.viewRect.width, 
+			(float)viewProps.target.viewRect.height));
 
 		rapi.setRenderTarget(nullptr);
 	}

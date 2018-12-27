@@ -526,7 +526,7 @@ namespace bs { namespace ct
 
 		auto& viewProps = view.getProperties();
 		const Camera* camera = view.getSceneCamera();
-		SPtr<RenderTarget> target = viewProps.target;
+		SPtr<RenderTarget> target = viewProps.target.target;
 		SPtr<Viewport> viewport = camera->getViewport();
 
 		ClearFlags clearFlags = viewport->getClearFlags();

@@ -273,7 +273,7 @@ namespace bs { namespace ct {
 	{
 		const auto& viewProps = view.getProperties();
 
-		bool isMSAA = view.getProperties().numSamples > 1;
+		bool isMSAA = view.getProperties().target.numSamples > 1;
 		SPtr<GpuParamBlockBuffer> perViewBuffer = view.getPerViewBuffer();
 
 		light.getParameters(mPerLightBuffer);
@@ -332,7 +332,7 @@ namespace bs { namespace ct {
 		const GBufferTextures& gBufferInput, const SceneInfo& sceneInfo, const SPtr<GpuParamBlockBuffer>& reflProbeParams)
 	{
 		const auto& viewProps = view.getProperties();
-		bool isMSAA = viewProps.numSamples > 1;
+		bool isMSAA = viewProps.target.numSamples > 1;
 
 		SPtr<GpuParamBlockBuffer> perViewBuffer = view.getPerViewBuffer();
 

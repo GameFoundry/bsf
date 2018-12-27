@@ -55,19 +55,9 @@ namespace bs { namespace ct
 	}
 
 	RendererViewProperties::RendererViewProperties(const RENDERER_VIEW_DESC& src)
-		:RendererViewData(src), frameIdx(0)
+		:RendererViewData(src), frameIdx(0), target(src.target)
 	{
 		viewProjTransform = src.projTransform * src.viewTransform;
-
-		target = src.target.target;
-		viewRect = src.target.viewRect;
-		nrmViewRect = src.target.nrmViewRect;
-		numSamples = src.target.numSamples;
-
-		clearFlags = src.target.clearFlags;
-		clearColor = src.target.clearColor;
-		clearDepthValue = src.target.clearDepthValue;
-		clearStencilValue = src.target.clearStencilValue;
 	}
 
 	RendererView::RendererView()
@@ -77,7 +67,7 @@ namespace bs { namespace ct
 	}
 
 	RendererView::RendererView(const RENDERER_VIEW_DESC& desc)
-		: mProperties(desc), mTargetDesc(desc.target), mCamera(desc.sceneCamera), mRenderSettingsHash(0), mViewIdx(-1)
+		: mProperties(desc), mCamera(desc.sceneCamera), mRenderSettingsHash(0), mViewIdx(-1)
 	{
 		mParamBuffer = gPerCameraParamDef.createBuffer();
 		mProperties.prevViewProjTransform = mProperties.viewProjTransform;
@@ -130,13 +120,42 @@ namespace bs { namespace ct
 		mProperties = desc;
 		mProperties.viewProjTransform = desc.projTransform * desc.viewTransform;
 		mProperties.prevViewProjTransform = Matrix4::IDENTITY;
-		mTargetDesc = desc.target;
+		mProperties.target = desc.target;
 
 		setStateReductionMode(desc.stateReduction);
 	}
 
 	void RendererView::beginFrame()
 	{
+		// Check if render target resized and update the view properties accordingly
+		// Note: Normally we rely on the renderer notify* methods to let us know of changes to camera/viewport, but since
+		// render target resize can often originate from the core thread, this avoids the back and forth between 
+		// main <-> core thread, and the frame delay that comes with it
+		if(mCamera)
+		{
+			const SPtr<Viewport>& viewport = mCamera->getViewport();
+			if(viewport)
+			{
+				UINT32 newTargetWidth = 0;
+				UINT32 newTargetHeight = 0;
+				if (mProperties.target.target != nullptr)
+				{
+					newTargetWidth = mProperties.target.target->getProperties().width;
+					newTargetHeight = mProperties.target.target->getProperties().height;
+				}
+
+				if(newTargetWidth != mProperties.target.targetWidth ||
+					newTargetHeight != mProperties.target.targetHeight)
+				{
+					mProperties.target.viewRect = viewport->getPixelArea();
+					mProperties.target.targetWidth = newTargetWidth;
+					mProperties.target.targetHeight = newTargetHeight;
+					
+					updatePerViewBuffer();
+				}
+			}
+		}
+
 		// Note: inverse view-projection can be cached, it doesn't change every frame
 		Matrix4 viewProj = mProperties.projTransform * mProperties.viewTransform;
 		Matrix4 invViewProj = viewProj.inverse();
@@ -369,7 +388,7 @@ namespace bs { namespace ct
 		}
 
 		// Queue decals
-		const bool isMSAA = mProperties.numSamples > 1;
+		const bool isMSAA = mProperties.target.numSamples > 1;
 		for(UINT32 i = 0; i < (UINT32)sceneInfo.decals.size(); i++)
 		{
 			if (!mVisibility.decals[i])
@@ -571,7 +590,7 @@ namespace bs { namespace ct
 		Vector2 nearFar(mProperties.nearPlane, mProperties.farPlane);
 		gPerCameraParamDef.gNearFar.set(mParamBuffer, nearFar);
 
-		const Rect2I& viewRect = mTargetDesc.viewRect;
+		const Rect2I& viewRect = mProperties.target.viewRect;
 
 		Vector4I viewportRect;
 		viewportRect[0] = viewRect.x;
@@ -601,13 +620,13 @@ namespace bs { namespace ct
 	{
 		RenderAPI& rapi = RenderAPI::instance();
 		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
-		const Rect2I& viewRect = mTargetDesc.viewRect;
+		const Rect2I& viewRect = mProperties.target.viewRect;
 		
 		float halfWidth = viewRect.width * 0.5f;
 		float halfHeight = viewRect.height * 0.5f;
 
-		float rtWidth = mTargetDesc.targetWidth != 0 ? (float)mTargetDesc.targetWidth : 20.0f;
-		float rtHeight = mTargetDesc.targetHeight != 0 ? (float)mTargetDesc.targetHeight : 20.0f;
+		float rtWidth = mProperties.target.targetWidth != 0 ? (float)mProperties.target.targetWidth : 20.0f;
+		float rtHeight = mProperties.target.targetHeight != 0 ? (float)mProperties.target.targetHeight : 20.0f;
 
 		Vector4 ndcToUV;
 		ndcToUV.x = halfWidth / rtWidth;

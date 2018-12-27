@@ -47,8 +47,8 @@ namespace bs { namespace ct
 
 		mLightBufferParam.set(lightData.getLightBuffer());
 
-		UINT32 width = viewProps.viewRect.width;
-		UINT32 height = viewProps.viewRect.height;
+		UINT32 width = viewProps.target.viewRect.width;
+		UINT32 height = viewProps.target.viewRect.height;
 
 		Vector2I framebufferSize;
 		framebufferSize[0] = width;
@@ -369,8 +369,8 @@ namespace bs { namespace ct
 		BS_RENMAT_PROFILE_BLOCK
 
 		const RendererViewProperties& viewProps = view.getProperties();
-		UINT32 width = viewProps.viewRect.width;
-		UINT32 height = viewProps.viewRect.height;
+		UINT32 width = viewProps.target.viewRect.width;
+		UINT32 height = viewProps.target.viewRect.height;
 
 		Vector2I framebufferSize;
 		framebufferSize[0] = width;
