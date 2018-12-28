@@ -894,7 +894,6 @@ namespace bs { namespace ct
 			ProfileGPUBlock sampleBlock("Standard deferred unshadowed lights");
 
 			rapi.setRenderTarget(output->renderTarget, FBT_DEPTH | FBT_STENCIL, RT_DEPTH_STENCIL);
-			rapi.clearRenderTarget(FBT_COLOR, Color::ZERO);
 
 			for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
 			{
