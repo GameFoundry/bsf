@@ -6,23 +6,27 @@
 #include "Debug/BsBitmapWriter.h"
 #include "FileSystem/BsFileSystem.h"
 #include "FileSystem/BsDataStream.h"
+#include "Utility/BsTime.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32 && BS_COMPILER == BS_COMPILER_MSVC
 #include <windows.h>
 #include <iostream>
 
-void logToIDEConsole(const bs::String& message)
+void logToIDEConsole(const bs::String& message, const char* channel)
 {
+	OutputDebugString("[");
+	OutputDebugString(channel);
+	OutputDebugString("] ");
 	OutputDebugString(message.c_str());
 	OutputDebugString("\n");
 
 	// Also default output in case we're running without debugger attached
-	std::cout << message << std::endl;
+	std::cout << "[" << channel << "] " << message << std::endl;
 }
 #else
-void logToIDEConsole(const bs::String& message)
+void logToIDEConsole(const bs::String& message, const char* channel)
 {
-	std::cout << message << std::endl;
+	std::cout << "[" << channel << "] " << message << std::endl;
 }
 #endif
 
@@ -31,25 +35,30 @@ namespace bs
 	void Debug::logDebug(const String& msg)
 	{
 		mLog.logMsg(msg, (UINT32)DebugChannel::Debug);
-		logToIDEConsole(msg);
+		logToIDEConsole(msg, "DEBUG");
 	}
 
 	void Debug::logWarning(const String& msg)
 	{
 		mLog.logMsg(msg, (UINT32)DebugChannel::Warning);
-		logToIDEConsole(msg);
+		logToIDEConsole(msg, "WARNING");
 	}
 
 	void Debug::logError(const String& msg)
 	{
 		mLog.logMsg(msg, (UINT32)DebugChannel::Error);
-		logToIDEConsole(msg);
+		logToIDEConsole(msg, "ERROR");
 	}
 
 	void Debug::log(const String& msg, UINT32 channel)
 	{
 		mLog.logMsg(msg, channel);
-		logToIDEConsole(msg);
+		if (channel == (UINT32)DebugChannel::Debug)
+			logToIDEConsole(msg, "DEBUG");
+		if (channel == (UINT32)DebugChannel::Warning || channel == (UINT32)DebugChannel::CompilerWarning)
+			logToIDEConsole(msg, "WARNING");
+		if (channel == (UINT32)DebugChannel::Error || channel == (UINT32)DebugChannel::CompilerError)
+			logToIDEConsole(msg, "ERROR");
 	}
 
 	void Debug::writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const Path& filePath, 
@@ -186,18 +195,28 @@ table td
 <style type="text/css">
 )";
 
+		#if BS_IS_BANSHEE3D
 		static const char* htmlPostStyleHeader =
 			R"(</style>
 <title>Banshee Engine Log</title>
 </head>
 <body>
 )";
+		#else
+		static const char* htmlPostStyleHeader =
+			R"(</style>
+<title>bs::framework Log</title>
+</head>
+<body>
+)";	
+		#endif
 
 		static const char* htmlEntriesTableHeader =
 			R"(<table border="1" cellpadding="1" cellspacing="1">
 	<thead>
 		<tr>
 			<th scope="col" style="width:60px">Type</th>
+			<th scope="col" style="width:70px">Time</th>
 			<th scope="col">Description</th>
 		</tr>
 	</thead>
@@ -214,20 +233,27 @@ table td
 		stream << htmlPreStyleHeader;
 		stream << style;
 		stream << htmlPostStyleHeader;
+		#if BS_IS_BANSHEE3D
 		stream << "<h1>Banshee Engine Log</h1>\n";
+		#else
+		stream << "<h1>bs::framework Log</h1>\n";
+		#endif
 
 		stream << "<h2>System information</h2>\n";
 
 		// Write header information
-		stream << "<p>Banshee version: " << BS_VERSION_MAJOR << "." << BS_VERSION_MINOR << "</p>\n";
+		stream << "<p>bs::framework version: " << BS_VERSION_MAJOR << "." << BS_VERSION_MINOR <<"." << BS_VERSION_PATCH << "</p>\n";
+		stream << "<p>Started on: " << gTime().getAppStartUpDate(false) << "</p>\n";
 
 		SystemInfo systemInfo = PlatformUtility::getSystemInfo();
 		stream << "<p>OS version: " << systemInfo.osName << " " << (systemInfo.osIs64Bit ? "64-bit" : "32-bit") << "</p>\n";
+		stream << "<h3>CPU information:</h3>\n";
 		stream << "<p>CPU vendor: " << systemInfo.cpuManufacturer << "</p>\n";
 		stream << "<p>CPU name: " << systemInfo.cpuModel << "</p>\n";
 		stream << "<p>CPU clock speed: " << systemInfo.cpuClockSpeedMhz << "Mhz</p>\n";
 		stream << "<p>CPU core count: " << systemInfo.cpuNumCores << "</p>\n";
 
+		stream << "<h3>GPU List:</h3>\n";
 		if(systemInfo.gpuInfo.numGPUs == 1)
 			stream << "<p>GPU: " << systemInfo.gpuInfo.names[0] << "</p>\n";
 		else
@@ -272,6 +298,8 @@ table td
 
 				stream << R"(			<td>Debug</td>)" << std::endl;
 			}
+
+			stream << R"(			<td>)" << entry.getLocalTime() << "</td>" << std::endl;
 
 			String parsedMessage = StringUtil::replaceAll(entry.getMessage(), "\n", "<br>\n");
 

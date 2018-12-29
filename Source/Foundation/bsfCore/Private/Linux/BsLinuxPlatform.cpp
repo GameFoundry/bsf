@@ -63,7 +63,7 @@ namespace bs
 
 		XIM IM;
 		XIC IC;
-		Time lastButtonPressTime;
+		::Time lastButtonPressTime;
 
 		Atom atomDeleteWindow;
 		Atom atomWmState;

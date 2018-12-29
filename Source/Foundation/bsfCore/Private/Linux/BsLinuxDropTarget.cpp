@@ -475,9 +475,9 @@ namespace bs
 
 			if(dropAccepted)
 			{
-				Time timestamp;
+				::Time timestamp;
 				if(sDNDVersion >= 1)
-					timestamp = (Time)event.data.l[2];
+					timestamp = (::Time)event.data.l[2];
 				else
 					timestamp = CurrentTime;
 
