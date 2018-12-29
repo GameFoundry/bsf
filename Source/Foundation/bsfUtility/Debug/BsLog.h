@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Prerequisites/BsPrerequisitesUtil.h"
+#include "Utility/BsTime.h"
 
 namespace bs
 {
@@ -16,7 +17,7 @@ namespace bs
 	public:
 		LogEntry() = default;
 		LogEntry(String msg, UINT32 channel)
-			:mMsg(std::move(msg)), mChannel(channel)
+			:mMsg(std::move(msg)), mChannel(channel), mLocalTime(gTime().getCurrentTime(false))
 		{ }
 
 		/** Channel the message was recorded on. */
@@ -25,9 +26,13 @@ namespace bs
 		/** Text of the message. */
 		const String& getMessage() const { return mMsg; }
 
+		/** Local time of message being registered as a text */
+		const String& getLocalTime() const { return mLocalTime; }
+
 	private:
 		String mMsg;
 		UINT32 mChannel;
+		String mLocalTime;
 	};
 
 	/**
