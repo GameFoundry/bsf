@@ -7,8 +7,6 @@
 namespace bs
 {
 	FMODAudioSource::FMODAudioSource()
-		: mChannel(nullptr), mStreamingSound(nullptr), mTime(0.0f), mGloballyPaused(false)
-		, mGlobalUnpauseState(AudioSourceState::Stopped)
 	{
 		gFMODAudio()._registerSource(this);
 	}
