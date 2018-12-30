@@ -5,12 +5,6 @@
 
 namespace bs
 {
-	AudioClipImportOptions::AudioClipImportOptions()
-		:mFormat(AudioFormat::PCM), mReadMode(AudioReadMode::LoadDecompressed), mIs3D(true), mBitDepth(16)
-	{
-		
-	}
-
 	SPtr<AudioClipImportOptions> AudioClipImportOptions::create()
 	{
 		return bs_shared_ptr_new<AudioClipImportOptions>();
