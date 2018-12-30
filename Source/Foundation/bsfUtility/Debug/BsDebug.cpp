@@ -12,7 +12,7 @@
 #include <windows.h>
 #include <iostream>
 
-void logToIDEConsole(const bs::String& message, const char *channel)
+void logToIDEConsole(const bs::String& message, const char* channel)
 {
 	OutputDebugString("[");
 	OutputDebugString(channel);
@@ -24,7 +24,7 @@ void logToIDEConsole(const bs::String& message, const char *channel)
 	std::cout << "[" << channel << "] " << message << std::endl;
 }
 #else
-void logToIDEConsole(const bs::String& message, const char *channel)
+void logToIDEConsole(const bs::String& message, const char* channel)
 {
 	std::cout << "[" << channel << "] " << message << std::endl;
 }
