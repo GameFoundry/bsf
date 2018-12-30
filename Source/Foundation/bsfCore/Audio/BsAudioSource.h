@@ -130,13 +130,13 @@ namespace bs
 		virtual void onClipChanged() { }
 
 		HAudioClip mAudioClip;
-		Vector3 mVelocity;
-		float mVolume;
-		float mPitch;
-		bool mLoop;
-		INT32 mPriority;
-		float mMinDistance;
-		float mAttenuation;
+		Vector3 mVelocity = BsZero;
+		float mVolume = 1.0f;
+		float mPitch = 1.0f;
+		bool mLoop = false;
+		INT32 mPriority = 0;
+		float mMinDistance = 1.0f;
+		float mAttenuation = 1.0f;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
