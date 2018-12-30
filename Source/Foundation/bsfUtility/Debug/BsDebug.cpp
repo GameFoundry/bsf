@@ -12,18 +12,21 @@
 #include <windows.h>
 #include <iostream>
 
-void logToIDEConsole(const bs::String& message)
+void logToIDEConsole(const bs::String& message, const char *channel)
 {
+	OutputDebugString("[");
+	OutputDebugString(channel);
+	OutputDebugString("] ");
 	OutputDebugString(message.c_str());
 	OutputDebugString("\n");
 
 	// Also default output in case we're running without debugger attached
-	std::cout << message << std::endl;
+	std::cout << "[" << channel << "] " << message << std::endl;
 }
 #else
-void logToIDEConsole(const bs::String& message)
+void logToIDEConsole(const bs::String& message, const char *channel)
 {
-	std::cout << message << std::endl;
+	std::cout << "[" << channel << "] " << message << std::endl;
 }
 #endif
 
@@ -32,25 +35,30 @@ namespace bs
 	void Debug::logDebug(const String& msg)
 	{
 		mLog.logMsg(msg, (UINT32)DebugChannel::Debug);
-		logToIDEConsole(msg);
+		logToIDEConsole(msg, "DEBUG");
 	}
 
 	void Debug::logWarning(const String& msg)
 	{
 		mLog.logMsg(msg, (UINT32)DebugChannel::Warning);
-		logToIDEConsole(msg);
+		logToIDEConsole(msg, "WARNING");
 	}
 
 	void Debug::logError(const String& msg)
 	{
 		mLog.logMsg(msg, (UINT32)DebugChannel::Error);
-		logToIDEConsole(msg);
+		logToIDEConsole(msg, "ERROR");
 	}
 
 	void Debug::log(const String& msg, UINT32 channel)
 	{
 		mLog.logMsg(msg, channel);
-		logToIDEConsole(msg);
+		if (channel == (UINT32)DebugChannel::Debug)
+			logToIDEConsole(msg, "DEBUG");
+		if (channel == (UINT32)DebugChannel::Warning)
+			logToIDEConsole(msg, "WARNING");
+		if (channel == (UINT32)DebugChannel::Error)
+			logToIDEConsole(msg, "ERROR");
 	}
 
 	void Debug::writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const Path& filePath, 
