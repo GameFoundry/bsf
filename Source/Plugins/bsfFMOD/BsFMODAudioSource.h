@@ -67,11 +67,11 @@ namespace bs
 		/** @copydoc IResourceListener::onClipChanged */
 		void onClipChanged() override;
 
-		FMOD::Channel* mChannel;
-		FMOD::Sound* mStreamingSound;
+		FMOD::Channel* mChannel = nullptr;
+		FMOD::Sound* mStreamingSound = nullptr;
 
-		float mTime;
-		bool mGloballyPaused;
+		float mTime = 0.0f;
+		bool mGloballyPaused = false;
 		AudioSourceState mGlobalUnpauseState;
 	};
 
