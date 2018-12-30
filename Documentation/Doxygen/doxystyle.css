@@ -49,6 +49,32 @@ div.contents {
 	padding-bottom: 160px;
 }
 
+div.outdated {
+	background-color: #ff5829;
+    color: black;
+    font-size: 90%;
+    padding-bottom: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 5px;
+    text-align: center;
+    width: 100%;
+}
+
+select.version-select {
+	margin-left: 5px;
+    color: white;
+    background-color: black;
+    border-color: grey;
+    font-family: Lato;
+}
+
+span.version-select-box {
+	display: flex;
+	align-items: center;
+	padding-left: 5px;
+}
+
 .ui.inverted.menu .item {
 	font-size: 14px;
 	font-family: Lato,sans-serif;
