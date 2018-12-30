@@ -72,7 +72,7 @@ namespace bs
 
 		float mTime = 0.0f;
 		bool mGloballyPaused = false;
-		AudioSourceState mGlobalUnpauseState;
+		AudioSourceState mGlobalUnpauseState = AudioSourceState::Stopped;
 	};
 
 	/** @} */
