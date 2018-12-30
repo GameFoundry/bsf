@@ -109,16 +109,16 @@ namespace bs
 		void onClipChanged() override;
 
 		Vector<UINT32> mSourceIDs;
-		float mSavedTime;
-		AudioSourceState mSavedState;
-		bool mGloballyPaused;
+		float mSavedTime = 0.0f;
+		AudioSourceState mSavedState = AudioSourceState::Stopped;
+		bool mGloballyPaused = false;
 
 		static const UINT32 StreamBufferCount = 3; // Maximum 32
 		UINT32 mStreamBuffers[StreamBufferCount];
 		UINT32 mBusyBuffers[StreamBufferCount];
-		UINT32 mStreamProcessedPosition;
-		UINT32 mStreamQueuedPosition;
-		bool mIsStreaming;
+		UINT32 mStreamProcessedPosition = 0;
+		UINT32 mStreamQueuedPosition = 0;
+		bool mIsStreaming = false;
 		mutable Mutex mMutex;
 	};
 

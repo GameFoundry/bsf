@@ -7,12 +7,6 @@
 
 namespace bs
 {
-	AudioSource::AudioSource()
-		: mVelocity(BsZero), mVolume(1.0f), mPitch(1.0f), mLoop(false), mPriority(0), mMinDistance(1.0f), mAttenuation(1.0f)
-	{
-
-	}
-
 	void AudioSource::setClip(const HAudioClip& clip)
 	{
 		mAudioClip = clip;

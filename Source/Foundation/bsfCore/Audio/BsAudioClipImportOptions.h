@@ -16,7 +16,7 @@ namespace bs
 	class BS_CORE_EXPORT AudioClipImportOptions : public ImportOptions
 	{
 	public:
-		AudioClipImportOptions();
+		AudioClipImportOptions() = default;
 
 		/** Returns the audio format to import the audio clip as. */
 		AudioFormat getFormat() const { return mFormat; }
@@ -51,10 +51,10 @@ namespace bs
 		static SPtr<AudioClipImportOptions> create();
 
 	private:
-		AudioFormat mFormat;
-		AudioReadMode mReadMode;
-		bool mIs3D;
-		UINT32 mBitDepth;
+		AudioFormat mFormat = AudioFormat::PCM;
+		AudioReadMode mReadMode = AudioReadMode::LoadDecompressed;
+		bool mIs3D = true;
+		UINT32 mBitDepth = 16;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

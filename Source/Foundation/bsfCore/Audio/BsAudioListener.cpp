@@ -6,12 +6,6 @@
 
 namespace bs
 {
-	AudioListener::AudioListener()
-		:mVelocity(BsZero)
-	{
-		
-	}
-
 	void AudioListener::setVelocity(const Vector3& velocity)
 	{
 		mVelocity = velocity;

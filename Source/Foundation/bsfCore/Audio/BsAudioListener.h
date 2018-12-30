@@ -31,9 +31,9 @@ namespace bs
 		static SPtr<AudioListener> create();
 
 	protected:
-		AudioListener();
+		AudioListener() = default;
 
-		Vector3 mVelocity;
+		Vector3 mVelocity = BsZero;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
