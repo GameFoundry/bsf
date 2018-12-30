@@ -8,8 +8,7 @@
 namespace bs
 {
 	OAAudioSource::OAAudioSource()
-		: mSavedTime(0.0f), mSavedState(AudioSourceState::Stopped), mGloballyPaused(false), mStreamBuffers()
-		, mBusyBuffers(), mStreamProcessedPosition(0), mStreamQueuedPosition(0), mIsStreaming(false)
+		:mStreamBuffers(), mBusyBuffers()
 	{
 		gOAAudio()._registerSource(this);
 		rebuild();
