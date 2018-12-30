@@ -299,7 +299,6 @@ table td
 				stream << R"(			<td>Debug</td>)" << std::endl;
 			}
 
-			// Date here
 			stream << R"(			<td>)" << entry.getLocalTime() << "</td>" << std::endl;
 
 			String parsedMessage = StringUtil::replaceAll(entry.getMessage(), "\n", "<br>\n");

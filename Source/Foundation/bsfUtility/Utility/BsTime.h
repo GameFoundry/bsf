@@ -85,7 +85,7 @@ namespace bs
 		 * 
 		 * @param[in]	isUTC Outputs the date in Coordinated Universal Time, otherwise in local time.
 		 * 
-		 * @return A String containing the current date and time.
+		 * @return	A String containing the current date and time.
 		 * 
 		 * @note
 		 * Thread safe.
@@ -98,7 +98,7 @@ namespace bs
 		 * 
 		 * @param[in]	isUTC Outputs the date in Coordinated Universal Time, otherwise in local time.
 		 * 
-		 * @return A String containing the current time.
+		 * @return	A String containing the current time.
 		 * 
 		 * @note
 		 * Thread safe.
@@ -111,7 +111,7 @@ namespace bs
 		 *
 		 * @param[in]	isUTC Outputs the date in Coordinated Universal Time, otherwise in local time.
 		 * 
-		 * @return A String containing the application startup date and time.
+		 * @return	A String containing the application startup date and time.
 		 * 
 		 * @note
 		 * Thread safe.
