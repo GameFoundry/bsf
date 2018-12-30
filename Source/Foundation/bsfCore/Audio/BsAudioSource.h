@@ -118,7 +118,7 @@ namespace bs
 		static SPtr<AudioSource> create();
 
 	protected:
-		AudioSource();
+		AudioSource() = default;
 
 		/** @copydoc IResourceListener::getListenerResources */
 		void getListenerResources(Vector<HResource>& resources) override;
