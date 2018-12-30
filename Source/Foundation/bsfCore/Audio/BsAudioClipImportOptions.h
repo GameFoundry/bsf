@@ -52,7 +52,7 @@ namespace bs
 
 	private:
 		AudioFormat mFormat = AudioFormat::PCM;
-		AudioReadMode mReadMode = AudioReadMode::LoadCompressed;
+		AudioReadMode mReadMode = AudioReadMode::LoadDecompressed;
 		bool mIs3D = true;
 		UINT32 mBitDepth = 16;
 
