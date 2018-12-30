@@ -83,7 +83,7 @@ namespace bs
 		/**
 		 * Gets the current date and time in textual form.
 		 * 
-		 * @param[in]	isUTC Outputs the date in Coordinated Universal Time, otherwise in local time.
+		 * @param[in]	isUTC Outputs the date and time in Coordinated Universal Time, otherwise in local time.
 		 * 
 		 * @return	A String containing the current date and time.
 		 * 
@@ -96,7 +96,7 @@ namespace bs
 		/**
 		 * Gets the current time in textual form
 		 * 
-		 * @param[in]	isUTC Outputs the date in Coordinated Universal Time, otherwise in local time.
+		 * @param[in]	isUTC Outputs the time in Coordinated Universal Time, otherwise in local time.
 		 * 
 		 * @return	A String containing the current time.
 		 * 
@@ -109,7 +109,7 @@ namespace bs
 		/**
 		 * Gets the date and time where the application has been started in textual form.
 		 *
-		 * @param[in]	isUTC Outputs the date in Coordinated Universal Time, otherwise in local time.
+		 * @param[in]	isUTC Outputs the date and time in Coordinated Universal Time, otherwise in local time.
 		 * 
 		 * @return	A String containing the application startup date and time.
 		 * 

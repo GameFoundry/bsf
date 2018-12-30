@@ -55,9 +55,9 @@ namespace bs
 		mLog.logMsg(msg, channel);
 		if (channel == (UINT32)DebugChannel::Debug)
 			logToIDEConsole(msg, "DEBUG");
-		if (channel == (UINT32)DebugChannel::Warning)
+		if (channel == (UINT32)DebugChannel::Warning || channel == (UINT32)DebugChannel::CompilerWarning)
 			logToIDEConsole(msg, "WARNING");
-		if (channel == (UINT32)DebugChannel::Error)
+		if (channel == (UINT32)DebugChannel::Error || channel == (UINT32)DebugChannel::CompilerError)
 			logToIDEConsole(msg, "ERROR");
 	}
 
