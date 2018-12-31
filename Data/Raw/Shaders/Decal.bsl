@@ -1,6 +1,8 @@
 #define CLIP_POS 1
 #define NO_ANIMATION 1
-#include "$ENGINE$\BasePass.bslinc"
+#include "$ENGINE$\PerCameraData.bslinc"
+#include "$ENGINE$\PerObjectData.bslinc"
+#include "$ENGINE$\VertexInput.bslinc"
 
 #if MSAA_MODE != 0
 	#define MSAA_COUNT 2
@@ -12,7 +14,9 @@
 
 shader Surface
 {
-	mixin BasePass;
+	mixin PerCameraData;
+	mixin PerObjectData;
+	mixin VertexInput;
 	mixin GBufferOutput;
 	mixin DepthInput;
 	mixin MaskInput;
@@ -185,6 +189,7 @@ shader Surface
 			float4x4 gWorldToDecal;
 			float3 gDecalNormal;
 			float gNormalTolerance;
+			float gFlipDerivatives;
 			uint gLayerMask;
 		}
 		
@@ -203,9 +208,27 @@ shader Surface
 			float invmax = rsqrt(max(dot(T,T), dot(B,B)));
 			return float3x3(T * invmax, B * invmax, N);
 		}
+
+		struct DecalVStoFS
+		{
+			float4 position : SV_Position;
+			float4 clipPos : TEXCOORD0;
+		};
+		
+		DecalVStoFS vsmain(VertexInput_PO input)
+		{
+			DecalVStoFS output;
+		
+			float4 worldPosition = getVertexWorldPosition(input);
+			
+			output.position = mul(gMatViewProj, worldPosition);
+			output.clipPos = output.position;
+						
+			return output;
+		}
 		
 		void fsmain(
-			in VStoFS input, 
+			in DecalVStoFS input, 
 			in float4 screenPos : SV_Position,
 			#if MSAA_MODE == 2
 			uint sampleIdx : SV_SampleIndex,
@@ -217,13 +240,13 @@ shader Surface
 		{		
 			#if MSAA_MODE == 0
 				float deviceZ = gDepthBufferTex.Load(int3(screenPos.xy, 0)).r;
-				uint layer = gMaskTex.Load(int3(screenPos.xy, 0)).r;
+				uint layer = (uint)(gMaskTex.Load(int3(screenPos.xy, 0)).r * 256.0f);
 			#elif MSAA_MODE == 1
 				float deviceZ = gDepthBufferTex.Load(screenPos.xy, 0).r;
-				uint layer = gMaskTex.Load(screenPos.xy, 0).r;
+				uint layer = (uint)(gMaskTex.Load(screenPos.xy, 0).r * 256.0f);
 			#else
 				float deviceZ = gDepthBufferTex.Load(screenPos.xy, sampleIdx).r;
-				uint layer = gMaskTex.Load(screenPos.xy, sampleIdx).r;
+				uint layer = (uint)(gMaskTex.Load(screenPos.xy, sampleIdx).r * 256.0f);
 			#endif
 			
 			if(layer < 32 && (gLayerMask & (1 << layer)) == 0)
@@ -247,7 +270,7 @@ shader Surface
 			if(any(decalUV < 0.0f) || any(decalUV > 1.0f))
 				discard;
 			
-			float3 worldNormal = normalize(cross(ddy(worldPosition), ddx(worldPosition)));
+			float3 worldNormal = normalize(cross(ddy(worldPosition), ddx(worldPosition))) * gFlipDerivatives;
 			if(dot(worldNormal, gDecalNormal) > gNormalTolerance)
 				discard;
 				

@@ -48,9 +48,16 @@ namespace bs { namespace ct
 		const Vector3 decalNormal = -decal->getTransform().getRotation().zAxis();
 		const float normalTolerance = -0.05f;
 
+		float flipDerivatives = 1.0f;
+
+		const RenderAPIInfo& rapiInfo = RenderAPI::instance().getAPIInfo();
+		if(rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp))
+			flipDerivatives = -1.0f;
+
 		gDecalParamDef.gWorldToDecal.set(decalParamBuffer, worldToDecal);
 		gDecalParamDef.gDecalNormal.set(decalParamBuffer, decalNormal);
 		gDecalParamDef.gNormalTolerance.set(decalParamBuffer, normalTolerance);
+		gDecalParamDef.gFlipDerivatives.set(decalParamBuffer, flipDerivatives);
 		gDecalParamDef.gLayerMask.set(decalParamBuffer, (INT32)decal->getLayerMask());
 	}
 

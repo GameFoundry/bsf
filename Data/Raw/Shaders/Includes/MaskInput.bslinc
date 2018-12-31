@@ -7,9 +7,9 @@ mixin MaskInput
 		#endif
 
 		#if MSAA_COUNT > 1
-		Texture2DMS<uint> gMaskTex;
+		Texture2DMS<float> gMaskTex;
 		#else
-		Texture2D<uint> gMaskTex;
+		Texture2D<float> gMaskTex;
 		#endif	
 	};
 };

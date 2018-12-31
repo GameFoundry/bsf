@@ -21,6 +21,7 @@ namespace bs { namespace ct
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gWorldToDecal)
 		BS_PARAM_BLOCK_ENTRY(Vector3, gDecalNormal)
 		BS_PARAM_BLOCK_ENTRY(float, gNormalTolerance)
+		BS_PARAM_BLOCK_ENTRY(float, gFlipDerivatives)
 		BS_PARAM_BLOCK_ENTRY(INT32, gLayerMask)
 	BS_PARAM_BLOCK_END
 

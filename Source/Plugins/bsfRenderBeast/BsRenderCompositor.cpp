@@ -252,7 +252,7 @@ namespace bs { namespace ct
 			numSamples, false));
 		roughMetalTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RG16F, width, height, TU_RENDERTARGET,
 			numSamples, false)); // Note: Metal doesn't need 16-bit float
-		idTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8U, width, height, TU_RENDERTARGET,
+		idTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, width, height, TU_RENDERTARGET,
 			numSamples, false));
 
 		auto sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[0]);

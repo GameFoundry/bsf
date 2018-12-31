@@ -146,7 +146,7 @@ shader Surface
 			out float4 OutGBufferA : SV_Target1,
 			out float4 OutGBufferB : SV_Target2,
 			out float2 OutGBufferC : SV_Target3,
-			out uint OutGBufferD : SV_Target4)
+			out float OutGBufferD : SV_Target4)
 		{
 			// ...
 		}	
@@ -192,7 +192,7 @@ shader Surface
 			out float4 OutGBufferA : SV_Target1,
 			out float4 OutGBufferB : SV_Target2,
 			out float2 OutGBufferC : SV_Target3,
-			out uint OutGBufferD : SV_Target4)
+			out float OutGBufferD : SV_Target4)
 		{
 			SurfaceData surfaceData;
 			surfaceData.albedo = gAlbedoTex.Sample(gAlbedoSamp, input.uv0);
