@@ -305,7 +305,9 @@ namespace bs
 			memory = rttiReadElem(data.dataType, memory, size);
 			memory = rttiReadElem(data.index, memory, size);
 			memory = rttiReadElem(data.arraySize, memory, size);
+
 			data.version = 1;
+			size += sizeof(data.version);
 
 			return size;
 		}
@@ -365,6 +367,10 @@ namespace bs
 				
 				UINT32 curveType = 0;
 				memory = rttiReadElem(curveType, memory);
+
+				data.floatCurve = nullptr;
+				data.colorGradient = nullptr;
+				data.spriteTextureIdx = (UINT32)-1;
 
 				switch(curveType)
 				{
