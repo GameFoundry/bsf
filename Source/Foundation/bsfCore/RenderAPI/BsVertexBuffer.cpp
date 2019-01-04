@@ -7,6 +7,15 @@
 
 namespace bs 
 {
+	void checkValidDesc(const VERTEX_BUFFER_DESC& desc)
+	{
+		if(desc.vertexSize == 0)
+			BS_EXCEPT(InvalidParametersException, "Vertex buffer vertex size is not allowed to be zero.");
+
+		if(desc.numVerts == 0)
+			BS_EXCEPT(InvalidParametersException, "Vertex buffer vertex count is not allowed to be zero.");
+	}
+
 	VertexBufferProperties::VertexBufferProperties(UINT32 numVertices, UINT32 vertexSize)
 		:mNumVertices(numVertices), mVertexSize(vertexSize)
 	{ }
@@ -14,7 +23,9 @@ namespace bs
 	VertexBuffer::VertexBuffer(const VERTEX_BUFFER_DESC& desc)
 		: mProperties(desc.numVerts, desc.vertexSize), mUsage(desc.usage), mStreamOut(desc.streamOut)
 	{
-
+#if BS_DEBUG_MODE
+		checkValidDesc(desc);
+#endif
 	}
 
 	SPtr<ct::CoreObject> VertexBuffer::createCore() const
@@ -42,7 +53,11 @@ namespace bs
 	{
 	VertexBuffer::VertexBuffer(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
 		:HardwareBuffer(desc.vertexSize * desc.numVerts, desc.usage, deviceMask), mProperties(desc.numVerts, desc.vertexSize)
-	{ }
+	{
+#if BS_DEBUG_MODE
+		checkValidDesc(desc);
+#endif
+	}
 
 	VertexBuffer::~VertexBuffer()
 	{

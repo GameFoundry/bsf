@@ -20,6 +20,12 @@ namespace bs
 		}
 	}
 
+	void checkValidDesc(const INDEX_BUFFER_DESC& desc)
+	{
+		if(desc.numIndices == 0)
+			BS_EXCEPT(InvalidParametersException, "Index buffer index count is not allowed to be zero.");
+	}
+
 	IndexBufferProperties::IndexBufferProperties(IndexType idxType, UINT32 numIndices)
 		:mIndexType(idxType), mNumIndices(numIndices), mIndexSize(calcIndexSize(idxType))
 	{ }
@@ -27,7 +33,9 @@ namespace bs
 	IndexBuffer::IndexBuffer(const INDEX_BUFFER_DESC& desc)
 		:mProperties(desc.indexType, desc.numIndices), mUsage(desc.usage)
 	{
-
+#if BS_DEBUG_MODE
+		checkValidDesc(desc);
+#endif
 	}
 
 	SPtr<ct::IndexBuffer> IndexBuffer::getCore() const
@@ -55,7 +63,11 @@ namespace bs
 	IndexBuffer::IndexBuffer(const INDEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
 		: HardwareBuffer(calcIndexSize(desc.indexType) * desc.numIndices, desc.usage, deviceMask)
 		, mProperties(desc.indexType, desc.numIndices)
-	{ }
+	{
+#if BS_DEBUG_MODE
+		checkValidDesc(desc);
+#endif
+	}
 
 	IndexBuffer::~IndexBuffer()
 	{
