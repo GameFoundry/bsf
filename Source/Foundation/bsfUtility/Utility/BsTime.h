@@ -151,6 +151,12 @@ namespace bs
 		/** Multiply with time in microseconds to get a time in seconds. */
 		static const double MICROSEC_TO_SEC;
 	private:
+		/** Maximum number of fixed updates that can ever be accumulated. */
+		static constexpr UINT32 MAX_ACCUM_FIXED_UPDATES = 200;
+
+		/** Determines how many new fixed updates are regenerated per frame. */
+		static constexpr UINT32 NEW_FIXED_UPDATES_PER_FRAME = 4;
+
 		float mFrameDelta = 0.0f; /**< Frame delta in seconds */
 		float mTimeSinceStart = 0.0f; /**< Time since start in seconds */
 		UINT64 mTimeSinceStartMs = 0u;
@@ -164,6 +170,7 @@ namespace bs
 		UINT64 mFixedStep = 16666; // 60 times a second in microseconds
 		UINT64 mLastFixedUpdateTime = 0;
 		bool mFirstFixedFrame = true;
+		UINT32 mNumRemainingFixedUpdates = MAX_ACCUM_FIXED_UPDATES;
 
 		std::time_t mAppStartUpDate;
 
