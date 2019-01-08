@@ -138,27 +138,53 @@ namespace bs
 		static UINT32 mostSignificantBit(UINT64 val)
 		{
 #if BS_COMPILER == BS_COMPILER_MSVC
+#if BS_ARCH_TYPE == BS_ARCHITECTURE_x86_64
 			unsigned long index;
 			_BitScanReverse64(&index, val);
 			return index;
+#else // BS_ARCH_TYPE
+			if (static_cast<UINT32>(val >> 32) != 0)
+			{
+				_BitScanReverse(&index, static_cast<UINT32>(val >> 32));
+				return index + 32;
+		}
+			else
+			{
+				_BitScanReverse(&index, static_cast<UINT32>(val));
+				return index;
+			}
+#endif // BS_ARCH_TYPE
 #elif BS_COMPILER == BS_COMPILER_GNUC || BS_COMPILER == BS_COMPILER_CLANG
 			return 31 - __builtin_clzll(val);
-#else
+#else // BS_COMPILER
 			static_assert(false, "Not implemented");
-#endif
+#endif // BS_COMPILER
 		}
 		/** Finds the least-significant non-zero bit in the provided value and returns the index of that bit. */
 		static UINT32 leastSignificantBit(UINT64 val)
 		{
 #if BS_COMPILER == BS_COMPILER_MSVC
+#if BS_ARCH_TYPE == BS_ARCHITECTURE_x86_64
 			unsigned long index;
 			_BitScanForward64(&index, val);
 			return index;
+#else // BS_ARCH_TYPE
+			if (static_cast<UINT32>(val) != 0)
+			{
+				_BitScanForward(&index, static_cast<UINT32>(val));
+				return index;
+			}
+			else
+			{
+				_BitScanForward(&index, static_cast<UINT32>(val >> 32));
+				return index + 32;
+			}
+#endif // BS_ARCH_TYPE
 #elif BS_COMPILER == BS_COMPILER_GNUC || BS_COMPILER == BS_COMPILER_CLANG
 			return __builtin_ctzll(val);
-#else
+#else // BS_COMPILER
 			static_assert(false, "Not implemented");
-#endif
+#endif // BS_COMPILER
 		}
 
 		/** Determines whether the number is power-of-two or not. */
