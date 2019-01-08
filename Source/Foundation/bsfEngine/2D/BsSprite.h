@@ -31,7 +31,7 @@ namespace bs
 	/** Contains information about a single sprite render element, including its geometry and material. */
 	struct SpriteRenderElement
 	{
-		SpriteRenderElement() = default
+		SpriteRenderElement() = default;
 
 		Vector2* vertices = nullptr;
 		Vector2* uvs = nullptr;

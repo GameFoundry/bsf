@@ -75,7 +75,7 @@ namespace bs
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 
-		MorphShape(); // Serialization only
+		MorphShape() = default; // Serialization only
 	};
 
 	/**
