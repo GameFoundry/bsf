@@ -14,9 +14,6 @@ namespace bs
 {
 	TEXTURE_COPY_DESC TEXTURE_COPY_DESC::DEFAULT = TEXTURE_COPY_DESC();
 
-	TextureProperties::TextureProperties()
-	{ }
-
 	TextureProperties::TextureProperties(const TEXTURE_DESC& desc)
 		:mDesc(desc)
 	{
@@ -65,11 +62,6 @@ namespace bs
 		dst->allocateInternalBuffer();
 
 		return dst;
-	}
-
-	Texture::Texture()
-	{
-
 	}
 
 	Texture::Texture(const TEXTURE_DESC& desc)
