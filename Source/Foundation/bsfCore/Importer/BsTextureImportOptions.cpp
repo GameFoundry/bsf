@@ -5,11 +5,6 @@
 
 namespace bs
 {
-	TextureImportOptions::TextureImportOptions()
-		: mFormat(PF_RGBA8), mGenerateMips(false), mMaxMip(0), mCPUCached(false), mSRGB(false), mCubemap(false)
-		, mCubemapSourceType(CubemapSourceType::Faces)
-	{ }
-
 	SPtr<TextureImportOptions> TextureImportOptions::create()
 	{
 		return bs_shared_ptr_new<TextureImportOptions>();

@@ -20,7 +20,7 @@ namespace bs
 	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Animation) AnimationCurves
 	{
 		BS_SCRIPT_EXPORT()
-		AnimationCurves() {}
+		AnimationCurves() = default;
 
 		/** 
 		 * Registers a new curve used for animating position. 
@@ -94,7 +94,7 @@ namespace bs
 	/** Contains a set of animation curves used for moving and rotating the root bone. */
 	struct BS_SCRIPT_EXPORT(m:Animation) RootMotion
 	{
-		RootMotion() { }
+		RootMotion() = default;
 		RootMotion(const TAnimationCurve<Vector3>& position, const TAnimationCurve<Quaternion>& rotation)
 			:position(position), rotation(rotation)
 		{ }
@@ -109,9 +109,7 @@ namespace bs
 	/** Event that is triggered when animation reaches a certain point. */
 	struct BS_SCRIPT_EXPORT(m:Animation,pl:true) AnimationEvent
 	{
-		AnimationEvent()
-			:time(0.0f)
-		{ }
+		AnimationEvent() = default;
 
 		/** 
 		 * Constructs a new animation event.
@@ -127,7 +125,7 @@ namespace bs
 		String name;
 
 		/** Time at which to trigger the event, in seconds. */
-		float time;
+		float time = 0.0f;
 	};
 
 	/** Types of curves in an AnimationClip. */
@@ -149,7 +147,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Animation) AnimationClip : public Resource
 	{
 	public:
-		virtual ~AnimationClip() { }
+		virtual ~AnimationClip() = default;
 
 		/** @copydoc setCurves() */
 		BS_SCRIPT_EXPORT(n:Curves,pr:getter)

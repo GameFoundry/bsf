@@ -18,7 +18,7 @@ namespace bs
 	class BS_CORE_EXPORT ImportOptions : public IReflectable
 	{
 	public:
-		virtual ~ImportOptions() {}
+		virtual ~ImportOptions() = default;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

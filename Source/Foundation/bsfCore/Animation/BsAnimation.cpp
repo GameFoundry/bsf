@@ -9,11 +9,6 @@
 
 namespace bs
 {
-	AnimationClipInfo::AnimationClipInfo()
-		: playbackType(AnimPlaybackType::Normal), fadeDirection(0.0f), fadeTime(0.0f), fadeLength(0.0f), curveVersion(0)
-		, layerIdx((UINT32)-1), stateIdx((UINT32)-1)
-	{ }
-
 	AnimationClipInfo::AnimationClipInfo(const HAnimationClip& clip)
 		: clip(clip), playbackType(AnimPlaybackType::Normal), fadeDirection(0.0f), fadeTime(0.0f), fadeLength(0.0f)
 		, curveVersion(0), layerIdx((UINT32)-1), stateIdx((UINT32)-1)
@@ -641,8 +636,6 @@ namespace bs
 	}
 
 	Animation::Animation()
-		: mDefaultWrapMode(AnimWrapMode::Loop), mDefaultSpeed(1.0f), mCull(true), mDirty(AnimDirtyStateFlag::All)
-		, mGenericCurveValuesValid(false)
 	{
 		mId = AnimationManager::instance().registerAnimation(this);
 		mAnimProxy = bs_shared_ptr_new<AnimationProxy>(mId);

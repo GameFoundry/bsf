@@ -17,7 +17,7 @@ namespace bs
 	 */
 	struct BS_EXPORT VIRTUAL_BUTTON_DESC
 	{
-		VIRTUAL_BUTTON_DESC();
+		VIRTUAL_BUTTON_DESC() = default;
 
 		/**
 		 * Constructs a virtual button descriptor.
@@ -29,9 +29,9 @@ namespace bs
 		 */
 		VIRTUAL_BUTTON_DESC(ButtonCode buttonCode, ButtonModifier modifiers = ButtonModifier::None, bool repeatable = false);
 
-		ButtonCode buttonCode;
-		ButtonModifier modifiers;
-		bool repeatable;
+		ButtonCode buttonCode = BC_0;
+		ButtonModifier modifiers = ButtonModifier::None;
+		bool repeatable = false;
 	};
 
 	/**
@@ -40,7 +40,7 @@ namespace bs
 	 */
 	struct BS_EXPORT VIRTUAL_AXIS_DESC
 	{
-		VIRTUAL_AXIS_DESC() {}
+		VIRTUAL_AXIS_DESC() = default;
 
 		/**
 		 * Constructs a new virtual axis descriptor.
@@ -83,7 +83,7 @@ namespace bs
 	class BS_EXPORT VirtualButton 
 	{
 	public:
-		VirtualButton();
+		VirtualButton() = default;
 		VirtualButton(const String& name);
 
 		bool operator== (const VirtualButton& rhs) const
@@ -91,7 +91,7 @@ namespace bs
 			return (buttonIdentifier == rhs.buttonIdentifier);
 		}
 
-		UINT32 buttonIdentifier;
+		UINT32 buttonIdentifier = 0;
 	private:
 		/** Returns a static map of all virtual button identifiers and their buttons. */
 		static Map<String, UINT32>& getUniqueButtonIds();
@@ -114,10 +114,10 @@ namespace bs
 	class BS_EXPORT VirtualAxis
 	{
 	public:
-		VirtualAxis();
+		VirtualAxis() = default;
 		VirtualAxis(const String& name);
 
-		UINT32 axisIdentifier;
+		UINT32 axisIdentifier = 0;
 
 		bool operator== (const VirtualAxis& rhs) const
 		{
@@ -158,7 +158,7 @@ namespace bs
 		};
 
 	public:
-		InputConfiguration();
+		InputConfiguration() = default;
 
 		/**
 		 * Registers a new virtual button.
@@ -215,7 +215,7 @@ namespace bs
 		Vector<VirtualButtonData> mButtons[BC_Count];
 		Vector<VirtualAxisData> mAxes;
 
-		UINT64 mRepeatInterval;
+		UINT64 mRepeatInterval = 300;
 	};
 
 	/** @} */

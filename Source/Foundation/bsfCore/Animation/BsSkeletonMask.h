@@ -17,7 +17,7 @@ namespace bs
 	class BS_CORE_EXPORT SkeletonMask
 	{
 	public:
-		SkeletonMask() {}
+		SkeletonMask() = default;
 		SkeletonMask(UINT32 numBones);
 
 		/** 

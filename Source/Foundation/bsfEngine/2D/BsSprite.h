@@ -31,24 +31,22 @@ namespace bs
 	/** Contains information about a single sprite render element, including its geometry and material. */
 	struct SpriteRenderElement
 	{
-		SpriteRenderElement()
-			:vertices(nullptr), uvs(nullptr), indexes(nullptr), numQuads(0), material(nullptr)
-		{ }
+		SpriteRenderElement() = default;
 
-		Vector2* vertices;
-		Vector2* uvs;
-		UINT32* indexes;
-		UINT32 numQuads;
+		Vector2* vertices = nullptr;
+		Vector2* uvs = nullptr;
+		UINT32* indexes = nullptr;
+		UINT32 numQuads = 0;
 		SpriteMaterialInfo matInfo;
-		SpriteMaterial* material;
+		SpriteMaterial* material = nullptr;
 	};
 
 	/**	Generates geometry and contains information needed for rendering a two dimensional element. */
 	class BS_EXPORT Sprite
 	{
 	public:
-		Sprite();
-		virtual ~Sprite();
+		Sprite() = default;
+		virtual ~Sprite() = default;
 
 		/**
 		 * Returns clipped bounds of the sprite.

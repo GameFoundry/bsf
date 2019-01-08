@@ -15,7 +15,7 @@ namespace bs
 	/** A single vertex used for morph target animation. Contains a difference between base and target shape. */
 	struct BS_CORE_EXPORT MorphVertex
 	{
-		MorphVertex() { }
+		MorphVertex() = default;
 		MorphVertex(const Vector3& deltaPosition, const Vector3& deltaNormal, UINT32 sourceIdx)
 			:deltaPosition(deltaPosition), deltaNormal(deltaNormal), sourceIdx(sourceIdx)
 		{ }
@@ -75,7 +75,7 @@ namespace bs
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 
-		MorphShape(); // Serialization only
+		MorphShape() = default; // Serialization only
 	};
 
 	/**
@@ -104,7 +104,7 @@ namespace bs
 		static SPtr<MorphChannel> create(const String& name, const Vector<SPtr<MorphShape>>& shapes);
 
 	private:
-		MorphChannel();
+		MorphChannel() = default;
 		MorphChannel(const String& name, const Vector<SPtr<MorphShape>>& shapes);
 
 		String mName;
@@ -151,7 +151,7 @@ namespace bs
 		static SPtr<MorphShapes> create(const Vector<SPtr<MorphChannel>>& channels, UINT32 numVertices);
 
 	private:
-		MorphShapes();
+		MorphShapes() = default;
 		MorphShapes(const Vector<SPtr<MorphChannel>>& channels, UINT32 numVertices);
 
 		Vector<SPtr<MorphChannel>> mChannels;

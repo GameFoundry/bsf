@@ -48,7 +48,7 @@ namespace bs
 	public:
 		typedef TKeyframe<T> KeyFrame;
 
-		TAnimationCurve();
+		TAnimationCurve() = default;
 
 		/**
 		 * Creates a new animation curve.
@@ -212,9 +212,9 @@ namespace bs
 		static const UINT32 CACHE_LOOKAHEAD;
 
 		Vector<KeyFrame> mKeyframes;
-		float mStart;
-		float mEnd;
-		float mLength;
+		float mStart = 0.0f;
+		float mEnd = 0.0f;
+		float mLength = 0.0f;
 	};
 
 #ifdef BS_SBGEN
@@ -247,7 +247,7 @@ namespace bs
 	template <class T>
 	struct TNamedAnimationCurve
 	{
-		TNamedAnimationCurve() { }
+		TNamedAnimationCurve() = default;
 
 		/**
 		 * Constructs a new named animation curve.

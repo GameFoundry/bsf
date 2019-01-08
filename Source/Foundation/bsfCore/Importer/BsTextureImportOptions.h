@@ -16,7 +16,7 @@ namespace bs
 	class BS_CORE_EXPORT TextureImportOptions : public ImportOptions
 	{
 	public:
-		TextureImportOptions();
+		TextureImportOptions() = default;
 
 		/** Sets the pixel format to import as. */
 		void setFormat(PixelFormat format) { mFormat = format; }
@@ -93,13 +93,13 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	private:
-		PixelFormat mFormat;
-		bool mGenerateMips;
-		UINT32 mMaxMip;
-		bool mCPUCached;
-		bool mSRGB;
-		bool mCubemap;
-		CubemapSourceType mCubemapSourceType;
+		PixelFormat mFormat = PF_RGBA8;
+		bool mGenerateMips = false;
+		UINT32 mMaxMip = 0;
+		bool mCPUCached = false;
+		bool mSRGB = false;
+		bool mCubemap = false;
+		CubemapSourceType mCubemapSourceType = CubemapSourceType::Faces;
 	};
 
 	/** @} */

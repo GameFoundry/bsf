@@ -116,7 +116,7 @@ namespace bs
 	class BS_CORE_EXPORT TextureProperties
 	{
 	public:
-		TextureProperties();
+		TextureProperties() = default;
 		TextureProperties(const TEXTURE_DESC& desc);
 
 		/**	Gets the type of texture. */
@@ -323,7 +323,7 @@ namespace bs
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/
 	public:
-		Texture(); // Serialization only
+		Texture() = default; // Serialization only
 
 		friend class TextureRTTI;
 		static RTTITypeBase* getRTTIStatic();

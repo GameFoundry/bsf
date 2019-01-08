@@ -10,10 +10,6 @@
 
 namespace bs
 {
-	PixelData::PixelData()
-		:mExtents(0, 0, 0, 0), mFormat(PF_UNKNOWN), mRowPitch(0), mSlicePitch(0)
-	{ }
-
 	PixelData::PixelData(const PixelVolume& extents, PixelFormat pixelFormat)
 		:mExtents(extents), mFormat(pixelFormat)
 	{

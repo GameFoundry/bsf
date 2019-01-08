@@ -7,11 +7,6 @@
 
 namespace bs
 {
-	ImageSprite::ImageSprite()
-	{
-
-	}
-
 	ImageSprite::~ImageSprite()
 	{
 		clearMesh();

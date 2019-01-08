@@ -208,7 +208,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT() PixelData : public GpuResourceData
 	{
 	public:
-		PixelData();
+		PixelData() = default;
 
 		/**
 		 * Constructs a new object with an internal buffer capable of holding "extents" volume of pixels, where each pixel 
@@ -413,10 +413,10 @@ namespace bs
 		UINT32 getInternalBufferSize() const override;
 
 	private:
-		PixelVolume mExtents;
-		PixelFormat mFormat;
-		UINT32 mRowPitch;
-		UINT32 mSlicePitch;
+		PixelVolume mExtents = PixelVolume(0, 0, 0, 0);
+		PixelFormat mFormat = PF_UNKNOWN;
+		UINT32 mRowPitch = 0;
+		UINT32 mSlicePitch = 0;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

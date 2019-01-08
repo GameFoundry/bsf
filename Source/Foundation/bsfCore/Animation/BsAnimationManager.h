@@ -114,14 +114,14 @@ namespace bs
 		 */
 		void evaluateAnimation(AnimationProxy* anim, UINT32& boneIdx);
 
-		UINT64 mNextId;
+		UINT64 mNextId = 1;
 		UnorderedMap<UINT64, Animation*> mAnimations;
 		
-		float mUpdateRate;
-		float mAnimationTime;
-		float mLastAnimationUpdateTime;
-		float mNextAnimationUpdateTime;
-		bool mPaused;
+		float mUpdateRate = 1.0f / 60.0f;
+		float mAnimationTime = 0.0f;
+		float mLastAnimationUpdateTime = 0.0f;
+		float mNextAnimationUpdateTime = 0.0f;
+		bool mPaused = false;
 
 		SPtr<VertexDataDesc> mBlendShapeVertexDesc;
 
@@ -130,8 +130,8 @@ namespace bs
 		Vector<ConvexVolume> mCullFrustums;
 		EvaluatedAnimationData mAnimData[CoreThread::NUM_SYNC_BUFFERS + 1];
 
-		UINT32 mPoseReadBufferIdx;
-		UINT32 mPoseWriteBufferIdx;
+		UINT32 mPoseReadBufferIdx = 2;
+		UINT32 mPoseWriteBufferIdx = 0;
 		
 		Signal mWorkerDoneSignal;
 		Mutex mMutex;

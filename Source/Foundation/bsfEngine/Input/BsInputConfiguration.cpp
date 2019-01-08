@@ -10,20 +10,12 @@ namespace bs
 	Map<String, UINT32> VirtualAxis::UniqueAxisIds;
 	UINT32 VirtualAxis::NextAxisId = 0;
 
-	VIRTUAL_BUTTON_DESC::VIRTUAL_BUTTON_DESC()
-		:buttonCode(BC_0), modifiers(ButtonModifier::None), repeatable(false)
-	{ }
-
 	VIRTUAL_BUTTON_DESC::VIRTUAL_BUTTON_DESC(ButtonCode buttonCode, ButtonModifier modifiers, bool repeatable)
 		:buttonCode(buttonCode), modifiers(modifiers), repeatable(repeatable)
 	{ }
 
 	VIRTUAL_AXIS_DESC::VIRTUAL_AXIS_DESC(UINT32 type)
 		:type(type)
-	{ }
-
-	VirtualButton::VirtualButton()
-		:buttonIdentifier(0)
 	{ }
 
 	VirtualButton::VirtualButton(const String& name)
@@ -47,10 +39,6 @@ namespace bs
 		return uniqueButtonIds;
 	}
 
-	VirtualAxis::VirtualAxis()
-		:axisIdentifier(0)
-	{ }
-
 	VirtualAxis::VirtualAxis(const String& name)
 	{
 		auto findIter = UniqueAxisIds.find(name);
@@ -63,10 +51,6 @@ namespace bs
 			UniqueAxisIds[name] = NextAxisId++;
 		}
 	}
-
-	InputConfiguration::InputConfiguration()
-		:mRepeatInterval(300)
-	{ }
 
 	void InputConfiguration::registerButton(const String& name, ButtonCode buttonCode, ButtonModifier modifiers, bool repeatable)
 	{
