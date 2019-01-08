@@ -57,9 +57,6 @@ namespace bs
 		return getRTTIStatic();
 	}
 
-	MorphShapes::MorphShapes()
-	{ }
-
 	MorphShapes::MorphShapes(const Vector<SPtr<MorphChannel>>& channels, UINT32 numVertices)
 		:mChannels(channels), mNumVertices(numVertices)
 	{
