@@ -7,12 +7,6 @@
 
 namespace bs
 {
-	Sprite::Sprite()
-	{ }
-
-	Sprite::~Sprite()
-	{ }
-
 	Rect2I Sprite::getBounds(const Vector2I& offset, const Rect2I& clipRect) const 
 	{
 		Rect2I bounds = mBounds;

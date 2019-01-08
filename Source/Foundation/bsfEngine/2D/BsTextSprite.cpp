@@ -8,11 +8,6 @@
 
 namespace bs
 {
-	TextSprite::TextSprite()
-	{
-
-	}
-
 	TextSprite::~TextSprite()
 	{
 		clearMesh();

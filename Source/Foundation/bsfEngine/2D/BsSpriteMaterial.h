@@ -28,9 +28,7 @@ namespace bs
 	/** Contains information for initializing a sprite material. */
 	struct SpriteMaterialInfo
 	{
-		SpriteMaterialInfo()
-			:groupId(0)
-		{ }
+		SpriteMaterialInfo() = default;
 
 		/** 
 		 * Creates a new deep copy of the object. This is different from standard copy constructor which will just reference
@@ -49,7 +47,7 @@ namespace bs
 			return info;
 		}
 
-		UINT64 groupId;
+		UINT64 groupId = 0;
 		HTexture texture;
 		Color tint;
 		SPtr<SpriteMaterialExtraInfo> additionalData;
