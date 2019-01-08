@@ -565,12 +565,6 @@ namespace bs
 	const UINT32 TAnimationCurve<T>::CACHE_LOOKAHEAD = 3;
 
 	template <class T>
-	TAnimationCurve<T>::TAnimationCurve()
-		:mStart(0.0f), mEnd(0.0f), mLength(0.0f)
-	{
-	}
-
-	template <class T>
 	TAnimationCurve<T>::TAnimationCurve(const Vector<KeyFrame>& keyframes)
 		:mKeyframes(keyframes)
 	{

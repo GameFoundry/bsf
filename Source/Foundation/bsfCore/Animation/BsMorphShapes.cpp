@@ -5,9 +5,6 @@
 
 namespace bs
 {
-	MorphShape::MorphShape()
-	{ }
-
 	MorphShape::MorphShape(const String& name, float weight, const Vector<MorphVertex>& vertices)
 		:mName(name), mWeight(weight), mVertices(vertices)
 	{ }
@@ -27,9 +24,6 @@ namespace bs
 	{
 		return getRTTIStatic();
 	}
-
-	MorphChannel::MorphChannel()
-	{ }
 
 	MorphChannel::MorphChannel(const String& name, const Vector<SPtr<MorphShape>>& shapes)
 		:mName(name), mShapes(shapes)
