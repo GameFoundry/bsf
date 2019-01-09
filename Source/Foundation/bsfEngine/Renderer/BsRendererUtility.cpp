@@ -19,11 +19,27 @@ namespace bs { namespace ct
 	RendererUtility::RendererUtility()
 	{
 		{
-			SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
-			vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
-			vertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
+			mFullscreenQuadVDesc = bs_shared_ptr_new<VertexDataDesc>();
+			mFullscreenQuadVDesc->addVertElem(VET_FLOAT3, VES_POSITION);
+			mFullscreenQuadVDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
 
-			mFullScreenQuadMesh = Mesh::create(4, 6, vertexDesc, MU_DYNAMIC);
+			INDEX_BUFFER_DESC ibDesc;
+			ibDesc.indexType = IT_32BIT;
+			ibDesc.numIndices = 6;
+			ibDesc.usage = GBU_DYNAMIC;
+
+			mFullScreenQuadIB = IndexBuffer::create(ibDesc);
+			mFullscreenQuadVDecl = VertexDeclaration::create(mFullscreenQuadVDesc);
+
+			VERTEX_BUFFER_DESC vbDesc;
+			vbDesc.vertexSize = mFullscreenQuadVDecl->getProperties().getVertexSize(0);
+			vbDesc.numVerts = 4 * NUM_QUAD_VB_SLOTS;
+			vbDesc.usage = GBU_DYNAMIC;
+
+			mFullScreenQuadVB = VertexBuffer::create(vbDesc);
+
+			UINT32 indices[] { 0, 1, 2, 1, 3, 2 };
+			mFullScreenQuadIB->writeData(0, sizeof(indices), indices, BWT_DISCARD);
 		}
 
 		{
@@ -326,8 +342,7 @@ namespace bs { namespace ct
 			uvs[i].y /= (float)textureSize.y;
 		}
 
-		SPtr<VertexDataDesc> vertexDesc = mFullScreenQuadMesh->getVertexDesc();
-		SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(4, 6, vertexDesc);
+		SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(4, 6, mFullscreenQuadVDesc);
 
 		auto vecIter = meshData->getVec3DataIter(VES_POSITION);
 		for (UINT32 i = 0; i < 4; i++)
@@ -337,16 +352,22 @@ namespace bs { namespace ct
 		for (UINT32 i = 0; i < 4; i++)
 			uvIter.addValue(uvs[i]);
 
-		auto indices = meshData->getIndices32();
-		indices[0] = 0;
-		indices[1] = 1;
-		indices[2] = 2;
-		indices[3] = 1;
-		indices[4] = 3;
-		indices[5] = 2;
+		UINT32 bufferSize = meshData->getStreamSize(0);
+		UINT8* srcVertBufferData = meshData->getStreamData(0);
 
-		mFullScreenQuadMesh->writeData(*meshData, true, false);
-		draw(mFullScreenQuadMesh, mFullScreenQuadMesh->getProperties().getSubMesh(), numInstances);
+		void* dstData = mFullScreenQuadVB->lock(mNextQuadVBSlot * bufferSize, bufferSize, GBL_WRITE_ONLY_NO_OVERWRITE);
+		memcpy(dstData, srcVertBufferData, bufferSize);
+		mFullScreenQuadVB->unlock();
+
+		RenderAPI& rapi = RenderAPI::instance();
+
+		rapi.setVertexDeclaration(mFullscreenQuadVDecl);
+		rapi.setVertexBuffers(0, &mFullScreenQuadVB, 1);
+		rapi.setIndexBuffer(mFullScreenQuadIB);
+		rapi.setDrawOperation(DOT_TRIANGLE_LIST);
+		rapi.drawIndexed(0, 6, mNextQuadVBSlot * 4, 4, numInstances);
+
+		mNextQuadVBSlot = (mNextQuadVBSlot + 1) % NUM_QUAD_VB_SLOTS;
 	}
 
 	void RendererUtility::clear(UINT32 value)

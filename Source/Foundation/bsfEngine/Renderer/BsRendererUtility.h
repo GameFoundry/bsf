@@ -222,7 +222,14 @@ namespace bs { namespace ct
 		SPtr<Mesh> getSkyBoxMesh() const { return mSkyBoxMesh; }
 
 	private:
-		SPtr<Mesh> mFullScreenQuadMesh;
+		static constexpr UINT32 NUM_QUAD_VB_SLOTS = 1024;
+
+		SPtr<IndexBuffer> mFullScreenQuadIB;
+		SPtr<VertexBuffer> mFullScreenQuadVB;
+		SPtr<VertexDataDesc> mFullscreenQuadVDesc;
+		SPtr<VertexDeclaration> mFullscreenQuadVDecl;
+		UINT32 mNextQuadVBSlot = 0;
+
 		SPtr<Mesh> mUnitSphereStencilMesh;
 		SPtr<Mesh> mUnitBoxStencilMesh;
 		SPtr<Mesh> mSpotLightStencilMesh;
