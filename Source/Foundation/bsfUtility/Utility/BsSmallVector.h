@@ -1,7 +1,13 @@
+//************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
+//*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #pragma once
 
 namespace bs
 {
+	/** @addtogroup General
+	 *  @{
+	 */
+
 	/** 
 	 * Dynamically sized container that statically allocates enough room for @p N elements of type @p Type. If the element 
 	 * count exceeds the statically allocated buffer size the vector falls back to general purpose dynamic allocator.
@@ -444,4 +450,6 @@ namespace bs
 		UINT32 mSize = 0;
 		UINT32 mCapacity = N;
 	};
+
+	/** @} */
 }

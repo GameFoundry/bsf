@@ -1,9 +1,15 @@
+//************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
+//*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #pragma once
 
 #include "Prerequisites/BsPrerequisitesUtil.h"
 
 namespace bs
 {
+	/** @addtogroup General
+	 *  @{
+	 */
+
 	/** Dynamically sized array, similar to std::vector. */
 	template <class Type>
 	class DynArray final
@@ -543,4 +549,6 @@ namespace bs
 		UINT32 mSize = 0;
 		UINT32 mCapacity = 0;
 	};
+
+	/** @} */
 }
