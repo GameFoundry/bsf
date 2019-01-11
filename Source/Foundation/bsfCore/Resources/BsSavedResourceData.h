@@ -33,7 +33,7 @@ namespace bs
 
 	private:
 		Vector<UUID> mDependencies;
-		bool mAllowAsync = false;
+		bool mAllowAsync = true;
 		UINT32 mCompressionMethod = 0;
 
 	/************************************************************************/
