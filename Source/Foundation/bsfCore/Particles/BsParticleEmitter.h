@@ -896,7 +896,7 @@ namespace bs
 
 		/** @copydoc setShape */
 		BS_SCRIPT_EXPORT(pr:getter,n:Shape)
-		ParticleEmitterShape* getShape() const { return mShape.get(); }
+		const SPtr<ParticleEmitterShape>& getShape() const { return mShape; }
 
 		/** Determines the number of particles that are emitted every second. */
 		BS_SCRIPT_EXPORT(pr:setter,n:EmissionRate)

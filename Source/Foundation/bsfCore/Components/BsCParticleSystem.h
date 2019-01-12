@@ -56,11 +56,11 @@ namespace bs
 		const Vector<SPtr<ParticleEvolver>>& getEvolvers() const { return mEvolvers; }
 
 		/** @copydoc ParticleSystem::setLayer() */
-		BS_SCRIPT_EXPORT(pr:setter,n:Layer)
+		BS_SCRIPT_EXPORT(pr:setter,n:Layer,layerMask)
 		void setLayer(UINT64 layer);
 
 		/** @copydoc ParticleSystem::getLayer() */
-		BS_SCRIPT_EXPORT(pr:getter,n:Layer)
+		BS_SCRIPT_EXPORT(pr:getter,n:Layer,layerMask)
 		UINT64 getLayer() const { return mLayer; }
 
 		/** @name Internal
