@@ -40,7 +40,8 @@ Huge thanks to all the patrons, contributors and donators!
 - Vladimir [Founder]
 - Timothy Green
 
-# One-time donators
+# Donators
+- Andre Taulien
 - Žan Strahija [Founder]
 - Michael Jones [Founder]
 - Patrick Meyer [Founder]
