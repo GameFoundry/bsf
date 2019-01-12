@@ -95,6 +95,14 @@ namespace bs
 		HTexture mBindableDepthStencilTex;
 
 		RENDER_TEXTURE_DESC mDesc;
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class RenderTextureRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/** @} */

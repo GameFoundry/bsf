@@ -120,7 +120,7 @@ namespace bs
 	 * @note	
 	 * Sim thread unless noted otherwise. Retrieve core implementation from getCore() for core thread only functionality.
 	 */
-	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering) RenderTarget : public CoreObject
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering) RenderTarget : public IReflectable, public CoreObject
 	{
 	public:
 		RenderTarget();
@@ -158,6 +158,14 @@ namespace bs
 
 		/**	Returns properties that describe the render target. */
 		virtual const RenderTargetProperties& getPropertiesInternal() const = 0;
+		
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class RenderTargetRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/** @} */

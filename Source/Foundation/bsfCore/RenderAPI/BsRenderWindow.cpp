@@ -5,6 +5,7 @@
 #include "Managers/BsRenderWindowManager.h"
 #include "RenderAPI/BsViewport.h"
 #include "Platform/BsPlatform.h"
+#include <Private/RTTI/BsRenderTargetRTTI.h>
 
 namespace bs 
 {
@@ -297,6 +298,20 @@ namespace bs
 				break;
 			}
 		}
+	}
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+
+	RTTITypeBase* RenderWindow::getRTTIStatic()
+	{
+		return RenderWindowRTTI::instance();
+	}
+
+	RTTITypeBase* RenderWindow::getRTTI() const
+	{
+		return RenderWindow::getRTTIStatic();
 	}
 
 	namespace ct

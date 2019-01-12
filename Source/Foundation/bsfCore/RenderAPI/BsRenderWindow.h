@@ -238,6 +238,14 @@ namespace bs
 	protected:
 		RENDER_WINDOW_DESC mDesc;
 		UINT32 mWindowId;
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class RenderWindowRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/** @} */

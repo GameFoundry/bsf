@@ -2,6 +2,7 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "RenderAPI/BsRenderTarget.h"
 #include "RenderAPI/BsViewport.h"
+#include "Private/RTTI/BsRenderTargetRTTI.h"
 #include "Error/BsException.h"
 #include "RenderAPI/BsRenderAPI.h"
 #include "CoreThread/BsCoreThread.h"
@@ -40,6 +41,20 @@ namespace bs
 	void RenderTarget::getCustomAttribute(const String& name, void* pData) const
 	{
 		BS_EXCEPT(InvalidParametersException, "Attribute not found.");
+	}
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+
+	RTTITypeBase* RenderTarget::getRTTIStatic()
+	{
+		return RenderTargetRTTI::instance();
+	}
+
+	RTTITypeBase* RenderTarget::getRTTI() const
+	{
+		return RenderTarget::getRTTIStatic();
 	}
 
 	namespace ct

@@ -637,6 +637,9 @@ namespace bs
 		TID_ParticleRotation = 1190,
 		TID_Decal = 1191,
 		TID_CDecal = 1192,
+		TID_RenderTarget = 1193,
+		TID_RenderTexture = 1194,
+		TID_RenderWindow = 1195,
 
 		// Moved from Engine layer
 		TID_CCamera = 30000,
