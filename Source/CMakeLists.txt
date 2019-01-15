@@ -189,9 +189,9 @@ set(COMPILED_ASSETS_VERSION_FILE ${BSF_SOURCE_DIR}/../Data/.reqversion)
 file (STRINGS ${COMPILED_ASSETS_VERSION_FILE} COMPILED_ASSETS_VERSION)
 check_and_update_builtin_assets(bsfCompiled ${BSF_SOURCE_DIR}/../Data Data ${COMPILED_ASSETS_VERSION} NO)
 
-set(DOC_IMAGES_VERSION_FILE ${BSF_SOURCE_DIR}/../Documentation/.reqversion)
-file (STRINGS ${DOC_IMAGES_VERSION_FILE} DOC_IMAGES_VERSION)
-check_and_update_builtin_assets(bsfDocImages ${BSF_SOURCE_DIR}/../Documentation Documentation ${DOC_IMAGES_VERSION} NO)
+#set(DOC_IMAGES_VERSION_FILE ${BSF_SOURCE_DIR}/../Documentation/.reqversion)
+#file (STRINGS ${DOC_IMAGES_VERSION_FILE} DOC_IMAGES_VERSION)
+#check_and_update_builtin_assets(bsfDocImages ${BSF_SOURCE_DIR}/../Documentation Documentation ${DOC_IMAGES_VERSION} NO)
 
 ## Install
 install(
