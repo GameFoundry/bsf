@@ -128,6 +128,7 @@ namespace bs
 	{
 		void onWake(PxActor** actors, PxU32 count) override { /* Do nothing */ }
 		void onSleep(PxActor** actors, PxU32 count) override { /* Do nothing */ }
+		void onAdvance(const PxRigidBody *const *bodyBuffer, const PxTransform *poseBuffer, const PxU32 count) override { /* Do nothing */ }
 
 		void onTrigger(PxTriggerPair* pairs, PxU32 count) override
 		{
@@ -461,7 +462,7 @@ namespace bs
 	static PhysXAllocator gPhysXAllocator;
 	static PhysXErrorCallback gPhysXErrorHandler;
 	static PhysXCPUDispatcher gPhysXCPUDispatcher;
-	//static PhysXEventCallback gPhysXEventCallback;
+	static PhysXEventCallback gPhysXEventCallback;
 	static PhysXBroadPhaseCallback gPhysXBroadphaseCallback;
 
 	static const UINT32 SIZE_16K = 1 << 14;
@@ -491,7 +492,7 @@ namespace bs
 		sceneDesc.gravity = toPxVector(input.gravity);
 		sceneDesc.cpuDispatcher = &gPhysXCPUDispatcher;
 		sceneDesc.filterShader = PhysXFilterShader;
-		//sceneDesc.simulationEventCallback = &gPhysXEventCallback;
+		sceneDesc.simulationEventCallback = &gPhysXEventCallback;
 		sceneDesc.broadPhaseCallback = &gPhysXBroadphaseCallback;
 
 		// Optionally: eENABLE_KINEMATIC_STATIC_PAIRS, eENABLE_KINEMATIC_PAIRS, eENABLE_PCM
