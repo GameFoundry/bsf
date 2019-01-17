@@ -32,6 +32,8 @@ if(animation->isPlaying())
 	gDebug().logDebug("Animation is playing!");
 ~~~~~~~~~~~~~
 
+> While animation is playing the **SceneObject** will be updated with transform from the animation root bone. This means any transform values you have set manually will get overriden. If you require custom transform on the animated **SceneObject** you should instead create a parent **SceneObject** that you can apply your custom transform to.
+
 You can control the speed of the playback through @ref bs::CAnimation::setSpeed "CAnimation::setSpeed()". The default value is 1, which represents normal speed, while lower values slow down playback accordingly (e.g. 0.5 is half speed) and higher values speed it up (2 is double speed). Use negative values to play animation in reverse. You can change animation speed during or before you start playing a clip. 
 
 ~~~~~~~~~~~~~{.cpp}

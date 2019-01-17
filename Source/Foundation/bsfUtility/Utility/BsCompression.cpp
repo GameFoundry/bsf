@@ -14,13 +14,14 @@ namespace bs
 	class DataStreamSource : public snappy::Source
 	{
 	public:
-		DataStreamSource(const SPtr<DataStream>& stream)
-			: mStream(stream)
+		DataStreamSource(const SPtr<DataStream>& stream, ProgressCallback reportProgress = nullptr)
+			:mStream(stream), mReportProgress(reportProgress)
 		{
-			mRemaining = mStream->size() - mStream->tell();
+			mTotal = mStream->size() - mStream->tell();
+			mRemaining = mTotal;
 
 			if (mStream->isFile())
-				mReadBuffer = (char*)bs_alloc(2048);
+				mReadBuffer = (char*)bs_alloc(32768);
 		}
 
 		virtual ~DataStreamSource()
@@ -48,7 +49,7 @@ namespace bs
 				while (mBufferOffset >= mReadBufferContentSize)
 				{
 					mBufferOffset -= mReadBufferContentSize;
-					mReadBufferContentSize = mStream->read(mReadBuffer, 2048);
+					mReadBufferContentSize = mStream->read(mReadBuffer, 32768);
 
 					if (mReadBufferContentSize == 0)
 						break;
@@ -63,15 +64,21 @@ namespace bs
 		{
 			mBufferOffset += n;
 			mRemaining -= n;
+
+			if(mReportProgress)
+				mReportProgress(1.0f - mRemaining / (float)mTotal);
 		}
 	private:
-		SPtr<DataStream> mStream;
+		SPtr<DataStream> mStream; 
+		ProgressCallback mReportProgress;
+
+		size_t mRemaining;
+		size_t mTotal;
+		size_t mBufferOffset = 0;
 
 		// File streams only
 		char* mReadBuffer = nullptr;
 		size_t mReadBufferContentSize = 0;
-		size_t mRemaining;
-		size_t mBufferOffset = 0;
 	};
 
 	/** Sink (destination) accepting a data stream. Used for Snappy compression library. */
@@ -93,7 +100,7 @@ namespace bs
 
 		void Append(const char* data, size_t n) override
 		{
-			if(mBufferPieces.size() == 0 || mBufferPieces.back().buffer != data)
+			if(mBufferPieces.empty() || mBufferPieces.back().buffer != data)
 			{
 				BufferPiece piece;
 				piece.buffer = (char*)bs_alloc((UINT32)n);
@@ -166,9 +173,9 @@ namespace bs
 		Vector<BufferPiece> mBufferPieces;
 	};
 
-	SPtr<MemoryDataStream> Compression::compress(SPtr<DataStream>& input)
+	SPtr<MemoryDataStream> Compression::compress(SPtr<DataStream>& input, ProgressCallback reportProgress)
 	{
-		DataStreamSource src(input);
+		DataStreamSource src(input, reportProgress);
 		DataStreamSink dst;
 
 		size_t bytesWritten = snappy::Compress(&src, &dst);
@@ -178,9 +185,9 @@ namespace bs
 		return output;
 	}
 
-	SPtr<MemoryDataStream> Compression::decompress(SPtr<DataStream>& input)
+	SPtr<MemoryDataStream> Compression::decompress(SPtr<DataStream>& input, ProgressCallback reportProgress)
 	{
-		DataStreamSource src(input);
+		DataStreamSource src(input, reportProgress);
 		DataStreamSink dst;
 
 		if (!snappy::Uncompress(&src, &dst))

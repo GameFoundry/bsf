@@ -69,9 +69,15 @@ namespace bs
 		 * @param[in]	context		Optional object that will be passed along to all serialized objects through
 		 *							their deserialization callbacks. Can be used for controlling deserialization, 
 		 *							maintaining state or sharing information between objects during deserialization.
+		 * @param[in]	progress	Optional callback that will occassionally trigger, reporting the current progress
+		 *							of the operation. The reported value is in range [0, 1].
 		 */
-		SPtr<IReflectable> decode(const SPtr<DataStream>& data, UINT32 dataLength, SerializationContext* context = nullptr);
+		SPtr<IReflectable> decode(const SPtr<DataStream>& data, UINT32 dataLength, SerializationContext* context = nullptr,
+			ProgressCallback progress = nullptr);
 	private:
+		/** Determines how many bytes need to be read before the progress report callback is triggered. */
+		static constexpr UINT32 REPORT_AFTER_BYTES = 32768;
+
 		struct ObjectMetaData
 		{
 			UINT32 objectMeta;
@@ -154,9 +160,13 @@ namespace bs
 		UnorderedMap<void*, UINT32> mObjectAddrToId;
 		UINT32 mLastUsedObjectId = 1;
 		UINT32 mTotalBytesWritten;
+		UINT32 mTotalBytesRead = 0;
+		UINT32 mTotalBytesToRead = 0;
+		UINT32 mNextProgressReport = REPORT_AFTER_BYTES;
 		FrameAlloc* mAlloc = nullptr;
 
 		SerializationContext* mContext = nullptr;
+		ProgressCallback mReportProgress = nullptr;
 
 		static constexpr const int META_SIZE = 4; // Meta field size
 		static constexpr const int NUM_ELEM_FIELD_SIZE = 4; // Size of the field storing number of array elements

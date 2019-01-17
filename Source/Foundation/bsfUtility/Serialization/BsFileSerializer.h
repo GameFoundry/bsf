@@ -15,7 +15,7 @@ namespace bs
 	/** Encodes the provided object to the specified file using the RTTI system. */
 	class BS_UTILITY_EXPORT FileEncoder
 	{
-		public:
+	public:
 		FileEncoder(const Path& fileLocation);
 		~FileEncoder();
 

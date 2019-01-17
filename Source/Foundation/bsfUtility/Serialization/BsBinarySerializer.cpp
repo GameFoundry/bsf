@@ -14,17 +14,18 @@
 #include "Serialization/BsMemorySerializer.h"
 #include "FileSystem/BsDataStream.h"
 
-#include <unordered_set>
+namespace bs
+{
 
-/**
- * A macro that represents a block of code that gets used a lot inside encodeInternal. It checks if the buffer has enough
- * space, and if it does it copies the data from the specified location and increments the needed pointers and counters. If
- * there is not enough space the buffer is flushed (hopefully to make some space). If there is still not enough space the
- * entire encoding process ends.
- *
- * @param	dataPtr	Pointer to data which to copy.
- * @param	size   	Size of the data to copy
- */
+	/**
+	 * A macro that represents a block of code that gets used a lot inside encodeInternal. It checks if the buffer has enough
+	 * space, and if it does it copies the data from the specified location and increments the needed pointers and counters. If
+	 * there is not enough space the buffer is flushed (hopefully to make some space). If there is still not enough space the
+	 * entire encoding process ends.
+	 *
+	 * @param	dataPtr	Pointer to data which to copy.
+	 * @param	size   	Size of the data to copy
+	 */
 #define COPY_TO_BUFFER(dataIter, size)									\
 if((*bytesWritten + size) > bufferLength)								\
 {																		\
@@ -38,8 +39,43 @@ memcpy(buffer, dataIter, size);											\
 buffer += size;															\
 *bytesWritten += size;
 
-namespace bs
-{
+/** Reports that @p size bytes were read from the data buffer */
+#define REPORT_READ(size)												\
+{																		\
+	mTotalBytesRead += size;											\
+	if(mReportProgress && (mTotalBytesRead >= mNextProgressReport))		\
+	{																	\
+		UINT32 lastReport = (mTotalBytesRead / REPORT_AFTER_BYTES) * REPORT_AFTER_BYTES;	\
+		mNextProgressReport = lastReport + REPORT_AFTER_BYTES;			\
+																		\
+		mReportProgress(mTotalBytesRead / (float)mTotalBytesToRead);	\
+	}																	\
+}
+/** Reads from the data buffer into the provided output and advances the read position. */
+#define READ_FROM_BUFFER(output, size)									\
+{																		\
+	if(data->read(output, size) != size)								\
+	{																	\
+		BS_EXCEPT(InternalErrorException, "Error decoding data.");		\
+	}																	\
+																		\
+	REPORT_READ(size)													\
+}
+
+/** Skips the next @p size bytes data buffer and advances the read position. */
+#define SKIP_READ(size)													\
+{																		\
+	data->skip(size);													\
+	REPORT_READ(size)													\
+}
+
+/** Moves the current read buffer read position back @p size bytes. */
+#define SEEK_BACK(size)													\
+data->seek(data->tell() - size);										\
+mTotalBytesRead -= size;												\
+
+	constexpr UINT32 BinarySerializer::REPORT_AFTER_BYTES;
+
 	BinarySerializer::BinarySerializer()
 		:mAlloc(&gFrameAlloc())
 	{ }
@@ -124,12 +160,20 @@ namespace bs
 	}
 
 	SPtr<IReflectable> BinarySerializer::decode(const SPtr<DataStream>& data, UINT32 dataLength, 
-		SerializationContext* context)
+		SerializationContext* context, ProgressCallback progress)
 	{
 		mContext = context;
+		mReportProgress = nullptr;
+		mTotalBytesToRead = dataLength;
+		mTotalBytesRead = 0;
 
 		if (dataLength == 0)
+		{
+			if(mReportProgress)
+				mReportProgress(1.0f);
+
 			return nullptr;
+		}
 
 		const size_t start = data->tell();
 		const size_t end = start + dataLength;
@@ -170,6 +214,12 @@ namespace bs
 
 		} while (decodeEntry(data, end, nullptr));
 
+		assert(mTotalBytesRead == mTotalBytesToRead);
+
+		// Don't set report callback until we actually do the reads
+		mReportProgress = progress;
+		mTotalBytesRead = 0;
+
 		// Now go through all of the objects and actually decode them
 		for(auto iter = mDecodeObjectMap.begin(); iter != mDecodeObjectMap.end(); ++iter)
 		{
@@ -188,6 +238,11 @@ namespace bs
 
 		mDecodeObjectMap.clear();
 		data->seek(end);
+
+		assert(mTotalBytesRead == mTotalBytesToRead);
+
+		if(mReportProgress)
+			mReportProgress(1.0f);
 
 		return rootObject;
 	}
@@ -435,10 +490,7 @@ namespace bs
 		objectMetaData.objectMeta = 0;
 		objectMetaData.typeId = 0;
 
-		if(data->read(&objectMetaData, sizeof(ObjectMetaData)) != sizeof(ObjectMetaData))
-		{
-			BS_EXCEPT(InternalErrorException, "Error decoding data.");
-		}
+		READ_FROM_BUFFER(&objectMetaData, sizeof(ObjectMetaData))
 
 		UINT32 objectId = 0;
 		UINT32 objectTypeId = 0;
@@ -493,10 +545,7 @@ namespace bs
 		while (data->tell() < dataEnd)
 		{
 			int metaData = -1;
-			if(data->read(&metaData, META_SIZE) != META_SIZE)
-			{
-				BS_EXCEPT(InternalErrorException, "Error decoding data.");
-			}
+			READ_FROM_BUFFER(&metaData, META_SIZE)
 
 			if (isObjectMetaData(metaData)) // We've reached a new object or a base class of the current one
 			{
@@ -504,11 +553,8 @@ namespace bs
 				objMetaData.objectMeta = 0;
 				objMetaData.typeId = 0;
 
-				data->seek(data->tell() - META_SIZE);
-				if (data->read(&objMetaData, sizeof(ObjectMetaData)) != sizeof(ObjectMetaData))
-				{
-					BS_EXCEPT(InternalErrorException, "Error decoding data.");
-				}
+				SEEK_BACK(META_SIZE)
+				READ_FROM_BUFFER(&objMetaData, sizeof(ObjectMetaData))
 
 				UINT32 objId = 0;
 				UINT32 objTypeId = 0;
@@ -538,7 +584,7 @@ namespace bs
 				else
 				{
 					// Found new object, we're done
-					data->seek(data->tell() - sizeof(ObjectMetaData));
+					SEEK_BACK(sizeof(ObjectMetaData))
 
 					finalizeObject(output.get());
 					return true;
@@ -592,10 +638,7 @@ namespace bs
 			int arrayNumElems = 1;
 			if (isArray)
 			{
-				if(data->read(&arrayNumElems, NUM_ELEM_FIELD_SIZE) != NUM_ELEM_FIELD_SIZE)
-				{
-					BS_EXCEPT(InternalErrorException, "Error decoding data.");
-				}
+				READ_FROM_BUFFER(&arrayNumElems, NUM_ELEM_FIELD_SIZE)
 
 				if(curGenericField != nullptr)
 					curGenericField->setArraySize(rttiInstance, output.get(), arrayNumElems);
@@ -609,10 +652,7 @@ namespace bs
 					for (int i = 0; i < arrayNumElems; i++)
 					{
 						int childObjectId = 0;
-						if(data->read(&childObjectId, COMPLEX_TYPE_FIELD_SIZE) != COMPLEX_TYPE_FIELD_SIZE)
-						{
-							BS_EXCEPT(InternalErrorException, "Error decoding data.");
-						}
+						READ_FROM_BUFFER(&childObjectId, COMPLEX_TYPE_FIELD_SIZE)
 
 						if (curField != nullptr)
 						{
@@ -703,13 +743,13 @@ namespace bs
 							//  - Copy from stream into a temporary buffer (use stream directly for decoding)
 							//  - Internally the field will do a value copy of the decoded object (ideally we decode directly into the destination)
 							void* fieldValue = bs_stack_alloc(typeSize);
-							data->read(fieldValue, typeSize);
+							READ_FROM_BUFFER(fieldValue, typeSize)
 
 							curField->arrayElemFromBuffer(rttiInstance, output.get(), i, fieldValue);
 							bs_stack_free(fieldValue);
 						}
 						else
-							data->skip(typeSize);
+							SKIP_READ(typeSize);
 					}
 					break;
 				}
@@ -728,10 +768,7 @@ namespace bs
 					RTTIReflectablePtrFieldBase* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
 
 					int childObjectId = 0;
-					if(data->read(&childObjectId, COMPLEX_TYPE_FIELD_SIZE) != COMPLEX_TYPE_FIELD_SIZE)
-					{
-						BS_EXCEPT(InternalErrorException, "Error decoding data.");
-					}
+					READ_FROM_BUFFER(&childObjectId, COMPLEX_TYPE_FIELD_SIZE)
 
 					if (curField != nullptr)
 					{
@@ -818,13 +855,13 @@ namespace bs
 						//  - Copy from stream into a temporary buffer (use stream directly for decoding)
 						//  - Internally the field will do a value copy of the decoded object (ideally we decode directly into the destination)
 						void* fieldValue = bs_stack_alloc(typeSize);
-						data->read(fieldValue, typeSize);
+						READ_FROM_BUFFER(fieldValue, typeSize)
 
 						curField->fromBuffer(rttiInstance, output.get(), fieldValue);
 						bs_stack_free(fieldValue);
 					}
 					else
-						data->skip(typeSize);
+						SKIP_READ(typeSize);
 
 					break;
 				}
@@ -834,10 +871,7 @@ namespace bs
 
 					// Data block size
 					UINT32 dataBlockSize = 0;
-					if(data->read(&dataBlockSize, DATA_BLOCK_TYPE_FIELD_SIZE) != DATA_BLOCK_TYPE_FIELD_SIZE)
-					{
-						BS_EXCEPT(InternalErrorException, "Error decoding data.");
-					}
+					READ_FROM_BUFFER(&dataBlockSize, DATA_BLOCK_TYPE_FIELD_SIZE)
 
 					// Data block data
 					if (curField != nullptr)
@@ -846,6 +880,7 @@ namespace bs
 						{
 							const size_t dataBlockOffset = data->tell();
 							curField->setValue(rttiInstance, output.get(), data, dataBlockSize);
+							REPORT_READ(dataBlockSize);
 
 							// Seek past the data (use original offset in case the field read from the stream)
 							data->seek(dataBlockOffset + dataBlockSize);
@@ -853,14 +888,14 @@ namespace bs
 						else
 						{
 							UINT8* dataBlockBuffer = (UINT8*)bs_alloc(dataBlockSize);
-							data->read(dataBlockBuffer, dataBlockSize);
+							READ_FROM_BUFFER(dataBlockBuffer, dataBlockSize)
 
 							SPtr<DataStream> stream = bs_shared_ptr_new<MemoryDataStream>(dataBlockBuffer, dataBlockSize);
 							curField->setValue(rttiInstance, output.get(), stream, dataBlockSize);
 						}
 					}
 					else
-						data->skip(dataBlockSize);
+						SKIP_READ(dataBlockSize)
 
 					break;
 				}

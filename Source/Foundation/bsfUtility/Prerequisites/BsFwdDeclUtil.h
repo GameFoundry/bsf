@@ -41,6 +41,9 @@ namespace bs
 		Fixed
 	};
 
+	/** Callback signature for reporting operation progress. */
+	typedef void(*ProgressCallback)(float);
+
 	/** @} */
 
 	class Angle;
@@ -94,9 +97,6 @@ namespace bs
 	// Serialization
 	class ISerializable;
 	class SerializableType;
-
-	typedef List<SPtr<DataStream>> DataStreamList;
-	typedef SPtr<DataStreamList> DataStreamListPtr;
 
 	enum TypeID_Utility
 	{

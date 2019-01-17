@@ -119,7 +119,6 @@ namespace bs
 		 */
 		String getAppStartUpDate(bool isUTC);
 
-
 		/** @name Internal 
 		 *  @{
 		 */
