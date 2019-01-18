@@ -14,8 +14,8 @@ namespace bs
 	class DataStreamSource : public snappy::Source
 	{
 	public:
-		DataStreamSource(const SPtr<DataStream>& stream, ProgressCallback reportProgress = nullptr)
-			:mStream(stream), mReportProgress(reportProgress)
+		DataStreamSource(const SPtr<DataStream>& stream, std::function<void(float)> reportProgress = nullptr)
+			:mStream(stream), mReportProgress(std::move(reportProgress))
 		{
 			mTotal = mStream->size() - mStream->tell();
 			mRemaining = mTotal;
@@ -70,7 +70,7 @@ namespace bs
 		}
 	private:
 		SPtr<DataStream> mStream; 
-		ProgressCallback mReportProgress;
+		std::function<void(float)> mReportProgress;
 
 		size_t mRemaining;
 		size_t mTotal;
@@ -173,9 +173,9 @@ namespace bs
 		Vector<BufferPiece> mBufferPieces;
 	};
 
-	SPtr<MemoryDataStream> Compression::compress(SPtr<DataStream>& input, ProgressCallback reportProgress)
+	SPtr<MemoryDataStream> Compression::compress(SPtr<DataStream>& input, std::function<void(float)> reportProgress)
 	{
-		DataStreamSource src(input, reportProgress);
+		DataStreamSource src(input, std::move(reportProgress));
 		DataStreamSink dst;
 
 		size_t bytesWritten = snappy::Compress(&src, &dst);
@@ -185,9 +185,9 @@ namespace bs
 		return output;
 	}
 
-	SPtr<MemoryDataStream> Compression::decompress(SPtr<DataStream>& input, ProgressCallback reportProgress)
+	SPtr<MemoryDataStream> Compression::decompress(SPtr<DataStream>& input, std::function<void(float)> reportProgress)
 	{
-		DataStreamSource src(input, reportProgress);
+		DataStreamSource src(input, std::move(reportProgress));
 		DataStreamSink dst;
 
 		if (!snappy::Uncompress(&src, &dst))

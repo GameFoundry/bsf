@@ -18,17 +18,14 @@ namespace bs
 	struct SerializationContext;
 
 	/**
-	 * Encodes all the fields of the provided object into a binary format. Fields are encoded using their unique IDs. 
-	 * Encoded data will remain compatible for decoding even if you modify the encoded class, as long as you assign new 
-	 * unique field IDs to added/modified fields.
+	 * Encodes/decodes all the fields of the provided object into/from a binary format. Fields are encoded using their 
+	 * unique IDs. Encoded data will remain compatible for decoding even if you modify the encoded class, as long as you
+	 * assign new unique field IDs to added/modified fields.
 	 * 			
 	 * Like for any serializable class, fields are defined in RTTIType that each IReflectable class must be able to return.
 	 *
 	 * Any data the object or its children are pointing to will also be serialized (unless the pointer isn't registered in 
 	 * RTTIType). Upon decoding the pointer addresses will be set to proper values.
-	 * 			
-	 * @note	
-	 * Child elements are guaranteed to be fully deserialized before their parents, except for fields marked with WeakRef flag.
 	 */
 	class BS_UTILITY_EXPORT BinarySerializer
 	{
@@ -71,9 +68,12 @@ namespace bs
 		 *							maintaining state or sharing information between objects during deserialization.
 		 * @param[in]	progress	Optional callback that will occassionally trigger, reporting the current progress
 		 *							of the operation. The reported value is in range [0, 1].
+		 *
+		 * @note
+		 * Child elements are guaranteed to be fully deserialized before their parents, except for fields marked with WeakRef flag.
 		 */
 		SPtr<IReflectable> decode(const SPtr<DataStream>& data, UINT32 dataLength, SerializationContext* context = nullptr,
-			ProgressCallback progress = nullptr);
+			std::function<void(float)> progress = nullptr);
 	private:
 		/** Determines how many bytes need to be read before the progress report callback is triggered. */
 		static constexpr UINT32 REPORT_AFTER_BYTES = 32768;
@@ -166,7 +166,7 @@ namespace bs
 		FrameAlloc* mAlloc = nullptr;
 
 		SerializationContext* mContext = nullptr;
-		ProgressCallback mReportProgress = nullptr;
+		std::function<void(float)> mReportProgress = nullptr;
 
 		static constexpr const int META_SIZE = 4; // Meta field size
 		static constexpr const int NUM_ELEM_FIELD_SIZE = 4; // Size of the field storing number of array elements

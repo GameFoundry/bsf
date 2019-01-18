@@ -41,9 +41,6 @@ namespace bs
 		Fixed
 	};
 
-	/** Callback signature for reporting operation progress. */
-	typedef void(*ProgressCallback)(float);
-
 	/** @} */
 
 	class Angle;

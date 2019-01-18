@@ -90,6 +90,18 @@ namespace bs
 		return object;
 	}
 
+	UINT32 FileDecoder::getSize() const
+	{
+		if (mInputStream->eof())
+			return 0;
+
+		UINT32 objectSize = 0;
+		mInputStream->read(&objectSize, sizeof(objectSize));
+		mInputStream->seek(mInputStream->tell() - sizeof(objectSize));
+
+		return objectSize;
+	}
+
 	void FileDecoder::skip()
 	{
 		if (mInputStream->eof())

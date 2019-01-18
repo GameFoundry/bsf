@@ -49,23 +49,21 @@ namespace bs
 		/** Information about a loaded resource. */
 		struct LoadedResourceData
 		{
-			LoadedResourceData()
-				:numInternalRefs(0)
-			{ }
-
-			LoadedResourceData(const WeakResourceHandle<Resource>& resource)
-				:resource(resource), numInternalRefs(0)
+			LoadedResourceData() = default;
+			LoadedResourceData(const WeakResourceHandle<Resource>& resource, UINT32 size)
+				:resource(resource), size(size)
 			{ }
 
 			WeakResourceHandle<Resource> resource;
-			UINT32 numInternalRefs;
+			UINT32 numInternalRefs = 0;
+			UINT32 size = 0;
 		};
 
 		/** Information about a resource that's currently being loaded. */
 		struct ResourceLoadData
 		{
-			ResourceLoadData(const WeakResourceHandle<Resource>& resource, UINT32 numDependencies)
-				:resData(resource), remainingDependencies(numDependencies)
+			ResourceLoadData(const WeakResourceHandle<Resource>& resource, UINT32 numDependencies, UINT32 size)
+				:resData(resource, size), remainingDependencies(numDependencies)
 			{ }
 
 			LoadedResourceData resData;
@@ -73,6 +71,21 @@ namespace bs
 			UINT32 remainingDependencies;
 			Vector<HResource> dependencies;
 			bool notifyImmediately;
+
+			// Progress reporting
+			UINT32 dependencySize = 0;
+			UINT32 dependencyLoadedAmount = 0;
+			std::atomic<float> progress;
+		};
+
+		/** Information about an issued resource load. */
+		struct LoadInfo
+		{
+			enum State { Loading, Failed, AlreadyInProgress, AlreadyLoaded };
+
+			HResource resource;
+			UINT32 size;
+			State state;
 		};
 
 	public:
@@ -231,6 +244,17 @@ namespace bs
 		bool isLoaded(const UUID& uuid, bool checkInProgress = true);
 
 		/**
+		 * Returns the loading progress of a resource that's being asynchronously loaded.
+		 * 
+		 * @param[in]	resource				Resource whose load progress to check.
+		 * @param[in]	includeDependencies		If false the progress will reflect the load progress only for this
+		 *										inidividual resource. If true the progress will reflect load progress
+		 *										of this resource and all of its dependencies.
+		 * @return								Load progress in range [0, 1].
+		 */
+		float getLoadProgress(const HResource& resource, bool includeDependencies = true);
+
+		/**
 		 *Allows you to set a resource manifest containing UUID <-> file path mapping that is used when resolving 
 		 * resource references.
 		 *
@@ -321,13 +345,13 @@ namespace bs
 		 * resource, although you may provide an empty path in which case the resource will be retrieved from memory if its
 		 * currently loaded.
 		 */
-		HResource loadInternal(const UUID& UUID, const Path& filePath, bool synchronous, ResourceLoadFlags loadFlags);
+		LoadInfo loadInternal(const UUID& UUID, const Path& filePath, bool synchronous, ResourceLoadFlags loadFlags);
 
 		/** Performs actually reading and deserializing of the resource file. Called from various worker threads. */
-		SPtr<Resource> loadFromDiskAndDeserialize(const Path& filePath, bool loadWithSaveData);
+		SPtr<Resource> loadFromDiskAndDeserialize(const Path& filePath, bool loadWithSaveData, std::atomic<float>& progress);
 
 		/**	Triggered when individual resource has finished loading. */
-		void loadComplete(HResource& resource);
+		void loadComplete(HResource& resource, bool notifyProgress);
 
 		/**	Callback triggered when the task manager is ready to process the loading task. */
 		void loadCallback(const Path& filePath, HResource& resource, bool loadWithSaveData);
