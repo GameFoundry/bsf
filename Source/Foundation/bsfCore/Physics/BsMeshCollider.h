@@ -16,7 +16,7 @@ namespace bs
 	class BS_CORE_EXPORT MeshCollider : public Collider, public IResourceListener
 	{
 	public:
-		MeshCollider();
+		MeshCollider() = default;
 
 		/** 
 		 * Sets a mesh that represents the collider geometry. This can be a generic triangle mesh, or and convex mesh. 

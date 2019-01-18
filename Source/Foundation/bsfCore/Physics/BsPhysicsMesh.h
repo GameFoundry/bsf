@@ -21,7 +21,7 @@ namespace bs
 	{
 	public:
 		PhysicsMesh(const SPtr<MeshData>& meshData, PhysicsMeshType type);
-		virtual ~PhysicsMesh() { }
+		virtual ~PhysicsMesh() = default;
 
 		/** Returns the type of the physics mesh. */
 		BS_SCRIPT_EXPORT(n:Type,pr:getter)

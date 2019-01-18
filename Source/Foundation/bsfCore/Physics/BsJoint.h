@@ -23,8 +23,8 @@ namespace bs
 	class BS_CORE_EXPORT Joint
 	{
 	public:
-		Joint() { }
-		virtual ~Joint() { }
+		Joint() = default;
+		virtual ~Joint() = default;
 
 		/** @copydoc FJoint::getBody */
 		Rigidbody* getBody(JointBody body) const;

@@ -26,7 +26,7 @@ namespace bs
 	{
 	public:
 		DistanceJoint(const DISTANCE_JOINT_DESC& desc) { }
-		virtual ~DistanceJoint() { }
+		virtual ~DistanceJoint() = default;
 
 		/** Returns the current distance between the two joint bodies. */
 		virtual float getDistance() const = 0;

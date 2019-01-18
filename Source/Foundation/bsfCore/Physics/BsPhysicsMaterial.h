@@ -18,7 +18,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Physics) PhysicsMaterial : public Resource
 	{
 	public:
-		virtual ~PhysicsMaterial() { }
+		virtual ~PhysicsMaterial() = default;
 
 		/** 
 		  * Controls friction when two in-contact objects are not moving lateral to each other (for example how difficult 

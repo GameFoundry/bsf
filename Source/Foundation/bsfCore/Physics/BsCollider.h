@@ -25,8 +25,8 @@ namespace bs
 	class BS_CORE_EXPORT Collider
 	{
 	public:
-		Collider() { }
-		virtual ~Collider() { }
+		Collider() = default;
+		virtual ~Collider() = default;
 
 		/** @copydoc FCollider::getPosition */
 		Vector3 getPosition() const;

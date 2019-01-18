@@ -17,7 +17,7 @@ namespace bs
 	class BS_CORE_EXPORT CapsuleCollider : public Collider
 	{
 	public:
-		CapsuleCollider();
+		CapsuleCollider() = default;
 
 		/** 
 		 * Determines the half height of the capsule, from the origin to one of the hemispherical centers, along the normal 

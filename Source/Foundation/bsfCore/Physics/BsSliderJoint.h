@@ -26,7 +26,7 @@ namespace bs
 	{
 	public:
 		SliderJoint(const SLIDER_JOINT_DESC& desc) { }
-		virtual ~SliderJoint() { }
+		virtual ~SliderJoint() = default;
 
 		/** Returns the current position of the slider. */
 		virtual float getPosition() const = 0;

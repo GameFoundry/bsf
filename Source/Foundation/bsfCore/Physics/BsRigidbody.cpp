@@ -12,11 +12,6 @@ namespace bs
 
 	}
 
-	Rigidbody::~Rigidbody()
-	{
-
-	}
-
 	void Rigidbody::_setTransform(const Vector3& position, const Quaternion& rotation)
 	{
 		mLinkedSO->setWorldPosition(position);

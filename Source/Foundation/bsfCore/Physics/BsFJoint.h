@@ -29,7 +29,7 @@ namespace bs
 	{
 	public:
 		FJoint(const JOINT_DESC& desc) { }
-		virtual ~FJoint() { }
+		virtual ~FJoint() = default;
 
 		/** @copydoc setBody() */
 		virtual Rigidbody* getBody(JointBody body) const = 0;

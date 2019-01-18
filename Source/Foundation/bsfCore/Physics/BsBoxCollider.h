@@ -17,7 +17,7 @@ namespace bs
 	class BS_CORE_EXPORT BoxCollider : public Collider
 	{
 	public:
-		BoxCollider();
+		BoxCollider() = default;
 
 		/** Determines the extents (half size) of the geometry of the box. */
 		virtual void setExtents(const Vector3& extents) = 0;
