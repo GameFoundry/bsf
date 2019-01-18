@@ -18,7 +18,7 @@ namespace bs
 	{
 	public:
 		FixedJoint(const FIXED_JOINT_DESC& desc) { }
-		virtual ~FixedJoint() { }
+		virtual ~FixedJoint() = default;
 
 		/** Creates a new fixed joint. */
 		static SPtr<FixedJoint> create(const FIXED_JOINT_DESC& desc);

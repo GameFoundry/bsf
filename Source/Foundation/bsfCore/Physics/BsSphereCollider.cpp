@@ -5,9 +5,6 @@
 
 namespace bs
 {
-	SphereCollider::SphereCollider()
-	{ }
-
 	SPtr<SphereCollider> SphereCollider::create(float radius, const Vector3& position, const Quaternion& rotation)
 	{
 		return Physics::instance().createSphereCollider(radius, position, rotation);

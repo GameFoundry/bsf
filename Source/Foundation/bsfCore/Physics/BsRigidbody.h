@@ -62,7 +62,7 @@ namespace bs
 		 *							those updates).
 		 */
 		Rigidbody(const HSceneObject& linkedSO);
-		virtual ~Rigidbody();
+		virtual ~Rigidbody() = default;
 
 		/** 
 		 * Moves the rigidbody to a specific position. This method will ensure physically correct movement, meaning the body

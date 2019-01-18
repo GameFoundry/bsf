@@ -5,9 +5,6 @@
 
 namespace bs
 {
-	MeshCollider::MeshCollider()
-	{ }
-
 	SPtr<MeshCollider> MeshCollider::create(const Vector3& position, const Quaternion& rotation)
 	{
 		return Physics::instance().createMeshCollider(position, rotation);

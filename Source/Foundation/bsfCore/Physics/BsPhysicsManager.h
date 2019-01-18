@@ -15,7 +15,7 @@ namespace bs
 	class BS_CORE_EXPORT PhysicsFactory
 	{
 	public:
-		virtual ~PhysicsFactory() { }
+		virtual ~PhysicsFactory() = default;
 
 		/** Initializes the physics system. */
 		virtual void startUp(bool cooking) = 0;

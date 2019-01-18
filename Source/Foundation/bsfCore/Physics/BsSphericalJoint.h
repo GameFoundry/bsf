@@ -28,7 +28,7 @@ namespace bs
 	{
 	public:
 		SphericalJoint(const SPHERICAL_JOINT_DESC& desc) { }
-		virtual ~SphericalJoint() { }
+		virtual ~SphericalJoint() = default;
 
 		/** @copydoc setLimit() */
 		virtual LimitConeRange getLimit() const = 0;

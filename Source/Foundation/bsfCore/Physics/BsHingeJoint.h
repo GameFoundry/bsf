@@ -53,7 +53,7 @@ namespace bs
 	{
 	public:
 		HingeJoint(const HINGE_JOINT_DESC& desc) { }
-		virtual ~HingeJoint() { }
+		virtual ~HingeJoint() = default;
 
 		/** Returns the current angle between the two attached bodes. */
 		virtual Radian getAngle() const = 0;

@@ -17,7 +17,7 @@ namespace bs
 	class BS_CORE_EXPORT PlaneCollider : public Collider
 	{
 	public:
-		PlaneCollider();
+		PlaneCollider() = default;
 
 		/** 
 		 * Creates a new plane collider. 
