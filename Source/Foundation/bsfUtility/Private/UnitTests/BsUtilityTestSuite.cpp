@@ -654,7 +654,7 @@ namespace bs
 			overlapElements.push_back(element);
 
 			// Manually check for intersections
-			assert(quadtreeData.elements[element].box.intersects(queryBounds));
+			BS_TEST_ASSERT(quadtreeData.elements[element].box.intersects(queryBounds));
 		}
 
 		// Ensure that all we have found all possible overlaps by manually testing all elements
@@ -664,7 +664,7 @@ namespace bs
 			if (entry.box.intersects(queryBounds))
 			{
 				auto iterFind = std::find(overlapElements.begin(), overlapElements.end(), elemIdx);
-				assert(iterFind != overlapElements.end());
+				BS_TEST_ASSERT(iterFind != overlapElements.end());
 			}
 
 			elemIdx++;
