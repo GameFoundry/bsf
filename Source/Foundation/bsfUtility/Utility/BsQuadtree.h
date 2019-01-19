@@ -101,7 +101,7 @@ namespace bs
 
 				struct
 				{
-					UINT32 index : 3;
+					UINT32 index : 2;
 					UINT32 empty2 : 1;
 				};
 			};
@@ -134,11 +134,11 @@ namespace bs
 
 				struct
 				{
-					UINT32 posBits : 3;
-					UINT32 negBits : 3;
+					UINT32 posBits : 2;
+					UINT32 negBits : 2;
 				};
 
-				UINT32 allBits : 6;
+				UINT32 allBits : 4;
 			};
 
 			/** Constructs a range overlapping no nodes. */
