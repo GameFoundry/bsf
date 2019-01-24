@@ -104,8 +104,10 @@ namespace bs
 		void setParamData(MaterialParams* obj, UINT32 idx, MaterialParam& param)
 		{
 			UINT32 paramIdx = param.index;
+
+			// Older saved files might not have indices preserved
 			if(paramIdx == (UINT32)-1)
-				paramIdx = (UINT32)obj->mParams.size();
+				paramIdx = mNextParamIdx++;
 
 			obj->mParams[paramIdx] = param.data;
 			obj->mParamLookup[param.name] = paramIdx;
@@ -286,6 +288,7 @@ namespace bs
 
 	private:
 		Vector<MaterialParam> mMatParams;
+		UINT32 mNextParamIdx = 0;
 	};
 
 	template<> struct RTTIPlainType<MaterialParamsBase::ParamData>
