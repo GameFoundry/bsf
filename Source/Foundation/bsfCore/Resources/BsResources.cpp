@@ -424,11 +424,8 @@ namespace bs
 
 				if (metaData->getCompressionMethod() != 0)
 				{
-					int cnt = 0;
-					stream = Compression::decompress(stream, [&progress, &cnt](float val)
+					stream = Compression::decompress(stream, [&progress](float val)
 					{
-						if((++cnt) % 5 == 0)
-							BS_THREAD_SLEEP(100)
 						progress.exchange(val * 0.9f, std::memory_order_relaxed);
 					});
 
@@ -440,12 +437,9 @@ namespace bs
 				}
 				else
 				{
-					int cnt = 0;
 					BinarySerializer bs;
-					loadedData = bs.decode(stream, objectSize, &serzContext, [&progress, &cnt](float val)
+					loadedData = bs.decode(stream, objectSize, &serzContext, [&progress](float val)
 					{
-						if((++cnt) % 5 == 0)
-							BS_THREAD_SLEEP(100)
 						progress.exchange(val, std::memory_order_relaxed);
 					});
 				}
