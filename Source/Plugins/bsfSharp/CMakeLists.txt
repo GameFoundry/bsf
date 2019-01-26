@@ -1,0 +1,32 @@
+# Generate the CS project file
+if(BS_IS_BANSHEE3D)
+	set(BS_SHARP_ROOT_NS "BansheeEngine")
+	set(BS_SHARP_ASSEMBLY_NAME "MBansheeEngine")
+	set(BS_SHARP_DEFINES "IS_B3D;")
+else()
+	set(BS_SHARP_ROOT_NS "bsf")
+	set(BS_SHARP_ASSEMBLY_NAME "bsfSharp")
+	set(BS_SHARP_DEFINES "IS_BSF;")
+endif()
+
+generate_csharp_project()
+
+# Include the CS project in the build
+set(BS_CS_PROJ "${BS_SHARP_ASSEMBLY_NAME}.csproj")
+
+if(MSVC)
+	include_external_msproject(${BS_SHARP_ASSEMBLY_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/${BS_CS_PROJ})
+	set_property(TARGET ${BS_SHARP_ASSEMBLY_NAME} PROPERTY FOLDER Script)
+else()
+	find_package(mcs)
+
+	if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+		set(CS_PROJ_CONFIG Debug)
+	else()
+		set(CS_PROJ_CONFIG Release)
+	endif()
+
+	add_custom_target(${BS_SHARP_ASSEMBLY_NAME}
+			COMMAND xbuild /p:Configuration=${CS_PROJ_CONFIG} ${BS_CS_PROJ}
+			COMMENT "Building managed assembly \"${BS_SHARP_ASSEMBLY_NAME}\"")
+endif()

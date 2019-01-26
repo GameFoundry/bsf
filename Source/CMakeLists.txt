@@ -50,7 +50,7 @@ set(USE_BUNDLED_LIBRARIES ON CACHE BOOL "Use and install bundled libraries")
 
 # Ensure dependencies are up to date
 ## Check prebuilt dependencies that are downloaded in a .zip
-check_and_update_binary_deps(bsf ${BSF_SOURCE_DIR}/../Dependencies/ ${BS_FRAMEWORK_PREBUILT_DEPENDENCIES_VERSION})
+check_and_update_binary_deps(bsfDependencies Dependencies ${BSF_SOURCE_DIR}/../Dependencies/ ${BS_FRAMEWORK_PREBUILT_DEPENDENCIES_VERSION})
 
 ## Check dependencies built from source
 if(WIN32)
@@ -113,6 +113,11 @@ if(INCLUDE_ALL_IN_WORKFLOW AND MSVC)
 	add_subdirectory(Plugins/bsfVulkanRenderAPI)
 	add_subdirectory(Plugins/bsfFMOD)
 	add_subdirectory(Plugins/bsfOpenAudio)
+	
+	## Scripting
+	add_subdirectory(Plugins/bsfMono)
+	add_subdirectory(Plugins/bsfScript)
+	add_subdirectory(Plugins/bsfSharp)
 else() # Otherwise include only chosen ones
 	if(RENDER_API_MODULE MATCHES "DirectX 11")
 		add_subdirectory(Plugins/bsfD3D11RenderAPI)
@@ -126,6 +131,15 @@ else() # Otherwise include only chosen ones
 		add_subdirectory(Plugins/bsfFMOD)
 	else() # Default to OpenAudio
 		add_subdirectory(Plugins/bsfOpenAudio)
+	endif()
+	
+	if((SCRIPT_API AND (NOT SCRIPT_API MATCHES "None")) OR BS_IS_BANSHEE3D)
+		add_subdirectory(Plugins/bsfScript)
+	endif()
+	
+	if((SCRIPT_API AND SCRIPT_API MATCHES "C#") OR BS_IS_BANSHEE3D)
+		add_subdirectory(Plugins/bsfMono)
+		add_subdirectory(Plugins/bsfSharp)
 	endif()
 endif()
 
@@ -192,6 +206,11 @@ check_and_update_builtin_assets(bsfCompiled ${BSF_SOURCE_DIR}/../Data Data ${COM
 set(DOC_IMAGES_VERSION_FILE ${BSF_SOURCE_DIR}/../Documentation/.reqversion)
 file (STRINGS ${DOC_IMAGES_VERSION_FILE} DOC_IMAGES_VERSION)
 check_and_update_builtin_assets(bsfDocImages ${BSF_SOURCE_DIR}/../Documentation Documentation ${DOC_IMAGES_VERSION} NO)
+
+## Script binding generation
+if(((SCRIPT_API AND (NOT SCRIPT_API MATCHES "None")) OR BS_IS_BANSHEE3D) AND SCRIPT_BINDING_GENERATION)
+	include(${BSF_SOURCE_DIR}/CMake/GenerateScriptBindings.cmake)
+endif()
 
 ## Install
 install(

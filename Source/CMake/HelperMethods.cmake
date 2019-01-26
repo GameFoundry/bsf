@@ -260,7 +260,7 @@ endfunction()
 set(BS_BINARY_DEP_WEBSITE "https://data.banshee3d.com" CACHE STRING "The location that binary dependencies will be pulled from. Must follow the same naming scheme as data.banshee3d.com")
 mark_as_advanced(BS_BINARY_DEP_WEBSITE)
 
-function(update_binary_deps DEP_PREFIX DEP_FOLDER DEP_VERSION)
+function(update_binary_deps DEP_PREFIX DEP_NAME DEP_FOLDER DEP_VERSION)
 	# Clean and create a temporary folder
 	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)	
 	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/Temp)	
@@ -273,7 +273,7 @@ function(update_binary_deps DEP_PREFIX DEP_FOLDER DEP_VERSION)
 		set(DEP_TYPE macOS)
 	endif()
 
-	set(BINARY_DEPENDENCIES_URL ${BS_BINARY_DEP_WEBSITE}/${DEP_PREFIX}Dependencies_${DEP_TYPE}_Master_${DEP_VERSION}.zip)
+	set(BINARY_DEPENDENCIES_URL ${BS_BINARY_DEP_WEBSITE}/${DEP_PREFIX}_${DEP_TYPE}_Master_${DEP_VERSION}.zip)
 	file(DOWNLOAD ${BINARY_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip 
 		SHOW_PROGRESS
 		STATUS DOWNLOAD_STATUS)
@@ -290,26 +290,28 @@ function(update_binary_deps DEP_PREFIX DEP_FOLDER DEP_VERSION)
 	)
 	
 	# Copy executables and dynamic libraries
-	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Temp/bin ${DEP_FOLDER}/../bin)	
+	if(EXISTS ${PROJECT_SOURCE_DIR}/Temp/bin)
+		execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Temp/bin ${DEP_FOLDER}/../bin)	
+	endif()
 	
 	# Copy static libraries, headers and tools
 	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${DEP_FOLDER})	
-	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Temp/Dependencies ${DEP_FOLDER})
+	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Temp/${DEP_NAME} ${DEP_FOLDER})
 	
 	# Clean up
 	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)	
 endfunction()
 
-function(check_and_update_binary_deps DEP_PREFIX DEP_FOLDER DEP_VERSION)
+function(check_and_update_binary_deps DEP_PREFIX DEP_NAME DEP_FOLDER DEP_VERSION)
 	set(BUILTIN_DEP_VERSION_FILE ${DEP_FOLDER}/.version)
 	if(NOT EXISTS ${BUILTIN_DEP_VERSION_FILE})
 		message(STATUS "Binary dependencies for '${DEP_PREFIX}' are missing. Downloading package...")
-		update_binary_deps(${DEP_PREFIX} ${DEP_FOLDER} ${DEP_VERSION})
+		update_binary_deps(${DEP_PREFIX} ${DEP_NAME} ${DEP_FOLDER} ${DEP_VERSION})
 	else()
 		file (STRINGS ${BUILTIN_DEP_VERSION_FILE} CURRENT_DEP_VERSION)
 		if(${DEP_VERSION} GREATER ${CURRENT_DEP_VERSION})
 			message(STATUS "Your precomiled dependencies package for '${DEP_PREFIX}' is out of date. Downloading latest package...")
-			update_binary_deps(${DEP_PREFIX} ${DEP_FOLDER} ${DEP_VERSION})
+			update_binary_deps(${DEP_PREFIX} ${DEP_NAME} ${DEP_FOLDER} ${DEP_VERSION})
 		endif()
 	endif()
 endfunction()
@@ -377,7 +379,7 @@ function(install_bsf_target targetName)
 	endif()
 endfunction()
 
-function(copyBsfBinaries target srcDir)
+function(install_dll_on_build target srcDir)
 	if(WIN32)
 		set(BIN_SRC_DIR "${srcDir}/bin")
 		set(BIN_DST_DIR ${PROJECT_BINARY_DIR}/bin)
@@ -401,6 +403,42 @@ function(copyBsfBinaries target srcDir)
 			   )
 		endforeach()
 	endif()
+endfunction()
+
+# BS_SHARP_ROOT_NS, BS_SHARP_ASSEMBLY_NAME, BS_SHARP_DEFINES need to be set before calling
+function(generate_csharp_project)
+	file(GLOB_RECURSE ALL_FILES 
+		RELATIVE "${BSF_SOURCE_DIR}/Plugins/bsfSharp/" 
+		"${BSF_SOURCE_DIR}/Plugins/bsfSharp/*.cs")
+		
+	set(BS_SHARP_GENERATED_FILE_LIST "")
+	foreach(CUR_FILE ${ALL_FILES})
+		string(REGEX REPLACE "/" "\\\\" CUR_FILE_PATH ${CUR_FILE})
+		string(APPEND BS_SHARP_GENERATED_FILE_LIST "\t<Compile Include=\"${CUR_FILE_PATH}\"/>\n")
+	endforeach()
+
+	if(BS_IS_BANSHEE3D)
+		set(BS_SHARP_ROOT_NS "BansheeEngine")
+		set(BS_SHARP_ASSEMBLY_NAME "MBansheeEngine")
+		set(BS_SHARP_DEFINES "IS_B3D;")
+	else()
+		set(BS_SHARP_ROOT_NS "bsf")
+		set(BS_SHARP_ASSEMBLY_NAME "bsfSharp")
+		set(BS_SHARP_DEFINES "IS_BSF;")
+	endif()
+
+	string(REGEX REPLACE "/" "\\\\" BINARY_DIR_PATH ${PROJECT_BINARY_DIR})
+	set(BS_SHARP_ASSEMBLY_OUTPUT "${BINARY_DIR_PATH}\\bin\\Assemblies")
+
+	set(RunAssetImport_EXECUTABLE ${bsfImportTool_EXECUTABLE})
+	set(RunAssetImport_INPUT_FOLDER ${_FOLDER})
+	set(RunAssetImport_CMD_ARGS ${__ARGS})
+	set(RunAssetImport_PREFIX ${_PREFIX})
+	set(RunAssetImport_WORKING_DIR ${_WORKING_DIR})
+	
+	configure_file(
+		${BSF_SOURCE_DIR}/Plugins/bsfSharp/bsfSharp.csproj.in
+		${BSF_SOURCE_DIR}/Plugins/bsfSharp/${BS_SHARP_ASSEMBLY_NAME}.csproj)
 endfunction()
 
 function(add_common_flags target)

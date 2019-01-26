@@ -1,6 +1,12 @@
 # Source files and their filters
 include(CMakeSources.cmake)
 
+# Ensure pre-built binary dependencies are up to date
+if(USE_BUNDLED_LIBRARIES)
+	set(BS_MONO_PREBUILT_DEPENDENCY_VERSION 1) # Tick this when you change the binaries
+	check_and_update_binary_deps(bsfDep_mono mono ${BSF_SOURCE_DIR}/../Dependencies/mono ${BS_MONO_PREBUILT_DEPENDENCY_VERSION})
+endif()
+
 # Find packages
 find_package(mono)
 
@@ -28,6 +34,11 @@ add_executable(MonoExec BsMonoExec.cpp)
 target_link_libraries(MonoExec ${mono_LIBRARIES})
 
 # IDE specific
-set_property(TARGET bsfMono PROPERTY FOLDER Plugins)
+set_property(TARGET bsfMono PROPERTY FOLDER Script)
+
+# Copy .dlls on build
+if(USE_BUNDLED_LIBRARIES)
+	install_dll_on_build(bsfMono ${BSF_SOURCE_DIR}/../Dependencies/mono)
+endif()
 
 conditional_cotire(bsfMono)

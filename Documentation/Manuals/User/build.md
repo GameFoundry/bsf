@@ -161,7 +161,7 @@ add_engine_dependencies(myApp)
 add_dependencies(myApp bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
 # When 'myApp' target is built, copy required binaries from bsf
-copyBsfBinaries(myApp ${BSF_DIRECTORY})
+install_dll_on_build(myApp ${BSF_DIRECTORY})
 ```
 
 Make sure to set `C:/bsf` to the directory where you cloned `bsf`.

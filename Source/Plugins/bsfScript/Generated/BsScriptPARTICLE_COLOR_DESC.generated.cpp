@@ -1,0 +1,53 @@
+#include "BsScriptPARTICLE_COLOR_DESC.generated.h"
+#include "BsMonoMethod.h"
+#include "BsMonoClass.h"
+#include "BsMonoUtil.h"
+#include "../../../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
+#include "BsScriptColorDistribution.generated.h"
+
+namespace bs
+{
+	ScriptPARTICLE_COLOR_DESC::ScriptPARTICLE_COLOR_DESC(MonoObject* managedInstance)
+		:ScriptObject(managedInstance)
+	{ }
+
+	void ScriptPARTICLE_COLOR_DESC::initRuntimeData()
+	{ }
+
+	MonoObject*ScriptPARTICLE_COLOR_DESC::box(const __PARTICLE_COLOR_DESCInterop& value)
+	{
+		return MonoUtil::box(metaData.scriptClass->_getInternalClass(), (void*)&value);
+	}
+
+	__PARTICLE_COLOR_DESCInterop ScriptPARTICLE_COLOR_DESC::unbox(MonoObject* value)
+	{
+		return *(__PARTICLE_COLOR_DESCInterop*)MonoUtil::unbox(value);
+	}
+
+	PARTICLE_COLOR_DESC ScriptPARTICLE_COLOR_DESC::fromInterop(const __PARTICLE_COLOR_DESCInterop& value)
+	{
+		PARTICLE_COLOR_DESC output;
+		SPtr<ColorDistribution> tmpcolor;
+		ScriptColorDistribution* scriptcolor;
+		scriptcolor = ScriptColorDistribution::toNative(value.color);
+		if(scriptcolor != nullptr)
+			tmpcolor = scriptcolor->getInternal();
+		if(tmpcolor != nullptr)
+		output.color = *tmpcolor;
+
+		return output;
+	}
+
+	__PARTICLE_COLOR_DESCInterop ScriptPARTICLE_COLOR_DESC::toInterop(const PARTICLE_COLOR_DESC& value)
+	{
+		__PARTICLE_COLOR_DESCInterop output;
+		MonoObject* tmpcolor;
+		SPtr<ColorDistribution> tmpcolorcopy;
+		tmpcolorcopy = bs_shared_ptr_new<ColorDistribution>(value.color);
+		tmpcolor = ScriptColorDistribution::create(tmpcolorcopy);
+		output.color = tmpcolor;
+
+		return output;
+	}
+
+}
