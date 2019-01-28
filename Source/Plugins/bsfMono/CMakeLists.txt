@@ -39,6 +39,7 @@ set_property(TARGET bsfMono PROPERTY FOLDER Script)
 # Copy .dlls on build
 if(USE_BUNDLED_LIBRARIES)
 	install_dll_on_build(bsfMono ${BSF_SOURCE_DIR}/../Dependencies/mono)
+	copy_folder_on_build(bsfMono ${BSF_SOURCE_DIR}/../Dependencies/mono ${PROJECT_BINARY_DIR} bin/Mono "*.*")
 endif()
 
 conditional_cotire(bsfMono)

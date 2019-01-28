@@ -5,7 +5,7 @@
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
 #include "BsScriptGameObjectManager.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCCollider.h"
+#include "../../../Foundation/bsfCore/Components/BsCCollider.h"
 #include "BsScriptCCollider.generated.h"
 #include "Math/BsVector3.h"
 #include "Wrappers/BsScriptVector.h"

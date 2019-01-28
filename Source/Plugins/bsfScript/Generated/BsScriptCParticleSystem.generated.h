@@ -4,8 +4,8 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "Wrappers/BsScriptComponent.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
 
 namespace bs
 {

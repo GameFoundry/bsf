@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCBone.h"
+#include "../../../Foundation/bsfCore/Components/BsCBone.h"
 
 namespace bs
 {

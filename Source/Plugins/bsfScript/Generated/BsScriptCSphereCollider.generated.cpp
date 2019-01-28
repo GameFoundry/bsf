@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCSphereCollider.h"
+#include "../../../Foundation/bsfCore/Components/BsCSphereCollider.h"
 #include "Wrappers/BsScriptVector.h"
 
 namespace bs

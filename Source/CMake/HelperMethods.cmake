@@ -405,18 +405,45 @@ function(install_dll_on_build target srcDir)
 	endif()
 endfunction()
 
+function(copy_folder_on_build target srcDir dstDir name filter)
+	set(SRC_DIR ${srcDir}/${name})
+	set(DST_DIR ${dstDir}/${name})
+	
+	file(GLOB_RECURSE ALL_FILES RELATIVE ${SRC_DIR} "${SRC_DIR}/${filter}")
+
+	foreach(CUR_PATH ${ALL_FILES})
+		get_filename_component(FILENAME ${CUR_PATH} NAME)
+	
+		set(SRC ${SRC_DIR}/${CUR_PATH})
+		set(DST ${DST_DIR}/${CUR_PATH})
+		add_custom_command(
+		   TARGET ${target} POST_BUILD
+		   COMMAND ${CMAKE_COMMAND}
+		   ARGS    -E copy_if_different ${SRC} ${DST}
+		   COMMENT "Copying ${SRC} ${DST}\n"
+		   )
+	endforeach()
+endfunction()
+
 function(generate_csharp_project folder project_name namespace assembly)
 	file(GLOB_RECURSE ALL_FILES RELATIVE ${folder} ${folder}/*.cs)
 		
 	set(BS_SHARP_FILE_LIST "")
 	foreach(CUR_FILE ${ALL_FILES})
+		if(CUR_FILE MATCHES "obj/")
+			continue()
+		endif()
+	
 		string(REGEX REPLACE "/" "\\\\" CUR_FILE_PATH ${CUR_FILE})
 		string(APPEND BS_SHARP_FILE_LIST "\t<Compile Include=\"${CUR_FILE_PATH}\"/>\n")
 	endforeach()
 
 	set(BS_SHARP_ROOT_NS ${namespace})
 	set(BS_SHARP_ASSEMBLY_NAME ${assembly})
-	set(BS_SHARP_DEFINES "IS_B3D=${BS_IS_BANSHEE3D};")
+	
+	if(BS_IS_BANSHEE3D)
+		set(BS_SHARP_DEFINES "IS_B3D;")
+	endif()
 
 	string(REGEX REPLACE "/" "\\\\" BINARY_DIR_PATH ${PROJECT_BINARY_DIR})
 	set(BS_SHARP_ASSEMBLY_OUTPUT "${BINARY_DIR_PATH}\\bin\\Assemblies")

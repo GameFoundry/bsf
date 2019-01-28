@@ -4,8 +4,8 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Physics/BsPhysicsCommon.h"
-#include "../../../../../Foundation/bsfCore/Physics/BsPhysicsCommon.h"
+#include "../../../Foundation/bsfCore/Physics/BsPhysicsCommon.h"
+#include "../../../Foundation/bsfCore/Physics/BsPhysicsCommon.h"
 #include "BsScriptContactPoint.generated.h"
 
 namespace bs

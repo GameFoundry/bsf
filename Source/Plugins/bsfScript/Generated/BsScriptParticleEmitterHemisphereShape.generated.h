@@ -5,7 +5,7 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
 #include "BsScriptParticleEmitterShape.generated.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleEmitter.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleEmitter.h"
 
 namespace bs
 {

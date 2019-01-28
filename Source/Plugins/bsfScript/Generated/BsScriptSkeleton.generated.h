@@ -4,7 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../Extensions/BsSkeletonEx.h"
+#include "../Extensions/BsSkeletonEx.h"
 
 namespace bs
 {

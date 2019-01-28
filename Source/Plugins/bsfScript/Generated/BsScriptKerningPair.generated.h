@@ -4,7 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Text/BsFontDesc.h"
+#include "../../../Foundation/bsfCore/Text/BsFontDesc.h"
 
 namespace bs
 {

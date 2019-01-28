@@ -4,12 +4,12 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "Wrappers/BsScriptResource.h"
-#include "../../../../../Foundation/bsfCore/RenderAPI/BsSubMesh.h"
+#include "../../../Foundation/bsfCore/RenderAPI/BsSubMesh.h"
 #include "Math/BsSphere.h"
-#include "../../../../../Foundation/bsfCore/Utility/BsCommonTypes.h"
-#include "../../../../../Foundation/bsfCore/Mesh/BsMeshBase.h"
-#include "../../../../../Foundation/bsfCore/Utility/BsCommonTypes.h"
-#include "../../../../../Foundation/bsfCore/Renderer/BsRendererMeshData.h"
+#include "../../../Foundation/bsfCore/Utility/BsCommonTypes.h"
+#include "../../../Foundation/bsfCore/Mesh/BsMeshBase.h"
+#include "../../../Foundation/bsfCore/Utility/BsCommonTypes.h"
+#include "../../../Foundation/bsfCore/Renderer/BsRendererMeshData.h"
 #include "Math/BsAABox.h"
 
 namespace bs

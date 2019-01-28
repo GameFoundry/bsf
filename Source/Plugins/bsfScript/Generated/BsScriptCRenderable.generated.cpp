@@ -4,11 +4,11 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCRenderable.h"
+#include "../../../Foundation/bsfCore/Components/BsCRenderable.h"
 #include "BsScriptResourceManager.h"
 #include "Wrappers/BsScriptRRefBase.h"
-#include "../../../../../Foundation/bsfCore/Mesh/BsMesh.h"
-#include "../../../../../Foundation/bsfCore/Material/BsMaterial.h"
+#include "../../../Foundation/bsfCore/Mesh/BsMesh.h"
+#include "../../../Foundation/bsfCore/Material/BsMaterial.h"
 
 namespace bs
 {

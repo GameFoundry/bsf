@@ -4,9 +4,9 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Material/BsShader.h"
+#include "../../../Foundation/bsfCore/Material/BsShader.h"
 #include "BsScriptShaderParameter.generated.h"
-#include "../../../Extensions/BsShaderEx.h"
+#include "../Extensions/BsShaderEx.h"
 
 namespace bs
 {

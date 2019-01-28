@@ -4,9 +4,9 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
 #include "BsScriptTDistribution.generated.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
 #include "BsScriptTDistribution.generated.h"
 
 namespace bs

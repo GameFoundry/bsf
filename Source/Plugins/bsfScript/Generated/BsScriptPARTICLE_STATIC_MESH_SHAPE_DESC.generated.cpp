@@ -6,7 +6,7 @@
 #include "BsMonoUtil.h"
 #include "BsScriptResourceManager.h"
 #include "Wrappers/BsScriptRRefBase.h"
-#include "../../../../../Foundation/bsfCore/Mesh/BsMesh.h"
+#include "../../../Foundation/bsfCore/Mesh/BsMesh.h"
 #include "BsScriptMesh.generated.h"
 
 namespace bs

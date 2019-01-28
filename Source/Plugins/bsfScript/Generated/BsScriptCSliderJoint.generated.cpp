@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCSliderJoint.h"
+#include "../../../Foundation/bsfCore/Components/BsCSliderJoint.h"
 #include "BsScriptLimitLinearRange.generated.h"
 
 namespace bs

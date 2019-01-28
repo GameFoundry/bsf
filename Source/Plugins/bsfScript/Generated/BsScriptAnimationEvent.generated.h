@@ -4,7 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationClip.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationClip.h"
 
 namespace bs
 {

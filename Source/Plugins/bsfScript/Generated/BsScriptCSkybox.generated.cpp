@@ -4,10 +4,10 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCSkybox.h"
+#include "../../../Foundation/bsfCore/Components/BsCSkybox.h"
 #include "BsScriptResourceManager.h"
 #include "Wrappers/BsScriptRRefBase.h"
-#include "../../../../../Foundation/bsfCore/Image/BsTexture.h"
+#include "../../../Foundation/bsfCore/Image/BsTexture.h"
 
 namespace bs
 {

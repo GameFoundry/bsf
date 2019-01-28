@@ -4,8 +4,8 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/RenderAPI/BsRenderTarget.h"
-#include "../../../Extensions/BsRenderTargetEx.h"
+#include "../../../Foundation/bsfCore/RenderAPI/BsRenderTarget.h"
+#include "../Extensions/BsRenderTargetEx.h"
 
 namespace bs
 {

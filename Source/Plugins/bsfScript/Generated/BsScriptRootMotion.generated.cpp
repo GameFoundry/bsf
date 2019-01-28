@@ -4,9 +4,9 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationClip.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationClip.h"
 #include "BsScriptTAnimationCurve.generated.h"
-#include "../../../Extensions/BsAnimationEx.h"
+#include "../Extensions/BsAnimationEx.h"
 #include "BsScriptTAnimationCurve.generated.h"
 
 namespace bs

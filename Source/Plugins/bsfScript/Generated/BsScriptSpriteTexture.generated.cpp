@@ -4,13 +4,13 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Image/BsSpriteTexture.h"
+#include "../../../Foundation/bsfCore/Image/BsSpriteTexture.h"
 #include "BsScriptResourceManager.h"
 #include "Wrappers/BsScriptRRefBase.h"
-#include "../../../../../Foundation/bsfCore/Image/BsTexture.h"
+#include "../../../Foundation/bsfCore/Image/BsTexture.h"
 #include "Wrappers/BsScriptVector.h"
 #include "BsScriptSpriteSheetGridAnimation.generated.h"
-#include "../../../../../Foundation/bsfCore/Image/BsSpriteTexture.h"
+#include "../../../Foundation/bsfCore/Image/BsSpriteTexture.h"
 
 namespace bs
 {

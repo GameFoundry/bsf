@@ -4,10 +4,10 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCAudioSource.h"
+#include "../../../Foundation/bsfCore/Components/BsCAudioSource.h"
 #include "BsScriptResourceManager.h"
 #include "Wrappers/BsScriptRRefBase.h"
-#include "../../../../../Foundation/bsfCore/Audio/BsAudioClip.h"
+#include "../../../Foundation/bsfCore/Audio/BsAudioClip.h"
 
 namespace bs
 {

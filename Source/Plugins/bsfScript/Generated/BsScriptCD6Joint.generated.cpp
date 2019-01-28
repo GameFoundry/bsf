@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCD6Joint.h"
+#include "../../../Foundation/bsfCore/Components/BsCD6Joint.h"
 #include "BsScriptD6JointDrive.generated.h"
 #include "Wrappers/BsScriptVector.h"
 #include "BsScriptLimitLinear.generated.h"

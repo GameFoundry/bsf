@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleEmitter.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleEmitter.h"
 #include "BsScriptPARTICLE_BOX_SHAPE_DESC.generated.h"
 #include "BsScriptParticleEmitterBoxShape.generated.h"
 

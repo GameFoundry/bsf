@@ -4,7 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "Wrappers/BsScriptComponent.h"
-#include "../../../../../Foundation/bsfCore/Renderer/BsLight.h"
+#include "../../../Foundation/bsfCore/Renderer/BsLight.h"
 #include "Math/BsSphere.h"
 #include "Image/BsColor.h"
 #include "Math/BsDegree.h"

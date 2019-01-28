@@ -4,8 +4,8 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../Extensions/BsShaderEx.h"
-#include "../../../Extensions/BsShaderEx.h"
+#include "../Extensions/BsShaderEx.h"
+#include "../Extensions/BsShaderEx.h"
 
 namespace bs
 {

@@ -4,10 +4,10 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "Wrappers/BsScriptComponent.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimation.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimation.h"
 #include "Math/BsAABox.h"
 #include "Math/BsVector2.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimation.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimation.h"
 
 namespace bs
 {

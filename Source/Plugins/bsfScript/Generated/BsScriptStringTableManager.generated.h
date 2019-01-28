@@ -4,7 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Localization/BsStringTable.h"
+#include "../../../Foundation/bsfCore/Localization/BsStringTable.h"
 
 namespace bs
 {

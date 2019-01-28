@@ -4,12 +4,12 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
 
 namespace bs
 {

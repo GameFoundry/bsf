@@ -7,11 +7,11 @@ function(addForGeneration path)
 	file(GLOB_RECURSE ALL_H_FILES ${path}/*.h)
 	
 	set(PUBLIC_H_FILES "")
-	FOREACH(f ${ALL_H_FILES})
-		IF("${f}" MATCHES ".*\\.h" AND NOT "${f}" MATCHES "Private|ThirdParty|Generated")
-			LIST(APPEND PUBLIC_H_FILES ${f})
-		ENDIF()
-	ENDFOREACH(f)
+	foreach(f ${ALL_H_FILES})
+		if("${f}" MATCHES ".*\\.h" AND NOT "${f}" MATCHES "Private|ThirdParty|Generated")
+			list(APPEND PUBLIC_H_FILES ${f})
+		endif()
+	endforeach(f)
 	
 	set(BS_SCRIPT_PARSER_H_FILES ${BS_SCRIPT_PARSER_H_FILES} ${PUBLIC_H_FILES} PARENT_SCOPE)	
 endfunction()
@@ -24,6 +24,11 @@ function(add_generate_script_bindings_target)
 		addForGeneration(${BSF_SOURCE_DIR}/Foundation/bsfCore)
 		addForGeneration(${BSF_SOURCE_DIR}/Foundation/bsfEngine)
 		addForGeneration(${BSF_SOURCE_DIR}/Plugins/bsfScript)
+		
+		if(BS_IS_BANSHEE3D)
+			addForGeneration(${PROJECT_SOURCE_DIR}/Source/EditorCore)
+			addForGeneration(${PROJECT_SOURCE_DIR}/Source/EditorScript)
+		endif()
 
 		set(BS_SCRIPT_PARSER_INCLUDE_DIRS 
 			${BS_SCRIPT_PARSER_INCLUDE_DIRS} 
@@ -39,9 +44,9 @@ function(add_generate_script_bindings_target)
 
 		# Generate a single .cpp file including all headers
 		set(BS_GLOBAL_FILE_CONTENTS "")
-		FOREACH(f ${BS_SCRIPT_PARSER_H_FILES})
-			LIST(APPEND BS_GLOBAL_FILE_CONTENTS "#include \"${f}\"\n")
-		ENDFOREACH(f)
+		foreach(f ${BS_SCRIPT_PARSER_H_FILES})
+			list(APPEND BS_GLOBAL_FILE_CONTENTS "#include \"${f}\"\n")
+		endforeach(f)
 
 		file(WRITE ${PROJECT_BINARY_DIR}/toParse.cpp ${BS_GLOBAL_FILE_CONTENTS})
 
@@ -53,8 +58,12 @@ function(add_generate_script_bindings_target)
 		set(GenScriptBinding_WORKING_DIR ${PROJECT_SOURCE_DIR})
 		
 		if(BS_IS_BANSHEE3D)
+			set(GenScriptBinding_OUTPUT_CPP_EDITOR_DIR ${PROJECT_SOURCE_DIR}/EditorScript/Generated)
+			set(GenScriptBinding_OUTPUT_CS_EDITOR_DIR ${PROJECT_SOURCE_DIR}/EditorManaged/Generated)
 			set(GenScriptBinding_CS_NAMESPACE "BansheeEngine")
 		else()
+			set(GenScriptBinding_OUTPUT_CPP_EDITOR_DIR "")
+			set(GenScriptBinding_OUTPUT_CS_EDITOR_DIR "")
 			set(GenScriptBinding_CS_NAMESPACE "bs")
 		endif()
 

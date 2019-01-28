@@ -4,10 +4,10 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfUtility/Image/BsColorGradient.h"
+#include "../../../Foundation/bsfUtility/Image/BsColorGradient.h"
 #include "Image/BsColor.h"
-#include "../../../../../Foundation/bsfUtility/Math/BsRandom.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
+#include "../../../Foundation/bsfUtility/Math/BsRandom.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
 
 namespace bs
 {

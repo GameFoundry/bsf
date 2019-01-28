@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCCamera.h"
+#include "../../../Foundation/bsfCore/Components/BsCCamera.h"
 #include "BsScriptViewport.generated.h"
 #include "Wrappers/BsScriptVector.h"
 #include "Wrappers/BsScriptVector2I.h"

@@ -4,9 +4,9 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsSkeleton.h"
+#include "../../../Foundation/bsfCore/Animation/BsSkeleton.h"
 #include "BsScriptSkeletonBoneInfoEx.generated.h"
-#include "../../../Extensions/BsSkeletonEx.h"
+#include "../Extensions/BsSkeletonEx.h"
 
 namespace bs
 {

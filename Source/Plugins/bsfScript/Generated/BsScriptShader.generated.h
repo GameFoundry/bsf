@@ -4,7 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "Wrappers/BsScriptResource.h"
-#include "../../../Extensions/BsShaderEx.h"
+#include "../Extensions/BsShaderEx.h"
 
 namespace bs
 {

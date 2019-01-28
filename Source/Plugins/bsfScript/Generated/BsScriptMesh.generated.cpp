@@ -4,15 +4,15 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Mesh/BsMesh.h"
+#include "../../../Foundation/bsfCore/Mesh/BsMesh.h"
 #include "BsScriptResourceManager.h"
 #include "Wrappers/BsScriptRRefBase.h"
 #include "BsScriptSkeleton.generated.h"
 #include "BsScriptRendererMeshData.generated.h"
 #include "BsScriptMorphShapes.generated.h"
 #include "BsScriptSubMesh.generated.h"
-#include "../../../../../Foundation/bsfCore/Mesh/BsMesh.h"
-#include "../../../Extensions/BsMeshEx.h"
+#include "../../../Foundation/bsfCore/Mesh/BsMesh.h"
+#include "../Extensions/BsMeshEx.h"
 
 namespace bs
 {

@@ -4,13 +4,13 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationClip.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationClip.h"
 #include "BsScriptResourceManager.h"
 #include "Wrappers/BsScriptRRefBase.h"
 #include "BsScriptAnimationCurves.generated.h"
 #include "BsScriptRootMotion.generated.h"
 #include "BsScriptAnimationEvent.generated.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationClip.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationClip.h"
 
 namespace bs
 {

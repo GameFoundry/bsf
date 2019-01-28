@@ -4,7 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Physics/BsD6Joint.h"
+#include "../../../Foundation/bsfCore/Physics/BsD6Joint.h"
 
 namespace bs
 {

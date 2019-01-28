@@ -4,7 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfUtility/Math/BsVector4I.h"
+#include "../../../Foundation/bsfUtility/Math/BsVector4I.h"
 
 namespace bs
 {

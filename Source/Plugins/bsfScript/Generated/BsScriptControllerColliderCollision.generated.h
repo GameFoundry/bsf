@@ -4,7 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Physics/BsCharacterController.h"
+#include "../../../Foundation/bsfCore/Physics/BsCharacterController.h"
 #include "Math/BsVector3.h"
 
 namespace bs

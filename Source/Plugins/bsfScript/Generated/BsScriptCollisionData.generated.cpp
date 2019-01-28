@@ -5,9 +5,9 @@
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
 #include "BsScriptGameObjectManager.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCCollider.h"
+#include "../../../Foundation/bsfCore/Components/BsCCollider.h"
 #include "BsScriptCCollider.generated.h"
-#include "../../../../../Foundation/bsfCore/Physics/BsPhysicsCommon.h"
+#include "../../../Foundation/bsfCore/Physics/BsPhysicsCommon.h"
 #include "BsScriptContactPoint.generated.h"
 
 namespace bs

@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCHingeJoint.h"
+#include "../../../Foundation/bsfCore/Components/BsCHingeJoint.h"
 #include "BsScriptHingeJointDrive.generated.h"
 #include "BsScriptLimitAngularRange.generated.h"
 

@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCAudioListener.h"
+#include "../../../Foundation/bsfCore/Components/BsCAudioListener.h"
 
 namespace bs
 {

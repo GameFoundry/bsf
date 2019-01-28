@@ -4,11 +4,11 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCCollider.h"
+#include "../../../Foundation/bsfCore/Components/BsCCollider.h"
 #include "BsScriptResourceManager.h"
 #include "Wrappers/BsScriptRRefBase.h"
 #include "BsScriptCollisionData.generated.h"
-#include "../../../../../Foundation/bsfCore/Physics/BsPhysicsMaterial.h"
+#include "../../../Foundation/bsfCore/Physics/BsPhysicsMaterial.h"
 
 namespace bs
 {

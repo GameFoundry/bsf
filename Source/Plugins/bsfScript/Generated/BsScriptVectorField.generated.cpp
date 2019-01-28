@@ -4,10 +4,10 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsVectorField.h"
+#include "../../../Foundation/bsfCore/Particles/BsVectorField.h"
 #include "BsScriptResourceManager.h"
 #include "Wrappers/BsScriptRRefBase.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsVectorField.h"
+#include "../../../Foundation/bsfCore/Particles/BsVectorField.h"
 #include "Wrappers/BsScriptVector.h"
 #include "BsScriptVECTOR_FIELD_DESC.generated.h"
 

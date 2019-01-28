@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCRigidbody.h"
+#include "../../../Foundation/bsfCore/Components/BsCRigidbody.h"
 #include "Wrappers/BsScriptVector.h"
 #include "Wrappers/BsScriptQuaternion.h"
 #include "BsScriptCollisionData.generated.h"

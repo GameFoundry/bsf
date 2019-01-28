@@ -5,7 +5,7 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
 #include "BsScriptRenderTarget.generated.h"
-#include "../../../../../Foundation/bsfCore/Image/BsPixelData.h"
+#include "../../../Foundation/bsfCore/Image/BsPixelData.h"
 
 namespace bs
 {

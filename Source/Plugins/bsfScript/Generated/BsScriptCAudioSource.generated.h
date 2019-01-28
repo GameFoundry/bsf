@@ -4,7 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "Wrappers/BsScriptComponent.h"
-#include "../../../../../Foundation/bsfCore/Audio/BsAudioSource.h"
+#include "../../../Foundation/bsfCore/Audio/BsAudioSource.h"
 
 namespace bs
 {

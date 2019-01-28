@@ -5,10 +5,10 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "Wrappers/BsScriptComponent.h"
 #include "BsScriptCJoint.generated.h"
-#include "../../../../../Foundation/bsfCore/Physics/BsHingeJoint.h"
+#include "../../../Foundation/bsfCore/Physics/BsHingeJoint.h"
 #include "Math/BsRadian.h"
-#include "../../../../../Foundation/bsfCore/Physics/BsJoint.h"
-#include "../../../../../Foundation/bsfCore/Physics/BsHingeJoint.h"
+#include "../../../Foundation/bsfCore/Physics/BsJoint.h"
+#include "../../../Foundation/bsfCore/Physics/BsHingeJoint.h"
 
 namespace bs
 {

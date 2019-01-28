@@ -4,11 +4,11 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Image/BsPixelData.h"
+#include "../../../Foundation/bsfCore/Image/BsPixelData.h"
 #include "Wrappers/BsScriptColor.h"
 #include "BsScriptPixelVolume.generated.h"
 #include "BsScriptPixelData.generated.h"
-#include "../../../Extensions/BsPixelDataEx.h"
+#include "../Extensions/BsPixelDataEx.h"
 
 namespace bs
 {

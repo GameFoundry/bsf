@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Text/BsFontDesc.h"
+#include "../../../Foundation/bsfCore/Text/BsFontDesc.h"
 #include "BsScriptKerningPair.generated.h"
 
 namespace bs

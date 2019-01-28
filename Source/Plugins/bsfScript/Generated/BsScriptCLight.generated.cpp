@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCLight.h"
+#include "../../../Foundation/bsfCore/Components/BsCLight.h"
 #include "Wrappers/BsScriptColor.h"
 
 namespace bs

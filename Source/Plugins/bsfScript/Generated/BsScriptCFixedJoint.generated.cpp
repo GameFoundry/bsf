@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCFixedJoint.h"
+#include "../../../Foundation/bsfCore/Components/BsCFixedJoint.h"
 
 namespace bs
 {

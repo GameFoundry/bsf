@@ -5,8 +5,8 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "Wrappers/BsScriptComponent.h"
 #include "BsScriptCJoint.generated.h"
-#include "../../../../../Foundation/bsfCore/Physics/BsSliderJoint.h"
-#include "../../../../../Foundation/bsfCore/Physics/BsJoint.h"
+#include "../../../Foundation/bsfCore/Physics/BsSliderJoint.h"
+#include "../../../Foundation/bsfCore/Physics/BsJoint.h"
 
 namespace bs
 {

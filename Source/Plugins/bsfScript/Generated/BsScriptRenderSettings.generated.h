@@ -4,15 +4,15 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
-#include "../../../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
-#include "../../../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
-#include "../../../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
-#include "../../../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
-#include "../../../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
-#include "../../../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
-#include "../../../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
-#include "../../../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
+#include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
+#include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
+#include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
+#include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
+#include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
+#include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
+#include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
+#include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
+#include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
 
 namespace bs
 {

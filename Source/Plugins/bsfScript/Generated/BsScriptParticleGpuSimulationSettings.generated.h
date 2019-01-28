@@ -4,10 +4,10 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
 #include "Math/BsVector3.h"
 
 namespace bs

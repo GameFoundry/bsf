@@ -4,7 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfEngine/GUI/BsGUIContent.h"
+#include "../../../Foundation/bsfEngine/GUI/BsGUIContent.h"
 
 namespace bs
 {

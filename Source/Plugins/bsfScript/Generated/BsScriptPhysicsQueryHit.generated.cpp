@@ -9,7 +9,7 @@
 #include "Wrappers/BsScriptVector.h"
 #include "Math/BsVector2.h"
 #include "Wrappers/BsScriptVector.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCCollider.h"
+#include "../../../Foundation/bsfCore/Components/BsCCollider.h"
 #include "BsScriptCCollider.generated.h"
 
 namespace bs

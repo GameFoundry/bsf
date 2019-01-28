@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationUtility.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationUtility.h"
 #include "BsScriptKeyframeRef.generated.h"
 
 namespace bs

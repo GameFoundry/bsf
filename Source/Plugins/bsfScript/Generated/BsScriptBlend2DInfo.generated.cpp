@@ -6,7 +6,7 @@
 #include "BsMonoUtil.h"
 #include "BsScriptResourceManager.h"
 #include "Wrappers/BsScriptRRefBase.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationClip.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationClip.h"
 #include "BsScriptAnimationClip.generated.h"
 
 namespace bs

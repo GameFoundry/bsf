@@ -4,7 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfUtility/Image/BsColorGradient.h"
+#include "../../../Foundation/bsfUtility/Image/BsColorGradient.h"
 #include "Image/BsColor.h"
 
 namespace bs

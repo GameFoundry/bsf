@@ -4,7 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Image/BsPixelVolume.h"
+#include "../../../Foundation/bsfCore/Image/BsPixelVolume.h"
 
 namespace bs
 {

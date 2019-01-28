@@ -4,7 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Mesh/BsMeshData.h"
+#include "../../../Foundation/bsfCore/Mesh/BsMeshData.h"
 
 namespace bs
 {

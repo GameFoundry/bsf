@@ -8,7 +8,7 @@
 #include "Math/BsVector2I.h"
 #include "Math/BsVector2.h"
 #include "Math/BsRadian.h"
-#include "../../../../../Foundation/bsfCore/Utility/BsCommonTypes.h"
+#include "../../../Foundation/bsfCore/Utility/BsCommonTypes.h"
 #include "Math/BsMatrix4.h"
 #include "Math/BsRay.h"
 

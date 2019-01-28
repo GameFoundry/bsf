@@ -5,11 +5,11 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
 #include "Math/BsAABox.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
 #include "Math/BsVector3.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
 
 namespace bs
 {

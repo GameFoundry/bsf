@@ -4,9 +4,9 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfEngine/GUI/BsGUIContent.h"
-#include "../../../../../Foundation/bsfCore/Localization/BsHString.h"
-#include "../../../../../Foundation/bsfEngine/GUI/BsGUIContent.h"
+#include "../../../Foundation/bsfEngine/GUI/BsGUIContent.h"
+#include "../../../Foundation/bsfCore/Localization/BsHString.h"
+#include "../../../Foundation/bsfEngine/GUI/BsGUIContent.h"
 #include "BsScriptGUIContentImages.generated.h"
 
 namespace bs

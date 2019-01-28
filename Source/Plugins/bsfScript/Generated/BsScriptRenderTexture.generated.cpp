@@ -4,11 +4,11 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/RenderAPI/BsRenderTexture.h"
+#include "../../../Foundation/bsfCore/RenderAPI/BsRenderTexture.h"
 #include "BsScriptResourceManager.h"
 #include "BsScriptTexture.generated.h"
 #include "BsScriptRenderTexture.generated.h"
-#include "../../../Extensions/BsRenderTargetEx.h"
+#include "../Extensions/BsRenderTargetEx.h"
 
 namespace bs
 {

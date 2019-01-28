@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCJoint.h"
+#include "../../../Foundation/bsfCore/Components/BsCJoint.h"
 #include "BsScriptGameObjectManager.h"
 #include "BsScriptCRigidbody.generated.h"
 #include "Wrappers/BsScriptVector.h"

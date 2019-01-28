@@ -2,6 +2,8 @@ set(BS_GSB_COMMAND @GenScriptBinding_SBGEN_EXECUTABLE@
 	@GenScriptBinding_SOURCE_FILE@
 	-output-cpp @GenScriptBinding_OUTPUT_CPP_DIR@
 	-output-cs @GenScriptBinding_OUTPUT_CS_DIR@
+	-output-cpp-editor @GenScriptBinding_OUTPUT_CPP_EDITOR_DIR@
+	-output-cs-editor @GenScriptBinding_OUTPUT_CS_EDITOR_DIR@
 	-cs-namespace @GenScriptBinding_CS_NAMESPACE@
 	-- @GenScriptBinding_INCLUDE_DIRS@
 	-std=c++14

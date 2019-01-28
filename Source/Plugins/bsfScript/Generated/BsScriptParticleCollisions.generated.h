@@ -6,7 +6,7 @@
 #include "BsScriptObject.h"
 #include "BsScriptParticleEvolver.generated.h"
 #include "Math/BsPlane.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleEvolver.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleEvolver.h"
 
 namespace bs
 {

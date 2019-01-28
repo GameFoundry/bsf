@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCLightProbeVolume.h"
+#include "../../../Foundation/bsfCore/Components/BsCLightProbeVolume.h"
 #include "Wrappers/BsScriptVector.h"
 #include "BsScriptLightProbeInfo.generated.h"
 #include "BsScriptVector3I.generated.h"

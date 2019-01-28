@@ -4,7 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsVectorField.h"
+#include "../../../Foundation/bsfCore/Particles/BsVectorField.h"
 #include "Math/BsAABox.h"
 
 namespace bs

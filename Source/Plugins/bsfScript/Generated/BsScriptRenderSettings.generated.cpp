@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
+#include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
 #include "BsScriptAutoExposureSettings.generated.h"
 #include "BsScriptShadowSettings.generated.h"
 #include "BsScriptTonemappingSettings.generated.h"

@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Localization/BsHString.h"
+#include "../../../Foundation/bsfCore/Localization/BsHString.h"
 
 namespace bs
 {

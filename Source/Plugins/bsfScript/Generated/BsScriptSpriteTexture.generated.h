@@ -5,8 +5,8 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "Wrappers/BsScriptResource.h"
 #include "Math/BsVector2.h"
-#include "../../../../../Foundation/bsfCore/Image/BsSpriteTexture.h"
-#include "../../../../../Foundation/bsfCore/Image/BsSpriteTexture.h"
+#include "../../../Foundation/bsfCore/Image/BsSpriteTexture.h"
+#include "../../../Foundation/bsfCore/Image/BsSpriteTexture.h"
 
 namespace bs
 {

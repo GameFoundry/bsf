@@ -4,12 +4,12 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Physics/BsPhysicsMesh.h"
+#include "../../../Foundation/bsfCore/Physics/BsPhysicsMesh.h"
 #include "BsScriptResourceManager.h"
 #include "Wrappers/BsScriptRRefBase.h"
-#include "../../../../../Foundation/bsfCore/Physics/BsPhysicsMesh.h"
+#include "../../../Foundation/bsfCore/Physics/BsPhysicsMesh.h"
 #include "BsScriptRendererMeshData.generated.h"
-#include "../../../Extensions/BsPhysicsMeshEx.h"
+#include "../Extensions/BsPhysicsMeshEx.h"
 
 namespace bs
 {

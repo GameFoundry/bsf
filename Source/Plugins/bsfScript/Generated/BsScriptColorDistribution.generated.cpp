@@ -4,11 +4,11 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
 #include "BsScriptColorGradient.generated.h"
 #include "Wrappers/BsScriptColor.h"
 #include "BsScriptRandom.generated.h"
-#include "../../../Extensions/BsParticleDistributionEx.h"
+#include "../Extensions/BsParticleDistributionEx.h"
 
 namespace bs
 {

@@ -5,7 +5,7 @@
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
 #include "BsScriptGameObjectManager.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCRenderable.h"
+#include "../../../Foundation/bsfCore/Components/BsCRenderable.h"
 #include "BsScriptCRenderable.generated.h"
 
 namespace bs

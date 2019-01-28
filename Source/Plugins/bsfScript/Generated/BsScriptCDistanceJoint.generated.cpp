@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCDistanceJoint.h"
+#include "../../../Foundation/bsfCore/Components/BsCDistanceJoint.h"
 #include "BsScriptSpring.generated.h"
 
 namespace bs

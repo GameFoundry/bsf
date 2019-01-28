@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCSphericalJoint.h"
+#include "../../../Foundation/bsfCore/Components/BsCSphericalJoint.h"
 #include "BsScriptLimitConeRange.generated.h"
 
 namespace bs

@@ -4,11 +4,11 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Components/BsCReflectionProbe.h"
+#include "../../../Foundation/bsfCore/Components/BsCReflectionProbe.h"
 #include "BsScriptResourceManager.h"
 #include "Wrappers/BsScriptRRefBase.h"
 #include "Wrappers/BsScriptVector.h"
-#include "../../../../../Foundation/bsfCore/Image/BsTexture.h"
+#include "../../../Foundation/bsfCore/Image/BsTexture.h"
 
 namespace bs
 {

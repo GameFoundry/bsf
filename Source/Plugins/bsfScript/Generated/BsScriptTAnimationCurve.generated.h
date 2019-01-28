@@ -4,20 +4,20 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
 #include "BsScriptObject.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
 #include "Math/BsVector3.h"
 #include "Math/BsVector2.h"
 #include "Math/BsQuaternion.h"
-#include "../../../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
+#include "../../../Foundation/bsfCore/Animation/BsAnimationCurve.h"
 
 namespace bs
 {

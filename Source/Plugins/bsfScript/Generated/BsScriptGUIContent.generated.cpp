@@ -4,9 +4,9 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "../../../../../Foundation/bsfCore/Localization/BsHString.h"
+#include "../../../Foundation/bsfCore/Localization/BsHString.h"
 #include "BsScriptHString.generated.h"
-#include "../../../../../Foundation/bsfEngine/GUI/BsGUIContent.h"
+#include "../../../Foundation/bsfEngine/GUI/BsGUIContent.h"
 #include "BsScriptGUIContentImages.generated.h"
 
 namespace bs
