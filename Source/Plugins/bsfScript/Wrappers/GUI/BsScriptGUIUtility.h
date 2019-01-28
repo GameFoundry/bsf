@@ -18,7 +18,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptGUILayoutUtility : public ScriptObject<ScriptGUILayoutUtility>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIUtility")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "GUIUtility")
 
 		ScriptGUILayoutUtility();
 

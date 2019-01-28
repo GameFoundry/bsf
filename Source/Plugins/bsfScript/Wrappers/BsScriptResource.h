@@ -145,7 +145,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptResource : public ScriptObject<ScriptResource, ScriptResourceBase>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Resource")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "Resource")
 
 	private:
 		ScriptResource(MonoObject* instance)
@@ -164,7 +164,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptUUID : public ScriptObject<ScriptUUID>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "UUID")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "UUID")
 
 		/**	Unboxes a boxed managed UUID struct and returns the native version of the structure. */
 		static UUID unbox(MonoObject* obj);

@@ -15,7 +15,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptGUIToggleGroup : public ScriptObject<ScriptGUIToggleGroup>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIToggleGroup")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "GUIToggleGroup")
 
 		/**	Returns the native toggle group that this object wraps. */
 		SPtr<GUIToggleGroup> getInternalValue() const { return mToggleGroup; }

@@ -23,7 +23,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptGUIElementStateStyle : public ScriptObject<ScriptGUIElementStateStyle>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIElementStateStyle")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "GUIElementStateStyle")
 
 		/**
 		 * Creates a new managed instance of GUIElementStateStyle.

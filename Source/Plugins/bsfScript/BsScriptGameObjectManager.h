@@ -9,7 +9,7 @@ namespace bs
 {
 	class ScriptRenderable;
 
-	/** @addtogroup SBansheeEngine
+	/** @addtogroup bsfScript
 	 *  @{
 	 */
 

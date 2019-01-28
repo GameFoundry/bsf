@@ -227,11 +227,11 @@ namespace bs
 
 		if (mManagedClass != nullptr)
 		{
-			MonoAssembly* bansheeEngineAssembly = MonoManager::instance().getAssembly(ENGINE_ASSEMBLY);
-			if (bansheeEngineAssembly == nullptr)
+			MonoAssembly* engineAssembly = MonoManager::instance().getAssembly(ENGINE_ASSEMBLY);
+			if (engineAssembly == nullptr)
 				BS_EXCEPT(InvalidStateException, String(ENGINE_ASSEMBLY) + " assembly is not loaded.");
 
-			MonoClass* runInEditorAttrib = bansheeEngineAssembly->getClass("BansheeEngine", "RunInEditor");
+			MonoClass* runInEditorAttrib = engineAssembly->getClass(ENGINE_NS, "RunInEditor");
 			if (runInEditorAttrib == nullptr)
 				BS_EXCEPT(InvalidStateException, "Cannot find RunInEditor managed class.");
 

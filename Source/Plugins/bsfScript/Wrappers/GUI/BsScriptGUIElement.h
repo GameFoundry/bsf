@@ -9,7 +9,7 @@
 
 namespace bs
 {
-	/** @addtogroup SBansheeEngine
+	/** @addtogroup bsfScript
 	 *  @{
 	 */
 
@@ -120,7 +120,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptGUIElement : public ScriptObject<ScriptGUIElement>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIElement")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "GUIElement")
 
 	private:
 		ScriptGUIElement(MonoObject* instance);

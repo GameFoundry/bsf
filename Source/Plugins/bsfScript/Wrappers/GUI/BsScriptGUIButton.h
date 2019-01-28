@@ -18,7 +18,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptGUIButton : public TScriptGUIElement<ScriptGUIButton>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIButton")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "GUIButton")
 
 	private:
 		ScriptGUIButton(MonoObject* instance, GUIButton* button);

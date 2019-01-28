@@ -10,7 +10,7 @@ namespace bs
 {
 	struct BuiltinComponentInfo;
 
-	/** @addtogroup SBansheeEngine
+	/** @addtogroup bsfScript
 	 *  @{
 	 */
 

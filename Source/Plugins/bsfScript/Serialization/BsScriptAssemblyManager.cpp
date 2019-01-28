@@ -609,8 +609,8 @@ namespace bs
 		if(corlib == nullptr)
 			BS_EXCEPT(InvalidStateException, "corlib assembly is not loaded.");
 
-		MonoAssembly* bansheeEngineAssembly = MonoManager::instance().getAssembly(ENGINE_ASSEMBLY);
-		if(bansheeEngineAssembly == nullptr)
+		MonoAssembly* engineAssembly = MonoManager::instance().getAssembly(ENGINE_ASSEMBLY);
+		if(engineAssembly == nullptr)
 			BS_EXCEPT(InvalidStateException, String(ENGINE_ASSEMBLY) +  " assembly is not loaded.");
 
 		mBuiltin.systemArrayClass = corlib->getClass("System", "Array");
@@ -629,79 +629,79 @@ namespace bs
 		if (mBuiltin.systemTypeClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find Type managed class.");
 
-		mBuiltin.serializeObjectAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "SerializeObject");
+		mBuiltin.serializeObjectAttribute = engineAssembly->getClass(ENGINE_NS, "SerializeObject");
 		if(mBuiltin.serializeObjectAttribute == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find SerializableObject managed class.");
 
-		mBuiltin.dontSerializeFieldAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "DontSerializeField");
+		mBuiltin.dontSerializeFieldAttribute = engineAssembly->getClass(ENGINE_NS, "DontSerializeField");
 		if(mBuiltin.dontSerializeFieldAttribute == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find DontSerializeField managed class.");
 
-		mBuiltin.rangeAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "Range");
+		mBuiltin.rangeAttribute = engineAssembly->getClass(ENGINE_NS, "Range");
 		if (mBuiltin.rangeAttribute == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find Range managed class.");
 
-		mBuiltin.stepAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "Step");
+		mBuiltin.stepAttribute = engineAssembly->getClass(ENGINE_NS, "Step");
 		if (mBuiltin.stepAttribute == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find Step managed class.");
 
-		mBuiltin.layerMaskAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "LayerMask");
+		mBuiltin.layerMaskAttribute = engineAssembly->getClass(ENGINE_NS, "LayerMask");
 		if (mBuiltin.layerMaskAttribute == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find LayerMask managed class.");
 
-		mBuiltin.asQuaternionAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "AsQuaternion");
+		mBuiltin.asQuaternionAttribute = engineAssembly->getClass(ENGINE_NS, "AsQuaternion");
 		if (mBuiltin.asQuaternionAttribute == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find AsQuaternion managed class.");
 
-		mBuiltin.nativeWrapperAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "NativeWrapper");
+		mBuiltin.nativeWrapperAttribute = engineAssembly->getClass(ENGINE_NS, "NativeWrapper");
 		if (mBuiltin.nativeWrapperAttribute == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find NativeWrapper managed class.");
 
-		mBuiltin.notNullAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "NotNull");
+		mBuiltin.notNullAttribute = engineAssembly->getClass(ENGINE_NS, "NotNull");
 		if (mBuiltin.notNullAttribute == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find NotNull managed class.");
 
-		mBuiltin.passByCopyAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "PassByCopy");
+		mBuiltin.passByCopyAttribute = engineAssembly->getClass(ENGINE_NS, "PassByCopy");
 		if (mBuiltin.passByCopyAttribute == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find PassByCopy managed class.");
 
-		mBuiltin.applyOnDirtyAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "ApplyOnDirty");
+		mBuiltin.applyOnDirtyAttribute = engineAssembly->getClass(ENGINE_NS, "ApplyOnDirty");
 		if (mBuiltin.applyOnDirtyAttribute == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find ApplyOnDirty managed class.");
 
-		mBuiltin.componentClass = bansheeEngineAssembly->getClass("BansheeEngine", "Component");
+		mBuiltin.componentClass = engineAssembly->getClass(ENGINE_NS, "Component");
 		if(mBuiltin.componentClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find Component managed class.");
 
-		mBuiltin.managedComponentClass = bansheeEngineAssembly->getClass("BansheeEngine", "ManagedComponent");
+		mBuiltin.managedComponentClass = engineAssembly->getClass(ENGINE_NS, "ManagedComponent");
 		if (mBuiltin.managedComponentClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find ManagedComponent managed class.");
 
-		mBuiltin.missingComponentClass = bansheeEngineAssembly->getClass("BansheeEngine", "MissingComponent");
+		mBuiltin.missingComponentClass = engineAssembly->getClass(ENGINE_NS, "MissingComponent");
 		if (mBuiltin.missingComponentClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find MissingComponent managed class.");
 
-		mBuiltin.sceneObjectClass = bansheeEngineAssembly->getClass("BansheeEngine", "SceneObject");
+		mBuiltin.sceneObjectClass = engineAssembly->getClass(ENGINE_NS, "SceneObject");
 		if(mBuiltin.sceneObjectClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find SceneObject managed class.");
 
-		mBuiltin.rrefBaseClass = bansheeEngineAssembly->getClass("BansheeEngine", "RRefBase");
+		mBuiltin.rrefBaseClass = engineAssembly->getClass(ENGINE_NS, "RRefBase");
 		if(mBuiltin.rrefBaseClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find RRefBase managed class.");
 
-		mBuiltin.genericRRefClass = bansheeEngineAssembly->getClass("BansheeEngine", "RRef`1");
+		mBuiltin.genericRRefClass = engineAssembly->getClass(ENGINE_NS, "RRef`1");
 		if(mBuiltin.genericRRefClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find RRef<T> managed class.");
 
-		mBuiltin.serializeFieldAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "SerializeField");
+		mBuiltin.serializeFieldAttribute = engineAssembly->getClass(ENGINE_NS, "SerializeField");
 		if(mBuiltin.serializeFieldAttribute == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find SerializeField managed class.");
 
-		mBuiltin.hideInInspectorAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "HideInInspector");
+		mBuiltin.hideInInspectorAttribute = engineAssembly->getClass(ENGINE_NS, "HideInInspector");
 		if(mBuiltin.hideInInspectorAttribute == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find HideInInspector managed class.");
 
-		mBuiltin.showInInspectorAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "ShowInInspector");
+		mBuiltin.showInInspectorAttribute = engineAssembly->getClass(ENGINE_NS, "ShowInInspector");
 		if (mBuiltin.showInInspectorAttribute == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find ShowInInspector managed class.");
 

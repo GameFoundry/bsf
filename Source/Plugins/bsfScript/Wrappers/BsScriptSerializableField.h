@@ -28,7 +28,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptSerializableField : public ScriptObject<ScriptSerializableField>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SerializableField")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "SerializableField")
 
 		/**
 		 * Creates a new serializable field interop object that references a specific field on a specific object.

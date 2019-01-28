@@ -16,7 +16,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptManagedComponent : public ScriptObject<ScriptManagedComponent, ScriptComponentBase>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "ManagedComponent")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "ManagedComponent")
 
 		/**	Returns a generic handle to the internal wrapped component. */
 		HGameObject getNativeHandle() const override { return static_object_cast<GameObject>(mComponent); }

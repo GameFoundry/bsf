@@ -15,7 +15,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptLogEntry : public ScriptObject <ScriptLogEntry>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "LogEntry")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "LogEntry")
 
 	private:
 		ScriptLogEntry(MonoObject* instance);

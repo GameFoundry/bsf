@@ -10,7 +10,7 @@ namespace bs
 {
 	class ScriptRRefBase;
 
-	/** @addtogroup SBansheeEngine
+	/** @addtogroup bsfScript
 	 *  @{
 	 */
 

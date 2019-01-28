@@ -32,7 +32,7 @@ namespace bs
 		const String ASSEMBLY_ENTRY_POINT = "Program::Start";
 
 		MonoManager::startUp();
-		MonoAssembly& bansheeEngineAssembly = MonoManager::instance().loadAssembly(engineAssemblyPath.toString(), ENGINE_ASSEMBLY);
+		MonoAssembly& engineAssembly = MonoManager::instance().loadAssembly(engineAssemblyPath.toString(), ENGINE_ASSEMBLY);
 
 		PlayInEditorManager::startUp();
 		ScriptDebug::startUp();
@@ -56,7 +56,7 @@ namespace bs
 			ScriptAssemblyManager::instance().loadAssemblyInfo(SCRIPT_GAME_ASSEMBLY);
 		}
 
-		bansheeEngineAssembly.invoke(ASSEMBLY_ENTRY_POINT);
+		engineAssembly.invoke(ASSEMBLY_ENTRY_POINT);
 	}
 
 	void EngineScriptLibrary::reload()

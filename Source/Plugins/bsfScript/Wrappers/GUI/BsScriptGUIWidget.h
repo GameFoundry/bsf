@@ -17,7 +17,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptGUIWidget : public ScriptObject <ScriptGUIWidget>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "NativeGUIWidget")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "NativeGUIWidget")
 
 		/**	Gets the wrapped native GUIWidget object. */
 		SPtr<GUIWidget> getInternal() const { return mGUIWidget; }

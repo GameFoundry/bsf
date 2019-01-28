@@ -16,7 +16,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptVector2I : public ScriptObject<ScriptVector2I>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Vector2I")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "Vector2I")
 
 		/**	Unboxes a boxed managed Vector2I struct and returns the native version of the structure. */
 		static Vector2I unbox(MonoObject* obj);

@@ -19,7 +19,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptSerializableProperty : public ScriptObject<ScriptSerializableProperty>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SerializableProperty")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "SerializableProperty")
 
 		/**
 		 * Creates a new managed serializable property object for the specified type.

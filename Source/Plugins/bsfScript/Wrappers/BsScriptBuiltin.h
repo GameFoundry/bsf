@@ -16,7 +16,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptBuiltin : public ScriptObject <ScriptBuiltin>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Builtin")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "Builtin")
 
 	private:
 		ScriptBuiltin(MonoObject* instance);

@@ -18,7 +18,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptResources : public ScriptObject<ScriptResources>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Resources")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "Resources")
 
 	private:
 		ScriptResources(MonoObject* instance);

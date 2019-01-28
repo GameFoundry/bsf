@@ -17,7 +17,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptCursor : public ScriptObject <ScriptCursor>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Cursor")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "Cursor")
 
 	private:
 		ScriptCursor(MonoObject* instance);

@@ -23,7 +23,7 @@ namespace bs
 		};
 
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUILayout")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "GUILayout")
 
 		virtual ~ScriptGUILayout() { }
 
@@ -83,7 +83,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptGUIPanel : public ScriptObject<ScriptGUIPanel>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIPanel")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "GUIPanel")
 
 		/**	Creates a new managed GUIPanel that wraps the provided native GUIPanel. */
 		static MonoObject* createFromExisting(GUIPanel* panel);

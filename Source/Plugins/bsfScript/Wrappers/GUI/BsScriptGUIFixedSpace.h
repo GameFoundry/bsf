@@ -15,7 +15,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptGUIFixedSpace : public TScriptGUIElementBase<ScriptGUIFixedSpace>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIFixedSpace")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "GUIFixedSpace")
 
 	private:
 		ScriptGUIFixedSpace(MonoObject* instance, GUIFixedSpace* fixedSpace);

@@ -37,13 +37,13 @@
  *  @{
  */
 
-/** @defgroup SBansheeEngine SBansheeEngine
+/** @defgroup bsfScript bsfScript
  *	Contains script interop objects and other scripting functionality for the engine layer.
  *  @{
  */
 
 /** @defgroup ScriptInteropEngine Interop
- *	Script interop objects for communicating between native code and MBansheeEngine managed assembly.
+ *	Script interop objects for communicating between native code and the managed assembly.
  */
 
 /** @cond RTTI */
@@ -59,6 +59,10 @@ namespace bs
 {
 #if !BS_IS_BANSHEE3D
 	constexpr const char* ENGINE_ASSEMBLY = "bsfSharp";
+	constexpr const char* ENGINE_NS = "bs";
+#else
+	constexpr const char* ENGINE_ASSEMBLY = "MBansheeEngine";
+	constexpr const char* ENGINE_NS = "BansheeEngine";
 #endif
 
 	class ScriptObjectBase;
@@ -126,7 +130,7 @@ namespace bs
 	typedef GameObjectHandle<ManagedComponent> HManagedComponent;
 	typedef ResourceHandle<ManagedResource> HManagedResource;
 
-	enum TypeID_BansheeScript
+	enum TypeID_bsfScript
 	{
 		TID_ManagedComponent = 50000,
 		TID_ScriptSerializableObject = 50001,

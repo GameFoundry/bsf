@@ -8,7 +8,7 @@
 
 namespace bs
 {
-	/** @addtogroup SBansheeEngine
+	/** @addtogroup bsfScript
 	 *  @{
 	 */
 

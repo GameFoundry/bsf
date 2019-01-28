@@ -15,7 +15,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptSerializableUtility : public ScriptObject<ScriptSerializableUtility>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SerializableUtility")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "SerializableUtility")
 
 	private:
 		ScriptSerializableUtility(MonoObject* instance);

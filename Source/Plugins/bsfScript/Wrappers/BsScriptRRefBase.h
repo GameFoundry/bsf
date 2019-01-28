@@ -19,7 +19,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptRRefBase : public ScriptObject<ScriptRRefBase>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "RRefBase")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "RRefBase")
 
 		/**	Returns a weak handle to the resource referenced by this object. */
 		ResourceHandle<Resource> getHandle() const { return mResource; }

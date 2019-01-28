@@ -11,7 +11,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptStep : public ScriptObject <ScriptStep>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Step")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "Step")
 
 		static MonoField* getStepField() { return stepField; }
 

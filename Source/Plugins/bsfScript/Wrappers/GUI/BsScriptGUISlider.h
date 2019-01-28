@@ -15,7 +15,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptGUISliderH : public TScriptGUIElement<ScriptGUISliderH>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUISliderH")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "GUISliderH")
 
 	private:
 		ScriptGUISliderH(MonoObject* instance, GUISliderHorz* slider);
@@ -46,7 +46,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptGUISliderV : public TScriptGUIElement<ScriptGUISliderV>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUISliderV")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "GUISliderV")
 
 	private:
 		ScriptGUISliderV(MonoObject* instance, GUISliderVert* slider);

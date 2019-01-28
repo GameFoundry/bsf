@@ -12,7 +12,7 @@ namespace bs
 {
 	extern "C" BS_SCR_BE_EXPORT const char* getPluginName()
 	{
-		static const char* pluginName = "SBansheeEngine";
+		static const char* pluginName = "bsfScript";
 		return pluginName;
 	}
 

@@ -15,7 +15,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptTime : public ScriptObject <ScriptTime>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Time")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "Time")
 
 	private:
 		ScriptTime(MonoObject* instance);

@@ -7,7 +7,7 @@
 
 namespace bs
 {
-	/** @addtogroup SBansheeEngine
+	/** @addtogroup bsfScript
 	 *  @{
 	 */
 
@@ -19,13 +19,7 @@ namespace bs
 		Paused
 	};
 
-	/**
-	 * Handles functionality specific to running the game in editor.
-	 *
-	 * @note	
-	 * Play-in-editor functionality is only available for managed code, but can be easily extended to native code if needed
-	 * (this would involve moving play in editor code into BansheeEngine library).
-	 */
+	/** Handles functionality specific to running the game in editor. */
 	class BS_SCR_BE_EXPORT PlayInEditorManager : public Module<PlayInEditorManager>
 	{
 	public:

@@ -16,7 +16,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptInputConfiguration : public ScriptObject<ScriptInputConfiguration>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "InputConfiguration")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "InputConfiguration")
 
 		/** Returns the managed version of this object. */
 		MonoObject* getManagedInstance() const;
@@ -67,7 +67,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptVirtualAxis : public ScriptObject <ScriptVirtualAxis>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "VirtualAxis")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, ENGINE_NS, "VirtualAxis")
 
 	private:
 		ScriptVirtualAxis(MonoObject* instance);
