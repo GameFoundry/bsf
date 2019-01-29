@@ -95,6 +95,8 @@ set(PHYSICS_MODULE_LIB bsfPhysX)
 
 if((SCRIPT_API AND (NOT SCRIPT_API MATCHES "None")) OR BS_IS_BANSHEE3D)
 	set(BS_SCRIPTING_ENABLED 1)
+else()
+	set(BS_SCRIPTING_ENABLED 0)
 endif()
 
 ## Generate config files

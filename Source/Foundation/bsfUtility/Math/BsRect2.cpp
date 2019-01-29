@@ -112,11 +112,11 @@ namespace bs
 
 	Vector2 Rect2::getCenter() const
 	{
-		return Vector2(x + width * 0.5, y + height * 0.5);
+		return Vector2(x + width * 0.5f, y + height * 0.5f);
 	}
 
 	Vector2 Rect2::getHalfSize() const
 	{
-		return Vector2(width, height) * 0.5;
+		return Vector2(width, height) * 0.5f;
 	}
 }
