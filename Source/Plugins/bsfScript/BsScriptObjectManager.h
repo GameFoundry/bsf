@@ -69,7 +69,7 @@ namespace bs
 		Set<ScriptObjectBase*> mScriptObjects;
 
 		Vector<ScriptObjectBase*> mFinalizedObjects[2];
-		UINT32 mFinalizedQueueIdx;
+		UINT32 mFinalizedQueueIdx = 0;
 		Mutex mMutex;
 	};
 

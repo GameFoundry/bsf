@@ -311,8 +311,8 @@ namespace bs
 	class BS_SCR_BE_EXPORT ManagedSerializableMemberInfo : public IReflectable
 	{
 	public:
-		ManagedSerializableMemberInfo();
-		virtual ~ManagedSerializableMemberInfo() {}
+		ManagedSerializableMemberInfo() = default;
+		virtual ~ManagedSerializableMemberInfo() = default;
 
 		/**	Determines should the member be serialized when serializing the parent object. */
 		bool isSerializable() const { return mFlags.isSet(ScriptFieldFlag::Serializable); }
@@ -347,11 +347,11 @@ namespace bs
 		virtual void setValue(MonoObject* instance, void* value) const = 0;
 
 		String mName;
-		UINT32 mFieldId;
+		UINT32 mFieldId = 0;
 		UINT32 mParentTypeId;
 
 		SPtr<ManagedSerializableTypeInfo> mTypeInfo;
-		ScriptFieldFlags mFlags;
+		ScriptFieldFlags mFlags = 0;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -386,7 +386,7 @@ namespace bs
 		/** @copydoc ManagedSerializableMemberInfo::setValue */
 		void setValue(MonoObject* instance, void* value) const override;
 
-		MonoField* mMonoField;
+		MonoField* mMonoField = nullptr;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -421,7 +421,7 @@ namespace bs
 		/** @copydoc ManagedSerializableMemberInfo::setValue */
 		void setValue(MonoObject* instance, void* value) const override;
 
-		MonoProperty* mMonoProperty;
+		MonoProperty* mMonoProperty = nullptr;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -436,7 +436,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ManagedSerializableObjectInfo : public IReflectable
 	{
 	public:
-		ManagedSerializableObjectInfo();
+		ManagedSerializableObjectInfo() = default;
 
 		/** Returns the managed type name of the object's type, including the namespace in format "namespace.typename". */
 		String getFullTypeName() const { return mTypeInfo->mTypeNamespace + "." + mTypeInfo->mTypeName; }
@@ -455,7 +455,7 @@ namespace bs
 			const SPtr<ManagedSerializableTypeInfo>& fieldTypeInfo) const;
 
 		SPtr<ManagedSerializableTypeInfoObject> mTypeInfo;
-		MonoClass* mMonoClass;
+		MonoClass* mMonoClass = nullptr;
 
 		UnorderedMap<String, UINT32> mFieldNameToId;
 		UnorderedMap<UINT32, SPtr<ManagedSerializableMemberInfo>> mFields;
