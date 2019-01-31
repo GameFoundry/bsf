@@ -366,7 +366,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldInfo : public ManagedSerializableMemberInfo
 	{
 	public:
-		ManagedSerializableFieldInfo();
+		ManagedSerializableFieldInfo() = default;
 
 		/** @copydoc ManagedSerializableMemberInfo::getRangeMinimum */
 		float getRangeMinimum() const override;
@@ -401,7 +401,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ManagedSerializablePropertyInfo : public ManagedSerializableMemberInfo
 	{
 	public:
-		ManagedSerializablePropertyInfo();
+		ManagedSerializablePropertyInfo() = default;
 
 		/** @copydoc ManagedSerializableMemberInfo::getRangeMinimum */
 		float getRangeMinimum() const override;
