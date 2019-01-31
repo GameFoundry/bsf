@@ -15,7 +15,7 @@ namespace bs
 	class BS_SCR_BE_EXPORT ScriptObjectManager : public Module <ScriptObjectManager>
 	{
 	public:
-		ScriptObjectManager();
+		ScriptObjectManager() = default;
 		~ScriptObjectManager();
 
 		/**	Registers a newly created script interop object. */
