@@ -27,7 +27,7 @@ namespace bs
 		};
 
 	public:
-		GUIOption();
+		GUIOption() = default;
 
 		/**
 		 * Constructs a GUI option notifying the GUI layout that this element should be positioned at this offset from the
@@ -62,7 +62,8 @@ namespace bs
 	private:
 		friend struct GUIDimensions;
 
-		UINT32 min, max;
+		UINT32 min = 0; 
+		UINT32 max = 0;
 		Type type;
 	};
 
@@ -70,7 +71,7 @@ namespace bs
 	class BS_EXPORT GUIOptions
 	{
 	public:
-		GUIOptions() { }
+		GUIOptions() = default;
 
 		GUIOptions(const GUIOption& e0)
 		{			

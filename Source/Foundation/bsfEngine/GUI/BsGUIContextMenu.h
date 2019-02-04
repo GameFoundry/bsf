@@ -34,7 +34,7 @@ namespace bs
 		void onMenuClosed();
 
 	private:
-		bool mContextMenuOpen;
+		bool mContextMenuOpen = false;
 	};
 
 	/** @} */

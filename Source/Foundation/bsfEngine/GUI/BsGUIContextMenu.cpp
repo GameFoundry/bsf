@@ -7,7 +7,7 @@
 namespace bs
 {
 	GUIContextMenu::GUIContextMenu()
-		:GUIMenu(), mContextMenuOpen(false)
+		:GUIMenu()
 	{
 
 	}
