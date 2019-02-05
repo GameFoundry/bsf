@@ -64,7 +64,7 @@ namespace bs
 
 		UINT32 min = 0; 
 		UINT32 max = 0;
-		Type type;
+		Type type = Type::FixedWidth;
 	};
 
 	/**	Container for a list of options used for controlling GUI element properties. */
