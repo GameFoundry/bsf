@@ -14,8 +14,8 @@ namespace bs { namespace ct
 	size_t VulkanVertexInputManager::HashFunc::operator()(const VertexDeclarationKey& key) const
 	{
 		size_t hash = 0;
-		hash_combine(hash, key.bufferDeclId);
-		hash_combine(hash, key.shaderDeclId);
+		bs_hash_combine(hash, key.bufferDeclId);
+		bs_hash_combine(hash, key.shaderDeclId);
 
 		return hash;
 	}

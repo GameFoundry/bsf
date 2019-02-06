@@ -10,11 +10,11 @@ namespace bs { namespace ct
 		(const GLSLProgramPipelineManager::ProgramPipelineKey &key) const
 	{
 		std::size_t seed = 0;
-		hash_combine(seed, key.vertexProgKey);
-		hash_combine(seed, key.fragmentProgKey);
-		hash_combine(seed, key.geometryProgKey);
-		hash_combine(seed, key.hullProgKey);
-		hash_combine(seed, key.domainProgKey);
+		bs_hash_combine(seed, key.vertexProgKey);
+		bs_hash_combine(seed, key.fragmentProgKey);
+		bs_hash_combine(seed, key.geometryProgKey);
+		bs_hash_combine(seed, key.hullProgKey);
+		bs_hash_combine(seed, key.domainProgKey);
 
 		return seed;
 	}

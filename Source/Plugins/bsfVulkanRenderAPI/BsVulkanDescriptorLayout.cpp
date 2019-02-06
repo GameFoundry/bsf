@@ -33,13 +33,13 @@ namespace bs { namespace ct
 		for (UINT32 i = 0; i < numBindings; i++)
 		{
 			size_t bindingHash = 0;
-			hash_combine(bindingHash, bindings[i].binding);
-			hash_combine(bindingHash, bindings[i].descriptorCount);
-			hash_combine(bindingHash, bindings[i].descriptorType);
-			hash_combine(bindingHash, bindings[i].stageFlags);
+			bs_hash_combine(bindingHash, bindings[i].binding);
+			bs_hash_combine(bindingHash, bindings[i].descriptorCount);
+			bs_hash_combine(bindingHash, bindings[i].descriptorType);
+			bs_hash_combine(bindingHash, bindings[i].stageFlags);
 			assert(bindings[i].pImmutableSamplers == nullptr); // Not accounted for in hash, assumed always null
 
-			hash_combine(hash, bindingHash);
+			bs_hash_combine(hash, bindingHash);
 		}
 
 		return hash;

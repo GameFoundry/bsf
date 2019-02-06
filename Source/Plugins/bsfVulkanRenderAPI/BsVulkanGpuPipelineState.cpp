@@ -42,10 +42,10 @@ namespace bs { namespace ct
 	size_t VulkanGraphicsPipelineState::HashFunc::operator()(const GpuPipelineKey& key) const
 	{
 		size_t hash = 0;
-		hash_combine(hash, key.framebufferId);
-		hash_combine(hash, key.vertexInputId);
-		hash_combine(hash, key.readOnlyFlags);
-		hash_combine(hash, key.drawOp);
+		bs_hash_combine(hash, key.framebufferId);
+		bs_hash_combine(hash, key.vertexInputId);
+		bs_hash_combine(hash, key.readOnlyFlags);
+		bs_hash_combine(hash, key.drawOp);
 
 		return hash;
 	}

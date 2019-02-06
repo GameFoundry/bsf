@@ -64,7 +64,7 @@ namespace bs { namespace ct
 	{
 		size_t hash = 0;
 		for (UINT32 i = 0; i < numLayouts; i++)
-			hash_combine(hash, layouts[i]->getHash());
+			bs_hash_combine(hash, layouts[i]->getHash());
 
 		return hash;
 	}

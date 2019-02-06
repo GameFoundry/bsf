@@ -15,9 +15,9 @@ namespace bs { namespace ct
 	size_t VulkanFramebuffer::VariantKey::HashFunction::operator()(const VariantKey& v) const
 	{
 		size_t hash = 0;
-		hash_combine(hash, v.readMask);
-		hash_combine(hash, v.loadMask);
-		hash_combine(hash, v.clearMask);
+		bs_hash_combine(hash, v.readMask);
+		bs_hash_combine(hash, v.loadMask);
+		bs_hash_combine(hash, v.clearMask);
 
 		return hash;
 	}
