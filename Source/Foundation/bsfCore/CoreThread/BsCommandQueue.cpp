@@ -174,8 +174,8 @@ namespace bs
 	inline size_t CommandQueueBase::QueueBreakpoint::HashFunction::operator()(const QueueBreakpoint& v) const
 	{
 		size_t seed = 0;
-		hash_combine(seed, v.queueIdx);
-		hash_combine(seed, v.commandIdx);
+		bs_hash_combine(seed, v.queueIdx);
+		bs_hash_combine(seed, v.commandIdx);
 		return seed;
 	}
 

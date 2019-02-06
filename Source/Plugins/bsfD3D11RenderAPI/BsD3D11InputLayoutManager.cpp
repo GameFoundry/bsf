@@ -15,8 +15,8 @@ namespace bs { namespace ct
 		(const D3D11InputLayoutManager::VertexDeclarationKey &key) const
 	{
 		size_t hash = 0;
-		hash_combine(hash, key.vertxDeclId);
-		hash_combine(hash, key.vertexProgramId);
+		bs_hash_combine(hash, key.vertxDeclId);
+		bs_hash_combine(hash, key.vertexProgramId);
 
 		return hash;
 	}

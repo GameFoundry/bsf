@@ -21,9 +21,9 @@ namespace bs
 		size_t genInstanceAddr = (size_t)v.genericInstance;
 
 		size_t seed = 0;
-		hash_combine(seed, v.namespaceName);
-		hash_combine(seed, v.name);
-		hash_combine(seed, genInstanceAddr);
+		bs_hash_combine(seed, v.namespaceName);
+		bs_hash_combine(seed, v.name);
+		bs_hash_combine(seed, genInstanceAddr);
 
 		return seed;
 	}

@@ -217,12 +217,15 @@ namespace bs
 		 */
 		void setExtension(const String& extension);
 
+		/** Returns a filename with extension. */
+		const String& getFilename() const { return mFilename; }
+
 		/**
 		 * Returns a filename in the path.
 		 *
 		 * @param[in]	extension	If true, returned filename will contain an extension.
 		 */
-		String getFilename(bool extension = true) const;
+		String getFilename(bool extension) const;
 
 		/** Returns file extension with the leading ".". */
 		String getExtension() const;
@@ -521,12 +524,12 @@ namespace std
 		size_t operator()(const bs::Path& path) const
 		{
 			size_t hash = 0;
-			bs::hash_combine(hash, path.mFilename);
-			bs::hash_combine(hash, path.mDevice);
-			bs::hash_combine(hash, path.mNode);
+			bs::bs_hash_combine(hash, path.mFilename);
+			bs::bs_hash_combine(hash, path.mDevice);
+			bs::bs_hash_combine(hash, path.mNode);
 
 			for (auto& dir : path.mDirectories)
-				bs::hash_combine(hash, dir);
+				bs::bs_hash_combine(hash, dir);
 
 			return hash;
 		}

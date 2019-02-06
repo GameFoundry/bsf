@@ -67,15 +67,15 @@ namespace bs
 	UINT64 RasterizerState::generateHash(const RASTERIZER_STATE_DESC& desc)
 	{
 		size_t hash = 0;
-		hash_combine(hash, (UINT32)desc.polygonMode);
-		hash_combine(hash, (UINT32)desc.cullMode);
-		hash_combine(hash, desc.depthBias);
-		hash_combine(hash, desc.depthBiasClamp);
-		hash_combine(hash, desc.slopeScaledDepthBias);
-		hash_combine(hash, desc.depthClipEnable);
-		hash_combine(hash, desc.scissorEnable);
-		hash_combine(hash, desc.multisampleEnable);
-		hash_combine(hash, desc.antialiasedLineEnable);
+		bs_hash_combine(hash, (UINT32)desc.polygonMode);
+		bs_hash_combine(hash, (UINT32)desc.cullMode);
+		bs_hash_combine(hash, desc.depthBias);
+		bs_hash_combine(hash, desc.depthBiasClamp);
+		bs_hash_combine(hash, desc.slopeScaledDepthBias);
+		bs_hash_combine(hash, desc.depthClipEnable);
+		bs_hash_combine(hash, desc.scissorEnable);
+		bs_hash_combine(hash, desc.multisampleEnable);
+		bs_hash_combine(hash, desc.antialiasedLineEnable);
 
 		return (UINT64)hash;
 	}

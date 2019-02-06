@@ -104,8 +104,8 @@ namespace std
 		size_t operator()(const bs::ct::SamplerOverrideKey& key) const
 		{
 			size_t hash = 0;
-			bs::hash_combine(hash, key.material);
-			bs::hash_combine(hash, key.techniqueIdx);
+			bs::bs_hash_combine(hash, key.material);
+			bs::bs_hash_combine(hash, key.techniqueIdx);
 
 			return hash;
 		}

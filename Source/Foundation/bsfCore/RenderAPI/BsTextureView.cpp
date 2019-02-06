@@ -8,11 +8,11 @@ namespace bs { namespace ct
 	size_t TextureView::HashFunction::operator()(const TEXTURE_VIEW_DESC &key) const
 	{
 		size_t seed = 0;
-		hash_combine(seed, key.mostDetailMip);
-		hash_combine(seed, key.numMips);
-		hash_combine(seed, key.firstArraySlice);
-		hash_combine(seed, key.numArraySlices);
-		hash_combine(seed, key.usage);
+		bs_hash_combine(seed, key.mostDetailMip);
+		bs_hash_combine(seed, key.numMips);
+		bs_hash_combine(seed, key.firstArraySlice);
+		bs_hash_combine(seed, key.numArraySlices);
+		bs_hash_combine(seed, key.usage);
 
 		return seed;
 	}

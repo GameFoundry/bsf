@@ -70,20 +70,20 @@ namespace bs
 	UINT64 DepthStencilState::generateHash(const DEPTH_STENCIL_STATE_DESC& desc)
 	{
 		size_t hash = 0;
-		hash_combine(hash, desc.depthReadEnable);
-		hash_combine(hash, desc.depthWriteEnable);
-		hash_combine(hash, (UINT32)desc.depthComparisonFunc);
-		hash_combine(hash, desc.stencilEnable);
-		hash_combine(hash, desc.stencilReadMask);
-		hash_combine(hash, desc.stencilWriteMask);
-		hash_combine(hash, (UINT32)desc.frontStencilFailOp);
-		hash_combine(hash, (UINT32)desc.frontStencilZFailOp);
-		hash_combine(hash, (UINT32)desc.frontStencilPassOp);
-		hash_combine(hash, (UINT32)desc.frontStencilComparisonFunc);
-		hash_combine(hash, (UINT32)desc.backStencilFailOp);
-		hash_combine(hash, (UINT32)desc.backStencilZFailOp);
-		hash_combine(hash, (UINT32)desc.backStencilPassOp);
-		hash_combine(hash, (UINT32)desc.backStencilComparisonFunc);
+		bs_hash_combine(hash, desc.depthReadEnable);
+		bs_hash_combine(hash, desc.depthWriteEnable);
+		bs_hash_combine(hash, (UINT32)desc.depthComparisonFunc);
+		bs_hash_combine(hash, desc.stencilEnable);
+		bs_hash_combine(hash, desc.stencilReadMask);
+		bs_hash_combine(hash, desc.stencilWriteMask);
+		bs_hash_combine(hash, (UINT32)desc.frontStencilFailOp);
+		bs_hash_combine(hash, (UINT32)desc.frontStencilZFailOp);
+		bs_hash_combine(hash, (UINT32)desc.frontStencilPassOp);
+		bs_hash_combine(hash, (UINT32)desc.frontStencilComparisonFunc);
+		bs_hash_combine(hash, (UINT32)desc.backStencilFailOp);
+		bs_hash_combine(hash, (UINT32)desc.backStencilZFailOp);
+		bs_hash_combine(hash, (UINT32)desc.backStencilPassOp);
+		bs_hash_combine(hash, (UINT32)desc.backStencilComparisonFunc);
 
 		return (UINT64)hash;
 	}

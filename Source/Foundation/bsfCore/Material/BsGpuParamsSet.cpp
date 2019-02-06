@@ -49,8 +49,8 @@ namespace std
 		size_t operator()(const bs::ValidParamKey& key) const
 		{
 			size_t hash = 0;
-			bs::hash_combine(hash, key.name);
-			bs::hash_combine(hash, key.type);
+			bs::bs_hash_combine(hash, key.name);
+			bs::bs_hash_combine(hash, key.type);
 
 			return hash;
 		}

@@ -69,10 +69,10 @@ namespace bs
 			textureId = info.texture->getInternalID();
 
 		size_t hash = 0;
-		hash_combine(hash, info.groupId);
-		hash_combine(hash, getId());
-		hash_combine(hash, textureId);
-		hash_combine(hash, info.tint);
+		bs_hash_combine(hash, info.groupId);
+		bs_hash_combine(hash, getId());
+		bs_hash_combine(hash, textureId);
+		bs_hash_combine(hash, info.tint);
 
 		return (UINT64)hash;
 	}

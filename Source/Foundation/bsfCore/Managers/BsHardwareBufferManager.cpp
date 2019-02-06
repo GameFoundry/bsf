@@ -77,7 +77,7 @@ namespace bs
 	{
 		size_t hash = 0;
 		for(auto& entry : v.elements)
-			hash_combine(hash, VertexElement::getHash(entry));
+			bs_hash_combine(hash, VertexElement::getHash(entry));
 
 		return hash;
 	}

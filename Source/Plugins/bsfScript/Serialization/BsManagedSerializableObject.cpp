@@ -14,8 +14,8 @@ namespace bs
 	inline size_t ManagedSerializableObject::Hash::operator()(const ManagedSerializableFieldKey& x) const
 	{
 		size_t seed = 0;
-		hash_combine(seed, (UINT32)x.mFieldId);
-		hash_combine(seed, (UINT32)x.mTypeId);
+		bs_hash_combine(seed, (UINT32)x.mFieldId);
+		bs_hash_combine(seed, (UINT32)x.mTypeId);
 
 		return seed;
 	}

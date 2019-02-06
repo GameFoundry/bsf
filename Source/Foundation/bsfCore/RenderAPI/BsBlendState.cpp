@@ -136,19 +136,19 @@ namespace bs
 	UINT64 BlendState::generateHash(const BLEND_STATE_DESC& desc)
 	{
 		size_t hash = 0;
-		hash_combine(hash, desc.alphaToCoverageEnable);
-		hash_combine(hash, desc.independantBlendEnable);
+		bs_hash_combine(hash, desc.alphaToCoverageEnable);
+		bs_hash_combine(hash, desc.independantBlendEnable);
 
 		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 		{
-			hash_combine(hash, desc.renderTargetDesc[i].blendEnable);
-			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].srcBlend);
-			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].dstBlend);
-			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].blendOp);
-			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].srcBlendAlpha);
-			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].dstBlendAlpha);
-			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].blendOpAlpha);
-			hash_combine(hash, desc.renderTargetDesc[i].renderTargetWriteMask);
+			bs_hash_combine(hash, desc.renderTargetDesc[i].blendEnable);
+			bs_hash_combine(hash, (UINT32)desc.renderTargetDesc[i].srcBlend);
+			bs_hash_combine(hash, (UINT32)desc.renderTargetDesc[i].dstBlend);
+			bs_hash_combine(hash, (UINT32)desc.renderTargetDesc[i].blendOp);
+			bs_hash_combine(hash, (UINT32)desc.renderTargetDesc[i].srcBlendAlpha);
+			bs_hash_combine(hash, (UINT32)desc.renderTargetDesc[i].dstBlendAlpha);
+			bs_hash_combine(hash, (UINT32)desc.renderTargetDesc[i].blendOpAlpha);
+			bs_hash_combine(hash, desc.renderTargetDesc[i].renderTargetWriteMask);
 		}
 
 		return (UINT64)hash;

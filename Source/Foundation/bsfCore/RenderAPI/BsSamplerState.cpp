@@ -73,18 +73,18 @@ namespace bs
 	UINT64 SamplerState::generateHash(const SAMPLER_STATE_DESC& desc)
 	{
 		size_t hash = 0;
-		hash_combine(hash, (UINT32)desc.addressMode.u);
-		hash_combine(hash, (UINT32)desc.addressMode.v);
-		hash_combine(hash, (UINT32)desc.addressMode.w);
-		hash_combine(hash, (UINT32)desc.minFilter);
-		hash_combine(hash, (UINT32)desc.magFilter);
-		hash_combine(hash, (UINT32)desc.mipFilter);
-		hash_combine(hash, desc.maxAniso);
-		hash_combine(hash, desc.mipmapBias);
-		hash_combine(hash, desc.mipMin);
-		hash_combine(hash, desc.mipMax);
-		hash_combine(hash, desc.borderColor);
-		hash_combine(hash, (UINT32)desc.comparisonFunc);
+		bs_hash_combine(hash, (UINT32)desc.addressMode.u);
+		bs_hash_combine(hash, (UINT32)desc.addressMode.v);
+		bs_hash_combine(hash, (UINT32)desc.addressMode.w);
+		bs_hash_combine(hash, (UINT32)desc.minFilter);
+		bs_hash_combine(hash, (UINT32)desc.magFilter);
+		bs_hash_combine(hash, (UINT32)desc.mipFilter);
+		bs_hash_combine(hash, desc.maxAniso);
+		bs_hash_combine(hash, desc.mipmapBias);
+		bs_hash_combine(hash, desc.mipMin);
+		bs_hash_combine(hash, desc.mipMax);
+		bs_hash_combine(hash, desc.borderColor);
+		bs_hash_combine(hash, (UINT32)desc.comparisonFunc);
 
 		return (UINT64)hash;
 	}

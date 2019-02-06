@@ -197,8 +197,8 @@ namespace bs { namespace ct
 		size_t operator()(const std::pair<INT32, INT32>& key) const
 		{
 			size_t hash = 0;
-			bs::hash_combine(hash, key.first);
-			bs::hash_combine(hash, key.second);
+			bs::bs_hash_combine(hash, key.first);
+			bs::bs_hash_combine(hash, key.second);
 
 			return hash;
 		}

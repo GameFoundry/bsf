@@ -152,12 +152,12 @@ namespace bs
 	size_t VertexElement::getHash(const VertexElement& element)
 	{
 		size_t hash = 0;
-		hash_combine(hash, element.mType);
-		hash_combine(hash, element.mIndex);
-		hash_combine(hash, element.mOffset);
-		hash_combine(hash, element.mSemantic);
-		hash_combine(hash, element.mSource);
-		hash_combine(hash, element.mInstanceStepRate);
+		bs_hash_combine(hash, element.mType);
+		bs_hash_combine(hash, element.mIndex);
+		bs_hash_combine(hash, element.mOffset);
+		bs_hash_combine(hash, element.mSemantic);
+		bs_hash_combine(hash, element.mSource);
+		bs_hash_combine(hash, element.mInstanceStepRate);
 
 		return hash;
 	}
