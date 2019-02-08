@@ -918,7 +918,7 @@ namespace bs
 				UINT8* data = params->getData(materialParamInfo->index);
 				if (!isAnimated)
 				{
-					const bool transposeMatrices = ct::RenderAPI::instance().getAPIInfo().isFlagSet(RenderAPIFeatureFlag::ColumnMajorMatrices);
+					const bool transposeMatrices = ct::gCaps().conventions.matrixOrder == Conventions::MatrixOrder::ColumnMajor;
 					if (transposeMatrices)
 					{
 						auto writeTransposed = [&paramInfo, &paramSize, &arraySize, &paramBlock, data](auto& temp)

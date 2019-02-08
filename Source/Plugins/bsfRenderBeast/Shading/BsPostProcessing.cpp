@@ -1557,9 +1557,9 @@ namespace bs { namespace ct
 		ndcToHiZUV.w = 0.5f;
 
 		// Either of these flips the Y axis, but if they're both true they cancel out
-		RenderAPI& rapi = RenderAPI::instance();
-		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
-		if (rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp) ^ rapiInfo.isFlagSet(RenderAPIFeatureFlag::NDCYAxisDown))
+		const Conventions& rapiConventions = gCaps().conventions;
+
+		if ((rapiConventions.uvYAxis == Conventions::Axis::Up) ^ (rapiConventions.ndcYAxis == Conventions::Axis::Down))
 			ndcToHiZUV.y = -ndcToHiZUV.y;
 		
 		// Maps from [0, 1] to area of HiZ where depth is stored in
@@ -1590,6 +1590,7 @@ namespace bs { namespace ct
 		SPtr<GpuParamBlockBuffer> perView = view.getPerViewBuffer();
 		mParams->setParamBlockBuffer("PerCamera", perView);
 
+		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setRenderTarget(destination, FBT_DEPTH | FBT_STENCIL, RT_DEPTH_STENCIL);
 
 		bind();

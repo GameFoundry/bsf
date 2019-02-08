@@ -413,37 +413,8 @@ namespace bs
 				LOGERR("Vertex buffer values for stream \"" + toString(i) + "\" are being written out of valid range.");
 			}
 
-			if (RenderAPI::instance().getAPIInfo().isFlagSet(RenderAPIFeatureFlag::VertexColorFlip))
-			{
-				UINT8* bufferCopy = (UINT8*)bs_alloc(bufferSize);
-				memcpy(bufferCopy, srcVertBufferData, bufferSize); // TODO Low priority - Attempt to avoid this copy
-
-				UINT32 vertexStride = meshData.getVertexDesc()->getVertexStride(i);
-				for (INT32 semanticIdx = 0; semanticIdx < bs::VertexBuffer::MAX_SEMANTIC_IDX; semanticIdx++)
-				{
-					if (!meshData.getVertexDesc()->hasElement(VES_COLOR, semanticIdx, i))
-						continue;
-
-					UINT8* colorData = bufferCopy + mVertexDesc->getElementOffsetFromStream(VES_COLOR, semanticIdx, i);
-					for (UINT32 j = 0; j < mVertexData->vertexCount; j++)
-					{
-						UINT32* curColor = (UINT32*)colorData;
-
-						(*curColor) = ((*curColor) & 0xFF00FF00) | ((*curColor >> 16) & 0x000000FF) | ((*curColor << 16) & 0x00FF0000);
-
-						colorData += vertexStride;
-					}
-				}
-
-				vertexBuffer->writeData(0, bufferSize, bufferCopy, discardEntireBuffer ? BWT_DISCARD : BWT_NORMAL, queueIdx);
-
-				bs_free(bufferCopy);
-			}
-			else
-			{
-				vertexBuffer->writeData(0, bufferSize, srcVertBufferData, discardEntireBuffer ? BWT_DISCARD : BWT_NORMAL,
-					queueIdx);
-			}
+			vertexBuffer->writeData(0, bufferSize, srcVertBufferData, discardEntireBuffer ? BWT_DISCARD : BWT_NORMAL,
+				queueIdx);
 		}
 
 		if (performUpdateBounds)

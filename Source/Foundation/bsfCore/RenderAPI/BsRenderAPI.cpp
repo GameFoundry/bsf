@@ -139,11 +139,6 @@ namespace bs
 		ct::RenderAPI::instance().convertProjectionMatrix(matrix, dest);
 	}
 
-	const RenderAPIInfo& RenderAPI::getAPIInfo()
-	{
-		return ct::RenderAPI::instance().getAPIInfo();
-	}
-
 	namespace ct
 	{
 	RenderAPI::RenderAPI()

@@ -24,12 +24,10 @@ namespace bs { namespace ct
 	{
 		BS_RENMAT_PROFILE_BLOCK
 
-		RenderAPI& rapi = RenderAPI::instance();
-		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
-
 		gReflectionCubeDownsampleParamDef.gCubeFace.set(mParamBuffer, face);
 
-		if(rapiInfo.isFlagSet(RenderAPIFeatureFlag::TextureViews))
+		const RenderAPICapabilities& caps = gCaps();
+		if(caps.hasCapability(RSC_TEXTURE_VIEWS))
 		{
 			mInputTexture.set(source, TextureSurface(mip, 1, 0, 6));
 			gReflectionCubeDownsampleParamDef.gMipLevel.set(mParamBuffer, 0);
@@ -40,6 +38,7 @@ namespace bs { namespace ct
 			gReflectionCubeDownsampleParamDef.gMipLevel.set(mParamBuffer, mip);
 		}
 
+		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setRenderTarget(target);
 
 		bind();

@@ -41,7 +41,7 @@ namespace bs { namespace ct
 			UINT32 elementSizeBytes = mParamDesc.elementSize * sizeof(UINT32);
 			UINT32 sizeBytes = std::min(elementSizeBytes, (UINT32)sizeof(T)); // Truncate if it doesn't fit within parameter size
 
-			bool transposeMatrices = RenderAPI::instance().getAPIInfo().isFlagSet(RenderAPIFeatureFlag::ColumnMajorMatrices);
+			const bool transposeMatrices = gCaps().conventions.matrixOrder == Conventions::MatrixOrder::ColumnMajor;
 			if (TransposePolicy<T>::transposeEnabled(transposeMatrices))
 			{
 				auto transposed = TransposePolicy<T>::transpose(value);

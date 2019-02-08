@@ -2209,8 +2209,7 @@ namespace bs { namespace ct
 		srcRect.width += (viewProps.target.viewRect.width % 2) * (1.0f / viewProps.target.viewRect.width);
 		srcRect.height += (viewProps.target.viewRect.height % 2) * (1.0f / viewProps.target.viewRect.height);
 
-		const RenderAPIInfo& rapiInfo = RenderAPI::instance().getAPIInfo();
-		bool noTextureViews = !rapiInfo.isFlagSet(RenderAPIFeatureFlag::TextureViews);
+		bool noTextureViews = !gCaps().hasCapability(RSC_TEXTURE_VIEWS);
 
 		BuildHiZMat* material = BuildHiZMat::getVariation(noTextureViews);
 

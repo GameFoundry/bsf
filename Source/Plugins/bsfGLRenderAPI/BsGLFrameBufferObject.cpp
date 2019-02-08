@@ -54,7 +54,7 @@ namespace bs { namespace ct
 	void GLFrameBufferObject::rebuild()
 	{
 		// Store basic stats
-		UINT16 maxSupportedMRTs = RenderAPI::instancePtr()->getCapabilities(0).getNumMultiRenderTargets();
+		UINT16 maxSupportedMRTs = RenderAPI::instancePtr()->getCapabilities(0).numMultiRenderTargets;
 
 		// Bind simple buffer to add color attachments
 		glBindFramebuffer(GL_FRAMEBUFFER, mFB);

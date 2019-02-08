@@ -302,10 +302,10 @@ namespace bs { namespace ct
 		// Note: Consider drawing the quad using a single large triangle for possibly better performance
 		// Note2: Consider setting quad size in shader instead of rebuilding the mesh every time
 
-		const RenderAPIInfo& rapiInfo = RenderAPI::instance().getAPIInfo();
+		const Conventions& rapiConventions = gCaps().conventions;
 		Vector3 vertices[4];
 
-		if (rapiInfo.isFlagSet(RenderAPIFeatureFlag::NDCYAxisDown))
+		if (rapiConventions.ndcYAxis == Conventions::Axis::Down)
 		{
 			vertices[0] = Vector3(-1.0f, -1.0f, 0.0f);
 			vertices[1] = Vector3(1.0f, -1.0f, 0.0f);
@@ -321,7 +321,7 @@ namespace bs { namespace ct
 		}
 
 		Vector2 uvs[4];
-		if (rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp) ^ flipUV)
+		if ((rapiConventions.uvYAxis == Conventions::Axis::Up) ^ flipUV)
 		{
 			uvs[0] = Vector2(uv.x, uv.y + uv.height);
 			uvs[1] = Vector2(uv.x + uv.width, uv.y + uv.height);

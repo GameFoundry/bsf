@@ -16,7 +16,6 @@
 
 namespace bs
 {
-	class RenderAPIInfo;
 	class RenderAPIManager;
 
 	/** @addtogroup RenderAPI
@@ -162,93 +161,6 @@ namespace bs
 
 		/** @copydoc ct::RenderAPI::convertProjectionMatrix */
 		static void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest);
-
-		/** @copydoc ct::RenderAPI::getAPIInfo */
-		static const RenderAPIInfo& getAPIInfo();
-	};
-
-	/** Feature flags that describe which render API specific features are enabled. */
-	enum class RenderAPIFeatureFlag
-	{
-		/** If set, vertex color order will be reversed before being sent to the shader. */
-		VertexColorFlip			= 1 << 0,
-		/** 
-		 * If set, the Y axis in texture (UV) coordinates is assumed to be pointing up, instead of down (which is the 
-		 * default). 
-		 */
-		UVYAxisUp				= 1 << 1,
-		/**
-		 * If set, the Y axis in normalized device coordinates (NDC) is assumed to be pointing down, instead of up (which
-		 * is the default).
-		 */
-		NDCYAxisDown			= 1 << 2,
-		/**
-		 * If set, the matrices used by shaders are in column major order, instead of in row major (which is the default).
-		 */
-		ColumnMajorMatrices		= 1 << 3,
-		/** 
-		 * If set, the render API has native support for multi-threaded command buffer generation. Otherwise it is 
-		 * emulated and using command buffers might not be beneficial. 
-		 */
-		MultiThreadedCB			= 1 << 4,
-		/** If set, the render API supports unordered stores to a texture with more than one sample. */
-		MSAAImageStores			= 1 << 5,
-		/** 
-		 * If set, the render API supports binds of parts of a texture (e.g. a single mip level, or a single element of a
-		 * texture array). This only applies to texture reads and individual mip levels or layers can still be bound as
-		 * render texture targets regardless of this flag.
-		 */
-		TextureViews			= 1 << 6,
-		/** If set, the render API supports compute shaders. */
-		Compute					= 1 << 7,
-		/** If set, the render API supports load-store textures or buffers (AKA unordered access (UAV). */
-		LoadStore				= 1 << 8,
-		/** If set, GpuPrograms can cache shader bytecode for faster future compilation. */
-		ByteCodeCaching			= 1 << 9,
-		/**
-		 * If set, the render API support rendering to multiple layers of a render texture at once (via a geometry shader).
-		 */
-		RenderTargetLayers		= 1 << 10,
-	};
-
-	typedef Flags<RenderAPIFeatureFlag> RenderAPIFeatures;
-	BS_FLAGS_OPERATORS(RenderAPIFeatureFlag)
-
-	/** Contains properties specific to a render API implementation. */
-	class RenderAPIInfo
-	{
-	public:
-		RenderAPIInfo(float horzTexelOffset, float vertTexelOffset, float minDepth, float maxDepth, 
-			VertexElementType vertexColorType, RenderAPIFeatures featureFlags)
-			: mHorizontalTexelOffset(horzTexelOffset), mVerticalTexelOffset(vertTexelOffset), mMinDepth(minDepth)
-			, mMaxDepth(maxDepth), mVertexColorType(vertexColorType), mFeatureFlags(featureFlags)
-		{ }
-
-		/** Gets the native type used for vertex colors. */
-		VertexElementType getColorVertexElementType() const { return mVertexColorType; }
-
-		/** Gets horizontal texel offset used for mapping texels to pixels in this render system. */
-		float getHorizontalTexelOffset() const { return mHorizontalTexelOffset; }
-
-		/** Gets vertical texel offset used for mapping texels to pixels in this render system. */
-		float getVerticalTexelOffset() const { return mVerticalTexelOffset; }
-
-		/** Gets the minimum (closest) depth value used by this render system. */
-		float getMinimumDepthInputValue() const { return mMinDepth; }
-
-		/** Gets the maximum (farthest) depth value used by this render system. */
-		float getMaximumDepthInputValue() const { return mMaxDepth; }
-
-		/** Checks is a specific feature flag enabled. */
-		bool isFlagSet(RenderAPIFeatureFlag flag) const { return mFeatureFlags.isSet(flag); }
-
-	private:
-		float mHorizontalTexelOffset = 0.0f;
-		float mVerticalTexelOffset = 0.0f;
-		float mMinDepth = 0.0f;
-		float mMaxDepth = 1.0f;
-		VertexElementType mVertexColorType = VET_COLOR_ABGR;
-		RenderAPIFeatures mFeatureFlags;
 	};
 
 	/** @} */
@@ -565,13 +477,6 @@ namespace bs
 		 */
 		virtual void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest) = 0;
 
-		/** 
-		 * Returns information about the specific API implementation. 
-		 *
-		 * @note	Thread safe.
-		 */
-		virtual const RenderAPIInfo& getAPIInfo() const = 0;
-
 		/**
 		 * Generates a parameter block description and calculates per-parameter offsets for the provided gpu data 
 		 * parameters. The offsets are render API specific and correspond to std140 layout for OpenGL, and the default 
@@ -631,6 +536,12 @@ namespace bs
 		UINT32 mNumDevices;
 		SPtr<VideoModeInfo> mVideoModeInfo;
 	};
+
+	/** Shorthand for RenderAPI::getCapabilities(). */
+	inline const RenderAPICapabilities& gCaps(UINT32 deviceIdx = 0)
+	{
+		return RenderAPI::instance().getCapabilities(deviceIdx);
+	}
 
 	/** @} */
 	}

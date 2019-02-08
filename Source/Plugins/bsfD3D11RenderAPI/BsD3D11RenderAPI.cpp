@@ -653,7 +653,7 @@ namespace bs { namespace ct
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
-			UINT32 maxBoundVertexBuffers = mCurrentCapabilities[0].getMaxBoundVertexBuffers();
+			UINT32 maxBoundVertexBuffers = mCurrentCapabilities[0].maxBoundVertexBuffers;
 			if (index < 0 || (index + numBuffers) >= maxBoundVertexBuffers)
 			{
 				BS_EXCEPT(InvalidParametersException, "Invalid vertex index: " + toString(index) +
@@ -981,7 +981,7 @@ namespace bs { namespace ct
 			// Clear render surfaces
 			if (buffers & FBT_COLOR)
 			{
-				UINT32 maxRenderTargets = mCurrentCapabilities[0].getNumMultiRenderTargets();
+				UINT32 maxRenderTargets = mCurrentCapabilities[0].numMultiRenderTargets;
 
 				ID3D11RenderTargetView** views = bs_newN<ID3D11RenderTargetView*>(maxRenderTargets);
 				memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
@@ -1050,7 +1050,7 @@ namespace bs { namespace ct
 
 			mActiveRenderTarget = target;
 
-			UINT32 maxRenderTargets = mCurrentCapabilities[0].getNumMultiRenderTargets();
+			UINT32 maxRenderTargets = mCurrentCapabilities[0].numMultiRenderTargets;
 			ID3D11RenderTargetView** views = bs_newN<ID3D11RenderTargetView*>(maxRenderTargets);
 			memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
 
@@ -1164,65 +1164,81 @@ namespace bs { namespace ct
 			driverVersion.build = LOWORD(driverVersionNum.LowPart);
 		}
 
-		caps.setDriverVersion(driverVersion);
-		caps.setDeviceName(mActiveD3DDriver->getDriverDescription());
-		caps.setRenderAPIName(getName());
+		caps.driverVersion = driverVersion;
+		caps.deviceName = mActiveD3DDriver->getDriverDescription();
+		caps.renderAPIName = getName();
 
 		caps.setCapability(RSC_TEXTURE_COMPRESSION_BC);
+		caps.setCapability(RSC_TEXTURE_VIEWS);
+		caps.setCapability(RSC_BYTECODE_CACHING);
+		caps.setCapability(RSC_RENDER_TARGET_LAYERS);
+
 		caps.addShaderProfile("hlsl");
 
 		if(mFeatureLevel >= D3D_FEATURE_LEVEL_10_1)
-			caps.setMaxBoundVertexBuffers(32);
+			caps.maxBoundVertexBuffers = 32;
 		else
-			caps.setMaxBoundVertexBuffers(16);
+			caps.maxBoundVertexBuffers = 16;
 
 		if(mFeatureLevel >= D3D_FEATURE_LEVEL_10_0)
 		{
 			caps.setCapability(RSC_GEOMETRY_PROGRAM);
 
-			caps.setNumTextureUnits(GPT_FRAGMENT_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
-			caps.setNumTextureUnits(GPT_VERTEX_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
-			caps.setNumTextureUnits(GPT_GEOMETRY_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+			caps.numTextureUnitsPerStage[GPT_FRAGMENT_PROGRAM] = D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT;
+			caps.numTextureUnitsPerStage[GPT_VERTEX_PROGRAM] = D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT;
+			caps.numTextureUnitsPerStage[GPT_GEOMETRY_PROGRAM]= D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT;
 
-			caps.setNumCombinedTextureUnits(caps.getNumTextureUnits(GPT_FRAGMENT_PROGRAM)
-				+ caps.getNumTextureUnits(GPT_VERTEX_PROGRAM) + caps.getNumTextureUnits(GPT_GEOMETRY_PROGRAM));
+			caps.numCombinedTextureUnits 
+				= caps.numTextureUnitsPerStage[GPT_FRAGMENT_PROGRAM]
+				+ caps.numTextureUnitsPerStage[GPT_VERTEX_PROGRAM] 
+				+ caps.numTextureUnitsPerStage[GPT_GEOMETRY_PROGRAM];
 
-			caps.setNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
-			caps.setNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
-			caps.setNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			caps.numGpuParamBlockBuffersPerStage[GPT_FRAGMENT_PROGRAM] = D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT;
+			caps.numGpuParamBlockBuffersPerStage[GPT_VERTEX_PROGRAM] = D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT;
+			caps.numGpuParamBlockBuffersPerStage[GPT_GEOMETRY_PROGRAM] = D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT;
 
-			caps.setNumCombinedGpuParamBlockBuffers(caps.getNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM)
-				+ caps.getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM) + caps.getNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM));
+			caps.numCombinedParamBlockBuffers 
+				= caps.numGpuParamBlockBuffersPerStage[GPT_FRAGMENT_PROGRAM]
+				+ caps.numGpuParamBlockBuffersPerStage[GPT_VERTEX_PROGRAM] 
+				+ caps.numGpuParamBlockBuffersPerStage[GPT_GEOMETRY_PROGRAM];
 		}
 
 		if(mFeatureLevel >= D3D_FEATURE_LEVEL_11_0)
 		{
 			caps.setCapability(RSC_TESSELLATION_PROGRAM);
 			caps.setCapability(RSC_COMPUTE_PROGRAM);
+			caps.setCapability(RSC_LOAD_STORE);
 
-			caps.setNumTextureUnits(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT);
-			caps.setNumTextureUnits(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT);
-			caps.setNumTextureUnits(GPT_COMPUTE_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT);
+			caps.numTextureUnitsPerStage[GPT_HULL_PROGRAM] = D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT;
+			caps.numTextureUnitsPerStage[GPT_DOMAIN_PROGRAM] = D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT;
+			caps.numTextureUnitsPerStage[GPT_COMPUTE_PROGRAM] = D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT;
 
-			caps.setNumCombinedTextureUnits(caps.getNumTextureUnits(GPT_FRAGMENT_PROGRAM)
-				+ caps.getNumTextureUnits(GPT_VERTEX_PROGRAM) + caps.getNumTextureUnits(GPT_GEOMETRY_PROGRAM)
-				+ caps.getNumTextureUnits(GPT_HULL_PROGRAM) + caps.getNumTextureUnits(GPT_DOMAIN_PROGRAM)
-				+ caps.getNumTextureUnits(GPT_COMPUTE_PROGRAM));
+			caps.numCombinedTextureUnits 
+				= caps.numTextureUnitsPerStage[GPT_FRAGMENT_PROGRAM]
+				+ caps.numTextureUnitsPerStage[GPT_VERTEX_PROGRAM] 
+				+ caps.numTextureUnitsPerStage[GPT_GEOMETRY_PROGRAM]
+				+ caps.numTextureUnitsPerStage[GPT_HULL_PROGRAM] 
+				+ caps.numTextureUnitsPerStage[GPT_DOMAIN_PROGRAM]
+				+ caps.numTextureUnitsPerStage[GPT_COMPUTE_PROGRAM];
 
-			caps.setNumGpuParamBlockBuffers(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
-			caps.setNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
-			caps.setNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			caps.numGpuParamBlockBuffersPerStage[GPT_HULL_PROGRAM] = D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT;
+			caps.numGpuParamBlockBuffersPerStage[GPT_DOMAIN_PROGRAM] = D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT;
+			caps.numGpuParamBlockBuffersPerStage[GPT_COMPUTE_PROGRAM] = D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT;
 
-			caps.setNumCombinedGpuParamBlockBuffers(caps.getNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM)
-				+ caps.getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM) + caps.getNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM)
-				+ caps.getNumGpuParamBlockBuffers(GPT_HULL_PROGRAM) + caps.getNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM)
-				+ caps.getNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM));
+			caps.numCombinedParamBlockBuffers 
+				= caps.numGpuParamBlockBuffersPerStage[GPT_FRAGMENT_PROGRAM]
+				+ caps.numGpuParamBlockBuffersPerStage[GPT_VERTEX_PROGRAM] 
+				+ caps.numGpuParamBlockBuffersPerStage[GPT_GEOMETRY_PROGRAM]
+				+ caps.numGpuParamBlockBuffersPerStage[GPT_HULL_PROGRAM] 
+				+ caps.numGpuParamBlockBuffersPerStage[GPT_DOMAIN_PROGRAM]
+				+ caps.numGpuParamBlockBuffersPerStage[GPT_COMPUTE_PROGRAM];
 
-			caps.setNumLoadStoreTextureUnits(GPT_FRAGMENT_PROGRAM, D3D11_PS_CS_UAV_REGISTER_COUNT);
-			caps.setNumLoadStoreTextureUnits(GPT_COMPUTE_PROGRAM, D3D11_PS_CS_UAV_REGISTER_COUNT);
+			caps.numLoadStoreTextureUnitsPerStage[GPT_FRAGMENT_PROGRAM] = D3D11_PS_CS_UAV_REGISTER_COUNT;
+			caps.numLoadStoreTextureUnitsPerStage[GPT_COMPUTE_PROGRAM] = D3D11_PS_CS_UAV_REGISTER_COUNT;
 
-			caps.setNumCombinedLoadStoreTextureUnits(caps.getNumLoadStoreTextureUnits(GPT_FRAGMENT_PROGRAM)
-				+ caps.getNumLoadStoreTextureUnits(GPT_COMPUTE_PROGRAM));
+			caps.numCombinedLoadStoreTextureUnits 
+				= caps.numLoadStoreTextureUnitsPerStage[GPT_FRAGMENT_PROGRAM]
+				+ caps.numLoadStoreTextureUnitsPerStage[GPT_COMPUTE_PROGRAM];
 		}
 
 		// Adapter details
@@ -1232,21 +1248,21 @@ namespace bs { namespace ct
 		switch(adapterID.VendorId)
 		{
 		case 0x10DE:
-			caps.setVendor(GPU_NVIDIA);
+			caps.deviceVendor = GPU_NVIDIA;
 			break;
 		case 0x1002:
-			caps.setVendor(GPU_AMD);
+			caps.deviceVendor = GPU_AMD;
 			break;
 		case 0x163C:
 		case 0x8086:
-			caps.setVendor(GPU_INTEL);
+			caps.deviceVendor = GPU_INTEL;
 			break;
 		default:
-			caps.setVendor(GPU_UNKNOWN);
+			caps.deviceVendor = GPU_UNKNOWN;
 			break;
 		};
 
-		caps.setNumMultiRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT);
+		caps.numMultiRenderTargets = D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT;
 	}
 
 	void D3D11RenderAPI::determineMultisampleSettings(UINT32 multisampleCount, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outputSampleDesc)
@@ -1359,20 +1375,6 @@ namespace bs { namespace ct
 		dest[2][1] = (dest[2][1] + dest[3][1]) / 2;
 		dest[2][2] = (dest[2][2] + dest[3][2]) / 2;
 		dest[2][3] = (dest[2][3] + dest[3][3]) / 2;
-	}
-
-	const RenderAPIInfo& D3D11RenderAPI::getAPIInfo() const
-	{
-		RenderAPIFeatures featureFlags =
-			RenderAPIFeatureFlag::TextureViews |
-			RenderAPIFeatureFlag::Compute | 
-			RenderAPIFeatureFlag::LoadStore |
-			RenderAPIFeatureFlag::ByteCodeCaching |
-			RenderAPIFeatureFlag::RenderTargetLayers;
-
-		static RenderAPIInfo info(0.0f, 0.0f, 0.0f, 1.0f, VET_COLOR_ABGR, featureFlags);
-
-		return info;
 	}
 
 	GpuParamBlockDesc D3D11RenderAPI::generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params)

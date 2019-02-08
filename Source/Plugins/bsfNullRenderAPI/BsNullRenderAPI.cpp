@@ -49,9 +49,9 @@ namespace bs { namespace ct
 
 		mNumDevices = 1;
 		mCurrentCapabilities = bs_newN<RenderAPICapabilities>(mNumDevices);
-		mCurrentCapabilities->setDeviceName("Null");
-		mCurrentCapabilities->setRenderAPIName(getName());
-		mCurrentCapabilities->setVendor(GPU_UNKNOWN);
+		mCurrentCapabilities->deviceName = "Null";
+		mCurrentCapabilities->renderAPIName = getName();
+		mCurrentCapabilities->deviceVendor = GPU_UNKNOWN;
 				
 		RenderAPI::initialize();
 	}
@@ -85,13 +85,6 @@ namespace bs { namespace ct
 	void NullRenderAPI::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
 	{
 		dest = matrix;
-	}
-
-	const RenderAPIInfo& NullRenderAPI::getAPIInfo() const
-	{
-		static RenderAPIInfo info(0.0f, 0.0f, 0.0f, 1.0f, VET_COLOR_ABGR, RenderAPIFeatures());
-
-		return info;
 	}
 
 	GpuParamBlockDesc NullRenderAPI::generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params)

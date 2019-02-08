@@ -50,8 +50,8 @@ namespace bs { namespace ct
 
 		float flipDerivatives = 1.0f;
 
-		const RenderAPIInfo& rapiInfo = RenderAPI::instance().getAPIInfo();
-		if(rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp))
+		const Conventions& rapiConventions = gCaps().conventions;
+		if(rapiConventions.uvYAxis == Conventions::Axis::Up)
 			flipDerivatives = -1.0f;
 
 		gDecalParamDef.gWorldToDecal.set(decalParamBuffer, worldToDecal);

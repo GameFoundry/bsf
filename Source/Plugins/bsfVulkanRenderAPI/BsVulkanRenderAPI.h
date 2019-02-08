@@ -95,9 +95,6 @@ namespace bs { namespace ct
 		/** @copydoc RenderAPI::convertProjectionMatrix */
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest) override;
 
-		/** @copydoc RenderAPI::getAPIInfo */
-		const RenderAPIInfo& getAPIInfo() const override;
-
 		/** @copydoc RenderAPI::generateParamBlockDesc() */
 		GpuParamBlockDesc generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params) override;
 

@@ -66,13 +66,12 @@ namespace bs { namespace ct
 
 	void RenderBeast::initializeCore()
 	{
-		const RenderAPI& rapi = RenderAPI::instance();
-		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
+		const RenderAPICapabilities& caps = gCaps();
 
 		if(
-			!rapiInfo.isFlagSet(RenderAPIFeatureFlag::Compute) ||
-			!rapiInfo.isFlagSet(RenderAPIFeatureFlag::LoadStore) ||
-			!rapiInfo.isFlagSet(RenderAPIFeatureFlag::TextureViews))
+			!caps.hasCapability(RSC_COMPUTE_PROGRAM) ||
+			!caps.hasCapability(RSC_LOAD_STORE) ||
+			!caps.hasCapability(RSC_TEXTURE_VIEWS))
 		{
 			mFeatureSet = RenderBeastFeatureSet::DesktopMacOS;
 		}
@@ -694,7 +693,7 @@ namespace bs { namespace ct
 		viewDesc.visibleLayers = 0xFFFFFFFFFFFFFFFF;
 		viewDesc.nearPlane = 0.5f;
 		viewDesc.farPlane = 1000.0f;
-		viewDesc.flipView = !RenderAPI::instance().getAPIInfo().isFlagSet(RenderAPIFeatureFlag::UVYAxisUp);
+		viewDesc.flipView = gCaps().conventions.uvYAxis != Conventions::Axis::Up;
 
 		viewDesc.viewOrigin = position;
 		viewDesc.projTransform = projTransform;

@@ -453,14 +453,12 @@ namespace bs { namespace ct
 
 		auto* const indices = (UINT16*)spriteIndices->lock(GBL_WRITE_ONLY_DISCARD);
 
-		RenderAPI& rapi = RenderAPI::instance();
-		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
-
+		const Conventions& rapiConventions = gCaps().conventions;
 		for (UINT32 i = 0; i < PARTICLES_PER_INSTANCE; i++)
 		{
 			// If UV is flipped, then our tile will be upside down so we need to change index order so it doesn't
 			// get culled.
-			if (rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp))
+			if (rapiConventions.uvYAxis == Conventions::Axis::Up)
 			{
 				indices[i * 6 + 0] = i * 4 + 2; indices[i * 6 + 1] = i * 4 + 1; indices[i * 6 + 2] = i * 4 + 0;
 				indices[i * 6 + 3] = i * 4 + 3; indices[i * 6 + 4] = i * 4 + 2; indices[i * 6 + 5] = i * 4 + 0;
@@ -1040,11 +1038,10 @@ namespace bs { namespace ct
 		// [0, 1] -> [-1, 1] and flip Y
 		Vector4 uvToNdc(2.0f, -2.0f, -1.0f, 1.0f);
 
-		RenderAPI& rapi = RenderAPI::instance();
-		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
+		const Conventions& rapiConventions = gCaps().conventions;
 
 		// Either of these flips the Y axis, but if they're both true they cancel out
-		if (rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp) ^ rapiInfo.isFlagSet(RenderAPIFeatureFlag::NDCYAxisDown))
+		if ((rapiConventions.uvYAxis == Conventions::Axis::Up) ^ (rapiConventions.ndcYAxis == Conventions::Axis::Down))
 		{
 			uvToNdc.y = -uvToNdc.y;
 			uvToNdc.w = -uvToNdc.w;
@@ -1382,14 +1379,13 @@ namespace bs { namespace ct
 
 		mInjectIndices = IndexBuffer::create(injectIndexBufferDesc);
 
-		RenderAPI& rapi = RenderAPI::instance();
-		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
+		const Conventions& rapiConventions = gCaps().conventions;
 
 		auto* const indices = (UINT16*)mInjectIndices->lock(GBL_WRITE_ONLY_DISCARD);
 
 		// If UV is flipped, then our tile will be upside down so we need to change index order so it doesn't
 		// get culled.
-		if (rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp))
+		if (rapiConventions.uvYAxis == Conventions::Axis::Up)
 		{
 			indices[0] = 2; indices[1] = 1; indices[2] = 0;
 			indices[3] = 3; indices[4] = 2; indices[5] = 0;
