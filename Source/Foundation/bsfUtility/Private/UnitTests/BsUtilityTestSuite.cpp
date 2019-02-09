@@ -7,6 +7,7 @@
 #include "Utility/BsDynArray.h"
 #include "Math/BsComplex.h"
 #include "Utility/BsMinHeap.h"
+#include "Utility/BsQuadtree.h"
 
 namespace bs
 {
