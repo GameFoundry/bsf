@@ -27,7 +27,7 @@ namespace bs
 {
 	void BuiltinResourcesHelper::importAssets(const nlohmann::json& entries, const Vector<bool>& importFlags, 
 		const Path& inputFolder, const Path& outputFolder, const SPtr<ResourceManifest>& manifest, AssetType mode,
-		nlohmann::json* dependencies, bool compress)
+		nlohmann::json* dependencies, bool compress, bool mipmap)
 	{
 		if (!FileSystem::exists(inputFolder))
 			return;
@@ -79,7 +79,7 @@ namespace bs
 					SPtr<TextureImportOptions> texImportOptions = 
 						std::static_pointer_cast<TextureImportOptions>(importOptions);
 
-					texImportOptions->setGenerateMipmaps(false);
+					texImportOptions->setGenerateMipmaps(mipmap);
 				}
 				else if (rtti_is_of_type<ShaderImportOptions>(importOptions))
 				{
@@ -720,7 +720,7 @@ namespace bs
 		if(entry.count("wordWrap") > 0)
 			style.wordWrap = entry["wordWrap"];
 
-		const auto loadState = [&loader, &entry](const char* name, GUIElementStyle::GUIElementStateStyle& state)
+		const auto loadState = [&loader, &entry](const char* name, GUIElementStateStyle& state)
 		{
 			if (entry.count(name) == 0)
 				return false;

@@ -44,10 +44,11 @@ namespace bs
 		 * @param[in]	mode			Mode that controls how are files imported.
 		 * @param[in]	dependencies	Optional map that be updated with any dependencies the imported assets depend on.
 		 * @param[in]	compress		True if the imported asset should be compressed when saved to the disk.
+		 * @param[in]	mipmap			True if mipmaps should be generated.
 		 */
 		static void importAssets(const nlohmann::json& entries, const Vector<bool>& importFlags, const Path& inputFolder, 
 			const Path& outputFolder, const SPtr<ResourceManifest>& manifest, AssetType mode = AssetType::Normal,
-			nlohmann::json* dependencies = nullptr, bool compress = false);
+			nlohmann::json* dependencies = nullptr, bool compress = false, bool mipmap = false);
 
 		/**
 		 * Imports a font from the specified file. Imported font assets are saved in the output folder. All saved resources
