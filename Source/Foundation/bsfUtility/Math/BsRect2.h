@@ -20,6 +20,10 @@ namespace bs
 			:x(_x), y(_y), width(_width), height(_height)
 		{ }
 
+		Rect2(const Vector2& coords, const Vector2& measures)
+			:x(coords.x), y(coords.y), width(measures.x), height(measures.y)
+		{ }
+
 		float x = 0.0f;
 		float y = 0.0f;
 		float width = 0.0f;
