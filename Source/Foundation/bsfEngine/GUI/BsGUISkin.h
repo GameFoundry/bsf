@@ -16,10 +16,11 @@ namespace bs
 	 * Holds a set of styles that control how are GUI element types positioned and displayed in the GUI. Each element type
 	 * can be assigned a specific style.
 	 */
-	class BS_EXPORT GUISkin : public Resource
+	class BS_EXPORT BS_SCRIPT_EXPORT(m:GUI) GUISkin : public Resource
 	{
 	public:
 		/**	Checks if the style with the specified name exists. */
+		BS_SCRIPT_EXPORT()
 		bool hasStyle(const String& name) const;
 
 		/**
@@ -27,6 +28,7 @@ namespace bs
 		 *
 		 * @see		GUIElement::getGUITypeName
 		 */
+		BS_SCRIPT_EXPORT()
 		const GUIElementStyle* getStyle(const String& guiElemType) const;
 
 		/**
@@ -34,6 +36,7 @@ namespace bs
 		 *
 		 * @see		GUIElement::getGUITypeName
 		 */
+		BS_SCRIPT_EXPORT()
 		void setStyle(const String& guiElemType, const GUIElementStyle& style);
 
 		/**
@@ -41,12 +44,15 @@ namespace bs
 		 *
 		 * @see		GUIElement::getGUITypeName
 		 */
+		BS_SCRIPT_EXPORT()
 		void removeStyle(const String& guiElemType);
 
 		/**	Returns names of all styles registered on this skin. */
+		BS_SCRIPT_EXPORT(pr:getter,n:StyleNames)
 		Vector<String> getStyleNames() const;
 
 		/**	Creates an empty GUI skin and returns a handle to it. */
+		BS_SCRIPT_EXPORT(ec:GUISkin)
 		static HGUISkin create();
 
 		/**	Default style that may be used when no other is available. */

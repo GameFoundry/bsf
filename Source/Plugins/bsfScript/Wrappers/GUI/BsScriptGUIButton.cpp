@@ -11,11 +11,11 @@
 #include "GUI/BsGUILayout.h"
 #include "GUI/BsGUIButton.h"
 #include "GUI/BsGUIOptions.h"
-#include "Wrappers/GUI/BsScriptGUIElementStyle.h"
 #include "Wrappers/GUI/BsScriptGUILayout.h"
 
 #include "Generated/BsScriptHString.generated.h"
 #include "Generated/BsScriptGUIContent.generated.h"
+#include "Generated/BsScriptGUIElementStyle.generated.h"
 
 namespace bs
 {

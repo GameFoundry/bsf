@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/** Rectangle represented in the form of offsets from some parent rectangle. */
-	struct RectOffset
+	struct BS_SCRIPT_EXPORT(pl:true,m:Math) RectOffset
 	{
 		RectOffset() = default;
 

@@ -1,13 +1,14 @@
 //********************************* bs::framework - Copyright 2018-2019 Marko Pintera ************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "Wrappers/GUI/BsScriptGUI.h"
-#include "Wrappers/GUI/BsScriptGUISkin.h"
 #include "Wrappers/GUI/BsScriptGUILayout.h"
 #include "GUI/BsGUIWidget.h"
 #include "Scene/BsSceneManager.h"
 #include "BsScriptObjectManager.h"
 #include "Resources/BsBuiltinResources.h"
 #include "BsMonoMethod.h"
+
+#include "Generated/BsScriptGUISkin.generated.h"
 
 namespace bs
 {

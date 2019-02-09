@@ -10,8 +10,9 @@
 #include "GUI/BsGUILayout.h"
 #include "GUI/BsGUIScrollArea.h"
 #include "GUI/BsGUIOptions.h"
-#include "Wrappers/GUI/BsScriptGUIElementStyle.h"
 #include "Wrappers/GUI/BsScriptGUILayout.h"
+
+#include "Generated/BsScriptGUIElementStyle.generated.h"
 
 namespace bs
 {

@@ -35,6 +35,7 @@
 #include "Wrappers/BsScriptScriptCode.h"
 #include "Wrappers/BsScriptShaderInclude.h"
 #include "Wrappers/BsScriptPrefab.h"
+#include "Wrappers/GUI/BsScriptGUISkin.h"
 #include "Serialization/BsBuiltinResourceLookup.h"
 
 #include "BsScriptMesh.generated.h"
@@ -48,9 +49,7 @@
 #include "BsScriptSpriteTexture.generated.h"
 #include "BsScriptStringTable.generated.h"
 #include "BsScriptVectorField.generated.h"
-#include "BsScriptGUISkin.generated.h"
 #include "Wrappers/BsScriptRRefBase.h"
-
 
 namespace bs
 {
@@ -313,15 +312,6 @@ namespace bs
 
 					if (property->hasAttribute(mBuiltin.nativeWrapperAttribute))
 						propertyInfo->mFlags |= ScriptFieldFlag::NativeWrapper;
-
-					if (property->hasAttribute(mBuiltin.categoryAttribute))
-						propertyInfo->mFlags |= ScriptFieldFlag::Category;
-
-					if (property->hasAttribute(mBuiltin.orderAttribute))
-						propertyInfo->mFlags |= ScriptFieldFlag::Order;
-
-					if (property->hasAttribute(mBuiltin.inlineAttribute))
-						propertyInfo->mFlags |= ScriptFieldFlag::Inline;
 				}
 
 				objInfo->mFieldNameToId[propertyInfo->mName] = propertyInfo->mFieldId;
