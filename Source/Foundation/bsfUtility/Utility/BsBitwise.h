@@ -209,6 +209,16 @@ namespace bs
 			return result;
 		}
 
+		/** Count the number of set bits in a mask. */
+		static uint32_t countSetBits(uint32_t val)
+		{
+			uint32_t count = 0;
+			for (count = 0; val; count++)
+				val &= val - 1;
+
+			return count;
+		}
+
 		/** Takes a value with a given src bit mask, and produces another value with a desired bit mask. */
 		template<typename SrcT, typename DestT>
 		static DestT convertBitPattern(SrcT srcValue, SrcT srcBitMask, DestT destBitMask)

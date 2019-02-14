@@ -218,6 +218,12 @@ namespace bs
 		{
 			return f != f;
 		}
+		/** Performs smooth Hermite interpolation between values. */
+		static float smoothStep(float val1, float val2, float t) 
+		{
+			t = clamp((t - val1) / (val2 - val1), 0.0f, 1.0f);
+			return t * t * (3.0f - 2.0f * t);
+		}
 
 		/** Compare two floats, using tolerance for inaccuracies. */
 		static bool approxEquals(float a, float b, 
