@@ -23,7 +23,7 @@ function(add_generate_script_bindings_target)
 		addForGeneration(${BSF_SOURCE_DIR}/Foundation/bsfUtility)
 		addForGeneration(${BSF_SOURCE_DIR}/Foundation/bsfCore)
 		addForGeneration(${BSF_SOURCE_DIR}/Foundation/bsfEngine)
-		addForGeneration(${BSF_SOURCE_DIR}/Plugins/bsfScript)
+		addForGeneration(${BSF_SOURCE_DIR}/Scripting/bsfScript)
 		
 		if(BS_IS_BANSHEE3D)
 			addForGeneration(${PROJECT_SOURCE_DIR}/Source/EditorCore)
@@ -32,7 +32,7 @@ function(add_generate_script_bindings_target)
 
 		set(BS_SCRIPT_PARSER_INCLUDE_DIRS 
 			${BS_SCRIPT_PARSER_INCLUDE_DIRS} 
-			"-I${BSF_SOURCE_DIR}/Plugins/bsfMono"
+			"-I${BSF_SOURCE_DIR}/Scripting/bsfMono"
 			"-I${BSF_SOURCE_DIR}/Foundation/bsfUtility/ThirdParty"
 			"-I${PROJECT_BINARY_DIR}/Generated/bsfUtility/")
 
@@ -53,8 +53,8 @@ function(add_generate_script_bindings_target)
 
 		set(GenScriptBinding_SBGEN_EXECUTABLE ${BansheeSBGen_EXECUTABLE_PATH})
 		set(GenScriptBinding_SOURCE_FILE ${PROJECT_BINARY_DIR}/toParse.cpp)
-		set(GenScriptBinding_OUTPUT_CPP_DIR ${BSF_SOURCE_DIR}/Plugins/bsfScript/Generated)
-		set(GenScriptBinding_OUTPUT_CS_DIR ${BSF_SOURCE_DIR}/Plugins/bsfSharp/Generated)
+		set(GenScriptBinding_OUTPUT_CPP_DIR ${BSF_SOURCE_DIR}/Scripting/bsfScript/Generated)
+		set(GenScriptBinding_OUTPUT_CS_DIR ${BSF_SOURCE_DIR}/Scripting/bsfSharp/Generated)
 		set(GenScriptBinding_INCLUDE_DIRS ${BS_SCRIPT_PARSER_INCLUDE_DIRS})
 		set(GenScriptBinding_WORKING_DIR ${PROJECT_SOURCE_DIR})
 		

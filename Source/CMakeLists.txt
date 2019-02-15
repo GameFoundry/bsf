@@ -124,9 +124,9 @@ if(INCLUDE_ALL_IN_WORKFLOW AND MSVC)
 	add_subdirectory(Plugins/bsfOpenAudio)
 	
 	## Scripting
-	add_subdirectory(Plugins/bsfMono)
-	add_subdirectory(Plugins/bsfScript)
-	add_subdirectory(Plugins/bsfSharp)
+	add_subdirectory(Scripting/bsfMono)
+	add_subdirectory(Scripting/bsfScript)
+	add_subdirectory(Scripting/bsfSharp)
 else() # Otherwise include only chosen ones
 	if(RENDER_API_MODULE MATCHES "DirectX 11")
 		add_subdirectory(Plugins/bsfD3D11RenderAPI)
@@ -145,12 +145,12 @@ else() # Otherwise include only chosen ones
 	endif()
 	
 	if((SCRIPT_API AND (NOT SCRIPT_API MATCHES "None")) OR BS_IS_BANSHEE3D)
-		add_subdirectory(Plugins/bsfScript)
+		add_subdirectory(Scripting/bsfScript)
 	endif()
 	
 	if((SCRIPT_API AND SCRIPT_API MATCHES "C#") OR BS_IS_BANSHEE3D)
-		add_subdirectory(Plugins/bsfMono)
-		add_subdirectory(Plugins/bsfSharp)
+		add_subdirectory(Scripting/bsfMono)
+		add_subdirectory(Scripting/bsfSharp)
 	endif()
 endif()
 
