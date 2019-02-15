@@ -202,7 +202,7 @@ namespace bs { namespace ct
 	struct CullInfo
 	{
 		CullInfo(const Bounds& bounds, UINT64 layer = -1, float cullDistanceFactor = 1.0f)
-			:bounds(bounds), layer(layer), cullDistanceFactor(cullDistanceFactor)
+			:layer(layer), bounds(bounds), cullDistanceFactor(cullDistanceFactor)
 		{ }
 
 		UINT64 layer;

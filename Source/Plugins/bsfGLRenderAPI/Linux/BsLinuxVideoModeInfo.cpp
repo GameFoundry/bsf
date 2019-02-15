@@ -177,6 +177,6 @@ namespace bs { namespace ct
 	LinuxVideoMode::LinuxVideoMode(UINT32 width, UINT32 height, float refreshRate, UINT32 outputIdx, RRMode modeID)
 		:VideoMode(width, height, refreshRate, outputIdx), mModeID(modeID)
 	{
-		mIsCustom = false;
+		isCustom = false;
 	}
 }}
