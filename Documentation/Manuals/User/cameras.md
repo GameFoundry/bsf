@@ -85,7 +85,7 @@ Normally you want to set it to the ratio of the render target's width and height
 SPtr<RenderWindow> primaryWindow = gApplication().getPrimaryWindow();
 auto& windowProps = primaryWindow->getProperties();
 
-float aspectRatio = windowProps.getWidth() / (float)windowProps.getHeight();
+float aspectRatio = windowProps.width / (float)windowProps.height;
 camera->setAspectRatio(aspectRatio);
 ~~~~~~~~~~~~~
 
@@ -105,7 +105,7 @@ For example, if you are making a 2D game, your world units are most likely pixel
 SPtr<RenderWindow> primaryWindow = gApplication().getPrimaryWindow();
 auto& windowProps = primaryWindow->getProperties();
 
-camera->setOrthoWindow(windowProps.getWidth(), windowProps.getHeight());
+camera->setOrthoWindow(windowProps.width, windowProps.height);
 ~~~~~~~~~~~~~
 
 # Multi-sample anti-aliasing {#cameras_e}

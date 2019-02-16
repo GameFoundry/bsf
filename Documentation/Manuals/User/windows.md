@@ -59,7 +59,7 @@ You can access current properties of the window, like its size and position, by 
 ~~~~~~~~~~~~~{.cpp}
 auto& props = newWindow->getProperties();
 
-gDebug().logDebug(toString(props.getWidth()) + " x " + toString(props.getHeight()));
+gDebug().logDebug(toString(props.width) + " x " + toString(props.height));
 ~~~~~~~~~~~~~
 
 # Window events {#windows_e}
@@ -109,7 +109,7 @@ for (UINT32 i = 0; i < numVideoModes; i++)
 {
 	const VideoMode& curVideoMode = primaryMonitorInfo.getVideoMode(i);
 
-	String videoModeString = toString(curVideoMode.getWidth()) + " x " + toString(curVideoMode.getHeight()) + " at " + toString(curVideoMode.getRefreshRate()) + "Hz";
+	String videoModeString = toString(curVideoMode.width) + " x " + toString(curVideoMode.height) + " at " + toString(curVideoMode.refreshRate) + "Hz";
 	
 	gDebug().logDebug(videoModeString);
 }
