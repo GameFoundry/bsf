@@ -162,7 +162,7 @@ namespace bs
                         throw new Exception("Attempted to set a serializable value using an invalid type. " +
                             "Provided type: " + typeof(T) + ". Needed type: " + internalType);
 
-                   setter((T) Convert.ChangeType(getter(), typeof(T)));
+                   setter((T) Convert.ChangeType(value, typeof(T)));
                    return;
                 }
 
