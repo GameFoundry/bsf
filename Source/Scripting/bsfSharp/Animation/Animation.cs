@@ -5,11 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-#if IS_B3D
-namespace BansheeEngine
-#else
 namespace bs
-#endif
 {
     /** @addtogroup Animation
      *  @{

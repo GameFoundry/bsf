@@ -4,11 +4,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-#if IS_B3D
-namespace BansheeEngine
-#else
 namespace bs
-#endif
 {
 #if !IS_B3D
 	/** @addtogroup Application
@@ -30,7 +26,7 @@ namespace bs
 			value.input = "";
 			value.physicsCooking = true;
 			value.primaryWindowDesc = new RenderWindowDesc();
-			value.importers = "";
+			value.importers = null;
 
 			return value;
 		}

@@ -4,22 +4,18 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-#if IS_B3D
-namespace BansheeEngine
-#else
 namespace bs
-#endif
 {
 	/** @addtogroup Rendering
 	 *  @{
 	 */
 
 	/// <summary>
-	/// Descriptor that describes a simple sprite sheet animation. The parent texture is split into a grid of  <paramref 
-	/// name="numRows"/> x <paramref name="numColumns"/>, each representing one frame of the animation. Every frame is of 
-	/// equal size. Frames are sequentially evaluated starting from the top-most row, iterating over all columns in a row and 
-	/// then moving to next row, up to <paramref name="count"/> frames. Frames in rows/colums past <paramref name="count"/>. 
-	/// <paramref name="fps"/> frames are evaluated every second, allowing you to control animation speed.
+	/// Descriptor that describes a simple sprite sheet animation. The parent texture is split into a grid of  <see 
+	/// cref="numRows"/> x <see cref="numColumns"/>, each representing one frame of the animation. Every frame is of equal 
+	/// size. Frames are sequentially evaluated starting from the top-most row, iterating over all columns in a row and then 
+	/// moving to next row, up to <see cref="count"/> frames. Frames in rows/colums past <see cref="count"/>. <see 
+	/// cref="fps"/> frames are evaluated every second, allowing you to control animation speed.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential), SerializeObject]
 	public partial struct SpriteSheetGridAnimation

@@ -4,11 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-#if IS_B3D
-namespace BansheeEngine
-#else
 namespace bs
-#endif
 {
     /** @addtogroup GUI_Engine
      *  @{

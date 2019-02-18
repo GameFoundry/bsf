@@ -4,11 +4,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-#if IS_B3D
-namespace BansheeEngine
-#else
 namespace bs
-#endif
 {
 	/// <summary>
 	/// Controls what kind of mobility restrictions a scene object has. This is used primarily as a performance hint to other 

@@ -4,11 +4,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-#if IS_B3D
-namespace BansheeEngine
-#else
 namespace bs
-#endif
 {
     /** @addtogroup Serialization
      *  @{

@@ -1,13 +1,11 @@
 # Generate the CS project file
 if(BS_IS_BANSHEE3D)
-	set(BS_CS_NAMESPACE "BansheeEngine")
 	set(BS_CS_ASSEMBLY_NAME "MBansheeEngine")
 else()
-	set(BS_CS_NAMESPACE "bs")
 	set(BS_CS_ASSEMBLY_NAME "bsfSharpCore")
 endif()
 
-generate_csharp_project(${BSF_SOURCE_DIR}/Scripting/bsfSharp bsfSharp ${BS_CS_NAMESPACE} ${BS_CS_ASSEMBLY_NAME})
+generate_csharp_project(${BSF_SOURCE_DIR}/Scripting/bsfSharp bsfSharp bs ${BS_CS_ASSEMBLY_NAME})
 
 # Include the CS project in the build
 set(BS_CS_PROJ "${BS_CS_ASSEMBLY_NAME}.csproj")

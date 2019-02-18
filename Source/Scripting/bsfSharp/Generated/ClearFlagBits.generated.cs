@@ -4,11 +4,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-#if IS_B3D
-namespace BansheeEngine
-#else
 namespace bs
-#endif
 {
 	/// <summary>Flags that determine which portion of the viewport to clear.</summary>
 	public enum ClearFlags
