@@ -25,7 +25,15 @@ namespace bs
         }
 
         /// <summary>
-        /// Vertical layout that will position its child elements left to right.
+        /// Constructs a new empty vertical layout.
+        /// </summary>
+        public GUILayoutY()
+        {
+            Internal_CreateInstanceY(this, new GUIOption[0]);
+        }
+
+        /// <summary>
+        /// Constructs a new empty vertical layout.
         /// </summary>
         public GUILayoutY(params GUIOption[] options)
         {

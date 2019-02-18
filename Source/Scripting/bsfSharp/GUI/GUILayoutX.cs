@@ -17,6 +17,14 @@ namespace bs
         /// <summary>
         /// Constructs a new empty horizontal layout.
         /// </summary>
+        public GUILayoutX()
+        {
+            Internal_CreateInstanceX(this, new GUIOption[0]);
+        }
+
+        /// <summary>
+        /// Constructs a new empty horizontal layout.
+        /// </summary>
         /// <param name="options">Options that allow you to control how is the layout positioned and sized.</param>
         public GUILayoutX(params GUIOption[] options)
         {
