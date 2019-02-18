@@ -31,6 +31,10 @@ namespace bs
 			mActiveTexture = _getStyle()->normal.texture;
 			mUsingStyleTexture = true;
 		}
+
+		bool isTexLoaded = SpriteTexture::checkIsLoaded(mActiveTexture);
+		mActiveTextureWidth = isTexLoaded ? mActiveTexture->getWidth() : 0;
+		mActiveTextureHeight = isTexLoaded ? mActiveTexture->getHeight() : 0;
 	}
 
 	GUITexture::~GUITexture()
@@ -108,6 +112,11 @@ namespace bs
 		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 
 		mActiveTexture = texture;
+
+		bool isTexLoaded = SpriteTexture::checkIsLoaded(mActiveTexture);
+		mActiveTextureWidth = isTexLoaded ? mActiveTexture->getWidth() : 0;
+		mActiveTextureHeight = isTexLoaded ? mActiveTexture->getHeight() : 0;
+
 		mUsingStyleTexture = false;
 		mDesc.animationStartTime = gTime().getTime();
 
@@ -138,9 +147,47 @@ namespace bs
 	}
 
 	void GUITexture::updateRenderElementsInternal()
-	{		
-		mDesc.width = mLayoutData.area.width;
-		mDesc.height = mLayoutData.area.height;
+	{
+		Vector2I textureSize;
+		if (SpriteTexture::checkIsLoaded(mActiveTexture))
+		{
+			mDesc.texture = mActiveTexture;
+			textureSize.x = mDesc.texture->getWidth();
+			textureSize.y = mDesc.texture->getHeight();
+		}
+		Vector2I destSize(mLayoutData.area.width, mLayoutData.area.height);
+
+		// ScaleToFit is the only scaling mode that might result in the GUITexture area not being completely covered by
+		// the sprite. We need the actual sprite size and offsets to center it.
+		if(mScaleMode == TextureScaleMode::ScaleToFit)
+		{
+			if(destSize.x != 0 && destSize.y != 0)
+			{
+				float aspectX = textureSize.x / (float)destSize.x;
+				float aspectY = textureSize.y / (float)destSize.y;
+
+				if (aspectY > aspectX)
+				{
+					destSize.x = Math::roundToPosInt(textureSize.x / aspectY);
+					destSize.y = Math::roundToPosInt(textureSize.y / aspectY);
+				}
+				else
+				{
+					destSize.x = Math::roundToPosInt(textureSize.x / aspectX);
+					destSize.y = Math::roundToPosInt(textureSize.y / aspectX);
+				}
+			}
+
+			mImageSpriteOffset = Vector2I(
+				((INT32)mLayoutData.area.width - destSize.x) / 2,
+				((INT32)mLayoutData.area.height - destSize.y) / 2
+			);
+		}
+		else
+			mImageSpriteOffset = Vector2I();
+
+		mDesc.width = (UINT32)destSize.x;
+		mDesc.height = (UINT32)destSize.y;
 
 		mDesc.borderLeft = _getStyle()->border.left;
 		mDesc.borderRight = _getStyle()->border.right;
@@ -149,15 +196,6 @@ namespace bs
 		mDesc.transparent = mTransparent;
 		mDesc.color = getTint();
 
-		Vector2I textureSize;
-		if (SpriteTexture::checkIsLoaded(mActiveTexture))
-		{
-			mDesc.texture = mActiveTexture;
-			textureSize.x = mDesc.texture->getWidth();
-			textureSize.y = mDesc.texture->getHeight();
-		}
-
-		Vector2I destSize(mLayoutData.area.width, mLayoutData.area.height);
 		mDesc.uvScale = ImageSprite::getTextureUVScale(textureSize, destSize, mScaleMode);
 		
 		mImageSprite->update(mDesc, (UINT64)_getParentWidget());
@@ -171,6 +209,10 @@ namespace bs
 		{
 			mActiveTexture = _getStyle()->normal.texture;
 			mDesc.animationStartTime = gTime().getTime();
+
+			bool isTexLoaded = SpriteTexture::checkIsLoaded(mActiveTexture);
+			mActiveTextureWidth = isTexLoaded ? mActiveTexture->getWidth() : 0;
+			mActiveTextureHeight = isTexLoaded ? mActiveTexture->getHeight() : 0;
 		}
 	}
 
@@ -179,12 +221,16 @@ namespace bs
 		// TODO - Accounting for style dimensions might be redundant here, I'm pretty sure we do that on higher level anyway
 		Vector2I optimalSize;
 
+		// Note: We use cached texture size here. This is because we use this method for checking we a layout update is
+		// needed (size change is detected). Sprite texture could change without us knowing and by storing the size we can
+		// safely detect this. (In short, don't do mActiveTexture->getWidth/Height() here)
+		
 		if(_getDimensions().fixedWidth())
 			optimalSize.x = _getDimensions().minWidth;
 		else
 		{
 			if (SpriteTexture::checkIsLoaded(mActiveTexture))
-				optimalSize.x = mActiveTexture->getWidth();
+				optimalSize.x = mActiveTextureWidth;
 			else
 				optimalSize.x = _getDimensions().maxWidth;
 		}
@@ -194,7 +240,7 @@ namespace bs
 		else
 		{
 			if (SpriteTexture::checkIsLoaded(mActiveTexture))
-				optimalSize.y = mActiveTexture->getHeight();
+				optimalSize.y = mActiveTextureHeight;
 			else
 				optimalSize.y = _getDimensions().maxHeight;
 		}
@@ -210,6 +256,7 @@ namespace bs
 		UINT32 indexStride = sizeof(UINT32);
 
 		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
+		offset += mImageSpriteOffset;
 		mImageSprite->fillBuffer(vertices, uvs, indices, vertexOffset, indexOffset, maxNumVerts, maxNumIndices,
 			vertexStride, indexStride, renderElementIdx, offset, mLayoutData.getLocalClipRect());
 	}

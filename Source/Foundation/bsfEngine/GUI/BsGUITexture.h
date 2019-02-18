@@ -179,7 +179,10 @@ namespace bs
 		void styleUpdated() override;
 
 		ImageSprite* mImageSprite;
+		Vector2I mImageSpriteOffset;
 		HSpriteTexture mActiveTexture;
+		UINT32 mActiveTextureWidth = 0;
+		UINT32 mActiveTextureHeight = 0;
 		IMAGE_SPRITE_DESC mDesc;
 		TextureScaleMode mScaleMode;
 		bool mTransparent;
