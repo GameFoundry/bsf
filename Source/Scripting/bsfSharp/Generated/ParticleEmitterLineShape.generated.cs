@@ -30,6 +30,7 @@ namespace bs
 
 		/// <summary>Options describing the shape.</summary>
 		[ShowInInspector]
+		[Inline]
 		[NativeWrapper]
 		public ParticleLineShapeOptions Options
 		{
