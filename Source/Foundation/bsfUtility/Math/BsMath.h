@@ -9,6 +9,57 @@
 
 namespace bs
 {
+	/** @addtogroup Implementation
+	 *  @{
+	 */
+
+	namespace impl
+	{
+		/** Helper method for implementing variable-parameter Math::min. */
+		template<typename T>
+		const T& min(const T& in)
+		{
+			return in;
+		}
+
+		/** Helper method for implementing variable-parameter Math::min. */
+		template<typename A, typename B>
+		std::common_type_t<A, B> min(const A& a, const B& b)
+		{
+			return a < b ? a : b;
+		}
+
+		/** Helper method for implementing variable-parameter Math::min. */
+		template<typename A, typename B, typename ...Args>
+		std::common_type_t<A, B, Args...> min(const A& a, const B& b, const Args& ...args)
+		{
+			return min(min(a, b), min(args...));
+		}
+
+		/** Helper method for implementing variable-parameter Math::max. */
+		template<typename T>
+		const T& max(const T& in)
+		{
+			return in;
+		}
+
+		/** Helper method for implementing variable-parameter Math::max. */
+		template<typename A, typename B>
+		std::common_type_t<A, B> max(const A& a, const B& b)
+		{
+			return a > b ? a : b;
+		}
+
+		/** Helper method for implementing variable-parameter Math::max. */
+		template<typename A, typename B, typename ...Args>
+		std::common_type_t<A, B, Args...> max(const A& a, const B& b, const Args& ...args)
+		{
+			return max(max(a, b), max(args...));
+		}
+	}
+
+	/** @} */
+
 	/** @addtogroup Math
 	 *  @{
 	 */
@@ -508,6 +559,34 @@ namespace bs
 		static float invLerp(T val, T min, T max)
 		{
 			return clamp01((val - min) / std::max(max - min, 0.0001F));
+		}
+
+		/** Returns the minimum value of the two provided. */
+		template <typename A, typename B>
+		static std::common_type_t<A, B> min(const A& a, const B& b) 
+		{
+			return impl::min(a, b);
+		}
+
+		/** Returns the minimum value of all the values provided. */
+		template <typename A, typename B, typename... Args>
+		static std::common_type_t<A, B, Args...> min(const A& a, const B& b, const Args&... args)
+		{
+			return impl::min(a, b, args...);
+		}
+
+		/** Returns the maximum value of the two provided. */
+		template <typename A, typename B>
+		static std::common_type_t<A, B> max(const A& a, const B& b)
+		{
+			return impl::max(a, b);
+		}
+
+		/** Returns the maximum value of all the values provided. */
+		template <typename A, typename B, typename... Args>
+		static std::common_type_t<A, B, Args...> max(const A& a, const B& b, const Args&... args)
+		{
+			return impl::max(a, b, args...);
 		}
 
 		/**
