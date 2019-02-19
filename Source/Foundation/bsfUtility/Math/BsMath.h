@@ -510,6 +510,40 @@ namespace bs
 			return clamp01((val - min) / std::max(max - min, 0.0001F));
 		}
 
+		/** Returns the minimum value of the two provided. */
+		template <typename T>
+		static T min(T a, T b) 
+		{
+			if (a < b)
+				return a;
+
+			return b;
+		}
+
+		/** Returns the minimum value of all the values provided. */
+		template<typename T, typename... Args>
+		static T min(T a, T b, Args&&... args)
+		{
+			return a < b ? min(a, std::forward<Args>(args)...) : min(b, std::forward<Args>(args)...);
+		}
+
+		/** Returns the maximum value of the two provided. */
+		template <typename T>
+		static T max(T a, T b)
+		{
+			if (a > b)
+				return a;
+
+			return b;
+		}
+
+		/** Returns the maximum value of all the values provided. */
+		template<typename T, typename... Args>
+		static T min(T a, T b, Args&&... args)
+		{
+			return a > b ? max(a, std::forward<Args>(args)...) : max(b, std::forward<Args>(args)...);
+		}
+
 		/**
 		 * Solves the linear equation with the parameters A, B. Returns number of roots found and the roots themselves will
 		 * be output in the @p roots array.
