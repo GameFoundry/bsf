@@ -539,7 +539,7 @@ namespace bs
 
 		/** Returns the maximum value of all the values provided. */
 		template<typename T, typename... Args>
-		static T min(T a, T b, Args&&... args)
+		static T max(T a, T b, Args&&... args)
 		{
 			return a > b ? max(a, std::forward<Args>(args)...) : max(b, std::forward<Args>(args)...);
 		}
