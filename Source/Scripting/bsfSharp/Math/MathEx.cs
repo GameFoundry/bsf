@@ -631,6 +631,77 @@ namespace bs
         }
 
         /// <summary>
+        /// Rounds to the nearest multiple.
+        /// </summary>
+        /// <param name="f">Value to round</param>
+        /// <param name="multiple">multiple for the rounds</param>
+        /// <returns>Rounded value to the nearest multiple.</returns>
+        public static float RoundToMultiple(float f, float multiple)
+        {
+            return Floor((f + multiple * 0.5f) / multiple) * multiple;
+        }
+
+        /// <summary>
+        /// Divides a value by another value and returns the result, rounded up. 
+        /// Only works if both values are positive.
+        /// </summary>
+        /// <param name="n">First value.</param>
+        /// <param name="d">Second value.</param>
+        /// <returns>Divided and rounded up the values.</returns>
+        public static float DivideAndRoundUp(float n, float d)
+        {
+            return (n + d - 1.0f) / d;
+        }
+
+        /// <summary>
+        /// Returns a floating point remainder for (f / length).
+        /// </summary>
+        /// <param name="f">First value for the remainder.</param>
+        /// <param name="length">Second value for the remainder.</param>
+        /// <returns>Floating point remainder for the values.</returns>
+        public static float Repeat(float f, float length)
+        {
+            return f - Floor(f / length) * length;
+        }
+
+        /// <summary>
+        /// Wraps the value in range [0, length] and reverses the direction every length increment.
+        /// This results in f incrementing until length, then decrementing back to 0, and so on.
+        /// </summary>
+        /// <param name="f">Value to increment.</param>
+        /// <param name="length">Value for the length of the increment.</param>
+        /// <returns>Floating point for the provided values.</returns>
+        public static float PingPong(float f, float length)
+        {
+            float val = Repeat(f, length * 2.0f);
+            return length - Abs(f - length);
+        }
+
+        /// <summary>
+        /// Determines the position of the value between two other values. Returns 0 if f is 
+        /// less or equal that min, 1 if f is equal or greater than max, and value in 
+        /// range (0, 1) otherwise.
+        /// </summary>
+        /// <param name="f">Value to take inverse lerp of.</param>
+        /// <param name="min">Minimum value of the range.</param>
+        /// <param name="max">Maximum value of the range.</param>
+        /// <returns>Inverse lerp of the provided values.</returns>
+        public static float InvLerp(float f, float min, float max)
+        {
+            return Clamp01((f - min) / Max(max - min, 0.0001f));
+        }
+
+        /// <summary>
+        /// Return a cubic root of the provided value.
+        /// </summary>
+        /// <param name="val">Value to take the square root of.</param>
+        /// <returns>Cubic root of the provided value.</returns>
+        public static float Cbrt(float val)
+        {
+            return (float)Math.Pow(val, 1 / 3);
+        }
+
+        /// <summary>
         /// Compares two floating point numbers with an error margin.
         /// </summary>
         /// <param name="a">First number to compare.</param>
