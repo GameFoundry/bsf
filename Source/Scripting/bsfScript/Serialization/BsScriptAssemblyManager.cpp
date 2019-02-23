@@ -82,6 +82,15 @@ namespace bs
 				else
 					typeInfo->mValueType = false;
 
+				::MonoReflectionType* type = MonoUtil::getType(curClass->_getInternalClass());
+
+				// Is this a wrapper for some reflectable type?
+				ReflectableTypeInfo* reflTypeInfo = getReflectableTypeInfo(type);
+				if(reflTypeInfo != nullptr)
+					typeInfo->mRTIITypeId = reflTypeInfo->typeId;
+				else
+					typeInfo->mRTIITypeId = 0;
+
 				SPtr<ManagedSerializableObjectInfo> objInfo = bs_shared_ptr_new<ManagedSerializableObjectInfo>();
 
 				objInfo->mTypeInfo = typeInfo;
@@ -854,29 +863,22 @@ namespace bs
 				return nullptr;
 			}
 
-			if (auto typeInfoRef = rtti_cast<ManagedSerializableTypeInfoRef>(objInfo->mTypeInfo))
+			if (objInfo->mTypeInfo->mRTIITypeId != 0)
 			{
-				if (typeInfoRef->mType == ScriptReferenceType::ReflectableObject)
-				{
-					::MonoClass* monoClass = MonoUtil::getClass(value);
-					::MonoReflectionType* monoType = MonoUtil::getType(monoClass);
+				::MonoClass* monoClass = MonoUtil::getClass(value);
+				::MonoReflectionType* monoType = MonoUtil::getType(monoClass);
 
-					const ReflectableTypeInfo* reflTypeInfo = instance().getReflectableTypeInfo(monoType);
-					assert(reflTypeInfo);
+				const ReflectableTypeInfo* reflTypeInfo = instance().getReflectableTypeInfo(monoType);
+				assert(reflTypeInfo);
 
-					ScriptReflectableBase* scriptReflectable = nullptr;
+				ScriptReflectableBase* scriptReflectable = nullptr;
 
-					if (reflTypeInfo->metaData->thisPtrField != nullptr)
-						reflTypeInfo->metaData->thisPtrField->get(value, &scriptReflectable);
+				if (reflTypeInfo->metaData->thisPtrField != nullptr)
+					reflTypeInfo->metaData->thisPtrField->get(value, &scriptReflectable);
 
-					nativeValue = scriptReflectable->getReflectable();
-				}
-				else
-				{
-					LOGERR(StringUtil::format("Object type ({0}) is not allowed.", (UINT32)typeInfoRef->mType));
-				}
+				nativeValue = scriptReflectable->getReflectable();
 			}
-			else if (rtti_is_of_type<ManagedSerializableTypeInfoObject>(objInfo->mTypeInfo))
+			else
 			{
 				SPtr<ManagedSerializableObject> managedObj = ManagedSerializableObject::createFromExisting(value);
 				if (!managedObj)
@@ -887,11 +889,6 @@ namespace bs
 
 				managedObj->serialize();
 				nativeValue = managedObj;
-			}
-			else
-			{
-				LOGERR(StringUtil::format("Object type ({0}) is not allowed.", objInfo->mTypeInfo->getRTTI()->getRTTIId()));
-				return nullptr;
 			}
 		}
 

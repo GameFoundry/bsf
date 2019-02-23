@@ -358,7 +358,8 @@ namespace bs
 
 		auto objTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoObject>(typeInfo);
 
-		return objTypeInfo->mTypeNamespace == mTypeNamespace && objTypeInfo->mTypeName == mTypeName && objTypeInfo->mValueType == mValueType;
+		return objTypeInfo->mTypeNamespace == mTypeNamespace && objTypeInfo->mTypeName == mTypeName && 
+			objTypeInfo->mValueType == mValueType && objTypeInfo->mRTIITypeId == mRTIITypeId;
 	}
 
 	bool ManagedSerializableTypeInfoObject::isTypeLoaded() const

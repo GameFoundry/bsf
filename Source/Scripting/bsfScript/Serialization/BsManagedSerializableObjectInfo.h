@@ -225,6 +225,7 @@ namespace bs
 		String mTypeNamespace;
 		String mTypeName;
 		bool mValueType;
+		UINT32 mRTIITypeId;
 		ScriptTypeFlags mFlags;
 		UINT32 mTypeId;
 
