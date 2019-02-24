@@ -129,7 +129,7 @@ mixin ShapingCommon
 			else 
 			  res = b + (1 - b) * pow((x - a) / (1 - a), p);
 
-			return y;
+			return res;
 		}
 
 		float polynomialSigmoid(float x, float a, float b, int n)
