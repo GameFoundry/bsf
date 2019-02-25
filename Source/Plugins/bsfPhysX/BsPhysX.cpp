@@ -128,6 +128,7 @@ namespace bs
 	{
 		void onWake(PxActor** actors, PxU32 count) override { /* Do nothing */ }
 		void onSleep(PxActor** actors, PxU32 count) override { /* Do nothing */ }
+		void onAdvance(const PxRigidBody *const *bodyBuffer, const PxTransform *poseBuffer, const PxU32 count) override { /* Do nothing */ }
 
 		void onTrigger(PxTriggerPair* pairs, PxU32 count) override
 		{
@@ -191,6 +192,9 @@ namespace bs
 
 		void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 count) override
 		{
+			const PxU32 bufferSize = 64;
+			PxContactPairPoint contacts[bufferSize];
+
 			for (PxU32 i = 0; i < count; i++)
 			{
 				const PxContactPair& pair = pairs[i];
@@ -220,17 +224,19 @@ namespace bs
 				event.type = type;
 
 				PxU32 contactCount = pair.contactCount;
-				const PxU8* stream = pair.contactStream;
+				//const PxU8* stream = pair.contactStream;
+				const PxU32 stream = pair.extractContacts(contacts, bufferSize);
 				PxU16 streamSize = pair.contactStreamSize;
 
 				if (contactCount > 0 && streamSize > 0)
 				{
 					PxU32 contactIdx = 0;
-					PxContactStreamIterator iter((PxU8*)stream, streamSize);
+					PxContactStreamIterator iter(pair.contactPatches,pair.contactPoints, pair.getInternalFaceIndices(), pair.patchCount, pair.contactCount);
 
-					stream += ((streamSize + 15) & ~15);
+					//stream += ((streamSize + 15) & ~15);
 
-					const PxReal* impulses = reinterpret_cast<const PxReal*>(stream);
+					const PxReal* impulses = pair.contactImpulses;
+					PxU32 flippedContacts = (pair.flags & PxContactPairFlag::eINTERNAL_CONTACTS_ARE_FLIPPED);
 					PxU32 hasImpulses = (pair.flags & PxContactPairFlag::eINTERNAL_HAS_IMPULSES);
 
 					while (iter.hasNextPatch())
@@ -240,15 +246,14 @@ namespace bs
 						{
 							iter.nextContact();
 
+							PxVec3 pointIter = iter.getContactPoint();
+
 							ContactPoint point;
 							point.position = fromPxVector(iter.getContactPoint());
 							point.separation = iter.getSeparation();
 							point.normal = fromPxVector(iter.getContactNormal());
 
-							if (hasImpulses)
-								point.impulse = impulses[contactIdx];
-							else
-								point.impulse = 0.0f;
+							point.impulse = hasImpulses ? impulses[contactIdx] : 0.0f;
 
 							event.points.push_back(point);
 
@@ -491,7 +496,7 @@ namespace bs
 		sceneDesc.broadPhaseCallback = &gPhysXBroadphaseCallback;
 
 		// Optionally: eENABLE_KINEMATIC_STATIC_PAIRS, eENABLE_KINEMATIC_PAIRS, eENABLE_PCM
-		sceneDesc.flags = PxSceneFlag::eENABLE_ACTIVETRANSFORMS;
+		sceneDesc.flags = PxSceneFlag::eENABLE_ACTIVE_ACTORS;
 
 		if (input.flags.isSet(PhysicsFlag::CCD_Enable))
 			sceneDesc.flags |= PxSceneFlag::eENABLE_CCD;
@@ -542,19 +547,20 @@ namespace bs
 
 		// Update rigidbodies with new transforms
 		PxU32 numActiveTransforms;
-		const PxActiveTransform* activeTransforms = mScene->getActiveTransforms(numActiveTransforms);
+		PxActor** activeActors = mScene->getActiveActors(numActiveTransforms);
 
 		for (PxU32 i = 0; i < numActiveTransforms; i++)
 		{
-			Rigidbody* rigidbody = static_cast<Rigidbody*>(activeTransforms[i].userData);
+			Rigidbody* rigidbody = static_cast<Rigidbody*>(activeActors[i]->userData);
 
 			// Note: This should never happen, as actors gets their userData set to null when they're destroyed. However
 			// in some cases PhysX seems to keep those actors alive for a frame or few, and reports their state here. Until
 			// I find out why I need to perform this check.
-			if(activeTransforms[i].actor->userData == nullptr)
+			if(activeActors[i]->userData == nullptr)
 				continue;
 
-			const PxTransform& transform = activeTransforms[i].actor2World;
+			//const PxTransform& transform = activeActors[i]->getGlobalPose();
+			const PxTransform& transform = (PxTransform&)activeActors[i]->userData;
 
 			// Note: Make this faster, avoid dereferencing Rigidbody and attempt to access pos/rot destination directly,
 			//       use non-temporal writes
@@ -1059,10 +1065,10 @@ namespace bs
 		PxRaycastHit hitInfo;
 		PxU32 maxHits = 1;
 		bool anyHit = false;
-		PxHitFlags hitFlags = PxHitFlag::eDEFAULT | PxHitFlag::eUV;
+		PxHitFlags hitFlags = PxHitFlag::eDEFAULT | PxHitFlag::eUV | PxHitFlag::eMESH_ANY;
 		PxU32 hitCount = PxGeometryQuery::raycast(toPxVector(origin), toPxVector(unitDir),
 			shape->getGeometry().any(), transform,
-			maxDist, hitFlags, maxHits, &hitInfo, anyHit);
+			maxDist, hitFlags, maxHits, &hitInfo);
 
 		if(hitCount > 0)
 			parseHit(hitInfo, hit);

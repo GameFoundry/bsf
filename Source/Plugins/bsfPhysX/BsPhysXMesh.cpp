@@ -44,7 +44,7 @@ namespace bs
 		}
 
 		// Try inflating the convex mesh
-		convexDesc.flags |= PxConvexFlag::eINFLATE_CONVEX;
+		//convexDesc.flags |= PxConvexFlag::eINFLATE_CONVEX; // TODO: Add this back once issue is solved
 		if (cooking->cookConvexMesh(convexDesc, output))
 		{
 			size = output.getSize();
@@ -78,7 +78,7 @@ namespace bs
 		convexDesc.points.count = 8;
 		convexDesc.points.stride = sizeof(Vector3);
 		convexDesc.points.data = &aabbVerts[0];
-		convexDesc.flags &= ~PxConvexFlag::eINFLATE_CONVEX;
+		//convexDesc.flags &= ~PxConvexFlag::eINFLATE_CONVEX; // TODO: Add this back once issue is solved
 
 		if (cooking->cookConvexMesh(convexDesc, output))
 		{
