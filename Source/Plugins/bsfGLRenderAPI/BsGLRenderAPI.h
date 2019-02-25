@@ -361,7 +361,7 @@ namespace bs { namespace ct
 
 		static const UINT32 MAX_VB_COUNT = 32;
 
-		Rect2 mViewportNorm = Rect2(0.0f, 0.0f, 1.0, 1.0f);
+		Rect2 mViewportNorm = Rect2(0.0f, 0.0f, 1.0f, 1.0f);
 		UINT32 mScissorTop = 0; 
 		UINT32 mScissorBottom = 720; 
 		UINT32 mScissorLeft = 0; 
