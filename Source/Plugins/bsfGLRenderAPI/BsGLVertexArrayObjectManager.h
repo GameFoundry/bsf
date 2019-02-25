@@ -47,7 +47,7 @@ namespace bs { namespace ct
 
 		GLuint mHandle = 0;
 		UINT64 mVertProgId = 0;
-		GLVertexBuffer** mAttachedBuffers = false;
+		GLVertexBuffer** mAttachedBuffers = nullptr;
 		UINT32 mNumBuffers = 0;
 	};
 
