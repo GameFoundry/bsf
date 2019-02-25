@@ -19,6 +19,14 @@ namespace bs
         readonly float value;
 
         /// <summary>
+        /// Creates a new default initialized degree value.
+        /// </summary>
+        public static Degree Default()
+        {
+            return new Degree();
+        }
+
+        /// <summary>
         /// Creates a new degree value.
         /// </summary>
         /// <param name="value">Value in degrees.</param>

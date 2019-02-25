@@ -190,16 +190,18 @@ namespace bs
 #endif
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetActiveScene(IntPtr prefab);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SceneObject Internal_GetRoot();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_ClearScene();
+        private static extern SceneObject Internal_GetMainCameraSO();
+
+#if IS_B3D
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetActiveScene(IntPtr prefab);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SceneObject Internal_GetMainCameraSO();
+        private static extern void Internal_ClearScene();
+#endif
     }
 
     /** @} */

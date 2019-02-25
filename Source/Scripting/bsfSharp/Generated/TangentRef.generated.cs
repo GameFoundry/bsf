@@ -20,7 +20,7 @@ namespace bs
 		public static TangentRef Default()
 		{
 			TangentRef value = new TangentRef();
-			value.keyframeRef = new KeyframeRef();
+			value.keyframeRef = KeyframeRef.Default();
 			value.type = TangentType.In;
 
 			return value;

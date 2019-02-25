@@ -63,6 +63,14 @@ namespace bs
         }
 
         /// <summary>
+        /// Creates a new default initialized axis aligned box value.
+        /// </summary>
+        public static AABox Default()
+        {
+            return new AABox();
+        }
+
+        /// <summary>
         /// Creates a new axis aligned box.
         /// </summary>
         /// <param name="min">Corner of the box with minimum values.</param>

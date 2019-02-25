@@ -22,7 +22,7 @@ namespace bs
 		{
 			GUIContent value = new GUIContent();
 			value.text = null;
-			value.images = new GUIContentImages();
+			value.images = GUIContentImages.Default();
 			value.tooltip = null;
 
 			return value;
@@ -32,7 +32,7 @@ namespace bs
 		public GUIContent(LocString text)
 		{
 			this.text = text;
-			this.images = new GUIContentImages();
+			this.images = GUIContentImages.Default();
 			this.tooltip = null;
 		}
 
@@ -40,7 +40,7 @@ namespace bs
 		public GUIContent(LocString text, LocString tooltip)
 		{
 			this.text = text;
-			this.images = new GUIContentImages();
+			this.images = GUIContentImages.Default();
 			this.tooltip = tooltip;
 		}
 

@@ -5,6 +5,7 @@
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
 #include "../Extensions/BsApplicationEx.h"
+#include "BsScriptVideoMode.generated.h"
 #include "BsScriptSTART_UP_DESC.generated.h"
 
 namespace bs
@@ -18,6 +19,7 @@ namespace bs
 	void ScriptApplicationEx::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_startUp", (void*)&ScriptApplicationEx::Internal_startUp);
+		metaData.scriptClass->addInternalCall("Internal_startUp0", (void*)&ScriptApplicationEx::Internal_startUp0);
 		metaData.scriptClass->addInternalCall("Internal_runMainLoop", (void*)&ScriptApplicationEx::Internal_runMainLoop);
 		metaData.scriptClass->addInternalCall("Internal_shutDown", (void*)&ScriptApplicationEx::Internal_shutDown);
 
@@ -39,6 +41,15 @@ namespace bs
 		START_UP_DESC tmpdesc;
 		tmpdesc = ScriptSTART_UP_DESC::fromInterop(*desc);
 		ApplicationEx::startUp(tmpdesc);
+	}
+
+	void ScriptApplicationEx::Internal_startUp0(__VideoModeInterop* videoMode, MonoString* title, bool fullscreen)
+	{
+		VideoMode tmpvideoMode;
+		tmpvideoMode = ScriptVideoMode::fromInterop(*videoMode);
+		String tmptitle;
+		tmptitle = MonoUtil::monoToString(title);
+		ApplicationEx::startUp(tmpvideoMode, tmptitle, fullscreen);
 	}
 
 	void ScriptApplicationEx::Internal_runMainLoop()

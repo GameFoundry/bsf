@@ -23,6 +23,11 @@ namespace bs
 			Internal_startUp(ref desc);
 		}
 
+		public static void StartUp(VideoMode videoMode, string title, bool fullscreen)
+		{
+			Internal_startUp0(ref videoMode, title, fullscreen);
+		}
+
 		public static void RunMainLoop()
 		{
 			Internal_runMainLoop();
@@ -35,6 +40,8 @@ namespace bs
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern void Internal_startUp(ref StartUpDesc desc);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern void Internal_startUp0(ref VideoMode videoMode, string title, bool fullscreen);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern void Internal_runMainLoop();
 		[MethodImpl(MethodImplOptions.InternalCall)]

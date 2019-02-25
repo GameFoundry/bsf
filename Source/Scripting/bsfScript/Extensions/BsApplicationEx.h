@@ -20,6 +20,9 @@ namespace bs
 		static void startUp(const START_UP_DESC& desc);
 
 		BS_SCRIPT_EXPORT()
+		static void startUp(VideoMode videoMode, const String& title, bool fullscreen);
+
+		BS_SCRIPT_EXPORT()
 		static void runMainLoop();
 
 		BS_SCRIPT_EXPORT()

@@ -27,7 +27,9 @@ namespace bs
 	String ScriptScene::sActiveSceneName;
 	bool ScriptScene::sIsGenericPrefab;
 
+#if BS_IS_BANSHEE3D
 	ScriptScene::OnUpdateThunkDef ScriptScene::onUpdateThunk;
+#endif
 
 	ScriptScene::ScriptScene(MonoObject* instance)
 		:ScriptObject(instance)
@@ -35,13 +37,16 @@ namespace bs
 
 	void ScriptScene::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_SetActiveScene", (void*)&ScriptScene::internal_SetActiveScene);
 		metaData.scriptClass->addInternalCall("Internal_GetRoot", (void*)&ScriptScene::internal_GetRoot);
-		metaData.scriptClass->addInternalCall("Internal_ClearScene", (void*)&ScriptScene::internal_ClearScene);
 		metaData.scriptClass->addInternalCall("Internal_GetMainCameraSO", (void*)&ScriptScene::internal_GetMainCameraSO);
+
+#if BS_IS_BANSHEE3D
+		metaData.scriptClass->addInternalCall("Internal_SetActiveScene", (void*)&ScriptScene::internal_SetActiveScene);
+		metaData.scriptClass->addInternalCall("Internal_ClearScene", (void*)&ScriptScene::internal_ClearScene);
 
 		MonoMethod* updateMethod = metaData.scriptClass->getMethod("OnUpdate");
 		onUpdateThunk = (OnUpdateThunkDef)updateMethod->getThunk();
+#endif
 	}
 
 	void ScriptScene::startUp()
@@ -58,7 +63,9 @@ namespace bs
 
 	void ScriptScene::update()
 	{
+#if BS_IS_BANSHEE3D
 		MonoUtil::invokeThunk(onUpdateThunk);
+#endif
 	}
 
 	void ScriptScene::setActiveScene(const HPrefab& prefab)
@@ -81,12 +88,6 @@ namespace bs
 		{
 			LOGERR("Attempting to activate a scene that hasn't finished loading yet.");
 		}
-	}
-
-	void ScriptScene::internal_SetActiveScene(ScriptPrefab* scriptPrefab)
-	{
-		HPrefab prefab = scriptPrefab->getHandle();
-		setActiveScene(prefab);
 	}
 
 	void ScriptScene::onRefreshStarted()
@@ -140,11 +141,6 @@ namespace bs
 		return scriptRoot->getManagedInstance();
 	}
 
-	void ScriptScene::internal_ClearScene()
-	{
-		gSceneManager().clearScene();
-	}
-
 	MonoObject* ScriptScene::internal_GetMainCameraSO()
 	{
 		SPtr<Camera> camera = gSceneManager().getMainCamera();
@@ -155,4 +151,17 @@ namespace bs
 		ScriptSceneObject* cameraSo = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(so);
 		return cameraSo->getManagedInstance();
 	}
+
+#if BS_IS_BANSHEE3D
+	void ScriptScene::internal_SetActiveScene(ScriptPrefab* scriptPrefab)
+	{
+		HPrefab prefab = scriptPrefab->getHandle();
+		setActiveScene(prefab);
+	}
+
+	void ScriptScene::internal_ClearScene()
+	{
+		gSceneManager().clearScene();
+	}
+#endif
 }

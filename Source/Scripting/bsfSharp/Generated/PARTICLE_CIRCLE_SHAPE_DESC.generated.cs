@@ -20,8 +20,8 @@ namespace bs
 			ParticleCircleShapeOptions value = new ParticleCircleShapeOptions();
 			value.radius = 1f;
 			value.thickness = 0f;
-			value.arc = new Degree();
-			value.mode = new ParticleEmissionMode();
+			value.arc = Degree.Default();
+			value.mode = ParticleEmissionMode.Default();
 
 			return value;
 		}

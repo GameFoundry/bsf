@@ -15,14 +15,38 @@ namespace bs
 	void ScriptVideoMode::initRuntimeData()
 	{ }
 
-	MonoObject*ScriptVideoMode::box(const VideoMode& value)
+	MonoObject*ScriptVideoMode::box(const __VideoModeInterop& value)
 	{
 		return MonoUtil::box(metaData.scriptClass->_getInternalClass(), (void*)&value);
 	}
 
-	VideoMode ScriptVideoMode::unbox(MonoObject* value)
+	__VideoModeInterop ScriptVideoMode::unbox(MonoObject* value)
 	{
-		return *(VideoMode*)MonoUtil::unbox(value);
+		return *(__VideoModeInterop*)MonoUtil::unbox(value);
+	}
+
+	VideoMode ScriptVideoMode::fromInterop(const __VideoModeInterop& value)
+	{
+		VideoMode output;
+		output.width = value.width;
+		output.height = value.height;
+		output.refreshRate = value.refreshRate;
+		output.outputIdx = value.outputIdx;
+		output.isCustom = value.isCustom;
+
+		return output;
+	}
+
+	__VideoModeInterop ScriptVideoMode::toInterop(const VideoMode& value)
+	{
+		__VideoModeInterop output;
+		output.width = value.width;
+		output.height = value.height;
+		output.refreshRate = value.refreshRate;
+		output.outputIdx = value.outputIdx;
+		output.isCustom = value.isCustom;
+
+		return output;
 	}
 
 #endif

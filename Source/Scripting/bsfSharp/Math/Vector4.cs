@@ -106,6 +106,14 @@ namespace bs
         }
 
         /// <summary>
+        /// Creates a new default initialized vector value.
+        /// </summary>
+        public static Vector4 Default()
+        {
+            return new Vector4();
+        }
+
+        /// <summary>
         /// Creates a new four dimensional vector.
         /// </summary>
         /// <param name="x">X coordinate.</param>

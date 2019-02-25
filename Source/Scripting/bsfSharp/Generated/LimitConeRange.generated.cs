@@ -18,11 +18,11 @@ namespace bs
 		public static LimitConeRange Default()
 		{
 			LimitConeRange value = new LimitConeRange();
-			value.yLimitAngle = new Radian();
-			value.zLimitAngle = new Radian();
+			value.yLimitAngle = Radian.Default();
+			value.zLimitAngle = Radian.Default();
 			value.contactDist = -1f;
 			value.restitution = 0f;
-			value.spring = new Spring();
+			value.spring = Spring.Default();
 
 			return value;
 		}
@@ -46,7 +46,7 @@ namespace bs
 			this.zLimitAngle = zLimitAngle;
 			this.contactDist = -1f;
 			this.restitution = 0f;
-			this.spring = new Spring();
+			this.spring = Spring.Default();
 		}
 
 		/// <summary>
@@ -72,7 +72,7 @@ namespace bs
 			this.zLimitAngle = zLimitAngle;
 			this.contactDist = -1f;
 			this.restitution = 0f;
-			this.spring = new Spring();
+			this.spring = Spring.Default();
 		}
 
 		///<summary>

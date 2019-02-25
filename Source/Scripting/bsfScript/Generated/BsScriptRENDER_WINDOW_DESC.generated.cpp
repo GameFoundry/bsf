@@ -30,7 +30,9 @@ namespace bs
 	RENDER_WINDOW_DESC ScriptRENDER_WINDOW_DESC::fromInterop(const __RENDER_WINDOW_DESCInterop& value)
 	{
 		RENDER_WINDOW_DESC output;
-		output.videoMode = value.videoMode;
+		VideoMode tmpvideoMode;
+		tmpvideoMode = ScriptVideoMode::fromInterop(value.videoMode);
+		output.videoMode = tmpvideoMode;
 		output.fullscreen = value.fullscreen;
 		output.vsync = value.vsync;
 		output.vsyncInterval = value.vsyncInterval;
@@ -59,7 +61,9 @@ namespace bs
 	__RENDER_WINDOW_DESCInterop ScriptRENDER_WINDOW_DESC::toInterop(const RENDER_WINDOW_DESC& value)
 	{
 		__RENDER_WINDOW_DESCInterop output;
-		output.videoMode = value.videoMode;
+		__VideoModeInterop tmpvideoMode;
+		tmpvideoMode = ScriptVideoMode::toInterop(value.videoMode);
+		output.videoMode = tmpvideoMode;
 		output.fullscreen = value.fullscreen;
 		output.vsync = value.vsync;
 		output.vsyncInterval = value.vsyncInterval;

@@ -29,6 +29,7 @@ int main(int __argc, char* __argv[])
 		return 0;
 	}
 
+	MemStack::beginThread();
 	MonoManager::startUp();
 
 	SPtr<EngineScriptLibrary> library = bs_shared_ptr_new<EngineScriptLibrary>();
@@ -42,6 +43,7 @@ int main(int __argc, char* __argv[])
 	gameAssembly.invoke("Program::Start");
 
 	MonoManager::shutDown();
+	MemStack::endThread();
 
 	return 0;
 }

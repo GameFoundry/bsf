@@ -18,11 +18,11 @@ namespace bs
 		public static LimitAngularRange Default()
 		{
 			LimitAngularRange value = new LimitAngularRange();
-			value.lower = new Radian();
-			value.upper = new Radian();
+			value.lower = Radian.Default();
+			value.upper = Radian.Default();
 			value.contactDist = -1f;
 			value.restitution = 0f;
-			value.spring = new Spring();
+			value.spring = Spring.Default();
 
 			return value;
 		}
@@ -42,7 +42,7 @@ namespace bs
 			this.upper = upper;
 			this.contactDist = -1f;
 			this.restitution = 0f;
-			this.spring = new Spring();
+			this.spring = Spring.Default();
 		}
 
 		/// <summary>
@@ -64,7 +64,7 @@ namespace bs
 			this.upper = upper;
 			this.contactDist = -1f;
 			this.restitution = 0f;
-			this.spring = new Spring();
+			this.spring = Spring.Default();
 		}
 
 		///<summary>

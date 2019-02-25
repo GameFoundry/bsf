@@ -100,6 +100,14 @@ namespace bs
         }
 
         /// <summary>
+        /// Creates a new default initialized vector value.
+        /// </summary>
+        public static Vector3 Default()
+        {
+            return new Vector3();
+        }
+
+        /// <summary>
         /// Creates a new three dimensional vector.
         /// </summary>
         /// <param name="x">X coordinate.</param>

@@ -19,6 +19,14 @@ namespace bs
         readonly float value;
 
         /// <summary>
+        /// Creates a new default initialized radian value.
+        /// </summary>
+        public static Radian Default()
+        {
+            return new Radian();
+        }
+
+        /// <summary>
         /// Creates a new radian value.
         /// </summary>
         /// <param name="value">Value in radians.</param>

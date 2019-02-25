@@ -93,6 +93,14 @@ namespace bs
         }
 
         /// <summary>
+        /// Creates a new default initialized vector value.
+        /// </summary>
+        public static Vector2 Default()
+        {
+            return new Vector2();
+        }
+
+        /// <summary>
         /// Creates a new two dimensional vector.
         /// </summary>
         /// <param name="x">X coordinate.</param>

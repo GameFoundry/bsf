@@ -18,7 +18,7 @@ namespace bs
 		{
 			this.contactDist = contactDist;
 			this.restitution = 0f;
-			this.spring = new Spring();
+			this.spring = Spring.Default();
 		}
 
 		public LimitCommon(Spring spring, float restitution = 0f)

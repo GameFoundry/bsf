@@ -21,7 +21,7 @@ namespace bs
 			value.countX = 1;
 			value.countY = 1;
 			value.countZ = 1;
-			value.bounds = new AABox();
+			value.bounds = AABox.Default();
 
 			return value;
 		}

@@ -48,13 +48,16 @@ namespace bs
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_SetActiveScene(ScriptPrefab* scriptPrefab);
 		static MonoObject* internal_GetRoot();
-		static void internal_ClearScene();
 		static MonoObject* internal_GetMainCameraSO();
+
+#if BS_IS_BANSHEE3D
+		static void internal_SetActiveScene(ScriptPrefab* scriptPrefab);
+		static void internal_ClearScene();
 
 		typedef void(BS_THUNKCALL *OnUpdateThunkDef)(MonoException**);
 		static OnUpdateThunkDef onUpdateThunk;
+#endif
 	};
 
 	/** @} */

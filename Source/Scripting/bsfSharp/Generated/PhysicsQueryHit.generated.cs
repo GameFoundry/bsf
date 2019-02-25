@@ -18,9 +18,9 @@ namespace bs
 		public static PhysicsQueryHit Default()
 		{
 			PhysicsQueryHit value = new PhysicsQueryHit();
-			value.point = new Vector3();
-			value.normal = new Vector3();
-			value.uv = new Vector2();
+			value.point = Vector3.Default();
+			value.normal = Vector3.Default();
+			value.uv = Vector2.Default();
 			value.distance = 0f;
 			value.triangleIdx = 0;
 			value.collider = null;

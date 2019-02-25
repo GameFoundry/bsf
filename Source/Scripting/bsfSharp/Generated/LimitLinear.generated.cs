@@ -21,7 +21,7 @@ namespace bs
 			value.extent = 0f;
 			value.contactDist = -1f;
 			value.restitution = 0f;
-			value.spring = new Spring();
+			value.spring = Spring.Default();
 
 			return value;
 		}
@@ -39,7 +39,7 @@ namespace bs
 			this.extent = extent;
 			this.contactDist = -1f;
 			this.restitution = 0f;
-			this.spring = new Spring();
+			this.spring = Spring.Default();
 		}
 
 		/// <summary>
@@ -59,7 +59,7 @@ namespace bs
 			this.extent = extent;
 			this.contactDist = -1f;
 			this.restitution = 0f;
-			this.spring = new Spring();
+			this.spring = Spring.Default();
 		}
 
 		///<summary>

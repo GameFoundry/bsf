@@ -11,6 +11,11 @@ namespace bs
 		Application::startUp(desc);
 	}
 
+	void ApplicationEx::startUp(VideoMode videoMode, const String& title, bool fullscreen)
+	{
+		Application::startUp(videoMode, title, fullscreen);
+	}
+
 	void ApplicationEx::runMainLoop()
 	{
 		Application::instance().runMainLoop();

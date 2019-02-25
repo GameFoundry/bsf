@@ -25,7 +25,7 @@ namespace bs
 			value.audio = "";
 			value.input = "";
 			value.physicsCooking = true;
-			value.primaryWindowDesc = new RenderWindowDesc();
+			value.primaryWindowDesc = RenderWindowDesc.Default();
 			value.importers = null;
 
 			return value;

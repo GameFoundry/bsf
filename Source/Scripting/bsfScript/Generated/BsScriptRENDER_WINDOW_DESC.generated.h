@@ -6,13 +6,14 @@
 #include "BsScriptObject.h"
 #include "../../../Foundation/bsfCore/RenderAPI/BsRenderWindow.h"
 #include "../../../Foundation/bsfCore/RenderAPI/BsVideoModeInfo.h"
+#include "BsScriptVideoMode.generated.h"
 
 namespace bs
 {
 #if !BS_IS_BANSHEE3D
 	struct __RENDER_WINDOW_DESCInterop
 	{
-		VideoMode videoMode;
+		__VideoModeInterop videoMode;
 		bool fullscreen;
 		bool vsync;
 		uint32_t vsyncInterval;

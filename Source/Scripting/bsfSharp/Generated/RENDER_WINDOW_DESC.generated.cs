@@ -19,7 +19,7 @@ namespace bs
 		public static RenderWindowDesc Default()
 		{
 			RenderWindowDesc value = new RenderWindowDesc();
-			value.videoMode = new VideoMode();
+			value.videoMode = VideoMode.Default();
 			value.fullscreen = false;
 			value.vsync = false;
 			value.vsyncInterval = 1;

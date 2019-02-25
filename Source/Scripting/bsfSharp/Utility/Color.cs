@@ -81,6 +81,14 @@ namespace bs
         }
 
         /// <summary>
+        /// Creates a new default initialized color value.
+        /// </summary>
+        public static Color Default()
+        {
+            return new Color();
+        }
+
+        /// <summary>
         /// Creates a new color value.
         /// </summary>
         /// <param name="r">Red component, in range [0, 1].</param>

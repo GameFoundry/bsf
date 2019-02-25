@@ -19,7 +19,7 @@ namespace bs
 		{
 			ParticleLineShapeOptions value = new ParticleLineShapeOptions();
 			value.length = 1f;
-			value.mode = new ParticleEmissionMode();
+			value.mode = ParticleEmissionMode.Default();
 
 			return value;
 		}

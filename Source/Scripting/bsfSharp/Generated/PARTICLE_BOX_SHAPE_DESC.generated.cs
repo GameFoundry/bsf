@@ -19,7 +19,7 @@ namespace bs
 		{
 			ParticleBoxShapeOptions value = new ParticleBoxShapeOptions();
 			value.type = ParticleEmitterBoxType.Volume;
-			value.extents = new Vector3();
+			value.extents = Vector3.Default();
 
 			return value;
 		}

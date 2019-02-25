@@ -18,7 +18,7 @@ namespace bs
 		public static ColorGradientKey Default()
 		{
 			ColorGradientKey value = new ColorGradientKey();
-			value.color = new Color();
+			value.color = Color.Default();
 			value.time = 0f;
 
 			return value;

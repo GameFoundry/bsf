@@ -4,10 +4,12 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
+#include "../../../Foundation/bsfCore/RenderAPI/BsVideoModeInfo.h"
 
 namespace bs
 {
 	class ApplicationEx;
+	struct __VideoModeInterop;
 	struct __START_UP_DESCInterop;
 
 #if !BS_IS_BANSHEE3D
@@ -25,6 +27,7 @@ namespace bs
 		SPtr<ApplicationEx> mInternal;
 
 		static void Internal_startUp(__START_UP_DESCInterop* desc);
+		static void Internal_startUp0(__VideoModeInterop* videoMode, MonoString* title, bool fullscreen);
 		static void Internal_runMainLoop();
 		static void Internal_shutDown();
 	};
