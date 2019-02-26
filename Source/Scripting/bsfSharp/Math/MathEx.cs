@@ -711,7 +711,7 @@ namespace bs
         /// <returns>Interpolation between the values provided.</returns>
         public static float SmoothStep(float val1, float val2, float t)
         {
-            t = clamp((t - val1) / (val2 - val1), 0.0f, 1.0f);
+            t = Clamp((t - val1) / (val2 - val1), 0.0f, 1.0f);
             return t * t * (3.0f - 2.0f * t);
         }
        
