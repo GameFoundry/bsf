@@ -530,7 +530,7 @@ namespace bs
 			if (parent != nullptr)
 			{
 				parent->addChild(mThisHandle);
-				setScene(parent->getScene());
+				setScene(parent->mParentScene);
 			}
 			else
 				setScene(nullptr);
