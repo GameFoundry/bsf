@@ -66,7 +66,12 @@ namespace bs
         /// <returns>Loaded resource, or null if resource cannot be found.</returns>
         public static RRef<T> LoadAsync<T>(string path, ResourceLoadFlag flags = ResourceLoadFlag.Default) where T : Resource
         {
-            return Internal_LoadAsync(path, flags).As<T>();
+            RRefBase rref = Internal_LoadAsync(path, flags);
+            
+            if(rref != null)
+                return rref.As<T>();
+
+            return null;
         }
 
         /// <summary>
@@ -84,7 +89,12 @@ namespace bs
         /// <returns>Loaded resource, or null if resource cannot be found.</returns>
         public static RRef<T> LoadAsync<T>(UUID uuid, ResourceLoadFlag flags = ResourceLoadFlag.Default) where T : Resource
         {
-            return Internal_LoadAsyncFromUUID(ref uuid, flags).As<T>();
+            RRefBase rref = Internal_LoadAsyncFromUUID(ref uuid, flags).As<T>();            
+
+            if(rref != null)
+                return rref.As<T>();
+
+            return null;
         }
 
         /// <summary>
