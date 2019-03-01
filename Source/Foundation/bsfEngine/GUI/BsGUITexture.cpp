@@ -114,8 +114,8 @@ namespace bs
 		mActiveTexture = texture;
 
 		bool isTexLoaded = SpriteTexture::checkIsLoaded(mActiveTexture);
-		mActiveTextureWidth = isTexLoaded ? mActiveTexture->getWidth() : 0;
-		mActiveTextureHeight = isTexLoaded ? mActiveTexture->getHeight() : 0;
+		mActiveTextureWidth = isTexLoaded ? mActiveTexture->getFrameWidth() : 0;
+		mActiveTextureHeight = isTexLoaded ? mActiveTexture->getFrameHeight() : 0;
 
 		mUsingStyleTexture = false;
 		mDesc.animationStartTime = gTime().getTime();
@@ -152,8 +152,8 @@ namespace bs
 		if (SpriteTexture::checkIsLoaded(mActiveTexture))
 		{
 			mDesc.texture = mActiveTexture;
-			textureSize.x = mDesc.texture->getWidth();
-			textureSize.y = mDesc.texture->getHeight();
+			textureSize.x = mDesc.texture->getFrameWidth();
+			textureSize.y = mDesc.texture->getFrameHeight();
 		}
 		Vector2I destSize(mLayoutData.area.width, mLayoutData.area.height);
 
@@ -196,7 +196,10 @@ namespace bs
 		mDesc.transparent = mTransparent;
 		mDesc.color = getTint();
 
-		mDesc.uvScale = ImageSprite::getTextureUVScale(textureSize, destSize, mScaleMode);
+		if(mScaleMode != TextureScaleMode::ScaleToFit)
+			mDesc.uvScale = ImageSprite::getTextureUVScale(textureSize, destSize, mScaleMode);
+		else
+			mDesc.uvScale = Vector2::ONE;
 		
 		mImageSprite->update(mDesc, (UINT64)_getParentWidget());
 		
@@ -211,8 +214,8 @@ namespace bs
 			mDesc.animationStartTime = gTime().getTime();
 
 			bool isTexLoaded = SpriteTexture::checkIsLoaded(mActiveTexture);
-			mActiveTextureWidth = isTexLoaded ? mActiveTexture->getWidth() : 0;
-			mActiveTextureHeight = isTexLoaded ? mActiveTexture->getHeight() : 0;
+			mActiveTextureWidth = isTexLoaded ? mActiveTexture->getFrameWidth() : 0;
+			mActiveTextureHeight = isTexLoaded ? mActiveTexture->getFrameHeight() : 0;
 		}
 	}
 
@@ -223,7 +226,7 @@ namespace bs
 
 		// Note: We use cached texture size here. This is because we use this method for checking we a layout update is
 		// needed (size change is detected). Sprite texture could change without us knowing and by storing the size we can
-		// safely detect this. (In short, don't do mActiveTexture->getWidth/Height() here)
+		// safely detect this. (In short, don't do mActiveTexture->getFrameWidth/Height() here)
 		
 		if(_getDimensions().fixedWidth())
 			optimalSize.x = _getDimensions().minWidth;

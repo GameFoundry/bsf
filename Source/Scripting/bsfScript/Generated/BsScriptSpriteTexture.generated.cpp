@@ -26,6 +26,8 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_getTexture", (void*)&ScriptSpriteTexture::Internal_getTexture);
 		metaData.scriptClass->addInternalCall("Internal_getWidth", (void*)&ScriptSpriteTexture::Internal_getWidth);
 		metaData.scriptClass->addInternalCall("Internal_getHeight", (void*)&ScriptSpriteTexture::Internal_getHeight);
+		metaData.scriptClass->addInternalCall("Internal_getFrameWidth", (void*)&ScriptSpriteTexture::Internal_getFrameWidth);
+		metaData.scriptClass->addInternalCall("Internal_getFrameHeight", (void*)&ScriptSpriteTexture::Internal_getFrameHeight);
 		metaData.scriptClass->addInternalCall("Internal_setOffset", (void*)&ScriptSpriteTexture::Internal_setOffset);
 		metaData.scriptClass->addInternalCall("Internal_getOffset", (void*)&ScriptSpriteTexture::Internal_getOffset);
 		metaData.scriptClass->addInternalCall("Internal_setScale", (void*)&ScriptSpriteTexture::Internal_setScale);
@@ -92,6 +94,28 @@ namespace bs
 	{
 		uint32_t tmp__output;
 		tmp__output = thisPtr->getHandle()->getHeight();
+
+		uint32_t __output;
+		__output = tmp__output;
+
+		return __output;
+	}
+
+	uint32_t ScriptSpriteTexture::Internal_getFrameWidth(ScriptSpriteTexture* thisPtr)
+	{
+		uint32_t tmp__output;
+		tmp__output = thisPtr->getHandle()->getFrameWidth();
+
+		uint32_t __output;
+		__output = tmp__output;
+
+		return __output;
+	}
+
+	uint32_t ScriptSpriteTexture::Internal_getFrameHeight(ScriptSpriteTexture* thisPtr)
+	{
+		uint32_t tmp__output;
+		tmp__output = thisPtr->getHandle()->getFrameHeight();
 
 		uint32_t __output;
 		__output = tmp__output;

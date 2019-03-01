@@ -188,6 +188,20 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:Height,pr:getter)
 		UINT32 getHeight() const;
 
+		/**	
+		 * Returns width of a single animation frame sprite texture in pixels. If the texture has no animation this
+		 * is the same as getWidth().
+		 */
+		BS_SCRIPT_EXPORT(n:FrameWidth,pr:getter)
+		UINT32 getFrameWidth() const;
+
+		/**	
+		 * Returns height of a single animation frame sprite texture in pixels. If the texture has no animation this
+		 * is the same as getHeight().
+		 */
+		BS_SCRIPT_EXPORT(n:FrameHeight,pr:getter)
+		UINT32 getFrameHeight() const;
+
 		/**	Retrieves a core implementation of a sprite texture usable only from the core thread. */
 		SPtr<ct::SpriteTexture> getCore() const;
 

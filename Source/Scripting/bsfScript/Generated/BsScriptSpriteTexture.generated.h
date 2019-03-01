@@ -28,6 +28,8 @@ namespace bs
 		static MonoObject* Internal_getTexture(ScriptSpriteTexture* thisPtr);
 		static uint32_t Internal_getWidth(ScriptSpriteTexture* thisPtr);
 		static uint32_t Internal_getHeight(ScriptSpriteTexture* thisPtr);
+		static uint32_t Internal_getFrameWidth(ScriptSpriteTexture* thisPtr);
+		static uint32_t Internal_getFrameHeight(ScriptSpriteTexture* thisPtr);
 		static void Internal_setOffset(ScriptSpriteTexture* thisPtr, Vector2* offset);
 		static void Internal_getOffset(ScriptSpriteTexture* thisPtr, Vector2* __output);
 		static void Internal_setScale(ScriptSpriteTexture* thisPtr, Vector2* scale);

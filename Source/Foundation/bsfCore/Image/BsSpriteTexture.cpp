@@ -104,6 +104,16 @@ namespace bs
 		return Math::roundToInt(mAtlasTexture->getProperties().getHeight() * mUVScale.y);
 	}
 
+	UINT32 SpriteTexture::getFrameWidth() const
+	{
+		return getWidth() / std::max(1U, mAnimation.numColumns);
+	}
+
+	UINT32 SpriteTexture::getFrameHeight() const
+	{
+		return getHeight() / std::max(1U, mAnimation.numRows);
+	}
+
 	void SpriteTexture::_markCoreDirty()
 	{
 		markCoreDirty();

@@ -64,6 +64,26 @@ namespace bs
 		}
 
 		/// <summary>
+		/// Returns width of a single animation frame sprite texture in pixels. If the texture has no animation this is the same 
+		/// as getWidth().
+		/// </summary>
+		[NativeWrapper]
+		public int FrameWidth
+		{
+			get { return Internal_getFrameWidth(mCachedPtr); }
+		}
+
+		/// <summary>
+		/// Returns height of a single animation frame sprite texture in pixels. If the texture has no animation this is the same 
+		/// as getHeight().
+		/// </summary>
+		[NativeWrapper]
+		public int FrameHeight
+		{
+			get { return Internal_getFrameHeight(mCachedPtr); }
+		}
+
+		/// <summary>
 		/// Determines the offset into the referenced texture where the sprite starts. The offset is in UV coordinates, in range 
 		/// [0, 1].
 		/// </summary>
@@ -136,6 +156,10 @@ namespace bs
 		private static extern int Internal_getWidth(IntPtr thisPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern int Internal_getHeight(IntPtr thisPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern int Internal_getFrameWidth(IntPtr thisPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern int Internal_getFrameHeight(IntPtr thisPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern void Internal_setOffset(IntPtr thisPtr, ref Vector2 offset);
 		[MethodImpl(MethodImplOptions.InternalCall)]
