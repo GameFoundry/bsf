@@ -10,8 +10,9 @@ add_common_flags(bsfNullRenderAPI)
 # Includes
 target_include_directories(bsfNullRenderAPI PRIVATE "./")
 	
+# Libraries
 ## Local libs
-target_link_libraries(bsfNullRenderAPI bsf)
+target_link_libraries(bsfNullRenderAPI PRIVATE bsf)
 
 # IDE specific
 set_property(TARGET bsfNullRenderAPI PROPERTY FOLDER Plugins)

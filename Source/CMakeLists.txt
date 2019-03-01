@@ -13,7 +13,7 @@ set(AUDIO_MODULE "OpenAudio" CACHE STRING "Audio backend to use.")
 set_property(CACHE AUDIO_MODULE PROPERTY STRINGS OpenAudio FMOD)
 
 set(PHYSICS_MODULE "PhysX" CACHE STRING "Physics backend to use.")
-set_property(CACHE PHYSICS_MODULE PROPERTY STRINGS PhysX)
+set_property(CACHE PHYSICS_MODULE PROPERTY STRINGS "PhysX" "Null")
 
 if(WIN32)
 	set(RENDER_API_MODULE "DirectX 11" CACHE STRING "Render API to use.")
@@ -92,8 +92,13 @@ else() # Default to OpenAudio
 	set(AUDIO_MODULE_LIB bsfOpenAudio)
 endif()
 
+if(PHYSICS_MODULE MATCHES "PhysX")
+	set(PHYSICS_MODULE_LIB bsfPhysX)
+else()
+	set(PHYSICS_MODULE_LIB bsfNullPhysics)
+endif()
+
 set(RENDERER_MODULE_LIB bsfRenderBeast)
-set(PHYSICS_MODULE_LIB bsfPhysX)
 
 if((SCRIPT_API AND (NOT SCRIPT_API MATCHES "None")) OR BS_IS_BANSHEE3D)
 	set(BS_SCRIPTING_ENABLED 1)
@@ -122,6 +127,8 @@ if(INCLUDE_ALL_IN_WORKFLOW AND MSVC)
 	add_subdirectory(Plugins/bsfNullRenderAPI)
 	add_subdirectory(Plugins/bsfFMOD)
 	add_subdirectory(Plugins/bsfOpenAudio)
+	add_subdirectory(Plugins/bsfPhysX)
+	add_subdirectory(Plugins/bsfNullPhysics)
 	
 	## Scripting
 	add_subdirectory(Scripting/bsfMono)
@@ -144,6 +151,12 @@ else() # Otherwise include only chosen ones
 		add_subdirectory(Plugins/bsfOpenAudio)
 	endif()
 	
+	if(PHYSICS_MODULE MATCHES "PhysX")
+		add_subdirectory(Plugins/bsfPhysX)
+	else()
+		add_subdirectory(Plugins/bsfNullPhysics)
+	endif()
+	
 	if((SCRIPT_API AND (NOT SCRIPT_API MATCHES "None")) OR BS_IS_BANSHEE3D)
 		add_subdirectory(Scripting/bsfScript)
 	endif()
@@ -155,7 +168,6 @@ else() # Otherwise include only chosen ones
 endif()
 
 add_subdirectory(Plugins/bsfRenderBeast)
-add_subdirectory(Plugins/bsfPhysX)
 add_subdirectory(Plugins/bsfFBXImporter)
 add_subdirectory(Plugins/bsfFontImporter)
 add_subdirectory(Plugins/bsfFreeImgImporter)

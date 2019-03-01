@@ -37,7 +37,13 @@ function(add_engine_dependencies2 target_name all_render_api)
 		add_dependencies(${target_name} bsfOpenAudio)
 	endif()
 	
-	add_dependencies(${target_name} bsfSL bsfPhysX bsfRenderBeast)
+	if(PHYSICS_MODULE MATCHES "PhysX")
+		add_dependencies(${target_name} bsfPhysX)
+	else()
+		add_dependencies(${target_name} bsfNullPhysics)
+	endif()
+	
+	add_dependencies(${target_name} bsfSL bsfRenderBeast)
 endfunction()
 
 function(add_importer_dependencies target_name)
