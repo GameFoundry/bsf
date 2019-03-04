@@ -1,17 +1,17 @@
-Input events						{#inputEvents}
-===============
-[TOC]
+---
+title: Input events
+---
 
 Events represent another way of handling user input. They are an alternative to input polling, and it's up to the developer to choose which way of handling input he prefers. These approaches aren't identical though, and events can provide more information than polling. Same as polling, events are also handled by the **Input** class.
 
 This approach uses the event system, on which you can read more on [here](@ref events).
 
-# Button presses {#inputEvents_a}
+# Button presses
 You can subscribe to the following events that report when the user interacted with a button:
- - @ref bs::Input::onButtonDown "Input::onButtonDown" - Triggered whenever a button has been pressed.
- - @ref bs::Input::onButtonUp "Input::onButtonUp" - Triggered whenever a button has been released.
+ - @bs::Input::onButtonDown - Triggered whenever a button has been pressed.
+ - @bs::Input::onButtonUp - Triggered whenever a button has been released.
  
-Both of these events supply the @ref bs::ButtonEvent "ButtonEvent" structure, containing the code of the button that was pressed, along with some other information.
+Both of these events supply the @bs::ButtonEvent structure, containing the code of the button that was pressed, along with some other information.
 
 ~~~~~~~~~~~~~{.cpp}
 Vector3 position(BsZero);
@@ -28,8 +28,8 @@ auto handleButtonDown = [&](const ButtonEvent& event)
 gInput().onButtonDown.connect(handleButtonDown);
 ~~~~~~~~~~~~~
 
-# Mouse/touch input{#inputEvents_b}
-Use @ref bs::Input::onPointerMoved "Input::onPointerMoved" to track whenever the user moves the mouse or his finger on a touch device. The event supplies the @ref bs::PointerEvent "PointerEvent" structure, containing information like screen position of the event, delta from the last frame, state of all the mouse buttons, scroll wheel movement and more.
+# Mouse/touch input
+Use @bs::Input::onPointerMoved to track whenever the user moves the mouse or his finger on a touch device. The event supplies the @bs::PointerEvent structure, containing information like screen position of the event, delta from the last frame, state of all the mouse buttons, scroll wheel movement and more.
 
 ~~~~~~~~~~~~~{.cpp}
 Vector3 position(BsZero);
@@ -53,9 +53,9 @@ gInput().onPointerMoved.connect(handlePointerMove);
 ~~~~~~~~~~~~~
 
 Pointers may also receive specialized button down/up events, similar to *Input::onButtonDown* and *Input::onButtonUp*. They trigger at the same time, but provide *PointerEvent* structure instead of *ButtonEvent* - which may be more useful in certain situations. These methods are:
- - @ref bs::Input::onPointerPressed "Input::onPointerPressed" - Triggered whenever a pointer button has been pressed or screen touch began.
- - @ref bs::Input::onPointerReleased "Input::onPointerReleased" - Triggered whenever a pointer button has been released or screen touch ended.
- - @ref bs::Input::onPointerDoubleClick "Input::onPointerDoubleClick" - Triggered when the user quickly clicks the pointer buttons or taps the screen in succession.
+ - @bs::Input::onPointerPressed - Triggered whenever a pointer button has been pressed or screen touch began.
+ - @bs::Input::onPointerReleased - Triggered whenever a pointer button has been released or screen touch ended.
+ - @bs::Input::onPointerDoubleClick - Triggered when the user quickly clicks the pointer buttons or taps the screen in succession.
  
 ~~~~~~~~~~~~~{.cpp}
 Vector3 position(BsZero);
@@ -71,8 +71,8 @@ auto handleDoubleClick = [&](const PointerEvent& event)
 gInput().onPointerDoubleClick.connect(handleDoubleClick);
 ~~~~~~~~~~~~~
 
-# Text input{#inputEvents_c}
-If user is typing text (using a physical or a touch keyboard) you may subscribe to @ref bs::Input::onCharInput "Input::onCharInput" to receive individual characters as the user inputs them. 
+# Text input
+If user is typing text (using a physical or a touch keyboard) you may subscribe to @bs::Input::onCharInput to receive individual characters as the user inputs them. 
 
 ~~~~~~~~~~~~~{.cpp}
 StringStream inputString;

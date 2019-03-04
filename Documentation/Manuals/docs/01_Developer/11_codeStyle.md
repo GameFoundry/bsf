@@ -1,6 +1,6 @@
-Coding style							{#codeStyle}
-===============
-[TOC]
+---
+title: Coding style
+---
 
 When making changes or additions that you plan on contributing to bs::f, you must follow the same coding style as the rest of the codebase. This document tries to list the most important aspects of the style.
 

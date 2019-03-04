@@ -1,9 +1,9 @@
-Animation curves				{#animCurves}
-===============
+---
+title: Animation curves
+---
+Animation curves represent a set of values placed along a timeline that can be smoothly interpolated. They are most often used by the animation system, as well as the particle system (for setting up time-varying properties). The curve is represented with a template @bs::TAnimationCurve<T> class which can be used with a **float**, **Vector2**, **Vector3** or a **Quaternion** parameter.
 
-Animation curves represent a set of values placed along a timeline that can be smoothly interpolated. They are most often used by the animation system, as well as the particle system (for setting up time-varying properties). The curve is represented with a template @ref bs::TAnimationCurve<T> "TAnimationCurve<T>" class which can be used with a **float**, **Vector2**, **Vector3** or a **Quaternion** parameter.
-
-Entries in the curve are represented with the @ref bs::TKeyframe "TKeyFrame<T>" which can be used with the same parameter types. Each keyframe consists of four values:
+Entries in the curve are represented with the @bs::TKeyframe which can be used with the same parameter types. Each keyframe consists of four values:
  - Time - Time at which to place the keyframe
  - Value - Value of the keyframe
  - In tangent - Tangent that controls the shape of the curve to the left of the keyframe
@@ -21,7 +21,7 @@ TAnimationCurve<float> curve(
 });
 ~~~~~~~~~~~~~
 
-If you are unsure how to set them, or don't care about tangents you can use @ref bs::AnimationUtility::calculateTangents "AnimationUtility::calculateTangents()" method to generate them automatically.
+If you are unsure how to set them, or don't care about tangents you can use @bs::AnimationUtility::calculateTangents method to generate them automatically.
 
 ~~~~~~~~~~~~~{.cpp}
 // All tangents set to 0, then auto-calculating them
@@ -37,7 +37,7 @@ TAnimationCurve<float> curve(keyframes);
 
 Note that keyframes provided to the curve must be in ascending order with regards to time. Once the curve is created it is immutable and keyframes can no longer be changed.
 
-To evaluate a curve call @ref bs::TAnimationCurve<T>::evaluate "TAnimationCurve<T>::evaluate()".
+To evaluate a curve call @bs::TAnimationCurve<T>::evaluate.
 
 ~~~~~~~~~~~~~{.cpp}
 float val = curve.evaluate(0.25f);

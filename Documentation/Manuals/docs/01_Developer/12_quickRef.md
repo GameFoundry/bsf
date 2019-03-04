@@ -1,6 +1,6 @@
-Quick reference									{#quickref}
-===============
-[TOC]
+---
+title: Quick reference
+---
 
 Here are some common conventions used throughout bs::f:
  - It uses right handed coordinate system

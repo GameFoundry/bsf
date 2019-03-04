@@ -1,10 +1,10 @@
-GUI styles									{#guiStyles}
-===============
-[TOC]
+---
+title: GUI styles
+---
 
-So far all the GUI elements we have been creating have used the default built-in GUI style. However it is possible to fully customize an element's look by defining a @ref bs::GUIElementStyle "GUIElementStyle" object. This object allows you to specify which textures to use, style of text (if any), default dimensions, margins, padding and similar.
+So far all the GUI elements we have been creating have used the default built-in GUI style. However it is possible to fully customize an element's look by defining a @bs::GUIElementStyle object. This object allows you to specify which textures to use, style of text (if any), default dimensions, margins, padding and similar.
 
-Each style must be given a unique name and then registered with a @ref bs::GUISkin "GUISkin" object which serves as a collection of styles. Create an empty skin by calling @ref bs::GUISkin::create "GUISkin::create()". Register the style by calling @ref bs::GUISkin "GUISkin::setStyle()".
+Each style must be given a unique name and then registered with a @bs::GUISkin object which serves as a collection of styles. Create an empty skin by calling @bs::GUISkin::create. Register the style by calling @bs::GUISkin.
 
 ~~~~~~~~~~~~~{.cpp}
 HGUISkin skin = GUISkin::create();
@@ -23,7 +23,7 @@ myButtonStyle.width = 50;
 skin->setStyle("MyButtonStyle", myButtonStyle);
 ~~~~~~~~~~~~~
 
-Once a skin has been created you must assign it to a **GUIWidget** by calling @ref bs::GUIWidget::setSkin "GUIWidget::setSkin()". Each **GUIWidget** can only have a single skin assigned, and all GUI elements parented to that widget will use the styles from the provided skin.
+Once a skin has been created you must assign it to a **GUIWidget** by calling @bs::GUIWidget::setSkin. Each **GUIWidget** can only have a single skin assigned, and all GUI elements parented to that widget will use the styles from the provided skin.
 
 ~~~~~~~~~~~~~{.cpp}
 HSceneObject guiSO = SceneObject::create("GUI");
@@ -47,10 +47,10 @@ All GUI elements also have a default style name they will use if you don't provi
 skin->setStyle(GUIButton::getGUITypeName(), myButtonStyle);
 ~~~~~~~~~~~~~
 
-# GUI style properties {#guiStyles_a}
+# GUI style properties
 **GUIElementStyle** allows you to set a variety of different properties to customize its look. They can be categorized into *states*, *textual*, *dimensions* and *offsets*.
 
-## States {#guiStyles_a_a}
+## States
 States are used to change how an element looks as the user interacts with the element. There are five different states:
  - Normal - Default state when no interaction is happening
  - Hover - State when the user is hovering the pointer over the element
@@ -61,20 +61,20 @@ States are used to change how an element looks as the user interacts with the el
 All elements must have a *normal* state. This is the state that defines their default look. Elements that can be interacted with (like buttons) can optionally also provide the remaining states.
 
 The states can be set in **GUIElementStyle** by populating the following fields:
- - @ref bs::GUIElementStyle::normal "GUIElementStyle::normal"
- - @ref bs::GUIElementStyle::hover "GUIElementStyle::hover"
- - @ref bs::GUIElementStyle::active "GUIElementStyle::active"
- - @ref bs::GUIElementStyle::focused "GUIElementStyle::focused"
- - @ref bs::GUIElementStyle::focusedHover "GUIElementStyle::focusedHover"
+ - @bs::GUIElementStyle::normal
+ - @bs::GUIElementStyle::hover
+ - @bs::GUIElementStyle::active
+ - @bs::GUIElementStyle::focused
+ - @bs::GUIElementStyle::focusedHover
  
 Additionally, certain elements can be permanently toggled on or off (i.e. toggle buttons). In that case it is useful to have a separate set of states for on and off modes. Therefore there are also states specific to the "on" mode (while above states default to "off"):
- - @ref bs::GUIElementStyle::normalOn "GUIElementStyle::normalOn"
- - @ref bs::GUIElementStyle::hoverOn "GUIElementStyle::hoverOn"
- - @ref bs::GUIElementStyle::activeOn "GUIElementStyle::activeOn"
- - @ref bs::GUIElementStyle::focusedOn "GUIElementStyle::focusedOn"
- - @ref bs::GUIElementStyle::focusedHoverOn "GUIElementStyle::focusedHoverOn"
+ - @bs::GUIElementStyle::normalOn
+ - @bs::GUIElementStyle::hoverOn
+ - @bs::GUIElementStyle::activeOn
+ - @bs::GUIElementStyle::focusedOn
+ - @bs::GUIElementStyle::focusedHoverOn
  
-Each of these eight states is a @ref bs::GUIElementStyle::GUIElementStateStyle "GUIElementStateStyle" object, which contains a single sprite texture and a text color tint. When the style is active the element will render the provided texture covering its available area, and render any text using the provided color.
+Each of these eight states is a @bs::GUIElementStyle::GUIElementStateStyle object, which contains a single sprite texture and a text color tint. When the style is active the element will render the provided texture covering its available area, and render any text using the provided color.
 
 An example that sets up a button style that has different textures depending if the button is in normal, hovered or active state:
 ~~~~~~~~~~~~~{.cpp}
@@ -88,13 +88,13 @@ myButtonStyle.hover.texture = SpriteTexture::create(hoverTex);
 myButtonStyle.active.texture = SpriteTexture::create(activeTex);
 ~~~~~~~~~~~~~
 
-## Textual {#guiStyles_a_b}
+## Textual
 As the name implies, this set of properties is relevant for GUI elements that display text. The properties allow you to control text font, size and alignment using the following fields:
- - @ref bs::GUIElementStyle::font "GUIElementStyle::font"
- - @ref bs::GUIElementStyle::fontSize "GUIElementStyle::fontSize"
- - @ref bs::GUIElementStyle::textHorzAlign "GUIElementStyle::textHorzAlign"
- - @ref bs::GUIElementStyle::textVertAlign "GUIElementStyle::textVertAlign"
- - @ref bs::GUIElementStyle::wordWrap "GUIElementStyle::wordWrap"
+ - @bs::GUIElementStyle::font
+ - @bs::GUIElementStyle::fontSize
+ - @bs::GUIElementStyle::textHorzAlign
+ - @bs::GUIElementStyle::textVertAlign
+ - @bs::GUIElementStyle::wordWrap
  
 An example customizing text display on a GUI element:
 ~~~~~~~~~~~~~{.cpp}
@@ -110,18 +110,18 @@ myButtonStyle.textVertAlign = TVA_Center;
  
 > We'll show how to import fonts in a later chapter.
 
-## Dimensions {#guiStyles_a_c}
+## Dimensions
 Dimensions provided on **GUIElementStyle** allow you to choose what's the default size of the GUI element. The user can override this on a per-element basis by calling **GUIElement::setSize()**, **GUIElement::setFlexibleWidth()**, **GUIElement::setFlexibleHeight()** or similar methods (as we have done in previous chapters).
 
 Dimensions are controlled by the following properties:
- - @ref bs::GUIElementStyle::width "GUIElementStyle::width"
- - @ref bs::GUIElementStyle::minWidth "GUIElementStyle::minWidth"
- - @ref bs::GUIElementStyle::maxWidth "GUIElementStyle::maxWidth"
- - @ref bs::GUIElementStyle::fixedWidth "GUIElementStyle::fixedWidth"
- - @ref bs::GUIElementStyle::height "GUIElementStyle::height"
- - @ref bs::GUIElementStyle::minHeight "GUIElementStyle::minHeight"
- - @ref bs::GUIElementStyle::maxHeight "GUIElementStyle::maxHeight"
- - @ref bs::GUIElementStyle::fixedHeight "GUIElementStyle::fixedHeight"
+ - @bs::GUIElementStyle::width
+ - @bs::GUIElementStyle::minWidth
+ - @bs::GUIElementStyle::maxWidth
+ - @bs::GUIElementStyle::fixedWidth
+ - @bs::GUIElementStyle::height
+ - @bs::GUIElementStyle::minHeight
+ - @bs::GUIElementStyle::maxHeight
+ - @bs::GUIElementStyle::fixedHeight
    
 When **GUIElementStyle::fixedWidth** or **GUIElementStyle::fixedHeight** is set to true, the system will use size values provided by **GUIElementStyle::width** and **GUIElementStyle::height** respectively. This is the same as calling **GUIElement::setSize()**.
 
@@ -148,11 +148,11 @@ style.minWidth = 20;
 style.maxWidth = 0; // 0 = infinite
 ~~~~~~~~~~~~~
    
-## Offsets {#guiStyles_a_d}
+## Offsets
 Finally, styles allow you to provide offsets that control how are GUI elements positioned relative to other elements, and how are GUI element images & text positioned relative to GUI element borders.
 
-### Padding {#guiStyles_a_d_a}
-@ref bs::GUIElementStyle::padding "GUIElementStyle::padding" allows you to specify minimum distance between this and the next element in a **GUILayout**. This field is only relevant for elements that are in automatically positioning layouts (i.e. **GUILayoutX** or **GUILayoutY**). 
+### Padding
+@bs::GUIElementStyle::padding allows you to specify minimum distance between this and the next element in a **GUILayout**. This field is only relevant for elements that are in automatically positioning layouts (i.e. **GUILayoutX** or **GUILayoutY**). 
 
 ~~~~~~~~~~~~~{.cpp}
 GUIElementStyle style;
@@ -164,8 +164,8 @@ style.padding.top = 0;
 style.padding.bottom = 0;
 ~~~~~~~~~~~~~
 
-### Margins {#guiStyles_a_d_b}
-@ref bs::GUIElementStyle::margins "GUIElementStyle::margins" work similarly to padding, except they work inwards. Margins will offset visible GUI element contents (e.g. text in a button) by the specified amount. Normally the contents are centered but you can use margins to more precisely position them.
+### Margins
+@bs::GUIElementStyle::margins work similarly to padding, except they work inwards. Margins will offset visible GUI element contents (e.g. text in a button) by the specified amount. Normally the contents are centered but you can use margins to more precisely position them.
 
 Note that margins will modify the bounds for the GUI element used for input. This means that pointer interaction will not be possible with areas outside of the zone defined by margins. This can be useful if you want to make a certain part of a GUI element visible, yet not interactable.
 
@@ -179,8 +179,8 @@ style.margins.right = 0;
 style.margins.top = 0;
 ~~~~~~~~~~~~~
 
-### Content offset {#guiStyles_a_d_c}
-@ref bs::GUIElementStyle::contentOffset "GUIElementStyle::contentOffset" has the same visual effect as margins, but it doesn't affect the input bounds.
+### Content offset
+@bs::GUIElementStyle::contentOffset has the same visual effect as margins, but it doesn't affect the input bounds.
 
 ~~~~~~~~~~~~~{.cpp}
 GUIElementStyle style;
@@ -192,10 +192,10 @@ style.margins.top = 0;
 style.margins.bottom = 0;
 ~~~~~~~~~~~~~
 
-### Borders {#guiStyles_a_d_d}
+### Borders
 Normally when you set a texture for a GUI element state, the texture will stretch to fill out the area of the GUI element. Unless the texture is a uniform color or a repeatable pattern, that stretching will often look bad.
 
-For this reason bs::f allows you to specify borders though @ref bs::GUIElementStyle::border "GUIElementStyle::border". By setting borders you split the image into 9 sections.
+For this reason bs::f allows you to specify borders though @bs::GUIElementStyle::border. By setting borders you split the image into 9 sections.
 
 Center section will be resized uniformly as normal. Four corner sections will never be resized. Top and bottom sections will be resized only horizontally (fixed height), and left and right sections will be resized only vertically (fixed width). This allows you to use more complex images that still look good when resized.
 

@@ -1,6 +1,6 @@
-Importing shaders 						{#importingShaders}
-===============
-
+---
+title: Importing shaders
+---
 All shaders are written using BSL syntax described in the previous manual. The code is stored as a raw text file using the .bsl extension (or .bslinc for include files). Shader can then be imported from a .bsl file as any other resources, using the **Importer**.
 
 ~~~~~~~~~~~~~{.cpp}

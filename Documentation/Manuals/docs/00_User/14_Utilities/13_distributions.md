@@ -1,6 +1,6 @@
-Distributions				{#distributions}
-===============
-
+---
+title: Distributions
+---
 Distributions can be used for describing properties that can either take on a constant value, a range of values, or vary their value by time. They are most commonly used by properties in the particle system.
 
 In particular all types of distributions can take on the following values:
@@ -10,10 +10,10 @@ In particular all types of distributions can take on the following values:
  - Dual curves - Similar to a single curve, except both curves will be sampled and a random value will then be chosen in the range determined by the sampled values
 
 There are different types of distributions:
- - @ref bs::TDistribution<T> "FloatDistribution" - Distribution that outputs a single floating point number. Curves are represented using a **TAnimationCurve<float>**, as described in the [animation curves](@ref animCurves) manual.
- - @ref bs::TDistribution<T> "Vector2Distribution" - Distribution that outputs a 2D vector. Curves are represented using a **TAnimationCurve<Vector2>**, as described in the [animation curves](@ref animCurves) manual.
- - @ref bs::TDistribution<T> "Vector3Distribution" - Distribution that outputs a 3D vector. Curves are represented using a **TAnimationCurve<Vector3>**, as described in the [animation curves](@ref animCurves) manual.
- - @ref bs::ColorDistribution "ColorDistribution" - Distribution that outputs a color. Curves are represented using a **ColorGradient**, as described in the [color gradient](@ref colorGradient) manual.
+ - @bs::TDistribution<T> - Distribution that outputs a single floating point number. Curves are represented using a **TAnimationCurve<float>**, as described in the [animation curves](@ref animCurves) manual.
+ - @bs::TDistribution<T> - Distribution that outputs a 2D vector. Curves are represented using a **TAnimationCurve<Vector2>**, as described in the [animation curves](@ref animCurves) manual.
+ - @bs::TDistribution<T> - Distribution that outputs a 3D vector. Curves are represented using a **TAnimationCurve<Vector3>**, as described in the [animation curves](@ref animCurves) manual.
+ - @bs::ColorDistribution - Distribution that outputs a color. Curves are represented using a **ColorGradient**, as described in the [color gradient](@ref colorGradient) manual.
 
 ~~~~~~~~~~~~~{.cpp}
 // 'Distribution' that always evaluates to a constant value

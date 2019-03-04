@@ -1,10 +1,10 @@
-Scene queries						{#sceneQueries}
-===============
-[TOC]
+---
+title: Scene queries
+---
 
-Scene queries allow you to specify a geometric object and perform a query if that object intersects or overlaps any physics object in the scene. Most queries also return detailed information about the intersection. All queries are performed through the @ref bs::PhysicsScene "PhysicsScene" interface.
+Scene queries allow you to specify a geometric object and perform a query if that object intersects or overlaps any physics object in the scene. Most queries also return detailed information about the intersection. All queries are performed through the @bs::PhysicsScene interface.
 
-All queries will operate only on objects in a particular scene. Usually you will only have one scene, and you can retrieve it through @ref bs::SceneManager::getMainScene "SceneManager::getMainScene()". This will return a @ref bs::SceneInstance "SceneInstance" object through which you can get a **PhysicsScene** by calling @ref bs::SceneInstance::getPhysicsScene "SceneInstance::getPhysicsScene()". 
+All queries will operate only on objects in a particular scene. Usually you will only have one scene, and you can retrieve it through @bs::SceneManager::getMainScene. This will return a @bs::SceneInstance object through which you can get a **PhysicsScene** by calling @bs::SceneInstance::getPhysicsScene. 
 
 Here is a short example of a basic query, to give you a better idea:
 
@@ -32,7 +32,7 @@ There are two major types of queries:
   - Casts - Check if an object hits something if traveling along a certain direction
   - Overlaps - Check if object overlaps something at a specific position
   
-# Casts {#sceneQueries_a}
+# Casts
 Casts are types of queries in which you provide a shape, origin point and a direction, and the system check if the shape intersects anything along the way.
 
 Cast can be used with different objects (shapes):
@@ -49,15 +49,15 @@ They can also be categorized by the type of values they return:
   - Any hit - Cheapest type of cast query, just returns a boolean if hit occurred or not.
   - Closest - Returns information only about the closest hit. Cheaper than *All*, more expensive than *Any*.
   
-## All hit casts {#sceneQueries_a_a}
+## All hit casts
 As the name implies, these type of queries perform a cast and then return information about all hit objects. Relevant methods are:
- - @ref bs::PhysicsScene::rayCastAll "PhysicsScene::rayCastAll()"
- - @ref bs::PhysicsScene::boxCastAll "PhysicsScene::boxCastAll()"
- - @ref bs::PhysicsScene::sphereCastAll "PhysicsScene::sphereCastAll()"
- - @ref bs::PhysicsScene::capsuleCastAll "PhysicsScene::capsuleCastAll()"
- - @ref bs::PhysicsScene::convexCastAll "PhysicsScene::convexCastAll()"
+ - @bs::PhysicsScene::rayCastAll
+ - @bs::PhysicsScene::boxCastAll
+ - @bs::PhysicsScene::sphereCastAll
+ - @bs::PhysicsScene::capsuleCastAll
+ - @bs::PhysicsScene::convexCastAll
  
-They all share a common interface, where as the first parameter they accept a shape with its starting position and orientation, travel direction, and finally an optional maximum range. They return an array of @ref bs::PhysicsQueryHit "PhysicsQueryHit" objects.
+They all share a common interface, where as the first parameter they accept a shape with its starting position and orientation, travel direction, and finally an optional maximum range. They return an array of @bs::PhysicsQueryHit objects.
 
 ~~~~~~~~~~~~~{.cpp}
 // Sphere centered at origin with radius 0.5
@@ -87,15 +87,15 @@ for(auto& entry : hits)
  - Index of the triangle that was hit (if hit collider is a **MeshCollider**)
  - Barycentric coordinates of the triangle that was hit (if hit collider is a **MeshCollider**)
  
-## Closest hit casts {#sceneQueries_a_b}
+## Closest hit casts
 Closest hit casts are nearly identical to all hit casts, with the main difference is that they return a boolean value if a hit occurred or not, and output a single **PhysicsQueryHit** object. Hit information returned always concerns the closest found hit. 
 
 Checking for closest hit is cheaper than checking for them all, and is usually adequate for most applications. Relevant methods are:
- - @ref bs::PhysicsScene::rayCast "PhysicsScene::rayCast()"
- - @ref bs::PhysicsScene::boxCast "PhysicsScene::boxCast()"
- - @ref bs::PhysicsScene::sphereCast "PhysicsScene::sphereCast()"
- - @ref bs::PhysicsScene::capsuleCast "PhysicsScene::capsuleCast()"
- - @ref bs::PhysicsScene::convexCast "PhysicsScene::convexCast()"
+ - @bs::PhysicsScene::rayCast
+ - @bs::PhysicsScene::boxCast
+ - @bs::PhysicsScene::sphereCast
+ - @bs::PhysicsScene::capsuleCast
+ - @bs::PhysicsScene::convexCast
  
 They also share a common interface where as the first parameter they accept a shape with its starting position and orientation, travel direction, reference to a **PhysicsQueryHit** object to receive the results, and finally an optional maximum range. They return a boolean value that returns true if anything was hit.
 
@@ -119,15 +119,15 @@ if(physicsScene.boxCast(box, direction, hitInfo))
 }
 ~~~~~~~~~~~~~
 
-## Any hit casts {#sceneQueries_a_c}
+## Any hit casts
 Finally, any hit casts are the simplest (and cheapest) of them all. They simply return a boolean value if a hit occurred or not. They do not return any further information about the hit.
 
 Relevant methods are:
- - @ref bs::PhysicsScene::rayCastAny "PhysicsScene::rayCastAny()"
- - @ref bs::PhysicsScene::boxCastAny "PhysicsScene::boxCastAny()"
- - @ref bs::PhysicsScene::sphereCastAny "PhysicsScene::sphereCastAny()"
- - @ref bs::PhysicsScene::capsuleCastAny "PhysicsScene::capsuleCastAny()"
- - @ref bs::PhysicsScene::convexCastAny "PhysicsScene::convexCastAny()"
+ - @bs::PhysicsScene::rayCastAny
+ - @bs::PhysicsScene::boxCastAny
+ - @bs::PhysicsScene::sphereCastAny
+ - @bs::PhysicsScene::capsuleCastAny
+ - @bs::PhysicsScene::convexCastAny
  
 ~~~~~~~~~~~~~{.cpp}
 // Ray starting at origin, traveling towards negative Z
@@ -141,7 +141,7 @@ if(physicsScene.rayCastAny(ray))
 	gDebug().logDebug("Found hit!");
 ~~~~~~~~~~~~~
 
-# Overlaps {#sceneQueries_b}
+# Overlaps
 Overlap queries simply check if an object standing still at a specific position/orientation overlaps any other objects. 
 
 Overlaps can be used with different shapes:
@@ -154,12 +154,12 @@ They can also be categorized by the type of values they return:
   - All overlaps - Most expensive type of overlap query, returns all overlapping objects.
   - Any overlap - Cheapest type of overlap query, just returns a boolean if overlap occurred or not.
   
-## All overlap methods {#sceneQueries_b_a}
+## All overlap methods
 These overlap methods return an array of **Collider**%s consisting of all the objects the provided shape is currently overlapping. Relevant methods are:
- - @ref bs::PhysicsScene::boxOverlap "PhysicsScene::boxOverlap()"
- - @ref bs::PhysicsScene::sphereOverlap "PhysicsScene::sphereOverlap()"
- - @ref bs::PhysicsScene::capsuleOverlap "PhysicsScene::capsuleOverlap()"
- - @ref bs::PhysicsScene::convexOverlap "PhysicsScene::convexOverlap()"
+ - @bs::PhysicsScene::boxOverlap
+ - @bs::PhysicsScene::sphereOverlap
+ - @bs::PhysicsScene::capsuleOverlap
+ - @bs::PhysicsScene::convexOverlap
  
 They all share a common interface. As input they take a shape with its starting position and orientation, and return an array of overlapping objects. 
 
@@ -178,12 +178,12 @@ for(auto& entry : overlaps)
 }
 ~~~~~~~~~~~~~
 
-## Any overlap methods {#sceneQueries_b_b}
+## Any overlap methods
 This is a set of overlap methods that returns only a boolean value if the overlap occurred or not, without a list of colliders that are overlapping. This is cheaper than querying for all overlaps. The relevant methods are:
- - @ref bs::PhysicsScene::boxOverlapAny "PhysicsScene::boxOverlapAny()"
- - @ref bs::PhysicsScene::sphereOverlapAny "PhysicsScene::sphereOverlapAny()"
- - @ref bs::PhysicsScene::capsuleOverlapAny "PhysicsScene::capsuleOverlapAny()"
- - @ref bs::PhysicsScene::convexOverlapAny "PhysicsScene::convexOverlapAny()"
+ - @bs::PhysicsScene::boxOverlapAny
+ - @bs::PhysicsScene::sphereOverlapAny
+ - @bs::PhysicsScene::capsuleOverlapAny
+ - @bs::PhysicsScene::convexOverlapAny
  
  ~~~~~~~~~~~~~{.cpp}
 // Sphere centered at origin with radius 0.5

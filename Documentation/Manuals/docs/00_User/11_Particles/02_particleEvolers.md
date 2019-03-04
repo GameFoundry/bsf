@@ -1,6 +1,6 @@
-Particle evolvers 			{#particleEvolvers}
-===============
-[TOC]
+---
+title: Particle evolvers
+---
 
 Many of the particle properties can be controlled directly from the **ParticleEmitter**, such as particle color, size and velocity, but those properties will only affect the initial state of the particle. If you need to modify the particle state during its lifetime you must use evolvers. 
 
@@ -10,7 +10,7 @@ Evolvers can provide various functionality such as:
  - Colliding particles with the world
  - Animating particle textures
 
-All evolvers derive from @ref bs::ParticleEvolver "ParticleEvolver". They are created and registered with the particle system similarly to emitters. Use @ref bs::ParticleSystem::setEvolvers() "ParticleSystem::setEvolvers()" to set a list of evolvers to use for a particular particle system. All evolver types have a **create()** method and accept a descriptor structure that allows you to customize their properties.
+All evolvers derive from @bs::ParticleEvolver. They are created and registered with the particle system similarly to emitters. Use @bs::ParticleSystem::setEvolvers() to set a list of evolvers to use for a particular particle system. All evolver types have a **create()** method and accept a descriptor structure that allows you to customize their properties.
 
 ~~~~~~~~~~~~~{.cpp}
 // An example creating and registering an evolver that modifies particle size over lifetime
@@ -27,12 +27,12 @@ particleSystem->setEvolvers({evolver});
 
 Lets go over all the available evolver types.
 
-# Size over lifetime {#particleEvolvers_a}
+# Size over lifetime
 Modifies the particle size over the particle lifetime.
 
-Represented with the @ref bs::ParticleSize "ParticleSize" and initialization options provided through @ref bs::PARTICLE_SIZE_DESC "PARTICLE_SIZE_DESC". 
+Represented with the @bs::ParticleSize and initialization options provided through @bs::PARTICLE_SIZE_DESC. 
 
-Uniform size is provided through @ref bs::PARTICLE_SIZE_DESC::size "PARTICLE_SIZE_DESC::size" in the form of a **FloatDistribution**. If @ref bs::PARTICLE_SIZE_DESC::use3DSize "PARTICLE_SIZE_DESC::use3DSize" is enabled you may instead a separate size value for all three axes in the @ref bs::PARTICLE_SIZE_DESC::size3D "PARTICLE_SIZE_DESC::size3D" field.
+Uniform size is provided through @bs::PARTICLE_SIZE_DESC::size in the form of a **FloatDistribution**. If @bs::PARTICLE_SIZE_DESC::use3DSize is enabled you may instead a separate size value for all three axes in the @bs::PARTICLE_SIZE_DESC::size3D field.
 
 Note that all evolver distributions containing curves will be evaluated in range [0, 1], 0 representing the beginning of the particle lifetime and 1 representing the end.
 
@@ -48,12 +48,12 @@ desc.size = TAnimationCurve<float>(
 auto evolver = ParticleSize::create(desc);
 ~~~~~~~~~~~~~
 
-# Color over lifetime {#particleEvolvers_b}
+# Color over lifetime
 Modifies the particle color over the particle lifetime.
 
-Represented with the @ref bs::ParticleColor "ParticleColor" and initialization options provided through @ref bs::PARTICLE_COLOR_DESC "PARTICLE_COLOR_DESC". 
+Represented with the @bs::ParticleColor and initialization options provided through @bs::PARTICLE_COLOR_DESC. 
 
-Color is provided through @ref bs::PARTICLE_COLOR_DESC::color "PARTICLE_COLOR_DESC::color" in the form of a **ColorDistribution**, and is the only available property for this evolver.
+Color is provided through @bs::PARTICLE_COLOR_DESC::color in the form of a **ColorDistribution**, and is the only available property for this evolver.
 
 ~~~~~~~~~~~~~{.cpp}
 // Fades from white to black over the particle's lifetime
@@ -67,12 +67,12 @@ desc.color = ColorGradient(
 auto evolver = ParticleColor::create(desc);
 ~~~~~~~~~~~~~
 
-# Rotation over lifetime {#particleEvolvers_c}
+# Rotation over lifetime
 Rotates the particle over the particle lifetime.
 
-Represented with the @ref bs::ParticleRotation "ParticleRotation" and initialization options provided through @ref bs::PARTICLE_ROTATION_DESC "PARTICLE_ROTATION_DESC". 
+Represented with the @bs::ParticleRotation and initialization options provided through @bs::PARTICLE_ROTATION_DESC. 
 
-Rotation around Z axis is provided through @ref bs::PARTICLE_ROTATION_DESC::rotation "PARTICLE_SIZE_DESC::rotation" in the form of a **FloatDistribution**, containing angle in degrees. If @ref bs::PARTICLE_ROTATION_DESC::use3DRotation "PARTICLE_ROTATION_DESC::use3DRotation" is enabled you may instead a separate rotation value for each of the three axes in the @ref bs::PARTICLE_ROTATION_DESC::rotation3D "PARTICLE_ROTATION_DESC::rotation3D" field.
+Rotation around Z axis is provided through @bs::PARTICLE_ROTATION_DESC::rotation in the form of a **FloatDistribution**, containing angle in degrees. If @bs::PARTICLE_ROTATION_DESC::use3DRotation is enabled you may instead a separate rotation value for each of the three axes in the @bs::PARTICLE_ROTATION_DESC::rotation3D field.
 
 ~~~~~~~~~~~~~{.cpp}
 // Rotates the particle by 180 degrees over its lifetime
@@ -86,12 +86,12 @@ desc.rotation = TAnimationCurve<float>(
 auto evolver = ParticleRotation::create(desc);
 ~~~~~~~~~~~~~
 
-# Gravity {#particleEvolvers_d}
+# Gravity
 Applies the force of gravity to particles.
 
-Represented with the @ref bs::ParticleGravity "ParticleGravity" and initialization options provided through @ref bs::PARTICLE_GRAVITY_DESC "PARTICLE_GRAVITY_DESC".
+Represented with the @bs::ParticleGravity and initialization options provided through @bs::PARTICLE_GRAVITY_DESC.
 
-The gravity force is inherited from the physics system, but can be scaled for the purposes of this evolver by setting @ref bs::PARTICLE_GRAVITY_DESC::scale "PARTICLE_GRAVITY_DESC::scale".
+The gravity force is inherited from the physics system, but can be scaled for the purposes of this evolver by setting @bs::PARTICLE_GRAVITY_DESC::scale.
 
 ~~~~~~~~~~~~~{.cpp}
 // Applies the default gravity
@@ -101,12 +101,12 @@ desc.scale = 1.0f;
 auto evolver = ParticleGravity::create(desc);
 ~~~~~~~~~~~~~
 
-# Force {#particleEvolvers_e}
+# Force
 Applies an arbitrary force to particles.
 
-Represented with the @ref bs::ParticleForce "ParticleForce" and initialization options provided through @ref bs::PARTICLE_FORCE_DESC "PARTICLE_FORCE_DESC".
+Represented with the @bs::ParticleForce and initialization options provided through @bs::PARTICLE_FORCE_DESC.
 
-Use @ref bs::PARTICLE_FORCE_DESC::force "PARTICLE_FORCE_DESC::force" to specify the force direction and intensity. If @ref bs::PARTICLE_FORCE_DESC::worldSpace "PARTICLE_FORCE_DESC::worldSpace" is true the force direction is assumed to be provided in world space, otherwise it is assumed to be relative to the transform of the parent particle system.
+Use @bs::PARTICLE_FORCE_DESC::force to specify the force direction and intensity. If @bs::PARTICLE_FORCE_DESC::worldSpace is true the force direction is assumed to be provided in world space, otherwise it is assumed to be relative to the transform of the parent particle system.
 
 ~~~~~~~~~~~~~{.cpp}
 // Applies a force to particles, pushing them towards the positive X axis
@@ -121,14 +121,14 @@ desc.worldSpace = true;
 auto evolver = ParticleForce::create(desc);
 ~~~~~~~~~~~~~
 
-# Velocity {#particleEvolvers_f}
+# Velocity
 Sets the velocity of particles over their lifetime.
 
 ![Velocity evolver](velocityEvolver.gif)  
 
-Represented with the @ref bs::ParticleVelocity "ParticleVelocity" and initialization options provided through @ref bs::PARTICLE_VELOCITY_DESC "PARTICLE_VELOCITY_DESC".
+Represented with the @bs::ParticleVelocity and initialization options provided through @bs::PARTICLE_VELOCITY_DESC.
 
-Use @ref bs::PARTICLE_VELOCITY_DESC::velocity "PARTICLE_VELOCITY_DESC::velocity" to specify the velocity direction and intensity. If @ref bs::PARTICLE_VELOCITY_DESC::worldSpace "PARTICLE_VELOCITY_DESC::worldSpace" is true the velocity direction is assumed to be provided in world space, otherwise it is assumed to be relative to the transform of the parent particle system.
+Use @bs::PARTICLE_VELOCITY_DESC::velocity to specify the velocity direction and intensity. If @bs::PARTICLE_VELOCITY_DESC::worldSpace is true the velocity direction is assumed to be provided in world space, otherwise it is assumed to be relative to the transform of the parent particle system.
 
 ~~~~~~~~~~~~~{.cpp}
 // Moves the particles upwards
@@ -138,16 +138,16 @@ desc.velocity = Vector3(0.0f, 0.2f, 0.0f);
 auto evolver = ParticleVelocity::create(velocityDesc);
 ~~~~~~~~~~~~~
 
-# Orbit {#particleEvolvers_g}
+# Orbit
 Sets angular velocity of particles as if they were orbiting a point in space.
 
-Represented with the @ref bs::ParticleOrbit "ParticleOrbit" and initialization options provided through @ref bs::PARTICLE_ORBIT_DESC "PARTICLE_ORBIT_DESC".
+Represented with the @bs::ParticleOrbit and initialization options provided through @bs::PARTICLE_ORBIT_DESC.
 
-Use @ref bs::PARTICLE_ORBIT_DESC::center "PARTICLE_ORBIT_DESC::center" to a specify a point to orbit around. If @ref bs::PARTICLE_ORBIT_DESC::worldSpace "PARTICLE_ORBIT_DESC::worldSpace" is true the point assumed to be provided in world space, otherwise it is assumed to be relative to the transform of the parent particle system.
+Use @bs::PARTICLE_ORBIT_DESC::center to a specify a point to orbit around. If @bs::PARTICLE_ORBIT_DESC::worldSpace is true the point assumed to be provided in world space, otherwise it is assumed to be relative to the transform of the parent particle system.
 
-Specify the speed of rotation by setting @ref bs::PARTICLE_ORBIT_DESC::velocity "PARTICLE_ORBIT_DESC::velocity" which allows to set the speed of rotation for each axis separately, in rotations per second. Evaluated in local or world space according to **PARTICLE_ORBIT_DESC::worldSpace**.
+Specify the speed of rotation by setting @bs::PARTICLE_ORBIT_DESC::velocity which allows to set the speed of rotation for each axis separately, in rotations per second. Evaluated in local or world space according to **PARTICLE_ORBIT_DESC::worldSpace**.
 
-By default the particles will orbit at a fixed distance from the point, buy you can also make them move away or be drawn to the point by setting the @ref bs::PARTICLE_ORBIT_DESC::radial "PARTICLE_ORBIT_DESC::radial" field to a positive (move away) or negative (move closer) value.
+By default the particles will orbit at a fixed distance from the point, buy you can also make them move away or be drawn to the point by setting the @bs::PARTICLE_ORBIT_DESC::radial field to a positive (move away) or negative (move closer) value.
 
 ~~~~~~~~~~~~~{.cpp}
 // Rotates the particles over the local Y axis and slowly moves them away from the center
@@ -159,20 +159,20 @@ desc.radial = 0.4f;
 auto evolver = ParticleOrbit::create(desc);
 ~~~~~~~~~~~~~
 
-# Collision {#particleEvolvers_h}
+# Collision
 Makes the particles collide with the world or a user-provided set of planes.
 
 ![Particle collisions](particleCollision.gif)  
 
-Represented with the @ref bs::ParticleCollisions "ParticleCollisions" and initialization options provided through @ref bs::PARTICLE_COLLISIONS_DESC "PARTICLE_COLLISIONS_DESC".
+Represented with the @bs::ParticleCollisions and initialization options provided through @bs::PARTICLE_COLLISIONS_DESC.
 
-This evolver comes with two modes, settable through @ref bs::PARTICLE_COLLISIONS_DESC::mode "PARTICLE_COLLISIONS_DESC::mode":
- - @ref bs::ParticleCollisionMode::World "ParticleCollisionMode::World" - Particles will collide with all world geometry as defined by the physics components placed in the world. Optionally use bitmask @ref bs::PARTICLE_COLLISIONS_DESC::layer "PARTICLE_COLLISIONS_DESC::layer" to collide only with physics objects with a matching layer.
- - @ref bs::ParticleCollisionMode::World "ParticleCollisionMode::Plane" - This is a secondary collision mode that makes the particles collide only with a user-defined set of planes. This mode is cheaper performance-wise than world collisions. Use @ref bs::ParticleCollisions::setPlanes "ParticleCollisions::setPlanes()" to provide an array of planes to collide with.
+This evolver comes with two modes, settable through @bs::PARTICLE_COLLISIONS_DESC::mode:
+ - @bs::ParticleCollisionMode::World - Particles will collide with all world geometry as defined by the physics components placed in the world. Optionally use bitmask @bs::PARTICLE_COLLISIONS_DESC::layer to collide only with physics objects with a matching layer.
+ - @bs::ParticleCollisionMode::World - This is a secondary collision mode that makes the particles collide only with a user-defined set of planes. This mode is cheaper performance-wise than world collisions. Use @bs::ParticleCollisions::setPlanes to provide an array of planes to collide with.
  
-Additionally, the following properties are used in either collision mode. @ref bs::PARTICLE_COLLISIONS_DESC::radius "PARTICLE_COLLISIONS_DESC::radius" specifies the size of individual particle (defined as a sphere). @ref bs::PARTICLE_COLLISIONS_DESC::restitution "PARTICLE_COLLISIONS_DESC::restitution" determines how much will be particles bounce after a collision, and @ref bs::PARTICLE_COLLISIONS_DESC::dampening "PARTICLE_COLLISIONS_DESC::dampening" determines how much energy will particles lose after a collision.
+Additionally, the following properties are used in either collision mode. @bs::PARTICLE_COLLISIONS_DESC::radius specifies the size of individual particle (defined as a sphere). @bs::PARTICLE_COLLISIONS_DESC::restitution determines how much will be particles bounce after a collision, and @bs::PARTICLE_COLLISIONS_DESC::dampening determines how much energy will particles lose after a collision.
 
-Sometimes it is useful to reduce particle lifetime after a collision, or kill them entirely. Use @ref bs::PARTICLE_COLLISIONS_DESC::lifetimeLoss "PARTICLE_COLLISIONS_DESC::lifetimeLoss" to specify how much lifetime is lost (in range [0, 1]) after a collision. Lifetime loss of 1 will destroy the particle upon collision.
+Sometimes it is useful to reduce particle lifetime after a collision, or kill them entirely. Use @bs::PARTICLE_COLLISIONS_DESC::lifetimeLoss to specify how much lifetime is lost (in range [0, 1]) after a collision. Lifetime loss of 1 will destroy the particle upon collision.
 
 ~~~~~~~~~~~~~{.cpp}
 // Create a plane collider
@@ -195,14 +195,14 @@ desc.radius = 0.2f;
 auto evolver = ParticleCollisions::create(desc);
 ~~~~~~~~~~~~~
 
-# Texture animation {#particleEvolvers_i}
+# Texture animation
 Texture animation evolver allows you to animate the texture applied to the particle.
 
-Represented with the @ref bs::ParticleTextureAnimation "ParticleTextureAnimation" and initialization options provided through @ref bs::PARTICLE_TEXTURE_ANIMATION_DESC "PARTICLE_TEXTURE_ANIMATION_DESC".
+Represented with the @bs::ParticleTextureAnimation and initialization options provided through @bs::PARTICLE_TEXTURE_ANIMATION_DESC.
 
 Texture animation evolver only works if you have provided a **SpriteTexture** with animation to the **Material** the particle is rendered with. You can find more about sprite texture animation in [material](@ref simpleMaterial) manual.
 
-Use @ref bs::PARTICLE_TEXTURE_ANIMATION_DESC::numCycles "PARTICLE_TEXTURE_ANIMATION_DESC::numCycles" to specify how many times should the animation loop during particle's lifetime. Enable @ref bs::PARTICLE_TEXTURE_ANIMATION_DESC::randomizeRow "PARTICLE_TEXTURE_ANIMATION_DESC::randomizeRow" if you want every particle to pick a random row from the relevant sprite texture. This allows you to provide different textures and animations to different particles.
+Use @bs::PARTICLE_TEXTURE_ANIMATION_DESC::numCycles to specify how many times should the animation loop during particle's lifetime. Enable @bs::PARTICLE_TEXTURE_ANIMATION_DESC::randomizeRow if you want every particle to pick a random row from the relevant sprite texture. This allows you to provide different textures and animations to different particles.
 
 ~~~~~~~~~~~~~{.cpp}
 HTexture texture = ...; // Import a texture (or create one)

@@ -1,15 +1,15 @@
-Advanced RTTI				{#advancedRtti}
-===============
-[TOC]
+---
+title: Advanced RTTI
+---
 
 This manual is a continuation of the @ref serializingObjects manual, focusing on some more advanced features of the RTTI system.
 
-# Manually defining fields {#advancedRtti_a}
+# Manually defining fields
 Previously we have shown how to define RTTI member fields by using the BS_RTTI_MEMBER_* macros. While this method is in most cases preferable, it might not be useful if more advanced functionality is required. The macro approach is only able to reference class fields directly, but sometimes we might wish to access data returned by a method, or we might want to process the data in some way (e.g. compressing it).
 
 We can do this by manually defining fields. In order to manually register fields the systems supports a several sets of `add*Field` methods, each expecting a unique name/id, and a pair of getter/setter methods. The getter/setter methods can then be used for any more advanced processing.
 
-## Plain fields {#advancedRtti_a_a}
+## Plain fields
 You register plain fields by calling @ref bs::RTTIType<Type, BaseType, MyRTTIType>::addPlainField "RTTIType::addPlainField()". The getter/setter methods must return/accept a reference to the value of the field.
 
 ~~~~~~~~~~~~~{.cpp}
@@ -39,7 +39,7 @@ public:
 };
 ~~~~~~~~~~~~~
 
-## Reflectable fields {#advancedRtti_a_b}
+## Reflectable fields
 The reflectable field getter/setter signature is similar to the plain field one, only the @ref bs::RTTIType<Type, BaseType, MyRTTIType>::addReflectableField "RTTIType::addReflectableField()" method is used for registration instead. 
 
 ~~~~~~~~~~~~~{.cpp}
@@ -68,7 +68,7 @@ public:
 };
 ~~~~~~~~~~~~~
 
-## Reflectable pointer fields {#advancedRtti_a_c}
+## Reflectable pointer fields
 Reflectable pointer getter/setter methods must return shared pointers to the instance, and they're registered with @ref bs::RTTIType<Type, BaseType, MyRTTIType>::addReflectablePtrField "RTTIType::addReflectablePtrField()".
 ~~~~~~~~~~~~~{.cpp}
 class MyClass : public IReflectable
@@ -101,7 +101,7 @@ public:
 };
 ~~~~~~~~~~~~~
 
-## Array fields {#advancedRtti_a_d}
+## Array fields
 Each of the valid field types (plain/reflectable/reflectable pointer), also come in array form. The array form requires two additional getter/setter methods that get/set array size, and normal getter/setter methods require an additional index parameter. 
 
 Methods for registering array fields are:
@@ -143,8 +143,8 @@ public:
 
 > By using this form of field definitions you are also no longer limited to arrays only contained with the **Vector** container.
 
-# Advanced plain fields {#advancedRtti_b}
-Although plain fields are primarily intended for simple built-in types, sometimes they also need to be used on complex types. For example a **std::string** is often used as a field type, but it is not a simple built-in type, nor can we make it derive from **IReflectable**. For these purposes you can use @ref bs::RTTIPlainType<T> "RTTIPlainType<T>". This is a templated class you can specialize for your specific type. 
+# Advanced plain fields
+Although plain fields are primarily intended for simple built-in types, sometimes they also need to be used on complex types. For example a **std::string** is often used as a field type, but it is not a simple built-in type, nor can we make it derive from **IReflectable**. For these purposes you can use @bs::RTTIPlainType<T>. This is a templated class you can specialize for your specific type. 
 
 Once you specialize the class for your type, implementing all the required methods, you will then be able to use your type on plain fields in the RTTI class. Without this specialization the system will refuse to compile the RTTI type.
 
@@ -207,9 +207,9 @@ BS_ALLOW_MEMCPY_SERIALIZATION(SimpleData)
 ~~~~~~~~~~~~~
 
 **RTTIPlainType** specializations can also be used as a more traditional form of serialization in case you find the RTTI system an overkill. For example if you needed to transfer data over a network and don't require advanced versioning features. The system provides helper methods that allow you to easily work with plain types in such a case:
- - @ref bs::rttiReadElem "rttiReadElem()" - Deserializes an object from the provided buffer and returns offset into the buffer after the read data
- - @ref bs::rttiWriteElem "rttiWriteElem()" - Serializes an object into the provided buffer and returns offset into the buffer after the written data
- - @ref bs::rttiGetElemSize "rttiGetElemSize()" - Returns a size an object
+ - @bs::rttiReadElem - Deserializes an object from the provided buffer and returns offset into the buffer after the read data
+ - @bs::rttiWriteElem - Serializes an object into the provided buffer and returns offset into the buffer after the written data
+ - @bs::rttiGetElemSize - Returns a size an object
  
 ~~~~~~~~~~~~~{.cpp}
 // Assuming Vector has a RTTIPlainType<T> specialization (which it has, bs::f provides it by default)
@@ -229,31 +229,31 @@ rttiReadElem(myDataCopy, data);
 bs_free(data);
 ~~~~~~~~~~~~~
 
-# Querying RTTI {#advancedRtti_c}
+# Querying RTTI
 Aside from using RTTI for serialization, you can also use it to manually query various information about objects, as well as create and cast object instances. 
 
 Global queries:
- - @ref bs::rtti_is_of_type "rtti_is_of_type<T>()" - Checks is a specific object of type *T*
- - @ref bs::rtti_is_subclass "rtti_is_subclass<T>()" - Checks is a specific object derived from type *T*
- - @ref bs::rtti_create "rtti_create()" - Creates a new object from its type ID
- - @ref bs::rtti_cast "rtti_cast<T>()" - Casts an object to the specified type if the cast is valid, or returns null otherwise
+ - @bs::rtti_is_of_type - Checks is a specific object of type *T*
+ - @bs::rtti_is_subclass - Checks is a specific object derived from type *T*
+ - @bs::rtti_create - Creates a new object from its type ID
+ - @bs::rtti_cast - Casts an object to the specified type if the cast is valid, or returns null otherwise
  
 **IReflectable** queries:
- - @ref bs::IReflectable::getTypeName "IReflectable::getTypeName()" - Gets the name of the object's type
- - @ref bs::IReflectable::getTypeId "IReflectable::getTypeId()" - Gets the type ID of the object's type
+ - @bs::IReflectable::getTypeName - Gets the name of the object's type
+ - @bs::IReflectable::getTypeId - Gets the type ID of the object's type
  
 **RTTIType** queries:
- - @ref bs::RTTITypeBase::getBaseClass "RTTITypeBase::getBaseClass()" - Returns the **RTTIType** object of the base class
- - @ref bs::RTTITypeBase::getDerivedClasses "RTTITypeBase::getDerivedClasses()" - Returns a list of **RTTIType**%s for all derived classes
- - @ref bs::RTTITypeBase::getNumFields "RTTITypeBase::getNumFields()" - Returns the number of member fields
- - @ref bs::RTTITypeBase::getField "RTTITypeBase::getField()" - Returns information about a field from its sequential index, in the form of @ref bs::RTTIField "RTTIField"
- - @ref bs::RTTITypeBase::findField "RTTITypeBase::findField()" - Searches for a field with a specific name and returns information about it in form of **RTTIField**
+ - @bs::RTTITypeBase::getBaseClass - Returns the **RTTIType** object of the base class
+ - @bs::RTTITypeBase::getDerivedClasses - Returns a list of **RTTIType**%s for all derived classes
+ - @bs::RTTITypeBase::getNumFields - Returns the number of member fields
+ - @bs::RTTITypeBase::getField - Returns information about a field from its sequential index, in the form of @bs::RTTIField
+ - @bs::RTTITypeBase::findField - Searches for a field with a specific name and returns information about it in form of **RTTIField**
  
 **RTTIField** queries:
- - @ref bs::RTTIField::isPlainType "RTTIField::isPlainType()" - Checks if field contains a plain data type. **RTTIField** can then be cast to @ref bs::RTTIPlainFieldBase "RTTIPlainFieldBase" for more operations.
- - @ref bs::RTTIField::isReflectableType "RTTIField::isReflectableType()" - Checks if field contains an **IReflectable** data type. **RTTIField** can then be cast to @ref bs::RTTIReflectableFieldBase "RTTIReflectableFieldBase" for more operations.
- - @ref bs::RTTIField::isReflectablePtrType "RTTIField::isReflectablePtrType()" - Checks if field contains an **IReflectable** pointer data type. **RTTIField** can then be cast to @ref bs::RTTIReflectablePtrFieldBase "RTTIReflectablePtrFieldBase" for more operations.
- - @ref bs::RTTIField::isArray "RTTIField::isArray()" - Checks if the field contains an array or a single value
+ - @bs::RTTIField::isPlainType - Checks if field contains a plain data type. **RTTIField** can then be cast to @bs::RTTIPlainFieldBase for more operations.
+ - @bs::RTTIField::isReflectableType - Checks if field contains an **IReflectable** data type. **RTTIField** can then be cast to @bs::RTTIReflectableFieldBase for more operations.
+ - @bs::RTTIField::isReflectablePtrType - Checks if field contains an **IReflectable** pointer data type. **RTTIField** can then be cast to @bs::RTTIReflectablePtrFieldBase for more operations.
+ - @bs::RTTIField::isArray - Checks if the field contains an array or a single value
  
 ~~~~~~~~~~~~~{.cpp}
 IReflectable* myObject = ...;
@@ -281,7 +281,7 @@ rttiField->isArray();
 
 Once you have an instance of a **RTTIField** object, you can also use it to directly read and write values on object instances for that particular field.
 
-# Advanced serialization  {#advancedRtti_d}
+# Advanced serialization
 When implementing **RTTIType<Type, BaseType, MyRTTIType>** can optionally override any of these methods, for additional functionality:
  - @ref bs::RTTIType<Type, BaseType, MyRTTIType>::onSerializationStarted "RTTIType::onSerializationStarted"
  - @ref bs::RTTIType<Type, BaseType, MyRTTIType>::onSerializationEnded "RTTIType::onSerializationEnded"

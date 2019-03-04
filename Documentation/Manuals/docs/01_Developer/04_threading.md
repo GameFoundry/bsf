@@ -1,14 +1,14 @@
-Threading									{#threading}
-===============
-[TOC]
+---
+title: Threading
+---
 
 In this chapter we'll show how to start new threads of execution and how to safely synchronize between them. We'll start with explanation of the basic threading primitives, and then move onto higher level concepts like the thread pool and task scheduler.
 
-# Primitives {#threading_a}
+# Primitives
 This section describes the most basic primitives you can use to manipulate threads. All threading primitives use the standard C++ library constructs, so for more information you should read their documentation.
 
-## Thread {#threading_a_a}
-To create a new thread use @ref bs::Thread "Thread", with its constructor parameter being a function pointer of the function that will execute on the new thread.
+## Thread
+To create a new thread use @bs::Thread, with its constructor parameter being a function pointer of the function that will execute on the new thread.
 ~~~~~~~~~~~~~{.cpp}
 void workerFunc()
 {
@@ -18,8 +18,8 @@ void workerFunc()
 Thread myThread(&workerFunc);
 ~~~~~~~~~~~~~
 
-## Mutex {#threading_a_b}
-Use @ref bs::Mutex "Mutex" and @ref bs::Lock "Lock" to synchronize access between multiple threads. **Lock** automatically locks the mutex when it's constructed, and unlocks it when it goes out of scope.
+## Mutex
+Use @bs::Mutex and @bs::Lock to synchronize access between multiple threads. **Lock** automatically locks the mutex when it's constructed, and unlocks it when it goes out of scope.
 
 ~~~~~~~~~~~~~{.cpp}
 Vector<int> output;
@@ -39,10 +39,10 @@ Thread threadA(&workerFunc);
 Thread threadB(&workerFunc);
 ~~~~~~~~~~~~~
 
-If a mutex can be locked recursively, use @ref bs::RecursiveMutex "RecursiveMutex" and @ref bs::RecursiveLock "RecursiveLock" instead.
+If a mutex can be locked recursively, use @bs::RecursiveMutex and @bs::RecursiveLock instead.
 
-## Signal {#threading_a_c}
-Use @ref bs::Signal "Signal" to pause thread execution until another thread reaches a certain point.
+## Signal
+Use @bs::Signal to pause thread execution until another thread reaches a certain point.
 
 ~~~~~~~~~~~~~{.cpp}
 bool isReady = false;
@@ -75,14 +75,14 @@ if(!isReady)
 	signal.wait_for(lock);
 ~~~~~~~~~~~~~
 
-## Other {#threading_a_d}
+## Other
 The previous sections covered all the primitives, but there is some more useful functionality to be aware of:
  - @ref BS_THREAD_HARDWARE_CONCURRENCY - Returns number of logical CPU cores.
- - @ref BS_THREAD_CURRENT_ID - Returns @ref bs::ThreadId "ThreadId" of the current thread.
+ - @ref BS_THREAD_CURRENT_ID - Returns @bs::ThreadId of the current thread.
  - @ref BS_THREAD_SLEEP - Pauses the current thread for a set number of milliseconds.
 
-# Thread pool {#threading_b}
-Instead of using **Thread** as described in the previous section, you can instead use the @ref bs::ThreadPool "ThreadPool" module for running threads. It allows you to re-use threads and avoid paying the cost of thread creation and destruction. It keeps any thread that was retired in idle state, and will re-use it when user requests a new thread.
+# Thread pool
+Instead of using **Thread** as described in the previous section, you can instead use the @bs::ThreadPool module for running threads. It allows you to re-use threads and avoid paying the cost of thread creation and destruction. It keeps any thread that was retired in idle state, and will re-use it when user requests a new thread.
 
 An example:
 ~~~~~~~~~~~~~{.cpp}
@@ -94,12 +94,12 @@ void workerFunc()
 ThreadPool::instance().run("MyThread", &workerFunc);
 ~~~~~~~~~~~~~
 
-# Task scheduler {#threading_c}
-@ref bs::TaskScheduler "TaskScheduler" module allows even more fine grained control over threads. It ensures there are only as many threads as the number of logical CPU cores. This ensures good thread distribution accross the cores, so that multiple threads don't fight for resources on the same core.
+# Task scheduler
+@bs::TaskScheduler module allows even more fine grained control over threads. It ensures there are only as many threads as the number of logical CPU cores. This ensures good thread distribution accross the cores, so that multiple threads don't fight for resources on the same core.
 
-It accomplishes that by storing each worker function as a @ref bs::Task "Task", which it then dispatches to threads that are free. This ensure you can just queue up as many tasks as required without needing to worry about efficiently utilizing CPU cores.
+It accomplishes that by storing each worker function as a @bs::Task, which it then dispatches to threads that are free. This ensure you can just queue up as many tasks as required without needing to worry about efficiently utilizing CPU cores.
 
-To create a task call @ref bs::Task::create "Task::create()" with a task name, and a function pointer that will execute the task code.
+To create a task call @bs::Task::create with a task name, and a function pointer that will execute the task code.
 
 ~~~~~~~~~~~~~{.cpp}
 void workerFunc()
@@ -110,7 +110,7 @@ void workerFunc()
 SPtr<Task> task = Task::create("MyTask", &workerFunc);
 ~~~~~~~~~~~~~
 
-Then run the task by calling @ref bs::TaskScheduler::addTask() "TaskScheduler::addTask()".
+Then run the task by calling @bs::TaskScheduler::addTask().
 
 ~~~~~~~~~~~~~{.cpp}
 TaskScheduler::instance().addTask(task);
@@ -143,13 +143,13 @@ TaskScheduler::instance().addTask(dependency);
 TaskScheduler::instance().addTask(task);
 ~~~~~~~~~~~~~
 
-You can cancel a task by calling @ref bs::Task::cancel() "Task::cancel()". Note this will only cancel it if it hasn't started executing already.
+You can cancel a task by calling @bs::Task::cancel(). Note this will only cancel it if it hasn't started executing already.
 
 ~~~~~~~~~~~~~{.cpp}
 task->cancel();
 ~~~~~~~~~~~~~
 
-Finally, you can block the current thread until a task finished by calling @ref bs::Task::wait "Task::wait()".
+Finally, you can block the current thread until a task finished by calling @bs::Task::wait.
 
 ~~~~~~~~~~~~~{.cpp}
 task->wait();

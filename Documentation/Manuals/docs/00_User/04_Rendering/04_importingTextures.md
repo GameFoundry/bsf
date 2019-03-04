@@ -1,10 +1,10 @@
-Textures 						{#importingTextures}
-===============
-[TOC]
+---
+title: Textures
+---
 
-Textures are images that are applied to meshes in order to achieve greater surface detail. In bs::f they are represented with the @ref bs::Texture "Texture" class. A texture is a resource, meaning it can be imported, saved and loaded as any other resource.
+Textures are images that are applied to meshes in order to achieve greater surface detail. In bs::f they are represented with the @bs::Texture class. A texture is a resource, meaning it can be imported, saved and loaded as any other resource.
 
-# Importing a texture {#importingTextures_a}
+# Importing a texture
 Textures can be imported from various third party formats, using the importer.
 
 ~~~~~~~~~~~~~{.cpp}
@@ -26,11 +26,11 @@ Supported formats are:
  - TARGA
  - TIFF
  
-# Creating a texture {#importingTextures_b}
+# Creating a texture
 Textures can also be created manually, which we cover later in the [creating textures](@ref advancedTextures) manual.
    
-# Texture properties {#importingTextures_c}
-Once a texture has been imported, you can retrieve its properties like width, height and format by calling @ref bs::Texture::getProperties "Texture::getProperties()", which returns a @ref bs::TextureProperties "TextureProperties" object.
+# Texture properties
+Once a texture has been imported, you can retrieve its properties like width, height and format by calling @bs::Texture::getProperties, which returns a @bs::TextureProperties object.
 
 ~~~~~~~~~~~~~{.cpp}
 // Retrieve and print out various texture properties
@@ -42,8 +42,8 @@ gDebug().logDebug("Format: " + toString(props.getFormat()));
 gDebug().logDebug("Num. mip maps: " + toString(props.getNumMipmaps()));
 ~~~~~~~~~~~~~
 
-# Customizing import {#importingTextures_d}
-Texture import can be customized by providing a @ref bs::TextureImportOptions "TextureImportOptions" object to the importer.
+# Customizing import
+Texture import can be customized by providing a @bs::TextureImportOptions object to the importer.
 
 ~~~~~~~~~~~~~{.cpp}
 auto importOptions = TextureImportOptions::create();
@@ -54,8 +54,8 @@ HTexture texture = gImporter().import<Texture>("myTexture.jpg", importOptions);
 
 A variety of properties can be customized on import, the most important of which being image format, mip-map generation, sRGB state and caching.
 
-## Image format {#importingTextures_d_a}
-@ref bs::TextureImportOptions::format "TextureImportOptions::format" allows you to specify which format should the texture pixels be in after import. Any of the formats provided in @ref bs::PixelFormat "PixelFormat" are supported.
+## Image format
+@bs::TextureImportOptions::format allows you to specify which format should the texture pixels be in after import. Any of the formats provided in @bs::PixelFormat are supported.
 
 ~~~~~~~~~~~~~{.cpp}
 // Set format as uncompressed RGB with an alpha channel
@@ -73,8 +73,8 @@ Some of most common formats are:
  - PF_BC3 - Compressed RGB data, with an alpha channel. 
  - PF_BC5 - Compressed 2-channel format. 
  
-## Mip-maps {#importingTextures_d_b}
-@ref bs::TextureImportOptions::generateMips "TextureImportOptions::generateMips" allows you to specify should mip-maps for the texture be generated. Mipmaps ensure that textures applied to 3D surfaces look good when they're viewed from far away (i.e. when the pixel size they take up on screen is considerably less than the actual texture resolution).
+## Mip-maps
+@bs::TextureImportOptions::generateMips allows you to specify should mip-maps for the texture be generated. Mipmaps ensure that textures applied to 3D surfaces look good when they're viewed from far away (i.e. when the pixel size they take up on screen is considerably less than the actual texture resolution).
 
 Enabling mip-maps will increase the memory use of the texture by 33%, but it is pretty much essential for any texture applied on a 3D object. It should not be enabled for textures used on 2D elements like GUI or sprites, as it will have no benefit.
 
@@ -83,12 +83,12 @@ Enabling mip-maps will increase the memory use of the texture by 33%, but it is 
 importOptions->generateMips = true;
 ~~~~~~~~~~~~~
 
-## Gamma correction {#importingTextures_d_c}
+## Gamma correction
 Most images output by modern cameras and image editing software will be stored in what's called a gamma (sRGB) space. This ensures that the image has more quality in the blacks, but it does not represent the actual image you see on the screen (when you open it in some image viewing program). This is because your monitor performs gamma-correction on the image, before displaying it to you.
 
 However game engines don't like their data in gamma space, because it's not linear which means that all lighting and similar operations don't operate exactly as they should. Essentially the image ends up looking more "washed-out" than it should.
 
-For this reason bs::f provides @ref bs::TextureImportOptions::sRGB "TextureImportOptions::sRGB" toggle, which you can set for images in gamma (sRGB) space. The engine will then know to convert to linear space before performing any relevant operations, ensuring the final rendering looks good.
+For this reason bs::f provides @bs::TextureImportOptions::sRGB toggle, which you can set for images in gamma (sRGB) space. The engine will then know to convert to linear space before performing any relevant operations, ensuring the final rendering looks good.
 
 ~~~~~~~~~~~~~{.cpp}
 // Tell the engine this image is in gamma space
@@ -97,10 +97,10 @@ importOptions->sRGB = true;
 
 > How do you know when an image is in gamma space and when in linear space? As a general rule an albedo (diffuse) images are in gamma space, and normal maps are in linear space. For other types of images you need to consult the tool you use to create/save them, but in most cases they will be in gamma space.
 
-## Caching {#importingTextures_d_d}
-Sometimes you need to import a texture you don't want to only use for rendering, but rather for manually reading its contents. When that's the case you can enable the @ref bs::TextureImportOptions::cpuCached "TextureImportOptions::cpuCached" option.
+## Caching
+Sometimes you need to import a texture you don't want to only use for rendering, but rather for manually reading its contents. When that's the case you can enable the @bs::TextureImportOptions::cpuCached option.
 
-This will allow you to call @ref bs::Texture::readCachedData "Texture::readCachedData()" and to manually read individual pixels of the texture.
+This will allow you to call @bs::Texture::readCachedData and to manually read individual pixels of the texture.
 
 Note that caching a texture means its data will be available in system memory, essentially doubling its memory usage.
 

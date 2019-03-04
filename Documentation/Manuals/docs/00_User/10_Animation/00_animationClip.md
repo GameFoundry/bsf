@@ -1,6 +1,6 @@
-Loading animation clips						{#animationClip}
-===============
-[TOC]
+---
+title: Loading animation clips
+---
 
 When it comes to animating 3D objects (meshes), bs::f supports two types of animation:
  - Skeletal - Each vertex on the mesh is assigned to a bone using an index and a weight - this is called a skin. Each bone is part of a hierarchy which is called a skeleton. The bones are then animated using animation clips, and as the bones move, so do the vertices (skin) attached to them. 
@@ -12,14 +12,14 @@ In general it is preferred to use skeletal animation wherever possible, as it ha
 
 @ref TODO_IMAGE_MORPH_ANIM
 
-Both animation types are controlled via @ref bs::AnimationClip "AnimationClip"%s. 
+Both animation types are controlled via @bs::AnimationClip%s. 
 
 Animation clip consists of a set of animation curves, each animating either a bone or a set of morph shapes. Each animation curve has a set of keyframes (time and value pairs). As animation is playing, time moves forward and the system interpolates between those keyframes and applies the latest available value, which produces the animation. Knowledge of this internal structure is not necessary to play animation, but it will be useful to know when we explain some more advanced features below.
 
-# Import {#animationClip_a}
+# Import
 Animation clips are imported from the same source file that contains the mesh object. The import process is similar to how we imported physics meshes, using **Importer::importAll()** to retrieve the clips.
 
-To enable animation clip import you must set @ref bs::MeshImportOptions::importAnimation "MeshImportOptions::importAnimation" to true, import the mesh and retrieve the clip from the resulting resource array. Note that a source file could contain multiple animation clips (depending on how it was created).
+To enable animation clip import you must set @bs::MeshImportOptions::importAnimation to true, import the mesh and retrieve the clip from the resulting resource array. Note that a source file could contain multiple animation clips (depending on how it was created).
 
 ~~~~~~~~~~~~~{.cpp}
 auto importOptions = MeshImportOptions::create();
@@ -31,23 +31,23 @@ HAnimationClip animationClip = static_resource_cast<AnimationClip>(resources[1].
 
 We'll show how to use animation clips in the following chapter, while in this one we'll just focus on importing them.
 
-Aside from the animation clip you will also need to import additional data for the mesh itself. Depending on whether you're using skeletal or morph animation (or both), you need to enable @ref bs::MeshImportOptions::importSkin "MeshImportOptions::importSkin" and/or @ref bs::MeshImportOptions::importBlendShapes "MeshImportOptions::importBlendShapes". This will import required additional per-vertex information, skeleton & bone information, as well as morph shapes.
+Aside from the animation clip you will also need to import additional data for the mesh itself. Depending on whether you're using skeletal or morph animation (or both), you need to enable @bs::MeshImportOptions::importSkin and/or @bs::MeshImportOptions::importBlendShapes. This will import required additional per-vertex information, skeleton & bone information, as well as morph shapes.
 
 ~~~~~~~~~~~~~{.cpp}
 importOptions->importSkin = true; // For skeletal animation
 importOptions->importBlendShapes = true; // For morph shapes
 ~~~~~~~~~~~~~
 
-> These options add additional information to **Mesh**, accessible through @ref bs::Mesh::getSkeleton "Mesh::getSkeleton()" and @ref bs::Mesh::getMorphShapes "Mesh::getMorphShapes()". This information will automatically be used by the animation system (you don't need to do anything but enable these flags on import), but can be accessed by the user if required for some special purpose.
+> These options add additional information to **Mesh**, accessible through @bs::Mesh::getSkeleton and @bs::Mesh::getMorphShapes. This information will automatically be used by the animation system (you don't need to do anything but enable these flags on import), but can be accessed by the user if required for some special purpose.
 
-# Animation properties {#animationClip_b}
-Once imported the animation clip provides a few properties you can query. Use @ref bs::AnimationClip::getLength "AnimationClip::getLength()" to get the duration of the animation in seconds. Use @ref bs::AnimationClip::getCurves "AnimationClip::getCurves()" to retrieve all animation curves that are a part of the animation.
+# Animation properties
+Once imported the animation clip provides a few properties you can query. Use @bs::AnimationClip::getLength to get the duration of the animation in seconds. Use @bs::AnimationClip::getCurves to retrieve all animation curves that are a part of the animation.
 
-These aren't properties you need to access manually for normal animation playback, but it can be useful to know they're there. You can also manually assign custom animation curves by calling @ref bs::AnimationClip::setCurves "AnimationClip::setCurves()". This allows you to create fully customized animations within the engine. Creation of animation curves is out of the scope of this manual but you can look up documentation for @ref bs::AnimationCurves "AnimationCurves" and related classes for more information.
+These aren't properties you need to access manually for normal animation playback, but it can be useful to know they're there. You can also manually assign custom animation curves by calling @bs::AnimationClip::setCurves. This allows you to create fully customized animations within the engine. Creation of animation curves is out of the scope of this manual but you can look up documentation for @bs::AnimationCurves and related classes for more information.
 
-# Advanced {#animationClip_c}
-## Splitting {#animationClip_c_a}
-Often the creator of the animation will place several animations into the same set of animation curves, one playing after another. When imported in bs::f this will result in a single continous animation clip. This is not useful and in such cases you can break up the animation into multiple clips by populating a set of @ref bs::AnimationSplitInfo "AnimationSplitInfo" structures, and providing them to @ref bs::MeshImportOptions::animationSplits "MeshImportOptions::animationSplits".
+# Advanced
+## Splitting
+Often the creator of the animation will place several animations into the same set of animation curves, one playing after another. When imported in bs::f this will result in a single continous animation clip. This is not useful and in such cases you can break up the animation into multiple clips by populating a set of @bs::AnimationSplitInfo structures, and providing them to @bs::MeshImportOptions::animationSplits.
 
 Each of **AnimationSplitInfo** entries requires the starting and ending frame of the animation, as well as a name to make it easier to identify. Starting/ending frames are something you must receive from the animation creator, or guess from animation playback.
 
@@ -80,19 +80,19 @@ for(auto& entry : resource)
 }
 ~~~~~~~~~~~~~
 
-## Keyframe reduction {#animationClip_c_b}
+## Keyframe reduction
 Tools that create animation will often output a large set of animation keyframes, usually at a fixed rate (e.g. 60 per second). In most cases this amount of keyframes is not necessary as many of them are static and change very slowly. Additionally bs::f uses keyframe tangents to better approximate the animation curve, ensuring less keyframes need to be used. 
 
-By enabling @ref bs::MeshImportOptions::reduceKeyFrames "MeshImportOptions::reduceKeyFrames" you can ensure that bsf eliminates any keyframes it deems unnecessary. This can greately reduce the memory usage of animation clips, but might yield animation clips that don't look exactly as imagined by the creator. In most cases you should enable this unless you notice problems.
+By enabling @bs::MeshImportOptions::reduceKeyFrames you can ensure that bsf eliminates any keyframes it deems unnecessary. This can greately reduce the memory usage of animation clips, but might yield animation clips that don't look exactly as imagined by the creator. In most cases you should enable this unless you notice problems.
 
 ~~~~~~~~~~~~~{.cpp}
 importOptions->reduceKeyFrames = true;
 ~~~~~~~~~~~~~
 
-## Animation events {#animationClip_c_c}
+## Animation events
 Often while animation is playing you might want to be notified when a certain point in an animation is reached. For example in a walk animation we might want a notification when the character's foot touches the ground, so we can play the footstep sound. These kind of notifications can be accomplished by using animation events.
 
-They are extremely simple, represented by @ref bs::AnimationEvent "AnimationEvent" structure, which consists of a name and a time. You can register animation events by calling @ref bs::AnimationClip::setEvents "AnimationClip::setEvents()".
+They are extremely simple, represented by @bs::AnimationEvent structure, which consists of a name and a time. You can register animation events by calling @bs::AnimationClip::setEvents.
 
 ~~~~~~~~~~~~~{.cpp}
 Vector<AnimationEvent> events(2);
@@ -106,14 +106,14 @@ walkClip->setEvents(events);
 
 We'll show how to receive event notifications in the following chapter.
 
-## Root motion {#animationClip_c_d}
+## Root motion
 Root motion represents an animation curve used for movement of the root bone in skeletal animation. This animation curve is useful for characters and objects that are animated and also move through the world in a dynamic way (like a user controller character or an AI controlled entity).
 
 By enabling root motion you ensure that the animation clip's root motion curve is removed, and you instead get access to the relevant curve directly. You can then use this curve to move the entity through the world. This results in motion that is more realistic and more in line with the animation, than if you just moved the entity in some linear fashion (e.g. a walking character would appear to be gliding, rather than actually walking, since humans and animals don't move at a constant pace).
 
-Enable root motion import by setting @ref bs::MeshImportOptions::importRootMotion "MeshImportOptions::importRootMotion". Then retrieve the root motion curve through @ref bs::AnimationClip::getRootMotion "AnimationClip::getRootMotion()". This will return a @ref bs::RootMotion "RootMotion" object, which contains two animation curves, one for rotation, other for translation.
+Enable root motion import by setting @bs::MeshImportOptions::importRootMotion. Then retrieve the root motion curve through @bs::AnimationClip::getRootMotion. This will return a @bs::RootMotion object, which contains two animation curves, one for rotation, other for translation.
 
-Animation curves are represented through the @ref bs::TAnimationCurve<T> "TAnimationCurve<T>" object. You can evaluate the curve by calling @ref bs::TAnimationCurve<T>::evaluate "TAnimationCurve<T>::evaluate()" with a specific time value.
+Animation curves are represented through the @bs::TAnimationCurve<T> object. You can evaluate the curve by calling @bs::TAnimationCurve<T>::evaluate with a specific time value.
 
 ~~~~~~~~~~~~~{.cpp}
 // Import animation with root motion
@@ -146,7 +146,7 @@ if(gInput().isButtonHeld(BC_W))
 }
 ~~~~~~~~~~~~~
 
-## Additive animation {#animationClip_c_e}
+## Additive animation
 Additive animation is a special type of skeletal animation that is not meant to be played on its own. Instead it is animation that is meant to be played on top of another animation clip. For example if you had a walk/run/crawl animation for your character, and then wanted to add a wave animation to the game. Instead of creating separate versions of walk/run/crawl animations, you can instead create an additive wave animation. Such additive animation can then play on top of any other compatible animations, without having to modify any existing animations.
 
 Note that artist creating such animation needs to pay attention to two things:

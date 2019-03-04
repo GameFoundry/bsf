@@ -1,12 +1,12 @@
-Prefabs				{#prefabs}
-===============
-
+---
+title: Prefabs
+---
 We talked about prefabs when discussing on how to save a game scene, but they can actually be used for saving of any group of scene objects. Contents of such prefabs can then be easily instantiated throughout the scene, allowing you to build complex scenes more easily. Prefabs can be nested within other prefabs with no limits (where the top level prefab is the "scene") and provide other useful functionality we'll talk about.
 
 For example you might create a scene object that contains a **Renderable** displaying a mesh of a house a material referencing the relevant textures. The scene object could also contain physics objects like a **Collider** and even child scene objects. You could then group all the scene objects and their components into a single prefab, which you can then easily re-use all over your scene.
 
 # Creation
-To create such a prefab call @ref bs::Prefab::create "Prefab::create()" with the first parameter being a **SceneObject** from which to create the prefab from. All child scene objects will be included in the prefab as well. Second parameter of **Prefab::create()** should equal to false, indicating this prefab doesn't represent a scene.
+To create such a prefab call @bs::Prefab::create with the first parameter being a **SceneObject** from which to create the prefab from. All child scene objects will be included in the prefab as well. Second parameter of **Prefab::create()** should equal to false, indicating this prefab doesn't represent a scene.
 
 ~~~~~~~~~~~~~{.cpp}
 // Create a renderable object as normal
@@ -18,7 +18,7 @@ HPrefab renderablePrefab = Prefab::create(renderableSO, false);
 ~~~~~~~~~~~~~
 
 # Instantiation
-Once created you can now instantiate the prefab as many times as you wish by calling @ref bs::Prefab::instantiate "Prefab::instantiate()". This will return a scene object, which will by default be parented to scene root.
+Once created you can now instantiate the prefab as many times as you wish by calling @bs::Prefab::instantiate. This will return a scene object, which will by default be parented to scene root.
 
 ~~~~~~~~~~~~~{.cpp}
 HSceneObject instance1 = renderablePrefab->instantiate();
@@ -26,7 +26,7 @@ HSceneObject instance2 = renderablePrefab->instantiate();
 ~~~~~~~~~~~~~
 
 # Updates
-Often you might want to modify the contents of a prefab. To do that call @ref bs::Prefab::update "Prefab::update()", preferably with the same scene object it was created with.
+Often you might want to modify the contents of a prefab. To do that call @bs::Prefab::update, preferably with the same scene object it was created with.
 
 ~~~~~~~~~~~~~{.cpp}
 // Update mesh on our renderable prefab
@@ -38,7 +38,7 @@ renderablePrefab->update(renderableSO);
 
 Once a prefab has been updated, you might also want to update any instances of that prefab. A prefab instance is any scene object resulting from **Prefab::instantiate()**, and the scene object used for originally creating the prefab.
 
-You can update the instances by calling @ref bs::PrefabUtility::updateFromPrefab() "PrefabUtility::updateFromPrefab()".
+You can update the instances by calling @bs::PrefabUtility::updateFromPrefab().
 
 ~~~~~~~~~~~~~{.cpp}
 // Update all the instances of our prefab with new prefab data (renderableSO is also an instance, but we don't update it since it was the source of the changes, so there's no need)
@@ -54,7 +54,7 @@ PrefabUtility::updateFromPrefab(gSceneManager().getRootNode());
 ~~~~~~~~~~~~~
 
 ## Links
-You'll notice we didn't need to provide a reference to **Prefab** when performing prefab updates. This is because every prefab instance is linked to its prefab. You can break the link by calling @ref bs::SceneObject::breakPrefabLink "SceneObject::breakPrefabLink()". This will make it into a regular scene object and it will no longer be updated from the prefab.
+You'll notice we didn't need to provide a reference to **Prefab** when performing prefab updates. This is because every prefab instance is linked to its prefab. You can break the link by calling @bs::SceneObject::breakPrefabLink. This will make it into a regular scene object and it will no longer be updated from the prefab.
 
 ~~~~~~~~~~~~~{.cpp}
 instance1->breakPrefabLink();
@@ -72,7 +72,7 @@ gResources().save(renderablePrefab, "myPrefab.asset");
 # Instance modifications
 All prefab instances are by default identical, and if you make any changes to the instances any calls to **PrefabUtility::updateFromPrefab()** will discard those changes and update the instance with latest data from the prefab. You can choose to break the prefab link by calling **SceneObject::breakPrefabLink()** but in that case you can no longer update the scene object if the source prefab changes.
 
-The solution for this problem are instance modifications. Using this system you can modify prefab instance same as a normal scene object, as long as you call @ref bs::PrefabUtility::recordPrefabDiff "PrefabUtility::recordPrefabDiff()" after.
+The solution for this problem are instance modifications. Using this system you can modify prefab instance same as a normal scene object, as long as you call @bs::PrefabUtility::recordPrefabDiff after.
 
 ~~~~~~~~~~~~~{.cpp}
 // Change the material of the prefab instance's renderable
@@ -86,7 +86,7 @@ PrefabUtility::recordPrefabDiff(instanceRenderable);
 Note the system will automatically call **PrefabUtility::recordPrefabDiff()** when a new prefab is created or updated. Meaning this will also be done automatically when you're saving scenes, and therefore there should be rare need to call it manually. 
 
 ## Reverting
-Sometimes you might want to discard all instance modifications, and revert back to original data from the prefab. In that case you can call @ref bs::PrefabUtility::revertToPrefab "PrefabUtility::revertToPrefab()".
+Sometimes you might want to discard all instance modifications, and revert back to original data from the prefab. In that case you can call @bs::PrefabUtility::revertToPrefab.
 
 ~~~~~~~~~~~~~{.cpp}
 // Discard any instance specific changes and update from the latest data from the prefab

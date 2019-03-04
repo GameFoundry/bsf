@@ -1,10 +1,10 @@
-Particle surface shaders					{#particleSurfaceShaders}
-===============
-[TOC]
+---
+title: Particle surface shaders
+---
 
 Particle system supports the use of custom surface shaders with mostly the same approach as with normal surface shaders. The major difference is that instead of using the **BasePass** mixin for handling vertex shaders you use the **ParticleVertex** mixin.
 
-# Deferred pipeline {#particleSurfaceShaders_a}
+# Deferred pipeline
 When creating particle shaders for the deferred pipeline the process is nearly identical to the normal deferred surface shader approach. The end goal is still to populate the **SurfaceData** structure.
 
 ~~~~~~~~~~~~~
@@ -47,7 +47,7 @@ shader Surface
 
 Note the **LIGHTING_DATA** preprocessor define and the use of **ParticleVertex** mixin. Those are the only two notable differences between normal and particle surface shaders when it comes to the deferred pipeline. **LIGHTING_DATA** tells the **ParticleVertex** mixin to provide additional information required for calculating lighting (such as normals and tangents). This is required as its possible to create particle shaders that don't account for lighting.
 
-# Forward pipeline {#particleSurfaceShaders_b}
+# Forward pipeline
 Once again, the forward pipeline approach is the same as with standard surface shaders except for the **LIGHTING_DATA** define and **ParticleVertex** mixin. In the example below we also add support for transparency, but this is not specific to particle surface shaders.
 
 ~~~~~~~~~~~~~
@@ -104,7 +104,7 @@ shader Surface
 };
 ~~~~~~~~~~~~~
 
-# Unlit forward {#particleSurfaceShaders_c}
+# Unlit forward
 And finally the most common way particles will be renderered is with support for transparency but ignoring any lighting. This can be done simply by including **ParticleVertex** on its own with no other mixins and writing the color in the fragment shader.
 
 ~~~~~~~~~~~~~

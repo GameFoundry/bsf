@@ -1,12 +1,12 @@
-Meshes 						{#importingMeshes}
-===============
-[TOC]
+---
+title: Meshes
+---
 
-Meshes are used for defining surfaces of 2D and 3D objects, and are the primary building blocks of the scene. In bs::f meshes are represented with the @ref bs::Mesh "Mesh" class. A mesh is a resource, meaning it can be imported, saved and loaded as any other resource.
+Meshes are used for defining surfaces of 2D and 3D objects, and are the primary building blocks of the scene. In bs::f meshes are represented with the @bs::Mesh class. A mesh is a resource, meaning it can be imported, saved and loaded as any other resource.
 
 ![Wireframe mesh](DragonWireframe.png) 
 
-# Importing a mesh {#importingMeshes_a}
+# Importing a mesh
 Meshes can be imported from various third party formats, using the importer.
 
 ~~~~~~~~~~~~~{.cpp}
@@ -19,11 +19,11 @@ Supported formats are:
  - DAE
  - OBJ
  
-# Creating a mesh {#importingMeshes_b}
+# Creating a mesh
 Meshes can also be created manually, which we cover later in the [creating meshes](@ref creatingMeshes) manual.
  
-# Mesh properties {#importingMeshes_c}
-Once a mesh has been imported, you can retrieve its properties like vertex & index counts, as well as its bounds by calling @ref bs::Mesh::getProperties "Mesh::getProperties()", which returns a @ref bs::MeshProperties "MeshProperties" object.
+# Mesh properties
+Once a mesh has been imported, you can retrieve its properties like vertex & index counts, as well as its bounds by calling @bs::Mesh::getProperties, which returns a @bs::MeshProperties object.
 
 ~~~~~~~~~~~~~{.cpp}
 // Retrieve and print out various mesh properties
@@ -36,8 +36,8 @@ gDebug().logDebug("Radius: " + toString(props.getBounds().getSphere().getRadius(
 
 > The debug logging functionality is explained in the [logging](@ref logging) manual.
 
-# Customizing import {#importingMeshes_d}
-Mesh import can be customized by providing a @ref bs::MeshImportOptions "MeshImportOptions" object to the importer.
+# Customizing import
+Mesh import can be customized by providing a @bs::MeshImportOptions object to the importer.
 
 ~~~~~~~~~~~~~{.cpp}
 auto importOptions = MeshImportOptions::create();
@@ -48,16 +48,16 @@ HMesh mesh = gImporter().import<Mesh>("dragon.fbx", importOptions);
 
 Lets see some of the options you can use for customizing import.
 
-## Scale {#importingMeshes_d_a}
-@ref bs::MeshImportOptions::importScale "MeshImportOptions::importScale" allows you to apply a uniform scale value to the mesh upon import. Although you can scale the size of a rendered mesh by adjusting the **SceneObject** transform when its placed in the scene, sometimes it is more useful to be able to do it once at import instead of every time you place it.
+## Scale
+@bs::MeshImportOptions::importScale allows you to apply a uniform scale value to the mesh upon import. Although you can scale the size of a rendered mesh by adjusting the **SceneObject** transform when its placed in the scene, sometimes it is more useful to be able to do it once at import instead of every time you place it.
 
 ~~~~~~~~~~~~~{.cpp}
 // Reduce the size of the mesh to 10% of its original size
 importOptions->importScale = 0.1f;
 ~~~~~~~~~~~~~
 
-## Normals {#importingMeshes_d_b}
-@ref bs::MeshImportOptions::importNormals "MeshImportOptions::importNormals" controls whether normal vectors are imported from the mesh file. 
+## Normals
+@bs::MeshImportOptions::importNormals controls whether normal vectors are imported from the mesh file. 
 
 Normal vectors are used in lighting and are required for any meshes placed in the 3D scene (unless rendering them manually using some custom method). They allow the mesh to appear smooth even though its surface is made out of triangles.
 
@@ -68,8 +68,8 @@ Most 3D authoring tools generate normals for their meshes, but if normals are no
 importOptions->importNormals = true;
 ~~~~~~~~~~~~~
 
-## Tangent {#importingMeshes_d_c}
-@ref bs::MeshImportOptions::importTangents "MeshImportOptions::importTangents" controls whether tangent vectors are imported from the mesh file. 
+## Tangent
+@bs::MeshImportOptions::importTangents controls whether tangent vectors are imported from the mesh file. 
 
 Tangent vectors (along with normal vectors) are required if your rendering shader uses normal maps. Similar to normals, if tangents are not present in the mesh file, bs::f will attempt to generate them automatically.
 
@@ -78,10 +78,10 @@ Tangent vectors (along with normal vectors) are required if your rendering shade
 importOptions->importTangents = true;
 ~~~~~~~~~~~~~
 
-## Caching {#importingMeshes_d_d}
-Sometimes you need to import a mesh you don't want to only use for rendering, but rather for manually reading its contents. When that's the case you can enable the @ref bs::MeshImportOptions::cpuCached "MeshImportOptions::cpuCached" option.
+## Caching
+Sometimes you need to import a mesh you don't want to only use for rendering, but rather for manually reading its contents. When that's the case you can enable the @bs::MeshImportOptions::cpuCached option.
 
-This will allow you to call @ref bs::Mesh::getCachedData "Mesh::getCachedData()" and to manually read individual vertices and indices of the mesh.
+This will allow you to call @bs::Mesh::getCachedData and to manually read individual vertices and indices of the mesh.
 
 Note that caching a mesh means its data will be available in system memory, essentially doubling its memory usage.
 

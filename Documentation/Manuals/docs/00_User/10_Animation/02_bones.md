@@ -1,7 +1,7 @@
-Bones				{#bones}
-===============
-
-The @ref bs::CBone "Bone" component allows you to expose a bone in a skeleton used for skeletal animation, for external use. A **SceneObject** with such a component attached will mimic the transformations the bone undergoes during animation. This allows you to:
+---
+title: Bones
+---
+The @bs::CBone component allows you to expose a bone in a skeleton used for skeletal animation, for external use. A **SceneObject** with such a component attached will mimic the transformations the bone undergoes during animation. This allows you to:
  - Attach other scene objects as children of the bone, ensuring you can animate other objects depending on the skeletal animation (e.g. a character holding a sword would have the sword attached to the hand bone, assuming the sword is modeled as a separate object)
  - Manipulate the bone's transform manually, ensuring you can control the animation manually (e.g. for purposes of inverse kinematics)
  
@@ -18,7 +18,7 @@ boneSO->setParent(animRenderableSO);
 HBone bone = boneSO->addComponent<CBone>();
 ~~~~~~~~~~~~~
 
-After the component has been added to the scene you must specify the name of the bone it will mimic. You can find information about all bones in a specific **Mesh** by calling @ref bs::Mesh::getSkeleton() "Mesh::getSkeleton()". This will return a @ref bs::Skeleton "Skeleton" object which allows you to enumerate all bones.
+After the component has been added to the scene you must specify the name of the bone it will mimic. You can find information about all bones in a specific **Mesh** by calling @bs::Mesh::getSkeleton(). This will return a @bs::Skeleton object which allows you to enumerate all bones.
 
 ~~~~~~~~~~~~~{.cpp}
 HMesh mesh = ...;

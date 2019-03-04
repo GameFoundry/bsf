@@ -1,10 +1,10 @@
-BSL syntax			{#bsl}
-===============
-[TOC]
+---
+title: BSL syntax
+---
 
 All shaders in bs::f are written in BSL (bs::f Shading Language). The core of the language is based on HLSL (High Level Shading Language), with various extensions to make development easier. In this manual we will not cover HLSL syntax, nor talk about shaders in general, and will instead focus on the functionality specific to BSL. If you are not familiar with the concept of a shader, or HLSL syntax, it is suggested you learn about them before continuing.
 
-# Basics {#bsl_a}
+# Basics
 
 A simple BSL program that renders a mesh all in white looks like this:
 ~~~~~~~~~~~~~~
@@ -57,7 +57,7 @@ There are a few restrictions compared to normal HLSL that you must be aware of:
   
 Let's now move onto more advanced functionality specific to BSL.
 
-# Non-programmable states {#bsl_b}
+# Non-programmable states
 Aside from the **code** block, a **shader** can also specify four blocks that allow it to control non-programmable parts of the pipeline:
  - **raster** - Allows you to set options related to rasterization, like rasterization mode (fill/wireframe), cull mode, etc.
  - **depth** - Allows you to set options related to depth buffer and depth comparison, like enabling/disabling depth reads or writes, or changing the depth comparison function
@@ -109,43 +109,43 @@ shader MyShader
 
 Let's cover all available options for each block type. 
 
-## raster {#bsl_b_a}
+## raster
 
 Name                 | Valid values				   | Reference
 ---------------------|---------------------------- |----------
-fill    	  	     | wire, solid (See @ref bs::PolygonMode "PolygonMode")			   | @ref bs::RASTERIZER_STATE_DESC::polygonMode "RASTERIZER_STATE_DESC::polygonMode"
-cull    	  	     | cw, ccw, none (See @ref bs::CullingMode "CullingMode")			   | @ref bs::RASTERIZER_STATE_DESC::cullMode "RASTERIZER_STATE_DESC::cullMode"
-scissor				 | true, false				   | @ref bs::RASTERIZER_STATE_DESC::scissorEnable "RASTERIZER_STATE_DESC::scissorEnable"
-multisample			 | true, false				   | @ref bs::RASTERIZER_STATE_DESC::multisampleEnable "RASTERIZER_STATE_DESC::multisampleEnable"
-lineaa				 | true, false				   | @ref bs::RASTERIZER_STATE_DESC::antialiasedLineEnable "RASTERIZER_STATE_DESC::antialiasedLineEnable"
+fill    	  	     | wire, solid (See @bs::PolygonMode)			   | @bs::RASTERIZER_STATE_DESC::polygonMode
+cull    	  	     | cw, ccw, none (See @bs::CullingMode)			   | @bs::RASTERIZER_STATE_DESC::cullMode
+scissor				 | true, false				   | @bs::RASTERIZER_STATE_DESC::scissorEnable
+multisample			 | true, false				   | @bs::RASTERIZER_STATE_DESC::multisampleEnable
+lineaa				 | true, false				   | @bs::RASTERIZER_STATE_DESC::antialiasedLineEnable
 
-## depth {#bsl_b_b}
+## depth
 Name                 | Valid values				   | Reference
 ---------------------|---------------------------- |----------
-read    	  	     | true, false				   | @ref bs::DEPTH_STENCIL_STATE_DESC::depthReadEnable "DEPTH_STENCIL_STATE_DESC::depthReadEnable"
-write    	  	     | true, false				   | @ref bs::DEPTH_STENCIL_STATE_DESC::depthWriteEnable "DEPTH_STENCIL_STATE_DESC::depthWriteEnable"
-compare    	  	     | never, always, lt, lte, eq, neq, gte, gt (See @ref bs::CompareFunction "CompareFunction")				   | @ref bs::DEPTH_STENCIL_STATE_DESC::depthComparisonFunc "DEPTH_STENCIL_STATE_DESC::depthComparisonFunc"
-bias    	  	     | float				   | @ref bs::RASTERIZER_STATE_DESC::depthBias "RASTERIZER_STATE_DESC::depthBias"
-scaledBias    	  	 | float				   | @ref bs::RASTERIZER_STATE_DESC::slopeScaledDepthBias "RASTERIZER_STATE_DESC::slopeScaledDepthBias"
-clip    	  	     | true, false				   | @ref bs::RASTERIZER_STATE_DESC::depthClipEnable "RASTERIZER_STATE_DESC::depthClipEnable"
+read    	  	     | true, false				   | @bs::DEPTH_STENCIL_STATE_DESC::depthReadEnable
+write    	  	     | true, false				   | @bs::DEPTH_STENCIL_STATE_DESC::depthWriteEnable
+compare    	  	     | never, always, lt, lte, eq, neq, gte, gt (See @bs::CompareFunction)				   | @bs::DEPTH_STENCIL_STATE_DESC::depthComparisonFunc
+bias    	  	     | float				   | @bs::RASTERIZER_STATE_DESC::depthBias
+scaledBias    	  	 | float				   | @bs::RASTERIZER_STATE_DESC::slopeScaledDepthBias
+clip    	  	     | true, false				   | @bs::RASTERIZER_STATE_DESC::depthClipEnable
 
-## stencil {#bsl_b_c}
+## stencil
 Name                 | Valid values				   | Reference
 ---------------------|---------------------------- |----------
 reference    	  	 | integer			           | Reference value to use for stencil compare operations.
-enabled    	  	     | true, false				   | @ref bs::DEPTH_STENCIL_STATE_DESC::stencilEnable "DEPTH_STENCIL_STATE_DESC::stencilEnable"
-readmask    	  	 | integer in [0, 255] range   | @ref bs::DEPTH_STENCIL_STATE_DESC::stencilReadMask "DEPTH_STENCIL_STATE_DESC::stencilReadMask"
-writemask    	  	 | integer in [0, 255] range   | @ref bs::DEPTH_STENCIL_STATE_DESC::stencilWriteMask "DEPTH_STENCIL_STATE_DESC::stencilWriteMask"
+enabled    	  	     | true, false				   | @bs::DEPTH_STENCIL_STATE_DESC::stencilEnable
+readmask    	  	 | integer in [0, 255] range   | @bs::DEPTH_STENCIL_STATE_DESC::stencilReadMask
+writemask    	  	 | integer in [0, 255] range   | @bs::DEPTH_STENCIL_STATE_DESC::stencilWriteMask
 front				 | StencilOp block			   | Stencil operations and compare function for front facing geometry
 back				 | StencilOp block			   | Stencil operations and compare function for back facing geometry
  
 **front** and **back** options are blocks themselves, and they accept the following options:
 Name                 | Valid values				   | Reference
 ---------------------|---------------------------- |----------
-fail    	  	 	| keep, zero, replace, inc, dec, incwrap, decwrap, inverse (See @ref bs::StencilOperation "StencilOperation")			           | @ref bs::DEPTH_STENCIL_STATE_DESC::frontStencilFailOp "DEPTH_STENCIL_STATE_DESC::frontStencilFailOp" & @ref bs::DEPTH_STENCIL_STATE_DESC::backStencilFailOp "DEPTH_STENCIL_STATE_DESC::backStencilFailOp"
-zfail    	  	 	| keep, zero, replace, inc, dec, incwrap, decwrap, inverse (See @ref bs::StencilOperation "StencilOperation")			           | @ref bs::DEPTH_STENCIL_STATE_DESC::frontStencilZFailOp "DEPTH_STENCIL_STATE_DESC::frontStencilZFailOp" & @ref bs::DEPTH_STENCIL_STATE_DESC::backStencilZFailOp "DEPTH_STENCIL_STATE_DESC::backStencilZFailOp"
-pass    	  	 	| keep, zero, replace, inc, dec, incwrap, decwrap, inverse (See @ref bs::StencilOperation "StencilOperation")			           | @ref bs::DEPTH_STENCIL_STATE_DESC::frontStencilPassOp "DEPTH_STENCIL_STATE_DESC::frontStencilPassOp" & @ref bs::DEPTH_STENCIL_STATE_DESC::backStencilPassOp "DEPTH_STENCIL_STATE_DESC::backStencilPassOp"
-compare				| never, always, lt, lte, eq, neq, gte, gt (See @ref bs::CompareFunction "CompareFunction") | @ref bs::DEPTH_STENCIL_STATE_DESC::frontStencilComparisonFunc "DEPTH_STENCIL_STATE_DESC::frontStencilComparisonFunc" & @ref bs::DEPTH_STENCIL_STATE_DESC::backStencilComparisonFunc "DEPTH_STENCIL_STATE_DESC::backStencilComparisonFunc"
+fail    	  	 	| keep, zero, replace, inc, dec, incwrap, decwrap, inverse (See @bs::StencilOperation)			           | @bs::DEPTH_STENCIL_STATE_DESC::frontStencilFailOp & @bs::DEPTH_STENCIL_STATE_DESC::backStencilFailOp
+zfail    	  	 	| keep, zero, replace, inc, dec, incwrap, decwrap, inverse (See @bs::StencilOperation)			           | @bs::DEPTH_STENCIL_STATE_DESC::frontStencilZFailOp & @bs::DEPTH_STENCIL_STATE_DESC::backStencilZFailOp
+pass    	  	 	| keep, zero, replace, inc, dec, incwrap, decwrap, inverse (See @bs::StencilOperation)			           | @bs::DEPTH_STENCIL_STATE_DESC::frontStencilPassOp & @bs::DEPTH_STENCIL_STATE_DESC::backStencilPassOp
+compare				| never, always, lt, lte, eq, neq, gte, gt (See @bs::CompareFunction) | @bs::DEPTH_STENCIL_STATE_DESC::frontStencilComparisonFunc & @bs::DEPTH_STENCIL_STATE_DESC::backStencilComparisonFunc
 
 An example of a stencil block:
 ~~~~~~~~~~~~~~
@@ -178,28 +178,28 @@ shader MyShader
 };
 ~~~~~~~~~~~~~~
 
-## blend {#bsl_b_d}
+## blend
 Name                 | Valid values				   | Reference
 ---------------------|---------------------------- |----------
-dither    	  	 | true, false			           | @ref bs::BLEND_STATE_DESC::alphaToCoverageEnable "BLEND_STATE_DESC::alphaToCoverageEnable"
-independant    	 | true, false			           | @ref bs::BLEND_STATE_DESC::independantBlendEnable "BLEND_STATE_DESC::independantBlendEnable"
+dither    	  	 | true, false			           | @bs::BLEND_STATE_DESC::alphaToCoverageEnable
+independant    	 | true, false			           | @bs::BLEND_STATE_DESC::independantBlendEnable
 target			 | Target block					   | Blend operations for a specific render target. Multiple Target blocks can exist under a single blend block.
 
 **Target** block accepts the following options:
 Name                 | Valid values				   | Reference
 ---------------------|---------------------------- |----------
 index    	  	     | positive integer		       | Index of the render target these options are applied to. If not specified the index is derived from the order in which Target blocks are defined.
-enabled				 | true, false				   | @ref bs::RENDER_TARGET_BLEND_STATE_DESC::blendEnable "RENDER_TARGET_BLEND_STATE_DESC::blendEnable"
-writemask		     | R, G, B, A or any combination (e.g. RG, RBA, RGBA). "empty" for zero mask.					   | @ref bs::RENDER_TARGET_BLEND_STATE_DESC::renderTargetWriteMask "RENDER_TARGET_BLEND_STATE_DESC::renderTargetWriteMask"
+enabled				 | true, false				   | @bs::RENDER_TARGET_BLEND_STATE_DESC::blendEnable
+writemask		     | R, G, B, A or any combination (e.g. RG, RBA, RGBA). "empty" for zero mask.					   | @bs::RENDER_TARGET_BLEND_STATE_DESC::renderTargetWriteMask
 color    	  	     | BlendOp block	       	   | Represents the blend operation to execute on the color channels.
 alpha				 | BlendOp block			   | Represents the blend operation to execute on the alpha channel. Only relevant if independant blend is enabled.
 
 **BlendOp** block accepts the following options:
 Name                 | Valid values				   | Reference
 ---------------------|---------------------------- |----------
-source    	  	     | one, zero, dstRGB, srcRGB, dstIRGB, srcIRGB, dstA, srcA, dstIA, srcIA (See @ref bs::BlendFactor "BlendFactor")		       | @ref bs::RENDER_TARGET_BLEND_STATE_DESC::srcBlend "RENDER_TARGET_BLEND_STATE_DESC::srcBlend", @ref bs::RENDER_TARGET_BLEND_STATE_DESC::srcBlendAlpha "RENDER_TARGET_BLEND_STATE_DESC::srcBlendAlpha"
-dest    	  	     | one, zero, dstRGB, srcRGB, dstIRGB, srcIRGB, dstA, srcA, dstIA, srcIA (See @ref bs::BlendFactor "BlendFactor")		       | @ref bs::RENDER_TARGET_BLEND_STATE_DESC::dstBlend "RENDER_TARGET_BLEND_STATE_DESC::dstBlend", @ref bs::RENDER_TARGET_BLEND_STATE_DESC::dstBlendAlpha "RENDER_TARGET_BLEND_STATE_DESC::dstBlendAlpha"
-op    	  	     | add, sub, rsub, min, max (See @ref bs::BlendOperation "BlendOperation")		       | @ref bs::RENDER_TARGET_BLEND_STATE_DESC::blendOp "RENDER_TARGET_BLEND_STATE_DESC::blendOp", @ref bs::RENDER_TARGET_BLEND_STATE_DESC::blendOpAlpha "RENDER_TARGET_BLEND_STATE_DESC::blendOpAlpha"
+source    	  	     | one, zero, dstRGB, srcRGB, dstIRGB, srcIRGB, dstA, srcA, dstIA, srcIA (See @bs::BlendFactor)		       | @bs::RENDER_TARGET_BLEND_STATE_DESC::srcBlend, @bs::RENDER_TARGET_BLEND_STATE_DESC::srcBlendAlpha
+dest    	  	     | one, zero, dstRGB, srcRGB, dstIRGB, srcIRGB, dstA, srcA, dstIA, srcIA (See @bs::BlendFactor)		       | @bs::RENDER_TARGET_BLEND_STATE_DESC::dstBlend, @bs::RENDER_TARGET_BLEND_STATE_DESC::dstBlendAlpha
+op    	  	     | add, sub, rsub, min, max (See @bs::BlendOperation)		       | @bs::RENDER_TARGET_BLEND_STATE_DESC::blendOp, @bs::RENDER_TARGET_BLEND_STATE_DESC::blendOpAlpha
 
 An example of a **blend** block:
 ~~~~~~~~~~~~~~
@@ -237,7 +237,7 @@ shader MyShader
 };
 ~~~~~~~~~~~~~~
 
-# Mixins {#bsl_c}
+# Mixins
 When writing complex shaders is it is often useful to break them up into components. This is where the concept of a **mixin** comes in. Any shader code or programmable states defined in a **mixin** can be included in any **shader**, or in another **mixin**. Syntax within a **mixin** block is identical to syntax in a **shader** block, meaning you can define code and non-programmable state blocks as shown above.
 
 ~~~~~~~~~~~~~~
@@ -308,7 +308,7 @@ shader MyShader
 };
 ~~~~~~~~~~~~~~
 
-## Mixin overrides {#bsl_c_a}
+## Mixin overrides
 Mixins can override each other if another mixin is defined with the same name. The last defined mixin is considered the override and will be used in the shader. Shaders can also reference mixins that haven't been declared yet. This concept of mixin overrides allows you to change functionality of complex shaders without having to be aware of any code other than the mixin you are overriding. This concept is heavily used when writing surface and lighting shaders, as described in a later manual.
 
 ~~~~~~~~~~~~~~
@@ -335,7 +335,7 @@ mixin MyMixin
 };
 ~~~~~~~~~~~~~~
 
-# Passes {#bsl_d}
+# Passes
 Passes can be used when a shader needs to perform multiple complex operations in a sequence. Each pass can be thought of as its own fully functional shader. By default shaders have one pass, which doesn't have to be explicitly defined, as was the case in all examples above. To explicitly define a pass, use the **pass** block and define the relevant code/state blocks within it, same as it was shown for shaders above. Passes will be executed sequentially one after another in the order they are defined. 
 
 ~~~~~~~~~~~~~~
@@ -376,7 +376,7 @@ shader MyShader
 };
 ~~~~~~~~~~~~~~
 
-# Default values {#bsl_e}
+# Default values
 All constants (uniforms) of primitive types can be assigned default values. These values will be used if the user doesn't assign the values explicitly. The relevant syntax is:
  - For scalars: "type name = value;"
  - For vectors/matrices: "type name = { v0, v1, ... };", where the number of values is the total number of elements in a vector/matrix
@@ -439,16 +439,16 @@ shader MyShader
 Valid values within the sampler state block are:
 Name                 | Valid values				   				  | Reference
 ---------------------|--------------------------------------------|----------
-AddressU			 | WRAP, MIRROR, CLAMP, BORDER, MIRROR_ONCE   | @ref bs::SAMPLER_STATE_DESC::addressMode "SAMPLER_STATE_DESC::addressMode"
-AddressV			 | WRAP, MIRROR, CLAMP, BORDER, MIRROR_ONCE   | @ref bs::SAMPLER_STATE_DESC::addressMode "SAMPLER_STATE_DESC::addressMode"
-AddressW			 | WRAP, MIRROR, CLAMP, BORDER, MIRROR_ONCE   | @ref bs::SAMPLER_STATE_DESC::addressMode "SAMPLER_STATE_DESC::addressMode"
-BorderColor			 | float4									  | @ref bs::SAMPLER_STATE_DESC::borderColor "SAMPLER_STATE_DESC::borderColor"
-Filter				 | See table below							  | @ref bs::SAMPLER_STATE_DESC::minFilter "SAMPLER_STATE_DESC::minFilter", @ref bs::SAMPLER_STATE_DESC::magFilter "SAMPLER_STATE_DESC::magFilter", @ref bs::SAMPLER_STATE_DESC::mipFilter "SAMPLER_STATE_DESC::mipFilter"
-MaxAnisotropy		 | uint										  | @ref bs::SAMPLER_STATE_DESC::maxAniso "SAMPLER_STATE_DESC::maxAniso"
-MaxLOD				 | float									  | @ref bs::SAMPLER_STATE_DESC::mipMax "SAMPLER_STATE_DESC::mipMax"
-MinLOD				 | float									  | @ref bs::SAMPLER_STATE_DESC::mipMin "SAMPLER_STATE_DESC::mipMin"
-MipLODBias			 | float									  | @ref bs::SAMPLER_STATE_DESC::mipmapBias "SAMPLER_STATE_DESC::mipmapBias"
-ComparisonFunc		 | NEVER, LESS, EQUAL, LESS_EQUAL, GREATER, NOT_EQUAL, GREATER_EQUAL, ALWAYS | @ref bs::SAMPLER_STATE_DESC::comparisonFunc "SAMPLER_STATE_DESC::comparisonFunc"
+AddressU			 | WRAP, MIRROR, CLAMP, BORDER, MIRROR_ONCE   | @bs::SAMPLER_STATE_DESC::addressMode
+AddressV			 | WRAP, MIRROR, CLAMP, BORDER, MIRROR_ONCE   | @bs::SAMPLER_STATE_DESC::addressMode
+AddressW			 | WRAP, MIRROR, CLAMP, BORDER, MIRROR_ONCE   | @bs::SAMPLER_STATE_DESC::addressMode
+BorderColor			 | float4									  | @bs::SAMPLER_STATE_DESC::borderColor
+Filter				 | See table below							  | @bs::SAMPLER_STATE_DESC::minFilter, @bs::SAMPLER_STATE_DESC::magFilter, @bs::SAMPLER_STATE_DESC::mipFilter
+MaxAnisotropy		 | uint										  | @bs::SAMPLER_STATE_DESC::maxAniso
+MaxLOD				 | float									  | @bs::SAMPLER_STATE_DESC::mipMax
+MinLOD				 | float									  | @bs::SAMPLER_STATE_DESC::mipMin
+MipLODBias			 | float									  | @bs::SAMPLER_STATE_DESC::mipmapBias
+ComparisonFunc		 | NEVER, LESS, EQUAL, LESS_EQUAL, GREATER, NOT_EQUAL, GREATER_EQUAL, ALWAYS | @bs::SAMPLER_STATE_DESC::comparisonFunc
 
 Filter valid values:
 - MIN_MAG_MIP_POINT
@@ -490,7 +490,7 @@ Filter valid values:
 
 > Note: Sampler state default values use the same syntax as HLSL Effects framework.
 
-# Attributes {#bsl_f}
+# Attributes
 BSL provides a couple of extension attributes that can be applied to constants (uniforms) or constant (uniform) blocks. Attributes are specified using the standard HSLS [] attribute syntax.
 
 ~~~~~~~~~~~~~~
@@ -509,7 +509,7 @@ shader MyShader
 
 Following is a complete list of supported attributes with their use cases.
 
-## internal {#bsl_f_a}
+## internal
 Marks a constant or a constant buffer (cbuffer) so it is hidden from the material's public interface (editor UI or **Material** API). This is useful for constants that are set by the engine itself and shouldn't be touched by normal users. Additionaly internal cbuffers must be explicitly created and assigned by the low level rendering API, as they will not be created automatically.
 
 In the example below only *position* and *tint* parameters will be accessible through the material.
@@ -535,7 +535,7 @@ shader MyShader
 };
 ~~~~~~~~~~~~~~
 
-## color {#bsl_f_b}
+## color
 Marks the floating point vector constant as a color. This ensures the constant is displayed as a color in the editor UI (with access to a color picker), and is represented by the **Color** structure in **Material** API. Only usable on *float3* or *float4* types.
 
 ~~~~~~~~~~~~~~
@@ -555,7 +555,7 @@ shader MyShader
 };
 ~~~~~~~~~~~~~~
 
-## spriteuv {#bsl_f_c}
+## spriteuv
 Marks a *float4* constant to be used for sprite texture animation. If a **Material** is assigned a **SpriteTexture** with animation enabled this parameter will receive the UV offset (in .xy components) and size (in .zw components) required for animating the texture. The attribute expects a texture name as a parameter, which corresponds to the texture to animate.
 
 ~~~~~~~~~~~~~~
@@ -586,7 +586,7 @@ shader MyShader
 };
 ~~~~~~~~~~~~~~
 
-## alias {#bsl_f_d}
+## alias
 Allows you to provide an alternative name to a SamplerState. This is important when using render backends like OpenGL, which may not support separate sampler states. In these cases the sampler state will be 'merged' with the texture it is used on. This means all internal systems will report the name of this sampler to be the same as the name of the texture, rather than the given name. In this case you will want to explictly add an `alias(TextureName)` attribute so the system knows this sampler state might have an alternative name.
 
 This does come with a restriction that a sampler state can only be used with a single texture.
@@ -610,7 +610,7 @@ shader MyShader
 };
 ~~~~~~~~~~~~~~
 
-## layout {#bsl_f_e}
+## layout
 Used primarily as compatibility with OpenGL and Vulkan code, which require read-write objects (e.g. **RWTexture**) to have an explicit layout provided in shader. This is only required when READING from a read-write object AND when you will be using either OpenGL or Vulkan render backend.
 
 This attribute expects a parameter that lets the system know the format of the data in the buffer. Valid values are:
@@ -675,7 +675,7 @@ shader MyShader
 };
 ~~~~~~~~~~~~~~
 
-# Global options {#bsl_g}
+# Global options
 BSL supports a few global options that control all shaders and mixins in a shader file. These options are specified in a **options** block, which must be defined at the top most level along with **shader** or **mixin** blocks.
 
 ~~~~~~~~~~~~~~
@@ -702,7 +702,7 @@ transparent			 | true, false				   | false					| Notifies the renderer that this
 forward				 | true, false				   | false					| Notifies the renderer that this object should be rendered using the forward rendering pipeline (as opposed to a deferred one).
 priority			 | integer					   | 0						| Allows you to force objects with this shader to render before others. Objects with higher priority will be rendered before those with lower priority. If sorting is enabled, objects will be sorted within their priority groups (i.e. priority takes precedence over sort mode).
 
-# Variations {#bsl_h}
+# Variations
 Sometimes you need a few versions of the same shader, that are mostly similar but have some minor differences between them. For example, when rendering objects you might need to support a vertex shader for static meshes, as well as those using skinned and/or morph animation. 
 
 This is where the **variation** block comes into play. It allows you to specify a set of permutations for which the shader will be compiled. During shader import every permutation of that shader will be parsed, enabling pre-processor \#define blocks depending on the current permutation. The \#defines take on the name of their variation, and one of the user provided values.
@@ -754,7 +754,7 @@ Each variation block can have one or multiple entries. Each must have a unique i
 
 Once a shader with variations is imported, those variations will be available on the shader in the form of **Technique** objects. In general variations are only required when working with the low level rendering API, therefore we discuss techniques in more details in the developer manuals.
 
-# Sub-shaders {#bsl_i}
+# Sub-shaders
 Each BSL file can contain an optional set of sub-shaders, alongside the main shader. Sub-shaders are recognized by the renderer and are meant to allow the user to override functionality of default shaders used by the renderer. They are specified using the **subshader** keyword, followed by an unique identifier. Sub-shaders are only allowed to contain **mixin** blocks, within which the same rules as for normal mixins apply.
 
 ~~~~~~~~~~~~~~

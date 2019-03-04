@@ -1,12 +1,12 @@
-Exposing code to script API (automated)			{#scriptingAuto}
-===============
-[TOC]
+---
+title: Exposing code to script API (automated)
+---
 
 When you've added a new feature, system or just extended existing ones you might want to expose that functionality to the scripting API. bs::f makes this process easier through its automated script binding generator tool. All you need to do is to decorate the C++ types and methods you wish to export and run the tool. The tool is ran automatically whenever you build through CMake if *GENERATE_SCRIPT_BINDINGS* option is turned on.
 
 @ref **BS_SCRIPT_EXPORT** macro supports a variety of parameters used for customizing how will the type/method be exported.
 
-# Exporting classes {#scriptingAuto_a}
+# Exporting classes
 In order to export a class to script code you need to decorate the class and one or multiple methods with **BS_SCRIPT_EXPORT** macro. 
 
 ~~~~~~~~~~~~~{.cpp}
@@ -102,7 +102,7 @@ public:
 };
 ~~~~~~~~~~~~~ 
 
-## Renaming {#scriptingAuto_a_a}
+## Renaming
 **BS_SCRIPT_EXPORT** accepts a variety of comma separated parameters in the format "param1:value1,param2:value2". Parameter named "n" allows you to specify a different name for a type or a method, so when exported it uses the specified name rather than the same name as in C++.
 
 ~~~~~~~~~~~~~{.cpp}
@@ -122,7 +122,7 @@ public partial class MyRenamedClass : ScriptObject
 }
 ~~~~~~~~~~~~~
 
-## Visibility {#scriptingAuto_a_b}
+## Visibility
 You can make a type or a method *public*, *internal* or *private* by specifying the "v" parameter. Accepted values are "public", "internal" and "private". By default all types and methods are public.
 
 ~~~~~~~~~~~~~{.cpp}
@@ -143,7 +143,7 @@ public partial class MyRenamedClass : ScriptObject
 }
 ~~~~~~~~~~~~~
 
-## Exporting as properties  {#scriptingAuto_a_c}
+## Exporting as properties
 Parameter named "pr" allows you to specify that a method should be exported as a property. The supported values for the parameter are "getter" or "setter". When exposing a method as a property the name ("n") parameter is required and should be the name of the property.
 
 ~~~~~~~~~~~~~{.cpp}
@@ -178,10 +178,10 @@ Getter/setter methods must follow a specific template otherwise they will be ign
  - Setter method must not have a return value and a single parameter
  - Getter return value and setter parameter types must match
 
-## Extending script interface further {#scriptingAuto_a_d}
+## Extending script interface further
 Sometimes automatic code generation just isn't good enough. For that reason all exported C# classes are marked with the *partial* keyword, meaning you can extend their interface with manually written code in a separate file, as required. 
  
-# Exporting structures {#scriptingAuto_b}
+# Exporting structures
 A data type can be exported as a C# *struct* by using the "pl" parameter, accepting values "true" or "false" (default being false). When exported all of the fields of the data type will be exported as a C# *struct*. Any constructors will also be exported, but no other methods. This is meant to be used on simple types that will be used for passing data around. Such types are passed by value and will be copied when crossing the C++/C# boundary.
 
 ~~~~~~~~~~~~~{.cpp}
@@ -254,7 +254,7 @@ Note when generating constructors the system is only able to parse class member 
 
 Structs support rename & visibility parameters same as normal class export.
 
-# Exporting enums {#scriptingAuto_c}
+# Exporting enums
 Enums can be exported with no additional parameters, just by specifying **BS_SCRIPT_EXPORT**.
 
 ~~~~~~~~~~~~~{.cpp}
@@ -278,7 +278,7 @@ public enum MyEnum
 
 Enums support rename & visibility parameters same as normal class and struct export.
 
-## Excluding enum entries {#scriptingAuto_c_a}
+## Excluding enum entries
 By default when exporting enums all of their entries will be exported. You can ignore a certain enum entry by using the "ex" parameter. Supported values are "true" or "false".
 
 ~~~~~~~~~~~~~{.cpp}
@@ -300,7 +300,7 @@ public enum MyEnum
 }
 ~~~~~~~~~~~~~
 
-## Renaming enum entries {#scriptingAuto_c_b}
+## Renaming enum entries
 Individual enum entries can also be renamed using the "n" parameter.
 
 ~~~~~~~~~~~~~{.cpp}
@@ -322,10 +322,10 @@ public enum MyEnum
 }
 ~~~~~~~~~~~~~
 
-# Exporting comments {#scriptingAuto_d}
+# Exporting comments
 All Javadoc-type comments on exported types and methods will automatically be parsed, converted to XML documentation format and exported to script code.
 
-# External methods {#scriptingAuto_e}
+# External methods
 Sometimes the C++ interface just isn't suitable for export to script code as-is. Sometimes you want to make the script code more streamlined and higher level, without modifying the existing C++ interface. Other times the method parameters or return values don't fit the requirements we stated above.
 
 External methods allow you to extend functionality of some class, **Resource** or a **Component** by defining static methods which are then exported as if they were part of the original class. Note these types of methods are not relevant for struct or enum export.
@@ -396,5 +396,5 @@ External methods must follow these rules:
  - External constructors must return a value of the type they're external to
  - External methods must accept the type they're external to as the first parameter 
  
-# Running the code generator {#scriptingAuto_f}
+# Running the code generator
 Once you have decorated the C++ classes with necessary export parameters you can run the code generator simply by enabling *GENERATE_SCRIPT_BINDINGS* and regenerating the CMake build. The generator will run automatically over all bs::f code and generate relevant script code.

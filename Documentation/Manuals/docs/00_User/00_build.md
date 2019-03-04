@@ -1,12 +1,12 @@
-Setting up a project				{#build}
-===============
-[TOC]
+---
+title: Setting up a project
+---
 
 This manual will explain how to set up your own project and link it with bs::framework. We'll explore two options:
  - **Link with binaries** - Either download the precompiled set of binaries or compile them yourself. Then create a project that links with the binaries. If you do not wish to compile `bsf` yourself, this is the best approach to follow.
  - **Link with source** - Grab the source code and include it as part of your own project. Requires you to go through the same steps as if you were compiling `bsf` from scratch, but allows you to easily recompile the framework from latest source, or due to your own modifications. If you plan on making changes to the framework, or want to frequently update to the latest version, this is the best approach. Linux users should also prefer this approach as binary incompatibilities between different Linux distributions might make the provided binaries incompatible with your particular distribution.
 
-# Link with binaries {#build_a}
+# Link with binaries
  
 The first step is to actually get `bsf` binaries. You have two options:
  1. Get the precompiled set of binaries from the [Download](https://www.bsframework.io/download.html) page. This is the simplest and easiest solution.
@@ -27,15 +27,15 @@ In order to get your project running you will need to:
 
 We'll handle these steps by creating a CMake project that will ultimately work with any major build tool (like Visual Studio, XCode or Makefiles).
  
-## CMake {#build_a_a}
+## CMake
 CMake is a build system that allows you define a project that can then be used for building across multiple platforms and build tools. Such CMake project can be used to create a Visual Studio solution, XCode project or Unix Makefiles. `bsf` also comes with modules that make using `bsf` in your CMake project easier.
 
 Note that CMake is fairly complex and we don't go into details about all of its syntax. There are many tutorials that do that. However our project will be pretty simple and should be easy to understand even to a newcomer to CMake.
 
-## Preparation {#build_a_b}
+## Preparation
 First create a new directory where you would like your project to live. Grab the `Findbsf.cmake` file from [here](https://github.com/GameFoundry/bsf/raw/master/Source/CMake/Modules/Findbsf.cmake) and place it in the root of your project folder. This file will be used for helping us find `bsf` libraries and includes.
 
-## CMake project {#build_a_c}
+## CMake project
 In your project folder create `CMakeLists.txt`, and fill it out like so:
 ```
 # Minimum version of CMake as required by bsf
@@ -72,7 +72,7 @@ target_link_libraries(myApp PRIVATE bsf)
 
 Make sure to modify `C:/path/to/bsf/install` and set it to the path where you extracted/installed `bsf`.
 
-## Code {#build_a_d}
+## Code
 The CMake file above references `Main.cpp` file. The most basic file that runs the framework looks like so:
 ```
 #include "BsApplication.h"
@@ -94,10 +94,10 @@ We will explain the code above in following manuals, but for now you can just co
 
 Place the `Main.cpp` into your project's root folder.
 
-## Get CMake {#build_a_e}
+## Get CMake
 If you don't already have it, grab the latest version of CMake from [www.cmake.org](https://cmake.org/download/). Make sure to grab version 3.12.4 or later. 
 
-## Build {#build_a_f}
+## Build
 You are now ready to build the project. From your project's root folder execute the following commands in terminal/command line:
  - `mkdir build`
  - `cd build`
@@ -115,7 +115,7 @@ Your build files will be output to the `build` folder.
  - If you are using XCode open up the project in the `build` folder and proceed building as normal
  - If you are using Makefiles simply run `make` within the `build` folder
  
-## Copy files {#build_a_g}
+## Copy files
 Before you can run the application you must first copy the data files and dynamic libraries so that your application can find them when it starts. 
  - Copy the `bin/Data` folder to the location where is your executable is located
  - If on Windows you should also copy any .dll files in the `bin` folder to where your executable is located. Note that precompiled binaries package comes with separate set of dynamic libraries for Debug and Release builds in `bin/Debug` and `bin/Release` folders. You should copy them to the appropriate folder depending on the configuration you are building with. 
@@ -124,16 +124,16 @@ For example in Visual Studio the executable will be placed at `Release/` folder 
 
 ![Structure of the executable folder on Windows](BuildStructure.png)
 
-## Run {#build_a_h}
+## Run
 You are now ready to run the application. If you used the default `Main.cpp` code above an empty window should open.
 
-# Link with source {#build_b}
+# Link with source
 This is an alternative approach to linking with binaries. `bsf` source code will be included as part of your own project, making sure any changes you make can easily be compiled and tested.
 
-## Preparation {#build_b_a}
+## Preparation
 First make sure to follow the compilation guide on [GitHub](https://github.com/GameFoundry/bsf). You only need to do the first few steps of that guide and ensure you have installed all the required dependencies, as well as checked out `bsf` from its repository. Actual CMake calls can be skipped at this point.
 
-## CMake project {#build_b_b}
+## CMake project
 Create a new project folder, with a `CMakeLists.txt` file with the following contents:
 ```
 # Minimum version of CMake as required by bsf
@@ -166,7 +166,7 @@ install_dll_on_build(myApp ${BSF_DIRECTORY})
 
 Make sure to set `C:/bsf` to the directory where you cloned `bsf`.
 
-## Code {#build_b_c}
+## Code
 The CMake file above references `Main.cpp` file. The most basic file that runs the framework looks like so:
 ```
 #include "BsApplication.h"
@@ -188,7 +188,7 @@ We will explain the code above in following manuals, but for now you can just co
 
 Place the `Main.cpp` into your project's root folder.
 
-## Build {#build_b_d}
+## Build
 You are now ready to build the project. From your project's root folder execute the following commands in terminal/command line:
  - `mkdir build`
  - `cd build`
