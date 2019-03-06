@@ -157,7 +157,7 @@ Vector3 dir = quat.zAxis();
 
 # Matrices
 
-Matrices can be split into two major types: @bs::Matrix3 representing a 3x3 matrix and @bs::Matrix4 representing a 4x4 matrix. 3x3 matrices are used primarily for representing rotations, and are used similarly to quaternions. 4x4 matrices are used to represent a complete set of transformations like scale, translation and rotation, and are the most commonly used matrix type. We also provide a generic @ref bs::MatrixNxM<N, M> "MatrixNxM<N, M>" template for other matrix sizes, but they come with much simpler functionality.
+Matrices can be split into two major types: @bs::Matrix3 representing a 3x3 matrix and @bs::Matrix4 representing a 4x4 matrix. 3x3 matrices are used primarily for representing rotations, and are used similarly to quaternions. 4x4 matrices are used to represent a complete set of transformations like scale, translation and rotation, and are the most commonly used matrix type. We also provide a generic @bs::MatrixNxM template for other matrix sizes, but they come with much simpler functionality.
 
 ## Matrix3
 **Matrix3** can be initialized using Euler angles, axis/angle combination, or from a quaternion. It can also accept a scale factor as well as rotation.
@@ -253,7 +253,7 @@ Matrix4 scaleMat = Matrix4::scaling(scale);
 Matrix4 combinedMat = Matrix4::TRS(translation, rotation, scale);
 ~~~~~~~~~~~~~
  
-To apply a matrix transformation to a 4D vector you can call @ref bs::Matrix4::multiply(const Vector4&) const "Matrix4::multiply()".
+To apply a matrix transformation to a 4D vector you can call @bs::Matrix4::multiply(const Vector4&).
 
 ~~~~~~~~~~~~~{.cpp}
 Vector4 myVector(1, 0, 0, 1);
@@ -262,7 +262,7 @@ Vector4 transformedVector = combinedMat.multiply(myVector);
 
 Not that a vector has its 4th component set to 1. This means the vector is treated as a point, and will be translated by the matrix. If the 4th component was 0, the vector would be treated as a direction instead, and translation would not be applied.
 
-You can also use overriden @ref bs::Matrix4::multiply(const Vector3&) const "Matrix4::multiply()" to multiply a **Vector3**, in which case it is assumed to be a point (4th component is equal to 1). If you instead wish to assume a **Vector3** is a direction, use @bs::Matrix4::multiplyDirection instead.
+You can also use overriden @bs::Matrix4::multiply(const Vector3&) to multiply a **Vector3**, in which case it is assumed to be a point (4th component is equal to 1). If you instead wish to assume a **Vector3** is a direction, use @bs::Matrix4::multiplyDirection instead.
 
 ~~~~~~~~~~~~~{.cpp}
 Vector3 myVector(1, 0, 0);
@@ -304,7 +304,7 @@ mat.decomposition(translation, rotation, scale);
 ~~~~~~~~~~~~~
 
 # Rays
-@bs::Rays are represented using an origin point, and a direction. They are often used in physics for intersection tests.
+A @bs::Ray is represented using an origin point, and a direction. They are often used in physics for intersection tests.
 
 ~~~~~~~~~~~~~{.cpp}
 // Ray with origin at world origin, looking up
@@ -325,10 +325,10 @@ ray.transform(mat);
 ~~~~~~~~~~~~~  
 
 They also provide a series of *intersects* methods that allow them to test for intersection against axis aligned boxes, spheres, planes and triangles:
- - @ref bs::Ray::intersects(const AABox&) const "Ray::intersects(const AABox&)" - Axis aligned box intersection
- - @ref bs::Ray::intersects(const Sphere&) const "Ray::intersects(const Sphere&)" - Sphere intersection
- - @ref bs::Ray::intersects(const Plane&) const "Ray::intersects(const Plane&)" - Plane intersection
- - @ref bs::Ray::intersects(const Vector3&, const Vector3&, const Vector3&, const Vector3&, bool, bool) const "Ray::intersects(const Vector3&, const Vector3&, const Vector3&)" - Triangle intersection
+ - @bs::Ray::intersects(const AABox&) - Axis aligned box intersection
+ - @bs::Ray::intersects(const Sphere&) - Sphere intersection
+ - @bs::Ray::intersects(const Plane&) - Plane intersection
+ - @bs::Ray::intersects(const Vector3&, const Vector3&, const Vector3&, const Vector3&, bool, bool) - Triangle intersection
  
 # Rectangles
 

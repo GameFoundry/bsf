@@ -4,7 +4,7 @@ title: Physics meshes
 
 Physics meshes are represented using the @bs::PhysicsMesh class. They are resources, meaning they can be imported, saved and loaded as any other resource.
 
-![Physics mesh](MeshCollider.png)  
+![Physics mesh](../../Images/MeshCollider.png)  
 
 # Import
 The import process is slightly different from other resources because physics meshes are imported from the same file types as normal meshes. We must first create **MeshImportOptions** object, and specify that we wish to import a physics mesh along with a normal mesh by setting @bs::MeshImportOptions::collisionMeshType.
@@ -42,5 +42,5 @@ Convex meshes on the other hand can be used for dynamic physical objects. They a
 
 When convex mesh option is enabled the system will automatically convert any non-convex meshes to convex ones on import. This process is also known as "gift-wrapping", as the resulting convex object looks like as if you gift wrapped the original object.
 
-@ref TODO_IMAGE 
+[TODO_IMAGE]()
  

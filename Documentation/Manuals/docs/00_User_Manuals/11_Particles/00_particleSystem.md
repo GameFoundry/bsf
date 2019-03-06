@@ -4,7 +4,7 @@ title: Setting up a particle system
 
 Particles allow for rendering of objects that cannot be easily represented using normal static or animated meshes, such as liquids, smoke, flames or magic effects. Particles are normally rendered as dozens/hundreds/thousands of 2D billboards oriented towards the viewer, using some user-specified texture and material.
 
-![An example of a particle system](ParticleSystem.gif)  
+![An example of a particle system](../../Images/ParticleSystem.gif)  
 
 Particle system is represented through the @bs::CParticleSystem component and consists of the following parts:
  - One or multiple **emitters** - Each emitter has a shape that specifies where should new particles appear, as well as a variety of rules that control the initial properties of the particles.
@@ -76,7 +76,7 @@ particleSystem->setSettings(psSettings);
 
 You may also create your own particle shaders, as we will show later.
 
-![Left - Normal (non-soft) shader, Right - soft shader](softParticles.gif)  
+![Left - Normal (non-soft) shader, Right - soft shader](../../Images/softParticles.gif)  
 
 # Emitter
 
@@ -122,7 +122,7 @@ emitter->setEmissionBursts(
 });
 ~~~~~~~~~~~~~
 
-![Emission bursts](emissionBurst.gif)  
+![Emission bursts](../../Images/emissionBurst.gif)  
 
 ### Lifetime
 Controls how long should each individual particle live, in seconds. After the lifetime expires the particle disappears. Set it through @bs::ParticleEmitter::setInitialLifetime.
@@ -211,7 +211,7 @@ emitter->setInitialSize(FloatDistribution(TAnimationCurve<float>(
 })));
 ~~~~~~~~~~~~~
 
-See the [animation curves](@ref animCurves), [color gradient](@ref colorGradient) and [distributions](@ref distributions) manuals for more information.
+See the [animation curves](../Utilities/animCurves), [color gradient](../Utilities/colorGradient) and [distributions](../Utilities/distributions) manuals for more information.
 
 All the time-varying distributions are evaluated using the lifetime of the particle system. You can change the duration of a particle system by setting @bs::ParticleSystemSettings::duration. The particle system time will be normalized to [0, 1] range using the specified duration, and that normalized value will be used for sampling the curves in the time-varying distributions (therefore make sure those curves have times in the [0, 1] range). 
  

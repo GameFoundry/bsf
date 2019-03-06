@@ -20,10 +20,10 @@ rapi.setDrawOperation(DOT_TRIANGLE_LIST);
 
 # Indexed drawing
 Finally you can now draw the object by calling @bs::ct::RenderAPI::drawIndexed(). It requires the following parameters:
- - @p startIndex - Offset into the bound index buffer to start drawing from. In most cases this will be zero.
- - @p indexCount - Number of indices to draw. Specify total number of indices in the index buffer to draw them all (most common case).
- - @p vertexOffset - Offset to append to each index in the index buffer. Allows you to draw different set of vertices using the same index buffer. In most cases this will be zero.
- - @p vertexCount - Number of vertices to draw. Since the actual number of primitives drawn is determined by the index count, this value is internally used just for tracking purposes and wont affect your rendering. In most cases you can specify the number of vertices in the vertex buffer(s).
+ - `startIndex` - Offset into the bound index buffer to start drawing from. In most cases this will be zero.
+ - `indexCount` - Number of indices to draw. Specify total number of indices in the index buffer to draw them all (most common case).
+ - `vertexOffset` - Offset to append to each index in the index buffer. Allows you to draw different set of vertices using the same index buffer. In most cases this will be zero.
+ - `vertexCount` - Number of vertices to draw. Since the actual number of primitives drawn is determined by the index count, this value is internally used just for tracking purposes and wont affect your rendering. In most cases you can specify the number of vertices in the vertex buffer(s).
  
 ~~~~~~~~~~~~~{.cpp}
 SPtr<IndexBuffer> ib = ...;
@@ -37,7 +37,7 @@ rapi.drawIndexed(0, numIndices, 0, numVertices);
 ~~~~~~~~~~~~~
 
 # Non-indexed drawing
-If drawing without an index buffer you can call @bs::ct::RenderAPI::draw() instead. It requires only the @p vertexOffset and @p vertexCount parameters, with same meaning as above (except @p vertexCount in this case does affect the rendering).
+If drawing without an index buffer you can call @bs::ct::RenderAPI::draw() instead. It requires only the `vertexOffset` and `vertexCount` parameters, with same meaning as above (except `vertexCount` in this case does affect the rendering).
 
 ~~~~~~~~~~~~~{.cpp}
 SPtr<VertexBuffer> vb = ...;
@@ -48,7 +48,7 @@ rapi.draw(0, numVertices);
 ~~~~~~~~~~~~~
 
 # Instanced drawing
-Both **ct::RenderAPI::draw()** and **ct::RenderAPI::drawIndexed()** support drawing multiple instances of the same object using the @p instanceCount parameter. This can be used as an alternative for issuing multiple **draw** calls, as they may have a significant CPU overhead. Using instanced drawing you can draw the same geometry multiple times with almost no additional CPU overhead.
+Both **ct::RenderAPI::draw()** and **ct::RenderAPI::drawIndexed()** support drawing multiple instances of the same object using the `instanceCount` parameter. This can be used as an alternative for issuing multiple **draw** calls, as they may have a significant CPU overhead. Using instanced drawing you can draw the same geometry multiple times with almost no additional CPU overhead.
 
 ~~~~~~~~~~~~~{.cpp}
 // Draw 5 instances of the currently bound geometry
@@ -59,7 +59,7 @@ In order for instanced drawing to actually be useful, in most cases we need a wa
 
 This is done by creating a separate **VertexBuffer** that contains per-instance properties (like position). This buffer is created same as a normal vertex buffer, except it doesn't contain per-vertex data, and instead contains per-instance data.
 
-In order to use such a buffer we need to let the pipeline know by creating an appropriate **VertexDeclaration**. We need to define a **VertexDataDesc** that contains per-instance data. This is done by specifying the @p instanceStepRate parameter when calling **VertexDataDesc::addVertElem()**.
+In order to use such a buffer we need to let the pipeline know by creating an appropriate **VertexDeclaration**. We need to define a **VertexDataDesc** that contains per-instance data. This is done by specifying the `instanceStepRate` parameter when calling **VertexDataDesc::addVertElem()**.
 
 ~~~~~~~~~~~~~{.cpp}
 SPtr<VertexDataDesc> vertexDesc = VertexDataDesc::create();

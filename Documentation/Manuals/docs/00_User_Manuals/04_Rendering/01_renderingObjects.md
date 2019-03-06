@@ -48,7 +48,7 @@ In the example above we use a single material for a single mesh, but it can some
 
 It is up to the artist (creator of the mesh) to specify the regions of the mesh that will use separate materials. Upon mesh import those regions will be recognized as sub-meshes.
 
-You can assign a different material to a sub-mesh by calling a @ref bs::CRenderable::setMaterial(UINT32, HMaterial) "Renderable::setMaterial()" overload which accepts an additional index parameter, specifying which sub-mesh to apply the material on.
+You can assign a different material to a sub-mesh by calling a @bs::CRenderable::setMaterial(UINT32, HMaterial) overload which accepts an additional index parameter, specifying which sub-mesh to apply the material on.
 
 ~~~~~~~~~~~~~{.cpp}
 HMesh mesh = gImporter().import<Mesh>("myMesh.fbx");

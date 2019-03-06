@@ -46,7 +46,7 @@ gCoreThread().submit();
 
 By default commands are also submitted automatically at the end of every frame, just before rendering. Therefore normally you do not need to submit commands manually.
 
-The most common case for submitting commands manually is when you need the results of the command right away. In such a case you can call **CoreThread::submit()** or **CoreThread::submitAll()** with the parameter @p blockUntilComplete set to true. This will block the calling thread until the command finishes executing. Note that this is an expensive operation and shouldn't be done in performance critical code.
+The most common case for submitting commands manually is when you need the results of the command right away. In such a case you can call **CoreThread::submit()** or **CoreThread::submitAll()** with the parameter `blockUntilComplete` set to true. This will block the calling thread until the command finishes executing. Note that this is an expensive operation and shouldn't be done in performance critical code.
 
 ~~~~~~~~~~~~~{.cpp}
 // Submit all commands queued since the last submit call and wait until they're done executing
@@ -180,7 +180,7 @@ Earlier we mentioned that aside from handling construction/destruction the core 
 
 Synchronization should happen whenever some property on the **CoreObject** changes, that you would wish to make available on the core thread (e.g. a radius of a light source). To synchronize implement the @bs::CoreObject::syncToCore(FrameAlloc*) method, which generates the data for synchronization, and @bs::ct::CoreObject::syncToCore which accepts it.
 
-The synchronized data is transfered between the objects in the form of raw bytes, within the @bs::CoreSyncData structure. For convenience you can use @bs::rttiGetElemSize and @bs::rttiWriteElem to encode fields into raw memory, and @bs::rttiReadElem to decode them. These are explained in more detail in the [advanced RTTI manual](@ref advancedRtti).
+The synchronized data is transfered between the objects in the form of raw bytes, within the @bs::CoreSyncData structure. For convenience you can use @bs::rttiGetElemSize and @bs::rttiWriteElem to encode fields into raw memory, and @bs::rttiReadElem to decode them. These are explained in more detail in the [advanced RTTI manual](../advancedRtti).
 
 **CoreObject::syncToCore()** is provided an instance of @bs::FrameAlloc which should be used for allocating the serialization buffer. This is an allocator that is fast and doesn't require explicit memory deallocation making it perfect for synchronization. A simple synchronization example would look like so:
 ~~~~~~~~~~~~~{.cpp}

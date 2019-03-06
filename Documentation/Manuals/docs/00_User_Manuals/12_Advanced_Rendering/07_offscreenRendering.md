@@ -9,7 +9,7 @@ We call rendering to a texture offscreen rendering. By rendering offscreen you c
 # Creation
 Render texture must contain at least one color surface, and may optionally also contain a depth-stencil surface. Both of those surfaces are **Texture** objects, created with either **TU_RENDERTARGET** or **TU_DEPTHSTENCIL** usage flags, respectively, which we mentioned earlier. 
 
-To create a render texture call @ref bs::RenderTexture::create(const RENDER_TEXTURE_DESC&) "RenderTexture::create()" with a populated @bs::RENDER_TEXTURE_DESC structure. This structure expects a reference to one or more color surface textures, and an optional depth-stencil surface texture. For each of those you must also specify the face and mip level onto which to render, in case your texture has multiple.
+To create a render texture call @bs::RenderTexture::create(const RENDER_TEXTURE_DESC&) with a populated @bs::RENDER_TEXTURE_DESC structure. This structure expects a reference to one or more color surface textures, and an optional depth-stencil surface texture. For each of those you must also specify the face and mip level onto which to render, in case your texture has multiple.
 
 ~~~~~~~~~~~~~{.cpp}
 // Create a 1920x1080 texture with 32-bit RGBA format

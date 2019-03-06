@@ -46,7 +46,7 @@ Sprite textures also support sprite sheet grid based animation. To initialize th
 **SpriteSheetGridAnimation** specifies how are animation frames positioned. All frames are expected to be arranged in a grid where each sprite has the same width/height. You will need to provide the number of grid rows and columns, as well as total number of frames and animation speed in the form of frames per second.
 
 And example sprite sheet with 3x3 grid and a total of 8 frames would look like so:
-![Example sprite sheet](SpriteSheet.png)
+![Example sprite sheet](../../Images/SpriteSheet.png)
 
 And its corresponding **SpriteSheetGridAnimation**:
 

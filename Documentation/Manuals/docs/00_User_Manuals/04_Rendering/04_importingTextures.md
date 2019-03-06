@@ -27,7 +27,7 @@ Supported formats are:
  - TIFF
  
 # Creating a texture
-Textures can also be created manually, which we cover later in the [creating textures](@ref advancedTextures) manual.
+Textures can also be created manually, which we cover later in the [creating textures](../Advanced_Rendering/advancedTextures) manual.
    
 # Texture properties
 Once a texture has been imported, you can retrieve its properties like width, height and format by calling @bs::Texture::getProperties, which returns a @bs::TextureProperties object.
@@ -122,4 +122,4 @@ Color color = pixelData->getColorAt(50, 50);
 ...
 ~~~~~~~~~~~~~
 
-> **PixelData** is explained later in the [creating textures](@ref advancedTextures) manual.
+> **PixelData** is explained later in the [creating textures](../Advanced_Rendering/advancedTextures) manual.

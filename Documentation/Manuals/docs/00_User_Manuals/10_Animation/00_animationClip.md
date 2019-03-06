@@ -8,9 +8,9 @@ When it comes to animating 3D objects (meshes), bs::f supports two types of anim
  
 In general it is preferred to use skeletal animation wherever possible, as it has lower memory requirements, allows interesting ways to combine animations and allows other objects to be attached to bones (as we'll show later). Morph animation is preferable for complex animations where bones just don't cut it (e.g. facial animation can sometimes benefit, as well as objects that have very soft structure without a clear way to set up the skeleton).
 
-@ref TODO_IMAGE_SKELETAL_ANIM
+[TODO_IMAGE_SKELETAL_ANIM]()
 
-@ref TODO_IMAGE_MORPH_ANIM
+[TODO_IMAGE_MORPH_ANIM]()
 
 Both animation types are controlled via @bs::AnimationClip%s. 
 

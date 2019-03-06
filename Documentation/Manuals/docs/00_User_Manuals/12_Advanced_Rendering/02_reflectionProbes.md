@@ -4,7 +4,7 @@ title: Reflection environment
 
 Setting up a valid reflection environment is essential for all types of physically based materials. The environment ensures that the specular reflections on the materials correctly reflect the surroundings. 
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 
 A **Skybox** is one such example of a reflection environment. When one is present all materials will reflect the image displayed by the skybox. This is generally fine for open outdoor areas, but when the camera is indoors you don't want the indoor surfaces to reflect the sky. This is where @bs::CReflectionProbe component comes into play.
 

@@ -47,7 +47,7 @@ Quaternion rotate(Vector3::UNIT_Z, Degree(30.0f));
 guiSO->setRotation(rotate);
 ~~~~~~~~~~~~~
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 
 # Using a separate GUI camera
 In the example above we have asssumed you will use the same camera for GUI as you use for scene rendering. However sometimes it is useful to have a separate camera for GUI, or even multiple separate cameras. In such case camera creation is mostly the same, but with some additional options that need to be enabled. 

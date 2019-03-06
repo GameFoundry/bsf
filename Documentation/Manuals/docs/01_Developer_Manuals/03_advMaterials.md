@@ -14,14 +14,14 @@ To retrieve the handles call any of the following methods, depending on material
  - @bs::ct::Material::getParamLoadStoreTexture - Outputs a @bs::TMaterialParamLoadStoreTexture<Core> handle that can be used for reading & writing the parameter value.
  - @bs::ct::Material::getParamBuffer - Outputs a @bs::TMaterialParamBuffer<Core> handle that can be used for reading & writing the parameter value.
  - @bs::ct::Material::getParamSamplerState - Outputs a @bs::TMaterialParamSampState<Core> handle that can be used for reading & writing the parameter value.
- - @bs::ct::Material::getParamFloat - Outputs a @ref bs::TMaterialDataParam<T, Core> "MaterialParamFloat" handle that can be used for reading & writing the parameter value.
- - @bs::ct::Material::getParamVec2 - Outputs a @ref bs::TMaterialDataParam<T, Core> "MaterialParamVec2" handle that can be used for reading & writing the parameter value.
- - @bs::ct::Material::getParamVec3 - Outputs a @ref bs::TMaterialDataParam<T, Core> "MaterialParamVec3" handle that can be used for reading & writing the parameter value.
- - @bs::ct::Material::getParamVec4 - Outputs a @ref bs::TMaterialDataParam<T, Core> "MaterialParamVec4" handle that can be used for reading & writing the parameter value.
- - @bs::ct::Material::getParamColor - Outputs a @ref bs::TMaterialDataParam<T, Core> "MaterialParamColor" handle that can be used for reading & writing the parameter value.
- - @bs::ct::Material::getParamMat3 - Outputs a @ref bs::TMaterialDataParam<T, Core> "MaterialParamMat3" handle that can be used for reading & writing the parameter value.
- - @bs::ct::Material::getParamMat4 - Outputs a @ref bs::TMaterialDataParam<T, Core> "MaterialParamMat4" handle that can be used for reading & writing the parameter value.
- - @bs::ct::Material::getParamFloatCurve - Outputs a @ref bs::TMaterialCurveParam<float, Core> "MaterialParamFloatCurve" handle that can be used for assigning an animation curve to a *float* parameter. This can be used as an alternative to **ct::Material::getParamFloat()** in that the value will now be animated over the range of the curve, instead of being just a static value.
+ - @bs::ct::Material::getParamFloat - Outputs a @MaterialParamFloat handle that can be used for reading & writing the parameter value.
+ - @bs::ct::Material::getParamVec2 - Outputs a @MaterialParamVec2 handle that can be used for reading & writing the parameter value.
+ - @bs::ct::Material::getParamVec3 - Outputs a @MaterialParamVec3 handle that can be used for reading & writing the parameter value.
+ - @bs::ct::Material::getParamVec4 - Outputs a @MaterialParamVec4 handle that can be used for reading & writing the parameter value.
+ - @bs::ct::Material::getParamColor - Outputs a @MaterialParamColor handle that can be used for reading & writing the parameter value.
+ - @bs::ct::Material::getParamMat3 - Outputs a @MaterialParamMat3 handle that can be used for reading & writing the parameter value.
+ - @bs::ct::Material::getParamMat4 - Outputs a @MaterialParamMat4 handle that can be used for reading & writing the parameter value.
+ - @bs::ct::Material::getParamFloatCurve - Outputs a @MaterialParamFloatCurve handle that can be used for assigning an animation curve to a *float* parameter. This can be used as an alternative to **ct::Material::getParamFloat()** in that the value will now be animated over the range of the curve, instead of being just a static value.
  - @bs::ct::Material::getParamColorGradient - Outputs a @bs::TMaterialColorGradientParam<Core> handle that can be used for assigning a color gradient to a *Color* parameter. This can be used as an alternative to **ct::Material::getParamColor()** in that the value will now be animated over the range of the gradient, instead of being just a static value.
  - @bs::ct::Material::getParamSpriteTexture - Outputs a @bs::TMaterialParamSpriteTexture<Core> handle that can be used for assigning a sprite texture to a *texture* parameter. This can be used as an alternative to **ct::Material::getParamTexture()** in that the sprite texture can be animated while a normal texture is always static.
  
@@ -59,7 +59,7 @@ Each shader definition contains two things:
 To summarize, the relationship between materials, shaders, techniques and passes is:
  - **Material** [contains one]-> **Shader** [contains one or multiple]-> **Technique** [contains one or multiple]-> **Pass**
  
-Optionally, the shader definition can also contain a set of @bs::SubShaders. As explained previously sub-shaders are a set of techniques that are used to override specific renderer behaviour. 
+Optionally, the shader definition can also contain a set of @bs::SubShader objects. As explained previously sub-shaders are a set of techniques that are used to override specific renderer behaviour. 
  
 ## Creating a pass
 A **Pass** can be created by filling out a @bs::PASS_DESC descriptor and passing it to @bs::Pass::create method. **PASS_DESC** is fairly simple and it expects a set of GPU program and non-programmable state descriptors.

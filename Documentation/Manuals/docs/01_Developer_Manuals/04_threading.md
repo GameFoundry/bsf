@@ -8,7 +8,7 @@ In this chapter we'll show how to start new threads of execution and how to safe
 This section describes the most basic primitives you can use to manipulate threads. All threading primitives use the standard C++ library constructs, so for more information you should read their documentation.
 
 ## Thread
-To create a new thread use @bs::Thread, with its constructor parameter being a function pointer of the function that will execute on the new thread.
+To create a new thread use @Thread, with its constructor parameter being a function pointer of the function that will execute on the new thread.
 ~~~~~~~~~~~~~{.cpp}
 void workerFunc()
 {
@@ -19,7 +19,7 @@ Thread myThread(&workerFunc);
 ~~~~~~~~~~~~~
 
 ## Mutex
-Use @bs::Mutex and @bs::Lock to synchronize access between multiple threads. **Lock** automatically locks the mutex when it's constructed, and unlocks it when it goes out of scope.
+Use @Mutex and @Lock to synchronize access between multiple threads. **Lock** automatically locks the mutex when it's constructed, and unlocks it when it goes out of scope.
 
 ~~~~~~~~~~~~~{.cpp}
 Vector<int> output;
@@ -39,10 +39,10 @@ Thread threadA(&workerFunc);
 Thread threadB(&workerFunc);
 ~~~~~~~~~~~~~
 
-If a mutex can be locked recursively, use @bs::RecursiveMutex and @bs::RecursiveLock instead.
+If a mutex can be locked recursively, use @RecursiveMutex and @RecursiveLock instead.
 
 ## Signal
-Use @bs::Signal to pause thread execution until another thread reaches a certain point.
+Use @Signal to pause thread execution until another thread reaches a certain point.
 
 ~~~~~~~~~~~~~{.cpp}
 bool isReady = false;
@@ -77,9 +77,9 @@ if(!isReady)
 
 ## Other
 The previous sections covered all the primitives, but there is some more useful functionality to be aware of:
- - @ref BS_THREAD_HARDWARE_CONCURRENCY - Returns number of logical CPU cores.
- - @ref BS_THREAD_CURRENT_ID - Returns @bs::ThreadId of the current thread.
- - @ref BS_THREAD_SLEEP - Pauses the current thread for a set number of milliseconds.
+ - @BS_THREAD_HARDWARE_CONCURRENCY - Returns number of logical CPU cores.
+ - @BS_THREAD_CURRENT_ID - Returns @ThreadId of the current thread.
+ - @BS_THREAD_SLEEP - Pauses the current thread for a set number of milliseconds.
 
 # Thread pool
 Instead of using **Thread** as described in the previous section, you can instead use the @bs::ThreadPool module for running threads. It allows you to re-use threads and avoid paying the cost of thread creation and destruction. It keeps any thread that was retired in idle state, and will re-use it when user requests a new thread.

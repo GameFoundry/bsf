@@ -70,7 +70,7 @@ bs_frame_clear(); // Frees memory for the vector
 ~~~~~~~~~~~~~
 
 # Pool allocator
-@ref bs::PoolAlloc<ElemSize, ElemsPerBlock, Alignment> "PoolAlloc<ElemSize, ElemsPerBlock>" is a specialized type of allocator that can be used for permanent allocations. It performs fast allocations with very low fragmentation. Its downside is that it is only able to allocate memory in chunks of specific size, making it suitable for creation of many instances of the same object.
+@bs::PoolAlloc is a specialized type of allocator that can be used for permanent allocations. It performs fast allocations with very low fragmentation. Its downside is that it is only able to allocate memory in chunks of specific size, making it suitable for creation of many instances of the same object.
 
 When creating it you need to specify the size of the object you need to allocate, as well as the default number of objects it can contain. If the allocator exceeds the number of objects it can contain it will dynamically allocate another block capable of handling more objects.
 
@@ -94,7 +94,7 @@ allocator.free(obj);
 ~~~~~~~~~~~~~
 
 # Static allocator
-@ref bs::StaticAlloc<BlockSize, MaxDynamicMemory> "StaticAlloc<BlockSize, MaxDynamicMemory>" is a specialized type of allocator that can be used for permanent allocations. It works by pre-allocating a user-defined number of bytes. It then tries to use this pre-allocated buffer for any allocations requested from it. As long as the number of allocated bytes doesn't exceed the size of the pre-allocated buffer, allocations are basically free. If you exceed the size of the pre-allocated buffer the allocator will fall back on dynamic allocations.
+@bs::StaticAlloc is a specialized type of allocator that can be used for permanent allocations. It works by pre-allocating a user-defined number of bytes. It then tries to use this pre-allocated buffer for any allocations requested from it. As long as the number of allocated bytes doesn't exceed the size of the pre-allocated buffer, allocations are basically free. If you exceed the size of the pre-allocated buffer the allocator will fall back on dynamic allocations.
 
 The downside of this allocator is that the pre-allocated buffer will be using up memory, whether that memory is is actually required or not. Therefore it is important to predict a good static buffer size so that not much memory is wasted, and that most objects don't exceed the static buffer size. This kind of allocator is mostly useful when you have many relatively small objects, each of which requires dynamic allocation of a different size.
 

@@ -42,10 +42,10 @@ SPtr<GpuBuffer> buffer = GpuBuffer::create(desc);
 ~~~~~~~~~~~~~ 
 
 # Reading/writing
-Reading or writing to a GPU buffer uses the same approach as other types of buffers, like index or vertex buffers. Refer back to the @ref geometry manual to see how.
+Reading or writing to a GPU buffer uses the same approach as other types of buffers, like index or vertex buffers. Refer back to the [geometry](geometry) manual to see how.
 
 # Binding
-Once created buffer can be bound to a GPU program through **GpuParams** by calling @ref bs::ct::GpuParams::setBuffer(GpuProgramType, const String&, const BufferType&) "ct::GpuParams::setBuffer()".
+Once created buffer can be bound to a GPU program through **GpuParams** by calling @bs::ct::GpuParams::setBuffer(GpuProgramType, const String&, const BufferType&).
 
 ~~~~~~~~~~~~~{.cpp}
 SPtr<GpuParams> params = ...;

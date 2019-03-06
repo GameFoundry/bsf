@@ -28,7 +28,7 @@ mainPanel->addElement(label);
 
 At this point our GUI element will be displayed.
 
-![Simple GUI](guiBasic.png) 
+![Simple GUI](../../Images/guiBasic.png) 
 
 # Destroying GUI elements
 You do not need to manually destroy a GUI element that is registered with a layout (e.g. a **GUIPanel**). Such elements will be destroyed automatically when their parent layout is destroyed. If their parent layout is connected to **GUIWidget** root panel, then all layouts and elements will be destroyed with the widget.
@@ -87,7 +87,7 @@ label->setVisible(true);
 ~~~~~~~~~~~~~
 
 # GUI element types
-bs::f provides a large library of existing GUI element types. We'll focus on explaining the most important ones, but you can find an exhaustive list in @ref GUI.
+bs::f provides a large library of existing GUI element types. We'll focus on explaining the most important ones, but you can find an exhaustive list in the API reference.
 
 ## Label
 A label is the most basic of GUI elements, that allows no user interaction and just displays a textual string. It is created with @bs::GUILabel::create, which accepts a string as input.
@@ -105,7 +105,7 @@ label->setContent(HString("New text!"));
 
 > You can use *setContent* function on most GUI elements, so we won't mention it further for each individual element.
 
-![Label](guiLabel.png) 
+![Label](../../Images/guiLabel.png) 
 
 ## Texture
 A texture is another basic GUI element that allows no interaction. All it does is display a **SpriteTexture** on the screen.
@@ -130,7 +130,7 @@ guiTexture->setSize(150, 150);
 mainPanel->addElement(guiTexture);
 ~~~~~~~~~~~~~ 
  
-![Texture](guiTexture.png) 
+![Texture](../../Images/guiTexture.png) 
  
 ## Button
 A button GUI element displays a textual string or an image and reports events about user interaction with the button.
@@ -173,7 +173,7 @@ auto buttonClicked = []()
 imageButton->onClick.connect(buttonClicked);
 ~~~~~~~~~~~~~
 
-![GUI buttons](guiButton.png) 
+![GUI buttons](../../Images/guiButton.png) 
 
 ## Toggle
 Toggle buttons are very similar to normal buttons, with the main difference being that they remain in a toggled state after they have been pressed. Multiple toggle buttons can also be grouped so that only one of them can be toggled at a time. Other than that they share the same interface as **GUIButton**, so we'll focus only on the additional functionality.
@@ -217,7 +217,7 @@ auto elementToggled = [](bool toggled)
 toggle->onClick.connect(elementToggled);
 ~~~~~~~~~~~~~
 
-![GUI toggle](guiToggle.png) 
+![GUI toggle](../../Images/guiToggle.png) 
 
 ## Input box
 Input boxes allow user to type into them using the keyboard. They can be single-line (default) or multi-line. To create them call @bs::GUIInputBox::create where the first parameter specifies whether the input box is single- or multi-line.
@@ -266,7 +266,7 @@ auto intFilter = [](const String& str)
 singleLineInput->setFilter(intFilter);
 ~~~~~~~~~~~~~
 
-![Input boxes](guiInputBox.png) 
+![Input boxes](../../Images/guiInputBox.png) 
 
 ## List box
 List boxes allow you to provide multiple elements the user can pick between. They can allow selection of just a single element (default), or allow multi-selection. List boxes are created by calling @bs::GUIListBox::create where the first argument represents a list of entries to display on the list, while the second argument specifies whether the list should allow multi-selection or not.
@@ -323,7 +323,7 @@ auto selectionToggled = [=](UINT32 idx, bool enabled)
 listBox->onSelectionToggled.connect(selectionToggled);
 ~~~~~~~~~~~~~
 
-![List boxes](guiListBox.png) 
+![List boxes](../../Images/guiListBox.png) 
 
 ## Slider
 Sliders allow the user to select a numeric value by dragging a slider. Sliders can be vertical or horizontal, represented by @bs::GUISliderVert and @bs::GUISliderHorz classes, respectively. They both share the same interface.
@@ -380,7 +380,7 @@ sliderHorz->setStep(10.0f / 360.0f);
 
 Note the step is specified in [0, 1] range.
 
-![Vertical and a horizontal slider](guiSlider.png)
+![Vertical and a horizontal slider](../../Images/guiSlider.png)
 
 ## Scroll area
 Scroll areas serve as containers for other GUI elements. They can contain more elements that would normally be able to fit in the visible area by providing scrollbars when necessary. Create a scroll area by calling @bs::GUIScrollArea::create. 
@@ -415,4 +415,4 @@ for(UINT32 i = 0; i < 20; i++)
 
 We'll go more in depth about layouts in the next chapter.
 
-![Scroll area](guiScrollArea.png)
+![Scroll area](../../Images/guiScrollArea.png)

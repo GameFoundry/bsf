@@ -4,7 +4,7 @@ title: Events
 
 Events allow objects to expose events that may trigger during execution. External objects interested in those events can then register callbacks with those events and be notified when they happen. They are useful because they allow two objects to communicate without necessarily knowing about each other's types, which can reduce class coupling and improve design.
 
-They're represented with the @ref bs::TEvent<RetType, Args> "Event" class.
+They're represented with the @Event class.
 
 # Creating events
 When creating an event, all you need to do is specify a format of the callback it sends out, for example:
@@ -46,7 +46,7 @@ public:
 
 # Subscribing to events
 
-An external object can register itself with an event by calling @ref bs::TEvent<RetType, Args> "Event::connect()". 
+An external object can register itself with an event by calling @Event::connect(). 
 ~~~~~~~~~~~~~{.cpp}
 // Define a couple of methods that trigger when events are triggered
 auto playerJumpedCallback = [&]()

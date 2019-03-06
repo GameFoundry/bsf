@@ -35,7 +35,7 @@ if(!myProgram->isCompiled())
 	gDebug().logError("GPU program compilation failed with error: " + myProgram->getCompileErrorMessage());
 ~~~~~~~~~~~~~ 
 
-Be aware that shader compilation happens on the core thread. Therefore if calling these methods on the sim thread GPU program, you must first ensure the GPU program is initialized by calling **CoreThread::submit()** with @p blockUntilComplete parameter set to true, or use the core-object-specific method @bs::CoreObject::blockUntilCoreInitialized.
+Be aware that shader compilation happens on the core thread. Therefore if calling these methods on the sim thread GPU program, you must first ensure the GPU program is initialized by calling **CoreThread::submit()** with `blockUntilComplete` parameter set to true, or use the core-object-specific method @bs::CoreObject::blockUntilCoreInitialized.
 
 ~~~~~~~~~~~~~{.cpp}
 // If program is used on sim thread
@@ -105,11 +105,11 @@ SPtr<GpuParams> params = GpuParams::create(graphicsPipeline);
 ~~~~~~~~~~~~~
 
 Once created you can assign values to parameter by calling any of the following methods (depending on parameter type):
- - @ref bs::ct::GpuParams::setTexture(GpuProgramType, const String&, const TextureType&, const TextureSurface&) "ct::GpuParams::setTexture()" - Assigns a read-only (sampled) texture to a GPU program.
- - @ref bs::ct::GpuParams::setLoadStoreTexture(GpuProgramType, const String&, const TextureType&, const TextureSurface&) "ct::GpuParams::setLoadStoreTexture()" - Assign a load-store (writable) texture to a GPU program.
- - @ref bs::ct::GpuParams::setBuffer(GpuProgramType, const String&, const BufferType&) "ct::GpuParams::setBuffer()" - Assigns a buffer (either read-only or read-write) to a GPU program.
- - @ref bs::ct::GpuParams::setSamplerState(GpuProgramType, const String&, const SamplerType&) "ct::GpuParams::setSamplerState()" - Assigns a sampler state that determines how is a sampled texture read by the shader.
- - @ref bs::ct::GpuParams::setParam<T>(GpuProgramType, const String&, const T&) "ct::GpuParams::setParam()" - Assigns a primitive type like *float*, *int*, **Vector3**, **Matrix4** or others. Supported primitive types are:
+ - @bs::ct::GpuParams::setTexture(GpuProgramType, const String&, const TextureType&, const TextureSurface&) - Assigns a read-only (sampled) texture to a GPU program.
+ - @bs::ct::GpuParams::setLoadStoreTexture(GpuProgramType, const String&, const TextureType&, const TextureSurface&) - Assign a load-store (writable) texture to a GPU program.
+ - @bs::ct::GpuParams::setBuffer(GpuProgramType, const String&, const BufferType&) - Assigns a buffer (either read-only or read-write) to a GPU program.
+ - @bs::ct::GpuParams::setSamplerState(GpuProgramType, const String&, const SamplerType&) - Assigns a sampler state that determines how is a sampled texture read by the shader.
+ - @bs::ct::GpuParams::setParam<T>(GpuProgramType, const String&, const T&) - Assigns a primitive type like *float*, *int*, **Vector3**, **Matrix4** or others. Supported primitive types are:
   - *float*
   - **Vector2**
   - **Vector3**
@@ -137,7 +137,7 @@ If parameters are modified often you can instead use *parameter handles* for fas
  - @bs::ct::GpuParams::getLoadStoreTextureParam - Outputs a @bs::TGpuParamLoadStoreTexture<Core> handle that can be used for reading & writing the parameter value.
  - @bs::ct::GpuParams::getBufferParam - Outputs a @bs::TGpuParamBuffer<Core> handle that can be used for reading & writing the parameter value.
  - @bs::ct::GpuParams::getSamplerStateParam - Outputs a @bs::TGpuParamSampState<Core> handle that can be used for reading & writing the parameter value.
- - @bs::ct::GpuParams::getParam<T> - Outputs a @ref bs::TGpuDataParam<Core, T> "TGpuDataParam<T>" handle that can be used for reading & writing the parameter value.
+ - @bs::ct::GpuParams::getParam<T> - Outputs a @bs::TGpuDataParam<Core, T> handle that can be used for reading & writing the parameter value.
 
 Each of the methods accepts a **GpuProgramType** of the program whose parameter to assign, name of the parameter (as specified in the GPU program code), and outputs a handle to the parameter as specified above. Handles provide **set()** and **get()** methods that can be used for writing and reading the parameter values.
  

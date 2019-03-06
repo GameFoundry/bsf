@@ -44,7 +44,7 @@ psSettings.simulationSpace = ParticleSimulationSpace::World;
 This set of options allow you to modify how are particle billboards oriented. It is controlled through the @bs::ParticleSystemSettings::orientation field and can take on the following values:
  - @bs::ParticleOrientation::ViewPlane - Particles will be oriented towards the camera plane, so that their X & Y axes are parallel to the camera plane. All particles have the exact same orientation.
  - @bs::ParticleOrientation::ViewPosition - Achieves a similar effect as **ParticleOrientation::ViewPlane**, but orients towards the camera's position. Particles will have slightly different orientation depending on their position, but will still face the camera.
- - @bs::ParticleOrientation::Plane - Particles will always face a certain plane. The plane can be specified by setting @bs::ParticleSystemSettings::orientationPlane. This is particularily useful for 2D games.
+ - @bs::ParticleOrientation::Plane - Particles will always face a certain plane. The plane can be specified by setting @bs::ParticleSystemSettings::orientationPlaneNormal. This is particularily useful for 2D games.
  
 You can also forbid particles to rotate around the Y axis by setting @bs::ParticleSystemSettings::orientationLockY. This can be useful for particles that must remain "upright", yet still face the camera. As an example imagine grass billboards.
 
@@ -81,7 +81,7 @@ psSettings.renderMode = ParticleRenderMode::Mesh;
 psSettings.mesh = mesh;
 ~~~~~~~~~~~~~
 
-![3D particles](3dparticles.gif)  
+![3D particles](../../Images/3dparticles.gif)  
 
 # Sorting
 

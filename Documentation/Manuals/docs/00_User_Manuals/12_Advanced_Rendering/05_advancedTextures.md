@@ -162,7 +162,7 @@ PixelUtil::compress(srcPixelData, dstPixelData, options);
 ~~~~~~~~~~~~~
 
 ## Creating textures with data
-If you're creating a texture you wish to immediately populate with data, you can use the overload for @ref bs::Texture::create(const SPtr<PixelData>&, int, bool) "Texture::create()" that accepts a **PixelData** object directly, allowing you to skip the call to **Texture::writeData()**.
+If you're creating a texture you wish to immediately populate with data, you can use the overload for @bs::Texture::create(const SPtr<PixelData>&, int, bool) that accepts a **PixelData** object directly, allowing you to skip the call to **Texture::writeData()**.
 
 ~~~~~~~~~~~~~{.cpp}
 SPtr<PixelData> pixelData = PixelData::create(128, 128, 1, PF_R8G8B8A8);
@@ -208,7 +208,7 @@ texture->readData(*pixelData);
 
 Note that performing GPU reads will almost certainly cause a GPU pipeline stall, requiring all GPU operations to finish before the read completes. Such stalls can severely impact performance and should generally be avoided.
 
-Also note that this operation is asynchronous. This means the function will return immediately, but the actual contents of the provided **PixelData** object will not be populated until the async operation finishes. Read the [mini-manual](@ref asyncMethod) for async operations for more information.
+Also note that this operation is asynchronous. This means the function will return immediately, but the actual contents of the provided **PixelData** object will not be populated until the async operation finishes. Read the [mini-manual](api:async_method.html) for async operations for more information.
 
 # Other
 Take a look at @bs::PixelUtil class for a variety of helper methods for manipulating pixel data and colors.

@@ -42,7 +42,7 @@ public:
 ~~~~~~~~~~~~~ 
  
 # Registering SpecificImporter
-To register your **SpecificImporter** implementation with the importer system you must call @bs::Importer::_registerAssetImporter. You can do this after application start-up, or during by implementing your own **Application** class as described in the @ref nonComponentApproach manual.
+To register your **SpecificImporter** implementation with the importer system you must call @bs::Importer::_registerAssetImporter. You can do this after application start-up, or during by implementing your own **Application** class as described in the [non-component approach](User_Manuals/Gameplay/nonComponentApproach) manual.
 
 ~~~~~~~~~~~~~{.cpp}
 Application::startUp(...);
@@ -53,7 +53,7 @@ gImporter()._registerAssetImporter(myImporter);
 
 > Your importer must be allocated using a general purpose allocator (**bs_new**) because the importer system automatically frees it on shutdown, and it doesn't expect any special memory types.
 
-Optionally you can do this on the higher level by providing a list of importers to @bs::Application::startUp method. This method expects a list of dynamic library file-names, which means you must implement your importer as a plugin, as described in the @ref plugins manual.
+Optionally you can do this on the higher level by providing a list of importers to @bs::Application::startUp method. This method expects a list of dynamic library file-names, which means you must implement your importer as a plugin, as described in the [plugins](../plugins) manual.
 
 # Optional features
 Your importer may also optionally implement any of the following features.
@@ -77,7 +77,7 @@ public:
 };
 ~~~~~~~~~~~~~ 
 
-The RTTI is implemented as normal, as described in the @ref serializingObjects manual.
+The RTTI is implemented as normal, as described in the [serializing objects](User_Manuals/Gameplay/serializingObjects) manual.
 
 You can then instantiate import options and provide them to the call of @bs::Importer::import and they will be passed through all the way to your **SpecificImporter** implementation. After that you can read the relevant options and perform the import accordingly.
 

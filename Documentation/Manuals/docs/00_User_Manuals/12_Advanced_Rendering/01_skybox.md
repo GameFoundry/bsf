@@ -3,7 +3,7 @@ title: Skybox
 ---
 Skyboxes use a user-provided cubemap texture in order to display an image of the sky when the camera is looking at the scene when no other object is occluding the sky. The same image is also used to provide both specular reflections and indirect lighting on objects lit by the sky, but we will cover these effects later.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 
 Skybox is represented by the @bs::CSkybox component, which requires only a texture of the sky to work. The texture should ideally be in high dynamic range, unless your application is not using HDR. The skybox texture can be set through @bs::CSkybox::setTexture.
 

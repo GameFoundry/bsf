@@ -31,7 +31,7 @@ collider->setDistance(-10.0f);
 
 > Note that plane's position and orientation is also influenced by the scene object the component is attached to. All colliders are influenced by their scene object, but most also provide properties for modifying their position/orientation/scale locally for more control. You can use either method, or both.
 
-![Plane collider](PlaneCollider.png)  
+![Plane collider](../../Images/PlaneCollider.png)  
 
 # Box collider
 Represented by @bs::CBoxCollider component. Use @bs::CBoxCollider::setExtents to provide the extents (half size) of the box. Use @bs::CBoxCollider::setCenter to offset the box relative to the scene object.
@@ -45,7 +45,7 @@ collider->setExtents(Vector3(0.5f, 0.5f, 0.5f));
 collider->setCenter(Vector3(0.0f, 0.0f, 0.0f));
 ~~~~~~~~~~~~~
 
-![Box collider](BoxCollider.png)  
+![Box collider](../../Images/BoxCollider.png)  
 
 # Sphere collider
 Represented by @bs::CSphereCollider component. Use @bs::CSphereCollider::setRadius to provide the radius of the sphere.
@@ -58,7 +58,7 @@ HSphereCollider collider = colliderSO->addComponent<CSphereCollider>();
 collider->setRadius(1.0f);
 ~~~~~~~~~~~~~
 
-![Sphere collider](SphereCollider.png)  
+![Sphere collider](../../Images/SphereCollider.png)  
 
 # Capsule collider
 Represented by @bs::CCapsuleCollider component. Capsule is defined using a height, and a radius which represents a distance from every point on the line at the capsule center (the line being the length as defined by "height"). Use @bs::CCapsuleCollider::setHalfHeight to set the half-height, and @bs::CCapsuleCollider::setRadius to set the radius.
@@ -72,7 +72,7 @@ collider->setHalfHeight(1.0f);
 collider->setRadius(0.5f);
 ~~~~~~~~~~~~~
 
-![Capsule collider](CapsuleCollider.png)  
+![Capsule collider](../../Images/CapsuleCollider.png)  
 
 # Mesh collider
 Mesh colliders represent the most complex collider types. They're repesented with the @bs::CMeshCollider component and they require a **PhysicsMesh** resource to operate. The physics mesh allows you to represent complex surfaces using triangles (similar to how a mesh used for rendering works) when basic shapes like boxes and spheres don't cut it.
@@ -89,4 +89,4 @@ HPhysicsMesh physicsMesh = ...; // Shown in next chapter
 collider->setMesh(physicsMesh);
 ~~~~~~~~~~~~~
 
-![Mesh collider](MeshCollider.png)  
+![Mesh collider](../../Images/MeshCollider.png)  

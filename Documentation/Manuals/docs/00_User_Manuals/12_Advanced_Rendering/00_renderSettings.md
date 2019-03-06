@@ -37,7 +37,7 @@ By default the system will calculate the exposure automatically, based on how th
 
 Automatic exposure can be disabled through @bs::RenderSettings::enableAutoExposure. In this case you will want to set the exposure manually through @bs::RenderSettings::exposureScale. This allows for more control over the exposure, which is sometimes required.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 Image with different exposure levels
 
 # White balance
@@ -47,7 +47,7 @@ When it comes to virtual lighting our eyes cannot perform the same adapation, as
 
 By default the real-world lighting is assumed to be a room lit by daylight, but the exact environment can be controlled through @bs::RenderSettings::whiteBalance. Since you cannot assume the lighting environment your application will be viewed under, this might be best left for the user to tweak.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 Image with different white balance lighting environments
 
 # Color grading
@@ -55,7 +55,7 @@ Color grading allows you to perform additional artistic control over the final i
 
 The relevant options are present in @bs::RenderSettings::colorGrading.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 Image with and without custom color grading
 
 # Screen space reflections (SSR)
@@ -63,7 +63,7 @@ This effect provides high quality, real-time reflections at a fairly low perform
 
 You can control and toggle the effect through @bs::RenderSettings::screenSpaceReflections.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 Left - SSR disabled, Right - SSR enabled
 
 # Screen space ambient occlusion (SSAO)
@@ -71,7 +71,7 @@ This effect estimates ambient occlusion using screen-space information. The ambi
 
 You can control and toggle the effect through @bs::RenderSettings::ambientOcclusion.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 Left - SSAO disabled, Right - SSAO enabled
 
 # Depth of field
@@ -79,7 +79,7 @@ By default the virtual camera focuses perfectly on all parts of the scene it vie
 
 Depth of field options can be tweaked through @bs::RenderSettings::depthOfField.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 Left - DOF disabled, Right - DOF enabled
 
 # Fast approximate anti-aliasing (FXAA)
@@ -87,10 +87,10 @@ This is a screen space effect that reduces the aliasing artifacts known as 'jagg
 
 It can be toggled through @bs::RenderSettings::enableFXAA.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 Image without FXAA
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 Image with FXAA
 
 # Gamma
@@ -107,7 +107,7 @@ Indirect lighting provided by **LightProbeVolume** can be fully disabled for a v
 # Bloom
 Bloom provides an extra highlight to already bright areas of the scene, simulating the real-world camera effect where an extremely bright light overwhelms the camera. The effect produces a fringe extending from the borders of the bright areas of the image. This effect is only used if tonemapping and HDR is enabled.
 
-![Image without bloom](BloomOffSmall.png)  
-![Image with bloom](BloomOnSmall.png)  
+![Image without bloom](../../Images/BloomOffSmall.png)  
+![Image with bloom](../../Images/BloomOnSmall.png)  
 
 You can enable/disable, as well as tweak the effect through @bs::RenderSettings::bloom. You can control the intensity treshold at which bloom will be shown, as well as tweak the global intensity and tint, along with a quality setting for performance/quality tradeoff.

@@ -182,7 +182,7 @@ const Vector<RenderQueueElement>& sortedElements = queue->getSortedElements();
 ## Renderer material
 Often the renderer needs to use special shaders for various effects (e.g. resolving lighting for a deferred renderer or post-processing effects like FXAA). Unlike shaders and materials used by renderable objects, these shaders are built into the engine. Since we know they'll always be there we can make it easier for the renderer to load and use them by implementing the @bs::ct::RendererMaterial interface. 
 
-The template parameter must be name of your material implementation class. The class must contain a @ref RMAT_DEF macro which contains the filename of the shader the renderer material uses. The shader file should be present in the "Data/Raw/Engine/Shaders/" folder. 
+The template parameter must be name of your material implementation class. The class must contain a @RMAT_DEF macro which contains the filename of the shader the renderer material uses. The shader file should be present in the "Data/Raw/Engine/Shaders/" folder. 
 
 ~~~~~~~~~~~~~{.cpp}
 // Set up a post-processing material that downsamples some texture
@@ -251,7 +251,7 @@ renderMat->execute(inputTex);
 
 ### Variations
 
-If your BSL file contains shader variations, then you can call @ref bs::ct::RendererMaterial::get<T>(const ShaderVariation&) "ct::RendererMaterial::get<T>(const ShaderVariation&)" to retrieve a specific variation. Variations were explained in more detail in the BSL manual.
+If your BSL file contains shader variations, then you can call @bs::ct::RendererMaterial::get(const ShaderVariation&) to retrieve a specific variation. Variations were explained in more detail in the BSL manual.
 
 ~~~~~~~~~~~~~{.cpp}
 // External code wanting to run a specific variation of the material
@@ -315,7 +315,7 @@ renderMat->execute(inputTex);
 
 ### Defines
 
-Sometimes you wish to be able to dynamically control defines that are used to compile the shader code. This is particularily useful if you want to make sure your C++ code and shader code use the same value. To do this you need to create your material using the @ref RMAT_DEF_CUSTOMIZED macro, instead of **RMAT_DEF**. It has the exact same signature as **RMAT_DEF** but it provides an *_initDefines* method you must implement.
+Sometimes you wish to be able to dynamically control defines that are used to compile the shader code. This is particularily useful if you want to make sure your C++ code and shader code use the same value. To do this you need to create your material using the @RMAT_DEF_CUSTOMIZED macro, instead of **RMAT_DEF**. It has the exact same signature as **RMAT_DEF** but it provides an *_initDefines* method you must implement.
 
 The method receives a @bs::ShaderDefines object which you can then populate with relevant values. Those values will then be used when compiling the shader.
 
@@ -335,7 +335,7 @@ void IrradianceComputeSHMat::_initDefines(ShaderDefines& defines)
 > All builtin shaders are cached. The system will automatically pick up any changes to shaders in *Data/Raw/Engine* folder and rebuild the cache when needed. However if you are changing defines as above you must manually force the system to rebuild by modifying the BSL file in *Data/Raw/Engine* folder.
 
 ## Parameter blocks
-In the @ref gpuPrograms manual we talked about parameter block buffers, represented by **GpuParamBlockBuffer** class. These blocks are used for group data parameters (such as float, int or bool) into blocks that can then be efficiently bound to the pipeline. They are better known as uniform buffers in OpenGL/Vulkan, or constant buffers in DX11. 
+In the [GPU programs](../Low_Level_rendering/gpuPrograms) manual we talked about parameter block buffers, represented by **GpuParamBlockBuffer** class. These blocks are used for group data parameters (such as float, int or bool) into blocks that can then be efficiently bound to the pipeline. They are better known as uniform buffers in OpenGL/Vulkan, or constant buffers in DX11. 
 
 An example of such a buffer in HLSL looks like this:
 ~~~~~~~~~~~~~{.cpp}
@@ -354,7 +354,7 @@ cbuffer PerCamera
 
 Such parameter block buffers are primarily useful when you need to share the same data between multiple materials. Instead of accessing parametes individually through **Material** or **GpuParams**, you would instead create a **GpuParamBlockBuffer** object, populate it, and then bind to **Material** or **GpuParams**.
 
-When we talked about them earlier we have shown how to manually create a **GpuParamBlockBuffer** object and write to it by reading the **GpuParamDesc** object of the **GpuProgram**. This is cumbersome and requires a lot of boilerplate code. A simpler way of creating and populating a parameter block is to use @ref BS_PARAM_BLOCK_BEGIN, @ref BS_PARAM_BLOCK_ENTRY and @ref BS_PARAM_BLOCK_END macros. You simply define the parameter block structure using these macros in C++, to match the structure in HLSL/GLSL code.
+When we talked about them earlier we have shown how to manually create a **GpuParamBlockBuffer** object and write to it by reading the **GpuParamDesc** object of the **GpuProgram**. This is cumbersome and requires a lot of boilerplate code. A simpler way of creating and populating a parameter block is to use @BS_PARAM_BLOCK_BEGIN, @BS_PARAM_BLOCK_ENTRY and @BS_PARAM_BLOCK_END macros. You simply define the parameter block structure using these macros in C++, to match the structure in HLSL/GLSL code.
 
 ~~~~~~~~~~~~~{.cpp}
 BS_PARAM_BLOCK_BEGIN(PerCameraParamBlockDef)
@@ -423,7 +423,7 @@ To request a render texture, first populate the @bs::ct::POOLED_RENDER_TEXTURE_D
 
 To request a buffer, populate the @bs::ct::POOLED_STORAGE_BUFFER_DESC descriptor by calling either @bs::ct::POOLED_STORAGE_BUFFER_DESC::createStandard or @bs::ct::POOLED_STORAGE_BUFFER_DESC::createStructured.
 
-Then call @bs::ct::GpuResourcePool::get with the provided descriptor. This will either create a new render texture/buffer, or return one from the pool. The returned object is @bs::ct::PooledRenderTexture for textures and @ref bs::ct::PooledStorageBuffer  "ct::PooledStorageBuffer" for buffers.
+Then call @bs::ct::GpuResourcePool::get with the provided descriptor. This will either create a new render texture/buffer, or return one from the pool. The returned object is @bs::ct::PooledRenderTexture for textures and @bs::ct::PooledStorageBuffer for buffers.
 
 Once you are done using the texture or buffer, call @bs::ct::GpuResourcePool::release to return the object to the pool, and make it available for other systems. If you plan on using this object again, make sure to keep a reference to the **ct::PooledRenderTexture** / **ct::PooledStorageBuffer** object. This will prevent the pool from fully destroying the object so it may be reused.
 

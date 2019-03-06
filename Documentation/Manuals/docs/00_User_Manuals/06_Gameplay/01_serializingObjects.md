@@ -44,7 +44,7 @@ class MyClass : public IReflectable
 ~~~~~~~~~~~~~
 
 # Creating the RTTI object
-All RTTI objects must implement the @ref bs::RTTIType<Type, BaseType, MyRTTIType> "RTTIType<Type, BaseType, MyRTTIType>" interface. The interface accepts three template parameters:
+All RTTI objects must implement the @bs::RTTIType interface. The interface accepts three template parameters:
  - *Type* - Class of the object we're creating RTTI for (e.g. *MyClass* or *MyComponent* from example above)
  - *BaseType* - Base type of the object we're creating RTTI for (e.g. *IReflectable* or *Component* from example above)
  - *MyRTTIType* - Name of the RTTI class itself
@@ -150,12 +150,12 @@ public:
 };
 ~~~~~~~~~~~~~
 
-Field definition portion of the RTTI type always begins with the @bs::BS_BEGIN_RTTI_MEMBERS macro, and ends with the @bs::BS_END_RTTI_MEMBERS.
+Field definition portion of the RTTI type always begins with the @BS_BEGIN_RTTI_MEMBERS macro, and ends with the @BS_END_RTTI_MEMBERS.
 
 The field members themselves are defined by calling macros starting with BS_RTTI_MEMBER_*. The macro expects the name of the field it describes, as well as a unique ID of the field. The suffix of the BS_RTTI_MEMBER_* macro depends on the type of the field being added. There are three different types:
- - @bs::BS_RTTI_MEMBER_PLAIN - Field containing basic data types like ints, floats, strings or other types that can be just trivially copied during serialization/deserialization.
- - @bs::BS_RTTI_MEMBER_REFL - Field containing objects deriving from **IReflectable** (i.e. classes that have RTTI). The main advantage of using **IReflectable** types over plain ones is that you are allowed to add or remove fields from **IReflectable**%s RTTI type, and it wont break any data that was previously serialized. This is very important as you make changes to your components or resources, so you can still load previously saved data (e.g. imagine saving a level, changing a component, and then being unable to load the level). Plain types on the other hand must always keep the same structure, otherwise the serialized data will be broken.
- - @bs::BS_RTTI_MEMBER_REFLPTR - Fields containing pointers to objects deriving from **IReflectable**. Same as **BS_RTTI_MEMBER_REFL**, except that multiple fields can point to the same object. This ensures the object won't be serialized multiple times, wasting space and performance, and also ensures that the system can properly restore all references to the object when it's deserialized.
+ - @BS_RTTI_MEMBER_PLAIN - Field containing basic data types like ints, floats, strings or other types that can be just trivially copied during serialization/deserialization.
+ - @BS_RTTI_MEMBER_REFL - Field containing objects deriving from **IReflectable** (i.e. classes that have RTTI). The main advantage of using **IReflectable** types over plain ones is that you are allowed to add or remove fields from **IReflectable**%s RTTI type, and it wont break any data that was previously serialized. This is very important as you make changes to your components or resources, so you can still load previously saved data (e.g. imagine saving a level, changing a component, and then being unable to load the level). Plain types on the other hand must always keep the same structure, otherwise the serialized data will be broken.
+ - @BS_RTTI_MEMBER_REFLPTR - Fields containing pointers to objects deriving from **IReflectable**. Same as **BS_RTTI_MEMBER_REFL**, except that multiple fields can point to the same object. This ensures the object won't be serialized multiple times, wasting space and performance, and also ensures that the system can properly restore all references to the object when it's deserialized.
  
 ~~~~~~~~~~~~~{.cpp}
 // Component definition with more complex field types
@@ -198,9 +198,9 @@ Each field must have an ID unique within the RTTI type. If you remove members fr
 
 ## Arrays
 Array field types are also supported:
- - @bs::BS_RTTI_MEMBER_PLAIN_ARRAY
- - @bs::BS_RTTI_MEMBER_REFL_ARRAY
- - @bs::BS_RTTI_MEMBER_REFLPTR_ARRAY
+ - @BS_RTTI_MEMBER_PLAIN_ARRAY
+ - @BS_RTTI_MEMBER_REFL_ARRAY
+ - @BS_RTTI_MEMBER_REFLPTR_ARRAY
  
 They perform the same function as their non-array counterparts, except the fields are expected to contain a **Vector<T>** instead of a single entry.
 

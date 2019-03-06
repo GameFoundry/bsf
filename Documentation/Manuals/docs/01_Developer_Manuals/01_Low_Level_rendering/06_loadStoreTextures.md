@@ -20,7 +20,7 @@ desc.usage = TU_LOADSTORE;
 SPtr<Texture> texture = Texture::create(desc);
 ~~~~~~~~~~~~~ 
 
-You can then bind a load-store texture to a GPU program by calling @ref bs::ct::GpuParams::setLoadStoreTexture(GpuProgramType, const String&, const TextureType&, const TextureSurface&) "ct::GpuParams::setLoadStoreTexture()" as was described in an earlier chapter.
+You can then bind a load-store texture to a GPU program by calling @bs::ct::GpuParams::setLoadStoreTexture(GpuProgramType, const String&, const TextureType&, const TextureSurface&) as was described in an earlier chapter.
 
 ~~~~~~~~~~~~~{.cpp}
 SPtr<GpuParams> params = ...;

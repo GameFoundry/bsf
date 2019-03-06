@@ -122,7 +122,7 @@ Before you can run the application you must first copy the data files and dynami
  
 For example in Visual Studio the executable will be placed at `Release/` folder within your project root, for a Release configuration. This is where you should place the dynamic libraries and the data files.
 
-![Structure of the executable folder on Windows](BuildStructure.png)
+![Structure of the executable folder on Windows](../Images/BuildStructure.png)
 
 ## Run
 You are now ready to run the application. If you used the default `Main.cpp` code above an empty window should open.

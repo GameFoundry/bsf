@@ -45,7 +45,7 @@ joint->setBody(JointBody::Target, rigidbody);
 ## Fixed joint
 Fixed joints are the simplest joint types. As the name implies they fix the origins and orientations of two bodies together. For example imagine two wheels welded together with a metal bar - when one rotates so must the other, and when one moves so must the other.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 
 They are represented with the @bs::CFixedJoint component.They don't allow any additional properties to be set, aside from the bodies to influence.
 
@@ -57,7 +57,7 @@ HFixedJoint joint = jointSO->addComponent<CFixedJoint>();
 ## Distance joint
 Distance joint simply keeps two bodies together at the specified distance range. You can specify a minimum and a maximum distance, as well as a spring property that makes the objects spring back or forth as they reach the range limits. For example you might use this joint type to model a rope.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 
 Distance joints are represented using the @bs::CDistanceJoint component. 
 
@@ -108,7 +108,7 @@ Sometimes it is useful to find out how much is the joint currently "stretched". 
 ## Spherical joint
 Spherical joint allows for a full range of rotations, while keeping the origins of the two bodies together. This allows you to create a ball-and-socket functionality, for example.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 
 Spherical joint is represented with the @bs::CSphericalJoint component.
 
@@ -161,7 +161,7 @@ Note that all the joint types that are about to follow have these four propertie
 ## Slider joint
 As the name implies slider joint constrains the body movement to slide along a single axis (X axis in particular). No movement along other axes, or rotation is allowed. For example this could be used for modeling some kind of a piston moving up and down.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 
 It is represented using the @bs::CSliderJoint component.
 
@@ -191,7 +191,7 @@ You can find out the current position of the slider by calling @bs::CSliderJoint
 ## Hinge joint
 Hinge joint contrains rotation around a single axis (X axis specifically). Rotation around other axes, or translation is not allowed. This can be used for modeling door hinges or similar behaviour.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 
 It is represented using the @bs::CHingeJoint component.
 
@@ -216,7 +216,7 @@ joint->setFlag(HingeJointFlag::Limit, true);
 ~~~~~~~~~~~~~
 
 ### Drive
-Drive is a special object of type @bs::HingeJoint::Drive that can be assigned to a hinge joint, to make the joint move without external forces. For example if you wanted to make a propeller, you could set up a drive on the hinge joint so it keeps on spinning.
+Drive is a special object of type @bs::HingeJointDrive that can be assigned to a hinge joint, to make the joint move without external forces. For example if you wanted to make a propeller, you could set up a drive on the hinge joint so it keeps on spinning.
 
 Drive can be assigned through @bs::CHingeJoint::setDrive, and must be explicitly enabled by calling **CHingeJoint::setFlag()** with @bs::HingeJointFlag::Drive.
 

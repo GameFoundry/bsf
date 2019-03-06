@@ -62,7 +62,7 @@ mesh->writeData(meshData);
 ~~~~~~~~~~~~~ 
 
 ## Creating mesh data
-You can create @bs::MeshData by calling @ref bs::MeshData::create(UINT32, UINT32, const SPtr<VertexDataDesc>&, IndexType) "MeshData::create()" and providing it with vertex description, index type and number of vertices and indices. You must ensure that the formats and sizes match the mesh this will be used on.
+You can create @bs::MeshData by calling @bs::MeshData::create(UINT32, UINT32, const SPtr<VertexDataDesc>&, IndexType) and providing it with vertex description, index type and number of vertices and indices. You must ensure that the formats and sizes match the mesh this will be used on.
 
 ~~~~~~~~~~~~~{.cpp}
 // Create mesh data able to contain 8 vertices of the format specified by vertexDesc, and 36 indices

@@ -6,11 +6,11 @@ Once you have populated your scene with scene objects and components you will wa
 
 # Creating prefabs
 
-A prefab can be created by calling @bs::Prefab::create method and providing the relevant **SceneObject**. You can retrieve the root **SceneObject** of the current scene by calling @bs::SceneManager::getRootNode(), accessible through @bs::gSceneManager(). The second parameter of **Prefab::create()** controls whether the prefab represents an entire scene, or just a subset of scene objects.
+A prefab can be created by calling @bs::Prefab::create method and providing the relevant **SceneObject**. You can retrieve the root **SceneObject** of the current scene by calling @bs::SceneInstance::getRoot. You can get the main **SceneInstance** from @bs::SceneManager::getMainScene, accessible through @bs::gSceneManager(). The second parameter of **Prefab::create()** controls whether the prefab represents an entire scene, or just a subset of scene objects.
 
 ~~~~~~~~~~~~~{.cpp}
 // Get scene root
-HSceneObject sceneRoot = gSceneManager().getRootNode();
+HSceneObject sceneRoot = gSceneManager().getMainScene()->getRoot();
 
 // Create a prefab of some sub-object
 HSceneObject subObject = sceneRoot->findPath("Path/To/Some/Object");
@@ -73,7 +73,7 @@ SPtr<ResourceManifest> manifest = gResources().getResourceManifest("Default");
 ResourceManifest::save(manifest, "C:/myManifest.asset", "C:/Data");
 ~~~~~~~~~~~~~
 
-> **SPtr** is a shared pointer, used in bs::f for most object instances that aren't components, scene objects or resources. It is covered later in the [smart pointers manual](@ref smartPointers).
+> **SPtr** is a shared pointer, used in bs::f for most object instances that aren't components, scene objects or resources. It is covered later in the [smart pointers manual](../Utilities/smartPointers).
 
 Before loading a **Prefab** you will need to restore the manifest by calling @bs::ResourceManifest::load. Note that you only need to restore the manifest once when your application starts up (usually before any other resource loads).
 

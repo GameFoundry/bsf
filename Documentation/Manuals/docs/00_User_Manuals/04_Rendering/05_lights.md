@@ -26,19 +26,19 @@ light->setType(LightType::Radial);
 
 Radial light affects everything within a certain radius from the light (i.e. its sphere of influence). It is the most basic type of light.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 
 ## Spot light
 
 Spot lights only illuminate a certain direction (i.e. like a flash-light). The user can specify the angle of illumination.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 
 ## Directional light
 
 Directional lights are a special type of light primarily used for simulating sun-light, or otherwise far-away objects. Unlike radial or spot lights they cannot be positioned. Only their orientation matters and they equally affect every object in the scene.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 
 # Light properties
 Each light has a set of properties you can adjust (aside from position/orientation, which are handled by the **SceneObject**). Most of the properties are common for all light types but some are only relevant for specific types. We'll go over all of the properties below.
@@ -75,11 +75,11 @@ Lights may or may not cast shadows. For realism all lights should cast shadows, 
 
 Casting shadows can cause artifacts called "shadow acne" in the scene. These artifacts occur due to an object casting a shadow on itself, caused limited precision of the calculations used. To combat this effect you can tweak the shadow bias property. Shadow bias moves the distance from which the shadow is cast, ensuring incorrect self-shadowing is avoided. Shadow bias can be tweaked by calling @bs::CLight::setShadowBias.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 
 Valid shadow bias values are from -1 to 1. When value is 0 no shadow bias will be applied, while positive shadow bias values will offset the shadow distance as described above. However offseting the shadow distance may cause the objects to appear like they are floating even if they are in contact with a surface.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()
 
 By setting the shadow bias to a negative value you move the shadow backwards, resolving both the shadow acne and the floating object issue. However this only works if your geometry has thickness, otherwise elements behind the object will be incorrectly shadowed. This is generally the best option as long as you can set up your geometry correctly.
 
@@ -90,4 +90,4 @@ You can set the spot light angle (also knows as total angle) with @bs::CLight::s
 
 You can also call @bs::CLight::setSpotFalloffAngle to set an angle that allows a smooth falloff at the edge of the lights radius. This must be an angle smaller than the total spot angle. Within this angle the light intensity will be uniform, but as the angle increases past the falloff angle and towards the total angle and intensity will slowly reduce, resulting in a smooth falloff curve. If you don't want the smooth falloff, set this angle to the same value as the total angle.
 
-@ref TODO_IMAGE
+[TODO_IMAGE]()

@@ -804,10 +804,9 @@ INPUT                  = ../../Source/Foundation/bsfUtility \
                          ../../Source/Plugins/bsfPhysX \
                          ../../Source/Plugins/bsfSL \
                          ../../Source/Plugins/bsfRenderBeast \
-                         ../Manuals \
+                         ./Pages \
                          ../../Source/Plugins/bsfFMOD \
                          ../../Source/Plugins/bsfOpenAudio \
-                         ../Manuals/User \
                          ../../Source/Plugins/bsfVulkanRenderAPI \
                          ../../Source/Scripting/bsfMono \
                          ../../Source/Scripting/bsfScript
@@ -1969,7 +1968,7 @@ MAN_LINKS              = NO
 # captures the structure of the code including all documentation.
 # The default value is: NO.
 
-GENERATE_XML           = NO
+GENERATE_XML           = YES
 
 # The XML_OUTPUT tag is used to specify where the XML pages will be put. If a
 # relative path is entered the value of OUTPUT_DIRECTORY will be put in front of

@@ -4,7 +4,7 @@ title: Decals
 
 Decals allow you to project textures onto visible geometry. During gameplay they can be used for dynamic effects such as explosion markings, bullet holes or blood spatter. During level design they can be used to add extra detail to the level and provide detailed surfaces without needing to use large textures.
 
-![Decal](decal.png)  
+![Decal](../../Images/decal.png)  
 
 > Decals will only project onto surfaces rendered using the deferred rendering pipeline. This includes the built-in standard material, but excludes any materials with transparency or any custom materials built to use the forward rendering pipeline.
 
@@ -102,4 +102,4 @@ HRenderable renderable2 = ...;
 renderable2->setLayer(1 << 20)
 ~~~~~~~~~~~~~
 
-![Decal with masking](DecalMask.png)  
+![Decal with masking](../../Images/DecalMask.png)  

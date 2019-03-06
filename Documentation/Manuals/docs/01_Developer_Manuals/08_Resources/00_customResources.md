@@ -5,7 +5,7 @@ title: Creating new resource types
 Throughout the previous manuals we have shown how to import, load and save a variety of resource types. But you can also add brand new resource types of your own.
 
 # Custom resource type
-To create a custom resource type you need to implement the @bs::Resource interface. **Resource** derives from both @bs::CoreObject and @bs::IReflectable. These two classes make up majority of its interface, and we have already shown how to implement them in the @ref coreThread and @ref serializingObjects manuals.
+To create a custom resource type you need to implement the @bs::Resource interface. **Resource** derives from both @bs::CoreObject and @bs::IReflectable. These two classes make up majority of its interface, and we have already shown how to implement them in the [core thread](../Low_Level_rendering/coreThread) and [serializing objects](User_Manuals/Gameplay/serializingObjects) manuals.
 
 ~~~~~~~~~~~~~{.cpp}
 class MyResource : public Resource
@@ -26,7 +26,7 @@ public:
 // MyResourceRTTI implemented as a standard RTTI object, as discussed previously
 ~~~~~~~~~~~~~
 
-The constructor of **Resource** accepts one parameter, signifying whether or not your resource requires a core-thread representation. If you set this to false then you don't need to implement any of the core thread sync functionality (as described in @ref coreThread manual), and @bs::CoreObject::getCore() method will simply return null. In general if your resource doesn't need to be used on the core thread set this to false. On the other hand, if it is used by systems like the renderer or the render API, set it to true.
+The constructor of **Resource** accepts one parameter, signifying whether or not your resource requires a core-thread representation. If you set this to false then you don't need to implement any of the core thread sync functionality (as described in [core thread](../01_Low_Level_rendering/00_coreThread.md) manual), and @bs::CoreObject::getCore() method will simply return null. In general if your resource doesn't need to be used on the core thread set this to false. On the other hand, if it is used by systems like the renderer or the render API, set it to true.
 
 # Custom resource handle
 To create a handle for your custom resource, similarly to **HTexture** or **HMesh**, simply create a *typedef* using the @bs::ResourceHandle<T> type. Generally you want to define this in some header included by all files, for convenience.

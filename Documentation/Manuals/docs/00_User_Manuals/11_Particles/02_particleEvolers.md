@@ -124,7 +124,7 @@ auto evolver = ParticleForce::create(desc);
 # Velocity
 Sets the velocity of particles over their lifetime.
 
-![Velocity evolver](velocityEvolver.gif)  
+![Velocity evolver](../../Images/velocityEvolver.gif)  
 
 Represented with the @bs::ParticleVelocity and initialization options provided through @bs::PARTICLE_VELOCITY_DESC.
 
@@ -162,11 +162,11 @@ auto evolver = ParticleOrbit::create(desc);
 # Collision
 Makes the particles collide with the world or a user-provided set of planes.
 
-![Particle collisions](particleCollision.gif)  
+![Particle collisions](../../Images/particleCollision.gif)  
 
 Represented with the @bs::ParticleCollisions and initialization options provided through @bs::PARTICLE_COLLISIONS_DESC.
 
-This evolver comes with two modes, settable through @bs::PARTICLE_COLLISIONS_DESC::mode:
+This evolver comes with two modes, settable through @bs::PARTICLE_COLLISIONS_DESC::mode :
  - @bs::ParticleCollisionMode::World - Particles will collide with all world geometry as defined by the physics components placed in the world. Optionally use bitmask @bs::PARTICLE_COLLISIONS_DESC::layer to collide only with physics objects with a matching layer.
  - @bs::ParticleCollisionMode::World - This is a secondary collision mode that makes the particles collide only with a user-defined set of planes. This mode is cheaper performance-wise than world collisions. Use @bs::ParticleCollisions::setPlanes to provide an array of planes to collide with.
  
@@ -200,7 +200,7 @@ Texture animation evolver allows you to animate the texture applied to the parti
 
 Represented with the @bs::ParticleTextureAnimation and initialization options provided through @bs::PARTICLE_TEXTURE_ANIMATION_DESC.
 
-Texture animation evolver only works if you have provided a **SpriteTexture** with animation to the **Material** the particle is rendered with. You can find more about sprite texture animation in [material](@ref simpleMaterial) manual.
+Texture animation evolver only works if you have provided a **SpriteTexture** with animation to the **Material** the particle is rendered with. You can find more about sprite texture animation in [material](../Rendering/simpleMaterial) manual.
 
 Use @bs::PARTICLE_TEXTURE_ANIMATION_DESC::numCycles to specify how many times should the animation loop during particle's lifetime. Enable @bs::PARTICLE_TEXTURE_ANIMATION_DESC::randomizeRow if you want every particle to pick a random row from the relevant sprite texture. This allows you to provide different textures and animations to different particles.
 

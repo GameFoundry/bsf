@@ -134,7 +134,7 @@ public:
 ~~~~~~~~~~~~~
 
 # Communicating with the extension
-If you need further communication with your extension from the sim thread, you should use the command queue as described in the @ref coreThread manual. If not using the command queue then you must ensure to use some other form of thread primitives to ensure safe communication between the two threads.
+If you need further communication with your extension from the sim thread, you should use the command queue as described in the [core thread](../Low_Level_rendering/coreThread) manual. If not using the command queue then you must ensure to use some other form of thread primitives to ensure safe communication between the two threads.
 
 ~~~~~~~~~~~~~{.cpp}
 class MyRendererExtension : public RendererExtension

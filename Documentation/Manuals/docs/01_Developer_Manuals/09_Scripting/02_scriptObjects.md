@@ -9,7 +9,7 @@ To implement the script object interface for a particular type you need two clas
  - Managed wrapper class for the type (C#)
 
 # Native interop class
-This class is intended as a wrapper for the C++ class you're exposing to the scripting API. It will contain all the code needed for C++/C# interop. All such native interop objects must implement the @bs::ScriptObject<T> interface. The template parameter should be the type of the interop class itself. The implementation of the class must begin with @ref SCRIPT_OBJ macro. The macro accepts (in order): 
+This class is intended as a wrapper for the C++ class you're exposing to the scripting API. It will contain all the code needed for C++/C# interop. All such native interop objects must implement the @bs::ScriptObject<T> interface. The template parameter should be the type of the interop class itself. The implementation of the class must begin with @SCRIPT_OBJ macro. The macro accepts (in order): 
  - the name of the assembly (.dll) the managed wrapper class is in, this is usually `ENGINE_ASSEMBLY` or `EDITOR_ASSEMBLY`
  - the namespace the managed wrapper class
  - the name of the managed wrapper class
@@ -30,7 +30,7 @@ public:
 
 **SCRIPT_OBJ** macro defines a static **initRuntimeData()** method you need to implement. In this method you want to take care of hooking up managed internal methods to C++ functions. It gets called automatically on startup and whenever the assembly containing the related managed class is loaded. 
 
-Every **ScriptObject** provides a static @ref bs::ScriptObject<Type, Base>::getMetaData "metaData" structure you can use for retrieving the **MonoClass** of the related managed class. You can use that **MonoClass** to register internal methods to it (as described earlier). 
+Every **ScriptObject** provides a static @bs::ScriptObject::getMetaData structure you can use for retrieving the **MonoClass** of the related managed class. You can use that **MonoClass** to register internal methods to it (as described earlier). 
 ~~~~~~~~~~~~~{.cpp}
 class ScriptMyObject : public ScriptObject <ScriptMyObject>
 {

@@ -4,7 +4,7 @@ title: Meshes
 
 Meshes are used for defining surfaces of 2D and 3D objects, and are the primary building blocks of the scene. In bs::f meshes are represented with the @bs::Mesh class. A mesh is a resource, meaning it can be imported, saved and loaded as any other resource.
 
-![Wireframe mesh](DragonWireframe.png) 
+![Wireframe mesh](../../Images/DragonWireframe.png) 
 
 # Importing a mesh
 Meshes can be imported from various third party formats, using the importer.
@@ -20,7 +20,7 @@ Supported formats are:
  - OBJ
  
 # Creating a mesh
-Meshes can also be created manually, which we cover later in the [creating meshes](@ref creatingMeshes) manual.
+Meshes can also be created manually, which we cover later in the [creating meshes](../Advanced_Rendering/creatingMeshes) manual.
  
 # Mesh properties
 Once a mesh has been imported, you can retrieve its properties like vertex & index counts, as well as its bounds by calling @bs::Mesh::getProperties, which returns a @bs::MeshProperties object.
@@ -34,7 +34,7 @@ gDebug().logDebug("Num. indices: " + toString(props.getNumIndices()));
 gDebug().logDebug("Radius: " + toString(props.getBounds().getSphere().getRadius()));
 ~~~~~~~~~~~~~
 
-> The debug logging functionality is explained in the [logging](@ref logging) manual.
+> The debug logging functionality is explained in the [logging](../Utilities/logging) manual.
 
 # Customizing import
 Mesh import can be customized by providing a @bs::MeshImportOptions object to the importer.
@@ -106,4 +106,4 @@ meshData->getVertexData(VES_POSITION, vertices.data(), vertices.size() * sizeof(
 ...
 ~~~~~~~~~~~~~
 
-> **MeshData** is explained later in the [creating meshes](@ref creatingMeshes) manual.
+> **MeshData** is explained later in the [creating meshes](../Advanced_Rendering/creatingMeshes) manual.

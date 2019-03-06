@@ -11,7 +11,7 @@ HRigidbody rigidbody = rigidbodySO->addComponent<CRigidbody>();
 
 > We call them "rigid" because their shape cannot be changed as a result of physics (unlike objects in the real world).
 
-![Rigidbody under the influence of gravity](rigidbodyGravity.gif)
+![Rigidbody under the influence of gravity](../../Images/rigidbodyGravity.gif)
 
 # Shape
 A rigidbody represents a physical object, and as such must have a certain shape. To define a rigidbody shape we use the **Collider** components we talked about in previous chapter. Any collider component that is added to the same scene object as a rigidbody, or to a child of such scene object, will define a shape of the rigidbody. A rigidbody can have one or multiple child colliders. 

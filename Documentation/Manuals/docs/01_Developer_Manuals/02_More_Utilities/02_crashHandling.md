@@ -8,7 +8,7 @@ Whenever possible you should try to avoid triggering a crash, and instead try to
 gCrashHandler().reportCrash("My error", "My error description");
 ~~~~~~~~~~~~~
 
-You can also use @ref BS_EXCEPT macro, which internally calls **CrashHandler::reportCrash()** but automatically adds file/line information and terminates the process after reporting the crash.
+You can also use @BS_EXCEPT macro, which internally calls **CrashHandler::reportCrash()** but automatically adds file/line information and terminates the process after reporting the crash.
 
 ~~~~~~~~~~~~~{.cpp}
 BS_EXCEPT(InternalErrorException, "My error description");

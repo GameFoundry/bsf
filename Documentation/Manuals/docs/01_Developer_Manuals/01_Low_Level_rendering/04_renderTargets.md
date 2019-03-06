@@ -2,7 +2,7 @@
 title: Render targets
 ---
 
-Before we can actually render an object, we must also specify a render target which will serve as a surface to render the output to. We already covered render target creation in @ref windows and @ref offscreenRendering manuals. The only difference is that in those manuals we used a **Camera** component to set the target, and relied on the renderer to make use of it. 
+Before we can actually render an object, we must also specify a render target which will serve as a surface to render the output to. We already covered render target creation in [windows](User_Manuals/Advanced_Rendering/windows) and [offscreen rendering](User_Manuals/Advanced_Rendering/offscreenRendering) manuals. The only difference is that in those manuals we used a **Camera** component to set the target, and relied on the renderer to make use of it. 
 
 In this chapter we'll show how to manually bind a render target for rendering, as well as some other render target related operations.
 
@@ -26,8 +26,8 @@ rapi.setViewport(Rect2(0.25f, 0.25f, 0.5f, 0.5f));
 
 ## Advanced binding
 **ct::RenderAPI::setRenderTarget()** also has a couple of parameters to control more advanced behaviour:
- - @p readOnlyFlags - Combination of one or more elements of @bs::FrameBufferType denoting which buffers will be bound for read-only operations. This is useful for depth or stencil buffers which need to be bound both for depth/stencil tests, as well as shader reads. If you don't specify this the render backend will assume you will be writing to the render target which will result in undefined behaviour if you also try reading from that same texture.
- - @p loadMask - Mask described by @bs::RenderSurfaceMaskBits which controls if current contents of any of the render target surfaces should be preserved. By default the system doesn't guarantee the contents will be preserved and data is instead undefined. In certain cases (like blending operations) you want to preserve the contents, in which case specify the necessary flags to tell the system which surfaces need their contents preserved.
+ - `readOnlyFlags` - Combination of one or more elements of @bs::FrameBufferType denoting which buffers will be bound for read-only operations. This is useful for depth or stencil buffers which need to be bound both for depth/stencil tests, as well as shader reads. If you don't specify this the render backend will assume you will be writing to the render target which will result in undefined behaviour if you also try reading from that same texture.
+ - `loadMask` - Mask described by @bs::RenderSurfaceMaskBits which controls if current contents of any of the render target surfaces should be preserved. By default the system doesn't guarantee the contents will be preserved and data is instead undefined. In certain cases (like blending operations) you want to preserve the contents, in which case specify the necessary flags to tell the system which surfaces need their contents preserved.
 
 ~~~~~~~~~~~~~{.cpp}
 // Bind a render target with read-only depth/stencil, and preserve the existing contents of depth-stencil buffer on bind

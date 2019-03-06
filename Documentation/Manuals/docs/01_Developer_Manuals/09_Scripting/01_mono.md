@@ -24,7 +24,7 @@ MonoAssembly* assembly = MonoManager::instance().getAssembly("MyManagedAssembly"
 ~~~~~~~~~~~~~ 
 
 # MonoAssembly
-**MonoAssembly** gives you access to all the script classes in an assembly. You can retrieve all clases using @bs::MonoAssembly::getAllClasses, or retrieve a specific one by calling @ref bs::MonoAssembly::getClass(const String&, const String&) const "MonoAssembly::getClass(const String& namespace, const String& typename)". Both of these methods return a @bs::MonoClass object.
+**MonoAssembly** gives you access to all the script classes in an assembly. You can retrieve all clases using @bs::MonoAssembly::getAllClasses, or retrieve a specific one by calling @bs::MonoAssembly::getClass(const String&, const String&). Both of these methods return a @bs::MonoClass object.
 
 ~~~~~~~~~~~~~{.cpp}
 // Retrieve information about a C# class MyNamespace::MyClass
@@ -72,7 +72,7 @@ MonoMethod* myMethod2 = klass->getMethodExact("MyMethod", "single,int");
 To invoke a method you may use multiple approaches:
  - @bs::MonoMethod::invoke - Invokes the exact method to exact type it was retrieved from.
  - @bs::MonoMethod::invokeVirtual - Invokes the method polymorphically, meaning it determines the actual type of the provided managed object instance and calls an overriden method if available.
- - @bs::MonoMethod::getThunk - Returns a C++ function pointer that can be used for invoking the method, same as you would any C++ function. This is equivalent to **MonoMethod::invoke()** but is significantly faster. A helper method @ref bs::MonoUtil::invokeThunk<T, Args> "MonoUtil::invokeThunk()" is provided - it is suggested you use it instead of calling thunks manually  because it handles exceptions internally.
+ - @bs::MonoMethod::getThunk - Returns a C++ function pointer that can be used for invoking the method, same as you would any C++ function. This is equivalent to **MonoMethod::invoke()** but is significantly faster. A helper method @bs::MonoUtil::invokeThunk is provided - it is suggested you use it instead of calling thunks manually  because it handles exceptions internally.
 
 All method invocation types follow a similar format:
  - First parameter is always a **MonoObject** which corresponds to the instance of the class to execute the method on. If a method is static this should be null.

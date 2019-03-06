@@ -2,7 +2,7 @@
 title: Advanced RTTI
 ---
 
-This manual is a continuation of the @ref serializingObjects manual, focusing on some more advanced features of the RTTI system.
+This manual is a continuation of the [serializing objects](User_Manuals/Gameplay/serializingObjects) manual, focusing on some more advanced features of the RTTI system.
 
 # Manually defining fields
 Previously we have shown how to define RTTI member fields by using the BS_RTTI_MEMBER_* macros. While this method is in most cases preferable, it might not be useful if more advanced functionality is required. The macro approach is only able to reference class fields directly, but sometimes we might wish to access data returned by a method, or we might want to process the data in some way (e.g. compressing it).
@@ -10,7 +10,7 @@ Previously we have shown how to define RTTI member fields by using the BS_RTTI_M
 We can do this by manually defining fields. In order to manually register fields the systems supports a several sets of `add*Field` methods, each expecting a unique name/id, and a pair of getter/setter methods. The getter/setter methods can then be used for any more advanced processing.
 
 ## Plain fields
-You register plain fields by calling @ref bs::RTTIType<Type, BaseType, MyRTTIType>::addPlainField "RTTIType::addPlainField()". The getter/setter methods must return/accept a reference to the value of the field.
+You register plain fields by calling @bs::RTTIType::addPlainField. The getter/setter methods must return/accept a reference to the value of the field.
 
 ~~~~~~~~~~~~~{.cpp}
 class MyComponent : public Component
@@ -40,7 +40,7 @@ public:
 ~~~~~~~~~~~~~
 
 ## Reflectable fields
-The reflectable field getter/setter signature is similar to the plain field one, only the @ref bs::RTTIType<Type, BaseType, MyRTTIType>::addReflectableField "RTTIType::addReflectableField()" method is used for registration instead. 
+The reflectable field getter/setter signature is similar to the plain field one, only the @bs::RTTIType::addReflectableField method is used for registration instead. 
 
 ~~~~~~~~~~~~~{.cpp}
 class MyComponent : public Component
@@ -69,7 +69,7 @@ public:
 ~~~~~~~~~~~~~
 
 ## Reflectable pointer fields
-Reflectable pointer getter/setter methods must return shared pointers to the instance, and they're registered with @ref bs::RTTIType<Type, BaseType, MyRTTIType>::addReflectablePtrField "RTTIType::addReflectablePtrField()".
+Reflectable pointer getter/setter methods must return shared pointers to the instance, and they're registered with @bs::RTTIType::addReflectablePtrField.
 ~~~~~~~~~~~~~{.cpp}
 class MyClass : public IReflectable
 {
@@ -105,9 +105,9 @@ public:
 Each of the valid field types (plain/reflectable/reflectable pointer), also come in array form. The array form requires two additional getter/setter methods that get/set array size, and normal getter/setter methods require an additional index parameter. 
 
 Methods for registering array fields are:
- - @ref bs::RTTIType<Type, BaseType, MyRTTIType>::addPlainArrayField "RTTIType::addPlainArrayField()"
- - @ref bs::RTTIType<Type, BaseType, MyRTTIType>::addReflectableArrayField "RTTIType::addReflectableArrayField()"
- - @ref bs::RTTIType<Type, BaseType, MyRTTIType>::addReflectablePtrArrayField "RTTIType::addReflectablePtrArrayField()"
+ - @bs::RTTIType::addPlainArrayField
+ - @bs::RTTIType::addReflectableArrayField
+ - @bs::RTTIType::addReflectablePtrArrayField
  
 ~~~~~~~~~~~~~{.cpp}
 class MyComponent : public Component
@@ -192,7 +192,7 @@ Each specialization must implement all three **toMemory()**, **fromMemory()** an
 
 After the specialization is implemented you will be able to use the type in getters/setters for plain fields as you would *int* or *float*. 
 
-For very simple classes you can also use the @ref BS_ALLOW_MEMCPY_SERIALIZATION macro instead. It will create a basic **RTTIPlainType<T>** specialization which uses *memcpy()* and *sizeof()* to implement the necessary methods.
+For very simple classes you can also use the @BS_ALLOW_MEMCPY_SERIALIZATION macro instead. It will create a basic **RTTIPlainType<T>** specialization which uses *memcpy()* and *sizeof()* to implement the necessary methods.
 
 ~~~~~~~~~~~~~{.cpp}
 // Simple plain old data type
@@ -283,10 +283,10 @@ Once you have an instance of a **RTTIField** object, you can also use it to dire
 
 # Advanced serialization
 When implementing **RTTIType<Type, BaseType, MyRTTIType>** can optionally override any of these methods, for additional functionality:
- - @ref bs::RTTIType<Type, BaseType, MyRTTIType>::onSerializationStarted "RTTIType::onSerializationStarted"
- - @ref bs::RTTIType<Type, BaseType, MyRTTIType>::onSerializationEnded "RTTIType::onSerializationEnded"
- - @ref bs::RTTIType<Type, BaseType, MyRTTIType>::onDeserializationStarted "RTTIType::onDeserializationStarted"
- - @ref bs::RTTIType<Type, BaseType, MyRTTIType>::onDeserializationEnded "RTTIType::onDeserializationEnded"
+ - @bs::RTTIType::onSerializationStarted
+ - @bs::RTTIType::onSerializationEnded
+ - @bs::RTTIType::onDeserializationStarted
+ - @bs::RTTIType::onDeserializationEnded
  
 As their names imply they will get called during serialization/deserialization and allow you to do any pre- or post-processing of the data. Each of those methods accepts an **IReflectable** pointer to the object currently being processed. 
 

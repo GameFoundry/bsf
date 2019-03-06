@@ -4,7 +4,7 @@ title: Windows
 
 A window represents the final destination where the application's rendered output gets displayed to the user. It has a title, size and a position. Window can cover the entirety of the user's screen (fullscreen mode) or just part of it (windowed mode). In bs::f a window is represented using the @bs::RenderWindow class. We have already shown how the application creates a primary window when it is first started up, and in this chapter we'll show how to create more windows manually as well as manipulate them.
 
-![Render window](RenderWindow.png)  
+![Render window](../../Images/RenderWindow.png)  
 
 # Creating windows
 You can also create your own windows by filling out the @bs::RENDER_WINDOW_DESC structure and calling @bs::RenderWindow::create.

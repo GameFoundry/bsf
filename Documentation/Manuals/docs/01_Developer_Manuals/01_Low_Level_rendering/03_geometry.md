@@ -45,7 +45,7 @@ rapi.setVertexBuffers(0, { vb });
 # Vertex declaration
 Before vertex buffer(s) can be used for rendering, you need to tell the pipeline what kind of information does each vertex in the vertex buffer(s) contain. This information lets the GPU know how to map per-vertex properties like position & UV coordinates, to vertex GPU program inputs. This is done by creating a @bs::ct::VertexDeclaration object.
 
-In order to create one you call @bs::ct::VertexDeclaration::create which accepts a **VertexDataDesc** as its parameter. We already explained to how create a **VertexDataDesc** in the @ref creatingMeshes manual.
+In order to create one you call @bs::ct::VertexDeclaration::create which accepts a **VertexDataDesc** as its parameter. We already explained to how create a **VertexDataDesc** in the [creating meshees](User_Manuals/Advanced_Rendering/creatingMeshes) manual.
 
 ~~~~~~~~~~~~~{.cpp}
 // Create a vertex descriptor with a position, normal and UV coordinates
@@ -58,7 +58,7 @@ vertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
 SPtr<VertexDeclaration> vertexDecl = VertexDeclaration::create(vertexDesc);
 ~~~~~~~~~~~~~
 
-If you are binding multiple vertex buffers, then make use of the @p streamIdx parameter when registering elements in **VertexDataDesc**. This index will let the pipeline know in which vertex buffer to find the provided element.
+If you are binding multiple vertex buffers, then make use of the `streamIdx` parameter when registering elements in **VertexDataDesc**. This index will let the pipeline know in which vertex buffer to find the provided element.
 
 Once created you can bind the declaration to the pipeline by calling @bs::ct::RenderAPI::setVertexDeclaration.
 

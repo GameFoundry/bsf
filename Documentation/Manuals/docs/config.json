@@ -1,0 +1,17 @@
+{
+  "title": "bs::framework documentation",
+  "author": "Marko Pintera",
+  "processor": "Processor",
+  "html": {
+	"search": true,
+    "breadcrumbs": true,
+    "breadcrumb_separator" : " > ",
+	"buttons": {
+       "Home": "https://www.bsframework.io"
+    },
+	"repo": "GameFoundry/bsf",
+	"ignore": {
+		"folders": ["api"]
+	}
+  }
+}

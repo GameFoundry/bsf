@@ -38,7 +38,7 @@ Finally, you must tell the GUI element which style to use by providing its name 
 GUIButton* customStyleButton = GUIButton::create(HString("Click me"), "MyButtonStyle");
 ~~~~~~~~~~~~~
 
-![Button with a custom style](customButton.png)
+![Button with a custom style](../../Images/customButton.png)
 
 All GUI elements also have a default style name they will use if you don't provide one in a call to **create()** (as was the case for all GUI elements we created in previous chapters). You can find out that name by calling a static **getGUITypeName()** method present on all GUI elements (e.g. **GUIButton::getGUITypeName()**). You can use this name to override GUI element's default styles in **GUISkin**.
 
@@ -74,7 +74,7 @@ Additionally, certain elements can be permanently toggled on or off (i.e. toggle
  - @bs::GUIElementStyle::focusedOn
  - @bs::GUIElementStyle::focusedHoverOn
  
-Each of these eight states is a @bs::GUIElementStyle::GUIElementStateStyle object, which contains a single sprite texture and a text color tint. When the style is active the element will render the provided texture covering its available area, and render any text using the provided color.
+Each of these eight states is a @bs::GUIElementStateStyle object, which contains a single sprite texture and a text color tint. When the style is active the element will render the provided texture covering its available area, and render any text using the provided color.
 
 An example that sets up a button style that has different textures depending if the button is in normal, hovered or active state:
 ~~~~~~~~~~~~~{.cpp}
@@ -209,4 +209,4 @@ style.border.top = 4;
 style.border.bottom = 4;
 ~~~~~~~~~~~~~
 
-![Border sections](Scale9Grid.png) 
+![Border sections](../../Images/Scale9Grid.png) 

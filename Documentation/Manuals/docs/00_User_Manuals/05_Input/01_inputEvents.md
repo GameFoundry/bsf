@@ -4,7 +4,7 @@ title: Input events
 
 Events represent another way of handling user input. They are an alternative to input polling, and it's up to the developer to choose which way of handling input he prefers. These approaches aren't identical though, and events can provide more information than polling. Same as polling, events are also handled by the **Input** class.
 
-This approach uses the event system, on which you can read more on [here](@ref events).
+This approach uses the event system, on which you can read more on [here](../Utilities/events).
 
 # Button presses
 You can subscribe to the following events that report when the user interacted with a button:

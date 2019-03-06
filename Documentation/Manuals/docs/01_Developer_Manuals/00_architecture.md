@@ -15,7 +15,7 @@ All the libraries can be separated into two main categories:
  - Plugins - These are separate, independant, and in most cases optional libraries containing various high level systems. They usually implement some interface that was defined in one of the foundation layers. You are able to design your own plugins that completely replace certain portion of the engine functionality without having to modify the engine itself (e.g. use a new physics library, or a renderer backend)
  
 To give you a better idea here is a diagram showing how all the libraries connect. You can use this for reference when we talk about the individual library purposes later on.
-![bs::f libraries](ArchitectureSimple.png)  
+![bs::f libraries](../Images/ArchitectureSimple.png)  
  
 # Foundation #
 The foundation layers contain the core of the engine. All the essentials and all the abstract interfaces for plugins belong here. 
@@ -48,7 +48,7 @@ The following plugins all have their own implementations of the @bs::RenderAPI i
 ## Importers ##		
 Importers allow you to convert various types of files into formats easily readable by the engine. Normally importers are only used during development, and the game itself will only use previously imported assets (although ultimately that's up to the user).
 
-All importers implement a relatively simple interface represented by the @bs::SpecificImporter class. The engine can start with zero importers, or with as many as you need. See the [importer](@ref customImporters) manual to learn more about importers and how to create your own. Some important importers are provided out of the box:
+All importers implement a relatively simple interface represented by the @bs::SpecificImporter class. The engine can start with zero importers, or with as many as you need. See the [importer](Developer_Manuals/Resources/customImporters) manual to learn more about importers and how to create your own. Some important importers are provided out of the box:
  - **bsfFreeImgImporter** - Handles import of most popular image formats, like .png, .psd, .jpg, .bmp and similar. It uses the FreeImage library for reading the image files and converting them into engine's @bs::Texture format.
  - **bsfFBXImporter** - Handles import of FBX mesh files. Uses Autodesk FBX SDK for reading the files and converting them into engine's @bs::Mesh format.
  - **bsfFontImporter** - Handles import of TTF and OTF font files. Uses FreeType for reading the font files and converting them into engine's @bs::Font format.

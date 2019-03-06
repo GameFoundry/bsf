@@ -1,5 +1,7 @@
-Memory allocation
-===============
+---
+title: Memory allocation
+---
+
 When allocating memory in bs::f it is prefered (but not required) to use bs::f allocator functions instead of the standard *new* / *delete* operators or *malloc* / *free*.
 
 - Use @bs::bs_new instead of *new* and @bs::bs_delete instead of *delete*.

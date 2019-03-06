@@ -12,7 +12,7 @@ ColorGradient gradient({
 });
 ~~~~~~~~~~~~~
 
-Once created you can manually evaluate the gradient by calling @bs::ColorGradient::evaluate with a value of @p t specifying a point at which to sample the gradient. The returned value is a color encoded in a 32-bit format.
+Once created you can manually evaluate the gradient by calling @bs::ColorGradient::evaluate with a value of `t` specifying a point at which to sample the gradient. The returned value is a color encoded in a 32-bit format.
 
 ~~~~~~~~~~~~~{.cpp}
 // Evaluates a gradient yielding a color half way between red and green

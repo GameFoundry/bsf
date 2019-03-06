@@ -100,9 +100,9 @@ parent->setPosition(Vector3(30, 0, 0));
 You may query for parent and children of a scene object using methods like @bs::SceneObject::getParent, @bs::SceneObject::getNumChildren, @bs::SceneObject::getChild or @bs::SceneObject::findChild. See the @bs::SceneObject API reference for a full overview.
 
 # Components
-You may add components to a scene object using the @ref bs::SceneObject::addComponent<T, Args...> "SceneObject::addComponent<T>()" method. 
+You may add components to a scene object using the @bs::SceneObject::addComponent method. 
 
-You may retrieve existing components by calling @bs::SceneObject::getComponent<T>.
+You may retrieve existing components by calling @bs::SceneObject::getComponent.
 
 Components can be removed by calling the @bs::Component::destroy method on the component.
 

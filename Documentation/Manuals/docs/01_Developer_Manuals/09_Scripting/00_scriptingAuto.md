@@ -4,7 +4,7 @@ title: Exposing code to script API (automated)
 
 When you've added a new feature, system or just extended existing ones you might want to expose that functionality to the scripting API. bs::f makes this process easier through its automated script binding generator tool. All you need to do is to decorate the C++ types and methods you wish to export and run the tool. The tool is ran automatically whenever you build through CMake if *GENERATE_SCRIPT_BINDINGS* option is turned on.
 
-@ref **BS_SCRIPT_EXPORT** macro supports a variety of parameters used for customizing how will the type/method be exported.
+**BS_SCRIPT_EXPORT** macro supports a variety of parameters used for customizing how will the type/method be exported.
 
 # Exporting classes
 In order to export a class to script code you need to decorate the class and one or multiple methods with **BS_SCRIPT_EXPORT** macro. 
