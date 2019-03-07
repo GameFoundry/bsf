@@ -44,7 +44,7 @@ class MyClass : public IReflectable
 ~~~~~~~~~~~~~
 
 # Creating the RTTI object
-All RTTI objects must implement the @bs::RTTIType interface. The interface accepts three template parameters:
+All RTTI objects must implement the @bs::RTTIType<Type, BaseType, MyRTTIType> interface. The interface accepts three template parameters:
  - *Type* - Class of the object we're creating RTTI for (e.g. *MyClass* or *MyComponent* from example above)
  - *BaseType* - Base type of the object we're creating RTTI for (e.g. *IReflectable* or *Component* from example above)
  - *MyRTTIType* - Name of the RTTI class itself

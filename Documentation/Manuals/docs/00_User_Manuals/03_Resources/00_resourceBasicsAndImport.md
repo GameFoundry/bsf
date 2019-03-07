@@ -22,7 +22,7 @@ Similar to scene objects and components, resources are also represented using ha
 You may treat the handles as pointers, using "->" to access their members, comparing them for equality or with *nullptr* to check their validity. 
 
 # Customizing import
-Sometimes you need more control over import. In which case you can provide an additional **ImportOptions** object to the @bs::Importer::import<T> method. See the example below on how we change the texture format on import, using **TextureImportOptions**.
+Sometimes you need more control over import. In which case you can provide an additional **ImportOptions** object to the @bs::Importer::import method. See the example below on how we change the texture format on import, using **TextureImportOptions**.
 
 ~~~~~~~~~~~~~{.cpp}
 // Create an import options object specific to textures

@@ -89,7 +89,7 @@ private:
 > **gTime()** method provides access to a variety of timing related functionality, and is explained later in the [timing manual](../Utilities/time).
 		
 # Component handle
-You will also likely want to declare a handle you can use to easily access the component, same as **HCamera** or **HRenderable**. This is done by simply creating a *typedef* on the @bs::GameObjectHandle<T> object.
+You will also likely want to declare a handle you can use to easily access the component, same as **HCamera** or **HRenderable**. This is done by simply creating a *typedef* of a @bs::GameObjectHandle<T>.
 
 ~~~~~~~~~~~~~{.cpp}
 typedef GameObjectHandle<CCameraFlyer> HCameraFlyer;

@@ -69,7 +69,7 @@ HMesh mesh = gResources().load("myMesh.asset", ResourceLoadFlags(ResourceLoadFla
 ~~~~~~~~~~~~~ 
 
 # Weak handles
-In case you want to keep a reference to a resource without incrementing the reference count you can use a weak handle instead of a normal one. Weak handles are represented by the @bs::WeakResourceHandle<T> class and can be retrieved from normal handles by calling @bs::ResourceHandle<T>::getWeak. Other than that they are accessed the same as normal handles.
+In case you want to keep a reference to a resource without incrementing the reference count you can use a weak handle instead of a normal one. Weak handles are represented by the @bs::WeakResourceHandle class and can be retrieved from normal handles by calling @bs::ResourceHandle::getWeak. Other than that they are accessed the same as normal handles.
 
 ~~~~~~~~~~~~~{.cpp}
 // Load a mesh and store a handle as normal

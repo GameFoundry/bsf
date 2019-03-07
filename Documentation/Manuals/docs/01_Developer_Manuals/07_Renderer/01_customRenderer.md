@@ -251,7 +251,7 @@ renderMat->execute(inputTex);
 
 ### Variations
 
-If your BSL file contains shader variations, then you can call @bs::ct::RendererMaterial::get(const ShaderVariation&) to retrieve a specific variation. Variations were explained in more detail in the BSL manual.
+If your BSL file contains shader variations, then you can call @bs::ct::RendererMaterial::get<T>(const ShaderVariation&) to retrieve a specific variation. Variations were explained in more detail in the BSL manual.
 
 ~~~~~~~~~~~~~{.cpp}
 // External code wanting to run a specific variation of the material

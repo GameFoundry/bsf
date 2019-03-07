@@ -11,6 +11,16 @@ environment:
   FTP_HOST:
     secure: vkR/qaZuHZ7k7iZQBfLlNYJzx/+rzkhRlOloJq7o0mk=
 
+install:
+  # Install composer on tagged and scheduled builds (need it for documentation gen.)
+  - cmd: if %APPVEYOR_REPO_TAG% == true (choco install composer)
+  - cmd: if %APPVEYOR_SCHEDULED_BUILD% == true (choco install composer)
+  - cmd: refreshenv
+  # Install daux on tagged and scheduled builds (need it for documentation gen.)
+  - cmd: if %APPVEYOR_REPO_TAG% == true (composer global require daux/daux.io)
+  - cmd: if %APPVEYOR_SCHEDULED_BUILD% == true (composer global require daux/daux.io)
+  - cmd: refreshenv
+
 build_script:
   # Setup and CMake configure
   - cmd: set INSTALL_DIR=C:/Projects/bsf/install/Release
@@ -21,7 +31,7 @@ build_script:
   - cmd: cd Build
   - cmd: cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX:STRING=%INSTALL_DIR% ..
   - cmd: cd ..
-  # Generate documentation (only tagged and nightly builds)
+  # Generate API documentation (only tagged and nightly builds)
   - ps: |
         if($env:APPVEYOR_REPO_TAG -eq "true" -or $env:APPVEYOR_SCHEDULED_BUILD -eq "true")
         {
@@ -33,10 +43,25 @@ build_script:
           Invoke-WebRequest https://data.banshee3d.com/SemanticUI.zip -OutFile SemanticUI.zip
           7z x SemanticUI.zip
           rm SemanticUI.zip
-          cd ..
-          Rename-Item html nightly
+          cd ../../..
+        }
+  
+  # Generate manuals (only tagged and nightly builds)
+  - cmd: cd Documentation/Manuals
+  - cmd: if %APPVEYOR_REPO_TAG% == true (daux generate)
+  - cmd: if %APPVEYOR_SCHEDULED_BUILD% == true (daux generate)
+  - cmd: cd ../..
+  # Package documentation (only tagged and nightly builds)
+  - ps: |
+        if($env:APPVEYOR_REPO_TAG -eq "true" -or $env:APPVEYOR_SCHEDULED_BUILD -eq "true")
+        {
+          cd Documentation/Manuals
+          mkdir Generated
+          Move-Item static Generated/nightly
+          cd ../Generated
+          Move-Item html ../Manuals/Generated/nightly/api
           cd ../..
-          7z a bsfDocs.zip ./Documentation/Generated/* -r
+          7z a bsfDocs.zip ./Documentation/Manuals/Generated/* -r
         }
   # Build and install
   - cmd: cd Build

@@ -2,7 +2,7 @@
 title: Flags
 ---
 
-@bs::Flags provide a wrapper around an `enum` and allow you to easily perform bitwise operations on them without having to cast to integers. For example when using raw C++ you must do something like this:
+@bs::Flags<Enum, Storage> provide a wrapper around an `enum` and allow you to easily perform bitwise operations on them without having to cast to integers. For example when using raw C++ you must do something like this:
 ~~~~~~~~~~~~~{.cpp}
 enum class MyFlag
 {

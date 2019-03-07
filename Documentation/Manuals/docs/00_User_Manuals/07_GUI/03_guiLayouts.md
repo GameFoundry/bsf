@@ -13,8 +13,8 @@ You will find that vertical and horizontal layouts come in handy when you need t
 
 # Adding/removing elements
 In the previous chapter we have already seen how to add a GUI element to a layout (a panel, more specifically). Here is the entire interface for dealing with element addition/removal, shared by all layout types:
- - @bs::GUILayout::addNewElement - Creates a new element of type *T* and adds it to the end of the layout's element list.
- - @bs::GUILayout::insertNewElement - Creates a new element of type *T* and inserts it at a specific position in the layout's element list.
+ - @bs::GUILayout::addNewElement<T> - Creates a new element of type *T* and adds it to the end of the layout's element list.
+ - @bs::GUILayout::insertNewElement<T> - Creates a new element of type *T* and inserts it at a specific position in the layout's element list.
  - @bs::GUILayout::removeElement - Removes a GUI element from the layout's element list.
 
 Here's an example of retrieving the GUI widget's primary panel and adding some elements to it: 

@@ -1,0 +1,24 @@
+div.outdated {
+	background-color: #ff5829;
+    color: black;
+    font-size: 90%;
+    padding-bottom: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 5px;
+    text-align: center;
+    width: 100%;
+}
+
+span.version-select-box {
+	align-items: center;
+	padding-left: 20px;
+}
+
+select.version-select {
+	margin-left: 5px;
+    color: white;
+    background-color: black;
+    border-color: grey;
+    font-family: Lato;
+}

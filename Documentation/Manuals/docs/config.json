@@ -1,17 +1,23 @@
 {
   "title": "bs::framework documentation",
+  "tagline": "Next-generation C++ game development framework focused on modern technologies, quality design and high performance",
   "author": "Marko Pintera",
   "processor": "Processor",
+  "themes_directory": "themes",
   "html": {
 	"search": true,
     "breadcrumbs": true,
     "breadcrumb_separator" : " > ",
+	"edit_on_github": "gamefoundry/bsf/blob/master/Documentation/Manuals/docs",
 	"buttons": {
-       "Home": "https://www.bsframework.io"
+	   "API reference": "api/index.html"
+	},
+    "links": {
+      "API Reference": "api/index.html",
+	  "Main site": "https://www.bsframework.io/",
+      "GitHub Repo": "https://github.com/gamefoundry/bsf"
     },
-	"repo": "GameFoundry/bsf",
-	"ignore": {
-		"folders": ["api"]
-	}
+	"inherit_index": true,
+	"theme": "bsf-blue"
   }
 }

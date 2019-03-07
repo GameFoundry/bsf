@@ -87,7 +87,7 @@ Vector fields are perhaps the most important feature of a GPU simulated particle
 
 ![Particle system with a vector field](../../Images/vectorField.gif)  
 
-All vector field properties are controlled through a @bs::ParticleVectorFieldSettings object, accessible from @bs::TParticleGpuSimulationSettings<Core>::vectorField.
+All vector field properties are controlled through a @bs::ParticleVectorFieldSettings object, accessible from @bs::ParticleGpuSimulationSettings::vectorField.
 
 To enable the vector field you must assign a @bs::VectorField resource to @bs::ParticleVectorFieldSettings::vectorField.
 

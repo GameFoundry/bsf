@@ -10,9 +10,9 @@ In particular all types of distributions can take on the following values:
  - Dual curves - Similar to a single curve, except both curves will be sampled and a random value will then be chosen in the range determined by the sampled values
 
 There are different types of distributions:
- - @bs::TDistribution<T> - Distribution that outputs a single floating point number. Curves are represented using a **TAnimationCurve<float>**, as described in the [animation curves](animCurves) manual.
- - @bs::TDistribution<T> - Distribution that outputs a 2D vector. Curves are represented using a **TAnimationCurve<Vector2>**, as described in the [animation curves](animCurves) manual.
- - @bs::TDistribution<T> - Distribution that outputs a 3D vector. Curves are represented using a **TAnimationCurve<Vector3>**, as described in the [animation curves](animCurves) manual.
+ - @bs::TDistribution<float> - Distribution that outputs a single floating point number. Curves are represented using a **TAnimationCurve<float>**, as described in the [animation curves](animCurves) manual.
+ - @bs::TDistribution<Vector2> - Distribution that outputs a 2D vector. Curves are represented using a **TAnimationCurve<Vector2>**, as described in the [animation curves](animCurves) manual.
+ - @bs::TDistribution<Vector3> - Distribution that outputs a 3D vector. Curves are represented using a **TAnimationCurve<Vector3>**, as described in the [animation curves](animCurves) manual.
  - @bs::ColorDistribution - Distribution that outputs a color. Curves are represented using a **ColorGradient**, as described in the [color gradient](colorGradient) manual.
 
 ~~~~~~~~~~~~~{.cpp}
