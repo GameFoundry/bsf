@@ -159,20 +159,42 @@ class APIDocLinkParser extends CommonMark\Inline\Parser\AbstractInlineParser
         return FALSE;
     }
 
+    private function lookupCompound($typeName, $checkTypedef)
+    {
+        if(array_key_exists($typeName, $this->compoundLookup))
+            return $this->compoundLookup[$typeName];
+        elseif($checkTypedef == true)
+        {
+            if(array_key_exists($typeName, $this->typedefLookup))
+            {
+                $typedefRef = $this->typedefLookup[$typeName];
+                if(array_key_exists($typedefRef, $this->compoundLookupByRef)) {
+                    return $this->compoundLookupByRef[$typedefRef];
+                }
+            }
+        }
+
+        return null;
+    }
+
     private function lookupType($typeName, $argList, &$linkFile, &$linkHash, &$isFunction)
     {
         // Find the file the type is described in
         $linkFile = "";
         $linkHash = "";
 
-        // Remove template parameters from lookup, for now we're ignoring them
-        $typeName = preg_replace('/<[A-Za-z0-9_,\s]*>/', '', $typeName);
-
         // Check if we're referencing a class/struct/union by doing a direct lookup
         $isFunction = FALSE;
-        if(array_key_exists($typeName, $this->compoundLookup)) {
-            $typeInfo = $this->compoundLookup[$typeName];
 
+        $typeInfo = $this->lookupCompound($typeName, false);
+        if($typeInfo == null)
+        {
+            // Check with no template parameters
+            $typeNameNoT = preg_replace('/<[A-Za-z0-9_,\.\s\(\)]*>/', '', $typeName);
+            $typeInfo = $this->lookupCompound($typeNameNoT, false);
+        }
+
+        if($typeInfo != null) {
             $linkFile = $typeInfo->file;
             $linkHash = "";
         } else {
@@ -187,24 +209,20 @@ class APIDocLinkParser extends CommonMark\Inline\Parser\AbstractInlineParser
             // Cut the name of the member, enum or global and try to find its parent class or namespace
             $memberName0 = array_pop($names);
 
+            // Always remove template parameters from members, we're not using them at the moment
+            $memberName0 = preg_replace('/<[A-Za-z0-9_,\.\s\(\)]*>/', '', $memberName0);
+
             if(empty($names))
                 $typeName0 = "";
             else
                 $typeName0 = join("::", $names);
 
-
-            $typeInfo = null;
-            if(array_key_exists($typeName0, $this->compoundLookup))
-                $typeInfo = $this->compoundLookup[$typeName0];
-            else
+            $typeInfo = $this->lookupCompound($typeName0, true);
+            if($typeInfo == null)
             {
-                if(array_key_exists($typeName0, $this->typedefLookup))
-                {
-                    $typedefRef = $this->typedefLookup[$typeName0];
-                    if(array_key_exists($typedefRef, $this->compoundLookupByRef)) {
-                        $typeInfo = $this->compoundLookupByRef[$typedefRef];
-                    }
-                }
+                // Check with no template parameters
+                $typeName0NoT = preg_replace('/<[A-Za-z0-9_,\.\s\(\)]*>/', '', $typeName0);
+                $typeInfo = $this->lookupCompound($typeName0NoT, true);
             }
 
             if($typeInfo != null) {
@@ -276,7 +294,7 @@ class APIDocLinkParser extends CommonMark\Inline\Parser\AbstractInlineParser
         $cursor->advance();
 
         // Parse the type name
-        $typeName = $cursor->match('/^(?:[A-Za-z0-9_](?:<[A-Za-z0-9_,\s]*>)?)+(?:::(?:[A-Za-z0-9_])+(?:<[A-Za-z0-9_,\s]*>)?)*/');
+        $typeName = $cursor->match('/^(?:[A-Za-z0-9_](?:<[A-Za-z0-9_,\.\s\(\)]*>)?)+(?:::(?:[A-Za-z0-9_])+(?:<[A-Za-z0-9_,\.\s\(\)]*>)?)*/');
         if (empty($typeName)) {
             // Regex failed to match
             $cursor->restoreState($previousState);
@@ -555,14 +573,10 @@ class Processor extends \Todaymade\Daux\Processor
         $compound = new APIDocCompoundInfo();
 
         $rawName = (string)$xmlCompound->compoundname;
-        //$cleanName = htmlspecialchars_decode($rawName); // Convert special HTML characters such as &lt;
-        //$cleanName = preg_replace('/\s+/', '', $cleanName); // Get rid of whitespace
+        $cleanName = htmlspecialchars_decode($rawName); // Convert special HTML characters such as &lt;
+        $cleanName = preg_replace('/\s+/', '', $cleanName); // Get rid of whitespace
 
-        // Remove template parameters. We don't use them, and even if we did we should parse them separately rather
-        // than including them in the name
-        //$compound->name = preg_replace('/<[A-Za-z0-9_,\s]*>/', '', $cleanName);
-
-        $compound->name = $rawName;
+        $compound->name = $cleanName;
         $compound->file = (string)$xmlCompound["id"];
 
         // Parse base classes
