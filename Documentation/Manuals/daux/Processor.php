@@ -17,9 +17,11 @@ class APIDocLinkParser extends CommonMark\Inline\Parser\AbstractInlineParser
 {
     private $compoundLookup;
     private $compoundLookupByRef;
+    private $typedefLookup;
 
-    public function __construct($compoundLookup) {
+    public function __construct($compoundLookup, $typedefLookup) {
         $this->compoundLookup = $compoundLookup;
+        $this->typedefLookup = $typedefLookup;
 
         $this->compoundLookupByRef = array();
         foreach($this->compoundLookup as $key => $value)
@@ -163,6 +165,9 @@ class APIDocLinkParser extends CommonMark\Inline\Parser\AbstractInlineParser
         $linkFile = "";
         $linkHash = "";
 
+        // Remove template parameters from lookup, for now we're ignoring them
+        $typeName = preg_replace('/<[A-Za-z0-9_,\s]*>/', '', $typeName);
+
         // Check if we're referencing a class/struct/union by doing a direct lookup
         $isFunction = FALSE;
         if(array_key_exists($typeName, $this->compoundLookup)) {
@@ -187,29 +192,35 @@ class APIDocLinkParser extends CommonMark\Inline\Parser\AbstractInlineParser
             else
                 $typeName0 = join("::", $names);
 
-            if(array_key_exists($typeName0, $this->compoundLookup)) {
-                $typeInfo = $this->compoundLookup[$typeName0];
 
-                // Look for member
-                if($this->lookUpField($typeInfo, $memberName0, $fieldInfo))
+            $typeInfo = null;
+            if(array_key_exists($typeName0, $this->compoundLookup))
+                $typeInfo = $this->compoundLookup[$typeName0];
+            else
+            {
+                if(array_key_exists($typeName0, $this->typedefLookup))
                 {
+                    $typedefRef = $this->typedefLookup[$typeName0];
+                    if(array_key_exists($typedefRef, $this->compoundLookupByRef)) {
+                        $typeInfo = $this->compoundLookupByRef[$typedefRef];
+                    }
+                }
+            }
+
+            if($typeInfo != null) {
+                // Look for member
+                if ($this->lookUpField($typeInfo, $memberName0, $fieldInfo)) {
                     $linkFile = $fieldInfo->file;
                     $linkHash = $fieldInfo->id;
-                }
-                else if($this->lookUpFunction($typeInfo, $memberName0, $argList, $functionInfo))
-                {
+                } else if ($this->lookUpFunction($typeInfo, $memberName0, $argList, $functionInfo)) {
                     $linkFile = $functionInfo->file;
                     $linkHash = $functionInfo->id;
 
                     $isFunction = TRUE;
-                }
-                else if($this->lookUpEnum($typeInfo, $memberName0, $enumInfo))
-                {
+                } else if ($this->lookUpEnum($typeInfo, $memberName0, $enumInfo)) {
                     $linkFile = $enumInfo->file;
                     $linkHash = $enumInfo->id;
-                }
-                else if($this->lookUpUnqualifiedEnumValue($typeInfo, $memberName0, $enumValueInfo))
-                {
+                } else if ($this->lookUpUnqualifiedEnumValue($typeInfo, $memberName0, $enumValueInfo)) {
                     $linkFile = $enumValueInfo->file;
                     $linkHash = $enumValueInfo->id;
                 }
@@ -265,7 +276,7 @@ class APIDocLinkParser extends CommonMark\Inline\Parser\AbstractInlineParser
         $cursor->advance();
 
         // Parse the type name
-        $typeName = $cursor->match('/^[A-Za-z0-9_:]*/');
+        $typeName = $cursor->match('/^(?:[A-Za-z0-9_](?:<[A-Za-z0-9_,\s]*>)?)+(?:::(?:[A-Za-z0-9_])+(?:<[A-Za-z0-9_,\s]*>)?)*/');
         if (empty($typeName)) {
             // Regex failed to match
             $cursor->restoreState($previousState);
@@ -276,6 +287,10 @@ class APIDocLinkParser extends CommonMark\Inline\Parser\AbstractInlineParser
         if(!empty($argList)) {
             $argList = $this->getCleanArgList($argList);
         }
+
+        $customTitle = $cursor->match('/^\[[^\]]*\]/');
+        if(!empty($customTitle))
+            $customTitle = substr($customTitle, 1, strlen($customTitle) - 2);
 
         // Add bs:: prefix if not specified, and not in some other namespace
         $prefixAdded = false;
@@ -331,6 +346,9 @@ class APIDocLinkParser extends CommonMark\Inline\Parser\AbstractInlineParser
         $readableName = str_replace("bs::","", $typeName);
         if($isFunction)
             $readableName .= '()';
+
+        if(!empty($customTitle))
+            $readableName = $customTitle;
 
         $inlineContext->getContainer()->appendChild(new CommonMark\Inline\Element\Link($linkUrl, $readableName));
         return true;
@@ -535,7 +553,16 @@ class Processor extends \Todaymade\Daux\Processor
     private function parseCompound($xmlCompound)
     {
         $compound = new APIDocCompoundInfo();
-        $compound->name = (string)$xmlCompound->compoundname;
+
+        $rawName = (string)$xmlCompound->compoundname;
+        //$cleanName = htmlspecialchars_decode($rawName); // Convert special HTML characters such as &lt;
+        //$cleanName = preg_replace('/\s+/', '', $cleanName); // Get rid of whitespace
+
+        // Remove template parameters. We don't use them, and even if we did we should parse them separately rather
+        // than including them in the name
+        //$compound->name = preg_replace('/<[A-Za-z0-9_,\s]*>/', '', $cleanName);
+
+        $compound->name = $rawName;
         $compound->file = (string)$xmlCompound["id"];
 
         // Parse base classes
@@ -555,6 +582,10 @@ class Processor extends \Todaymade\Daux\Processor
                         $this->parseCommonMember($member, $field);
 
                         $compound->fields[$field->name] = $field;
+
+                        if($member["kind"] == "typedef")
+                            $this->parseTypedef($member, $compound->name . '::' . $field->name);
+
                         break;
                     case "function":
                         $function = new APIDocFunctionInfo();
@@ -613,6 +644,7 @@ class Processor extends \Todaymade\Daux\Processor
     }
 
     private $compoundLookup;
+    private $typedefLookup;
     private function parseCompoundXml($xmlCompoundPath)
     {
         $xml = simplexml_load_file($xmlCompoundPath);
@@ -623,6 +655,20 @@ class Processor extends \Todaymade\Daux\Processor
         foreach($xml->compounddef as $xmlCompound) {
             $compound = $this->parseCompound($xmlCompound);
             $this->compoundLookup[$compound->name] = $compound;
+        }
+    }
+
+    private function parseTypedef($xmlMember, $typeName)
+    {
+        foreach($xmlMember->type->ref as $typeRef)
+        {
+            if($typeRef["kindref"] == "compound")
+            {
+                $referencedTypeId = (string)$typeRef["refid"];
+                $this->typedefLookup[$typeName] = $referencedTypeId;
+
+                break;
+            }
         }
     }
 
@@ -647,6 +693,10 @@ class Processor extends \Todaymade\Daux\Processor
                             $this->parseCommonMember($member, $compound);
 
                             $this->compoundLookup[$compound->name] = $compound;
+
+                            if($member["kind"] == "typedef")
+                                $this->parseTypedef($member, $compound->name);
+
                             break;
                     }
                 }
@@ -684,7 +734,7 @@ class Processor extends \Todaymade\Daux\Processor
             }
         }
 
-        $environment->addInlineParser(new APIDocLinkParser($this->compoundLookup));
+        $environment->addInlineParser(new APIDocLinkParser($this->compoundLookup, $this->typedefLookup));
         $environment->addInlineRenderer('League\CommonMark\Inline\Element\Link', new APIDocLinkRenderer($environment->getConfig('daux')));
     }
 }

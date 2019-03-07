@@ -46,7 +46,7 @@ public:
 
 # Subscribing to events
 
-An external object can register itself with an event by calling @Event::connect(). 
+An external object can register itself with an event by calling @bs::Event::connect(). 
 ~~~~~~~~~~~~~{.cpp}
 // Define a couple of methods that trigger when events are triggered
 auto playerJumpedCallback = [&]()

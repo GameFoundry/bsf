@@ -26,7 +26,7 @@ Lower layers were designed to be more general purpose than higher layers. They p
 
 Going from the lowest to highest the layers are:
 ## bsfUtility ##
-This is the lowest layer of the engine. It is a collection of very decoupled and separate systems that are likely to be used throughout all of the higher layers. Essentially a collection of tools that are in no way tied into a larger whole. Most of the functionality isn't even game engine specific, like providing [file-system access](@ref bs::FileSystem), [file path parsing](@ref bs::Path), [events](@ref bs::Event), [math library](@ref bs::Math), [RTTI system](@ref bs::RTTITypeBase), [threading primitives and managers](@ref bs::ThreadPool), among various others.
+This is the lowest layer of the engine. It is a collection of very decoupled and separate systems that are likely to be used throughout all of the higher layers. Essentially a collection of tools that are in no way tied into a larger whole. Most of the functionality isn't even game engine specific, like providing @bs::FileSystem[file-system access], @bs::Path[file path parsing], @bs::Event[events], @bs::Math[math library], @bs::RTTITypeBase[RTTI system], @bs::ThreadPool[threading primitives and managers], among various others.
 
 ## bsfCore ##
 This layer builds upon the utility layer by providing abstract interfaces for most of the engine systems. It is the largest layer in bs::f containing systems like @bs::RenderAPI, @bs::Resources, @bs::Importer, @bs::Input, @bs::Physics and more. Implementations of its interfaces are for the most part implemented as plugins, and not part of the layer itself. The layer tries to be generic and include only functionality that is common, while leaving more specialized functionality for higher layers.
