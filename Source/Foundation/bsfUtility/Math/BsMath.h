@@ -65,7 +65,7 @@ namespace bs
 	 */
 
 	/** Utility class providing common scalar math operations. */
-	class BS_UTILITY_EXPORT Math 
+	class BS_UTILITY_EXPORT Math
 	{
 	public:
 		static constexpr float BIGGEST_FLOAT_SMALLER_THAN_ONE = 0.99999994f;
@@ -80,7 +80,7 @@ namespace bs
 		static Radian atan(float val) { return Radian(std::atan(val)); }
 
 		/** Inverse tangent with two arguments, returns angle between the X axis and the point. */
-		static Radian atan2(float y, float x) { return Radian(std::atan2(y,x)); }
+		static Radian atan2(float y, float x) { return Radian(std::atan2(y, x)); }
 
 		/** Cosine. */
 		static float cos(const Radian& val) { return (float)std::cos(val.valueRadians()); }
@@ -113,7 +113,7 @@ namespace bs
 		static float invSqrt(float val);
 
 		/** Returns square of the provided value. */
-		static float sqr(float val) { return val*val; }
+		static float sqr(float val) { return val * val; }
 
 		/** Returns base raised to the provided power. */
 		static float pow(float base, float exponent) { return (float)std::pow(base, exponent); }
@@ -125,10 +125,10 @@ namespace bs
 		static float log(float val) { return (float)std::log(val); }
 
 		/** Returns base 2 logarithm of the provided value. */
-		static float log2(float val) { return (float)(std::log(val)/LOG2); }
+		static float log2(float val) { return (float)(std::log(val) / LOG2); }
 
 		/** Returns base N logarithm of the provided value. */
-		static float logN(float base, float val) { return (float)(std::log(val)/std::log(base)); }
+		static float logN(float base, float val) { return (float)(std::log(val) / std::log(base)); }
 
 		/** Returns the sign of the provided value as 1 or -1. */
 		static float sign(float val);
@@ -151,7 +151,7 @@ namespace bs
 		/** Returns the nearest integer equal or higher to the provided value. */
 		static float ceil(float val) { return (float)std::ceil(val); }
 
-		/** 
+		/**
 		 * Returns the nearest integer equal or higher to the provided value. If you are sure the input is positive use
 		 * ceilToPosInt() for a slightly faster operation.
 		 */
@@ -163,7 +163,7 @@ namespace bs
 			return val >= 0.0f ? (int32_t)(val + BIGGEST_FLOAT_SMALLER_THAN_ONE) : (int32_t)val;
 		}
 
-		/** 
+		/**
 		 * Returns the nearest integer equal or higher to the provided value. Value must be non-negative. Slightly faster
 		 * than ceilToInt().
 		 */
@@ -176,6 +176,9 @@ namespace bs
 
 		/** Returns the integer nearest to the provided value. */
 		static float round(float val) { return (float)std::floor(val + 0.5f); }
+
+		/** Returns the integer nearest to the provided value. */
+		static float fastRound(float val) { return (val >= 0) ? (float)(val + 0.5f) : (float)(val - 0.5f); }
 
 		/** 
 		 * Returns the integer nearest to the provided value. If you are sure the input is positive use roundToPosInt()
@@ -197,6 +200,9 @@ namespace bs
 
 		/** Returns the nearest integer equal or lower of the provided value. */
 		static float floor(float val) { return (float)std::floor(val); }
+
+		/** Returns the nearest integer equal or lower of the provided value. */
+		static float fastFloor(float val) { return (val >= 0) ? (float)val : (float)val - 1.0f; }
 
 		/** 
 		 * Returns the nearest integer equal or lower of the provided value. If you are sure the input is positive
@@ -274,6 +280,26 @@ namespace bs
 		{
 			t = clamp((t - val1) / (val2 - val1), 0.0f, 1.0f);
 			return t * t * (3.0f - 2.0f * t);
+		}
+
+		/** 
+		* Performs quintic interpolation where @p val is the value to map onto a quintic S-curve.
+		* @p val should range from 0.0f to 1.0f.
+		*/
+		static float quintic(float val) 
+		{
+			return val * val * val * (val * (val * 6.0f - 15.0f) + 10.0f);
+		}
+
+		/** 
+		* Performs cubic interpolation between two values bound between two other values where
+  		* @p f is the alpha value. It should range from 0.0f to 1.0f. If it is 0.0f
+  		* returns @p val2. If it is 1.0f returns @p val3.
+		*/
+		static float cubic(float val1, float val2, float val3, float val4, float f) 
+		{
+			float t = (val4 - val3) - (val1 - val2);
+			return f * f * f * t + f * f * ((val1 - val2) - t) + f * (val3 - val1) + val2;
 		}
 
 		/** Compare two floats, using tolerance for inaccuracies. */
