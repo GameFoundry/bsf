@@ -285,7 +285,7 @@ namespace bs
 		/** Performs quintic interpolation. */
 		static float quintic(float val) 
 		{
-			return val * val * val * (val * (val * 6.0f - 15.0f) + 10.f);
+			return val * val * val * (val * (val * 6.0f - 15.0f) + 10.0f);
 		}
 
 		/** Performs cubic interpolation. */
