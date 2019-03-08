@@ -293,7 +293,7 @@ namespace bs
 
 		/** 
 		* Performs cubic interpolation between two values bound between two other values where
-  		* @p f is alpha value. It should range from 0.0f to 1.0f. If it is 0.0f
+  		* @p f is the alpha value. It should range from 0.0f to 1.0f. If it is 0.0f
   		* returns @p val2. If it is 1.0f returns @p val3.
 		*/
 		static float cubic(float val1, float val2, float val3, float val4, float f) 
