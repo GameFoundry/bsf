@@ -282,13 +282,20 @@ namespace bs
 			return t * t * (3.0f - 2.0f * t);
 		}
 
-		/** Performs quintic interpolation. */
+		/** 
+		* Performs quintic interpolation where @p val is the value to map onto a quintic S-curve.
+		* @p val should range from 0.0f to 1.0f.
+		*/
 		static float quintic(float val) 
 		{
 			return val * val * val * (val * (val * 6.0f - 15.0f) + 10.0f);
 		}
 
-		/** Performs cubic interpolation. */
+		/** 
+		* Performs cubic interpolation between two values bound between two other values where
+  		* @p f is alpha value. It should range from 0.0f to 1.0f. If it is 0.0f
+  		* returns @p val2. If it is 1.0f returns @p val3.
+		*/
 		static float cubic(float val1, float val2, float val3, float val4, float f) 
 		{
 			float t = (val4 - val3) - (val1 - val2);
