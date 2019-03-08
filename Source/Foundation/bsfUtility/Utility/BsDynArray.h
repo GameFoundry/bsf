@@ -381,6 +381,23 @@ namespace bs
 			other.mElements = tmp;
 		}
 
+		bool swapAndErase(Iterator iter)
+		{
+			assert(!empty());
+
+			auto iterLast = end() - 1;
+
+			bool swapped = false;
+			if (iter != iterLast)
+			{
+				std::swap(*iter, *iterLast);
+				swapped = true;
+			}
+
+			pop();
+			return swapped;
+		}
+
 		template <typename ...Args>
 		void emplaceBack(Args&& ...args)
 		{
