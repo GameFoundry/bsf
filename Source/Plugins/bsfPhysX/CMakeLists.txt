@@ -31,7 +31,7 @@ target_link_libraries(bsfPhysX PRIVATE bsf)
 set_property(TARGET bsfPhysX PROPERTY FOLDER Plugins)
 
 # Install
-if(PHYSICS_API_MODULE MATCHES "PhysX")
+if(PHYSICS_MODULE MATCHES "PhysX")
 	install_bsf_target(bsfPhysX)
 endif()
 	
