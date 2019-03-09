@@ -33,8 +33,8 @@ namespace bs
 		}
 
 		bool isTexLoaded = SpriteTexture::checkIsLoaded(mActiveTexture);
-		mActiveTextureWidth = isTexLoaded ? mActiveTexture->getWidth() : 0;
-		mActiveTextureHeight = isTexLoaded ? mActiveTexture->getHeight() : 0;
+		mActiveTextureWidth = isTexLoaded ? mActiveTexture->getFrameWidth() : 0;
+		mActiveTextureHeight = isTexLoaded ? mActiveTexture->getFrameHeight() : 0;
 	}
 
 	GUITexture::~GUITexture()

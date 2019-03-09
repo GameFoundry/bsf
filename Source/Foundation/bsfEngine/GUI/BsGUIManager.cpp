@@ -1904,7 +1904,7 @@ namespace bs
 				gGUISpriteParamBlockDef.gUVSizeOffset.set(buffer, sizeOffset);
 			}
 			else
-				gGUISpriteParamBlockDef.gUVSizeOffset.set(buffer, Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+				gGUISpriteParamBlockDef.gUVSizeOffset.set(buffer, Vector4(1.0f, 1.0f, 0.0f, 0.0f));
 
 			buffer->flushToGPU();
 		}
