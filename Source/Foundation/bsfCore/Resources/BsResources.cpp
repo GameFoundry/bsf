@@ -673,6 +673,8 @@ namespace bs
 			// If a file exists, save to a temporary location, then copy over only after a save was successful. This guards
 			// against data loss in case the save process fails.
 
+			// TODO: Temp directory should always be on this drive, as files moved from one drive to another will in fact
+			// be copied
 			savePath = FileSystem::getTempDirectoryPath();
 			savePath.setFilename(UUIDGenerator::generateRandom().toString());
 

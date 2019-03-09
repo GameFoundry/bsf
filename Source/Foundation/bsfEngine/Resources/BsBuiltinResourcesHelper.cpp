@@ -114,6 +114,24 @@ namespace bs
 			manifest->registerResource(spriteTex.getUUID(), outputPath);
 		};
 
+		auto generateAnimatedSprite = [&](const HTexture& texture, const String& fileName, const UUID& UUID, 
+			SpriteAnimationPlayback playback, const SpriteSheetGridAnimation& animation)
+		{
+			Path relativePath = fileName;
+			Path outputPath = spriteOutputFolder + relativePath;
+
+			outputPath.setFilename("sprite_" + fileName + ".asset");
+
+			SPtr<SpriteTexture> spriteTexPtr = SpriteTexture::_createPtr(texture);
+			spriteTexPtr->setAnimation(animation);
+			spriteTexPtr->setAnimationPlayback(playback);
+
+			HResource spriteTex = gResources()._createResourceHandle(spriteTexPtr, UUID);
+
+			Resources::instance().save(spriteTex, outputPath, true, compress);
+			manifest->registerResource(spriteTex.getUUID(), outputPath);
+		};
+
 		// Start async import for all resources
 		int idx = 0;
 		for(auto& entry : entries)
@@ -205,10 +223,26 @@ namespace bs
 
 					if (mode == AssetType::Sprite)
 					{
+						HTexture tex = static_resource_cast<Texture>(outputRes);
 						std::string spriteUUID = entry["SpriteUUID"];
 
-						HTexture tex = static_resource_cast<Texture>(outputRes);
-						generateSprite(tex, name.c_str(), UUID(spriteUUID.c_str()));
+						bool isAnimated = entry.find("Animation") != entry.end();
+						if(isAnimated)
+						{
+							auto& jsonAnimation = entry["Animation"];
+
+							SpriteSheetGridAnimation animation;
+							animation.numRows = jsonAnimation["NumRows"].get<UINT32>();
+							animation.numColumns = jsonAnimation["NumColumns"].get<UINT32>();
+							animation.count = jsonAnimation["Count"].get<UINT32>();
+							animation.fps = jsonAnimation["FPS"].get<UINT32>();
+
+							generateAnimatedSprite(tex, name.c_str(), UUID(spriteUUID.c_str()), 
+								SpriteAnimationPlayback::Loop, animation);
+						}
+						else
+							generateSprite(tex, name.c_str(), UUID(spriteUUID.c_str()));
+
 					}
 
 					if (isIcon)

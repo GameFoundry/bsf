@@ -151,7 +151,8 @@ namespace bs
 		static constexpr const char* CURSOR_FOLDER = "Cursors/";
 		static constexpr const char* ICON_FOLDER = "Icons/";
 		static constexpr const char* ICON3D_FOLDER = "Icons3D/";
-		static constexpr const char* SKIN_FOLDER = "Skin/"; 
+		static constexpr const char* SKIN_FOLDER = "Skin/";
+		static constexpr const char* ANIMATED_SPRITES_FOLDER = "AnimatedSprites/";
 		static constexpr const char* SHADER_INCLUDE_FOLDER = "Shaders/Includes/";
 		static constexpr const char* MESH_FOLDER = "Meshes/";
 		static constexpr const char* TEXTURE_FOLDER = "Textures/";
