@@ -401,7 +401,7 @@ namespace bs
 				charIdx++;
 
 				// Check for \r\n
-				if (charIdx < text.size())
+				if (text[charIdx - 1] == '\r' && charIdx < text.size())
 				{
 					if (text[charIdx] == '\n')
 						charIdx++;
