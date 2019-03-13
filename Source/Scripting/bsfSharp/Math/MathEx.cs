@@ -714,7 +714,32 @@ namespace bs
             t = Clamp((t - val1) / (val2 - val1), 0.0f, 1.0f);
             return t * t * (3.0f - 2.0f * t);
         }
-       
+
+        /// <summary>
+        ///  Performs quintic interpolation where @p val is the value to map onto a quintic S-curve.
+        /// </summary>
+        /// <param name="val">Value should range between 0.0f to 1.0f</param>
+        /// <returns>Quintic interpolation.</returns>
+        public static float Quintic(float val)
+        {
+            return val * val * val * (val * (val * 6.0f - 15.0f) + 10.0f);
+        }
+
+        /// <summary>
+        /// Performs cubic interpolation between two values bound between two other values where
+        /// </summary>
+        /// <param name="val1">First value.</param>
+        /// <param name="val2">Second value.</param>
+        /// <param name="val3">Third value.</param>
+        /// <param name="val4">Fourth value.</param>
+        /// <param name="f">Values should range between 0.0f to 1.0f</param>
+        /// <returns>Cubic interpolation.</returns>
+        public static float Cubic(float val1, float val2, float val3, float val4, float f)
+        {
+            float t = (val4 - val3) - (val1 - val2);
+            return f * f * f * t + f * f * ((val1 - val2) - t) + f * (val3 - val1) + val2;
+        }
+
         /// <summary>
         /// Compares two floating point numbers with an error margin.
         /// </summary>
