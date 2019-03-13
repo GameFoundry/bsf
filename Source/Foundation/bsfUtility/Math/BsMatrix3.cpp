@@ -758,13 +758,14 @@ namespace bs
 
 	bool Matrix3::toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle) const
 	{
-		xAngle = -Radian(Math::asin(m[1][2]));
-		if (xAngle < Radian(Math::HALF_PI))
+		float m21 = m[2][1];
+		if (m21 < 1)
 		{
-			if (xAngle > Radian(-Math::HALF_PI))
+			if (m21 > -1)
 			{
-				yAngle = Math::atan2(m[0][2], m[2][2]);
-				zAngle = Math::atan2(m[1][0], m[1][1]);
+				xAngle = Radian(Math::asin(m21));
+				yAngle = Math::atan2(-m[2][0], m[2][2]);
+				zAngle = Math::atan2(-m[0][1], m[1][1]);
 
 				return true;
 			}
@@ -772,8 +773,8 @@ namespace bs
 			{
 				// Note: Not an unique solution.
 				xAngle = Radian(-Math::HALF_PI);
-				yAngle = Math::atan2(-m[0][1], m[0][0]);
-				zAngle = Radian(0.0f);
+				yAngle = Radian(0.0f);
+				zAngle = -Math::atan2(m[0][2], m[0][0]);
 
 				return false;
 			}
@@ -782,8 +783,8 @@ namespace bs
 		{
 			// Note: Not an unique solution.
 			xAngle = Radian(Math::HALF_PI);
-			yAngle = Math::atan2(m[0][1], m[0][0]);
-			zAngle = Radian(0.0f);
+			yAngle = Radian(0.0f);
+			zAngle = Math::atan2(m[0][2], m[0][0]);
 			
 			return false;
 		}
@@ -800,16 +801,16 @@ namespace bs
 		float cz = Math::cos(zAngle);
 		float sz = Math::sin(zAngle);
 
-		m[0][0] = cy * cz + sx * sy * sz;
-		m[0][1] = cz * sx * sy - cy * sz;
-		m[0][2] = cx * sy;
+		m[0][0] = cy * cz - sx * sy * sz;
+		m[0][1] = -cx * sz;
+		m[0][2] = cz * sy + cy * sx * sz;
 
-		m[1][0] = cx * sz;
+		m[1][0] = cz * sx * sy + cy * sz;
 		m[1][1] = cx * cz;
-		m[1][2] = -sx;
+		m[1][2] = -cy * cz * sx + sy * sz;
 
-		m[2][0] = -cz * sy + cy * sx * sz;
-		m[2][1] = cy * cz * sx + sy * sz;
+		m[2][0] = -cx * sy;
+		m[2][1] = sx;
 		m[2][2] = cx * cy;
 	}
 
