@@ -103,7 +103,7 @@ namespace bs
 	void Application::postUpdate()
 	{
 		CoreApplication::postUpdate();
-		ScriptManager::instance().update();
+		updateScriptManager();
 
 		PROFILE_CALL(GUIManager::instance().update(), "GUI");
 		DebugDraw::instance()._update();
@@ -139,6 +139,11 @@ namespace bs
 	void Application::startUpScriptManager()
 	{
 		ScriptManager::startUp();
+	}
+
+	void Application::updateScriptManager()
+	{
+		ScriptManager::instance().update();
 	}
 
 	START_UP_DESC Application::buildStartUpDesc(VideoMode videoMode, const String& title, bool fullscreen)

@@ -70,6 +70,9 @@ namespace bs
 		/** Initializes the script manager. */
 		virtual void startUpScriptManager();
 
+		/** Calls per-frame update on the script manager. */
+		virtual void updateScriptManager();
+
 		/** @copydoc CoreApplication::getShaderIncludeHandler */
 		SPtr<IShaderIncludeHandler> getShaderIncludeHandler() const override;
 

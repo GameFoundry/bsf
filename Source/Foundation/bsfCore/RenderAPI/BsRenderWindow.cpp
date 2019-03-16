@@ -5,7 +5,7 @@
 #include "Managers/BsRenderWindowManager.h"
 #include "RenderAPI/BsViewport.h"
 #include "Platform/BsPlatform.h"
-#include <Private/RTTI/BsRenderTargetRTTI.h>
+#include "Private/RTTI/BsRenderTargetRTTI.h"
 
 namespace bs 
 {
