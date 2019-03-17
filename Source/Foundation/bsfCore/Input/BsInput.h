@@ -315,7 +315,7 @@ namespace bs
 		HEvent mMouseWheelScrolledConn;
 
 		// Raw input
-		bool mMouseSmoothingEnabled;
+		bool mMouseSmoothingEnabled = false;
 		UINT64 mWindowHandle;
 
 		Mouse* mMouse = nullptr;
