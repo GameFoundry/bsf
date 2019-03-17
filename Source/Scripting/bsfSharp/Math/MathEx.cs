@@ -190,6 +190,20 @@ namespace bs
         /// <param name="a">First value to compare.</param>
         /// <param name="b">Second value to compare.</param>
         /// <returns>Maximum of the two values.</returns>
+        public static uint Max(uint a, uint b)
+        {
+            if (a > b)
+                return a;
+            else
+                return b;
+        }
+
+        /// <summary>
+        /// Returns the maximum value of the two provided.
+        /// </summary>
+        /// <param name="a">First value to compare.</param>
+        /// <param name="b">Second value to compare.</param>
+        /// <returns>Maximum of the two values.</returns>
         public static Radian Max(Radian a, Radian b)
         {
             if (a > b)
