@@ -545,7 +545,9 @@ namespace bs
 					mLocalTfrm.makeLocal(mParent->getTransform());
 			}
 
-			notifyTransformChanged((TransformChangedFlags)(TCF_Parent | TCF_Transform));
+			bool isInstantiated = (mFlags & SOF_DontInstantiate) == 0;
+			if(isInstantiated)
+				notifyTransformChanged((TransformChangedFlags)(TCF_Parent | TCF_Transform));
 		}
 	}
 

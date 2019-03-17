@@ -715,6 +715,7 @@ namespace bs
 	typedef GameObjectHandle<CSphereCollider> HSphereCollider;
 	typedef GameObjectHandle<CCapsuleCollider> HCapsuleCollider;
 	typedef GameObjectHandle<CPlaneCollider> HPlaneCollider;
+	typedef GameObjectHandle<CMeshCollider> HMeshCollider;
 	typedef GameObjectHandle<CJoint> HJoint;
 	typedef GameObjectHandle<CHingeJoint> HHingeJoint;
 	typedef GameObjectHandle<CSliderJoint> HSliderJoint;
