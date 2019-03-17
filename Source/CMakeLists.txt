@@ -10,7 +10,7 @@ set (BS_FRAMEWORK_BUILTIN_ASSETS_VERSION 6)
 
 # Options
 set(AUDIO_MODULE "OpenAudio" CACHE STRING "Audio backend to use.")
-set_property(CACHE AUDIO_MODULE PROPERTY STRINGS OpenAudio FMOD)
+set_property(CACHE AUDIO_MODULE PROPERTY STRINGS OpenAudio FMOD Null)
 
 set(PHYSICS_MODULE "PhysX" CACHE STRING "Physics backend to use.")
 set_property(CACHE PHYSICS_MODULE PROPERTY STRINGS "PhysX" "Null")
@@ -88,8 +88,10 @@ endif()
 
 if(AUDIO_MODULE MATCHES "FMOD")
 	set(AUDIO_MODULE_LIB bsfFMOD)
-else() # Default to OpenAudio
+elseif(AUDIO_MODULE MATCHES "OpenAudio")
 	set(AUDIO_MODULE_LIB bsfOpenAudio)
+else()
+	set(AUDIO_MODULE_LIB bsfNullAudio)
 endif()
 
 if(PHYSICS_MODULE MATCHES "PhysX")
@@ -127,6 +129,7 @@ if(INCLUDE_ALL_IN_WORKFLOW AND MSVC)
 	add_subdirectory(Plugins/bsfNullRenderAPI)
 	add_subdirectory(Plugins/bsfFMOD)
 	add_subdirectory(Plugins/bsfOpenAudio)
+	add_subdirectory(Plugins/bsfNullAudio)
 	add_subdirectory(Plugins/bsfPhysX)
 	add_subdirectory(Plugins/bsfNullPhysics)
 	
@@ -147,8 +150,10 @@ else() # Otherwise include only chosen ones
 
 	if(AUDIO_MODULE MATCHES "FMOD")
 		add_subdirectory(Plugins/bsfFMOD)
-	else() # Default to OpenAudio
+	elseif(AUDIO_MODULE MATCHES "OpenAudio")
 		add_subdirectory(Plugins/bsfOpenAudio)
+	else()
+		add_subdirectory(Plugins/bsfNullAudio)
 	endif()
 	
 	if(PHYSICS_MODULE MATCHES "PhysX")

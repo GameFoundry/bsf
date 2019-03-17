@@ -33,8 +33,10 @@ function(add_engine_dependencies2 target_name all_render_api)
 
 	if(AUDIO_MODULE MATCHES "FMOD")
 		add_dependencies(${target_name} bsfFMOD)
-	else() # Default to OpenAudio
+	elseif(AUDIO_MODULE MATCHES "OpenAudio")
 		add_dependencies(${target_name} bsfOpenAudio)
+	else()
+		add_dependencies(${target_name} bsfNullAudio)
 	endif()
 	
 	if(PHYSICS_MODULE MATCHES "PhysX")
