@@ -27,7 +27,7 @@ else()
 endif()
 
 set(RENDERER_MODULE "RenderBeast" CACHE STRING "Renderer backend to use.")
-set_property(CACHE RENDERER_MODULE PROPERTY STRINGS RenderBeast)
+set_property(CACHE RENDERER_MODULE PROPERTY STRINGS RenderBeast Null)
 
 set(INCLUDE_ALL_IN_WORKFLOW OFF CACHE BOOL "If true, all libraries (even those not selected) will be included in the generated workflow (e.g. Visual Studio solution). This is useful when working on engine internals with a need for easy access to all parts of it. Only relevant for workflow generators like Visual Studio or XCode.")
 
@@ -100,7 +100,11 @@ else()
 	set(PHYSICS_MODULE_LIB bsfNullPhysics)
 endif()
 
-set(RENDERER_MODULE_LIB bsfRenderBeast)
+if(RENDERER_MODULE MATCHES "RenderBeast")
+	set(RENDERER_MODULE_LIB bsfRenderBeast)
+else()
+	set(RENDERER_MODULE_LIB bsfNullRenderer)
+endif()
 
 if((SCRIPT_API AND (NOT SCRIPT_API MATCHES "None")) OR BS_IS_BANSHEE3D)
 	set(BS_SCRIPTING_ENABLED 1)
@@ -132,6 +136,8 @@ if(INCLUDE_ALL_IN_WORKFLOW AND MSVC)
 	add_subdirectory(Plugins/bsfNullAudio)
 	add_subdirectory(Plugins/bsfPhysX)
 	add_subdirectory(Plugins/bsfNullPhysics)
+	add_subdirectory(Plugins/bsfRenderBeast)
+	add_subdirectory(Plugins/bsfNullRenderer)
 	
 	## Scripting
 	add_subdirectory(Scripting/bsfMono)
@@ -162,6 +168,12 @@ else() # Otherwise include only chosen ones
 		add_subdirectory(Plugins/bsfNullPhysics)
 	endif()
 	
+	if(RENDERER_MODULE MATCHES "RenderBeast")
+		add_subdirectory(Plugins/bsfRenderBeast)
+	else()
+		add_subdirectory(Plugins/bsfNullRenderer)
+	endif()
+	
 	if((SCRIPT_API AND (NOT SCRIPT_API MATCHES "None")) OR BS_IS_BANSHEE3D)
 		add_subdirectory(Scripting/bsfScript)
 	endif()
@@ -172,7 +184,6 @@ else() # Otherwise include only chosen ones
 	endif()
 endif()
 
-add_subdirectory(Plugins/bsfRenderBeast)
 add_subdirectory(Plugins/bsfFBXImporter)
 add_subdirectory(Plugins/bsfFontImporter)
 add_subdirectory(Plugins/bsfFreeImgImporter)

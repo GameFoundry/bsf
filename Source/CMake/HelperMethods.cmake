@@ -45,7 +45,13 @@ function(add_engine_dependencies2 target_name all_render_api)
 		add_dependencies(${target_name} bsfNullPhysics)
 	endif()
 	
-	add_dependencies(${target_name} bsfSL bsfRenderBeast)
+	if(RENDERER_MODULE MATCHES "RenderBeast")
+		add_dependencies(${target_name} bsfRenderBeast)
+	else()
+		add_dependencies(${target_name} bsfNullRenderer)
+	endif()
+	
+	add_dependencies(${target_name} bsfSL)
 endfunction()
 
 function(add_importer_dependencies target_name)
