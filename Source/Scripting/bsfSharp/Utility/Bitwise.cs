@@ -13,7 +13,6 @@ namespace bs
     /// </summary>
     public class Bitwise
     {
-
         /// <summary>
         /// Returns the power-of-two number greater or equal to the provided value.
         /// </summary>
