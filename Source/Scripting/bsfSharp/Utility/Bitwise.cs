@@ -186,7 +186,7 @@ namespace bs
         /// <returns>Word inversion lerp.</returns>
         public static UInt32 InvLerpWord(UInt32 from, UInt32 to, UInt32 val)
         {
-            return ((val - from) << 16) / std::max(to - from, 1u);
+            return ((val - from) << 16) / MathEx.Max(to - from, 1u);
         }
 
         /// <summary>
