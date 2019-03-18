@@ -41,6 +41,8 @@ set(UPLOAD_ASSETS OFF CACHE BOOL "Only relevant if BUILD_ASSETS is true. When en
 
 set(ENABLE_COTIRE false CACHE BOOL "Enable cotire's precompiled headers and unity build support (experimental).")
 
+set(EXPERIMENTAL_ENABLE_NETWORKING OFF CACHE BOOL "If true, enable experimental networking support.")
+
 # Add cotire if enabled
 if(ENABLE_COTIRE)
 	include(${BSF_SOURCE_DIR}/CMake/cotire.cmake)

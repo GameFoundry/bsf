@@ -70,7 +70,11 @@
   */
 
 /** @defgroup Particles Particles
-  *	Emission, updated and rendering of particles in the particle system.
+  *	Emission, updates and rendering of particles in the particle system.
+  */
+
+/** @defgroup Network Network
+  * Sending and receiving data over the network.
   */
 
 /** @cond RTTI */
@@ -133,6 +137,10 @@
 
 /** @defgroup Particles-Internal Particles
  *	Emission, updates and rendering of particles in the particle system.
+ */
+
+/** @defgroup Network-Internal Network
+ * Sending and receiving data over the network.
  */
 
 /** @defgroup Physics-Internal Physics

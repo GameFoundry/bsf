@@ -3,9 +3,21 @@ include(bsfUtility/CMakeSources.cmake)
 include(bsfCore/CMakeSources.cmake)
 include(bsfEngine/CMakeSources.cmake)
 
+# Ensure pre-built binary dependencies are up to date
+if(USE_BUNDLED_LIBRARIES)
+	if(EXPERIMENTAL_ENABLE_NETWORKING)
+		set(BS_RAKNET_PREBUILT_DEPENDENCY_VERSION 1) # Tick this when you change the binaries
+		check_and_update_binary_deps(bsfDep_RakNet RakNet ${BSF_SOURCE_DIR}/../Dependencies/RakNet ${BS_RAKNET_PREBUILT_DEPENDENCY_VERSION})
+	endif()
+endif()
+
 # Packages
 find_package(snappy REQUIRED)
 find_package(nvtt REQUIRED)
+
+if(EXPERIMENTAL_ENABLE_NETWORKING)
+	find_package(RakNet REQUIRED)
+endif()
 
 if(LINUX)
 	find_package(X11 REQUIRED)
@@ -81,6 +93,11 @@ target_link_libraries(bsf PRIVATE ${nvtt_LIBRARIES})
 
 ## External lib: Snappy
 target_link_libraries(bsf PRIVATE ${snappy_LIBRARIES})
+
+## External lib: RakNet
+if(EXPERIMENTAL_ENABLE_NETWORKING)
+	target_link_libraries(bsf PRIVATE ${RakNet_LIBRARIES})
+endif()
 
 ## External libs: Header only libraries
 target_link_libraries(bsf PUBLIC ThirdParty)

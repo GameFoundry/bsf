@@ -616,6 +616,14 @@ set(BS_CORE_SRC_PARTICLES
 	"bsfCore/Particles/BsVectorField.cpp"
 )
 
+set(BS_CORE_INC_NETWORK
+	"bsfCore/Network/BsNetwork.h"
+)
+
+set(BS_CORE_SRC_NETWORK
+	"bsfCore/Network/BsNetwork.cpp"
+)
+
 set(BS_CORE_INC_PLATFORM
 	"bsfCore/Platform/BsPlatform.h"
 	"bsfCore/Platform/BsFolderMonitor.h"
@@ -722,6 +730,10 @@ source_group("Mesh" FILES ${BS_CORE_INC_MESH} ${BS_CORE_SRC_MESH})
 source_group("Particles" FILES ${BS_CORE_INC_PARTICLES} ${BS_CORE_SRC_PARTICLES})
 source_group("" FILES ${BS_CORE_INC_NOFILTER} ${BS_CORE_SRC_NOFILTER})
 
+if(EXPERIMENTAL_ENABLE_NETWORKING)
+	source_group("Network" FILES ${BS_CORE_INC_NETWORK} ${BS_CORE_SRC_NETWORK})
+endif()
+
 if(APPLE)
 	source_group("MacOS" FILES ${BS_CORE_INC_PLATFORM_MACOS} ${BS_CORE_SRC_PLATFORM_MACOS})
 endif()
@@ -774,3 +786,11 @@ set(BS_CORE_SRC
 	${BS_CORE_INC_PARTICLES}
 	${BS_CORE_SRC_PARTICLES}
 )
+
+if(EXPERIMENTAL_ENABLE_NETWORKING)
+	set(BS_CORE_SRC
+		${BS_CORE_SRC}
+		${BS_CORE_INC_NETWORK}
+		${BS_CORE_SRC_NETWORK}
+	)
+endif()
