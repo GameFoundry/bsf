@@ -56,10 +56,11 @@ namespace bs
         public static UInt32 ModPow(UInt32 val1, UInt32 val2, UInt32 t)
         {
             UInt32 res = 1;
-
+            bool b = Convert.ToBoolean(val2) & Convert.ToBoolean(1);
+            
             while (val2 != 0)
             {
-                if (val2 & 1)
+                if (b)
                     res = (res * val1) % t;
 
                 val2 >>= 1;
@@ -86,7 +87,7 @@ namespace bs
         /// <param name="value">Value parameter.</param>
         /// <param name="bits">Bits parameter.</param>
         /// <returns>Converted floating point value to unsigned integer value.</returns>
-        public static UInt32 UnormToUint(float value, UInt32 bits)
+        public static int UnormToUint(float value, int bits)
         {
             if (value <= 0.0f)
                 return 0;
@@ -94,7 +95,7 @@ namespace bs
             if (value >= 1.0f)
                 return (1 << bits) - 1;
 
-            return (UInt32)MathEx.RoundToInt(value * (1 << bits));
+            return MathEx.RoundToInt(value * (1 << bits));
         }
 
         /// <summary>
@@ -104,7 +105,7 @@ namespace bs
         /// <param name="value">Value parameter.</param>
         /// <param name="bits">Bits parameter.</param>
         /// <returns>Converted floating point value to unsigned integer value.</returns>
-        public static UInt32 SnormToUint(float value, UInt32 bits)
+        public static int SnormToUint(float value, int bits)
         {
             return UnormToUint((value + 1.0f) * 0.5f, bits);
         }
@@ -115,7 +116,7 @@ namespace bs
         /// <param name="value">Value parameter.</param>
         /// <param name="bits">Bits parameter.</param>
         /// <returns>Converted unsigned integer value to floating point.</returns>
-        public static float UintToUnorm(UInt32 value, UInt32 bits)
+        public static float UintToUnorm(UInt32 value, int bits)
         {
             return (float)value / (float)((1 << bits) - 1);
         }
@@ -126,9 +127,9 @@ namespace bs
         /// <param name="value">Value parameter.</param>
         /// <param name="bits">Bits parameter.</param>
         /// <returns>Converted unsigned int to floating point.</returns>
-        public static float UintToSnorm(UInt32 value, UInt32 bits)
+        public static float UintToSnorm(UInt32 value)
         {
-            return UintToUnorm(value) * 2.0f - 1.0f;
+            return UintToUnorm(value, 8) * 2.0f - 1.0f;
         }
 
         /// <summary>
