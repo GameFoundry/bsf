@@ -687,7 +687,7 @@ function(add_run_asset_import_target _PREFIX _FOLDER _WORKING_DIR _ARGS)
 	else()
 		set(RunAssetImport_EXECUTABLE ${bsfImportTool_EXECUTABLE})
 		set(RunAssetImport_INPUT_FOLDER ${_FOLDER})
-		set(RunAssetImport_CMD_ARGS ${__ARGS})
+		set(RunAssetImport_CMD_ARGS ${_ARGS})
 		set(RunAssetImport_PREFIX ${_PREFIX})
 		set(RunAssetImport_WORKING_DIR ${_WORKING_DIR})
 		
