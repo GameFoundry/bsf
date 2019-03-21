@@ -51,6 +51,9 @@ namespace bs
 
 	UINT32 PixelData::getSize() const
 	{
+		if(mRowPitch == 0)
+			return 0;
+
 		return PixelUtil::getMemorySize(mRowPitch, mSlicePitch / mRowPitch, getDepth(), getFormat());
 	}
 

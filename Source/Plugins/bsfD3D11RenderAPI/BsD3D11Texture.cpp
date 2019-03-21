@@ -434,8 +434,9 @@ namespace bs { namespace ct
 		// TODO - Consider making this a parameter eventually
 		bool readableDepth = true;
 
-		// We must have those defined here
-		assert(width > 0 || height > 0);
+		// 0-sized textures aren't supported by the API
+		width = std::max(width, 1U);
+		height = std::max(height, 1U);
 
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
