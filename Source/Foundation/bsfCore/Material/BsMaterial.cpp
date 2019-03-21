@@ -361,6 +361,12 @@ namespace bs
 		return TMaterialParamSampState<Core>(name, getMaterialPtr(this));
 	}
 
+	template <bool Core>
+	bool TMaterial<Core>::isAnimated(const String& name, UINT32 arrayIdx)
+	{
+		return mParams->isAnimated(name, arrayIdx);
+	}
+
 	template<bool Core>
 	void TMaterial<Core>::initializeTechniques()
 	{

@@ -644,6 +644,12 @@ namespace bs
 		 */
 		void setSamplerState(const String& name, const SamplerType& value);
 
+		/** 
+		 * Checks does the data parameter with the specified name currently contains animated data. This could be 
+		 * an animation curve or a color gradient.
+		 */
+		bool isAnimated(const String& name, UINT32 arrayIdx = 0);
+
 		/**
 		 * Equivalent to getStructData(const String&, UINT32, void*, UINT32) except it uses the internal parameter reference
 		 * directly, avoiding the name lookup. Caller must guarantee the parameter reference is valid and belongs to this

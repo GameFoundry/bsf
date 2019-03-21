@@ -50,6 +50,7 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_getVec4", (void*)&ScriptMaterial::Internal_getVec4);
 		metaData.scriptClass->addInternalCall("Internal_getMat3", (void*)&ScriptMaterial::Internal_getMat3);
 		metaData.scriptClass->addInternalCall("Internal_getMat4", (void*)&ScriptMaterial::Internal_getMat4);
+		metaData.scriptClass->addInternalCall("Internal_isAnimated", (void*)&ScriptMaterial::Internal_isAnimated);
 		metaData.scriptClass->addInternalCall("Internal_create", (void*)&ScriptMaterial::Internal_create);
 		metaData.scriptClass->addInternalCall("Internal_create0", (void*)&ScriptMaterial::Internal_create0);
 		metaData.scriptClass->addInternalCall("Internal_setTexture", (void*)&ScriptMaterial::Internal_setTexture);
@@ -283,6 +284,19 @@ namespace bs
 		tmp__output = thisPtr->getHandle()->getMat4(tmpname, arrayIdx);
 
 		*__output = tmp__output;
+	}
+
+	bool ScriptMaterial::Internal_isAnimated(ScriptMaterial* thisPtr, MonoString* name, uint32_t arrayIdx)
+	{
+		bool tmp__output;
+		String tmpname;
+		tmpname = MonoUtil::monoToString(name);
+		tmp__output = thisPtr->getHandle()->isAnimated(tmpname, arrayIdx);
+
+		bool __output;
+		__output = tmp__output;
+
+		return __output;
 	}
 
 	void ScriptMaterial::Internal_create(MonoObject* managedInstance)

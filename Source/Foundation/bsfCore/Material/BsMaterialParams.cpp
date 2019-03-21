@@ -577,6 +577,25 @@ namespace bs
 	}
 
 	template<bool Core>
+	bool TMaterialParams<Core>::isAnimated(const String& name, UINT32 arrayIdx)
+	{
+		auto iterFind = mParamLookup.find(name);
+		if (iterFind == mParamLookup.end())
+			return false;
+
+		UINT32 index = iterFind->second;
+		const ParamData& param = mParams[index];
+
+		if (param.type != ParamType::Data)
+			return false;
+
+		if (arrayIdx >= param.arraySize)
+			return false;
+
+		return isAnimated(param, arrayIdx);
+	}
+
+	template<bool Core>
 	void TMaterialParams<Core>::getStructData(const ParamData& param, void* value, UINT32 size, UINT32 arrayIdx) const
 	{
 		const ParamStructDataType& structParam = mStructParams[param.index + arrayIdx];

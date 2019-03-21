@@ -51,6 +51,7 @@ namespace bs
 		static void Internal_getVec4(ScriptMaterial* thisPtr, MonoString* name, uint32_t arrayIdx, Vector4* __output);
 		static void Internal_getMat3(ScriptMaterial* thisPtr, MonoString* name, uint32_t arrayIdx, Matrix3* __output);
 		static void Internal_getMat4(ScriptMaterial* thisPtr, MonoString* name, uint32_t arrayIdx, Matrix4* __output);
+		static bool Internal_isAnimated(ScriptMaterial* thisPtr, MonoString* name, uint32_t arrayIdx);
 		static void Internal_create(MonoObject* managedInstance);
 		static void Internal_create0(MonoObject* managedInstance, MonoObject* shader);
 		static void Internal_setTexture(ScriptMaterial* thisPtr, MonoString* name, MonoObject* value, uint32_t mipLevel, uint32_t numMipLevels, uint32_t arraySlice, uint32_t numArraySlices);

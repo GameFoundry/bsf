@@ -254,6 +254,15 @@ namespace bs
 			return temp;
 		}
 
+		/// <summary>
+		/// Checks does the data parameter with the specified name currently contains animated data. This could be  an animation 
+		/// curve or a color gradient.
+		/// </summary>
+		public bool IsAnimated(string name, int arrayIdx = 0)
+		{
+			return Internal_isAnimated(mCachedPtr, name, arrayIdx);
+		}
+
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern RRef<Material> Internal_GetRef(IntPtr thisPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
@@ -298,6 +307,8 @@ namespace bs
 		private static extern void Internal_getMat3(IntPtr thisPtr, string name, int arrayIdx, out Matrix3 __output);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern void Internal_getMat4(IntPtr thisPtr, string name, int arrayIdx, out Matrix4 __output);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern bool Internal_isAnimated(IntPtr thisPtr, string name, int arrayIdx);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern void Internal_create(Material managedInstance);
 		[MethodImpl(MethodImplOptions.InternalCall)]

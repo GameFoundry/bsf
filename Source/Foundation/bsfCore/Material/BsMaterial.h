@@ -412,6 +412,13 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:GetMatrix4)
 		Matrix4 getMat4(const String& name, UINT32 arrayIdx = 0) const { return getParamMat4(name).get(arrayIdx); }
 
+		/** 
+		 * Checks does the data parameter with the specified name currently contains animated data. This could be 
+		 * an animation curve or a color gradient.
+		 */
+		BS_SCRIPT_EXPORT()
+		bool isAnimated(const String& name, UINT32 arrayIdx = 0);
+
 		/** Returns a texture assigned with the parameter with the specified name. */
 		TextureType getTexture(const String& name) const { return getParamTexture(name).get(); }
 
