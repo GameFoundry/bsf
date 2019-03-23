@@ -77,9 +77,13 @@ mixin ParticleVertex
 		};
 		
 		#if GPU
+		[internal]
 		Texture2D gPositionTimeTex; // position in .xyz, time (in [0, 1] range) in .w
+		
+		[internal]
 		Texture2D gSizeRotationTex; // size in .xy, rotation in .z
 		
+		[internal]
 		Texture2D gCurvesTex;
 		
 		[alias(gCurvesTex)]
@@ -127,9 +131,16 @@ mixin ParticleVertex
 			return pi;
 		}
 		#elif IS_3D
+		[internal]
 		Texture2D gPositionTex;
+		
+		[internal]
 		Texture2D gColorTex;
+		
+		[internal]
 		Texture2D gSizeTex;
+		
+		[internal]
 		Texture2D gRotationTex;
 		
 		ParticleInput getParticleInput(uint2 index)
@@ -172,8 +183,11 @@ mixin ParticleVertex
 		}
 		
 		#else
+		[internal]
 		Texture2D gPositionAndRotTex; // position in .xyz, rotation in radians in .w
+		[internal]
 		Texture2D gColorTex;
+		[internal]
 		Texture2D gSizeAndFrameIdxTex; // size in .xy, uv flip encoded in sign of .xy, frame index in .z, .w unused
 		
 		ParticleInput getParticleInput(uint2 index)
@@ -199,6 +213,7 @@ mixin ParticleVertex
 		}
 		#endif
 		
+		[internal]
 		Buffer<uint2> gIndices;
 
 		[internal]

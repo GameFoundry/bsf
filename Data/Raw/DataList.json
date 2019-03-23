@@ -1,4 +1,5 @@
 ﻿{
+    "AnimatedSprites": null,
     "Cursors": [
         {
             "Path": "Arrow.psd",
@@ -60,6 +61,10 @@
         {
             "Path": "bsfIcon.png",
             "UUID": "fc1a1c8f-4242-c2e9-728b-42429f5b7cd2"
+        },
+        {
+            "Path": "BansheeIcon.png",
+            "UUID": "d32ab6ab-4bd5-4f54-0b9f-4bd55f371ce3"
         }
     ],
     "Includes": [
@@ -202,6 +207,10 @@
         {
             "Path": "MaskInput.bslinc",
             "UUID": "e69b8e15-4301-f0fb-11ad-430140d3a7d6"
+        },
+        {
+            "Path": "ShapingCommon.bslinc",
+            "UUID": "3d40728a-454c-0618-cb8d-454c0d8b9d07"
         }
     ],
     "Shaders": [
@@ -890,5 +899,6 @@
         }
     ],
     "SplashScreen": null,
-    "SpriteIcons": null
+    "SpriteIcons": null,
+    "SpriteIcons3D": null
 }
