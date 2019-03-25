@@ -74,7 +74,7 @@ namespace bs
 		/** Destroys the interop object, unless refresh is in progress in which case it is just prepared for re-creation. */
 		void destroy();
 
-		UINT32 mGCHandle;
+		UINT32 mGCHandle = 0;
 	};
 
 	/**	Base class for a specific resource's interop object. */

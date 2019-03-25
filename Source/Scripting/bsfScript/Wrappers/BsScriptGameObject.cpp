@@ -7,7 +7,7 @@
 namespace bs
 {
 	ScriptGameObjectBase::ScriptGameObjectBase(MonoObject* instance)
-		:PersistentScriptObjectBase(instance), mGCHandle(0)
+		:PersistentScriptObjectBase(instance)
 	{
 		
 	}

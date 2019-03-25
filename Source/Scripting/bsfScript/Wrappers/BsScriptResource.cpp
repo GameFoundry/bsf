@@ -11,7 +11,7 @@
 namespace bs
 {
 	ScriptResourceBase::ScriptResourceBase(MonoObject* instance)
-		:PersistentScriptObjectBase(instance), mGCHandle(0)
+		:PersistentScriptObjectBase(instance)
 	{ }
 
 	ScriptResourceBase::~ScriptResourceBase()

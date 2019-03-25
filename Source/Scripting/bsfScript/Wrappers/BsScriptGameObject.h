@@ -43,7 +43,7 @@ namespace bs
 		 */
 		void freeManagedInstance();
 
-		UINT32 mGCHandle;
+		UINT32 mGCHandle = 0;
 	};
 
 	/**	Interop class between C++ & CLR for GameObject. */

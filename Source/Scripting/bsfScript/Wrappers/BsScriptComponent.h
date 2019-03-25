@@ -18,7 +18,7 @@ namespace bs
 	{
 	public:
 		ScriptComponentBase(MonoObject* instance);
-		virtual ~ScriptComponentBase() { }
+		virtual ~ScriptComponentBase() = default;
 
 		/** Returns the component wrapped by this object. */
 		HComponent getComponent() const { return static_object_cast<Component>(getNativeHandle()); }
