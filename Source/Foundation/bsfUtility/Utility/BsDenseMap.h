@@ -366,7 +366,7 @@ namespace bs
 			mTombstones = other.getTombstones();
 
 			if (getCount())
-				bs_delete(mBuckets);
+				bs_free(mBuckets);
 
 			mBuckets = bs_allocN<DensePair>(other.getCount());
 
@@ -523,7 +523,7 @@ namespace bs
 				pair->first.~Key();
 			}
 			// Free the old table
-			bs_delete(oldBuckets);
+			bs_free(oldBuckets);
 		}
 
 		void shrink()
@@ -552,7 +552,7 @@ namespace bs
 			}
 
 			// Free the old mBuckets
-			bs_delete(oldBuckets);
+			bs_free(oldBuckets);
 			mEntries = 0;
 		}
 
