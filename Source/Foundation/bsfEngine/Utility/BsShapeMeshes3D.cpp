@@ -107,7 +107,7 @@ namespace bs
 		wireArc(sphere.getCenter(), sphere.getRadius(), Vector3::UNIT_Y, Degree(0.0f), Degree(180.0f), meshData,
 			vertexOffset + verticesPerArc, indexOffset + indicesPerArc, quality);
 
-		wireArc(sphere.getCenter(), sphere.getRadius(), Vector3::UNIT_Z, Degree(0.0f), Degree(180.0f), meshData,
+		wireDisc(sphere.getCenter(), sphere.getRadius(), Vector3::UNIT_Z, meshData,
 			vertexOffset + verticesPerArc * 2, indexOffset + indicesPerArc * 2, quality);
 	}
 
