@@ -199,10 +199,13 @@ namespace bs
 		std::sort(mEvolvers.begin(), mEvolvers.end(), 
 			[](const SPtr<ParticleEvolver>& a, const SPtr<ParticleEvolver>& b)
 		{
-			if (a->getProperties().priority == b->getProperties().priority)
+			INT32 priorityA = a ? a->getProperties().priority : 0;
+			INT32 priorityB = b ? b->getProperties().priority : 0;
+
+			if (priorityA == priorityB)
 				return a > b; // Use address, at this point it doesn't matter, but sorting requires us to differentiate
 			else
-				return a->getProperties().priority > b->getProperties().priority;
+				return priorityA > priorityB;
 		});
 
 		_markCoreDirty();
@@ -334,6 +337,9 @@ namespace bs
 		// Evolve pre-simulation
 		for(auto& evolver : mEvolvers)
 		{
+			if(!evolver)
+				continue;
+
 			const ParticleEvolverProperties& props = evolver->getProperties();
 			if (props.priority < 0)
 				break;
@@ -369,6 +375,9 @@ namespace bs
 		// Evolve post-simulation
 		for(auto& evolver : mEvolvers)
 		{
+			if(!evolver)
+				continue;
+
 			const ParticleEvolverProperties& props = evolver->getProperties();
 			if(props.priority >= 0)
 				continue;
