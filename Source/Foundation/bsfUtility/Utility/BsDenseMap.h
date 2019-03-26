@@ -532,7 +532,7 @@ namespace bs
 			DensePair* oldBuckets = getBuckets();
 
 			// Reduce the number of mBuckets
-			mCount = size() > 32 ? 1 << (std::log(size()) + 1) : 64;
+			mCount = size() > 32 ? 1 << ((int)std::log(size()) + 1) : 64;
 			mTombstones = 0;
 			mBuckets = bs_allocN<DensePair>(getCount());
 
