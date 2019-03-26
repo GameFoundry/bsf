@@ -210,7 +210,7 @@ namespace bs
 	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,n:ParticleSphereShapeOptions) PARTICLE_SPHERE_SHAPE_DESC
 	{
 		/** Radius of the sphere. */
-		float radius = 0.0f;
+		float radius = 1.0f;
 
 		/** 
 		 * Proportion of the volume that can emit particles. Thickness of 0 results in particles being emitted only from the
@@ -279,7 +279,7 @@ namespace bs
 	struct BS_SCRIPT_EXPORT(m:Particles,pl:true,n:ParticleHemisphereShapeOptions) PARTICLE_HEMISPHERE_SHAPE_DESC
 	{
 		/** Radius of the hemisphere. */
-		float radius = 0.0f;
+		float radius = 1.0f;
 
 		/** 
 		 * Proportion of the volume that can emit particles. Thickness of 0 results in particles being emitted only from the
