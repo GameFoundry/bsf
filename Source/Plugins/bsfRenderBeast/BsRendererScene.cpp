@@ -1326,7 +1326,7 @@ namespace bs {	namespace ct
 				worldAABox.transformAffine(entry.localToWorld);
 
 			const Sphere worldSphere(worldAABox.getCenter(), worldAABox.getRadius());
-			mInfo.particleSystemCullInfos[rendererId] = Bounds(worldAABox, worldSphere);
+			mInfo.particleSystemCullInfos[rendererId].bounds = Bounds(worldAABox, worldSphere);
 		}
 	}
 
