@@ -12,10 +12,10 @@ All available containers:
  - @bs::Map - Same as **Set**, only each element is represented as a key-value pair, while **Set** only contains keys.
  - @bs::UnorderedSet - Similar to **Set** it allows fast lookup, but elements aren't sorted. In general offers better performance than **Set**.
  - @bs::UnorderedMap - Same as **UnorderedSet**, only each element is represented as a key-value pair, while **Set** only contains keys.
- - bs::SmallVector - A dynamically sized container that statically allocates enough room for N elements. If the element
+ - @bs::SmallVector - A dynamically sized container that statically allocates enough room for N elements. If the element
  count exceeds the statically allocated buffer size the vector falls back to general purpose dynamic allocator.
- - bs::DynArray - Dynamically sized array, similar to std::vector.
- - bs::DenseMap - Hash-map with densely stored values, using quadratic probing for lookup.
+ - @bs::DynArray - Dynamically sized array, similar to std::vector.
+ - @bs::DenseMap - Hash-map with densely stored values, using quadratic probing for lookup.
 An example with a vector and an unordered map:
 ~~~~~~~~~~~~~{.cpp}
 int nextUserId = 0;
