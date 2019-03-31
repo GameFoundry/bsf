@@ -1207,25 +1207,39 @@ namespace bs
 
 			float start = lastFrameTime;
 			float end = start + delta;
-
 			float clipLength = clipInfo.clip->getLength();
-			AnimationUtility::wrapTime(start, 0.0f, clipLength, loop);
-			AnimationUtility::wrapTime(end, 0.0f, clipLength, loop);
 
-			if (start < end)
+			float wrappedStart = start;
+			float wrappedEnd = end;
+			AnimationUtility::wrapTime(wrappedStart, 0.0f, clipLength, loop);
+			AnimationUtility::wrapTime(wrappedEnd, 0.0f, clipLength, loop);
+
+			if(!loop)
 			{
 				for (auto& event : events)
 				{
-					if (event.time > start && event.time <= end)
+					if (event.time >= wrappedStart && (event.time < wrappedEnd || 
+						(event.time == clipLength && start < clipLength && end >= clipLength)))
 						onEventTriggered(clipInfo.clip, event.name);
 				}
 			}
-			else if(end < start) // End is looped, but start is not
+			else
 			{
-				for (auto& event : events)
+				if (wrappedStart < wrappedEnd)
 				{
-					if (event.time > start && event.time < clipLength && event.time > 0 && event.time <= end)
-						onEventTriggered(clipInfo.clip, event.name);
+					for (auto& event : events)
+					{
+						if (event.time >= wrappedStart && event.time < wrappedEnd)
+							onEventTriggered(clipInfo.clip, event.name);
+					}
+				}
+				else if (wrappedEnd < wrappedStart) // End is looped, but start is not
+				{
+					for (auto& event : events)
+					{
+						if ((event.time >= wrappedStart && event.time <= clipLength) || (event.time >= 0 && event.time < wrappedEnd))
+							onEventTriggered(clipInfo.clip, event.name);
+					}
 				}
 			}
 		}
