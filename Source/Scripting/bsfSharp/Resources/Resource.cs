@@ -56,7 +56,7 @@ namespace bs
     }
 
     /// <summary>Represents a universally unique identifier.</summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [SerializeObject, StructLayout(LayoutKind.Sequential)]
     public struct UUID
     {
         public readonly uint data0;
