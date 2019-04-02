@@ -18,7 +18,7 @@ namespace bs
 		public static ParticleHemisphereShapeOptions Default()
 		{
 			ParticleHemisphereShapeOptions value = new ParticleHemisphereShapeOptions();
-			value.radius = 0f;
+			value.radius = 1f;
 			value.thickness = 0f;
 
 			return value;

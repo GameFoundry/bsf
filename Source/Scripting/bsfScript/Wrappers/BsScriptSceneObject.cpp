@@ -25,6 +25,7 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptSceneObject::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetName", (void*)&ScriptSceneObject::internal_getName);
 		metaData.scriptClass->addInternalCall("Internal_SetName", (void*)&ScriptSceneObject::internal_setName);
+		metaData.scriptClass->addInternalCall("Internal_GetUUID", (void*)&ScriptSceneObject::internal_getUUID);
 		metaData.scriptClass->addInternalCall("Internal_GetActive", (void*)&ScriptSceneObject::internal_getActive);
 		metaData.scriptClass->addInternalCall("Internal_SetActive", (void*)&ScriptSceneObject::internal_setActive);
 		metaData.scriptClass->addInternalCall("Internal_GetMobility", (void*)&ScriptSceneObject::internal_getMobility);
@@ -90,6 +91,17 @@ namespace bs
 
 		String name = nativeInstance->mSceneObject->getName();
 		return MonoUtil::stringToMono(name);
+	}
+
+	void ScriptSceneObject::internal_getUUID(ScriptSceneObject* nativeInstance, UUID* uuid)
+	{
+		if (checkIfDestroyed(nativeInstance))
+		{
+			*uuid = UUID::EMPTY;
+			return;
+		}
+
+		*uuid = nativeInstance->mSceneObject->getUUID();
 	}
 
 	void ScriptSceneObject::internal_setActive(ScriptSceneObject* nativeInstance, bool value)

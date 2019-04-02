@@ -38,7 +38,7 @@ namespace bs
 		 *			
 		 * @return	Instantiated clone of the prefab's scene object hierarchy.
 		 */
-		HSceneObject instantiate();
+		HSceneObject instantiate() const { return _instantiate(); }
 
 		/**
 		 * Replaces the contents of this prefab with new contents from the provided object. Object will be automatically
@@ -66,7 +66,7 @@ namespace bs
 		 */
 
 		/** Updates any prefab child instances by loading their prefabs and making sure they are up to date. */
-		void _updateChildInstances();
+		void _updateChildInstances() const;
 
 		/**
 		 * Returns a reference to the internal prefab hierarchy. Returned hierarchy is not instantiated and cannot be 
@@ -76,10 +76,26 @@ namespace bs
 
 		/**
 		 * Creates the clone of the prefab's current hierarchy but doesn't instantiate it.
-		 *			
-		 * @return	Clone of the prefab's scene object hierarchy.
+		 *
+		 * @param[in]	preserveUUIDs	If false, each cloned game object will be assigned a brand new UUID. Otherwise
+		 *								the UUID of the original game objects will be preserved. Note that two instantiated
+		 *								scene objects should never have the same UUID, so if preserving UUID's make sure
+		 *								the original is destroyed before instantiating.
+		 * @return						Clone of the prefab's scene object hierarchy.
 		 */
-		HSceneObject _clone();
+		HSceneObject _clone(bool preserveUUIDs = false) const;
+
+		/**
+		 * Instantiates a prefab by creating an instance of the prefab's scene object hierarchy. The returned hierarchy 
+		 * will be parented to world root by default.
+		 *			
+		 * @param[in]	preserveUUIDs	If false, each cloned game object will be assigned a brand new UUID. Otherwise
+		 *								the UUID of the original game objects will be preserved. Note that two instantiated
+		 *								scene objects should never have the same UUID, so if preserving UUID's make sure
+		 *								the original is destroyed before instantiating.
+		 * @return						Instantiated clone of the prefab's scene object hierarchy.
+		 */
+		HSceneObject _instantiate(bool preserveUUIDs = false) const;
 
 		/** @} */
 

@@ -148,6 +148,9 @@ namespace bs
 					child->_setParent(so->mThisHandle, false);
 			}
 
+			if(so->mUUID.empty() || ((coreContext->flags & GODM_UseNewUUID) != 0))
+				so->mUUID = UUIDGenerator::generateRandom();
+
 			// If this is the deserialization parent, end deserialization (which resolves all game object handles, if we 
 			// provided valid IDs), and instantiate (i.e. activate) the deserialized hierarchy.
 			if (mIsDeserializationParent)

@@ -25,6 +25,19 @@ namespace bs
         }
 
         /// <summary>
+        /// Returns a universally unique identifier that persists scene save/load.
+        /// </summary>
+        public UUID UUID
+        {
+            get
+            {
+                UUID uuid;
+                Internal_GetUUID(mCachedPtr, out uuid);
+                return uuid;
+            }
+        }
+
+        /// <summary>
         /// Parent in the scene object hierarchy. Null for hierarchy root.
         /// </summary>
         public SceneObject Parent
@@ -481,6 +494,9 @@ namespace bs
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetName(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetUUID(IntPtr nativeInstance, out UUID uuid);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetActive(IntPtr nativeInstance, bool value);

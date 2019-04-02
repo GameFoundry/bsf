@@ -55,7 +55,7 @@ namespace bs
 
 			gSceneManager().setComponentState(ComponentState::Stopped);
 			mSavedScene->_instantiate();
-			gSceneManager().setRootNode(mSavedScene);
+			gSceneManager()._setRootNode(mSavedScene);
 
 			mSavedScene = nullptr;
 		}
@@ -125,7 +125,7 @@ namespace bs
 
 	void PlayInEditorManager::saveSceneInMemory()
 	{
-		mSavedScene = SceneManager::instance().getMainScene()->getRoot()->clone(false);
+		mSavedScene = SceneManager::instance().getMainScene()->getRoot()->clone(false, true);
 
 		// Remove objects with "dont save" flag
 		Stack<HSceneObject> todo;

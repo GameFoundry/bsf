@@ -74,10 +74,7 @@ namespace bs
 		{
 			// If scene replace current root node, otherwise just append to the current root node
 			if (prefab->isScene())
-			{
-				HSceneObject root = prefab->instantiate();
-				gSceneManager().setRootNode(root);
-			}
+				gSceneManager().loadScene(prefab);
 			else
 			{
 				gSceneManager().clearScene();

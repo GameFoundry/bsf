@@ -14,24 +14,6 @@ namespace bs
 	/** Performs various prefab specific operations. */
 	class BS_CORE_EXPORT PrefabUtility
 	{
-	private:
-		/**	Contains saved Component instance data. */
-		struct ComponentProxy
-		{
-			GameObjectInstanceDataPtr instanceData;
-			UINT32 linkId;
-		};
-
-		/** Contains saved SceneObject instance data, as well as saved instance data for all its children and components. */
-		struct SceneObjectProxy
-		{
-			GameObjectInstanceDataPtr instanceData;
-			UINT32 linkId;
-
-			Vector<ComponentProxy> components;
-			Vector<SceneObjectProxy> children;
-		};
-
 	public:
 		/**
 		 * Remove any instance specific changes to the object or its hierarchy from the provided prefab instance and 
@@ -78,47 +60,6 @@ namespace bs
 		 * If the provided object contains any child prefab instances, this will be done recursively for them as well.
 		 */
 		static void recordPrefabDiff(const HSceneObject& sceneObject);
-
-	private:
-		/**
-	     * Traverses the object hierarchy, finds all child objects and components and records their instance data, as well
-		 * as their original place in the hierarchy. Instance data essentially holds the object's "identity" and by 
-		 * restoring it we ensure any handles pointing to the object earlier will still point to the new version.
-		 *
-		 * @param[in]	so					Object to traverse and record.
-		 * @param[out]	output				Contains the output hierarchy of instance data.
-		 * @param[out]	linkedInstanceData	A map of link IDs to instance data. Objects without link IDs will not be 
-		 *									included here.
-		 *
-		 * @note	Does not recurse into child prefab instances.
-		 */
-		static void recordInstanceData(const HSceneObject& so, SceneObjectProxy& output, 
-			UnorderedMap<UINT32, GameObjectInstanceDataPtr>& linkedInstanceData);
-
-		/**
-		 * Restores instance data in the provided hierarchy, using link ids to determine what data maps to which objects. 
-		 *
-		 * @param[in]	so					Object to traverse and restore the instance data.
-		 * @param[in]	proxy				Hierarchy containing instance data for all objects and components, returned by
-		 *									recordInstanceData() method.				
-		 * @param[in]	linkedInstanceData	A map of link IDs to instance data, returned by recordInstanceData() method.
-		 *
-		 * @note	Does not recurse into child prefab instances.
-		 */
-		static void restoreLinkedInstanceData(const HSceneObject& so, SceneObjectProxy& proxy, 
-			UnorderedMap<UINT32, GameObjectInstanceDataPtr>& linkedInstanceData);
-
-		/**
-		 * Restores instance data in the provided hierarchy, but only for objects without a link id. Since the objects do
-		 * not have a link ID we rely on their sequential order to find out which instance data belongs to which object.
-		 *
-		 * @param[in]	so		Object to traverse and restore the instance data.
-		 * @param[in]	proxy	Hierarchy containing instance data for all objects and components, returned by
-		 *						recordInstanceData() method.
-		 *
-		 * @note	Does not recurse into child prefab instances.
-		 */
-		static void restoreUnlinkedInstanceData(const HSceneObject& so, SceneObjectProxy& proxy);
 	};
 
 	/** @} */

@@ -75,7 +75,7 @@ namespace bs
 		if (mRoot != nullptr)
 			mRoot->destroy(true);
 
-		mRoot = sceneObject->clone(false);
+		mRoot = sceneObject->clone(false, true);
 		mRoot->mParent = nullptr;
 		mRoot->mLinkId = -1;
 
@@ -107,7 +107,7 @@ namespace bs
 		mHash++;
 	}
 
-	void Prefab::_updateChildInstances()
+	void Prefab::_updateChildInstances() const
 	{
 		Stack<HSceneObject> todo;
 		todo.push(mRoot);
@@ -130,7 +130,7 @@ namespace bs
 		}
 	}
 
-	HSceneObject Prefab::instantiate()
+	HSceneObject Prefab::_instantiate(bool preserveUUIDs) const
 	{
 		if (mRoot == nullptr)
 			return HSceneObject();
@@ -143,13 +143,13 @@ namespace bs
 		}
 #endif
 
-		HSceneObject clone = _clone();
+		HSceneObject clone = _clone(preserveUUIDs);
 		clone->_instantiate();
 		
 		return clone;
 	}
 
-	HSceneObject Prefab::_clone()
+	HSceneObject Prefab::_clone(bool preserveUUIDs) const
 	{
 		if (mRoot == nullptr)
 			return HSceneObject();
@@ -157,7 +157,7 @@ namespace bs
 		mRoot->mPrefabHash = mHash;
 		mRoot->mLinkId = -1;
 
-		return mRoot->clone(false);
+		return mRoot->clone(false, preserveUUIDs);
 	}
 
 	RTTITypeBase* Prefab::getRTTIStatic()

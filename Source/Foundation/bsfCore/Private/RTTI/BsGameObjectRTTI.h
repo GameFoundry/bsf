@@ -25,8 +25,11 @@ namespace bs
 	class BS_CORE_EXPORT GameObjectRTTI : public RTTIType<GameObject, IReflectable, GameObjectRTTI>
 	{
 	private:
-		String& getName(GameObject* obj) { return obj->mName; }
-		void setName(GameObject* obj, String& name) { obj->mName = name; }
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_PLAIN(mName, 1)
+			BS_RTTI_MEMBER_PLAIN(mLinkId, 2)
+			BS_RTTI_MEMBER_PLAIN(mUUID, 3)
+		BS_END_RTTI_MEMBERS
 
 		UINT64& getInstanceID(GameObject* obj) { return obj->mInstanceData->mInstanceId; }
 		void setInstanceID(GameObject* obj, UINT64& instanceId) 
@@ -39,9 +42,6 @@ namespace bs
 
 			deserializationData.originalId = instanceId;
 		}
-
-		UINT32& getLinkId(GameObject* obj) { return obj->mLinkId; }
-		void setLinkId(GameObject* obj, UINT32& linkId) { obj->mLinkId = linkId; }
 
 	public:
 		/**	Helper method used for creating Component objects used during deserialization. */
@@ -58,8 +58,6 @@ namespace bs
 		GameObjectRTTI()
 		{
 			addPlainField("mInstanceID", 0, &GameObjectRTTI::getInstanceID, &GameObjectRTTI::setInstanceID);
-			addPlainField("mName", 1, &GameObjectRTTI::getName, &GameObjectRTTI::setName);
-			addPlainField("mLinkId", 2, &GameObjectRTTI::getLinkId, &GameObjectRTTI::setLinkId);
 		}
 
 		void onDeserializationStarted(IReflectable* obj, SerializationContext* context) override

@@ -44,6 +44,9 @@ namespace bs
 		 */
 		UINT32 getLinkId() const { return mLinkId; }
 
+		/**	Globally unique identifier of the game object that persists scene save/load. */
+		const UUID& getUUID() const { return mUUID; }
+
 		/**	Gets the name of the object. */
 		const String& getName() const { return mName; }
 
@@ -66,6 +69,9 @@ namespace bs
 
 		/** Changes the prefab link ID for this object. See getLinkId(). */
 		void _setLinkId(UINT32 id) { mLinkId = id; }
+
+		/** @copydoc getUUID */
+		void _setUUID(const UUID& uuid) { mUUID = uuid; }
 
 		/**
 		 * Replaces the instance data with another objects instance data. This object will basically become the original 
@@ -101,6 +107,7 @@ namespace bs
 
 	protected:
 		String mName;
+		UUID mUUID;
 		UINT32 mLinkId = (UINT32)-1;
 
 		Any mRTTIData; // RTTI only

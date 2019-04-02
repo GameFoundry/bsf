@@ -26,7 +26,9 @@ namespace bs
 		will be broken. */
 		GODM_BreakExternal = 0x08,
 		/** Handles pointing to GameObjects that cannot be found will not be set to null. */
-		GODM_KeepMissing = 0x10
+		GODM_KeepMissing = 0x10,
+		/** When enabled, new UUIDs will be generated for all deserialized game objects. */
+		GODM_UseNewUUID = 0x20
 	};
 
 	/**

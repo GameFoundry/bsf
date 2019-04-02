@@ -43,6 +43,7 @@ namespace bs
 	{
 		SPtr<SceneObject> sceneObjectPtr = SPtr<SceneObject>(new (bs_alloc<SceneObject>()) SceneObject(name, flags),
 			&bs_delete<SceneObject>, StdAlloc<SceneObject>());
+		sceneObjectPtr->mUUID = UUIDGenerator::generateRandom();
 
 		HSceneObject sceneObject = static_object_cast<SceneObject>(
 			GameObjectManager::instance().registerObject(sceneObjectPtr));
@@ -751,7 +752,7 @@ namespace bs
 		}
 	}
 
-	HSceneObject SceneObject::clone(bool instantiate)
+	HSceneObject SceneObject::clone(bool instantiate, bool preserveUUIDs)
 	{
 		const bool isInstantiated = !hasFlag(SOF_DontInstantiate);
 
@@ -765,8 +766,12 @@ namespace bs
 		MemorySerializer serializer;
 		UINT8* buffer = serializer.encode(this, bufferSize, (void*(*)(size_t))&bs_alloc);
 
+		int flags = GODM_RestoreExternal | GODM_UseNewIds;
+		if(!preserveUUIDs)
+			flags |= GODM_UseNewUUID;
+
 		CoreSerializationContext serzContext;
-		serzContext.goState = bs_shared_ptr_new<GameObjectDeserializationState>(GODM_RestoreExternal | GODM_UseNewIds);
+		serzContext.goState = bs_shared_ptr_new<GameObjectDeserializationState>(flags);
 
 		SPtr<SceneObject> cloneObj = std::static_pointer_cast<SceneObject>(
 			serializer.decode(buffer, bufferSize, &serzContext));
@@ -867,6 +872,10 @@ namespace bs
 	void SceneObject::addAndInitializeComponent(const HComponent& component)
 	{
 		component->mThisHandle = component;
+
+		if(component->mUUID.empty())
+			component->mUUID = UUIDGenerator::generateRandom();
+
 		mComponents.push_back(component);
 
 		if (isInstantiated())

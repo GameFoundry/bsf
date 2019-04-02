@@ -57,6 +57,7 @@ namespace bs
 
 		static void internal_setName(ScriptSceneObject* nativeInstance, MonoString* name);
 		static MonoString* internal_getName(ScriptSceneObject* nativeInstance);
+		static void internal_getUUID(ScriptSceneObject* nativeInstance, UUID* uuid);
 		static void internal_setActive(ScriptSceneObject* nativeInstance, bool value);
 		static bool internal_getActive(ScriptSceneObject* nativeInstance);
 

@@ -51,6 +51,7 @@ namespace bs
 
 	void ScriptComponent::initRuntimeData()
 	{
+		metaData.scriptClass->addInternalCall("Internal_GetUUID", (void*)&ScriptComponent::internal_getUUID);
 		metaData.scriptClass->addInternalCall("Internal_AddComponent", (void*)&ScriptComponent::internal_addComponent);
 		metaData.scriptClass->addInternalCall("Internal_GetComponent", (void*)&ScriptComponent::internal_getComponent);
 		metaData.scriptClass->addInternalCall("Internal_GetComponents", (void*)&ScriptComponent::internal_getComponents);
@@ -60,6 +61,18 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_GetNotifyFlags", (void*)&ScriptComponent::internal_getNotifyFlags);
 		metaData.scriptClass->addInternalCall("Internal_SetNotifyFlags", (void*)&ScriptComponent::internal_setNotifyFlags);
 		metaData.scriptClass->addInternalCall("Internal_Destroy", (void*)&ScriptComponent::internal_destroy);
+	}
+
+	void ScriptComponent::internal_getUUID(ScriptComponentBase* nativeInstance, UUID* uuid)
+	{
+		HComponent component = nativeInstance->getComponent();
+		if (checkIfDestroyed(component))
+		{
+			*uuid = UUID::EMPTY;
+			return;
+		}
+
+		*uuid = component->getUUID();
 	}
 
 	MonoObject* ScriptComponent::internal_addComponent(MonoObject* parentSceneObject, MonoReflectionType* type)

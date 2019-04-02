@@ -437,10 +437,14 @@ namespace bs
 		/**
 		 * Makes a deep copy of this object.
 		 * 			
-		 * @param[in]	instantiate	If false, the cloned hierarchy will just be a memory copy, but will not be present in the
-		 * 							scene or otherwise active until instantiate() is called.
+		 * @param[in]	instantiate		If false, the cloned hierarchy will just be a memory copy, but will not be present 
+		 *								in the scene or otherwise active until instantiate() is called.
+		 * @param[in]	preserveUUIDs	If false, each cloned game object will be assigned a brand new UUID. Otherwise
+		 *								the UUID of the original game objects will be preserved. Note that two instantiated
+		 *								scene objects should never have the same UUID, so if preserving UUID's make sure
+		 *								the original is destroyed before instantiating.
 		 */
-		HSceneObject clone(bool instantiate = true);
+		HSceneObject clone(bool instantiate = true, bool preserveUUIDs = false);
 
 	private:
 		SPtr<SceneInstance> mParentScene;
@@ -611,6 +615,15 @@ namespace bs
 		/**	Returns all components on this object. */
 		const Vector<HComponent>& getComponents() const { return mComponents; }
 
+	public: // ***** INTERNAL ******
+		/** @name Internal
+		 *  @{
+		 */
+
+		/**	Returns a modifyable list of all components on this object. */
+		Vector<HComponent>& _getComponents() { return mComponents; }
+
+		/** @} */
 	private:
 		/**	Creates an empty component with the default constructor. */
 		template <typename T>

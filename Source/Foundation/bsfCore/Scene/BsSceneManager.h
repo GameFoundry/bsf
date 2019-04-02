@@ -90,8 +90,17 @@ namespace bs
 		 */
 		void clearScene(bool forceAll = false);
 
-		/** Changes the root scene object. Any persistent objects will remain in the scene, now parented to the new root. */
-		void setRootNode(const HSceneObject& root);
+		/**
+		 * Instantiates a new scene and makes it active. All non-persistent objects that are part of the current scene will
+		 * be destroyed.
+		 */
+		void loadScene(const HPrefab& scene);
+
+		/** 
+		 * Saves all the currently active scene objects into a brand new prefab which can then be saved to disk, loaded back
+		 * and provided to setScene() for loading.
+		 */
+		HPrefab saveScene() const;
 
 		/** 
 		 * Changes the component state that globally determines which component callbacks are activated. Only affects
@@ -127,6 +136,9 @@ namespace bs
 		 * the main game window when running standalone, or the Game viewport when running in editor.
 		 */
 		void setMainRenderTarget(const SPtr<RenderTarget>& rt);
+
+		/** Changes the root scene object. Any persistent objects will remain in the scene, now parented to the new root. */
+		void _setRootNode(const HSceneObject& root);
 
 		/** 
 		 * Binds a scene actor with a scene object. Every frame the scene object's transform will be monitored for

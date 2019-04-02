@@ -11,6 +11,7 @@
 #include "RenderAPI/BsRenderTarget.h"
 #include "Renderer/BsLightProbeVolume.h"
 #include "Scene/BsSceneActor.h"
+#include "Scene/BsPrefab.h"
 #include "Physics/BsPhysics.h"
 
 namespace bs
@@ -72,10 +73,22 @@ namespace bs
 		GameObjectManager::instance().destroyQueuedObjects();
 
 		HSceneObject newRoot = SceneObject::createInternal("SceneRoot");
-		setRootNode(newRoot);
+		_setRootNode(newRoot);
 	}
 
-	void SceneManager::setRootNode(const HSceneObject& root)
+	void SceneManager::loadScene(const HPrefab& scene)
+	{
+		HSceneObject root = scene->_instantiate(true);
+		_setRootNode(root);
+	}
+
+	HPrefab SceneManager::saveScene() const
+	{
+		HSceneObject sceneRoot = mMainScene->getRoot();
+		return Prefab::create(sceneRoot);
+	}
+
+	void SceneManager::_setRootNode(const HSceneObject& root)
 	{
 		if (root == nullptr)
 			return;

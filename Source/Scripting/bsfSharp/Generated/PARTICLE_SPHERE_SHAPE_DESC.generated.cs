@@ -18,7 +18,7 @@ namespace bs
 		public static ParticleSphereShapeOptions Default()
 		{
 			ParticleSphereShapeOptions value = new ParticleSphereShapeOptions();
-			value.radius = 0f;
+			value.radius = 1f;
 			value.thickness = 0f;
 
 			return value;

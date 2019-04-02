@@ -20,6 +20,19 @@ namespace bs
         { }
 
         /// <summary>
+        /// Returns a universally unique identifier that persists scene save/load.
+        /// </summary>
+        public UUID UUID
+        {
+            get
+            {
+                UUID uuid;
+                Internal_GetUUID(mCachedPtr, out uuid);
+                return uuid;
+            }
+        }
+
+        /// <summary>
         /// Returns the scene object this component is attached to.
         /// </summary>
         public SceneObject SceneObject
@@ -93,6 +106,9 @@ namespace bs
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Internal_SetNotifyFlags(IntPtr nativeInstance, TransformChangedFlags flags);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetUUID(IntPtr nativeInstance, out UUID uuid);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Destroy(IntPtr nativeInstance, bool immediate);
