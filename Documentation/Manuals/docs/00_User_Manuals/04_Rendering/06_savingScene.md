@@ -2,64 +2,37 @@
 title: Saving a scene
 ---
 
-Once you have populated your scene with scene objects and components you will want to save it so you can easily load it later. The entire scene, as well as parts of the scene can be saved by creating a @bs::Prefab.
+Once you have populated your scene with scene objects and components you will want to save it so you can easily load it later. 
 
-# Creating prefabs
+Saved scenes are represented as a @bs::Prefab object. Scene saving and loading is handled through @bs::SceneManager, which can be accessed globally through @bs::gSceneManager().
 
-A prefab can be created by calling @bs::Prefab::create method and providing the relevant **SceneObject**. You can retrieve the root **SceneObject** of the current scene by calling @bs::SceneInstance::getRoot. You can get the main **SceneInstance** from @bs::SceneManager::getMainScene, accessible through @bs::gSceneManager(). The second parameter of **Prefab::create()** controls whether the prefab represents an entire scene, or just a subset of scene objects.
+Scene saving in particular is done by calling @bs::SceneManager::saveScene, which will return a **Prefab** representation of the current scene.
 
 ~~~~~~~~~~~~~{.cpp}
-// Get scene root
-HSceneObject sceneRoot = gSceneManager().getMainScene()->getRoot();
-
-// Create a prefab of some sub-object
-HSceneObject subObject = sceneRoot->findPath("Path/To/Some/Object");
-HPrefab partialPrefab = Prefab::create(subObject, false);
-
-// Create a prefab of the entire scene
-HPrefab scenePrefab = Prefab::create(sceneRoot, true);
+HPrefab scenePrefab = gSceneManager().saveScene();
 ~~~~~~~~~~~~~
 
-# Saving & loading prefabs
-
-Once a prefab has been created it can be saved and loaded as any other **Resource**.
+A **Prefab** is a **Resource**, and as such can then be saved or loaded as any other **Resource**.
 
 ~~~~~~~~~~~~~{.cpp}
-// Save the prefabs we created previously
-gResources().save(partialPrefab, "partialPrefab.asset");
+// Save the prefab we created previously
 gResources().save(scenePrefab, "scenePrefab.asset");
 
-// Then when ready, restore them
-HPrefab loadedPartialPrefab = gResources().load<Prefab>("partialPrefab.asset");
+// Then when ready, restore it
 HPrefab loadedScenePrefab = gResources().load<Prefab>("scenePrefab.asset");
 ~~~~~~~~~~~~~
 
-# Instantiating prefabs
-
-After loading the prefab must be instantiated, creating a representation of the **SceneObject** hierarchy it contains. This is done by calling @bs::Prefab::instantiate() which returns a **SceneObject**. By default this scene object will be parented to the current scene root, but can then be manipulated as any other scene object. You can replace the current scene with a new **SceneObject** root by calling @bs::SceneManager::setRootNode().
+Finally, when you wish to restore a scene you've loaded, you may call @bs::SceneManager::loadScene, and pass it the **Prefab** of the scene to load. The contents of the prefab will replace the currently loaded scene (if any).
 
 ~~~~~~~~~~~~~{.cpp}
-// Instatiate the scene prefab and replace the current scene
-HSceneObject newSceneHierarchy = loadedScenePrefab->instantiate();
-gSceneManager().setRootNode(newSceneHierarchy);
-~~~~~~~~~~~~~
-
-Since prefabs can also be created from arbitrary sub-hierarcies, you can use them to create groups of scene objects and components that are commonly used together, and then re-use them throughout the scene.
-
-~~~~~~~~~~~~~{.cpp}
-// Make a couple of copies of the prefab and place them in different parts of the scene
-HSceneObject subObject1 = loadedPartialPrefab->instantiate();
-HSceneObject subObject2 = loadedPartialPrefab->instantiate();
-
-subObject1->setPosition(Vector3(10.0f, 0.0f, 0.0f));
-subObject1->setPosition(Vector3(50.0f, 0.0f, 0.0f));
+gSceneManager().loadScene(loadedScenePrefab);
 ~~~~~~~~~~~~~
 
 # Resource manifest
 
-If your scene contains components that reference resources (e.g. a **Renderable** referencing a mesh or a material) you will also need to save a resource manifest along your scene. This is an important step as every scene will almost certainly reference some resources. The resource manifest allows the system to automatically find the referenced resources when loading the scene, even after application has been shutdown and started again. Without the manifest your scene will lose all references to any resources after attempting to load it in a new application session.
+If your scene contains components that reference resources (e.g. a **Renderable** referencing a mesh or a material) you will also need to save a resource manifest along with your scene. This is an important step as every scene will almost certainly reference some resources. The resource manifest allows the system to automatically find the referenced resources when loading the scene, even after application has been shutdown and started again. Without the manifest your scene will lose all references to any resources after attempting to load it in a new application session.
 
-A manifest can be retrieved from @bs::Resources::getResourceManifest(). The method expect a manifest name, which will be "Default" for the default manifest. Resources will be registered in this manifest whenever you call **Resources::save()**. 
+A manifest can be retrieved from @bs::Resources::getResourceManifest(). The method expect a manifest name, which will be "Default" for the default manifest (which will be the only available manifest unless you have set up your own). Resources will be registered in this manifest whenever you call **Resources::save()**. 
 
 > You can also create your own manifests and manage them manually but that is outside the scope of this topic. See the API reference for @bs::ResourceManifest.
 
@@ -73,9 +46,9 @@ SPtr<ResourceManifest> manifest = gResources().getResourceManifest("Default");
 ResourceManifest::save(manifest, "C:/myManifest.asset", "C:/Data");
 ~~~~~~~~~~~~~
 
-> **SPtr** is a shared pointer, used in bs::f for most object instances that aren't components, scene objects or resources. It is covered later in the [smart pointers manual](../Utilities/smartPointers).
+> **SPtr** is a shared pointer, used in the framework for most object instances that aren't components, scene objects or resources. You can find more about it in the [smart pointers manual](../Utilities/smartPointers).
 
-Before loading a **Prefab** you will need to restore the manifest by calling @bs::ResourceManifest::load. Note that you only need to restore the manifest once when your application starts up (usually before any other resource loads).
+When starting a new application session and loading a **Prefab** you will first need to restore the manifest by calling @bs::ResourceManifest::load. Note that you only need to restore the manifest once when your application starts up (usually before any scene loads).
 
 Loaded manifest should then be registered with **Resources** by calling @bs::Resources::registerResourceManifest.
 

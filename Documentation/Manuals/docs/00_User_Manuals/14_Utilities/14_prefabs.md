@@ -1,7 +1,7 @@
 ---
 title: Prefabs
 ---
-We talked about prefabs when discussing on how to save a game scene, but they can actually be used for saving of any group of scene objects. Contents of such prefabs can then be easily instantiated throughout the scene, allowing you to build complex scenes more easily. Prefabs can be nested within other prefabs with no limits (where the top level prefab is the "scene") and provide other useful functionality we'll talk about.
+We talked about prefabs when discussing on how to save a game scene, but they can actually be used for saving of any group of scene objects. Contents of such prefabs can then be easily instantiated throughout the scene, allowing you to build complex scenes more easily. 
 
 For example you might create a scene object that contains a **Renderable** displaying a mesh of a house a material referencing the relevant textures. The scene object could also contain physics objects like a **Collider** and even child scene objects. You could then group all the scene objects and their components into a single prefab, which you can then easily re-use all over your scene.
 
@@ -50,7 +50,7 @@ PrefabUtility::updateFromPrefab(instance2);
 Note that this process is recursive, so you can call **PrefabUtility::updateFromPrefab()** on the entire scene, in order to update all prefabs.
 
 ~~~~~~~~~~~~~{.cpp}
-PrefabUtility::updateFromPrefab(gSceneManager().getRootNode());
+PrefabUtility::updateFromPrefab(gSceneManager().getMainScene()->getRoot());
 ~~~~~~~~~~~~~
 
 ## Links
