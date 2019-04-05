@@ -35,7 +35,9 @@ build_script:
   - ps: |
         if($env:APPVEYOR_REPO_TAG -eq "true" -or $env:APPVEYOR_SCHEDULED_BUILD -eq "true")
         {
-          cd Documentation/Doxygen
+          cd Documentation
+          mkdir Generated
+          cd Doxygen
           Invoke-WebRequest https://data.banshee3d.com/doxygen-1.8.15.windows.x64.bin.zip -OutFile doxygen.zip
           7z x doxygen.zip
           ./doxygen native.doxyconfig
