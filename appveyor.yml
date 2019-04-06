@@ -67,7 +67,7 @@ build_script:
           Move-Item static Generated/nightly
           cd Generated/nightly
           mkdir csharp
-          cd ../../Generated/native
+          cd ../../../Generated/native
           Move-Item html ../../Manuals/Generated/nightly/api
           cd ../csharp
           Move-Item html ../../Manuals/Generated/nightly/csharp/api
