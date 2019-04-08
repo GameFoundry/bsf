@@ -21,7 +21,7 @@ namespace bs
 			if (p != nullptr)
 			{
 				if (mCounter == nullptr)
-					mCounter = bs_newN<UINT32>(1);
+					mCounter = bs_newN<INT32>(1);
 				else
 					++(*mCounter);
 			}
