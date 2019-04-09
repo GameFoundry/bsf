@@ -16,6 +16,7 @@ namespace bs
 	{
 	public:
 		USPtr() = default;
+		USPtr(nullptr_t) { }
 
 		explicit USPtr(T* ptr)
 			: mPtr(ptr)
@@ -94,6 +95,9 @@ namespace bs
 		T* get() const { return mPtr; }
 
 	private:
+		template<class U>
+		friend class USPtr;
+
 		void add()
 		{
 			if (mPtr != nullptr)
@@ -162,10 +166,51 @@ namespace bs
 		return lhs.get() > rhs.get();
 	}
 
+	template<class T> 
+	bool operator==(nullptr_t, const USPtr<T>& rhs)
+	{
+		return nullptr == rhs.get();
+	}
+
+	template<class T> 
+	bool operator==(const USPtr<T>& lhs, nullptr_t)
+	{
+		return lhs.get() == nullptr;
+	}
+
+	template<class T> 
+	bool operator!=(nullptr_t, const USPtr<T>& rhs)
+	{
+		return nullptr != rhs.get();
+	}
+
+	template<class T> 
+	bool operator!=(const USPtr<T>& lhs, nullptr_t)
+	{
+		return lhs.get() != nullptr;
+	}
+
+	/** Cast an unsafe shared pointer from one type to another. */
 	template<class T, class U>
 	USPtr<T> static_pointer_cast(const USPtr<U>& ptr)
 	{
 		return USPtr<T>(ptr);
+	}
+
+	/** Create a new unsafe shared pointer using a custom allocator category. */
+	template<typename Type, typename... Args>
+	USPtr<Type> bs_ushared_ptr_new(Args &&... args)
+	{
+		// Note: Ideally we merge the pointer and internal USPtr counter allocation in a single allocation
+
+		return USPtr<Type>(bs_new<Type>(std::forward<Args>(args)...));
+	}
+
+	/** Create a new unsafe shared pointer from a previously constructed object. */
+	template<typename Type>
+	USPtr<Type> bs_ushared_ptr(Type* data)
+	{
+		return USPtr<Type>(data);
 	}
 
 	/** @} */
