@@ -56,13 +56,6 @@ namespace bs
 		ScriptAssemblyManager::instance().loadAssemblyInfo(ENGINE_ASSEMBLY, mEngineTypeMappings);
 
 #if BS_IS_BANSHEE3D
-		Path gameAssemblyPath = getGameAssemblyPath();
-		if (FileSystem::exists(gameAssemblyPath))
-		{
-			MonoManager::instance().loadAssembly(gameAssemblyPath.toString(), SCRIPT_GAME_ASSEMBLY);
-			ScriptAssemblyManager::instance().loadAssemblyInfo(SCRIPT_GAME_ASSEMBLY, BuiltinTypeMappings());
-		}
-
 		engineAssembly.invoke(ASSEMBLY_ENTRY_POINT);
 #endif
 	}
@@ -94,17 +87,13 @@ namespace bs
 		}
 		else // Otherwise just additively load them
 		{
-			ScriptAssemblyManager::instance().clearAssemblyInfo();
-
-			MonoManager::instance().loadAssembly(engineAssemblyPath.toString(), ENGINE_ASSEMBLY);
-			ScriptAssemblyManager::instance().loadAssemblyInfo(ENGINE_ASSEMBLY, mEngineTypeMappings);
-
 			Path gameAssemblyPath = getGameAssemblyPath();
 			if (FileSystem::exists(gameAssemblyPath))
 			{
 				MonoManager::instance().loadAssembly(gameAssemblyPath.toString(), SCRIPT_GAME_ASSEMBLY);
 				ScriptAssemblyManager::instance().loadAssemblyInfo(SCRIPT_GAME_ASSEMBLY, BuiltinTypeMappings());
 			}
+
 			mScriptAssembliesLoaded = true;
 		}
 #endif
