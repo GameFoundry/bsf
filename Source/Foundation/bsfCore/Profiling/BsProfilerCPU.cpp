@@ -158,7 +158,13 @@ namespace bs
 	}
 
 	BS_THREADLOCAL ProfilerCPU::ThreadInfo* ProfilerCPU::ThreadInfo::activeThread = nullptr;
+	
+	ProfilerCPU::ThreadInfo::ThreadInfo()
+		:frameAlloc(1024 * 512)
+	{
 
+	}
+	
 	void ProfilerCPU::ThreadInfo::begin(const char* _name)
 	{
 		if(isActive)
