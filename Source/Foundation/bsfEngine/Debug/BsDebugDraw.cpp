@@ -23,7 +23,6 @@ using namespace std::placeholders;
 namespace bs
 {
 	DebugDraw::DebugDraw()
-		: mDrawHelper(nullptr)
 	{
 		mDrawHelper = bs_new<DrawHelper>();
 		mRenderer = RendererExtension::create<ct::DebugDrawRenderer>(nullptr);

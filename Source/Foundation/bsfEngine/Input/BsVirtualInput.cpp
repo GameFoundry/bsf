@@ -10,7 +10,6 @@ using namespace std::placeholders;
 namespace bs
 {
 	VirtualInput::VirtualInput()
-		:mActiveModifiers((UINT32)ButtonModifier::None)
 	{
 		mInputConfiguration = createConfiguration();
 

@@ -23,7 +23,7 @@ namespace bs
 		/**	Internal container for data about a single cursor icon. */
 		struct CustomIcon
 		{
-			CustomIcon() {}
+			CustomIcon() = default;
 			CustomIcon(const PixelData& pixelData, const Vector2I& hotSpot)
 				:hotSpot(hotSpot), pixelData(pixelData)
 			{ }
@@ -112,8 +112,8 @@ namespace bs
 
 		UnorderedMap<String, UINT32> mCustomIconNameToId;
 		UnorderedMap<UINT32, CustomIcon> mCustomIcons;
-		UINT32 mNextUniqueId;
-		INT32 mActiveCursorId;
+		UINT32 mNextUniqueId = (UINT32)CursorType::Count;
+		INT32 mActiveCursorId = -1;
 	};
 
 	/** Easy way to access Cursor. */

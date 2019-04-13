@@ -164,7 +164,7 @@ namespace bs
 		/** Converts mesh data from DrawHelper into mesh data usable by the debug draw renderer. */
 		Vector<MeshRenderData> createMeshProxyData(const Vector<DrawHelper::ShapeMeshData>& meshData);
 
-		DrawHelper* mDrawHelper;
+		DrawHelper* mDrawHelper = nullptr;
 		Vector<DrawHelper::ShapeMeshData> mActiveMeshes;
 
 		SPtr<ct::DebugDrawRenderer> mRenderer;
