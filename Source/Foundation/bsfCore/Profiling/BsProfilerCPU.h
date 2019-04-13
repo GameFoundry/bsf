@@ -377,9 +377,9 @@ namespace bs
 			UINT64 totalSelfCycles = 0; /**< Total number of cycles across all calls in the block. Ignores time used by child blocks. */
 
 			UINT64 estimatedSelfOverhead = 0; /**< Estimated overhead of profiling methods, only for this exact block. In cycles. */
-			UINT64 estimatedOverhead = 1.0f; /**< Estimated overhead of profiling methods for this block and all children. In cycles. */
+			UINT64 estimatedOverhead = 0; /**< Estimated overhead of profiling methods for this block and all children. In cycles. */
 
-			float pctOfParent; /**< Percent of parent block cycles used by this block. Ranging [0.0, 1.0]. */
+			float pctOfParent = 1.0f; /**< Percent of parent block cycles used by this block. Ranging [0.0, 1.0]. */
 		} data;
 
 		ProfilerVector<CPUProfilerPreciseSamplingEntry> childEntries;
