@@ -19,8 +19,7 @@ namespace bs
 	private:
 
 	public:
-		CGUIWidgetRTTI()
-		{ }
+		CGUIWidgetRTTI() = default;
 
 		const String& getRTTIName() override
 		{

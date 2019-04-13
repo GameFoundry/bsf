@@ -9,7 +9,6 @@
 namespace bs
 {
 	Cursor::Cursor()
-		:mNextUniqueId((UINT32)CursorType::Count), mActiveCursorId(-1)
 	{
 		for(UINT32 i = 0; i < (UINT32)CursorType::Count; i++)
 			restoreCursorIcon((CursorType)i);

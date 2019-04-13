@@ -16,7 +16,7 @@ namespace bs
 	class BS_EXPORT GUISkinEntry : public IReflectable
 	{
 	public:
-		GUISkinEntry() { }
+		GUISkinEntry() = default;
 		GUISkinEntry(const String& name, const GUIElementStyle& style);
 
 		String name;

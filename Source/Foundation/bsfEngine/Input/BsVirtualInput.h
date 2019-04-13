@@ -126,7 +126,7 @@ namespace bs
 		SPtr<InputConfiguration> mInputConfiguration;
 		Vector<DeviceData> mDevices;
 		Queue<VirtualButtonEvent> mEvents;
-		UINT32 mActiveModifiers;
+		UINT32 mActiveModifiers = (UINT32)ButtonModifier::None;
 
 		// Transient
 		Vector<VirtualButton> tempButtons;
