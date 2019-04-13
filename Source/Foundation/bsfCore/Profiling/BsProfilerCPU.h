@@ -202,7 +202,7 @@ namespace bs
 		/** Contains data about an active profiling thread. */
 		struct ThreadInfo
 		{
-			ThreadInfo() = default;
+			ThreadInfo();
 
 			/**
 			 * Starts profiling on the thread. New primary profiling block is created with the given name.
