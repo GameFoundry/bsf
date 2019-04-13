@@ -232,7 +232,7 @@ namespace bs
 
 			ProfiledBlock* rootBlock = nullptr;
 
-			FrameAlloc frameAlloc = 1024 * 512;
+			FrameAlloc frameAlloc = FrameAlloc(1024 * 512);
 			ActiveBlock activeBlock;
 			Stack<ActiveBlock, StdFrameAlloc<ActiveBlock>>* activeBlocks = nullptr;
 		};
