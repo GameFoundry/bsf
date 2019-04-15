@@ -124,9 +124,9 @@ namespace bs
 		instance->destroy();
 	}
 
-	void ScriptGUIWidget::destroy()
+	void ScriptGUIWidget::destroy(bool destroyPanel)
 	{
-		if(mPanel != nullptr)
+		if(mPanel != nullptr && destroyPanel)
 		{
 			mPanel->destroy();
 			mPanel = nullptr;
@@ -141,7 +141,7 @@ namespace bs
 
 	void ScriptGUIWidget::_onManagedInstanceDeleted(bool assemblyRefresh)
 	{
-		destroy();
+		destroy(false);
 
 		ScriptObject::_onManagedInstanceDeleted(assemblyRefresh);
 	}
