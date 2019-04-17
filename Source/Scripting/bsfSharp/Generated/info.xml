@@ -892,73 +892,157 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 	<class native="ImportOptions" script="ImportOptions">
 		<doc>Base class for creating import options from. Import options are specific for each importer and control how is data  imported.</doc>
 	</class>
-	<enum native="ObjectMobility" script="ObjectMobility">
-		<doc>Controls what kind of mobility restrictions a scene object has. This is used primarily as a performance hint to other systems. Generally the more restricted the mobility the higher performance can be achieved.</doc>
-		<enumentry native="Movable" script="Movable">
-			<doc>Scene object can be moved and has no mobility restrictions.</doc>
-		</enumentry>
-		<enumentry native="Immovable" script="Immovable">
-			<doc>Scene object isn&apos;t allowed to be moved but is allowed to be visually changed in other ways (e.g. changing the displayed mesh or light intensity (depends on attached components).</doc>
-		</enumentry>
-		<enumentry native="Static" script="Static">
-			<doc>Scene object isn&apos;t allowed to be moved nor is it allowed to be visually changed. Object must be fully static.</doc>
-		</enumentry>
-	</enum>
-	<class native="RootMotion" script="RootMotion">
-		<doc>Contains a set of animation curves used for moving and rotating the root bone.</doc>
-		<property name="Position" type="Vector3Curve" getter="getPositionCurves" setter="" static="false">
-			<doc>Animation curve representing the movement of the root bone.</doc>
-		</property>
-		<property name="Rotation" type="QuaternionCurve" getter="getRotationCurves" setter="" static="false">
-			<doc>Animation curve representing the rotation of the root bone.</doc>
-		</property>
-	</class>
-	<struct native="TextureSurface" script="TextureSurface">
-		<doc>References a subset of surfaces within a texture.</doc>
+	<class native="ParticleEmitterStaticMeshShape" script="ParticleEmitterStaticMeshShape">
+		<doc>Particle emitter shape that emits particles from a surface of a static (non-animated) mesh. Particles can be emitted from mesh vertices, edges or triangles. If information about normals exists, particles will also inherit the normals.</doc>
 		<ctor>
-			<param name="mipLevel" type="int">
-			</param>
-			<param name="numMipLevels" type="int">
-			</param>
-			<param name="face" type="int">
-			</param>
-			<param name="numFaces" type="int">
+			<doc>Creates a new particle emitter static mesh shape.</doc>
+			<param name="desc" type="ParticleStaticMeshShapeOptions">
 			</param>
 		</ctor>
-		<field name="mipLevel" type="int">
-			<doc>First mip level to reference.</doc>
+		<ctor>
+			<doc>Creates a new particle emitter static mesh shape.</doc>
+		</ctor>
+		<property name="Options" type="ParticleStaticMeshShapeOptions" getter="getOptions" setter="setOptions" static="false">
+			<doc>Options describing the shape.</doc>
+		</property>
+	</class>
+	<struct native="PixelVolume" script="PixelVolume">
+		<doc>Represents a 3D region of pixels used for referencing pixel data.</doc>
+		<ctor>
+		</ctor>
+		<ctor>
+			<param name="left" type="int">
+			</param>
+			<param name="top" type="int">
+			</param>
+			<param name="right" type="int">
+			</param>
+			<param name="bottom" type="int">
+			</param>
+		</ctor>
+		<ctor>
+			<param name="left" type="int">
+			</param>
+			<param name="top" type="int">
+			</param>
+			<param name="front" type="int">
+			</param>
+			<param name="right" type="int">
+			</param>
+			<param name="bottom" type="int">
+			</param>
+			<param name="back" type="int">
+			</param>
+		</ctor>
+		<field name="left" type="int">
 		</field>
-		<field name="numMipLevels" type="int">
-			<doc>Number of mip levels to reference. Must be greater than zero.</doc>
+		<field name="top" type="int">
 		</field>
-		<field name="face" type="int">
-			<doc>First face to reference. Face can represent a single cubemap face, or a single array entry in a  texture array. If cubemaps are laid out in a texture array then every six sequential faces represent a single array entry.</doc>
+		<field name="right" type="int">
 		</field>
-		<field name="numFaces" type="int">
-			<doc>Number of faces to reference, if the texture has more than one.</doc>
+		<field name="bottom" type="int">
+		</field>
+		<field name="front" type="int">
+		</field>
+		<field name="back" type="int">
 		</field>
 	</struct>
-	<class native="MorphShapes" script="MorphShapes">
-		<doc>Contains a set of morph channels used for morph target animation. Each morph channel contains one or multiple shapes which are blended together depending on frame animation. Each channel is then additively blended together depending on some weight.</doc>
-		<property name="Channels" type="MorphChannel" getter="getChannels" setter="" static="false">
-			<doc>Returns a list of all morph channels in the morph animation.</doc>
-		</property>
-	</class>
-	<class native="Skeleton" script="Skeleton">
-		<doc>Contains information about bones required for skeletal animation.</doc>
-		<method native="getBoneInfo" script="GetBoneInfo" static="false">
-			<doc>Returns information about a bone at the provided index.</doc>
-			<param name="boneIdx" type="int">
-				<doc>Index of the bone to retrieve information for.</doc>
+	<class native="CCharacterController" script="CharacterController">
+		<doc>Special physics controller meant to be used for game characters. Uses the &quot;slide-and-collide&quot; physics instead of of the standard physics model to handle various issues with manually moving kinematic objects. Uses a capsule to represent the character&apos;s bounds.</doc>
+		<method native="move" script="Move" static="false">
+			<doc>Moves the controller in the specified direction by the specified amount, while interacting with surrounding geometry. Returns flags signaling where collision occurred after the movement.
+Does not account for gravity, you must apply it manually.</doc>
+			<param name="displacement" type="Vector3">
 			</param>
-			<returns type="BoneInfo">
-				<doc>Information about the bone at the specified index.</doc>
+			<returns type="CharacterCollisionFlag">
 			</returns>
 		</method>
-		<property name="NumBones" type="int" getter="getNumBones" setter="" static="false">
-			<doc>Returns the total number of bones in the skeleton.</doc>
+		<property name="FootPosition" type="Vector3" getter="getFootPosition" setter="setFootPosition" static="false">
+			<doc>Determines the position of the bottom of the controller. Position takes contact offset into account. Changing this will teleport the character to the location. Use move() for movement that includes physics.</doc>
+		</property>
+		<property name="Radius" type="float" getter="getRadius" setter="setRadius" static="false">
+			<doc>Determines the radius of the controller capsule.</doc>
+		</property>
+		<property name="Height" type="float" getter="getHeight" setter="setHeight" static="false">
+			<doc>Determines the height between the centers of the two spheres of the controller capsule.</doc>
+		</property>
+		<property name="Up" type="Vector3" getter="getUp" setter="setUp" static="false">
+			<doc>Determines the up direction of capsule. Determines capsule orientation.</doc>
+		</property>
+		<property name="ClimbingMode" type="CharacterClimbingMode" getter="getClimbingMode" setter="setClimbingMode" static="false">
+			<doc>Controls what happens when character encounters a height higher than its step offset.</doc>
+		</property>
+		<property name="NonWalkableMode" type="CharacterNonWalkableMode" getter="getNonWalkableMode" setter="setNonWalkableMode" static="false">
+			<doc>Controls what happens when character encounters a slope higher than its slope offset.</doc>
+		</property>
+		<property name="MinMoveDistance" type="float" getter="getMinMoveDistance" setter="setMinMoveDistance" static="false">
+			<doc>Represents minimum distance that the character will move during a call to move(). This is used to stop the recursive motion algorithm when the remaining distance is too small.</doc>
+		</property>
+		<property name="ContactOffset" type="float" getter="getContactOffset" setter="setContactOffset" static="false">
+			<doc>Contact offset specifies a skin around the object within which contacts will be generated. It should be a small positive non-zero value.</doc>
+		</property>
+		<property name="StepOffset" type="float" getter="getStepOffset" setter="setStepOffset" static="false">
+			<doc>Controls which obstacles will the character be able to automatically step over without being stopped. This is the height of the maximum obstacle that will be stepped over (with exceptions, see climbingMode).</doc>
+		</property>
+		<property name="SlopeLimit" type="Radian" getter="getSlopeLimit" setter="setSlopeLimit" static="false">
+			<doc>Controls which slopes should the character consider too steep and won&apos;t be able to move over. See nonWalkableMode for more information.</doc>
+		</property>
+		<property name="Layer" type="ulong" getter="getLayer" setter="setLayer" static="false">
+			<doc>Determines the layer that controls what can the controller collide with.</doc>
+		</property>
+		<event native="onColliderHit" script="OnColliderHit" static="false">
+			<doc>Triggered when the controller hits a collider.</doc>
+			<param name="p0" type="ControllerColliderCollision">
+			</param>
+		</event>
+		<event native="onControllerHit" script="OnControllerHit" static="false">
+			<doc>Triggered when the controller hits another character controller.</doc>
+			<param name="p0" type="ControllerControllerCollision">
+			</param>
+		</event>
+	</class>
+	<class native="BloomSettings" script="BloomSettings">
+		<doc>Settings that control the bloom effect. Bloom adds an extra highlight to bright areas of the scene.</doc>
+		<ctor>
+		</ctor>
+		<property name="Enabled" type="bool" getter="getenabled" setter="setenabled" static="false">
+			<doc>Enables or disables the bloom effect.</doc>
+		</property>
+		<property name="Quality" type="int" getter="getquality" setter="setquality" static="false">
+			<doc>Quality of the bloom effect. Higher values will use higher resolution texture for calculating bloom, at the cost of lower performance. Valid range is [0, 3], default is 2.</doc>
+		</property>
+		<property name="Threshold" type="float" getter="getthreshold" setter="setthreshold" static="false">
+			<doc>Determines the minimal threshold of pixel luminance to be included in the bloom calculations. Any pixel with luminance below this value will be ignored for the purposes of bloom. The value represents luminance after it is scaled by exposure. Set to zero or negative to disable the threshold and include all pixels in the calculations.</doc>
+		</property>
+		<property name="Intensity" type="float" getter="getintensity" setter="setintensity" static="false">
+			<doc>Determines the intensity of the bloom effect. Ideally should be in [0, 4] range but higher values are allowed.</doc>
+		</property>
+		<property name="Tint" type="Color" getter="gettint" setter="settint" static="false">
+			<doc>Tint color to apply to the bloom highlight. A pure white means the bloom inherits the underlying scene color.</doc>
 		</property>
 	</class>
+	<enum native="VectorComponent" script="VectorComponent">
+		<doc>Names of individual components of a vector.</doc>
+		<enumentry native="X" script="X">
+		</enumentry>
+		<enumentry native="Y" script="Y">
+		</enumentry>
+		<enumentry native="Z" script="Z">
+		</enumentry>
+		<enumentry native="W" script="W">
+		</enumentry>
+	</enum>
+	<enum native="ColorComponent" script="ColorComponent">
+		<doc>Names of individual components of a color.</doc>
+		<enumentry native="R" script="R">
+		</enumentry>
+		<enumentry native="G" script="G">
+		</enumentry>
+		<enumentry native="B" script="B">
+		</enumentry>
+		<enumentry native="A" script="A">
+		</enumentry>
+	</enum>
 	<class native="AnimationUtility" script="AnimationUtility">
 		<doc>Helper class for dealing with animations, animation clips and curves.</doc>
 		<method native="eulerToQuaternionCurve" script="EulerToQuaternionCurve" static="true">
@@ -1081,6 +1165,73 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 			<doc>Clamp to end/beginning, keeping the last/first frame active.</doc>
 		</enumentry>
 	</enum>
+	<enum native="ObjectMobility" script="ObjectMobility">
+		<doc>Controls what kind of mobility restrictions a scene object has. This is used primarily as a performance hint to other systems. Generally the more restricted the mobility the higher performance can be achieved.</doc>
+		<enumentry native="Movable" script="Movable">
+			<doc>Scene object can be moved and has no mobility restrictions.</doc>
+		</enumentry>
+		<enumentry native="Immovable" script="Immovable">
+			<doc>Scene object isn&apos;t allowed to be moved but is allowed to be visually changed in other ways (e.g. changing the displayed mesh or light intensity (depends on attached components).</doc>
+		</enumentry>
+		<enumentry native="Static" script="Static">
+			<doc>Scene object isn&apos;t allowed to be moved nor is it allowed to be visually changed. Object must be fully static.</doc>
+		</enumentry>
+	</enum>
+	<class native="RootMotion" script="RootMotion">
+		<doc>Contains a set of animation curves used for moving and rotating the root bone.</doc>
+		<property name="Position" type="Vector3Curve" getter="getPositionCurves" setter="" static="false">
+			<doc>Animation curve representing the movement of the root bone.</doc>
+		</property>
+		<property name="Rotation" type="QuaternionCurve" getter="getRotationCurves" setter="" static="false">
+			<doc>Animation curve representing the rotation of the root bone.</doc>
+		</property>
+	</class>
+	<struct native="TextureSurface" script="TextureSurface">
+		<doc>References a subset of surfaces within a texture.</doc>
+		<ctor>
+			<param name="mipLevel" type="int">
+			</param>
+			<param name="numMipLevels" type="int">
+			</param>
+			<param name="face" type="int">
+			</param>
+			<param name="numFaces" type="int">
+			</param>
+		</ctor>
+		<field name="mipLevel" type="int">
+			<doc>First mip level to reference.</doc>
+		</field>
+		<field name="numMipLevels" type="int">
+			<doc>Number of mip levels to reference. Must be greater than zero.</doc>
+		</field>
+		<field name="face" type="int">
+			<doc>First face to reference. Face can represent a single cubemap face, or a single array entry in a  texture array. If cubemaps are laid out in a texture array then every six sequential faces represent a single array entry.</doc>
+		</field>
+		<field name="numFaces" type="int">
+			<doc>Number of faces to reference, if the texture has more than one.</doc>
+		</field>
+	</struct>
+	<class native="MorphShapes" script="MorphShapes">
+		<doc>Contains a set of morph channels used for morph target animation. Each morph channel contains one or multiple shapes which are blended together depending on frame animation. Each channel is then additively blended together depending on some weight.</doc>
+		<property name="Channels" type="MorphChannel" getter="getChannels" setter="" static="false">
+			<doc>Returns a list of all morph channels in the morph animation.</doc>
+		</property>
+	</class>
+	<class native="Skeleton" script="Skeleton">
+		<doc>Contains information about bones required for skeletal animation.</doc>
+		<method native="getBoneInfo" script="GetBoneInfo" static="false">
+			<doc>Returns information about a bone at the provided index.</doc>
+			<param name="boneIdx" type="int">
+				<doc>Index of the bone to retrieve information for.</doc>
+			</param>
+			<returns type="BoneInfo">
+				<doc>Information about the bone at the specified index.</doc>
+			</returns>
+		</method>
+		<property name="NumBones" type="int" getter="getNumBones" setter="" static="false">
+			<doc>Returns the total number of bones in the skeleton.</doc>
+		</property>
+	</class>
 	<struct native="AnimationClipState" script="AnimationClipState">
 		<doc>Contains information about a currently playing animation clip.</doc>
 		<ctor>
@@ -1109,18 +1260,6 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 		<field name="clips" type="BlendClipInfo">
 		</field>
 	</struct>
-	<enum native="CollisionReportMode" script="CollisionReportMode">
-		<doc>Determines which collision events will be reported by physics objects.</doc>
-		<enumentry native="None" script="None">
-			<doc>No collision events will be triggered.</doc>
-		</enumentry>
-		<enumentry native="Report" script="Report">
-			<doc>Collision events will be triggered when object enters and/or leaves collision.</doc>
-		</enumentry>
-		<enumentry native="ReportPersistent" script="ReportPersistent">
-			<doc>Collision events will be triggered when object enters and/or leaves collision, but also every frame the object remains in collision.</doc>
-		</enumentry>
-	</enum>
 	<struct native="GUIElementStateStyle" script="GUIElementStateStyle">
 		<doc>Specific texture and text color used in a particular GUI element style.</doc>
 		<field name="texture" type="SpriteTexture">
@@ -1987,61 +2126,6 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 			<doc>Size of a single sample in bits. The clip will be converted to this bit depth on import.</doc>
 		</property>
 	</class>
-	<class native="ParticleEmitterStaticMeshShape" script="ParticleEmitterStaticMeshShape">
-		<doc>Particle emitter shape that emits particles from a surface of a static (non-animated) mesh. Particles can be emitted from mesh vertices, edges or triangles. If information about normals exists, particles will also inherit the normals.</doc>
-		<ctor>
-			<doc>Creates a new particle emitter static mesh shape.</doc>
-			<param name="desc" type="ParticleStaticMeshShapeOptions">
-			</param>
-		</ctor>
-		<ctor>
-			<doc>Creates a new particle emitter static mesh shape.</doc>
-		</ctor>
-		<property name="Options" type="ParticleStaticMeshShapeOptions" getter="getOptions" setter="setOptions" static="false">
-			<doc>Options describing the shape.</doc>
-		</property>
-	</class>
-	<struct native="PixelVolume" script="PixelVolume">
-		<doc>Represents a 3D region of pixels used for referencing pixel data.</doc>
-		<ctor>
-		</ctor>
-		<ctor>
-			<param name="left" type="int">
-			</param>
-			<param name="top" type="int">
-			</param>
-			<param name="right" type="int">
-			</param>
-			<param name="bottom" type="int">
-			</param>
-		</ctor>
-		<ctor>
-			<param name="left" type="int">
-			</param>
-			<param name="top" type="int">
-			</param>
-			<param name="front" type="int">
-			</param>
-			<param name="right" type="int">
-			</param>
-			<param name="bottom" type="int">
-			</param>
-			<param name="back" type="int">
-			</param>
-		</ctor>
-		<field name="left" type="int">
-		</field>
-		<field name="top" type="int">
-		</field>
-		<field name="right" type="int">
-		</field>
-		<field name="bottom" type="int">
-		</field>
-		<field name="front" type="int">
-		</field>
-		<field name="back" type="int">
-		</field>
-	</struct>
 	<enum native="PixelFormat" script="PixelFormat">
 		<doc>Pixel formats usable by images, textures and render surfaces.</doc>
 		<enumentry native="PF_R8" script="R8">
@@ -2353,29 +2437,6 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 			<doc>Controls how many samples are used for multisampling. (0 or 1 if multisampling is not used).</doc>
 		</property>
 	</class>
-	<struct native="PhysicsQueryHit" script="PhysicsQueryHit">
-		<doc>Hit information from a physics query.</doc>
-		<ctor>
-		</ctor>
-		<field name="point" type="Vector3">
-			<doc>Position of the hit in world space.</doc>
-		</field>
-		<field name="normal" type="Vector3">
-			<doc>Normal to the surface that was hit.</doc>
-		</field>
-		<field name="uv" type="Vector2">
-			<doc>Barycentric coordinates of the triangle that was hit (only applicable when triangle meshes are hit).</doc>
-		</field>
-		<field name="distance" type="float">
-			<doc>Distance from the query origin to the hit position.</doc>
-		</field>
-		<field name="triangleIdx" type="int">
-			<doc>Index of the triangle that was hit (only applicable when triangle meshes are hit).</doc>
-		</field>
-		<field name="collider" type="Collider">
-			<doc>Component of the collider that was hit. This may be null if the hit collider has no owner component, in which case refer to #colliderRaw.</doc>
-		</field>
-	</struct>
 	<struct native="VideoMode" script="VideoMode">
 		<doc>Video mode contains information about how a render window presents its information to an output device like a  monitor.</doc>
 		<ctor>
@@ -2579,6 +2640,41 @@ Whether or not an audio source is spatial is controlled by the assigned AudioCli
 			<doc>Determines the name of the bone the component is referencing.</doc>
 		</property>
 	</class>
+	<enum native="CollisionReportMode" script="CollisionReportMode">
+		<doc>Determines which collision events will be reported by physics objects.</doc>
+		<enumentry native="None" script="None">
+			<doc>No collision events will be triggered.</doc>
+		</enumentry>
+		<enumentry native="Report" script="Report">
+			<doc>Collision events will be triggered when object enters and/or leaves collision.</doc>
+		</enumentry>
+		<enumentry native="ReportPersistent" script="ReportPersistent">
+			<doc>Collision events will be triggered when object enters and/or leaves collision, but also every frame the object remains in collision.</doc>
+		</enumentry>
+	</enum>
+	<struct native="PhysicsQueryHit" script="PhysicsQueryHit">
+		<doc>Hit information from a physics query.</doc>
+		<ctor>
+		</ctor>
+		<field name="point" type="Vector3">
+			<doc>Position of the hit in world space.</doc>
+		</field>
+		<field name="normal" type="Vector3">
+			<doc>Normal to the surface that was hit.</doc>
+		</field>
+		<field name="uv" type="Vector2">
+			<doc>Barycentric coordinates of the triangle that was hit (only applicable when triangle meshes are hit).</doc>
+		</field>
+		<field name="distance" type="float">
+			<doc>Distance from the query origin to the hit position.</doc>
+		</field>
+		<field name="triangleIdx" type="int">
+			<doc>Index of the triangle that was hit (only applicable when triangle meshes are hit).</doc>
+		</field>
+		<field name="collider" type="Collider">
+			<doc>Component of the collider that was hit. This may be null if the hit collider has no owner component, in which case refer to #colliderRaw.</doc>
+		</field>
+	</struct>
 	<class native="CCollider" script="Collider">
 		<doc>Collider represents physics geometry that can be in multiple states: - Default: Static geometry that physics objects can collide with. - Trigger: Static geometry that can&apos;t be collided with but will report touch events. - Dynamic: Dynamic geometry that is a part of a Rigidbody. A set of colliders defines the shape of the parent  rigidbody.</doc>
 		<property name="Trigger" type="bool" getter="getIsTrigger" setter="setIsTrigger" static="false">
@@ -2795,80 +2891,6 @@ In range [-1.0f, 1.0f].</doc>
 		</property>
 		<property name="MaxRoughness" type="float" getter="getmaxRoughness" setter="setmaxRoughness" static="false">
 			<doc>Roughness at which screen space reflections start fading out and become replaced with refl. probes. Valid range is [0, 1]. Default is 0.8.</doc>
-		</property>
-	</class>
-	<class native="CCharacterController" script="CharacterController">
-		<doc>Special physics controller meant to be used for game characters. Uses the &quot;slide-and-collide&quot; physics instead of of the standard physics model to handle various issues with manually moving kinematic objects. Uses a capsule to represent the character&apos;s bounds.</doc>
-		<method native="move" script="Move" static="false">
-			<doc>Moves the controller in the specified direction by the specified amount, while interacting with surrounding geometry. Returns flags signaling where collision occurred after the movement.
-Does not account for gravity, you must apply it manually.</doc>
-			<param name="displacement" type="Vector3">
-			</param>
-			<returns type="CharacterCollisionFlag">
-			</returns>
-		</method>
-		<property name="FootPosition" type="Vector3" getter="getFootPosition" setter="setFootPosition" static="false">
-			<doc>Determines the position of the bottom of the controller. Position takes contact offset into account. Changing this will teleport the character to the location. Use move() for movement that includes physics.</doc>
-		</property>
-		<property name="Radius" type="float" getter="getRadius" setter="setRadius" static="false">
-			<doc>Determines the radius of the controller capsule.</doc>
-		</property>
-		<property name="Height" type="float" getter="getHeight" setter="setHeight" static="false">
-			<doc>Determines the height between the centers of the two spheres of the controller capsule.</doc>
-		</property>
-		<property name="Up" type="Vector3" getter="getUp" setter="setUp" static="false">
-			<doc>Determines the up direction of capsule. Determines capsule orientation.</doc>
-		</property>
-		<property name="ClimbingMode" type="CharacterClimbingMode" getter="getClimbingMode" setter="setClimbingMode" static="false">
-			<doc>Controls what happens when character encounters a height higher than its step offset.</doc>
-		</property>
-		<property name="NonWalkableMode" type="CharacterNonWalkableMode" getter="getNonWalkableMode" setter="setNonWalkableMode" static="false">
-			<doc>Controls what happens when character encounters a slope higher than its slope offset.</doc>
-		</property>
-		<property name="MinMoveDistance" type="float" getter="getMinMoveDistance" setter="setMinMoveDistance" static="false">
-			<doc>Represents minimum distance that the character will move during a call to move(). This is used to stop the recursive motion algorithm when the remaining distance is too small.</doc>
-		</property>
-		<property name="ContactOffset" type="float" getter="getContactOffset" setter="setContactOffset" static="false">
-			<doc>Contact offset specifies a skin around the object within which contacts will be generated. It should be a small positive non-zero value.</doc>
-		</property>
-		<property name="StepOffset" type="float" getter="getStepOffset" setter="setStepOffset" static="false">
-			<doc>Controls which obstacles will the character be able to automatically step over without being stopped. This is the height of the maximum obstacle that will be stepped over (with exceptions, see climbingMode).</doc>
-		</property>
-		<property name="SlopeLimit" type="Radian" getter="getSlopeLimit" setter="setSlopeLimit" static="false">
-			<doc>Controls which slopes should the character consider too steep and won&apos;t be able to move over. See nonWalkableMode for more information.</doc>
-		</property>
-		<property name="Layer" type="ulong" getter="getLayer" setter="setLayer" static="false">
-			<doc>Determines the layer that controls what can the controller collide with.</doc>
-		</property>
-		<event native="onColliderHit" script="OnColliderHit" static="false">
-			<doc>Triggered when the controller hits a collider.</doc>
-			<param name="p0" type="ControllerColliderCollision">
-			</param>
-		</event>
-		<event native="onControllerHit" script="OnControllerHit" static="false">
-			<doc>Triggered when the controller hits another character controller.</doc>
-			<param name="p0" type="ControllerControllerCollision">
-			</param>
-		</event>
-	</class>
-	<class native="BloomSettings" script="BloomSettings">
-		<doc>Settings that control the bloom effect. Bloom adds an extra highlight to bright areas of the scene.</doc>
-		<ctor>
-		</ctor>
-		<property name="Enabled" type="bool" getter="getenabled" setter="setenabled" static="false">
-			<doc>Enables or disables the bloom effect.</doc>
-		</property>
-		<property name="Quality" type="int" getter="getquality" setter="setquality" static="false">
-			<doc>Quality of the bloom effect. Higher values will use higher resolution texture for calculating bloom, at the cost of lower performance. Valid range is [0, 3], default is 2.</doc>
-		</property>
-		<property name="Threshold" type="float" getter="getthreshold" setter="setthreshold" static="false">
-			<doc>Determines the minimal threshold of pixel luminance to be included in the bloom calculations. Any pixel with luminance below this value will be ignored for the purposes of bloom. The value represents luminance after it is scaled by exposure. Set to zero or negative to disable the threshold and include all pixels in the calculations.</doc>
-		</property>
-		<property name="Intensity" type="float" getter="getintensity" setter="setintensity" static="false">
-			<doc>Determines the intensity of the bloom effect. Ideally should be in [0, 4] range but higher values are allowed.</doc>
-		</property>
-		<property name="Tint" type="Color" getter="gettint" setter="settint" static="false">
-			<doc>Tint color to apply to the bloom highlight. A pure white means the bloom inherits the underlying scene color.</doc>
 		</property>
 	</class>
 	<class native="ShadowSettings" script="ShadowSettings">

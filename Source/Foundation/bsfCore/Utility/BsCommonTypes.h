@@ -531,6 +531,18 @@ namespace bs
 		Cylindrical
 	};
 
+	/** Names of individual components of a vector. */
+	enum class BS_SCRIPT_EXPORT(m:Utility) VectorComponent
+	{
+		X, Y, Z, W
+	};
+
+	/** Names of individual components of a color. */
+	enum class BS_SCRIPT_EXPORT(m:Utility) ColorComponent
+	{
+		R, G, B, A
+	};
+
 	/** 
 	 * Bits that map to a specific surface of a render target. Combine the bits to generate a mask that references
 	 * only specific render target surfaces.

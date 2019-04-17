@@ -14,6 +14,10 @@
 #include "../../../Foundation/bsfCore/Importer/BsImportOptions.h"
 #endif
 #include "BsScriptImportOptions.generated.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleEmitter.h"
+#include "BsScriptParticleEmitterStaticMeshShape.generated.h"
+#include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
+#include "BsScriptBloomSettings.generated.h"
 #include "../../../Foundation/bsfCore/Animation/BsMorphShapes.h"
 #include "BsScriptMorphShapes.generated.h"
 #include "../../../Foundation/bsfCore/Animation/BsSkeleton.h"
@@ -30,8 +34,6 @@
 #include "../../../Foundation/bsfCore/Audio/BsAudioClipImportOptions.h"
 #endif
 #include "BsScriptAudioClipImportOptions.generated.h"
-#include "../../../Foundation/bsfCore/Particles/BsParticleEmitter.h"
-#include "BsScriptParticleEmitterStaticMeshShape.generated.h"
 #include "../../../Foundation/bsfCore/Image/BsPixelData.h"
 #include "BsScriptPixelData.generated.h"
 #include "../../../Foundation/bsfCore/RenderAPI/BsViewport.h"
@@ -58,8 +60,6 @@
 #include "BsScriptDepthOfFieldSettings.generated.h"
 #include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
 #include "BsScriptScreenSpaceReflectionsSettings.generated.h"
-#include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
-#include "BsScriptBloomSettings.generated.h"
 #include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
 #include "BsScriptShadowSettings.generated.h"
 #include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
@@ -144,6 +144,8 @@ namespace bs
 #if !BS_IS_BANSHEE3D
 		ADD_ENTRY(ImportOptions, ScriptImportOptions)
 #endif
+		ADD_ENTRY(ParticleEmitterStaticMeshShape, ScriptParticleEmitterStaticMeshShape)
+		ADD_ENTRY(BloomSettings, ScriptBloomSettings)
 		ADD_ENTRY(MorphShapes, ScriptMorphShapes)
 		ADD_ENTRY(Skeleton, ScriptSkeleton)
 		ADD_ENTRY(FontBitmap, ScriptFontBitmap)
@@ -153,7 +155,6 @@ namespace bs
 #if !BS_IS_BANSHEE3D
 		ADD_ENTRY(AudioClipImportOptions, ScriptAudioClipImportOptions)
 #endif
-		ADD_ENTRY(ParticleEmitterStaticMeshShape, ScriptParticleEmitterStaticMeshShape)
 		ADD_ENTRY(PixelData, ScriptPixelData)
 		ADD_ENTRY(Viewport, ScriptViewport)
 		ADD_ENTRY(RenderTarget, ScriptRenderTarget)
@@ -169,7 +170,6 @@ namespace bs
 #endif
 		ADD_ENTRY(DepthOfFieldSettings, ScriptDepthOfFieldSettings)
 		ADD_ENTRY(ScreenSpaceReflectionsSettings, ScriptScreenSpaceReflectionsSettings)
-		ADD_ENTRY(BloomSettings, ScriptBloomSettings)
 		ADD_ENTRY(ShadowSettings, ScriptShadowSettings)
 		ADD_ENTRY(RenderSettings, ScriptRenderSettings)
 		ADD_ENTRY(ParticleForce, ScriptParticleForce)
