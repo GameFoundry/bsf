@@ -19,7 +19,7 @@ namespace bs { namespace ct
 	class ParamBlockParam
 	{
 	public:
-		ParamBlockParam() { }
+		ParamBlockParam() = default;
 		ParamBlockParam(const GpuParamDataDesc& paramDesc)
 			:mParamDesc(paramDesc)
 		{ }

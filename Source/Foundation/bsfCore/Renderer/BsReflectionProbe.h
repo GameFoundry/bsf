@@ -41,7 +41,7 @@ namespace bs
 	class BS_CORE_EXPORT ReflectionProbeBase : public SceneActor
 	{
 	public:
-		ReflectionProbeBase();
+		ReflectionProbeBase() = default;
 		ReflectionProbeBase(ReflectionProbeType type, float radius, const Vector3& extents);
 		virtual ~ReflectionProbeBase() = default;
 
@@ -79,12 +79,12 @@ namespace bs
 		/** Updates the internal bounds for the probe. Call this whenever a property affecting the bounds changes. */
 		void updateBounds();
 
-		ReflectionProbeType mType; /**< Type of probe that determines how are the rest of the parameters interpreted. */
-		float mRadius; /**< Radius used for sphere reflection probes. */
-		Vector3 mExtents; /**< Extents used by box reflection probe. */
-		float mTransitionDistance; /**< Extra distance to used for fading out box probes. */
+		ReflectionProbeType mType = ReflectionProbeType::Box; /**< Type of probe that determines how are the rest of the parameters interpreted. */
+		float mRadius = 1.0f; /**< Radius used for sphere reflection probes. */
+		Vector3 mExtents = { 1.0f, 1.0f, 1.0f }; /**< Extents used by box reflection probe. */
+		float mTransitionDistance = 0.1f; /**< Extra distance to used for fading out box probes. */
 
-		Sphere mBounds; /**< Sphere that bounds the probe area of influence. */
+		Sphere mBounds = { Vector3::ZERO, 1.0f }; /**< Sphere that bounds the probe area of influence. */
 	};
 
 	/** Templated base class for both core and sim thread implementations of a reflection probe. */

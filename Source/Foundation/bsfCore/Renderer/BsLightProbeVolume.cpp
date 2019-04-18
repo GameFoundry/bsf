@@ -11,10 +11,6 @@
 
 namespace bs
 {
-	LightProbeVolume::LightProbeVolume()
-		: mVolume(AABox::UNIT_BOX), mCellCount { 1, 1, 1 }
-	{ }
-
 	LightProbeVolume::LightProbeVolume(const AABox& volume, const Vector3I& cellCount)
 		:mVolume(volume), mCellCount(cellCount)
 	{

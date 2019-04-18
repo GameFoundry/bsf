@@ -8,7 +8,7 @@
 namespace bs { namespace ct
 {
 	PooledRenderTexture::PooledRenderTexture(GpuResourcePool* pool)
-		:mPool(pool), mIsFree(false)
+		:mPool(pool)
 	{ }
 
 	PooledRenderTexture::~PooledRenderTexture()
@@ -18,7 +18,7 @@ namespace bs { namespace ct
 	}
 
 	PooledStorageBuffer::PooledStorageBuffer(GpuResourcePool* pool)
-		:mPool(pool), mIsFree(false)
+		:mPool(pool)
 	{ }
 
 	PooledStorageBuffer::~PooledStorageBuffer()
