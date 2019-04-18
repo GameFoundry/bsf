@@ -211,7 +211,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		LightProbeVolume = default(); // Serialization only
+		LightProbeVolume = default; // Serialization only
 	};
 
 	namespace ct
