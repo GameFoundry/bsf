@@ -11,11 +11,6 @@
 
 namespace bs
 {
-	ReflectionProbeBase::ReflectionProbeBase()
-		: mType(ReflectionProbeType::Box), mRadius(1.0f), mExtents(1.0f, 1.0f, 1.0f), mTransitionDistance(0.1f)
-		, mBounds(Vector3::ZERO, 1.0f)
-	{ }
-
 	ReflectionProbeBase::ReflectionProbeBase(ReflectionProbeType type, float radius, const Vector3& extents)
 		: mType(type), mRadius(radius), mExtents(extents), mTransitionDistance(0.1f), mBounds(Vector3::ZERO, 1.0f)
 	{ }

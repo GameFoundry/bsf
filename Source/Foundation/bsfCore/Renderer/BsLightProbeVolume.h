@@ -76,7 +76,7 @@ namespace bs
 		/** Internal information about a single light probe. */
 		struct ProbeInfo
 		{
-			ProbeInfo() {}
+			ProbeInfo() = default;
 			ProbeInfo(LightProbeFlags flags, const Vector3& position)
 				:flags(flags), position(position)
 			{ }
@@ -197,7 +197,7 @@ namespace bs
 	private:
 		UnorderedMap<UINT32, ProbeInfo> mProbes;
 		AABox mVolume = AABox::UNIT_BOX;
-		Vector3I mCellCount;
+		Vector3I mCellCount = { 1, 1, 1 };
 
 		UINT32 mNextProbeId = 0;
 		SPtr<ct::RendererTask> mRendererTask;
@@ -211,7 +211,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		LightProbeVolume(); // Serialization only
+		LightProbeVolume = default(); // Serialization only
 	};
 
 	namespace ct

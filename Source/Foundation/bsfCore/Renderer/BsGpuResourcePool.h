@@ -30,7 +30,7 @@ namespace bs { namespace ct
 		friend class GpuResourcePool;
 
 		GpuResourcePool* mPool;
-		bool mIsFree;
+		bool mIsFree = false;
 	};
 
 	/**	Contains data about a single storage buffer in the GPU resource pool. */
@@ -45,7 +45,7 @@ namespace bs { namespace ct
 		friend class GpuResourcePool;
 
 		GpuResourcePool* mPool;
-		bool mIsFree;
+		bool mIsFree = false;
 	};
 
 	/** 

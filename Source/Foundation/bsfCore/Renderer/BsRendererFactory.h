@@ -19,7 +19,7 @@ namespace bs
 	class BS_CORE_EXPORT RendererFactory
 	{
 	public:
-		virtual ~RendererFactory() { }
+		virtual ~RendererFactory() = default;
 
 		/**	Creates a new instance of the renderer. */
 		virtual SPtr<ct::Renderer> create() = 0;

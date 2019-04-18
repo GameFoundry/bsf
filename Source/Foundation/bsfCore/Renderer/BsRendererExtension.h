@@ -105,7 +105,7 @@ namespace bs
 			:mLocation(location), mPriority(priority)
 		{ }
 
-		virtual ~RendererExtension() {}
+		virtual ~RendererExtension() = default;
 	private:
 		/** Initializer that triggers when a renderer extension is first constructed. */
 		static void _initializer(RendererExtension* obj, const Any& data);
