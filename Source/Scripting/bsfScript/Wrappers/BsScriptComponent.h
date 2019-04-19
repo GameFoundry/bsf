@@ -110,7 +110,6 @@ namespace bs
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_getUUID(ScriptComponentBase* nativeInstance, UUID* uuid);
 		static MonoObject* internal_addComponent(MonoObject* parentSceneObject, MonoReflectionType* type);
 		static MonoObject* internal_getComponent(MonoObject* parentSceneObject, MonoReflectionType* type);
 		static MonoArray* internal_getComponents(MonoObject* parentSceneObject);

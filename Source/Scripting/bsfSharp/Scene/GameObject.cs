@@ -17,13 +17,34 @@ namespace bs
         /// <summary>
         /// Returns a unique ID for the game object.
         /// </summary>
-        public UInt64 InstanceId
+        public UInt64 InstanceId => Internal_GetInstanceId(mCachedPtr);
+
+        /// <summary>
+        /// Returns a universally unique identifier that persists scene save/load.
+        /// </summary>
+        public UUID UUID
         {
-            get { return Internal_GetInstanceId(mCachedPtr); }
+            get
+            {
+                UUID uuid;
+                Internal_GetUUID(mCachedPtr, out uuid);
+                return uuid;
+            }
         }
+
+        /// <summary>
+        /// Checks if the game object has been destroyed. 
+        /// </summary>
+        public bool IsDestroyed => Internal_GetIsDestroyed(mCachedPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern UInt64 Internal_GetInstanceId(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetUUID(IntPtr nativeInstance, out UUID uuid);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetIsDestroyed(IntPtr nativeInstance);
     }
 
     /// <summary>

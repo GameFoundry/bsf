@@ -25,19 +25,6 @@ namespace bs
         }
 
         /// <summary>
-        /// Returns a universally unique identifier that persists scene save/load.
-        /// </summary>
-        public UUID UUID
-        {
-            get
-            {
-                UUID uuid;
-                Internal_GetUUID(mCachedPtr, out uuid);
-                return uuid;
-            }
-        }
-
-        /// <summary>
         /// Parent in the scene object hierarchy. Null for hierarchy root.
         /// </summary>
         public SceneObject Parent
