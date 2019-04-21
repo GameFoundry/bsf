@@ -12,6 +12,9 @@
 #include "Wrappers/BsScriptComponent.h"
 #include "Wrappers/BsScriptReflectable.h"
 #include "BsManagedSerializableObject.h"
+#include "BsManagedResource.h"
+#include "Wrappers/BsScriptManagedComponent.h"
+#include "BsManagedComponent.h"
 
 namespace bs
 {
@@ -863,49 +866,161 @@ namespace bs
 
 	SPtr<IReflectable> ScriptAssemblyManager::getReflectableFromManagedObject(MonoObject* value)
 	{
-		SPtr<IReflectable> nativeValue;
 		if (value != nullptr)
 		{
-			String elementNs;
-			String elementTypeName;
-			MonoUtil::getClassName(value, elementNs, elementTypeName);
+			::MonoClass* klass = MonoUtil::getClass(value);
+			MonoClass* monoClass = MonoManager::instance().findClass(klass);
 
-			SPtr<ManagedSerializableObjectInfo> objInfo;
-			if (!instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo))
+			if (MonoUtil::isEnum(klass))
 			{
-				LOGERR("Object has no serialization meta-data.");
+				LOGWRN("Unsupported type provided.");
 				return nullptr;
 			}
 
-			if (objInfo->mTypeInfo->mRTIITypeId != 0)
+			MonoPrimitiveType monoPrimitiveType = MonoUtil::getPrimitiveType(klass);
+			if(monoPrimitiveType != MonoPrimitiveType::Class)
 			{
-				::MonoClass* monoClass = MonoUtil::getClass(value);
-				::MonoReflectionType* monoType = MonoUtil::getType(monoClass);
-
-				const ReflectableTypeInfo* reflTypeInfo = instance().getReflectableTypeInfo(monoType);
-				assert(reflTypeInfo);
-
-				ScriptReflectableBase* scriptReflectable = nullptr;
-
-				if (reflTypeInfo->metaData->thisPtrField != nullptr)
-					reflTypeInfo->metaData->thisPtrField->get(value, &scriptReflectable);
-
-				nativeValue = scriptReflectable->getReflectable();
+				LOGWRN("Unsupported type provided.");
+				return nullptr;
 			}
-			else
+
+			const ScriptMeta* managedResourceMeta = ScriptManagedResource::getMetaData();
+			const ScriptMeta* managedComponentMeta = ScriptManagedComponent::getMetaData();
+
+			if (monoClass->isSubClassOf(ScriptResource::getMetaData()->scriptClass)) // Resource
 			{
-				SPtr<ManagedSerializableObject> managedObj = ManagedSerializableObject::createFromExisting(value);
-				if (!managedObj)
+				if (monoClass == ScriptResource::getMetaData()->scriptClass ||
+					monoClass == ScriptManagedResource::getMetaData()->scriptClass)
 				{
-					LOGERR("Object failed to serialize due to an internal error.");
+					LOGWRN("Unsupported type provided.");
 					return nullptr;
 				}
 
-				managedObj->serialize();
-				nativeValue = managedObj;
+				if (monoClass->isSubClassOf(managedResourceMeta->scriptClass))
+				{
+					ScriptManagedResource* scriptResource = nullptr;
+					managedResourceMeta->thisPtrField->get(value, &scriptResource);
+
+					HManagedResource resource = scriptResource->getHandle();
+					if (!resource.isLoaded(false))
+						return nullptr;
+
+					MonoObject* managedInstance = resource->getManagedInstance();
+					SPtr<ManagedSerializableObject> serializedObject = ManagedSerializableObject::createFromExisting(managedInstance);
+					if (serializedObject == nullptr)
+						return nullptr;
+
+					serializedObject->serialize();
+					return serializedObject;
+				}
+				else
+				{
+					::MonoReflectionType* type = MonoUtil::getType(klass);
+					BuiltinResourceInfo* builtinInfo = getBuiltinResourceInfo(type);
+					if (builtinInfo == nullptr)
+					{
+						assert(false && "Unable to find information about a built-in resource. Did you update BuiltinResourceTypes list?");
+						return nullptr;
+					}
+
+					ScriptResourceBase* scriptResource = nullptr;
+					builtinInfo->metaData->thisPtrField->get(value, &scriptResource);
+
+					HResource handle = scriptResource->getGenericHandle();
+					if (!handle.isLoaded(false))
+						return nullptr;
+
+					return handle.getInternalPtr();
+				}
+			}
+			else if (monoClass->isSubClassOf(mBuiltin.componentClass)) // Component
+			{
+				if (monoClass == mBuiltin.componentClass || monoClass == mBuiltin.managedComponentClass)
+				{
+					LOGWRN("Unsupported type provided.");
+					return nullptr;
+				}
+
+				if(monoClass->isSubClassOf(mBuiltin.managedComponentClass))
+				{
+					ScriptManagedComponent* scriptComponent = nullptr;
+					managedComponentMeta->thisPtrField->get(value, &scriptComponent);
+
+					HManagedComponent component = scriptComponent->getHandle();
+					if (component.isDestroyed())
+						return nullptr;
+
+					MonoObject* managedInstance = component->getManagedInstance();
+					SPtr<ManagedSerializableObject> serializedObject = ManagedSerializableObject::createFromExisting(managedInstance);
+					if (serializedObject == nullptr)
+						return nullptr;
+
+					serializedObject->serialize();
+					return serializedObject;
+				}
+				else
+				{
+					::MonoReflectionType* type = MonoUtil::getType(klass);
+					BuiltinComponentInfo* builtinInfo = getBuiltinComponentInfo(type);
+					if (builtinInfo == nullptr)
+					{
+						assert(false && "Unable to find information about a built-in component. Did you update BuiltinComponents list?");
+						return nullptr;
+					}
+
+					ScriptComponentBase* scriptComponent = nullptr;
+					builtinInfo->metaData->thisPtrField->get(value, &scriptComponent);
+
+					HComponent handle = scriptComponent->getComponent();
+					if (handle.isDestroyed())
+						return nullptr;
+
+					return handle.getInternalPtr();
+				}
+			}
+			else
+			{
+				String elementNs;
+				String elementTypeName;
+				MonoUtil::getClassName(value, elementNs, elementTypeName);
+
+				SPtr<ManagedSerializableObjectInfo> objInfo;
+				if (!instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo))
+				{
+					LOGERR("Object has no serialization meta-data.");
+					return nullptr;
+				}
+
+				if (objInfo->mTypeInfo->mRTIITypeId != 0)
+				{
+					::MonoClass* monoClass = MonoUtil::getClass(value);
+					::MonoReflectionType* monoType = MonoUtil::getType(monoClass);
+
+					const ReflectableTypeInfo* reflTypeInfo = instance().getReflectableTypeInfo(monoType);
+					assert(reflTypeInfo);
+
+					ScriptReflectableBase* scriptReflectable = nullptr;
+
+					if (reflTypeInfo->metaData->thisPtrField != nullptr)
+						reflTypeInfo->metaData->thisPtrField->get(value, &scriptReflectable);
+
+					return scriptReflectable->getReflectable();
+				}
+				else
+				{
+					SPtr<ManagedSerializableObject> managedObj = ManagedSerializableObject::createFromExisting(value);
+					if (!managedObj)
+					{
+						LOGERR("Object failed to serialize due to an internal error.");
+						return nullptr;
+					}
+
+					managedObj->serialize();
+					return managedObj;
+				}
 			}
 		}
 
-		return nativeValue;
+		return nullptr;
 	}
 }

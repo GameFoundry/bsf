@@ -157,7 +157,7 @@ namespace bs
 		* object is serialized and the serialized version of the object is returned. The provided object cannot be an array,
 		* list, dictionary, component or a resource.
 		*/
-		static SPtr<IReflectable> getReflectableFromManagedObject(MonoObject* value);
+		SPtr<IReflectable> getReflectableFromManagedObject(MonoObject* value);
 
 	private:
 		/**	Deletes all stored managed serializable object infos for all assemblies. */
