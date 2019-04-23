@@ -11,8 +11,7 @@
 namespace bs { namespace ct
 {
 	D3D11TextureView::D3D11TextureView(const D3D11Texture* texture, const TEXTURE_VIEW_DESC& desc)
-		: TextureView(desc), mSRV(nullptr), mUAV(nullptr), mRTV(nullptr), mWDepthWStencilView(nullptr)
-		, mRODepthWStencilView(nullptr), mRODepthROStencilView(nullptr), mWDepthROStencilView(nullptr)
+		: TextureView(desc)
 	{
 		if ((mDesc.usage & GVU_RANDOMWRITE) != 0)
 			mUAV = createUAV(texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices);

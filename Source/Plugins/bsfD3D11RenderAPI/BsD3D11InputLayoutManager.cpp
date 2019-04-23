@@ -34,12 +34,6 @@ namespace bs { namespace ct
 		return true;
 	}
 
-	D3D11InputLayoutManager::D3D11InputLayoutManager()
-		:mLastUsedCounter(0), mWarningShown(false)
-	{
-
-	}
-
 	D3D11InputLayoutManager::~D3D11InputLayoutManager()
 	{
 		while(mInputLayoutMap.begin() != mInputLayoutMap.end())

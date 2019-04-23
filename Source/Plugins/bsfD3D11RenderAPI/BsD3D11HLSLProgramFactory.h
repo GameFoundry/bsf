@@ -15,8 +15,8 @@ namespace bs { namespace ct
 	class D3D11HLSLProgramFactory : public GpuProgramFactory
 	{
 	public:
-		D3D11HLSLProgramFactory();
-		~D3D11HLSLProgramFactory();
+		D3D11HLSLProgramFactory() = default;
+		~D3D11HLSLProgramFactory() = default;
 
 		/** @copydoc GpuProgramFactory::create(const GPU_PROGRAM_DESC&, GpuDeviceFlags) */
 		SPtr<GpuProgram> create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT) override;

@@ -127,22 +127,22 @@ namespace bs { namespace ct
 		SPtr<TextureView> createView(const TEXTURE_VIEW_DESC& desc) override;
 
 	protected:
-		ID3D11Texture1D* m1DTex;
-		ID3D11Texture2D* m2DTex;
-		ID3D11Texture3D* m3DTex;
-		ID3D11Resource* mTex;
+		ID3D11Texture1D* m1DTex = nullptr;
+		ID3D11Texture2D* m2DTex = nullptr;
+		ID3D11Texture3D* m3DTex = nullptr;
+		ID3D11Resource* mTex = nullptr;
 
 		SPtr<D3D11TextureView> mShaderResourceView;
 		
-		PixelFormat mInternalFormat;
-		DXGI_FORMAT mDXGIFormat;
-		DXGI_FORMAT mDXGIColorFormat;
-		DXGI_FORMAT mDXGIDepthStencilFormat;
+		PixelFormat mInternalFormat = PF_UNKNOWN;
+		DXGI_FORMAT mDXGIFormat = DXGI_FORMAT_UNKNOWN;
+		DXGI_FORMAT mDXGIColorFormat = DXGI_FORMAT_UNKNOWN;
+		DXGI_FORMAT mDXGIDepthStencilFormat = DXGI_FORMAT_UNKNOWN;
 
-		ID3D11Resource* mStagingBuffer;
-		PixelData* mStaticBuffer;
-		UINT32 mLockedSubresourceIdx;
-		bool mLockedForReading;
+		ID3D11Resource* mStagingBuffer = nullptr;
+		PixelData* mStaticBuffer = nullptr;
+		UINT32 mLockedSubresourceIdx = -1;
+		bool mLockedForReading = false;
 	};
 
 	/** @} */

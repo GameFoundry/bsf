@@ -46,7 +46,7 @@ namespace bs { namespace ct
 		};
 
 	public:
-		D3D11InputLayoutManager();
+		D3D11InputLayoutManager() = default;
 		~D3D11InputLayoutManager();
 
 		/**
@@ -77,8 +77,8 @@ namespace bs { namespace ct
 
 		UnorderedMap<VertexDeclarationKey, InputLayoutEntry*, HashFunc, EqualFunc> mInputLayoutMap;
 
-		bool mWarningShown;
-		UINT32 mLastUsedCounter;
+		bool mWarningShown = false;
+		UINT32 mLastUsedCounter = 0;
 	};
 
 	/** @} */

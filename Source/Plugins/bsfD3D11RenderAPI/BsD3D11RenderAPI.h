@@ -15,8 +15,8 @@ namespace bs { namespace ct
 	class D3D11RenderAPI : public RenderAPI
 	{
 	public:
-		D3D11RenderAPI();
-		~D3D11RenderAPI();
+		D3D11RenderAPI() = default;
+		~D3D11RenderAPI() = default;
 
 		/** @copydoc RenderAPI::getName */
 		const StringID& getName() const override;
@@ -149,22 +149,22 @@ namespace bs { namespace ct
 		void initCapabilites(IDXGIAdapter* adapter, RenderAPICapabilities& caps) const;
 
 	private:
-		IDXGIFactory1* mDXGIFactory;
-		D3D11Device* mDevice;
+		IDXGIFactory1* mDXGIFactory = nullptr;
+		D3D11Device* mDevice = nullptr;
 
-		D3D11DriverList* mDriverList;
-		D3D11Driver* mActiveD3DDriver;
+		D3D11DriverList* mDriverList = nullptr;
+		D3D11Driver* mActiveD3DDriver = nullptr;
 
-		D3D_FEATURE_LEVEL mFeatureLevel;
+		D3D_FEATURE_LEVEL mFeatureLevel = D3D_FEATURE_LEVEL_11_0;
 
-		D3D11HLSLProgramFactory* mHLSLFactory;
-		D3D11InputLayoutManager* mIAManager;
+		D3D11HLSLProgramFactory* mHLSLFactory = nullptr;
+		D3D11InputLayoutManager* mIAManager = nullptr;
 
-		bool mPSUAVsBound;
-		bool mCSUAVsBound;
+		bool mPSUAVsBound = false;
+		bool mCSUAVsBound = false;
 
-		UINT32 mStencilRef;
-		Rect2 mViewportNorm;
+		UINT32 mStencilRef = 0;
+		Rect2 mViewportNorm = Rect2(0.0f, 0.0f, 1.0f, 1.0f);
 		D3D11_VIEWPORT mViewport;
 		D3D11_RECT mScissorRect;
 
@@ -172,7 +172,7 @@ namespace bs { namespace ct
 		SPtr<D3D11GpuProgram> mActiveVertexShader;
 		SPtr<D3D11DepthStencilState> mActiveDepthStencilState;
 
-		DrawOperationType mActiveDrawOp;
+		DrawOperationType mActiveDrawOp = DOT_TRIANGLE_LIST;
 	};
 
 	/** @} */

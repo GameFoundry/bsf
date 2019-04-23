@@ -39,7 +39,7 @@ namespace bs { namespace ct
 
 		Vector<std::function<void()>> mCommands;
 
-		DrawOperationType mActiveDrawOp;
+		DrawOperationType mActiveDrawOp = DOT_TRIANGLE_LIST;
 	};
 
 	/** @} */

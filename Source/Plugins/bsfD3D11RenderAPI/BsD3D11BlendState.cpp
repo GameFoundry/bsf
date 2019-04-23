@@ -9,7 +9,7 @@
 namespace bs { namespace ct
 {
 	D3D11BlendState::D3D11BlendState(const BLEND_STATE_DESC& desc, UINT32 id)
-		:BlendState(desc, id), mBlendState(nullptr)
+		:BlendState(desc, id)
 	{ }
 
 	D3D11BlendState::~D3D11BlendState()

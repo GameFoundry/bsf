@@ -36,12 +36,12 @@ namespace bs { namespace ct
 		/** Resolves query results after it is ready. */
 		void finalize();
 
-		ID3D11Query* mQuery;
-		ID3D11DeviceContext* mContext;
-		bool mFinalized;
-		bool mQueryEndCalled;
+		ID3D11Query* mQuery = nullptr;
+		ID3D11DeviceContext* mContext = nullp;
+		bool mFinalized = false;
+		bool mQueryEndCalled = false;
 
-		UINT32 mNumSamples;
+		UINT32 mNumSamples = 0;
 	};
 
 	/** @} */

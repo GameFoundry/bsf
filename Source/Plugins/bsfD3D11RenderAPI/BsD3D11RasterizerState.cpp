@@ -10,7 +10,7 @@
 namespace bs { namespace ct
 {
 	D3D11RasterizerState::D3D11RasterizerState(const RASTERIZER_STATE_DESC& desc, UINT32 id)
-		:RasterizerState(desc, id), mRasterizerState(nullptr)
+		:RasterizerState(desc, id)
 	{ }
 
 	D3D11RasterizerState::~D3D11RasterizerState()

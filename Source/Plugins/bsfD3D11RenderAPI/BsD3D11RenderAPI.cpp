@@ -35,17 +35,6 @@
 
 namespace bs { namespace ct
 {
-	D3D11RenderAPI::D3D11RenderAPI()
-		: mDXGIFactory(nullptr), mDevice(nullptr), mDriverList(nullptr), mActiveD3DDriver(nullptr)
-		, mFeatureLevel(D3D_FEATURE_LEVEL_11_0), mHLSLFactory(nullptr), mIAManager(nullptr), mPSUAVsBound(false)
-		, mCSUAVsBound(false), mStencilRef(0), mActiveDrawOp(DOT_TRIANGLE_LIST), mViewportNorm(0.0f, 0.0f, 1.0f, 1.0f)
-	{ }
-
-	D3D11RenderAPI::~D3D11RenderAPI()
-	{
-
-	}
-
 	const StringID& D3D11RenderAPI::getName() const
 	{
 		static StringID strName("D3D11RenderAPI");

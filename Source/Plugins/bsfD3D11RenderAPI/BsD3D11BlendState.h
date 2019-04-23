@@ -28,7 +28,7 @@ namespace bs { namespace ct
 		/** @copydoc BlendState::createInternal */
 		void createInternal() override;
 
-		ID3D11BlendState* mBlendState;
+		ID3D11BlendState* mBlendState = nullptr;
 	};
 
 	/** @} */

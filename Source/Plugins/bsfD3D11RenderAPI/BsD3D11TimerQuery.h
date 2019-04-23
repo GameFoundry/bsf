@@ -34,14 +34,14 @@ namespace bs { namespace ct
 		/**	Resolve timing information after the query has finished. */
 		void finalize();
 
-		bool mFinalized;
-		bool mQueryEndCalled;
-		float mTimeDelta;
+		bool mFinalized = false;
+		bool mQueryEndCalled = false;
+		float mTimeDelta = 0.0f;
 
-		ID3D11Query* mBeginQuery;
-		ID3D11Query* mEndQuery;
-		ID3D11Query* mDisjointQuery;
-		ID3D11DeviceContext* mContext;
+		ID3D11Query* mBeginQuery = nullptr;
+		ID3D11Query* mEndQuery = nullptr;
+		ID3D11Query* mDisjointQuery = nullptr;
+		ID3D11DeviceContext* mContext = nullptr;
 	};
 
 	/** @} */

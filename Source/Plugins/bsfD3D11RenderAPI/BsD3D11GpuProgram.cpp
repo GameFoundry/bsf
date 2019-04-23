@@ -17,7 +17,7 @@ namespace bs { namespace ct
 	UINT32 D3D11GpuProgram::GlobalProgramId = 0;
 
 	D3D11GpuProgram::D3D11GpuProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
-		: GpuProgram(desc, deviceMask), mProgramId(0)
+		: GpuProgram(desc, deviceMask)
 	{
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on DirectX 11.");
 	}

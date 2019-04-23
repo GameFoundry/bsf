@@ -25,7 +25,7 @@ namespace bs { namespace ct
 		bool isReady() const override;
 
 	private:
-		ID3D11Query* mQuery;
+		ID3D11Query* mQuery = nullptr;
 		ID3D11DeviceContext* mContext;
 	};
 
