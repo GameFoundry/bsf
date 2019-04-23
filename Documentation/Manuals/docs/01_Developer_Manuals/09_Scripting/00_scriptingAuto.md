@@ -366,7 +366,7 @@ public:
 
 	// External method because MyClass returns an array in raw form, but we need it in a Vector
 	BS_SCRIPT_EXPORT(e:MyClass)
-	static UINT32 getArrayData(const SPtr<MyClass>& thisPtr)
+	static Vector<UINT32> getArrayData(const SPtr<MyClass>& thisPtr)
 	{
 		UINT32 numEntries;
 		UINT32* entries = thisPtr->getArrayData(numEntries);
