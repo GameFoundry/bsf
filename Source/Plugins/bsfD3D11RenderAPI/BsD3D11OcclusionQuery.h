@@ -37,7 +37,7 @@ namespace bs { namespace ct
 		void finalize();
 
 		ID3D11Query* mQuery = nullptr;
-		ID3D11DeviceContext* mContext = nullp;
+		ID3D11DeviceContext* mContext = nullptr;
 		bool mFinalized = false;
 		bool mQueryEndCalled = false;
 
