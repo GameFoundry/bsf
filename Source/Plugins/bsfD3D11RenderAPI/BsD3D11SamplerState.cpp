@@ -9,7 +9,7 @@
 namespace bs { namespace ct
 {
 	D3D11SamplerState::D3D11SamplerState(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask)
-		:SamplerState(desc, deviceMask), mSamplerState(nullptr)
+		:SamplerState(desc, deviceMask)
 	{ }
 
 	D3D11SamplerState::~D3D11SamplerState()

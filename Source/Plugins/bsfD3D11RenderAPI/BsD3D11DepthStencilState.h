@@ -28,7 +28,7 @@ namespace bs { namespace ct
 		/** @copydoc DepthStencilState::createInternal() */
 		void createInternal() override;
 
-		ID3D11DepthStencilState* mDepthStencilState;
+		ID3D11DepthStencilState* mDepthStencilState = nullptr;
 	};
 
 	/** @} */

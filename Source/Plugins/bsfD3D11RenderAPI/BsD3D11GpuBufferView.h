@@ -44,7 +44,7 @@ namespace bs { namespace ct
 			bool operator()(const GPU_BUFFER_VIEW_DESC& a, const GPU_BUFFER_VIEW_DESC& b) const;
 		};
 
-		GpuBufferView();
+		GpuBufferView() = default;
 		virtual ~GpuBufferView();
 
 		/** 
@@ -110,8 +110,8 @@ namespace bs { namespace ct
 		 */
 		ID3D11UnorderedAccessView* createUAV(D3D11GpuBuffer* buffer, UINT32 firstElement, UINT32 numElements, bool useCounter);
 
-		ID3D11ShaderResourceView* mSRV;
-		ID3D11UnorderedAccessView* mUAV;
+		ID3D11ShaderResourceView* mSRV = nullptr;
+		ID3D11UnorderedAccessView* mUAV = nullptr;
 
 		GPU_BUFFER_VIEW_DESC mDesc;
 		D3D11GpuBuffer* mBuffer;

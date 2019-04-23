@@ -35,7 +35,7 @@ namespace bs { namespace ct
 	protected:
 		static UINT32 GlobalProgramId;
 
-		UINT32 mProgramId;
+		UINT32 mProgramId = 0;
 	};
 
 	/**	Implementation of a DX11 vertex shader. */

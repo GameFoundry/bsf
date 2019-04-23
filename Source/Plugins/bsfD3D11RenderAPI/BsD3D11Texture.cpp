@@ -16,10 +16,7 @@ namespace bs { namespace ct
 {
 	D3D11Texture::D3D11Texture(const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData, 
 		GpuDeviceFlags deviceMask)
-		: Texture(desc, initialData, deviceMask),
-		m1DTex(nullptr), m2DTex(nullptr), m3DTex(nullptr), mDXGIFormat(DXGI_FORMAT_UNKNOWN), mDXGIColorFormat(DXGI_FORMAT_UNKNOWN),
-		mTex(nullptr), mInternalFormat(PF_UNKNOWN), mStagingBuffer(nullptr), mDXGIDepthStencilFormat(DXGI_FORMAT_UNKNOWN),
-		mLockedSubresourceIdx(-1), mLockedForReading(false), mStaticBuffer(nullptr)
+		: Texture(desc, initialData, deviceMask)
 	{
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on DirectX 11.");
 	}

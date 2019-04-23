@@ -26,7 +26,7 @@ namespace bs { namespace ct
 		/** @copydoc RasterizerState::createInternal */
 		void createInternal() override;
 
-		ID3D11RasterizerState* mRasterizerState;
+		ID3D11RasterizerState* mRasterizerState = nullptr;
 	};
 
 	/** @} */

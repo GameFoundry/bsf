@@ -120,13 +120,13 @@ namespace bs { namespace ct
 		ID3D11DepthStencilView* createDSV(const D3D11Texture* texture, UINT32 mipSlice, UINT32 firstArraySlice, 
 			UINT32 numArraySlices, bool readOnlyDepth, bool readOnlyStencil);
 
-		ID3D11ShaderResourceView* mSRV;
-		ID3D11RenderTargetView* mRTV;
-		ID3D11UnorderedAccessView* mUAV;
-		ID3D11DepthStencilView*	mWDepthWStencilView;
-		ID3D11DepthStencilView*	mRODepthWStencilView;
-		ID3D11DepthStencilView*	mRODepthROStencilView;
-		ID3D11DepthStencilView*	mWDepthROStencilView;
+		ID3D11ShaderResourceView* mSRV = nullptr;
+		ID3D11RenderTargetView* mRTV = nullptr;
+		ID3D11UnorderedAccessView* mUAV = nullptr;
+		ID3D11DepthStencilView*	mWDepthWStencilView = nullptr;
+		ID3D11DepthStencilView*	mRODepthWStencilView = nullptr;
+		ID3D11DepthStencilView*	mRODepthROStencilView = nullptr;
+		ID3D11DepthStencilView*	mWDepthROStencilView = nullptr;
 	};
 
 	/** @} */

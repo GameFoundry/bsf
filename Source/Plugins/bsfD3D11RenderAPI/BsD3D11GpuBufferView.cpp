@@ -30,12 +30,6 @@ namespace bs { namespace ct
 			&& a.useCounter == b.useCounter && a.usage == b.usage && a.format == b.format;
 	}
 
-	GpuBufferView::GpuBufferView()
-		:mSRV(nullptr), mUAV(nullptr)
-	{
-
-	}
-
 	GpuBufferView::~GpuBufferView()
 	{
 		SAFE_RELEASE(mSRV);

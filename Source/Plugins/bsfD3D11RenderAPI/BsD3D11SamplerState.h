@@ -26,7 +26,7 @@ namespace bs { namespace ct
 		/** @copydoc SamplerState::createInternal */
 		void createInternal() override;
 
-		ID3D11SamplerState* mSamplerState;
+		ID3D11SamplerState* mSamplerState = nullptr;
 	};
 
 	/** @} */

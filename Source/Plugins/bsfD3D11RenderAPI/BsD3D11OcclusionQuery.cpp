@@ -10,7 +10,7 @@
 namespace bs { namespace ct
 {
 	D3D11OcclusionQuery::D3D11OcclusionQuery(bool binary, UINT32 deviceIdx)
-		:OcclusionQuery(binary), mContext(nullptr), mQuery(nullptr), mNumSamples(0), mFinalized(false), mQueryEndCalled(false)
+		:OcclusionQuery(binary)
 	{
 		assert(deviceIdx == 0 && "Multiple GPUs not supported natively on DirectX 11.");
 

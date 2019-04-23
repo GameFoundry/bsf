@@ -9,12 +9,6 @@
 
 namespace bs { namespace ct
 {
-	D3D11HLSLProgramFactory::D3D11HLSLProgramFactory()
-	{ }
-
-	D3D11HLSLProgramFactory::~D3D11HLSLProgramFactory()
-	{ }
-
 	SPtr<GpuProgram> D3D11HLSLProgramFactory::create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
 	{
 		SPtr<GpuProgram> gpuProg;
