@@ -64,11 +64,11 @@ namespace bs
 		float getRestOffset() const { return mRestOffset; }
 
 		/** @copydoc Collider::setLayer */
-		BS_SCRIPT_EXPORT(n:Layer,pr:setter)
+		BS_SCRIPT_EXPORT(n:Layer,pr:setter,layerMask)
 		void setLayer(UINT64 layer);
 
 		/** @copydoc Collider::getLayer */
-		BS_SCRIPT_EXPORT(n:Layer,pr:getter)
+		BS_SCRIPT_EXPORT(n:Layer,pr:getter,layerMask)
 		UINT64 getLayer() const { return mLayer; }
 
 		/** @copydoc Collider::setCollisionReportMode */

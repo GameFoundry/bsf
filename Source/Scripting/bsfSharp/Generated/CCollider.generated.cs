@@ -90,6 +90,7 @@ namespace bs
 
 		/// <summary>Determines the layer of the collider. Layer controls with which objects will the collider collide.</summary>
 		[ShowInInspector]
+		[LayerMask]
 		[NativeWrapper]
 		public ulong Layer
 		{
