@@ -121,6 +121,7 @@ namespace bs
 		float mAnimationTime = 0.0f;
 		float mLastAnimationUpdateTime = 0.0f;
 		float mNextAnimationUpdateTime = 0.0f;
+		float mLastAnimationDeltaTime = 0.0f;
 		bool mPaused = false;
 
 		SPtr<VertexDataDesc> mBlendShapeVertexDesc;

@@ -497,10 +497,9 @@ namespace bs
 		/** 
 		 * Triggers any events between the last frame and current one. 
 		 *
-		 * @param[in]	lastFrameTime	Time of the last frame.
-		 * @param[in]	delta			Difference between the last and this frame.
+		 * @param[in]	delta			Time elapsed since the last call to this method.
 		 */
-		void triggerEvents(float lastFrameTime, float delta);
+		void triggerEvents(float delta);
 
 		/** 
 		 * Updates the animation proxy object based on the currently set skeleton, playing clips and dirty flags. 

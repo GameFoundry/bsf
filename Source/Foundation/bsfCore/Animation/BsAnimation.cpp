@@ -1195,7 +1195,7 @@ namespace bs
 		return mClipInfos[idx].clip;
 	}
 
-	void Animation::triggerEvents(float lastFrameTime, float delta)
+	void Animation::triggerEvents(float delta)
 	{
 		for (auto& clipInfo : mClipInfos)
 		{
@@ -1205,8 +1205,8 @@ namespace bs
 			const Vector<AnimationEvent>& events = clipInfo.clip->getEvents();
 			bool loop = clipInfo.state.wrapMode == AnimWrapMode::Loop;
 
-			float start = lastFrameTime;
-			float end = start + delta;
+			float start = std::max(clipInfo.state.time - delta, 0.0f);
+			float end = clipInfo.state.time;
 			float clipLength = clipInfo.clip->getLength();
 
 			float wrappedStart = start;

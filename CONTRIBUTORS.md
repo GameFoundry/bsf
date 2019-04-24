@@ -30,6 +30,7 @@ Huge thanks to all the patrons, contributors and donators!
 # Tier 3 Patrons
 
 # Tier 2 Patrons
+- Andre Taulien
 - Andrzej Oraniewicz [Founder]
 - Nemerle [Founder]
 - Thomas Tang [Founder]

@@ -70,9 +70,11 @@ namespace bs
 			for (auto& anim : mAnimations)
 			{
 				anim.second->updateFromProxy();
-				anim.second->triggerEvents(mAnimationTime, gTime().getFrameDelta());
+				anim.second->triggerEvents(mLastAnimationDeltaTime);
 			}
 		}
+
+		mLastAnimationDeltaTime = timeDelta;
 
 		// Update animation proxies from the latest data
 		mProxies.clear();
@@ -154,7 +156,7 @@ namespace bs
 			for (auto& anim : mAnimations)
 			{
 				anim.second->updateFromProxy();
-				anim.second->triggerEvents(mAnimationTime, gTime().getFrameDelta());
+				anim.second->triggerEvents(timeDelta);
 			}
 		}
 
