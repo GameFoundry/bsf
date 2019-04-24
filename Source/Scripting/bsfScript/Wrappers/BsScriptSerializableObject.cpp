@@ -14,8 +14,8 @@ namespace bs
 {
 	MonoField* ScriptSerializableObject::FieldsField = nullptr;
 
-	ScriptSerializableObject::ScriptSerializableObject(MonoObject* instance, const SPtr<ManagedSerializableTypeInfo>& typeInfo)
-		:ScriptObject(instance), mTypeInfo(typeInfo)
+	ScriptSerializableObject::ScriptSerializableObject(MonoObject* instance, const SPtr<ManagedSerializableObjectInfo>& objInfo)
+		:ScriptObject(instance), mObjInfo(objInfo)
 	{
 
 	}
@@ -23,6 +23,7 @@ namespace bs
 	void ScriptSerializableObject::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptSerializableObject::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetBaseClass", (void*)&ScriptSerializableObject::internal_getBaseClass);
 
 		FieldsField = metaData.scriptClass->getField("_fields");
 	}
@@ -31,7 +32,15 @@ namespace bs
 		MonoReflectionType* reflType)
 	{
 		void* params[2] = { reflType, managed };
-		MonoObject* managedInstance = metaData.scriptClass->createInstance(params, 2);
+		MonoObject* managedInstance = metaData.scriptClass->createInstance("Type,SerializableProperty", params);
+
+		return managedInstance;
+	}
+
+	MonoObject* ScriptSerializableObject::create(MonoObject* managed, MonoReflectionType* reflType)
+	{
+		void* params[2] = { reflType, managed };
+		MonoObject* managedInstance = metaData.scriptClass->createInstance("Type,object", params);
 
 		return managedInstance;
 	}
@@ -50,13 +59,18 @@ namespace bs
 		createInternal(instance, objInfo);
 	}
 
+	MonoObject* ScriptSerializableObject::internal_getBaseClass(ScriptSerializableObject* thisPtr, MonoObject* owningObject)
+	{
+		if(!thisPtr->mObjInfo->mBaseClass)
+			return nullptr;
+
+		MonoReflectionType* reflType = MonoUtil::getType(thisPtr->mObjInfo->mBaseClass->mMonoClass->_getInternalClass());
+		return create(owningObject, reflType);
+	}
+
 	ScriptSerializableObject* ScriptSerializableObject::createInternal(MonoObject* instance, const SPtr<ManagedSerializableObjectInfo>& objInfo)
 	{
-		SPtr<ManagedSerializableTypeInfo> typeInfo;
-		if(objInfo != nullptr)
-			typeInfo = objInfo->mTypeInfo;
-
-		ScriptSerializableObject* nativeInstance = new (bs_alloc<ScriptSerializableObject>()) ScriptSerializableObject(instance, typeInfo);
+		ScriptSerializableObject* nativeInstance = new (bs_alloc<ScriptSerializableObject>()) ScriptSerializableObject(instance, objInfo);
 
 		Vector<SPtr<ManagedSerializableMemberInfo>> sortedFields;
 		

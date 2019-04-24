@@ -33,6 +33,11 @@ namespace bs
         public object Object { get { return parentObject; } }
 
         /// <summary>
+        /// Returns the serializable object for the base class, if any.
+        /// </summary>
+        public SerializableObject Base => Internal_GetBaseClass(mCachedPtr, parentObject);
+
+        /// <summary>
         /// Creates a new serializable object for the specified object type.
         /// </summary>
         /// <param name="objectType">C# type of the object.</param>
@@ -199,6 +204,9 @@ namespace bs
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(SerializableObject instance, Type objectType);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern SerializableObject Internal_GetBaseClass(IntPtr nativeInstance, object owningObject);
     }
 
     /// <summary>
