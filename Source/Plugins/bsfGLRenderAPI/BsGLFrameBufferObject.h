@@ -17,7 +17,7 @@ namespace bs { namespace ct
 	struct GLSurfaceDesc
 	{
 	public:
-		GLSurfaceDesc() = default
+		GLSurfaceDesc() = default;
 
 		SPtr<GLPixelBuffer> buffer;
 		UINT32 zoffset = 0;
