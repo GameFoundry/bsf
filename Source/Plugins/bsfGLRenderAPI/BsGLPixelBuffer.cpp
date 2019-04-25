@@ -113,7 +113,7 @@ namespace bs { namespace ct
 
 	GLTextureBuffer::GLTextureBuffer(GLenum target, GLuint id, GLint face, GLint level, PixelFormat format, 
 		GpuBufferUsage usage, bool hwGamma, UINT32 multisampleCount)
-		: GLPixelBuffer(0, 0, 0, format, usage), mTarget(target) mTextureID(id), mFace(face)
+		: GLPixelBuffer(0, 0, 0, format, usage), mTarget(target), mTextureID(id), mFace(face)
 		, mLevel(level), mMultisampleCount(multisampleCount), mHwGamma(hwGamma)
 	{
 		GLint value = 0;
