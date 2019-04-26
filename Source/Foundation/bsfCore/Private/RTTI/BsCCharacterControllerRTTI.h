@@ -45,7 +45,7 @@ namespace bs
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			return GameObjectRTTI::createGameObject<CCharacterController>();
+			return SceneObject::createEmptyComponent<CCharacterController>();
 		}
 	};
 

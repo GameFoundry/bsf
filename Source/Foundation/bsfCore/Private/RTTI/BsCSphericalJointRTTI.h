@@ -39,7 +39,7 @@ namespace bs
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			return GameObjectRTTI::createGameObject<CSphericalJoint>();
+			return SceneObject::createEmptyComponent<CSphericalJoint>();
 		}
 	};
 

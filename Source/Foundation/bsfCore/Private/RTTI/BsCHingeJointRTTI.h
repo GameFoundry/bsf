@@ -44,7 +44,7 @@ namespace bs
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			return GameObjectRTTI::createGameObject<CHingeJoint>();
+			return SceneObject::createEmptyComponent<CHingeJoint>();
 		}
 	};
 

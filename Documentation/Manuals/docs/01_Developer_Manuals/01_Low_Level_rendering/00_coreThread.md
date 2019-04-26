@@ -180,7 +180,7 @@ Earlier we mentioned that aside from handling construction/destruction the core 
 
 Synchronization should happen whenever some property on the **CoreObject** changes, that you would wish to make available on the core thread (e.g. a radius of a light source). To synchronize implement the @bs::CoreObject::syncToCore(FrameAlloc*) method, which generates the data for synchronization, and @bs::ct::CoreObject::syncToCore which accepts it.
 
-The synchronized data is transfered between the objects in the form of raw bytes, within the @bs::CoreSyncData structure. For convenience you can use @bs::rttiGetElemSize and @bs::rttiWriteElem to encode fields into raw memory, and @bs::rttiReadElem to decode them. These are explained in more detail in the [advanced RTTI manual](../advancedRtti).
+The synchronized data is transfered between the objects in the form of raw bytes, within the @bs::CoreSyncData structure. For convenience you can use @bs::rttiGetElemSize and @bs::rttiWriteElem to encode fields into raw memory, and @bs::rttiReadElem to decode them. These are explained in more detail in the [advanced RTTI manual](../../User_Manuals/advancedRtti).
 
 **CoreObject::syncToCore()** is provided an instance of @bs::FrameAlloc which should be used for allocating the serialization buffer. This is an allocator that is fast and doesn't require explicit memory deallocation making it perfect for synchronization. A simple synchronization example would look like so:
 ~~~~~~~~~~~~~{.cpp}

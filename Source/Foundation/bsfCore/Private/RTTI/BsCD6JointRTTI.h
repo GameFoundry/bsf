@@ -91,7 +91,7 @@ namespace bs
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			return GameObjectRTTI::createGameObject<CD6Joint>();
+			return SceneObject::createEmptyComponent<CD6Joint>();
 		}
 	};
 

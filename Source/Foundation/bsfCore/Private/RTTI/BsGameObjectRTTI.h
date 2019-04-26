@@ -44,17 +44,6 @@ namespace bs
 		}
 
 	public:
-		/**	Helper method used for creating Component objects used during deserialization. */
-		template <typename T>
-		static SPtr<T> createGameObject()
-		{
-			SPtr<T> component = SceneObject::createEmptyComponent<T>();
-			component->mRTTIData = component;
-
-			return component;
-		}
-
-	public:
 		GameObjectRTTI()
 		{
 			addPlainField("mInstanceID", 0, &GameObjectRTTI::getInstanceID, &GameObjectRTTI::setInstanceID);

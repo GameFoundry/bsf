@@ -615,6 +615,19 @@ namespace bs
 		/**	Returns all components on this object. */
 		const Vector<HComponent>& getComponents() const { return mComponents; }
 
+		/**	Creates an empty component with the default constructor. Primarily used for RTTI purposes. */
+		template <typename T>
+		static SPtr<T> createEmptyComponent()
+		{
+			static_assert((std::is_base_of<bs::Component, T>::value), "Specified type is not a valid Component.");
+
+			T* rawPtr = new (bs_alloc<T>()) T();
+			SPtr<T> gameObject(rawPtr, &bs_delete<T>, StdAlloc<T>());
+			gameObject->mRTTIData = gameObject;
+			
+			return gameObject;
+		}
+
 	public: // ***** INTERNAL ******
 		/** @name Internal
 		 *  @{
@@ -625,18 +638,6 @@ namespace bs
 
 		/** @} */
 	private:
-		/**	Creates an empty component with the default constructor. */
-		template <typename T>
-		static SPtr<T> createEmptyComponent()
-		{
-			static_assert((std::is_base_of<bs::Component, T>::value), "Specified type is not a valid Component.");
-
-			T* rawPtr = new (bs_alloc<T>()) T();
-			SPtr<T> gameObject(rawPtr, &bs_delete<T>, StdAlloc<T>());
-
-			return gameObject;
-		}
-
 		/**	Adds the component to the internal component array. */
 		void addComponentInternal(const SPtr<Component>& component);
 

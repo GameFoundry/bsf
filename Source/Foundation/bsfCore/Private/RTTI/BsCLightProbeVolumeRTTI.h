@@ -35,7 +35,7 @@ namespace bs
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			return GameObjectRTTI::createGameObject<CLightProbeVolume>();
+			return SceneObject::createEmptyComponent<CLightProbeVolume>();
 		}
 	};
 

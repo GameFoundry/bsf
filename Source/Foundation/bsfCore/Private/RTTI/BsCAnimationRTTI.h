@@ -38,7 +38,7 @@ namespace bs
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			return GameObjectRTTI::createGameObject<CAnimation>();
+			return SceneObject::createEmptyComponent<CAnimation>();
 		}
 	};
 

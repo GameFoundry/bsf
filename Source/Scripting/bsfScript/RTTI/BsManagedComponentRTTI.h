@@ -67,7 +67,7 @@ namespace bs
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			return GameObjectRTTI::createGameObject<ManagedComponent>();
+			return SceneObject::createEmptyComponent<ManagedComponent>();
 		}
 
 	private:

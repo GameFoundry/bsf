@@ -18,6 +18,44 @@ public:
 };
 ~~~~~~~~~~~~~
 
+# Run-time type information (RTTI)
+It's important your component provides some meta-data about itself. This allows features such as dynamic casting and serialization to work properly. This information is provided by the run-time type information (RTTI) system. We'll talk about run-time type information in detail in the following manual, and for now we just provide a minimal working example.
+
+RTTI requires you to create a specialization of the @bs::RTTIType<Type, BaseType, MyRTTIType> interface, which contains information about your class, including its name, id and a helper creation method (at minimum).
+
+~~~~~~~~~~~~~{.cpp}
+class CCameraFlyerRTTI : public RTTIType<CCameraFlyer, Component, CCameraFlyerRTTI>
+{
+public:
+	const String& getRTTIName() override { return "CCameraFlyer"; }
+
+	// Unique integer for the type. Use numbers higher than 200000 to avoid conflicts with built-in types
+	UINT32 getRTTIId() override { return 200001; }
+
+	SPtr<IReflectable> newRTTIObject() override { return SceneObject::createEmptyComponent<CCameraFlyer>(); }
+};
+~~~~~~~~~~~~~
+
+The component itself then needs to implement a **getRTTI()** and **getRTTIStatic()** methods which return an instance of the **RTTIType** class you created.
+
+~~~~~~~~~~~~~{.cpp}
+class CCameraFlyer : public Component
+{
+public:
+	CCameraFlyer(const HSceneObject& parent)
+		:Component(parent)
+	{}
+
+	static RTTITypeBase* getRTTIStatic()
+	{ return CCameraFlyerRTTI::instance(); }
+
+	RTTITypeBase* getRTTI() const override
+	{ return CCameraFlyer::getRTTIStatic(); }
+};
+~~~~~~~~~~~~~
+
+This is the base template you can use for all components, but in the following chapter we'll explain RTTI in more detail.
+
 # Logic
 Each component implementation can override any of the three primary methods for introducing gameplay logic:
  - @bs::Component::onInitialized - Called once when the component is first instantiated. You should use this instead of the constructor for initialization.
@@ -81,6 +119,13 @@ private:
 	VirtualButton mMoveBack;
 	VirtualButton mMoveLeft;
 	VirtualButton mMoveRight;
+	
+	// RTTI
+	static RTTITypeBase* getRTTIStatic()
+	{ return CCameraFlyerRTTI::instance(); }
+
+	RTTITypeBase* getRTTI() const override
+	{ return CCameraFlyer::getRTTIStatic(); }
 };
 ~~~~~~~~~~~~~
 
@@ -93,7 +138,7 @@ You will also likely want to declare a handle you can use to easily access the c
 
 ~~~~~~~~~~~~~{.cpp}
 typedef GameObjectHandle<CCameraFlyer> HCameraFlyer;
-~~~~~~~~~~~~~	
+~~~~~~~~~~~~~
 		
 # Using the component
 We now have everything ready to use the component. You can create the component as any other by adding it to the scene object.
@@ -108,9 +153,6 @@ HCamera camera = cameraSO->addComponent<CCamera>(primaryWindow);
 // And finally we add our component
 HCameraFlyer = cameraSO->addComponent<CCameraFlyer>();
 ~~~~~~~~~~~~~
-
-# Data
-Often a component will contain some data which you want to persist after the scene is saved, which requires you to implement a special interface on your custom component class. We'll talk more about this in the next chapter.
 
 # Activating/deactivating a scene object
 Any scene object can be temporarily de-activated and reactivated by calling @bs::SceneObject::setActive. When a scene object is deactivated its components will not have **Component::update()** called.

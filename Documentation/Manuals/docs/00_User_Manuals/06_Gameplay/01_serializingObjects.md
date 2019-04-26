@@ -1,10 +1,12 @@
 ---
-title: Persisting data
+title: Run-time type information
 ---
+
+Run-time type information (RTTI) provides meta-data about components (as well as non-component objects). This meta-data allows for features such as dynamic-casting, type-checking and most importantly, serialization.
 
 Often components will have data you will want to persist across application sessions (for example **Renderable** component needs to remember which **Mesh** and **Material** it references). This persistent data will be automatically saved when a scene is saved, and loaded along with the scene. This process is called data serialization.
 
-In order to make an object serializable you need to set up a special interface that allows the system to query information about the object, retrieve and set its data. This interface is known as Run Time Type Information (RTTI). In this example we talk primarily about components, but the same interface can be used for resources and normal objects.
+In order to make an object serializable you need to set up a RTTI interface that allows the system to query information about the object, retrieve and set its data. In this example we talk primarily about components, but the same interface can be used for resources and normal objects.
 
 Any object that is serializable (and therefore provides RTTI information) must implement the @bs::IReflectable interface. If you are creating custom components or resources, **Component** and **Resource** base classes already derive from this interface so you don't need to specify it manually. The interface is simple, requiring you to implement two methods:
  - RTTITypeBase* getRTTI() const;
@@ -43,7 +45,7 @@ class MyClass : public IReflectable
 };
 ~~~~~~~~~~~~~
 
-# Creating the RTTI object
+# Creating the RTTI type
 All RTTI objects must implement the @bs::RTTIType<Type, BaseType, MyRTTIType> interface. The interface accepts three template parameters:
  - *Type* - Class of the object we're creating RTTI for (e.g. *MyClass* or *MyComponent* from example above)
  - *BaseType* - Base type of the object we're creating RTTI for (e.g. *IReflectable* or *Component* from example above)
@@ -63,13 +65,12 @@ class MyComponentRTTI : public RTTIType<MyComponent, Component, MyComponentRTTI>
 
 The RTTI object must at least implement the following methods:
  - @bs::RTTITypeBase::getRTTIName() - Returns the name of the class the RTTI describes
- - @bs::RTTITypeBase::getRTTIId() - Returns an identifier that uniquely identifies the class
+ - @bs::RTTITypeBase::getRTTIId() - Returns an identifier that uniquely identifies the class. This should be a unique integer equal or larger than 200000 (in order to avoid conflict with built-in types).
  - @bs::RTTITypeBase::newRTTIObject() - Creates a new empty instance of the class the RTTI describes
  
 ~~~~~~~~~~~~~{.cpp}
 enum TypeIds
 {
-	// These numbers must be unique or the system will complain. Use numbers higher than 200000 to avoid conflicts with built-in types
 	TID_MyClass = 200000,
 	TID_MyComponent = 200001
 }
@@ -110,12 +111,12 @@ public:
 
 	SPtr<IReflectable> newRTTIObject() override
 	{
-		return GameObjectRTTI::createGameObject<MyComponent>();
+		return SceneObject::createEmptyComponent<MyComponent>();
 	}
 };
 ~~~~~~~~~~~~~
 
-> Note that when creating new instances of components within RTTI class, you must use **GameObjectRTTI::createGameObject<T>()** method, instead of just creating a normal shared pointer.
+> Note that when creating new instances of components within the RTTI type class, you must use **SceneObject::createEmptyComponent<T>()** method, instead of just creating a normal shared pointer.
 
 This is the minimal amount of work you need to do in order to implement RTTI. The RTTI types above now describe the class type, but not any of its members. In order to actually have class data serialized, you also need to define member fields.
 
@@ -152,9 +153,9 @@ public:
 
 Field definition portion of the RTTI type always begins with the @BS_BEGIN_RTTI_MEMBERS macro, and ends with the @BS_END_RTTI_MEMBERS.
 
-The field members themselves are defined by calling macros starting with BS_RTTI_MEMBER_*. The macro expects the name of the field it describes, as well as a unique ID of the field. The suffix of the BS_RTTI_MEMBER_* macro depends on the type of the field being added. There are three different types:
+The field members themselves are defined by calling macros starting with BS_RTTI_MEMBER_. The macro expects the name of the field it describes, as well as a unique ID of the field. The suffix of the BS_RTTI_MEMBER_ macro depends on the type of the field being added. There are three different types:
  - @BS_RTTI_MEMBER_PLAIN - Field containing basic data types like ints, floats, strings or other types that can be just trivially copied during serialization/deserialization.
- - @BS_RTTI_MEMBER_REFL - Field containing objects deriving from **IReflectable** (i.e. classes that have RTTI). The main advantage of using **IReflectable** types over plain ones is that you are allowed to add or remove fields from **IReflectable**%s RTTI type, and it wont break any data that was previously serialized. This is very important as you make changes to your components or resources, so you can still load previously saved data (e.g. imagine saving a level, changing a component, and then being unable to load the level). Plain types on the other hand must always keep the same structure, otherwise the serialized data will be broken.
+ - @BS_RTTI_MEMBER_REFL - Field containing objects deriving from **IReflectable** (i.e. classes that have RTTI). The main advantage of using **IReflectable** types over plain ones is that you are allowed to add or remove fields from **IReflectable** RTTI type, and it wont break any data that was previously serialized. This is very important as you make changes to your components or resources, so you can still load previously saved data (e.g. imagine saving a level, changing a component, and then being unable to load the level). Plain types on the other hand must always keep the same structure, otherwise the serialized data will be broken.
  - @BS_RTTI_MEMBER_REFLPTR - Fields containing pointers to objects deriving from **IReflectable**. Same as **BS_RTTI_MEMBER_REFL**, except that multiple fields can point to the same object. This ensures the object won't be serialized multiple times, wasting space and performance, and also ensures that the system can properly restore all references to the object when it's deserialized.
  
 ~~~~~~~~~~~~~{.cpp}
@@ -231,7 +232,9 @@ public:
 ~~~~~~~~~~~~~
 
 # Using RTTI
-Once the RTTI has been created, in most cases it will be used automatically. In the case of components it will be used when saving/loading a scene, and in the case of resources it will be used when saving/loading a resource. But for any other class you will want to know how to utilize it manually.
+Once the RTTI type class has been created, in most cases it will be used automatically. In the case of components it will be used when saving/loading a scene, and in the case of resources it will be used when saving/loading a resource. But for any other class you will want to know how to utilize it manually.
+
+## Manually serializing
 
 To manually serialize an object you can use the @bs::FileEncoder class. Create the file encoder with a path to the output file, followed by a call to @bs::FileEncoder::encode with the object to encode as the parameter. The system will encode the provided object, as well as any other referenced **IReflectable** objects. 
 
@@ -260,3 +263,30 @@ SPtr<IReflectable> myObjectCopy2 = ms.decode(data, size);
 
 bs_free(data);
 ~~~~~~~~~~~~~
+
+## Casting & queries
+Aside from using RTTI for serialization, you can also use it to manually query various information about objects, as well as create and cast object instances. 
+
+Global queries:
+ - @bs::rtti_is_of_type - Checks is a specific object of type *T*
+ - @bs::rtti_is_subclass - Checks is a specific object derived from type *T*
+ - @bs::rtti_create - Creates a new object from its type ID
+ - @bs::rtti_cast - Casts an object to the specified type if the cast is valid, or returns null otherwise
+ 
+**IReflectable** queries:
+ - @bs::IReflectable::getTypeName - Gets the name of the object's type
+ - @bs::IReflectable::getTypeId - Gets the type ID of the object's type
+
+~~~~~~~~~~~~~{.cpp}
+IReflectable* myObject = ...;
+
+rtti_is_of_type<Texture>(myObject);
+rtti_is_subclass<Texture>(myObject);
+rtti_create(TID_Texture);
+Texture* myTexture = rtti_cast<Texture>(myObject);
+
+myObject->getTypeName();
+myObject->getTypeId();
+~~~~~~~~~~~~~
+
+For more information you can also continue reading the [Advanced RTTI](../advancedRtti) manual.

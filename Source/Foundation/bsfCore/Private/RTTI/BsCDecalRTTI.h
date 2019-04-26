@@ -35,7 +35,7 @@ namespace bs
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			return GameObjectRTTI::createGameObject<CDecal>();
+			return SceneObject::createEmptyComponent<CDecal>();
 		}
 	};
 

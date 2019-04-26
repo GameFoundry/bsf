@@ -33,7 +33,7 @@ namespace bs
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			return GameObjectRTTI::createGameObject<CAudioListener>();
+			return SceneObject::createEmptyComponent<CAudioListener>();
 		}
 	};
 

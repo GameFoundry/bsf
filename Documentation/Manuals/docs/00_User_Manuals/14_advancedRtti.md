@@ -2,10 +2,10 @@
 title: Advanced RTTI
 ---
 
-This manual is a continuation of the [serializing objects](User_Manuals/Gameplay/serializingObjects) manual, focusing on some more advanced features of the RTTI system.
+This manual is a continuation of the [RTTI](User_Manuals/Gameplay/serializingObjects) manual, focusing on some more advanced features of the RTTI system.
 
 # Manually defining fields
-Previously we have shown how to define RTTI member fields by using the BS_RTTI_MEMBER_* macros. While this method is in most cases preferable, it might not be useful if more advanced functionality is required. The macro approach is only able to reference class fields directly, but sometimes we might wish to access data returned by a method, or we might want to process the data in some way (e.g. compressing it).
+Previously we have shown how to define RTTI member fields by using the BS_RTTI_MEMBER_ macros. While this method is in most cases preferable, it might not be useful if more advanced functionality is required. The macro approach is only able to reference class fields directly, but sometimes we might wish to access data returned by a method, or we might want to process the data in some way (e.g. compressing it).
 
 We can do this by manually defining fields. In order to manually register fields the systems supports a several sets of `add*Field` methods, each expecting a unique name/id, and a pair of getter/setter methods. The getter/setter methods can then be used for any more advanced processing.
 
@@ -229,22 +229,12 @@ rttiReadElem(myDataCopy, data);
 bs_free(data);
 ~~~~~~~~~~~~~
 
-# Querying RTTI
-Aside from using RTTI for serialization, you can also use it to manually query various information about objects, as well as create and cast object instances. 
+# Querying more RTTI information
+You can manually query the class hierarchy and well as class members from the RTTI type object.
 
-Global queries:
- - @bs::rtti_is_of_type - Checks is a specific object of type *T*
- - @bs::rtti_is_subclass - Checks is a specific object derived from type *T*
- - @bs::rtti_create - Creates a new object from its type ID
- - @bs::rtti_cast - Casts an object to the specified type if the cast is valid, or returns null otherwise
- 
-**IReflectable** queries:
- - @bs::IReflectable::getTypeName - Gets the name of the object's type
- - @bs::IReflectable::getTypeId - Gets the type ID of the object's type
- 
 **RTTIType** queries:
  - @bs::RTTITypeBase::getBaseClass - Returns the **RTTIType** object of the base class
- - @bs::RTTITypeBase::getDerivedClasses - Returns a list of **RTTIType**%s for all derived classes
+ - @bs::RTTITypeBase::getDerivedClasses - Returns a list of **RTTIType** objects for all derived classes
  - @bs::RTTITypeBase::getNumFields - Returns the number of member fields
  - @bs::RTTITypeBase::getField - Returns information about a field from its sequential index, in the form of @bs::RTTIField
  - @bs::RTTITypeBase::findField - Searches for a field with a specific name and returns information about it in form of **RTTIField**

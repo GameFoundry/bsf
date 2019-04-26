@@ -33,7 +33,7 @@ namespace bs
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			return GameObjectRTTI::createGameObject<CBone>();
+			return SceneObject::createEmptyComponent<CBone>();
 		}
 	};
 

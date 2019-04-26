@@ -34,7 +34,7 @@ namespace bs
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			return GameObjectRTTI::createGameObject<CSphereCollider>();
+			return SceneObject::createEmptyComponent<CSphereCollider>();
 		}
 	};
 
