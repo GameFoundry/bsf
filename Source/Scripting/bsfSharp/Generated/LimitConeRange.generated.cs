@@ -99,8 +99,10 @@ namespace bs
 		}
 
 		/// <summary>Y angle of the cone. Movement is constrainted between 0 and this angle on the Y axis.</summary>
+		[Range(0f, 180f, false)]
 		public Radian yLimitAngle;
 		/// <summary>Z angle of the cone. Movement is constrainted between 0 and this angle on the Z axis.</summary>
+		[Range(0f, 180f, false)]
 		public Radian zLimitAngle;
 		/// <summary>
 		/// Distance from the limit at which it becomes active. Allows the solver to activate earlier than the limit is reached 

@@ -289,9 +289,11 @@ namespace bs
 		}
 
 		/** Lower angle of the limit. Must be less than #upper. */
+		BS_SCRIPT_EXPORT(range:[0,359])
 		Radian lower = Radian(0.0f);
 
 		/** Upper angle of the limit. Must be less than #lower. */
+		BS_SCRIPT_EXPORT(range:[0,359])
 		Radian upper = Radian(0.0f);
 	};
 
@@ -337,9 +339,11 @@ namespace bs
 		}
 
 		/** Y angle of the cone. Movement is constrainted between 0 and this angle on the Y axis. */
+		BS_SCRIPT_EXPORT(range:[0,180])
 		Radian yLimitAngle = Radian(Math::HALF_PI);
 
 		/** Z angle of the cone. Movement is constrainted between 0 and this angle on the Z axis. */
+		BS_SCRIPT_EXPORT(range:[0,180])
 		Radian zLimitAngle = Radian(Math::HALF_PI);
 	};
 

@@ -91,8 +91,10 @@ namespace bs
 		}
 
 		/// <summary>Lower angle of the limit. Must be less than #upper.</summary>
+		[Range(0f, 359f, false)]
 		public Radian lower;
 		/// <summary>Upper angle of the limit. Must be less than #lower.</summary>
+		[Range(0f, 359f, false)]
 		public Radian upper;
 		/// <summary>
 		/// Distance from the limit at which it becomes active. Allows the solver to activate earlier than the limit is reached 
