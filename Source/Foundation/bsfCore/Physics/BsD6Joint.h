@@ -194,7 +194,7 @@ namespace bs
 	{
 		D6_JOINT_DESC() { }
 
-		D6JointMotion motion[(UINT32)D6JointAxis::Count];
+		D6JointMotion motion[(UINT32)D6JointAxis::Count] = { D6JointMotion::Locked };
 		D6JointDrive drive[(UINT32)D6JointDriveType::Count];
 		LimitLinear limitLinear;
 		LimitAngularRange limitTwist;
