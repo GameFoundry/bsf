@@ -878,7 +878,7 @@ namespace bs
 			}
 
 			MonoPrimitiveType monoPrimitiveType = MonoUtil::getPrimitiveType(klass);
-			if(monoPrimitiveType != MonoPrimitiveType::Class)
+			if(monoPrimitiveType != MonoPrimitiveType::Class && monoPrimitiveType != MonoPrimitiveType::ValueType)
 			{
 				LOGWRN("Unsupported type provided.");
 				return nullptr;
@@ -978,46 +978,45 @@ namespace bs
 					return handle.getInternalPtr();
 				}
 			}
+
+			// Generic class or value type
+			String elementNs;
+			String elementTypeName;
+			MonoUtil::getClassName(value, elementNs, elementTypeName);
+
+			SPtr<ManagedSerializableObjectInfo> objInfo;
+			if (!instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo))
+			{
+				LOGERR("Object has no serialization meta-data.");
+				return nullptr;
+			}
+
+			if (objInfo->mTypeInfo->mRTIITypeId != 0)
+			{
+				::MonoClass* monoClass = MonoUtil::getClass(value);
+				::MonoReflectionType* monoType = MonoUtil::getType(monoClass);
+
+				const ReflectableTypeInfo* reflTypeInfo = instance().getReflectableTypeInfo(monoType);
+				assert(reflTypeInfo);
+
+				ScriptReflectableBase* scriptReflectable = nullptr;
+
+				if (reflTypeInfo->metaData->thisPtrField != nullptr)
+					reflTypeInfo->metaData->thisPtrField->get(value, &scriptReflectable);
+
+				return scriptReflectable->getReflectable();
+			}
 			else
 			{
-				String elementNs;
-				String elementTypeName;
-				MonoUtil::getClassName(value, elementNs, elementTypeName);
-
-				SPtr<ManagedSerializableObjectInfo> objInfo;
-				if (!instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo))
+				SPtr<ManagedSerializableObject> managedObj = ManagedSerializableObject::createFromExisting(value);
+				if (!managedObj)
 				{
-					LOGERR("Object has no serialization meta-data.");
+					LOGERR("Object failed to serialize due to an internal error.");
 					return nullptr;
 				}
 
-				if (objInfo->mTypeInfo->mRTIITypeId != 0)
-				{
-					::MonoClass* monoClass = MonoUtil::getClass(value);
-					::MonoReflectionType* monoType = MonoUtil::getType(monoClass);
-
-					const ReflectableTypeInfo* reflTypeInfo = instance().getReflectableTypeInfo(monoType);
-					assert(reflTypeInfo);
-
-					ScriptReflectableBase* scriptReflectable = nullptr;
-
-					if (reflTypeInfo->metaData->thisPtrField != nullptr)
-						reflTypeInfo->metaData->thisPtrField->get(value, &scriptReflectable);
-
-					return scriptReflectable->getReflectable();
-				}
-				else
-				{
-					SPtr<ManagedSerializableObject> managedObj = ManagedSerializableObject::createFromExisting(value);
-					if (!managedObj)
-					{
-						LOGERR("Object failed to serialize due to an internal error.");
-						return nullptr;
-					}
-
-					managedObj->serialize();
-					return managedObj;
-				}
+				managedObj->serialize();
+				return managedObj;
 			}
 		}
 
