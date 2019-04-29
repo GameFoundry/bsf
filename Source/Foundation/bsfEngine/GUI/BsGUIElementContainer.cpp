@@ -9,7 +9,9 @@ namespace bs
 	GUIElementContainer::GUIElementContainer(const GUIDimensions& dimensions, const String& style, 
 		GUIElementOptions options)
 		:GUIElement(style, dimensions, options)
-	{ }
+	{
+		mOptionFlags.set(GUIElementOption::ClickThrough);
+	}
 
 	UINT32 GUIElementContainer::_getNumRenderElements() const
 	{
@@ -51,15 +53,9 @@ namespace bs
 	{
 		// Make sure to pass through focus events to elements below
 		if (ev.getType() == GUICommandEventType::FocusGained)
-		{
-			onFocusChanged(true);
 			return false;
-		}
 		else if (ev.getType() == GUICommandEventType::FocusLost)
-		{
-			onFocusChanged(false);
 			return false;
-		}
 
 		return GUIElement::_commandEvent(ev);
 	}

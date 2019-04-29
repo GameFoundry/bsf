@@ -1061,8 +1061,8 @@ namespace bs
 		mNewElementsInFocus.clear();
 
 		mCommandEvent = GUICommandEvent();
-		mCommandEvent.setType(GUICommandEventType::FocusGained);
 
+		// Determine elements that gained focus
 		for (auto& elementInfo : mElementsUnderPointer)
 		{
 			auto iterFind = std::find_if(begin(mElementsInFocus), end(mElementsInFocus),
@@ -1070,7 +1070,7 @@ namespace bs
 
 			if (iterFind == mElementsInFocus.end())
 			{
-				bool processed = sendCommandEvent(elementInfo.element, mCommandEvent);
+				bool processed = !elementInfo.element->getOptionFlags().isSet(GUIElementOption::ClickThrough);
 				mNewElementsInFocus.push_back(ElementFocusInfo(elementInfo.element, elementInfo.widget, processed));
 
 				if (processed)
@@ -1085,7 +1085,7 @@ namespace bs
 			}
 		}
 
-		// Determine elements that lost focus
+		// Send focus loss events
 		// Note: Focus loss must trigger before mouse press because things like input boxes often only confirm changes
 		// made to them when focus is lost. So if the user is confirming some input via a press of the button focus loss
 		// must trigger on the input box first to make sure its contents get saved.
@@ -1097,9 +1097,19 @@ namespace bs
 				[=](const ElementFocusInfo& x) { return x.element == elementInfo.element; });
 
 			if (iterFind == mNewElementsInFocus.end())
-			{
 				sendCommandEvent(elementInfo.element, mCommandEvent);
-			}
+		}
+
+		// Send focus gain events
+		mCommandEvent.setType(GUICommandEventType::FocusGained);
+
+		for(auto& elementInfo : mNewElementsInFocus)
+		{
+			auto iterFind = std::find_if(begin(mElementsInFocus), end(mElementsInFocus),
+				[=](const ElementFocusInfo& x) { return x.element == elementInfo.element; });
+
+			if (iterFind == mElementsInFocus.end())
+				sendCommandEvent(elementInfo.element, mCommandEvent);
 		}
 
 		mElementsInFocus.swap(mNewElementsInFocus);

@@ -29,7 +29,7 @@ namespace bs
 		:GUIElementContainer(dimensions), mCaptureMouseOver(captureMouseOver),
 		mCaptureMousePresses(captureMousePresses)
 	{
-
+		mOptionFlags.set(GUIElementOption::ClickThrough);
 	}
 
 	void GUIDropDownHitBox::setBounds(const Rect2I& bounds)
