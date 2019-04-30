@@ -212,7 +212,12 @@ function(install_dependency_binary FILE_PATH CONFIG)
 		set(FULL_FILE_NAME ${FILE_NAME}.dll)
 
 		set(SRC_PATH "${BSF_SOURCE_DIR}/../bin/${PLATFORM}/${CONFIG}/${FULL_FILE_NAME}")
-		set(DEST_DIR bin)
+
+		if(NOT BS_IS_BANSHEE3D)
+			set(DEST_DIR bin)
+		else()
+			set(DEST_DIR .)
+		endif()
 	else()
 		# Check if there are so-versioned files in the source directory, and if so use the filename including
 		# the major soversion, because that's what the linker will use.
@@ -273,19 +278,25 @@ MACRO(install_dependency_dll FOLDER_NAME SRC_DIR LIB_NAME)
 		set(PLATFORM "x86")
 	endif()
 
+	if(NOT BS_IS_BANSHEE3D)
+		set(BIN_DIR bin)
+	else()
+		set(BIN_DIR .)
+	endif()
+
 	set(FULL_FILE_NAME ${LIB_NAME}.dll)
 	set(SRC_RELEASE "${SRC_DIR}/bin/${PLATFORM}/Release/${FULL_FILE_NAME}")
 	set(SRC_DEBUG "${SRC_DIR}/bin/${PLATFORM}/Debug/${FULL_FILE_NAME}")
 	
 	install(
 		FILES ${SRC_RELEASE}
-		DESTINATION bin
+		DESTINATION ${BIN_DIR}
 		CONFIGURATIONS Release RelWithDebInfo MinSizeRel
 	)
 		
 	install(
 		FILES ${SRC_DEBUG}
-		DESTINATION bin
+		DESTINATION ${BIN_DIR}
 		CONFIGURATIONS Debug
 	)
 ENDMACRO()
@@ -402,18 +413,20 @@ function(install_bsf_target targetName)
 	strip_symbols(${targetName} symbolsFile)
 	
 	if(NOT BS_IS_BANSHEE3D)
+		set(BIN_DIR bin)
 		install(
 			TARGETS ${targetName}
 			EXPORT bsf
-			RUNTIME DESTINATION bin
+			RUNTIME DESTINATION ${BIN_DIR}
 			LIBRARY DESTINATION lib
 			ARCHIVE DESTINATION lib
 		)
 	else()
+		set(BIN_DIR .)
 		install(
 			TARGETS ${targetName}
 			EXPORT bsf
-			RUNTIME DESTINATION bin
+			RUNTIME DESTINATION ${BIN_DIR}
 			LIBRARY DESTINATION lib
 		)
 	endif()
@@ -421,7 +434,7 @@ function(install_bsf_target targetName)
 	if(MSVC)
 		install(
 			FILES $<TARGET_PDB_FILE:${targetName}> 
-			DESTINATION bin 
+			DESTINATION ${BIN_DIR}
 			OPTIONAL
 		)
 	else()

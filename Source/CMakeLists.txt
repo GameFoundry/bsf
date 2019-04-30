@@ -255,10 +255,16 @@ if(((SCRIPT_API AND (NOT SCRIPT_API MATCHES "None")) OR BS_IS_BANSHEE3D) AND SCR
 	include(${BSF_SOURCE_DIR}/CMake/GenerateScriptBindings.cmake)
 endif()
 
+if(NOT BS_IS_BANSHEE3D)
+	set(DATA_DST_DIR bin)
+else()
+	set(DATA_DST_DIR .)
+endif()
+
 ## Install
 install(
 	DIRECTORY ../Data
-	DESTINATION bin/
+	DESTINATION ${DATA_DST_DIR}
 	PATTERN "../Data/Raw" EXCLUDE
 	PATTERN ".version" EXCLUDE
 	PATTERN ".reqversion" EXCLUDE
