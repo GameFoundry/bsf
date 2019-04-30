@@ -352,12 +352,34 @@ namespace bs
 		return PxFilterFlags();
 	}
 
+	void setUnmappedTriangleIndex(const PxQueryHit& input, PhysicsQueryHit& output)
+	{
+		// We can only assign a valid unmapped triangle index if the hit geometry is a triangle mesh
+		// and it was created with the flags to store the remapping.
+		// As a fallback, the raw face index is used.
+
+		if (input.shape != nullptr && input.shape->getGeometryType() == PxGeometryType::eTRIANGLEMESH)
+		{
+			PxTriangleMeshGeometry triMeshGeometry;
+			input.shape->getTriangleMeshGeometry(triMeshGeometry);
+
+			if (triMeshGeometry.isValid() && triMeshGeometry.triangleMesh->getTrianglesRemap() != nullptr)
+			{
+				output.unmappedTriangleIdx = triMeshGeometry.triangleMesh->getTrianglesRemap()[input.faceIndex];
+				return;
+			}
+		}
+
+		output.unmappedTriangleIdx = input.faceIndex;
+	}
+
 	void parseHit(const PxRaycastHit& input, PhysicsQueryHit& output)
 	{
 		output.point = fromPxVector(input.position);
 		output.normal = fromPxVector(input.normal);
 		output.distance = input.distance;
 		output.triangleIdx = input.faceIndex;
+		setUnmappedTriangleIndex(input, output);
 		output.uv = Vector2(input.u, input.v);
 
 		if(input.shape)
@@ -378,6 +400,7 @@ namespace bs
 		output.uv = Vector2::ZERO;
 		output.distance = input.distance;
 		output.triangleIdx = input.faceIndex;
+		setUnmappedTriangleIndex(input, output);
 		output.colliderRaw = (Collider*)input.shape->userData;
 
 		if (output.colliderRaw != nullptr)
