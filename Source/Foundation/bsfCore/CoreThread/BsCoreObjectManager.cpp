@@ -50,7 +50,7 @@ namespace bs
 
 	void CoreObjectManager::unregisterObject(CoreObject* object)
 	{
-		assert(object != nullptr);
+		assert(object != nullptr && !object->isDestroyed());
 
 		UINT64 internalId = object->getInternalID();
 
@@ -380,7 +380,12 @@ namespace bs
 			{
 				// Object was destroyed but we still need to sync its modifications before it was destroyed
 				if (objectData.second.syncDataId != -1)
-					syncData.entries.push_back(mDestroyedSyncData[objectData.second.syncDataId]);
+				{
+					const CoreStoredSyncObjData& objData = mDestroyedSyncData[objectData.second.syncDataId];
+
+					syncData.entries.push_back(objData);
+					syncData.destroyedObjects.push_back(objData.destinationObj);
+				}
 			}
 		}
 
@@ -409,6 +414,7 @@ namespace bs
 				syncData.alloc->free(data);
 		}
 
+		syncData.destroyedObjects.clear();
 		syncData.entries.clear();
 		mCoreSyncData.pop_front();
 	}

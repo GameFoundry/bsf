@@ -50,6 +50,7 @@ namespace bs
 		{
 			FrameAlloc* alloc = nullptr;
 			Vector<CoreStoredSyncObjData> entries;
+			Vector<SPtr<ct::CoreObject>> destroyedObjects;
 		};
 
 		/** Contains information about a dirty CoreObject that requires syncing to the core thread. */	
