@@ -34,6 +34,7 @@ namespace bs
 
 		/// <summary>Volume of the audio played from this source, in [0, 1] range.</summary>
 		[ShowInInspector]
+		[Range(0f, 1f, true)]
 		[NativeWrapper]
 		public float Volume
 		{
@@ -99,7 +100,6 @@ namespace bs
 		/// Determines the current time of playback. If playback hasn&apos;t yet started, it specifies the time at which playback 
 		/// will start at. The time is in seconds, in range [0, clipLength].
 		/// </summary>
-		[ShowInInspector]
 		[NativeWrapper]
 		public float Time
 		{

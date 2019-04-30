@@ -51,7 +51,12 @@ namespace bs
 
 		/// <summary>Returns a reference wrapper for this resource.</summary>
 		public static implicit operator RRef<Material>(Material x)
-		{ return Internal_GetRef(x.mCachedPtr); }
+		{
+			if(x != null)
+				return Internal_GetRef(x.mCachedPtr);
+			else
+				return null;
+		}
 
 		/// <summary>Creates a deep copy of the material and returns the new object.</summary>
 		public RRef<Material> Clone()

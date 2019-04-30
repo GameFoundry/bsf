@@ -84,7 +84,12 @@ namespace bs
 
 		/// <summary>Returns a reference wrapper for this resource.</summary>
 		public static implicit operator RRef<AudioClip>(AudioClip x)
-		{ return Internal_GetRef(x.mCachedPtr); }
+		{
+			if(x != null)
+				return Internal_GetRef(x.mCachedPtr);
+			else
+				return null;
+		}
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern RRef<AudioClip> Internal_GetRef(IntPtr thisPtr);

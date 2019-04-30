@@ -145,7 +145,12 @@ namespace bs
 
 		/// <summary>Returns a reference wrapper for this resource.</summary>
 		public static implicit operator RRef<Mesh>(Mesh x)
-		{ return Internal_GetRef(x.mCachedPtr); }
+		{
+			if(x != null)
+				return Internal_GetRef(x.mCachedPtr);
+			else
+				return null;
+		}
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern RRef<Mesh> Internal_GetRef(IntPtr thisPtr);

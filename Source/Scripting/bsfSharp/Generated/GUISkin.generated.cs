@@ -40,7 +40,12 @@ namespace bs
 
 		/// <summary>Returns a reference wrapper for this resource.</summary>
 		public static implicit operator RRef<GUISkin>(GUISkin x)
-		{ return Internal_GetRef(x.mCachedPtr); }
+		{
+			if(x != null)
+				return Internal_GetRef(x.mCachedPtr);
+			else
+				return null;
+		}
 
 		/// <summary>Checks if the style with the specified name exists.</summary>
 		public bool HasStyle(string name)

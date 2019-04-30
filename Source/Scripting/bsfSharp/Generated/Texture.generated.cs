@@ -102,7 +102,12 @@ namespace bs
 
 		/// <summary>Returns a reference wrapper for this resource.</summary>
 		public static implicit operator RRef<Texture>(Texture x)
-		{ return Internal_GetRef(x.mCachedPtr); }
+		{
+			if(x != null)
+				return Internal_GetRef(x.mCachedPtr);
+			else
+				return null;
+		}
 
 		/// <summary>Reads internal texture data into a newly allocated buffer.</summary>
 		/// <param name="face">Texture face to read from.</param>

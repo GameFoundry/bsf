@@ -28,7 +28,12 @@ namespace bs
 
 		/// <summary>Returns a reference wrapper for this resource.</summary>
 		public static implicit operator RRef<Font>(Font x)
-		{ return Internal_GetRef(x.mCachedPtr); }
+		{
+			if(x != null)
+				return Internal_GetRef(x.mCachedPtr);
+			else
+				return null;
+		}
 
 		/// <summary>Returns font bitmap for a specific font size.</summary>
 		/// <param name="size">Size of the bitmap in points.</param>
