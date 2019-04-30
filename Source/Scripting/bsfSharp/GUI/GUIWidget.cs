@@ -20,6 +20,7 @@ namespace bs
         /// <summary>
         /// Skin used for rendering all the GUI elements belonging to this widget.
         /// </summary>
+        [ShowInInspector]
         public GUISkin Skin
         {
             get { return serializableData.skin; }
@@ -34,6 +35,7 @@ namespace bs
         /// Determines to which camera are the GUI elements belonong to this widget rendered. If null then they will be
         /// rendered on the main camera.
         /// </summary>
+        [ShowInInspector]
         public Camera Camera
         {
             get { return serializableData.camera; }

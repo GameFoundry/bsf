@@ -159,6 +159,7 @@ namespace bs
 		/// enabled). In range [-8, 8].
 		/// </summary>
 		[ShowInInspector]
+		[Range(-8f, 8f, true)]
 		[NativeWrapper]
 		public float ExposureScale
 		{
@@ -172,6 +173,7 @@ namespace bs
 		/// tonemapping is turned off this is the exact value of the gamma curve that will be applied.
 		/// </summary>
 		[ShowInInspector]
+		[Range(1f, 3f, true)]
 		[NativeWrapper]
 		public float Gamma
 		{

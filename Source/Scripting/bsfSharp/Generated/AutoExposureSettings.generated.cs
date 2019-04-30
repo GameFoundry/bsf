@@ -27,6 +27,7 @@ namespace bs
 		/// scene brightness calculations. In log2 units (-8 = 1/256). In the range [-16, 0].
 		/// </summary>
 		[ShowInInspector]
+		[Range(-16f, 0f, true)]
 		[NativeWrapper]
 		public float HistogramLog2Min
 		{
@@ -40,6 +41,7 @@ namespace bs
 		/// scene brightness calculations. In log2 units (4 = 16). In the range [0, 16].
 		/// </summary>
 		[ShowInInspector]
+		[Range(0f, 16f, true)]
 		[NativeWrapper]
 		public float HistogramLog2Max
 		{
@@ -55,6 +57,7 @@ namespace bs
 		/// dark pixels in an otherwise bright image). In range [0.0f, 1.0f].
 		/// </summary>
 		[ShowInInspector]
+		[Range(0f, 1f, true)]
 		[NativeWrapper]
 		public float HistogramPctLow
 		{
@@ -70,6 +73,7 @@ namespace bs
 		/// bright pixels). In range [0.0f, 1.0f].
 		/// </summary>
 		[ShowInInspector]
+		[Range(0f, 1f, true)]
 		[NativeWrapper]
 		public float HistogramPctHigh
 		{
@@ -83,6 +87,7 @@ namespace bs
 		/// everything is still visible). In range [0.0f, 10.0f].
 		/// </summary>
 		[ShowInInspector]
+		[Range(0f, 10f, true)]
 		[NativeWrapper]
 		public float MinEyeAdaptation
 		{
@@ -96,6 +101,7 @@ namespace bs
 		/// so low that the rest of the scene is all white (overexposed). In range [0.0f, 10.0f].
 		/// </summary>
 		[ShowInInspector]
+		[Range(0f, 10f, true)]
 		[NativeWrapper]
 		public float MaxEyeAdaptation
 		{
@@ -108,6 +114,7 @@ namespace bs
 		/// exposure changes when the scene brightness increases. In range [0.01f, 20.0f].
 		/// </summary>
 		[ShowInInspector]
+		[Range(0.01f, 20f, true)]
 		[NativeWrapper]
 		public float EyeAdaptationSpeedUp
 		{
@@ -120,6 +127,7 @@ namespace bs
 		/// exposure changes when the scene brightness decreases. In range [0.01f, 20.0f].
 		/// </summary>
 		[ShowInInspector]
+		[Range(0.01f, 20f, true)]
 		[NativeWrapper]
 		public float EyeAdaptationSpeedDown
 		{

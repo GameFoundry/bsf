@@ -40,6 +40,7 @@ namespace bs
 		/// increase in memory cost. Valid range is roughly [1, 6].
 		/// </summary>
 		[ShowInInspector]
+		[Range(1f, 6f, true)]
 		[NativeWrapper]
 		public int NumCascades
 		{
@@ -55,6 +56,7 @@ namespace bs
 		/// Valid range is roughly [1, 4].
 		/// </summary>
 		[ShowInInspector]
+		[Range(1f, 4f, true)]
 		[NativeWrapper]
 		public float CascadeDistributionExponent
 		{
@@ -67,6 +69,7 @@ namespace bs
 		/// shadows, at the cost of performance. Valid range is [1, 4].
 		/// </summary>
 		[ShowInInspector]
+		[Range(1f, 4f, true)]
 		[NativeWrapper]
 		public int ShadowFilteringQuality
 		{

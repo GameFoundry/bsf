@@ -27,6 +27,7 @@ namespace bs
 		/// Moves along the Planckian locus. In range [1500.0f, 15000.0f].
 		/// </summary>
 		[ShowInInspector]
+		[Range(1500f, 15000f, true)]
 		[NativeWrapper]
 		public float Temperature
 		{
@@ -42,6 +43,7 @@ namespace bs
 		/// In range [-1.0f, 1.0f].
 		/// </summary>
 		[ShowInInspector]
+		[Range(-1f, 1f, true)]
 		[NativeWrapper]
 		public float Tint
 		{

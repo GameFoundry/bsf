@@ -37,6 +37,7 @@ namespace bs
 		/// 5.0].
 		/// </summary>
 		[ShowInInspector]
+		[Range(0.05f, 5f, true)]
 		[NativeWrapper]
 		public float Radius
 		{
@@ -50,6 +51,7 @@ namespace bs
 		/// millimeters, valid range is roughly [0, 200].
 		/// </summary>
 		[ShowInInspector]
+		[Range(0f, 200f, true)]
 		[NativeWrapper]
 		public float Bias
 		{
@@ -86,6 +88,7 @@ namespace bs
 		/// versa. Valid range is roughly [0.2, 2].
 		/// </summary>
 		[ShowInInspector]
+		[Range(0.2f, 2f, true)]
 		[NativeWrapper]
 		public float Intensity
 		{
@@ -99,6 +102,7 @@ namespace bs
 		/// darkening will occur.
 		/// </summary>
 		[ShowInInspector]
+		[Range(1f, 4f, true)]
 		[NativeWrapper]
 		public float Power
 		{
@@ -111,6 +115,7 @@ namespace bs
 		/// performance.
 		/// </summary>
 		[ShowInInspector]
+		[Range(0f, 4f, true)]
 		[NativeWrapper]
 		public int Quality
 		{

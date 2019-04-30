@@ -25,7 +25,7 @@ namespace bs
 		 * average brightness of the scene. Any luminance value below this value will not be included in the histogram and
 		 * ignored in scene brightness calculations. In log2 units (-8 = 1/256). In the range [-16, 0].
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[-16,0],slider)
 		float histogramLog2Min = -8.0f;
 
 		/**
@@ -33,7 +33,7 @@ namespace bs
 		 * average brightness of the scene. Any luminance value above this value will not be included in the histogram and
 		 * ignored in scene brightness calculations. In log2 units (4 = 16). In the range [0, 16].
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[0,16],slider)
 		float histogramLog2Max = 4.0f;
 
 		/**
@@ -43,7 +43,7 @@ namespace bs
 		 * in scene brightness calculations. This allows you to remove outliers on the lower end of the histogram (for
 		 * example a few very dark pixels in an otherwise bright image). In range [0.0f, 1.0f].
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[0,1],slider)
 		float histogramPctLow = 0.8f;
 
 		/**
@@ -53,7 +53,7 @@ namespace bs
 		 * in scene brightness calculations. This allows you to remove outliers on the high end of the histogram (for 
 		 * example a few very bright pixels). In range [0.0f, 1.0f].
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[0,1],slider)
 		float histogramPctHigh = 0.985f;
 
 		/**
@@ -61,7 +61,7 @@ namespace bs
 		 * is never too high (for example when in a very dark room you probably do not want the exposure to be so high that
 		 * everything is still visible). In range [0.0f, 10.0f].
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[0,10],slider)
 		float minEyeAdaptation = 0.003f;
 
 		/**
@@ -69,21 +69,21 @@ namespace bs
 		 * is never too low (for example when looking at a very bright light source you probably don't want the exposure to
 		 * be so low that the rest of the scene is all white (overexposed). In range [0.0f, 10.0f].
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[0,10],slider)
 		float maxEyeAdaptation = 2.0f;
 
 		/**
 		 * Determines how quickly does the eye adaptation adjust to larger values. This affects how quickly does the
 		 * automatic exposure changes when the scene brightness increases. In range [0.01f, 20.0f]. 
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[0.01,20],slider)
 		float eyeAdaptationSpeedUp = 3.0f;
 
 		/**
 		 * Determines how quickly does the eye adaptation adjust to smaller values. This affects how quickly does the
 		 * automatic exposure changes when the scene brightness decreases. In range [0.01f, 20.0f].
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[0.01,20],slider)
 		float eyeAdaptationSpeedDown = 3.0f;
 
 		/************************************************************************/
@@ -169,7 +169,7 @@ namespace bs
 		 *
 		 * Moves along the Planckian locus. In range [1500.0f, 15000.0f].
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[1500,15000],slider)
 		float temperature = 6500.0f;
 
 		/**
@@ -179,7 +179,7 @@ namespace bs
 		 *
 		 * In range [-1.0f, 1.0f].
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[-1,1],slider)
 		float tint = 0.0f;
 
 		/************************************************************************/
@@ -257,7 +257,7 @@ namespace bs
 		 * quality or noise because of low sampling precision. Usually best to keep at around a meter, valid range
 		 * is roughly [0.05, 5.0].
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[0.05,5],slider)
 		float radius = 1.5f;
 
 		/**
@@ -265,7 +265,7 @@ namespace bs
 		 * details to be lost in areas where occlusion isn't high. Value is in millimeters. Usually best to keep at a few
 		 * dozen millimeters, valid range is roughly [0, 200].
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[0,200],slider)
 		float bias = 1.0f;
 
 		/**
@@ -286,7 +286,7 @@ namespace bs
 		 * Linearly scales the intensity of the AO effect. Values less than 1 make the AO effect less pronounced, and vice
 		 * versa. Valid range is roughly [0.2, 2].
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[0.2,2],slider)
 		float intensity = 1.0f;
 
 		/**
@@ -294,14 +294,14 @@ namespace bs
 		 * control and will cause the darkening to ramp up exponentially. Valid range is roughly [1, 4], where 1 means no
 		 * extra darkening will occur.
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[1,4],slider)
 		float power = 4.0f;
 
 		/**
 		 * Quality level of generated ambient occlusion. In range [0, 4]. Higher levels yield higher quality AO at the cost
 		 * of performance.
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[0,4],slider)
 		UINT32 quality = 3;
 
 		/************************************************************************/
@@ -403,18 +403,18 @@ namespace bs
 		 * better precision. This results in higher quality, as well as a higher performance requirement. Valid range is
 		 * [0, 4], default is 2.
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[0,4],slider)
 		UINT32 quality = 2;
 
 		/** Intensity of the screen space reflections. Valid range is [0, 1]. Default is 1 (100%). */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[0,1],slider)
 		float intensity = 1.0f;
 
 		/** 
 		 * Roughness at which screen space reflections start fading out and become replaced with refl. probes. Valid range
 		 * is [0, 1]. Default is 0.8.
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[0,1],slider)
 		float maxRoughness = 0.8f;
 
 		/************************************************************************/
@@ -498,7 +498,7 @@ namespace bs
 		 * individual cascade has less area to cover, but can significantly increase performance cost, as well as a minor
 		 * increase in memory cost. Valid range is roughly [1, 6].
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[1,6],slider)
 		UINT32 numCascades = 4;
 
 		/**
@@ -508,14 +508,14 @@ namespace bs
 		 * yield higher resolution shadows). Higher values increase the size disparity between near and far cascades at
 		 * an exponential rate. Valid range is roughly [1, 4].
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[1,4],slider)
 		float cascadeDistributionExponent = 3.0f;
 
 		/**
 		 * Determines the number of samples used for percentage closer shadow map filtering. Higher values yield higher
 		 * quality shadows, at the cost of performance. Valid range is [1, 4].
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[1,4],slider)
 		UINT32 shadowFilteringQuality = 4;
 
 		/************************************************************************/
@@ -614,7 +614,7 @@ namespace bs
 		 * yield brighter image. Allows you to customize exposure manually, applied on top of eye adaptation exposure (if
 		 * enabled). In range [-8, 8].
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[-8,8],slider)
 		float exposureScale = 1.25f;
 
 		/**
@@ -622,7 +622,7 @@ namespace bs
 		 * on the best gamma curve for the output device is chosen automatically and this value can by used to merely tweak
 		 * that curve. If tonemapping is turned off this is the exact value of the gamma curve that will be applied.
 		 */
-		BS_SCRIPT_EXPORT()
+		BS_SCRIPT_EXPORT(range:[1,3],slider)
 		float gamma = 2.2f;
 
 		/** 

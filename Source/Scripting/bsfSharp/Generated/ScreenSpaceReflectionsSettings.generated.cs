@@ -43,6 +43,7 @@ namespace bs
 		/// default is 2.
 		/// </summary>
 		[ShowInInspector]
+		[Range(0f, 4f, true)]
 		[NativeWrapper]
 		public int Quality
 		{
@@ -52,6 +53,7 @@ namespace bs
 
 		/// <summary>Intensity of the screen space reflections. Valid range is [0, 1]. Default is 1 (100%).</summary>
 		[ShowInInspector]
+		[Range(0f, 1f, true)]
 		[NativeWrapper]
 		public float Intensity
 		{
@@ -64,6 +66,7 @@ namespace bs
 		/// [0, 1]. Default is 0.8.
 		/// </summary>
 		[ShowInInspector]
+		[Range(0f, 1f, true)]
 		[NativeWrapper]
 		public float MaxRoughness
 		{
