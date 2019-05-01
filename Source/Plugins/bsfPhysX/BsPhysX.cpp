@@ -746,7 +746,7 @@ namespace bs
 			maxDist, hitFlags, maxHits, &hitInfo, anyHit);
 
 		if(hitCount > 0)
-			parseHit(hitInfo, hit, shape);
+			parseHit(hitInfo, hit, shape); // We have to provide a hint for the tested shape, as it is not contained in single-geometry raycast hit results
 
 		return hitCount > 0;
 	}
