@@ -176,6 +176,8 @@ namespace bs
 	public:
 		TResourceHandle() = default;
 
+		TResourceHandle(std::nullptr_t) { }
+
 		/**	Copy constructor. */
 		TResourceHandle(const TResourceHandle& other)
 		{
