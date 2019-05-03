@@ -47,14 +47,14 @@ namespace bs
 		 *								It is primarily used for compatibility between different versions of serialized data.
 		 * @param[in]	getter  		The getter method for the field.
 		 * @param[in]	setter  		The setter method for the field.
-		 * @param[in]	flags			Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
+		 * @param[in]	info			Various optional information about the field.
 		 */
-		void initSingle(String name, UINT16 uniqueId, GetterType getter, SetterType setter, UINT64 flags)
+		void initSingle(String name, UINT16 uniqueId, GetterType getter, SetterType setter, const RTTIFieldInfo& info)
 		{
 			this->getter = getter;
 			this->setter = setter;
 
-			init(std::move(name), uniqueId, false, SerializableFT_DataBlock, flags);
+			init(std::move(name), uniqueId, false, SerializableFT_DataBlock, info);
 		}
 
 		/** @copydoc RTTIField::getTypeSize */

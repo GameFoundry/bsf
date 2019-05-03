@@ -81,7 +81,7 @@ namespace bs
 			addPlainField("mUsage", 11, &TextureRTTI::getUsage, &TextureRTTI::setUsage);
 
 			addReflectablePtrArrayField("mPixelData", 12, &TextureRTTI::getPixelData, &TextureRTTI::getPixelDataArraySize, 
-				&TextureRTTI::setPixelData, &TextureRTTI::setPixelDataArraySize, RTTI_Flag_SkipInReferenceSearch);
+				&TextureRTTI::setPixelData, &TextureRTTI::setPixelDataArraySize, RTTIFieldInfo(RTTIFieldFlag::SkipInReferenceSearch));
 		}
 
 		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override

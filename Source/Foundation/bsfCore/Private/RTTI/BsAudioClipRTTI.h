@@ -49,7 +49,7 @@ namespace bs
 	public:
 		AudioClipRTTI()
 		{
-			addDataBlockField("mData", 6, &AudioClipRTTI::getData, &AudioClipRTTI::setData, 0);
+			addDataBlockField("mData", 6, &AudioClipRTTI::getData, &AudioClipRTTI::setData);
 		}
 
 		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override

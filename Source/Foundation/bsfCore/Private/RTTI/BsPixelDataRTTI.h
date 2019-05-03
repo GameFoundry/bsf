@@ -68,7 +68,7 @@ namespace bs
 			addPlainField("rowPitch", 6, &PixelDataRTTI::getRowPitch, &PixelDataRTTI::setRowPitch);
 			addPlainField("slicePitch", 7, &PixelDataRTTI::getSlicePitch, &PixelDataRTTI::setSlicePitch);
 			addPlainField("format", 8, &PixelDataRTTI::getFormat, &PixelDataRTTI::setFormat);
-			addDataBlockField("data", 9, &PixelDataRTTI::getData, &PixelDataRTTI::setData, 0);
+			addDataBlockField("data", 9, &PixelDataRTTI::getData, &PixelDataRTTI::setData);
 		}
 
 		virtual const String& getRTTIName() override

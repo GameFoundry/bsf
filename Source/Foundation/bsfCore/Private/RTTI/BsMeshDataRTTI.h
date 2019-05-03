@@ -54,7 +54,7 @@ namespace bs
 			addPlainField("mNumVertices", 2, &MeshDataRTTI::getNumVertices, &MeshDataRTTI::setNumVertices);
 			addPlainField("mNumIndices", 3, &MeshDataRTTI::getNumIndices, &MeshDataRTTI::setNumIndices);
 
-			addDataBlockField("data", 4, &MeshDataRTTI::getData, &MeshDataRTTI::setData, 0);
+			addDataBlockField("data", 4, &MeshDataRTTI::getData, &MeshDataRTTI::setData);
 		}
 
 		SPtr<IReflectable> newRTTIObject() override

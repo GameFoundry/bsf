@@ -44,7 +44,7 @@ namespace bs
 	};
 
 	/** Various flags you can assign to RTTI fields. */
-	enum RTTIFieldFlag
+	enum class RTTIFieldFlag
 	{
 		/** 
 		 * This flag is only used on field types of ReflectablePtr type, and it is used
@@ -58,7 +58,7 @@ namespace bs
 		 * data until deserialization is fully complete. You only need to use this flag if the RTTI system
 		 * complains that is has found a circular reference.
 		 */
-		RTTI_Flag_WeakRef = 0x01,
+		WeakRef = 1 << 0,
 		/** 
 		 * This flags signals various systems that the flagged field should not be searched when looking for 
 		 * object references. This normally means the value of this field will no be retrieved during reference
@@ -67,7 +67,29 @@ namespace bs
 		 * would not contribute to the reference search anyway. Whether or not a field contributes to the reference
 		 * search depends on the search and should be handled on a case by case basis.
 		 */
-		RTTI_Flag_SkipInReferenceSearch = 0x02
+		SkipInReferenceSearch = 1 << 1,
+		/**
+		 * Lets the replication system know that this field should be monitored for changes and replicated across the
+		 * network when changes are detected.
+		 */
+		Replicate = 1 << 2
+	};
+
+	typedef Flags<RTTIFieldFlag> RTTIFieldFlags;
+	BS_FLAGS_OPERATORS(RTTIFieldFlag)
+
+	/** Provides various optional information regarding a RTTI field. */
+	struct BS_UTILITY_EXPORT RTTIFieldInfo
+	{
+		RTTIFieldFlags flags;
+
+		RTTIFieldInfo() = default;
+
+		RTTIFieldInfo(RTTIFieldFlags flags)
+			:flags(flags)
+		{ }
+
+		static RTTIFieldInfo DEFAULT;
 	};
 
 	/**
@@ -87,7 +109,7 @@ namespace bs
 		UINT16 mUniqueId;
 		bool mIsVectorType;
 		SerializableFieldType mType;
-		UINT64 mFlags;
+		RTTIFieldInfo mInfo;
 
 		virtual ~RTTIField() = default;
 
@@ -106,8 +128,8 @@ namespace bs
 		/** Checks is the field contains an array or a single entry. */
 		bool isArray() const { return mIsVectorType; }
 
-		/** Returns flags that were set in the field meta-data. */
-		UINT64 getFlags() const { return mFlags; }
+		/** Returns additional information about the field. */
+		const RTTIFieldInfo& getInfo() const { return mInfo; }
 
 		/**
 		 * Gets the size of an array contained by the field, if the field represents an array. Throws exception if field 
@@ -173,13 +195,13 @@ namespace bs
 		void checkIsDataBlock();
 
 	protected:
-		void init(String name, UINT16 uniqueId, bool isVectorType, SerializableFieldType type, UINT64 flags)
+		void init(String name, UINT16 uniqueId, bool isVectorType, SerializableFieldType type, const RTTIFieldInfo& info)
 		{
 			this->mName = std::move(name);
 			this->mUniqueId = uniqueId;
 			this->mIsVectorType = isVectorType;
 			this->mType = type;
-			this->mFlags = flags;
+			this->mInfo = info;
 		}
 	};
 

@@ -82,8 +82,8 @@ namespace bs
 					RTTIReflectablePtrFieldBase* otherReflectablePtrField = static_cast<RTTIReflectablePtrFieldBase*>(otherField);
 
 					if (myType->getRTTIId() == otherReflectablePtrField->getType()->getRTTIId() &&
-						(myReflectablePtrField->getFlags() & RTTI_Flag_WeakRef) == 0 &&
-						(otherReflectablePtrField->getFlags() & RTTI_Flag_WeakRef) == 0)
+						(!myReflectablePtrField->getInfo().flags.isSet(RTTIFieldFlag::WeakRef) &&
+						!otherReflectablePtrField->getInfo().flags.isSet(RTTIFieldFlag::WeakRef)))
 					{
 						BS_EXCEPT(InternalErrorException, "Found circular reference on RTTI type: " + myType->getRTTIName()
 							+ " to type: " + otherType->getRTTIName() + ". Either remove one of the references or mark it" 

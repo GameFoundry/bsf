@@ -117,9 +117,9 @@ namespace bs
 		 *							It is primarily used for compatibility between different versions of serialized data.
 		 * @param[in]	getter  	The getter method for the field.
 		 * @param[in]	setter  	The setter method for the field.
-		 * @param[in]	flags		Various flags you can use to specialize how outside systems handle this field. See "RTTIFieldFlag".
+		 * @param[in]	info		Various optional information about the field.
 		 */
-		void initSingle(String name, UINT16 uniqueId, GetterType getter, SetterType setter, UINT64 flags)
+		void initSingle(String name, UINT16 uniqueId, GetterType getter, SetterType setter, const RTTIFieldInfo& info)
 		{
 			static_assert(sizeof(RTTIPlainType<DataType>::id) > 0, "Type has no RTTI ID."); // Just making sure provided type has a type ID
 
@@ -130,7 +130,7 @@ namespace bs
 			this->getter = getter;
 			this->setter = setter;
 
-			init(std::move(name), uniqueId, false, SerializableFT_Plain, flags);
+			init(std::move(name), uniqueId, false, SerializableFT_Plain, info);
 		}
 
 		/**
@@ -144,10 +144,10 @@ namespace bs
 		 * @param[in]	getSize 	Getter method that returns the size of an array.
 		 * @param[in]	setter  	The setter method for the field.
 		 * @param[in]	setSize 	Setter method that allows you to resize an array. Can be null.
-		 * @param[in]	flags		Various flags you can use to specialize how outside systems handle this field. See "RTTIFieldFlag".
+		 * @param[in]	info		Various optional information about the field.
 		 */
 		void initArray(String name, UINT16 uniqueId, ArrayGetterType getter,
-			ArrayGetSizeType getSize, ArraySetterType setter, ArraySetSizeType setSize, UINT64 flags)
+			ArrayGetSizeType getSize, ArraySetterType setter, ArraySetSizeType setSize, const RTTIFieldInfo& info)
 		{
 			static_assert((RTTIPlainType<DataType>::id != 0) || true, ""); // Just making sure provided type has a type ID
 
@@ -160,7 +160,7 @@ namespace bs
 			arrayGetSize = getSize;
 			arraySetSize = setSize;
 
-			init(std::move(name), uniqueId, true, SerializableFT_Plain, flags);
+			init(std::move(name), uniqueId, true, SerializableFT_Plain, info);
 		}
 
 		/** @copydoc RTTIField::getTypeSize */

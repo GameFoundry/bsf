@@ -672,7 +672,7 @@ mTotalBytesRead -= size;												\
 							{
 								ObjectToDecode& objToDecode = findObj->second;
 
-								const bool needsDecoding = (curField->getFlags() & RTTI_Flag_WeakRef) == 0 && !objToDecode.isDecoded;
+								const bool needsDecoding = !curField->getInfo().flags.isSet(RTTIFieldFlag::WeakRef) && !objToDecode.isDecoded;
 								if (needsDecoding)
 								{
 									if (objToDecode.decodeInProgress)
@@ -788,7 +788,7 @@ mTotalBytesRead -= size;												\
 						{
 							ObjectToDecode& objToDecode = findObj->second;
 
-							const bool needsDecoding = (curField->getFlags() & RTTI_Flag_WeakRef) == 0 && !objToDecode.isDecoded;
+							const bool needsDecoding = !curField->getInfo().flags.isSet(RTTIFieldFlag::WeakRef) && !objToDecode.isDecoded;
 							if (needsDecoding)
 							{
 								if (objToDecode.decodeInProgress)

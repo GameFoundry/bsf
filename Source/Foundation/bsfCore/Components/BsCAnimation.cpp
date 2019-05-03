@@ -502,6 +502,7 @@ namespace bs
 				if (mAnimatedRenderable != nullptr)
 					bounds = mAnimatedRenderable->getBounds().getBox();
 
+				LOGWRN(toString(bounds.getCenter()) + " " + toString(bounds.getSize()));
 				mInternal->setBounds(bounds);
 			}
 		}

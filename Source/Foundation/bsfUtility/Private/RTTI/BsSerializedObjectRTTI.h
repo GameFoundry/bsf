@@ -56,7 +56,7 @@ namespace bs
 	public:
 		SerializedFieldRTTI()
 		{
-			addDataBlockField("data", 0, &SerializedFieldRTTI::getData, &SerializedFieldRTTI::setData, 0);
+			addDataBlockField("data", 0, &SerializedFieldRTTI::getData, &SerializedFieldRTTI::setData);
 		}
 
 		const String& getRTTIName() override
@@ -100,7 +100,7 @@ namespace bs
 	public:
 		SerializedDataBlockRTTI()
 		{
-			addDataBlockField("data", 0, &SerializedDataBlockRTTI::getData, &SerializedDataBlockRTTI::setData, 0);
+			addDataBlockField("data", 0, &SerializedDataBlockRTTI::getData, &SerializedDataBlockRTTI::setData);
 		}
 
 		const String& getRTTIName() override

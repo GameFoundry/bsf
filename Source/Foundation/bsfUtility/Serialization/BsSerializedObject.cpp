@@ -160,7 +160,7 @@ namespace bs
 
 									ObjectToDecode& objToDecode = findObj->second;
 
-									bool needsDecoding = (curField->getFlags() & RTTI_Flag_WeakRef) == 0 && !objToDecode.isDecoded;
+									bool needsDecoding = !curField->getInfo().flags.isSet(RTTIFieldFlag::WeakRef) && !objToDecode.isDecoded;
 									if (needsDecoding)
 									{
 										if (objToDecode.decodeInProgress)
@@ -254,7 +254,7 @@ namespace bs
 
 								ObjectToDecode& objToDecode = findObj->second;
 
-								bool needsDecoding = (curField->getFlags() & RTTI_Flag_WeakRef) == 0 && !objToDecode.isDecoded;
+								bool needsDecoding = !curField->getInfo().flags.isSet(RTTIFieldFlag::WeakRef) && !objToDecode.isDecoded;
 								if (needsDecoding)
 								{
 									if (objToDecode.decodeInProgress)

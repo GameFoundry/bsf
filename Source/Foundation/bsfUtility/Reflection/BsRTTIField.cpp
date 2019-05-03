@@ -5,6 +5,8 @@
 
 namespace bs
 {
+	RTTIFieldInfo RTTIFieldInfo::DEFAULT;
+
 	void RTTIField::checkIsPlain(bool array)
 	{
 		if(!isPlainType())

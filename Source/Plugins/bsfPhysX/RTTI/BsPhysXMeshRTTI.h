@@ -35,7 +35,7 @@ namespace bs
 	public:
 		FPhysXMeshRTTI()
 		{
-			addDataBlockField("mCookedData", 0, &FPhysXMeshRTTI::getCookedData, &FPhysXMeshRTTI::setCookedData, 0);
+			addDataBlockField("mCookedData", 0, &FPhysXMeshRTTI::getCookedData, &FPhysXMeshRTTI::setCookedData);
 		}
 
 		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override

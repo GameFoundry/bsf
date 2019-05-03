@@ -47,7 +47,7 @@ namespace bs
 			for (UINT32 i = 0; i < numFields; i++)
 			{
 				RTTIField* field = rtti->getField(i);
-				if ((field->getFlags() & RTTI_Flag_SkipInReferenceSearch) != 0)
+				if (field->getInfo().flags.isSet(RTTIFieldFlag::SkipInReferenceSearch))
 					continue;
 
 				if (field->isReflectableType())

@@ -66,7 +66,7 @@ namespace bs
 
 		MaterialParamStructDataRTTI()
 		{
-			addDataBlockField("dataBuffer", 0, &MaterialParamStructDataRTTI::getDataBuffer, &MaterialParamStructDataRTTI::setDataBuffer, 0);
+			addDataBlockField("dataBuffer", 0, &MaterialParamStructDataRTTI::getDataBuffer, &MaterialParamStructDataRTTI::setDataBuffer);
 		}
 
 		const String& getRTTIName() override
@@ -199,7 +199,7 @@ namespace bs
 			addPlainArrayField("paramData", 0, &MaterialParamsRTTI::getParamData, &MaterialParamsRTTI::getParamDataArraySize, 
 				&MaterialParamsRTTI::setParamData, &MaterialParamsRTTI::setParamDataArraySize);
 
-			addDataBlockField("dataBuffer", 1, &MaterialParamsRTTI::getDataBuffer, &MaterialParamsRTTI::setDataBuffer, 0);
+			addDataBlockField("dataBuffer", 1, &MaterialParamsRTTI::getDataBuffer, &MaterialParamsRTTI::setDataBuffer);
 
 			addReflectableArrayField("structParams", 2, &MaterialParamsRTTI::getStructParam,
 				&MaterialParamsRTTI::getStructArraySize, &MaterialParamsRTTI::setStructParam, &MaterialParamsRTTI::setStructArraySize);

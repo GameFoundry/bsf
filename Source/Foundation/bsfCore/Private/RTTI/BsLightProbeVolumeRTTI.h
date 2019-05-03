@@ -134,7 +134,7 @@ namespace bs
 		LightProbeVolumeRTTI()
 		{
 			addPlainField("mProbeInfo", 5, &LightProbeVolumeRTTI::getProbeInfo, &LightProbeVolumeRTTI::setProbeInfo,
-				RTTI_Flag_SkipInReferenceSearch);
+				RTTIFieldInfo(RTTIFieldFlag::SkipInReferenceSearch));
 		}
 
 		void onDeserializationEnded(IReflectable* obj, SerializationContext* context) override
