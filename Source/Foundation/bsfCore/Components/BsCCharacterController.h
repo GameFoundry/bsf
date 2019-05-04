@@ -27,11 +27,11 @@ namespace bs
 		CharacterCollisionFlags move(const Vector3& displacement);
 
 		/** @copydoc CharacterController::getFootPosition */
-		BS_SCRIPT_EXPORT(n:FootPosition,pr:getter)
+		BS_SCRIPT_EXPORT(n:FootPosition,pr:getter,hide)
 		Vector3 getFootPosition() const;
 
 		/** @copydoc CharacterController::setFootPosition */
-		BS_SCRIPT_EXPORT(n:FootPosition,pr:setter)
+		BS_SCRIPT_EXPORT(n:FootPosition,pr:setter,hide)
 		void setFootPosition(const Vector3& position);
 
 		/** @copydoc CharacterController::getRadius */
@@ -99,19 +99,19 @@ namespace bs
 		void setStepOffset(float value);
 
 		/** @copydoc CharacterController::getSlopeLimit */
-		BS_SCRIPT_EXPORT(n:SlopeLimit,pr:getter)
+		BS_SCRIPT_EXPORT(n:SlopeLimit,pr:getter,range:[0,180],slider)
 		Radian getSlopeLimit() const { return mDesc.slopeLimit; }
 
 		/** @copydoc CharacterController::setSlopeLimit */
-		BS_SCRIPT_EXPORT(n:SlopeLimit,pr:setter)
+		BS_SCRIPT_EXPORT(n:SlopeLimit,pr:setter,range:[0,180],slider)
 		void setSlopeLimit(Radian value);
 
 		/** @copydoc CharacterController::getLayer */
-		BS_SCRIPT_EXPORT(n:Layer,pr:getter)
+		BS_SCRIPT_EXPORT(n:Layer,pr:getter,layerMask)
 		UINT64 getLayer() const { return mLayer; }
 
 		/** @copydoc CharacterController::setLayer */
-		BS_SCRIPT_EXPORT(n:Layer,pr:setter)
+		BS_SCRIPT_EXPORT(n:Layer,pr:setter,layerMask)
 		void setLayer(UINT64 layer);
 
 		/** @copydoc CharacterController::onColliderHit */

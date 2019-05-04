@@ -25,7 +25,6 @@ namespace bs
 		/// Determines the position of the bottom of the controller. Position takes contact offset into account. Changing this 
 		/// will teleport the character to the location. Use move() for movement that includes physics.
 		/// </summary>
-		[ShowInInspector]
 		[NativeWrapper]
 		public Vector3 FootPosition
 		{
@@ -129,6 +128,7 @@ namespace bs
 		/// nonWalkableMode for more information.
 		/// </summary>
 		[ShowInInspector]
+		[Range(0f, 180f, true)]
 		[NativeWrapper]
 		public Radian SlopeLimit
 		{
@@ -143,6 +143,7 @@ namespace bs
 
 		/// <summary>Determines the layer that controls what can the controller collide with.</summary>
 		[ShowInInspector]
+		[LayerMask]
 		[NativeWrapper]
 		public ulong Layer
 		{
