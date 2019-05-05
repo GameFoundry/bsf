@@ -276,7 +276,7 @@ namespace bs
 		constexpr Deleter() noexcept = default;
 
 		/** Constructor enabling deleter conversion and therefore polymorphism with smart points (if they use the same allocator). */
-		template <class T2, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
+		template <class T2, std::enable_if_t<std::is_convertible<T2*, T*>::value, int> = 0>
 		constexpr Deleter(const Deleter<T2, Alloc>& other) noexcept { }
 
 		inline void operator()(T* ptr) const
