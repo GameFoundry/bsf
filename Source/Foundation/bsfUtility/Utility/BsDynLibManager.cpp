@@ -5,27 +5,26 @@
 
 namespace bs
 {
-
-namespace
-{
-	static void dynlib_delete(DynLib* lib)
+	namespace detail
 	{
-		lib->unload();
-		bs_delete(lib);
+		void dynlib_delete(DynLib* lib)
+		{
+			lib->unload();
+			bs_delete(lib);
+		}
 	}
-} // namespace ()
 
-	static bool operator<(const UPtr<DynLib>& lhs, const String& rhs)
+	static bool operator<(const DynLibManager::LibraryUPtr& lhs, const String& rhs)
 	{
 		return lhs->getName() < rhs;
 	}
 
-	static bool operator<(const String& lhs, const UPtr<DynLib>& rhs)
+	static bool operator<(const String& lhs, const DynLibManager::LibraryUPtr& rhs)
 	{
 		return lhs < rhs->getName();
 	}
 
-	static bool operator<(const UPtr<DynLib>& lhs, const UPtr<DynLib>& rhs)
+	static bool operator<(const DynLibManager::LibraryUPtr& lhs, const DynLibManager::LibraryUPtr& rhs)
 	{
 		return lhs->getName() < rhs->getName();
 	}
@@ -53,7 +52,7 @@ namespace
 		else
 		{
 			DynLib* newLib = bs_new<DynLib>(std::move(filename));
-			mLoadedLibraries.emplace_hint(iterFind, newLib, &dynlib_delete);
+			mLoadedLibraries.emplace_hint(iterFind, newLib, &detail::dynlib_delete);
 			return newLib;
 		}
 	}
@@ -69,7 +68,7 @@ namespace
 		{
 			// Somehow a DynLib not owned by the manager...?
 			// Well, we should clean it up anyway...
-			dynlib_delete(lib);
+			detail::dynlib_delete(lib);
 		}
 	}
 

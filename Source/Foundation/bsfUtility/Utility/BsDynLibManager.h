@@ -7,6 +7,17 @@
 
 namespace bs
 {
+	/** @addtogroup Implementation
+	 *  @{
+	 */
+
+	namespace detail
+	{
+		void dynlib_delete(DynLib* lib);
+	}
+
+	/** @} */
+
 	/** @addtogroup General
 	 *  @{
 	 */
@@ -20,6 +31,8 @@ namespace bs
 	class BS_UTILITY_EXPORT DynLibManager : public Module<DynLibManager>
 	{
 	public:
+		using LibraryUPtr = UPtr<DynLib, GenAlloc, decltype(&detail::dynlib_delete)>;
+
 		/**
 		 * Loads the given file as a dynamic library.
 		 *
@@ -31,7 +44,7 @@ namespace bs
 		void unload(DynLib* lib);
 
 	protected:
-		Set<UPtr<DynLib>, std::less<>> mLoadedLibraries;
+		Set<LibraryUPtr, std::less<>> mLoadedLibraries;
 	};
 
 	/** Easy way of accessing DynLibManager. */
