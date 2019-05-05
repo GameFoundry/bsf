@@ -269,6 +269,22 @@ namespace bs
 		MemoryAllocator<Alloc>::free(ptr);
 	}
 
+	/** Callable struct that acts as a proxy for bs_delete */
+	template<class T, class Alloc = GenAlloc>
+	struct Deleter
+	{
+		constexpr Deleter() noexcept = default;
+
+		/** Constructor enabling deleter conversion and therefore polymorphism with smart points (if they use the same allocator). */
+		template <class T2, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
+		constexpr Deleter(const Deleter<T2, Alloc>& other) noexcept { }
+
+		inline void operator()(T* ptr) const
+		{
+			bs_delete<T, Alloc>(ptr);
+		}
+	};
+
 	/** Destructs and frees the specified array of objects. */
 	template<class T, class Alloc = GenAlloc>
 	inline void bs_deleteN(T* ptr, size_t count)
