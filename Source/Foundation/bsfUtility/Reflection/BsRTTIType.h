@@ -55,10 +55,10 @@ namespace bs
 	 * The type of the member must be a valid plain type. Each field must specify a unique ID for @p id.
 	 * An optional @p RTTIFieldInfo structure can be provided to provide further information about the field.
 	 */
-#define BS_RTTI_MEMBER_PLAIN(name, id) BS_RTTI_MEMBER_PLAIN_FULL(name, name, id, RTTIFieldInfo::DEFAULT)
+#define BS_RTTI_MEMBER_PLAIN(name, id) BS_RTTI_MEMBER_PLAIN_FULL(name, name, id, bs::RTTIFieldInfo::DEFAULT)
 
 	/** Same as BS_RTTI_MEMBER_PLAIN, but allows you to specify separate names for the field name and the member variable. */
-#define BS_RTTI_MEMBER_PLAIN_NAMED(name, field, id)	BS_RTTI_MEMBER_PLAIN_FULL(name, field, id, RTTIFieldInfo::DEFAULT)
+#define BS_RTTI_MEMBER_PLAIN_NAMED(name, field, id)	BS_RTTI_MEMBER_PLAIN_FULL(name, field, id, bs::RTTIFieldInfo::DEFAULT)
 
 	/** Same as BS_RTTI_MEMBER_PLAIN, but allows you to specify an info structure that further describes the field. */
 #define BS_RTTI_MEMBER_PLAIN_INFO(name, id, info) BS_RTTI_MEMBER_PLAIN_FULL(name, name, id, info)
@@ -88,12 +88,12 @@ namespace bs
  * Registers a new member field in the RTTI type. The field references the @p name member in the owner class.
  * The type of the member must be an array of valid plain types. Each field must specify a unique ID for @p id.
  */
-#define BS_RTTI_MEMBER_PLAIN_ARRAY(name, id) BS_RTTI_MEMBER_PLAIN_ARRAY_FULL(name, name, id, RTTIFieldInfo::DEFAULT)
+#define BS_RTTI_MEMBER_PLAIN_ARRAY(name, id) BS_RTTI_MEMBER_PLAIN_ARRAY_FULL(name, name, id, bs::RTTIFieldInfo::DEFAULT)
 
  /** 
   * Same as BS_RTTI_MEMBER_PLAIN_ARRAY, but allows you to specify separate names for the field name and the member variable.
   */
-#define BS_RTTI_MEMBER_PLAIN_ARRAY_NAMED(name, field, id) BS_RTTI_MEMBER_PLAIN_ARRAY_FULL(name, field, id, RTTIFieldInfo::DEFAULT)
+#define BS_RTTI_MEMBER_PLAIN_ARRAY_NAMED(name, field, id) BS_RTTI_MEMBER_PLAIN_ARRAY_FULL(name, field, id, bs::RTTIFieldInfo::DEFAULT)
 
  /** 
   * Same as BS_RTTI_MEMBER_PLAIN_ARRAY, but allows you to specify an info structure that further describes the field. 
@@ -123,10 +123,10 @@ namespace bs
  * Registers a new member field in the RTTI type. The field references the @p name member in the owner class. 
  * The type of the member must be a valid reflectable (non-pointer) type. Each field must specify a unique ID for @p id.
  */
-#define BS_RTTI_MEMBER_REFL(name, id) BS_RTTI_MEMBER_REFL_FULL(name, name, id, RTTIFieldInfo::DEFAULT)
+#define BS_RTTI_MEMBER_REFL(name, id) BS_RTTI_MEMBER_REFL_FULL(name, name, id, bs::RTTIFieldInfo::DEFAULT)
 
 /** Same as BS_RTTI_MEMBER_REFL, but allows you to specify separate names for the field name and the member variable. */
-#define BS_RTTI_MEMBER_REFL_NAMED(name, field, id) BS_RTTI_MEMBER_REFL_FULL(name, field, id, RTTIFieldInfo::DEFAULT)
+#define BS_RTTI_MEMBER_REFL_NAMED(name, field, id) BS_RTTI_MEMBER_REFL_FULL(name, field, id, bs::RTTIFieldInfo::DEFAULT)
 
 /** Same as BS_RTTI_MEMBER_REFL, but allows you to specify an info structure that further describes the field. */
 #define BS_RTTI_MEMBER_REFL_INFO(name, id, info) BS_RTTI_MEMBER_REFL_FULL(name, name, id, info)
@@ -157,12 +157,12 @@ namespace bs
  * The type of the member must be an array of valid reflectable (non-pointer) types. Each field must specify a unique ID for
  * @p id.
  */
-#define BS_RTTI_MEMBER_REFL_ARRAY(name, id) BS_RTTI_MEMBER_REFL_ARRAY_FULL(name, name, id, RTTIFieldInfo::DEFAULT)
+#define BS_RTTI_MEMBER_REFL_ARRAY(name, id) BS_RTTI_MEMBER_REFL_ARRAY_FULL(name, name, id, bs::RTTIFieldInfo::DEFAULT)
 
 /** 
  * Same as BS_RTTI_MEMBER_REFL_ARRAY, but allows you to specify separate names for the field name and the member variable. 
  */
-#define BS_RTTI_MEMBER_REFL_ARRAY_NAMED(name, field, id) BS_RTTI_MEMBER_REFL_ARRAY_FULL(name, field, id, RTTIFieldInfo::DEFAULT)
+#define BS_RTTI_MEMBER_REFL_ARRAY_NAMED(name, field, id) BS_RTTI_MEMBER_REFL_ARRAY_FULL(name, field, id, bs::RTTIFieldInfo::DEFAULT)
 
 /** 
  * Same as BS_RTTI_MEMBER_REFL_ARRAY, but allows you to specify an info structure that further describes the field. 
@@ -192,7 +192,7 @@ namespace bs
  * Registers a new member field in the RTTI type. The field references the @p name member in the owner class. 
  * The type of the member must be a valid reflectable pointer type. Each field must specify a unique ID for @p id.
  */
-#define BS_RTTI_MEMBER_REFLPTR(name, id) BS_RTTI_MEMBER_REFLPTR_FULL(name, name, id, RTTIFieldInfo::DEFAULT)
+#define BS_RTTI_MEMBER_REFLPTR(name, id) BS_RTTI_MEMBER_REFLPTR_FULL(name, name, id, bs::RTTIFieldInfo::DEFAULT)
 
 /** Same as BS_RTTI_MEMBER_REFLPTR, but allows you to specify separate names for the field name and the member variable. */
 #define BS_RTTI_MEMBER_REFLPTR_NAMED(name, field, id) BS_RTTI_MEMBER_REFLPTR_FULL(name, field, id, RTTIFieldInfo::DEFAULT)
@@ -225,13 +225,13 @@ namespace bs
  * Registers a new member field in the RTTI type. The field references the @p name member in the owner class. 
  * The type of the member must be a valid reflectable pointer type. Each field must specify a unique ID for @p id.
  */
-#define BS_RTTI_MEMBER_REFLPTR_ARRAY(name, id) BS_RTTI_MEMBER_REFLPTR_ARRAY_FULL(name, name, id, RTTIFieldInfo::DEFAULT)
+#define BS_RTTI_MEMBER_REFLPTR_ARRAY(name, id) BS_RTTI_MEMBER_REFLPTR_ARRAY_FULL(name, name, id, bs::RTTIFieldInfo::DEFAULT)
 
  /**
   * Same as BS_RTTI_MEMBER_REFLPTR_ARRAY, but allows you to specify separate names for the field name and the member 
   * variable. 
   */
-#define BS_RTTI_MEMBER_REFLPTR_ARRAY_NAMED(name, field, id) BS_RTTI_MEMBER_REFLPTR_ARRAY_FULL(name, field, id, RTTIFieldInfo::DEFAULT)
+#define BS_RTTI_MEMBER_REFLPTR_ARRAY_NAMED(name, field, id) BS_RTTI_MEMBER_REFLPTR_ARRAY_FULL(name, field, id, bs::RTTIFieldInfo::DEFAULT)
 
  /** Same as BS_RTTI_MEMBER_REFLPTR_ARRAY, but allows you to specify an info structure that further describes the field. */
 #define BS_RTTI_MEMBER_REFLPTR_ARRAY_INFO(name, id, info) BS_RTTI_MEMBER_REFLPTR_ARRAY_FULL(name, name, id, info)
