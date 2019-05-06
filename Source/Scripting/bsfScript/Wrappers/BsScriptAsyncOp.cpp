@@ -23,7 +23,7 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_GetValue", (void*)&ScriptAsyncOpBase::internal_GetValue);
 	}
 
-	MonoObject* ScriptAsyncOpBase::createInternal(const AsyncOpBase& op, 
+	MonoObject* ScriptAsyncOpBase::_create(const AsyncOpBase& op,
 		const std::function<MonoObject*(const Any&)>& convertCallback, UINT32 rttiId)
 	{
 		MonoClass* returnTypeClass = nullptr;
@@ -41,10 +41,10 @@ namespace bs
 			return nullptr;
 		}
 
-		return createInternal(op, convertCallback, returnTypeClass);
+		return _create(op, convertCallback, returnTypeClass);
 	}
 
-	MonoObject* ScriptAsyncOpBase::createInternal(const AsyncOpBase& op, 
+	MonoObject* ScriptAsyncOpBase::_create(const AsyncOpBase& op,
 		const std::function<MonoObject*(const Any&)>& convertCallback, MonoClass* returnTypeClass)
 	{
 		MonoClass* asyncOpClass = nullptr;
@@ -62,7 +62,7 @@ namespace bs
 		return obj;
 	}
 
-	MonoObject* ScriptAsyncOpBase::createInternal(const AsyncOpBase& op, 
+	MonoObject* ScriptAsyncOpBase::_create(const AsyncOpBase& op,
 		const std::function<MonoObject*(const Any&)>& convertCallback)
 	{
 		MonoObject* obj = metaData.scriptClass->createInstance();
