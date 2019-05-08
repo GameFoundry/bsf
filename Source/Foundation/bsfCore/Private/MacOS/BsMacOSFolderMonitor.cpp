@@ -441,6 +441,8 @@ namespace bs
 
 	void FolderMonitor::workerThreadMain()
 	{
+		MemStack::beginThread();
+
 		while(true)
 		{
 			// Start up any newly added monitors
@@ -511,6 +513,8 @@ namespace bs
 					break;
 			}
 		}
+
+		MemStack::endThread();
 	}
 
 	void FolderMonitor::handleNotifications(FileNotifyInfo& notifyInfo, FolderWatchInfo& watchInfo)
