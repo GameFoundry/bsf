@@ -282,6 +282,40 @@ namespace bs
 		diffHandler.applyDiff(object, diff, alloc, objectMap, diffCommands, context);
 	}
 
+	bool BinaryDiff::generateDiff(const RTTIField* field, RTTITypeBase* rtti, const SPtr<SerializedInstance>& oldData, 
+		const SPtr<SerializedInstance>& newData, ObjectMap& objectMap,
+		SPtr<SerializedInstance>& modification)
+	{
+		if (newData != nullptr && oldData != nullptr)
+		{
+			modification = IDiff::generateDiff(rtti, field->mType, oldData, newData, objectMap);
+			return modification != nullptr;
+		}
+		else if (newData == nullptr)
+		{
+			switch (field->mType)
+			{
+			case SerializableFT_Plain:
+				modification = bs_shared_ptr_new<SerializedField>();
+				break;
+			case SerializableFT_DataBlock:
+				modification = bs_shared_ptr_new<SerializedDataBlock>();
+				break;
+			default:
+				break;
+			}
+
+			return true;
+		}
+		else if (oldData == nullptr)
+		{
+			modification = newData->clone();
+			return modification != nullptr;
+		}
+
+		return false;
+	}
+
 	SPtr<SerializedObject> BinaryDiff::generateDiff(const SPtr<SerializedObject>& orgObj, 
 		const SPtr<SerializedObject>& newObj, ObjectMap& objectMap)
 	{
@@ -330,20 +364,20 @@ namespace bs
 
 					if (newEntryData != nullptr && orgEntryData != nullptr)
 					{
+						// Check for new or different fields
 						for (auto& arrayEntryPair : newArrayData->entries)
 						{
-							SPtr<SerializedInstance> arrayModification;
+							SPtr<SerializedInstance> orgArrayEntryData;
 
 							auto iterFind = orgArrayData->entries.find(arrayEntryPair.first);
-							if (iterFind == orgArrayData->entries.end())
-								arrayModification = arrayEntryPair.second.serialized->clone();
-							else
-							{
-								arrayModification = IDiff::generateDiff(rtti, genericField->mType, iterFind->second.serialized,
-									arrayEntryPair.second.serialized, objectMap);
-							}
+							if (iterFind != orgArrayData->entries.end())
+								orgArrayEntryData = iterFind->second.serialized;
 
-							if (arrayModification != nullptr)
+							SPtr<SerializedInstance> arrayModification;
+							bool hasArrayModification = generateDiff(genericField, rtti, orgArrayEntryData,
+								arrayEntryPair.second.serialized, objectMap, arrayModification);
+
+							if (hasArrayModification)
 							{
 								if (serializedArray == nullptr)
 								{
@@ -371,34 +405,7 @@ namespace bs
 					hasModification = modification != nullptr;
 				}
 				else
-				{
-					if (newEntryData != nullptr && orgEntryData != nullptr)
-					{
-						modification = IDiff::generateDiff(rtti, genericField->mType, orgEntryData, newEntryData, objectMap);
-						hasModification = modification != nullptr;
-					}
-					else if (newEntryData == nullptr)
-					{
-						switch (genericField->mType)
-						{
-						case SerializableFT_Plain:
-							modification = bs_shared_ptr_new<SerializedField>();
-							break;
-						case SerializableFT_DataBlock:
-							modification = bs_shared_ptr_new<SerializedDataBlock>();
-							break;
-						default:
-							break;
-						}
-
-						hasModification = true;
-					}
-					else if (orgEntryData == nullptr)
-					{
-						modification = newEntryData->clone();
-						hasModification = modification != nullptr;
-					}
-				}
+					hasModification = generateDiff(genericField, rtti, orgEntryData, newEntryData, objectMap, modification);
 
 				if (hasModification)
 				{

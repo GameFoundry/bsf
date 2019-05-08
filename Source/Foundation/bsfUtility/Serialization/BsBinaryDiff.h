@@ -129,6 +129,23 @@ namespace bs
 		SPtr<SerializedObject> generateDiff(const SPtr<SerializedObject>& orgObj, const SPtr<SerializedObject>& newObj, 
 			ObjectMap& objectMap) override;
 
+
+		/** 
+		 * Generates a diff between two values of a single field.
+		 *	
+		 * @param[in]	field			Field the values belong to.
+		 * @param[in]	rtti			RTTI type owning the field.
+		 * @param[in]	oldData			Old value of the field.
+		 * @param[in]	newData			New value of the field.
+		 * @param[in]	objectMap		A map that can be used for determining if an object way previously referenced so we
+		 *								don't generate a separate diff.
+		 * @param[out]	modification	Object containing the diff value, if there is a difference.
+		 * @return						True if a difference is detected, false otherwise.
+		 */
+		bool generateDiff(const RTTIField* field, RTTITypeBase* rtti, const SPtr<SerializedInstance>& oldData,
+			const SPtr<SerializedInstance>& newData, ObjectMap& objectMap,
+			SPtr<SerializedInstance>& modification);
+
 		/** @copydoc	IDiff::applyDiff(const SPtr<IReflectable>&, const SPtr<SerializedObject>&, FrameAlloc&, DiffObjectMap&, FrameVector<DiffCommand>&) */
 		void applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff, FrameAlloc& alloc, 
 			DiffObjectMap& objectMap, FrameVector<DiffCommand>& diffCommands, SerializationContext* context) override;
