@@ -85,7 +85,7 @@ namespace bs { namespace ct
 			INT32 actualFormat;
 			UINT8* data;
 
-			Status status = XRRGetOutputProperty(x11Display, mOutputID, outputProps[k], 0, 100, False,
+			Status status = XRRGetOutputProperty(x11Display, mOutputID, outputProps[k], 0, 128, False,
 					False, AnyPropertyType, &actualType, &actualFormat, &numItems, &bytesAfter, &data);
 			if(status == Success)
 			{
@@ -97,7 +97,7 @@ namespace bs { namespace ct
 					{
 						UINT8* nameSrc = &data[idx + 5];
 
-						char name[13];
+						char name[14];
 						for(UINT32 m = 0; m < 13; m++)
 						{
 							if(nameSrc[m] == 0x0a)
@@ -111,6 +111,7 @@ namespace bs { namespace ct
 								name[m] = nameSrc[m];
 						}
 
+						name[13] = '\0';
 						mName = String(name);
 					}
 				}
