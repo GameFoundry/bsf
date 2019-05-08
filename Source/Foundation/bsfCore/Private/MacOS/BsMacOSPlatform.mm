@@ -153,7 +153,7 @@ namespace bs
 	NSPoint point = NSMakePoint(position.x, position.y);
 	CGWarpMouseCursorPosition(point);
 
-	Lock lock(platformData->cursorMutex);
+	bs::Lock lock(platformData->cursorMutex);
 	platformData->cursorPos = position;
 }
 
