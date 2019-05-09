@@ -111,19 +111,29 @@ namespace bs
             this.y = y;
         }
 
-        public static Vector2 operator+ (Vector2 a, Vector2 b)
+        public static Vector2 operator +(Vector2 a, Vector2 b)
         {
             return new Vector2(a.x + b.x, a.y + b.y);
         }
 
-        public static Vector2 operator- (Vector2 a, Vector2 b)
+        public static Vector2 operator +(Vector2 v, float scalar)
+        {
+            return new Vector2(v.x + scalar, v.y + scalar);
+        }
+
+        public static Vector2 operator -(Vector2 a, Vector2 b)
         {
             return new Vector2(a.x - b.x, a.y - b.y);
         }
 
-        public static Vector2 operator- (Vector2 v)
+        public static Vector2 operator -(Vector2 v)
         {
             return new Vector2(-v.x, -v.y);
+        }
+
+        public static Vector2 operator -(Vector2 v, float scalar)
+        {
+            return new Vector2(v.x - scalar, v.y - scalar);
         }
 
         public static Vector2 operator *(Vector2 a, Vector2 b)
@@ -131,27 +141,27 @@ namespace bs
             return new Vector2(a.x * b.x, a.y * b.y);
         }
 
-        public static Vector2 operator* (Vector2 v, float d)
+        public static Vector2 operator *(Vector2 v, float d)
         {
             return new Vector2(v.x * d, v.y * d);
         }
 
-        public static Vector2 operator* (float d, Vector2 v)
+        public static Vector2 operator *(float d, Vector2 v)
         {
             return new Vector2(v.x * d, v.y * d);
         }
 
-        public static Vector2 operator/ (Vector2 v, float d)
+        public static Vector2 operator /(Vector2 v, float d)
         {
             return new Vector2(v.x / d, v.y / d);
         }
 
-        public static bool operator== (Vector2 lhs, Vector2 rhs)
+        public static bool operator ==(Vector2 lhs, Vector2 rhs)
         {
             return lhs.x == rhs.x && lhs.y == rhs.y;
         }
 
-        public static bool operator!= (Vector2 lhs, Vector2 rhs)
+        public static bool operator !=(Vector2 lhs, Vector2 rhs)
         {
             return !(lhs == rhs);
         }
@@ -294,7 +304,7 @@ namespace bs
             Vector2 vec = (Vector2)other;
             if (x.Equals(vec.x) && y.Equals(vec.y))
                 return true;
-            
+
             return false;
         }
 
