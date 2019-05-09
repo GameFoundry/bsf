@@ -307,7 +307,7 @@ namespace bs
         private static extern void Internal_SetBounds(IntPtr nativeInstance, ref Rect2I value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_GetVisualBounds(IntPtr nativeInstance, out Rect2I value);
+        private static extern void Internal_GetVisibleBounds(IntPtr nativeInstance, out Rect2I value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetScreenBounds(IntPtr nativeInstance, out Rect2I value);
