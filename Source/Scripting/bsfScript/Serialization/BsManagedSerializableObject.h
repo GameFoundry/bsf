@@ -103,6 +103,9 @@ namespace bs
 		 */
 		void deserialize(MonoObject* instance, const SPtr<ManagedSerializableObjectInfo>& objInfo);
 
+		/** Checks if this object has the same contents as the provided object. */
+		bool equals(ManagedSerializableObject& other);
+
 		/**
 		 * Creates a managed serializable object that references an existing managed object. Created object will be in
 		 * linked mode.

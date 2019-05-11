@@ -29,16 +29,6 @@ namespace bs
 		return ManagedSerializableDictionaryKeyValue::getRTTIStatic();
 	}
 
-	inline size_t ManagedSerializableDictionary::Hash::operator()(const SPtr<ManagedSerializableFieldData>& x) const
-	{
-		return x->getHash();
-	}
-
-	inline bool ManagedSerializableDictionary::Equals::operator()(const SPtr<ManagedSerializableFieldData>& a, const SPtr<ManagedSerializableFieldData>& b) const
-	{
-		return a->equals(b);
-	}
-
 	ManagedSerializableDictionary::Enumerator::Enumerator(const ManagedSerializableDictionary* parent)
 		: mIteratorInitialized(false), mParent(parent)
 	{

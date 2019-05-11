@@ -53,18 +53,6 @@ namespace bs
 	private:
 		struct ConstructPrivately {};
 		
-		/**	Generates a hash value for field data. */
-		struct BS_SCR_BE_EXPORT Hash
-		{
-			inline size_t operator()(const SPtr<ManagedSerializableFieldData>& x) const;
-		};
-
-		/**	Compares two field data objects. */
-		struct BS_SCR_BE_EXPORT Equals
-		{
-			inline bool operator()(const SPtr<ManagedSerializableFieldData>& a, const SPtr<ManagedSerializableFieldData>& b) const;
-		};
-
 	public:
 		typedef UnorderedMap<SPtr<ManagedSerializableFieldData>, SPtr<ManagedSerializableFieldData>> CachedEntriesMap;
 

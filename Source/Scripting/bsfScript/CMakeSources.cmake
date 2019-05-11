@@ -125,6 +125,7 @@ set(BS_SCRIPT_SRC_SERIALIZATION
 	"Serialization/BsScriptAssemblyManager.cpp"
 	"Serialization/BsManagedSerializableDiff.cpp"
 	"Serialization/BsManagedDiff.cpp"
+	"Serialization/BsManagedCompare.cpp"
 )
 
 set(BS_SCRIPT_SRC_WRAPPERS
@@ -183,6 +184,7 @@ set(BS_SCRIPT_INC_SERIALIZATION
 	"Serialization/BsBuiltinComponentLookup.h"
 	"Serialization/BsBuiltinResourceLookup.h"
 	"Serialization/BsBuiltinReflectableTypesLookup.h"
+	"Serialization/BsManagedCompare.h"
 )
 
 set(BS_SCRIPT_SRC_NOFILTER

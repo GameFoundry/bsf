@@ -32,6 +32,19 @@ namespace bs
 		return false;
 	}
 
+	bool compareFieldData(const SPtr<ManagedSerializableFieldData>& oldData, const SPtr<ManagedSerializableFieldData>& newData)
+	{
+		if (!oldData)
+			return !newData;
+		else
+		{
+			if (!newData)
+				return false;
+		}
+
+		return oldData->equals(newData);
+	}
+
 	bool isPrimitiveOrEnumType(const SPtr<ManagedSerializableTypeInfo>& typeInfo, ScriptPrimitiveType underlyingType)
 	{
 		if(const auto primitiveTypeInfo = rtti_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo.get()))
@@ -944,22 +957,118 @@ namespace bs
 
 	bool ManagedSerializableFieldDataObject::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
-		return compareFieldData(this, other);
+		if (auto otherObj = rtti_cast<ManagedSerializableFieldDataObject>(other))
+		{
+			if(!value && !otherObj->value)
+				return true;
+
+
+			if((value == nullptr && otherObj->value) || (value && !otherObj->value))
+				return false;
+
+			return value->equals(*otherObj->value);
+		}
+
+		return false;
 	}
 
 	bool ManagedSerializableFieldDataArray::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
-		return compareFieldData(this, other);
+		if (auto otherObj = rtti_cast<ManagedSerializableFieldDataArray>(other))
+		{
+			if(!value && !otherObj->value)
+				return true;
+
+			if((!value && otherObj->value) || (value && !otherObj->value))
+				return false;
+
+			UINT32 oldLength = value->getTotalLength();
+			UINT32 newLength = otherObj->value->getTotalLength();
+
+			if(oldLength != newLength)
+				return false;
+
+			for (UINT32 i = 0; i < newLength; i++)
+			{
+				SPtr<ManagedSerializableFieldData> oldData = value->getFieldData(i);
+				SPtr<ManagedSerializableFieldData> newData = otherObj->value->getFieldData(i);
+
+				if (compareFieldData(oldData, newData))
+					return false;
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 
 	bool ManagedSerializableFieldDataList::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
-		return compareFieldData(this, other);
+		if (auto otherObj = rtti_cast<ManagedSerializableFieldDataList>(other))
+		{
+			if(!value && !otherObj->value)
+				return true;
+
+			if((!value && otherObj->value) || (value && !otherObj->value))
+				return false;
+
+			UINT32 oldLength = value->getLength();
+			UINT32 newLength = otherObj->value->getLength();
+
+			if(oldLength != newLength)
+				return false;
+
+			for (UINT32 i = 0; i < newLength; i++)
+			{
+				SPtr<ManagedSerializableFieldData> oldData = value->getFieldData(i);
+				SPtr<ManagedSerializableFieldData> newData = otherObj->value->getFieldData(i);
+
+				if (compareFieldData(oldData, newData))
+					return false;
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 
 	bool ManagedSerializableFieldDataDictionary::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
-		return compareFieldData(this, other);
+		if (auto otherObj = rtti_cast<ManagedSerializableFieldDataDictionary>(other))
+		{
+			if(!value && !otherObj->value)
+				return true;
+
+			if((!value && otherObj->value) || (value && !otherObj->value))
+				return false;
+
+			auto newEnumerator = otherObj->value->getEnumerator();
+			while (newEnumerator.moveNext())
+			{
+				SPtr<ManagedSerializableFieldData> key = newEnumerator.getKey();
+				if (value->contains(key))
+				{
+					if(!compareFieldData(value->getFieldData(key), newEnumerator.getValue()))
+						return false;
+				}
+				else
+					return false;
+			}
+
+			auto oldEnumerator = value->getEnumerator();
+			while (oldEnumerator.moveNext())
+			{
+				SPtr<ManagedSerializableFieldData> key = oldEnumerator.getKey();
+				if (!otherObj->value->contains(oldEnumerator.getKey()))
+					return false;
+			}
+
+			return true;
+		}
+
+		return false;;
 	}
 
 	size_t ManagedSerializableFieldDataBool::getHash()

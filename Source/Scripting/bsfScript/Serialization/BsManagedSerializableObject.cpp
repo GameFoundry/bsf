@@ -181,6 +181,42 @@ namespace bs
 		}
 	}
 
+	bool ManagedSerializableObject::equals(ManagedSerializableObject& other)
+	{
+		SPtr<ManagedSerializableObjectInfo> otherObjInfo = other.getObjectInfo();
+
+		if (!mObjInfo->mTypeInfo->matches(otherObjInfo->mTypeInfo))
+			return false;
+
+		SPtr<ManagedSerializableObjectInfo> curObjInfo = mObjInfo;
+		while (curObjInfo != nullptr)
+		{
+			for (auto& field : curObjInfo->mFields)
+			{
+				if (!field.second->isSerializable())
+					continue;
+
+				SPtr<ManagedSerializableFieldData> oldData = getFieldData(field.second);
+				SPtr<ManagedSerializableFieldData> newData = other.getFieldData(field.second);
+
+				if (!oldData)
+					return !newData;
+				else
+				{
+					if (!newData)
+						return false;
+				}
+
+				if(!oldData->equals(newData))
+					return false;
+			}
+
+			curObjInfo = curObjInfo->mBaseClass;
+		}
+
+		return true;
+	}
+
 	void ManagedSerializableObject::setFieldData(const SPtr<ManagedSerializableMemberInfo>& fieldInfo, const SPtr<ManagedSerializableFieldData>& val)
 	{
 		if (mGCHandle != 0)
