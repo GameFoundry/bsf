@@ -608,6 +608,31 @@ namespace bs { namespace ct
 		}
 	}
 
+	VkPipelineStageFlags VulkanUtility::shaderToPipelineStage(VkShaderStageFlags shaderStageFlags)
+	{
+		VkPipelineStageFlags output = 0;
+
+		if((shaderStageFlags & VK_SHADER_STAGE_VERTEX_BIT) != 0)
+			output |= VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
+
+		if((shaderStageFlags & VK_SHADER_STAGE_FRAGMENT_BIT) != 0)
+			output |= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+
+		if((shaderStageFlags & VK_SHADER_STAGE_GEOMETRY_BIT) != 0)
+			output |= VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT;
+
+		if((shaderStageFlags & VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT) != 0)
+			output |= VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT;
+
+		if((shaderStageFlags & VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT) != 0)
+			output |= VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT;
+
+		if((shaderStageFlags & VK_SHADER_STAGE_COMPUTE_BIT) != 0)
+			output |= VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+
+		return output;
+	}
+
 	bool VulkanUtility::isDeviceIdxSet(const VulkanRenderAPI& rapi, UINT32 idx, GpuDeviceFlags flags)
 	{
 		VulkanDevice* device = rapi._getDevice(idx).get();

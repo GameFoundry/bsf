@@ -564,7 +564,7 @@ namespace bs { namespace ct
 
 			UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
 			VkDescriptorSetLayoutBinding* perSetBindings = vkParamInfo.getBindings(set);
-			VkPipelineStageFlags stages = perSetBindings[bindingIdx].stageFlags;
+			VkPipelineStageFlags stages = VulkanUtility::shaderToPipelineStage(perSetBindings[bindingIdx].stageFlags);
 
 			// Register with command buffer
 			buffer.registerBuffer(resource, BufferUseFlagBits::Parameter, VulkanAccessFlag::Read, stages);
@@ -603,7 +603,7 @@ namespace bs { namespace ct
 
 			UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
 			VkDescriptorSetLayoutBinding* perSetBindings = vkParamInfo.getBindings(set);
-			VkPipelineStageFlags stages = perSetBindings[bindingIdx].stageFlags;
+			VkPipelineStageFlags stages = VulkanUtility::shaderToPipelineStage(perSetBindings[bindingIdx].stageFlags);
 
 			buffer.registerBuffer(resource, BufferUseFlagBits::Generic, useFlags, stages);
 
@@ -731,7 +731,7 @@ namespace bs { namespace ct
 
 			UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
 			VkDescriptorSetLayoutBinding* perSetBindings = vkParamInfo.getBindings(set);
-			VkPipelineStageFlags stages = perSetBindings[bindingIdx].stageFlags;
+			VkPipelineStageFlags stages = VulkanUtility::shaderToPipelineStage(perSetBindings[bindingIdx].stageFlags);
 
 			buffer.registerImageShader(resource, range, layout, VulkanAccessFlag::Read, stages);
 

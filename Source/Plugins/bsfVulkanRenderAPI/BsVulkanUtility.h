@@ -74,7 +74,10 @@ namespace bs { namespace ct
 		/** Gets Vulkan flags representing a certain shader stage. */
 		static VkShaderStageFlagBits getShaderStage(GpuProgramType type);
 
-		/** 
+		/** Converts a set of shader stage flags into a pipeline stage flags set containing the relevant shader stages. */
+		static VkPipelineStageFlags shaderToPipelineStage(VkShaderStageFlags shaderStageFlags);
+
+		/**
 		 * Populates the provided array with Vulkan devices that correspond to provided flags. Sets null in unused slots. 
 		 * Each device is placed at its own index in the output array.
 		 */

@@ -2192,27 +2192,6 @@ namespace bs { namespace ct
 	void VulkanCmdBuffer::registerBuffer(VulkanBuffer* res, BufferUseFlagBits useFlags, VulkanAccessFlags access, 
 		VkPipelineStageFlags stages)
 	{
-		switch(useFlags)
-		{
-		case BufferUseFlagBits::Index: 
-			stages = VK_ACCESS_INDEX_READ_BIT;
-			break;
-		case BufferUseFlagBits::Vertex: 
-			stages = VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
-			break;
-		case BufferUseFlagBits::Transfer:
-			stages = 0;
-
-			if(access.isSet(VulkanAccessFlag::Read))
-				stages |= VK_ACCESS_TRANSFER_READ_BIT;
-
-			if(access.isSet(VulkanAccessFlag::Write))
-				stages |= VK_ACCESS_TRANSFER_WRITE_BIT;
-			break;
-		default: 
-			break;
-		}
-
 		auto insertResult = mBuffers.insert(std::make_pair(res, BufferInfo()));
 		if (insertResult.second) // New element
 		{
