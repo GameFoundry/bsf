@@ -190,6 +190,7 @@ namespace bs
 		TID_IReflectable = 69,
 		TID_DataBlob = 70,
 		TID_ColorGradient = 71,
-		TID_SerializationContext = 72
+		TID_SerializationContext = 72,
+		TID_List = 73
 	};
 }

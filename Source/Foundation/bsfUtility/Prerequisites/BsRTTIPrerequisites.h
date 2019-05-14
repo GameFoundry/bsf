@@ -263,6 +263,76 @@ namespace bs
 	};
 
 	/**
+	 * RTTIPlainType for std::list.
+	 *
+	 * @see		RTTIPlainType
+	 */
+	template<class T> struct RTTIPlainType<std::list<T, StdAlloc<T>>>
+	{
+		enum { id = TID_List }; enum { hasDynamicSize = 1 };
+
+		/** @copydoc RTTIPlainType::toMemory */
+		static void toMemory(const std::list<T, StdAlloc<T>>& data, char* memory)
+		{
+			UINT32 size = sizeof(UINT32);
+			char* memoryStart = memory;
+			memory += sizeof(UINT32);
+
+			UINT32 numElements = (UINT32)data.size();
+			memcpy(memory, &numElements, sizeof(UINT32));
+			memory += sizeof(UINT32);
+			size += sizeof(UINT32);
+
+			for(const auto& item : data)
+			{
+				UINT32 elementSize = rttiGetElemSize(item);
+				RTTIPlainType<T>::toMemory(item, memory);
+
+				memory += elementSize;
+				size += elementSize;
+			}
+
+			memcpy(memoryStart, &size, sizeof(UINT32));
+		}
+
+		/** @copydoc RTTIPlainType::toMemory */
+		static UINT32 fromMemory(std::list<T, StdAlloc<T>>& data, char* memory)
+		{
+			UINT32 size = 0;
+			memcpy(&size, memory, sizeof(UINT32));
+			memory += sizeof(UINT32);
+
+			UINT32 numElements;
+			memcpy(&numElements, memory, sizeof(UINT32));
+			memory += sizeof(UINT32);
+
+			for(UINT32 i = 0; i < numElements; i++)
+			{
+				T element;
+				UINT32 elementSize = RTTIPlainType<T>::fromMemory(element, memory);
+				data.push_back(element);
+
+				memory += elementSize;
+			}
+
+			return size;
+		}
+
+		/** @copydoc RTTIPlainType::toMemory */
+		static UINT32 getDynamicSize(const std::list<T, StdAlloc<T>>& data)
+		{
+			UINT64 dataSize = sizeof(UINT32) * 2;
+
+			for(const auto& item : data)
+				dataSize += rttiGetElemSize(item);
+
+			assert(dataSize <= std::numeric_limits<UINT32>::max());
+
+			return (UINT32)dataSize;
+		}
+	};
+
+	/**
 	 * RTTIPlainType for std::set.
 	 *
 	 * @see		RTTIPlainType
