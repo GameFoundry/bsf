@@ -79,6 +79,7 @@ namespace bs
 			mOnInitializedThunk = nullptr;
 			mOnUpdateThunk = nullptr;
 			mOnDestroyThunk = nullptr;
+			mOnResetThunk = nullptr;
 			mOnEnabledThunk = nullptr;
 			mOnDisabledThunk = nullptr;
 			mOnTransformChangedThunk = nullptr;

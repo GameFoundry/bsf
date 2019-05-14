@@ -102,8 +102,8 @@ namespace bs
 		OnUpdateThunkDef mOnUpdateThunk = nullptr;
 		OnResetThunkDef mOnResetThunk = nullptr;
 		OnDestroyedThunkDef mOnDestroyThunk = nullptr;
-		OnDestroyedThunkDef mOnDisabledThunk = nullptr;
-		OnDestroyedThunkDef mOnEnabledThunk = nullptr;
+		OnDisabledThunkDef mOnDisabledThunk = nullptr;
+		OnEnabledThunkDef mOnEnabledThunk = nullptr;
 		OnTransformChangedThunkDef mOnTransformChangedThunk = nullptr;
 		MonoMethod* mCalculateBoundsMethod = nullptr;
 
