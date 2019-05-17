@@ -16,9 +16,16 @@ namespace bs
 		mKeepSourceData = desc.keepSourceData;
 	}
 
+	AudioClip::AudioClip(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc)
+		: Resource(false), mDesc(desc), mStreamData(samples), mEndless(true)
+	{
+		mKeepSourceData = desc.keepSourceData;
+	}
+
 	void AudioClip::initialize()
 	{
-		mLength = mNumSamples / mDesc.numChannels / (float)mDesc.frequency;
+		if(!mEndless)
+			mLength = mNumSamples / mDesc.numChannels / (float)mDesc.frequency;
 
 		Resource::initialize();
 	}
@@ -31,6 +38,20 @@ namespace bs
 	SPtr<AudioClip> AudioClip::_createPtr(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples, const AUDIO_CLIP_DESC& desc)
 	{
 		SPtr<AudioClip> newClip = gAudio().createClip(samples, streamSize, numSamples, desc);
+		newClip->_setThisPtr(newClip);
+		newClip->initialize();
+
+		return newClip;
+	}
+
+	HAudioClip AudioClip::create(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc)
+	{
+		return static_resource_cast<AudioClip>(gResources()._createResourceHandle(_createPtr(samples, desc)));
+	}
+
+	SPtr<AudioClip> AudioClip::_createPtr(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc)
+	{
+		SPtr<AudioClip> newClip = gAudio().createClip(samples, desc);
 		newClip->_setThisPtr(newClip);
 		newClip->initialize();
 

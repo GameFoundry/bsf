@@ -51,6 +51,9 @@ namespace bs
 		SPtr<AudioClip> createClip(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples,
 			const AUDIO_CLIP_DESC& desc) override;
 
+		/** @copydoc Audio::createClip */
+		SPtr<AudioClip> createClip(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc) override;
+
 		/** @copydoc Audio::createListener */
 		SPtr<AudioListener> createListener() override;
 
@@ -70,6 +73,8 @@ namespace bs
 	{
 	public:
 		NullAudioClip(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples, const AUDIO_CLIP_DESC& desc);
+
+		NullAudioClip(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc);
 
 	protected:
 		/** @copydoc Resource::initialize */

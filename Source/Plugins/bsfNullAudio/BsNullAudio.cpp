@@ -19,6 +19,11 @@ namespace bs
 		return bs_core_ptr_new<NullAudioClip>(samples, streamSize, numSamples, desc);
 	}
 
+	SPtr<AudioClip> NullAudio::createClip(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc)
+	{
+		return bs_core_ptr_new<NullAudioClip>(samples, desc);
+	}
+
 	SPtr<AudioListener> NullAudio::createListener()
 	{
 		return bs_shared_ptr_new<NullAudioListener>();
@@ -31,6 +36,10 @@ namespace bs
 
 	NullAudioClip::NullAudioClip(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples, const AUDIO_CLIP_DESC& desc)
 		:AudioClip(samples, streamSize, numSamples, desc)
+	{ }
+
+	NullAudioClip::NullAudioClip(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc)
+		:AudioClip(samples, desc)
 	{ }
 
 	void NullAudioClip::initialize()

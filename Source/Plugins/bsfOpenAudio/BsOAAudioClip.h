@@ -17,6 +17,7 @@ namespace bs
 	{
 	public:
 		OAAudioClip(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples, const AUDIO_CLIP_DESC& desc);
+		OAAudioClip(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc);
 		virtual ~OAAudioClip();
 
 		/** 
@@ -28,10 +29,12 @@ namespace bs
 		 * @param[in]	offset		Offset in number of samples at which to start reading (should be a multiple of number
 		 *							of channels).
 		 * @param[in]	count		Number of samples to read (should be a multiple of number of channels).
+		 * 
+		 * @return					The number of actually read samples
 		 *
 		 * @note	Implementation must be thread safe as this will get called from audio streaming thread.
 		 */
-		void getSamples(UINT8* samples, UINT32 offset, UINT32 count) const;
+		UINT32 getSamples(UINT8* samples, UINT32 offset, UINT32 count) const;
 
 		/** @name Internal
 		 *  @{

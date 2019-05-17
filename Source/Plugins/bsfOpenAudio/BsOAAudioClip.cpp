@@ -13,6 +13,10 @@ namespace bs
 		:AudioClip(samples, streamSize, numSamples, desc)
 	{ }
 
+	OAAudioClip::OAAudioClip(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc)
+		:AudioClip(samples, desc)
+	{ }
+
 	OAAudioClip::~OAAudioClip()
 	{
 		if (mBufferId != (UINT32)-1)
@@ -131,7 +135,7 @@ namespace bs
 		AudioClip::initialize();
 	}
 
-	void OAAudioClip::getSamples(UINT8* samples, UINT32 offset, UINT32 count) const
+	UINT32 OAAudioClip::getSamples(UINT8* samples, UINT32 offset, UINT32 count) const
 	{
 		Lock lock(mMutex);
 
@@ -141,7 +145,7 @@ namespace bs
 			if (mNeedsDecompression)
 			{
 				mVorbisReader.seek(offset);
-				mVorbisReader.read(samples, count);
+				return mVorbisReader.read(samples, count);
 			}
 			else
 			{
@@ -150,10 +154,8 @@ namespace bs
 				UINT32 streamOffset = mStreamOffset + offset * bytesPerSample;
 
 				mStreamData->seek(streamOffset);
-				mStreamData->read(samples, size);
+				return mStreamData->read(samples, size);
 			}
-
-			return;
 		}
 
 		if (mSourceStreamData != nullptr)
@@ -165,8 +167,7 @@ namespace bs
 			UINT32 streamOffset = offset * bytesPerSample;
 
 			mSourceStreamData->seek(streamOffset);
-			mSourceStreamData->read(samples, size);
-			return;
+			return mSourceStreamData->read(samples, size);
 		}
 
 		LOGWRN("Attempting to read samples while sample data is not available.");

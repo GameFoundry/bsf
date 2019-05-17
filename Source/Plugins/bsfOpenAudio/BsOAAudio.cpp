@@ -214,6 +214,11 @@ namespace bs
 		return bs_core_ptr_new<OAAudioClip>(samples, streamSize, numSamples, desc);
 	}
 
+	SPtr<AudioClip> OAAudio::createClip(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc)
+	{
+		return bs_core_ptr_new<OAAudioClip>(samples, desc);
+	}
+
 	SPtr<AudioListener> OAAudio::createListener()
 	{
 		return bs_shared_ptr_new<OAAudioListener>();
