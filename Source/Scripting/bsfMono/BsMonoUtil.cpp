@@ -100,7 +100,7 @@ namespace bs
 	void MonoUtil::getClassName(MonoReflectionType* monoReflType, String& ns, String& typeName)
 	{
 		MonoType* monoType = mono_reflection_type_get_type(monoReflType);
-		::MonoClass* monoClass = mono_type_get_class(monoType);
+		::MonoClass* monoClass = mono_class_from_mono_type(monoType);
 
 		getClassName(monoClass, ns, typeName);
 	}
@@ -113,7 +113,7 @@ namespace bs
 	::MonoClass* MonoUtil::getClass(MonoReflectionType* type)
 	{
 		MonoType* monoType = mono_reflection_type_get_type(type);
-		return mono_type_get_class(monoType);
+		return mono_class_from_mono_type(monoType);
 	}
 
 	MonoReflectionType* MonoUtil::getType(MonoObject* object)
@@ -190,7 +190,7 @@ namespace bs
 		MonoType* monoType = mono_class_get_type(enumClass);
 		MonoType* underlyingType = mono_type_get_underlying_type(monoType);
 
-		return getPrimitiveType(mono_type_get_class(underlyingType));
+		return getPrimitiveType(mono_class_from_mono_type(underlyingType));
 	}
 
 	MonoPrimitiveType MonoUtil::getPrimitiveType(::MonoClass* monoClass)
@@ -244,7 +244,9 @@ namespace bs
 
 	::MonoClass* MonoUtil::bindGenericParameters(::MonoClass* klass, ::MonoClass** params, UINT32 numParams)
 	{
-		MonoType** types = (MonoType**)bs_alloc(sizeof(MonoType*) * numParams);
+		auto buffer = bs_managed_stack_alloc<MonoType*>(numParams);
+
+		MonoType** types = buffer;
 		for (UINT32 i = 0; i < numParams; i++)
 			types[i] = mono_class_get_type(params[i]);
 
