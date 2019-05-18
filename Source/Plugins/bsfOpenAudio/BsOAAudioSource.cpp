@@ -582,8 +582,10 @@ namespace bs
 
 			if (fillBuffer(mStreamBuffers[i], info, totalNumSamples))
 			{
-				for (auto& source : mSourceIDs)
+				for (auto& source : mSourceIDs) {
 					alSourceQueueBuffers(source, 1, &mStreamBuffers[i]);
+					alSourcePlay(source);
+				}
 
 				mBusyBuffers[i] |= 1 << i;
 			}
@@ -634,7 +636,7 @@ namespace bs
 		bs_stack_free(samples);
 
 		// If the number of read samples is less the the amount we requested, we've reached the end of the stream.
-		return samplesRead == numSamples;
+		return samplesRead == sampleBufferSize;
 	}
 
 	void OAAudioSource::applyClip()
