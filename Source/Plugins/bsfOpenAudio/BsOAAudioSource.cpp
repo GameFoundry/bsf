@@ -500,13 +500,9 @@ namespace bs
 		UINT32 totalNumSamples;
 
 		if(mAudioClip->isEndless())
-		{
 			totalNumSamples = 1024;
-		}
 		else
-		{
 			totalNumSamples = mAudioClip->getNumSamples();
-		}
 
 		// Note: It is safe to access contexts here only because it is guaranteed by the OAAudio manager that it will always
 		// stop all streaming before changing contexts. Otherwise a mutex lock would be needed for every context access.
@@ -582,7 +578,8 @@ namespace bs
 
 			if (fillBuffer(mStreamBuffers[i], info, totalNumSamples))
 			{
-				for (auto& source : mSourceIDs) {
+				for (auto& source : mSourceIDs)
+				{
 					alSourceQueueBuffers(source, 1, &mStreamBuffers[i]);
 					alSourcePlay(source);
 				}
@@ -623,11 +620,14 @@ namespace bs
 		UINT32 sampleBufferSize = numSamples * (info.bitDepth / 8);
 
 		UINT8* samples = (UINT8*)bs_stack_alloc(sampleBufferSize);
-		std::fill(samples, samples + sampleBufferSize, 0);
 
 		OAAudioClip* audioClip = static_cast<OAAudioClip*>(mAudioClip.get());
 
 		UINT32 samplesRead = audioClip->getSamples(samples, mStreamQueuedPosition, numSamples);
+
+		// Only fill the buffer with zeros if it wasn't completely filled before.
+		std::fill(samples + samplesRead, samples + sampleBufferSize, 0);
+
 		mStreamQueuedPosition += numSamples;
 
 		info.numSamples = samplesRead;

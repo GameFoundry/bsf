@@ -92,7 +92,7 @@ namespace bs
 			const AUDIO_CLIP_DESC& desc) = 0;
 
 		/** 
-		 * Creates a new audio clip.
+		 * Creates a new audio clip, for use with endless data streams.
 		 *
 		 * @param[in]	samples		Stream containing audio samples in format specified in @p desc.
 		 * @param[in]	desc		Descriptor describing the type of the audio stream (format, sample rate, etc.).
