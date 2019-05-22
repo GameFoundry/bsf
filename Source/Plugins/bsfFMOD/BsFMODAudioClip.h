@@ -18,6 +18,7 @@ namespace bs
 	{
 		UINT32 readPos = 0;
 		OggVorbisDecoder vorbisReader;
+		SPtr<DataStream> stream;
 		const FMODAudioClip* clip = nullptr;
 	};
 
@@ -26,6 +27,7 @@ namespace bs
 	{
 	public:
 		FMODAudioClip(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples, const AUDIO_CLIP_DESC& desc);
+		FMODAudioClip(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc);
 		virtual ~FMODAudioClip();
 
 		/** 

@@ -6,7 +6,7 @@
 
 namespace bs
 {
-	FMOD_RESULT F_CALLBACK pcmReadCallback(FMOD_SOUND* sound, void *data, unsigned int dataLen)
+	FMOD_RESULT F_CALLBACK pcmReadCallbackCompressed(FMOD_SOUND* sound, void *data, unsigned int dataLen)
 	{
 		FMODOggDecompressorData* decompressor = nullptr;
 		((FMOD::Sound*)sound)->getUserData((void**)&decompressor);
@@ -37,7 +37,7 @@ namespace bs
 		return FMOD_OK;
 	}
 
-	FMOD_RESULT F_CALLBACK pcmSetPosCallback(FMOD_SOUND* sound, int subsound, unsigned int position, FMOD_TIMEUNIT posType)
+	FMOD_RESULT F_CALLBACK pcmSetPosCallbackCompressed(FMOD_SOUND* sound, int subsound, unsigned int position, FMOD_TIMEUNIT posType)
 	{
 		FMODOggDecompressorData* decompressor = nullptr;
 		((FMOD::Sound*)sound)->getUserData((void**)&decompressor);
@@ -67,8 +67,57 @@ namespace bs
 		return FMOD_OK;
 	}
 
+	FMOD_RESULT F_CALLBACK pcmReadCallbackUncompressed(FMOD_SOUND* sound, void *data, unsigned int dataLen)
+	{
+		FMODOggDecompressorData* soundData = nullptr;
+		((FMOD::Sound*)sound)->getUserData((void**)&soundData);
+
+		SPtr<DataStream> stream = soundData->stream;
+
+		size_t readBytes = stream->read(data, dataLen);
+
+		if(readBytes < dataLen)
+			return FMOD_ERR_FILE_EOF;
+		else
+			return FMOD_OK;
+	}
+
+	FMOD_RESULT F_CALLBACK pcmSetPosCallbackUncompressed(FMOD_SOUND* sound, int subsound, unsigned int position, FMOD_TIMEUNIT posType)
+	{
+		FMODOggDecompressorData* soundData = nullptr;
+		((FMOD::Sound*)sound)->getUserData((void**)&soundData);
+
+		SPtr<DataStream> stream = soundData->stream;
+		const FMODAudioClip* clip = soundData->clip;
+		
+		UINT32 bytesPerSample = (clip->getBitDepth() / 8);
+
+		switch(posType)
+		{
+		case FMOD_TIMEUNIT_MS:
+			stream->seek((UINT32)((clip->getFrequency() * clip->getNumChannels()) * (position / 1000.0f)));
+			break;
+		case FMOD_TIMEUNIT_PCM:
+			stream->seek(clip->getNumChannels() * position);
+			break;
+		case FMOD_TIMEUNIT_PCMBYTES:
+			assert(position % bytesPerSample == 0);
+			stream->seek(position / bytesPerSample);
+			break;
+		default:
+			LOGERR("Invalid time unit.");
+			break;
+		}
+
+		return FMOD_OK;
+	}
+
 	FMODAudioClip::FMODAudioClip(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples, const AUDIO_CLIP_DESC& desc)
 		:AudioClip(samples, streamSize, numSamples, desc)
+	{ }
+
+	FMODAudioClip::FMODAudioClip(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc)
+		:AudioClip(samples, desc)
 	{ }
 
 	FMODAudioClip::~FMODAudioClip()
@@ -226,27 +275,29 @@ namespace bs
 		}
 		else
 		{
-			SPtr<MemoryDataStream> memStream = std::static_pointer_cast<MemoryDataStream>(mStreamData);
-
 			if (mDesc.readMode == AudioReadMode::Stream)
-			{
-				// Note: I could use FMOD_OPENMEMORY_POINT here to save on memory, but then the caller would need to make
-				// sure the memory is not deallocated. I'm ignoring this for now as streaming from memory should be a rare
-				// occurence (normally only in editor)
-				flags |= FMOD_OPENMEMORY;
-
-				memStream->seek(mStreamOffset);
-				streamData = (const char*)memStream->getCurrentPtr();
-
-				exInfo.length = mStreamSize;
-			}
-			else // Load compressed
 			{
 				flags |= FMOD_OPENUSER;
 
+				FMODOggDecompressorData* uncompressedData = bs_new<FMODOggDecompressorData>();
+				uncompressedData->stream = mStreamData;
+				uncompressedData->clip = this;
+
+				exInfo.pcmreadcallback = pcmReadCallbackUncompressed;
+				exInfo.pcmsetposcallback = pcmSetPosCallbackUncompressed;
+				exInfo.userdata = uncompressedData;
+				exInfo.length = isEndless() ? (unsigned int)-1 : mStreamSize;
+
+				streamData = nullptr;
+			}
+			else // Load compressed
+			{
+				SPtr<MemoryDataStream> memStream = std::static_pointer_cast<MemoryDataStream>(mStreamData);
+				flags |= FMOD_OPENUSER;
+
 				exInfo.decodebuffersize = mDesc.frequency;
-				exInfo.pcmreadcallback = pcmReadCallback;
-				exInfo.pcmsetposcallback = pcmSetPosCallback;
+				exInfo.pcmreadcallback = pcmReadCallbackCompressed;
+				exInfo.pcmsetposcallback = pcmSetPosCallbackCompressed;
 
 				AudioDataInfo info;
 				info.bitDepth = mDesc.bitDepth;
@@ -337,6 +388,7 @@ namespace bs
 	bool FMODAudioClip::requiresStreaming() const
 	{
 		return mDesc.readMode == AudioReadMode::Stream || 
-			(mDesc.readMode == AudioReadMode::LoadCompressed && mDesc.format == AudioFormat::VORBIS);
+			(mDesc.readMode == AudioReadMode::LoadCompressed && mDesc.format == AudioFormat::VORBIS) ||
+			isEndless();
 	}
 }
