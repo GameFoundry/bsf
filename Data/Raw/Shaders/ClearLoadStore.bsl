@@ -4,8 +4,8 @@ shader ClearLoadStore
 
 	variations
 	{
-	    // 0 - Texture, 1 - Texture array, 2 - Buffer
-		OBJ_TYPE = { 0, 1, 2 };
+	    // 0 - Texture, 1 - Texture array, 2 - Buffer, 3 - StructuredBuffer
+		OBJ_TYPE = { 0, 1, 2, 3 };
 
 		// 0 - Float, 1 - Integer
 		DATA_TYPE = { 0, 1 };
@@ -49,8 +49,10 @@ shader ClearLoadStore
 			RWTexture2D<TYPE> gOutput;
 	    #elif OBJ_TYPE == 1
 			RWTexture2DArray<TYPE> gOutput;
-	    #else
+	    #elif OBJ_TYPE == 2
 		    RWBuffer<TYPE> gOutput;
+		#else
+			RWStructuredBuffer<TYPE> gOutput;
 	    #endif
 
 		[internal]

@@ -226,6 +226,38 @@ namespace bs { namespace ct
 		RenderAPI::instance().dispatchCompute(numGroupsX, 1);
 	}
 
+	/** Helper method used for initializing variations of the ClearLoadStore material. */
+	template<ClearLoadStoreType OBJ_TYPE, ClearLoadStoreDataType DATA_TYPE, UINT32 NUM_COMPONENTS>
+	static const ShaderVariation& getClearLoadStoreVariation()
+	{
+		static ShaderVariation variation = ShaderVariation(
+			{
+				ShaderVariation::Param("OBJ_TYPE", (int)OBJ_TYPE),
+				ShaderVariation::Param("DATA_TYPE", (int)DATA_TYPE),
+				ShaderVariation::Param("NUM_COMPONENTS", NUM_COMPONENTS),
+
+			});
+
+		return variation;
+	}
+
+	template<ClearLoadStoreType BUFFER_TYPE, ClearLoadStoreDataType DATA_TYPE>
+	const ShaderVariation& getClearLoadStoreVariation(UINT32 numComponents)
+	{
+		switch (numComponents)
+		{
+		default:
+		case 1:
+			return getClearLoadStoreVariation<BUFFER_TYPE, DATA_TYPE, 0>();
+		case 2:
+			return getClearLoadStoreVariation<BUFFER_TYPE, DATA_TYPE, 1>();
+		case 3:
+			return getClearLoadStoreVariation<BUFFER_TYPE, DATA_TYPE, 2>();
+		case 4:
+			return getClearLoadStoreVariation<BUFFER_TYPE, DATA_TYPE, 3>();
+		}
+	}
+
 	ClearLoadStoreMat* ClearLoadStoreMat::getVariation(ClearLoadStoreType objType, ClearLoadStoreDataType dataType,
 									UINT32 numComponents)
 	{
@@ -234,97 +266,24 @@ namespace bs { namespace ct
 		default:
 		case ClearLoadStoreType::Texture:
 			if(dataType == ClearLoadStoreDataType::Float)
-			{
-				switch(numComponents)
-				{
-				default:
-				case 1:
-					return get(getVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Float, 0>());
-				case 2:
-					return get(getVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Float, 1>());
-				case 3:
-					return get(getVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Float, 2>());
-				case 4:
-					return get(getVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Float, 3>());
-				}
-			}
+				return get(getClearLoadStoreVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Float>(numComponents));
 			else
-			{
-				switch(numComponents)
-				{
-				default:
-				case 1:
-					return get(getVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Int, 0>());
-				case 2:
-					return get(getVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Int, 1>());
-				case 3:
-					return get(getVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Int, 2>());
-				case 4:
-					return get(getVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Int, 3>());
-				}
-			}
+				return get(getClearLoadStoreVariation<ClearLoadStoreType::Texture, ClearLoadStoreDataType::Int>(numComponents));
 		case ClearLoadStoreType::TextureArray:
 			if(dataType == ClearLoadStoreDataType::Float)
-			{
-				switch(numComponents)
-				{
-				default:
-				case 1:
-					return get(getVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Float, 0>());
-				case 2:
-					return get(getVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Float, 1>());
-				case 3:
-					return get(getVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Float, 2>());
-				case 4:
-					return get(getVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Float, 3>());
-				}
-			}
+				return get(getClearLoadStoreVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Float>(numComponents));
 			else
-			{
-				switch(numComponents)
-				{
-				default:
-				case 1:
-					return get(getVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Int, 0>());
-				case 2:
-					return get(getVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Int, 1>());
-				case 3:
-					return get(getVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Int, 2>());
-				case 4:
-					return get(getVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Int, 3>());
-				}
-			}
+				return get(getClearLoadStoreVariation<ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Int>(numComponents));
 		case ClearLoadStoreType::Buffer:
 			if(dataType == ClearLoadStoreDataType::Float)
-			{
-				switch(numComponents)
-				{
-				default:
-				case 1:
-					return get(getVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Float, 0>());
-				case 2:
-					return get(getVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Float, 1>());
-				case 3:
-					return get(getVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Float, 2>());
-				case 4:
-					return get(getVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Float, 3>());
-				}
-			}
+				return get(getClearLoadStoreVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Float>(numComponents));
 			else
-			{
-				switch(numComponents)
-				{
-				default:
-				case 1:
-					return get(getVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Int, 0>());
-				case 2:
-					return get(getVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Int, 1>());
-				case 3:
-					return get(getVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Int, 2>());
-				case 4:
-					return get(getVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Int, 3>());
-				}
-			}
+				return get(getClearLoadStoreVariation<ClearLoadStoreType::Buffer, ClearLoadStoreDataType::Int>(numComponents));
+		case ClearLoadStoreType::StructuredBuffer:
+			if(dataType == ClearLoadStoreDataType::Float)
+				return get(getClearLoadStoreVariation<ClearLoadStoreType::StructuredBuffer, ClearLoadStoreDataType::Float>(numComponents));
+			else
+				return get(getClearLoadStoreVariation<ClearLoadStoreType::StructuredBuffer, ClearLoadStoreDataType::Int>(numComponents));
 		}
 	}
 

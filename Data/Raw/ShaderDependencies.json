@@ -751,16 +751,6 @@
         }
     ],
     "SpriteImage.bsl": null,
-    "SpriteImageAlpha.bsl": [
-        {
-            "Path": "SpriteImage.bslinc"
-        }
-    ],
-    "SpriteImageNoAlpha.bsl": [
-        {
-            "Path": "SpriteImage.bslinc"
-        }
-    ],
     "SpriteLine.bsl": null,
     "SpriteText.bsl": null,
     "TetrahedraRender.bsl": [

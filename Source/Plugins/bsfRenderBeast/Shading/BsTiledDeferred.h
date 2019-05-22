@@ -98,7 +98,7 @@ namespace bs { namespace ct
 	extern ClearLoadStoreParamDef gClearLoadStoreParamDef;
 
 	/** Possible object types used as clear destinations by ClearLoadStoreMat. */
-	enum class ClearLoadStoreType { Texture, TextureArray, Buffer };
+	enum class ClearLoadStoreType { Texture, TextureArray, Buffer, StructuredBuffer };
 
 	/** Possible data types used in destination objects in ClearLoadStoreMat. */
 	enum class ClearLoadStoreDataType { Float, Int };
@@ -108,20 +108,6 @@ namespace bs { namespace ct
 	{
 		RMAT_DEF_CUSTOMIZED("ClearLoadStore.bsl");
 
-		/** Helper method used for initializing variations of this material. */
-		template<ClearLoadStoreType OBJ_TYPE, ClearLoadStoreDataType DATA_TYPE, UINT32 NUM_COMPONENTS>
-		static const ShaderVariation& getVariation()
-		{
-			static ShaderVariation variation = ShaderVariation(
-			{
-				ShaderVariation::Param("OBJ_TYPE", (int)OBJ_TYPE),
-				ShaderVariation::Param("DATA_TYPE", (int)DATA_TYPE),
-				ShaderVariation::Param("NUM_COMPONENTS", NUM_COMPONENTS),
-
-			});
-
-			return variation;
-		}
 	public:
 		ClearLoadStoreMat();
 
