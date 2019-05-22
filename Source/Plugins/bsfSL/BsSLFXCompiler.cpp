@@ -592,7 +592,7 @@ namespace bs
 	{
 		SPtr<StringStream> input = bs_shared_ptr_new<StringStream>();
 
-		bool autoBinding = outputType == CrossCompileOutput::VKSL45 || outputType == CrossCompileOutput::MVKSL;
+		bool isVKSL = outputType == CrossCompileOutput::VKSL45 || outputType == CrossCompileOutput::MVKSL;
 		switch(outputType)
 		{
 		case CrossCompileOutput::GLSL41:
@@ -648,11 +648,12 @@ namespace bs
 
 		Xsc::ShaderOutput outputDesc;
 		outputDesc.sourceCode = &output;
-		outputDesc.options.autoBinding = autoBinding;
+		outputDesc.options.autoBinding = isVKSL;
 		outputDesc.options.autoBindingStartSlot = startBindingSlot;
 		outputDesc.options.fragmentLocations = true;
 		outputDesc.options.separateShaders = true;
-		outputDesc.options.separateSamplers = false;
+		outputDesc.options.separateSamplers = isVKSL;
+		outputDesc.options.allowExtensions = true;
 		outputDesc.nameMangling.inputPrefix = "bs_";
 		outputDesc.nameMangling.outputPrefix = "bs_";
 		outputDesc.nameMangling.useAlwaysSemantics = true;

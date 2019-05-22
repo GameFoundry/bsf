@@ -472,17 +472,19 @@ namespace bs { namespace ct
 				}
 				else
 				{
-					switch (sampler.dim)
+					if(sampler.isPureSampler() || sampler.isCombined())
 					{
-					case glslang::Esd1D:		param.type = GPOT_SAMPLER1D; break;
-					case glslang::Esd2D:		param.type = sampler.isMultiSample() ? GPOT_SAMPLER2DMS : GPOT_SAMPLER2D; break;
-					case glslang::Esd3D:		param.type = GPOT_SAMPLER3D; break;
-					case glslang::EsdCube:		param.type = GPOT_SAMPLERCUBE; break;
-					default:
-						break;
-					}
+						switch (sampler.dim)
+						{
+						case glslang::Esd1D:		param.type = GPOT_SAMPLER1D; break;
+						default:
+						case glslang::Esd2D:		param.type = sampler.isMultiSample() ? GPOT_SAMPLER2DMS : GPOT_SAMPLER2D; break;
+						case glslang::Esd3D:		param.type = GPOT_SAMPLER3D; break;
+						case glslang::EsdCube:		param.type = GPOT_SAMPLERCUBE; break;
+						}
 
-					desc.samplers[name] = param;
+						desc.samplers[name] = param;
+					}
 
 					if (!sampler.isPureSampler())
 					{

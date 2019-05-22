@@ -9,8 +9,7 @@
 namespace bs { namespace ct
 {
 	VulkanGpuPipelineParamInfo::VulkanGpuPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc, GpuDeviceFlags deviceMask)
-		: GpuPipelineParamInfo(desc, deviceMask), mDeviceMask(deviceMask), mLayouts()
-		, mLayoutInfos()
+		: GpuPipelineParamInfo(desc, deviceMask), mDeviceMask(deviceMask), mLayouts(), mLayoutInfos()
 	{ }
 
 	void VulkanGpuPipelineParamInfo::initialize()
@@ -143,11 +142,31 @@ namespace bs { namespace ct
 				}
 			};
 
-			// Note: Assuming all textures and samplers use the same set/slot combination, and that they're combined
 			setUpBlockBindings(paramDesc->paramBlocks, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-			setUpBindings(paramDesc->textures, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+			setUpBindings(paramDesc->textures, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE);
 			setUpBindings(paramDesc->loadStoreTextures, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE);
-			//setUpBindings(paramDesc->samplers, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+
+			// Set up sampler bindings
+			for (auto& entry : paramDesc->samplers)
+			{
+				UINT32 bindingIdx = getBindingIdx(entry.second.set, entry.second.slot);
+				assert(bindingIdx != (UINT32)-1);
+
+				LayoutInfo& layoutInfo = mLayoutInfos[entry.second.set];
+				VkDescriptorSetLayoutBinding& binding = layoutInfo.bindings[bindingIdx];
+
+				// If we already assigned an image to this binding slot, then it's a combined image/sampler
+				if(binding.descriptorType == VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE)
+					binding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				else
+				{
+					binding.descriptorCount = 1;
+					binding.stageFlags |= stageFlagsLookup[i];
+					binding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+
+					layoutInfo.types[bindingIdx] = entry.second.type;
+				}
+			}
 
 			// Set up buffer bindings
 			for (auto& entry : paramDesc->buffers)

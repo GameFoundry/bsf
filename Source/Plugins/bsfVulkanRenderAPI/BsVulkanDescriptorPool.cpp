@@ -8,24 +8,30 @@ namespace bs { namespace ct
 	VulkanDescriptorPool::VulkanDescriptorPool(VulkanDevice& device)
 		:mDevice(device)
 	{
-		VkDescriptorPoolSize poolSizes[6];
-		poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		VkDescriptorPoolSize poolSizes[8];
+		poolSizes[0].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
 		poolSizes[0].descriptorCount = sMaxSampledImages;
 
-		poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSizes[1].descriptorCount = sMaxUniformBuffers;
+		poolSizes[1].type = VK_DESCRIPTOR_TYPE_SAMPLER;
+		poolSizes[1].descriptorCount = sMaxSampledImages;
 
-		poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-		poolSizes[2].descriptorCount = sMaxImages;
+		poolSizes[2].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		poolSizes[2].descriptorCount = sMaxSampledImages;
 
-		poolSizes[3].type = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
-		poolSizes[3].descriptorCount = sMaxSampledBuffers;
+		poolSizes[3].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		poolSizes[3].descriptorCount = sMaxUniformBuffers;
 
-		poolSizes[4].type = VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
-		poolSizes[4].descriptorCount = sMaxBuffers;
+		poolSizes[4].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+		poolSizes[4].descriptorCount = sMaxImages;
 
-		poolSizes[5].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		poolSizes[5].descriptorCount = sMaxBuffers;
+		poolSizes[5].type = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+		poolSizes[5].descriptorCount = sMaxSampledBuffers;
+
+		poolSizes[6].type = VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
+		poolSizes[6].descriptorCount = sMaxBuffers;
+
+		poolSizes[7].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		poolSizes[7].descriptorCount = sMaxBuffers;
 
 		VkDescriptorPoolCreateInfo poolCI;
 		poolCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
