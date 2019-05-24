@@ -130,6 +130,13 @@ namespace bs
 		else
 			windowDesc.parent = 0;
 
+        // TODO: add passing the XDisplay here as well. Right now the default display is assumed
+        opt = mDesc.platformSpecific.find("externalWindowHandle");
+		if (opt != mDesc.platformSpecific.end())
+			windowDesc.external = (::Window)parseUINT64(opt->second);
+        else
+            windowDesc.external = 0;
+
 		mIsChild = windowDesc.parent != 0;
 		props.isFullScreen = mDesc.fullscreen && !mIsChild;
 
