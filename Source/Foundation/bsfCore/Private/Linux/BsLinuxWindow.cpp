@@ -40,6 +40,7 @@ namespace bs
 		bool hasTitleBar = true;
 		bool dragInProgress = false;
 		bool resizeDisabled = false;
+		bool isExternal = false;
 		WindowState state = WindowState::Normal;
 
 		Vector<Rect2I> dragZones;
@@ -51,98 +52,109 @@ namespace bs
 	{
 		m = bs_new<Pimpl>();
 
-		::Display* display = LinuxPlatform::getXDisplay();
-
-		// Find the screen of the chosen monitor, as well as its current dimensions
-		INT32 screen = XDefaultScreen(display);
-		UINT32 outputIdx = 0;
-
-		RROutput primaryOutput = XRRGetOutputPrimary(display, RootWindow(display, screen));
-		INT32 monitorX = 0;
-		INT32 monitorY = 0;
-		UINT32 monitorWidth = 0;
-		UINT32 monitorHeight = 0;
-
-		INT32 screenCount = XScreenCount(display);
-		for(INT32 i = 0; i < screenCount; i++)
+		if (desc.external)
 		{
-			XRRScreenResources* screenRes = XRRGetScreenResources(display, RootWindow(display, i));
+			m->x = desc.x;
+			m->y = desc.y;
+			m->width = desc.width;
+			m->height = desc.height;
+			m->xWindow = desc.external;
+			m->isExternal = true;
+		}
+		else
+		{
+			::Display* display = LinuxPlatform::getXDisplay();
 
-			bool foundMonitor = false;
-			for (INT32 j = 0; j < screenRes->noutput; j++)
+			// Find the screen of the chosen monitor, as well as its current dimensions
+			INT32 screen = XDefaultScreen(display);
+			UINT32 outputIdx = 0;
+
+			RROutput primaryOutput = XRRGetOutputPrimary(display, RootWindow(display, screen));
+			INT32 monitorX = 0;
+			INT32 monitorY = 0;
+			UINT32 monitorWidth = 0;
+			UINT32 monitorHeight = 0;
+
+			INT32 screenCount = XScreenCount(display);
+			for(INT32 i = 0; i < screenCount; i++)
 			{
-				XRROutputInfo* outputInfo = XRRGetOutputInfo(display, screenRes, screenRes->outputs[j]);
-				if (outputInfo == nullptr || outputInfo->crtc == 0 || outputInfo->connection == RR_Disconnected)
+				XRRScreenResources* screenRes = XRRGetScreenResources(display, RootWindow(display, i));
+
+				bool foundMonitor = false;
+				for (INT32 j = 0; j < screenRes->noutput; j++)
 				{
-					XRRFreeOutputInfo(outputInfo);
+					XRROutputInfo* outputInfo = XRRGetOutputInfo(display, screenRes, screenRes->outputs[j]);
+					if (outputInfo == nullptr || outputInfo->crtc == 0 || outputInfo->connection == RR_Disconnected)
+					{
+						XRRFreeOutputInfo(outputInfo);
 
-					continue;
-				}
+						continue;
+					}
 
-				XRRCrtcInfo* crtcInfo = XRRGetCrtcInfo(display, screenRes, outputInfo->crtc);
-				if (crtcInfo == nullptr)
-				{
-					XRRFreeCrtcInfo(crtcInfo);
-					XRRFreeOutputInfo(outputInfo);
+					XRRCrtcInfo* crtcInfo = XRRGetCrtcInfo(display, screenRes, outputInfo->crtc);
+					if (crtcInfo == nullptr)
+					{
+						XRRFreeCrtcInfo(crtcInfo);
+						XRRFreeOutputInfo(outputInfo);
 
-					continue;
-				}
+						continue;
+					}
 
-				if(desc.screen == (UINT32)-1)
-				{
-					if(screenRes->outputs[j] == primaryOutput)
+					if(desc.screen == (UINT32)-1)
+					{
+						if(screenRes->outputs[j] == primaryOutput)
+							foundMonitor = true;
+					}
+					else
+						foundMonitor = outputIdx == desc.screen;
+
+					if(foundMonitor)
+					{
+						screen = i;
+
+						monitorX = crtcInfo->x;
+						monitorY = crtcInfo->y;
+						monitorWidth = crtcInfo->width;
+						monitorHeight = crtcInfo->height;
+
 						foundMonitor = true;
+						break;
+					}
 				}
-				else
-					foundMonitor = outputIdx == desc.screen;
 
 				if(foundMonitor)
-				{
-					screen = i;
-
-					monitorX = crtcInfo->x;
-					monitorY = crtcInfo->y;
-					monitorWidth = crtcInfo->width;
-					monitorHeight = crtcInfo->height;
-
-					foundMonitor = true;
 					break;
-				}
 			}
 
-			if(foundMonitor)
-				break;
-		}
+			XSetWindowAttributes attributes;
+			attributes.background_pixel = XWhitePixel(display, screen);
+			attributes.border_pixel = XBlackPixel(display, screen);
+			attributes.background_pixmap = 0;
 
-		XSetWindowAttributes attributes;
-		attributes.background_pixel = XWhitePixel(display, screen);
-		attributes.border_pixel = XBlackPixel(display, screen);
-		attributes.background_pixmap = 0;
-
-		attributes.colormap = XCreateColormap(display,
+			attributes.colormap = XCreateColormap(display,
 				XRootWindow(display, screen),
 				desc.visualInfo.visual,
 				AllocNone);
 
-		// If no position specified, center on the requested monitor
-		if (desc.x == -1)
-			m->x = monitorX + (monitorWidth - desc.width) / 2;
-		else if (desc.screen != (UINT32)-1)
-			m->x = monitorX + desc.x;
-		else
-			m->x = desc.x;
+			// If no position specified, center on the requested monitor
+			if (desc.x == -1)
+				m->x = monitorX + (monitorWidth - desc.width) / 2;
+			else if (desc.screen != (UINT32)-1)
+				m->x = monitorX + desc.x;
+			else
+				m->x = desc.x;
 
-		if (desc.y == -1)
-			m->y = monitorY + (monitorHeight - desc.height) / 2;
-		else if (desc.screen != (UINT32)-1)
-			m->y = monitorY + desc.y;
-		else
-			m->y = desc.y;
+			if (desc.y == -1)
+				m->y = monitorY + (monitorHeight - desc.height) / 2;
+			else if (desc.screen != (UINT32)-1)
+				m->y = monitorY + desc.y;
+			else
+				m->y = desc.y;
 
-		m->width = desc.width;
-		m->height = desc.height;
+			m->width = desc.width;
+			m->height = desc.height;
 
-		m->xWindow = XCreateWindow(display,
+			m->xWindow = XCreateWindow(display,
 				XRootWindow(display, screen),
 				m->x, m->y,
 				m->width, m->height,
@@ -150,45 +162,45 @@ namespace bs
 				InputOutput, desc.visualInfo.visual,
 				CWBackPixel | CWBorderPixel | CWColormap | CWBackPixmap, &attributes);
 
-		XStoreName(display, m->xWindow, desc.title.c_str());
+			XStoreName(display, m->xWindow, desc.title.c_str());
 
-		// Position/size might have (and usually will) get overridden by the WM, so re-apply them
-		XSizeHints hints;
-		hints.flags = PPosition | PSize;
-		hints.x = m->x;
-		hints.y = m->y;
-		hints.width = m->width;
-		hints.height = m->height;
+			// Position/size might have (and usually will) get overridden by the WM, so re-apply them
+			XSizeHints hints;
+			hints.flags = PPosition | PSize;
+			hints.x = m->x;
+			hints.y = m->y;
+			hints.width = m->width;
+			hints.height = m->height;
 
-		if(!desc.allowResize)
-		{
-			hints.flags |= PMinSize | PMaxSize;
+			if(!desc.allowResize)
+			{
+				hints.flags |= PMinSize | PMaxSize;
 
-			hints.min_height = desc.height;
-			hints.max_height = desc.height;
+				hints.min_height = desc.height;
+				hints.max_height = desc.height;
 
-			hints.min_width = desc.width;
-			hints.max_width = desc.width;
-		}
+				hints.min_width = desc.width;
+				hints.max_width = desc.width;
+			}
 
-		XSetNormalHints(display, m->xWindow, &hints);
+			XSetNormalHints(display, m->xWindow, &hints);
 
-		setShowDecorations(desc.showDecorations);
-		setIsModal(desc.modal);
+			setShowDecorations(desc.showDecorations);
+			setIsModal(desc.modal);
 
-		XClassHint* classHint = XAllocClassHint();
+			XClassHint* classHint = XAllocClassHint();
 
-		classHint->res_class = (char*)"banshee3d";
-		classHint->res_name = (char*)desc.title.c_str();
+			classHint->res_class = (char*)"banshee3d";
+			classHint->res_name = (char*)desc.title.c_str();
 
-		XSetClassHint(display, m->xWindow, classHint);
-		XFree(classHint);
+			XSetClassHint(display, m->xWindow, classHint);
+			XFree(classHint);
 
-		// Ensures the child window is always on top of the parent window
-		if(desc.parent)
-			XSetTransientForHint(display, m->xWindow, desc.parent);
+			// Ensures the child window is always on top of the parent window
+			if(desc.parent)
+				XSetTransientForHint(display, m->xWindow, desc.parent);
 
-		long eventMask =
+			long eventMask =
 				ExposureMask | FocusChangeMask |
 				KeyPressMask | KeyReleaseMask |
 				ButtonPressMask | ButtonReleaseMask |
@@ -196,34 +208,35 @@ namespace bs
 				PointerMotionMask | ButtonMotionMask |
 				StructureNotifyMask | PropertyChangeMask;
 
-		if(!desc.parent)
-			eventMask |= SubstructureNotifyMask | SubstructureRedirectMask;
+			if(!desc.parent)
+				eventMask |= SubstructureNotifyMask | SubstructureRedirectMask;
 
-		XSelectInput(display, m->xWindow, eventMask);
+			XSelectInput(display, m->xWindow, eventMask);
 
-		// Make sure we get the window delete message from WM, so we can clean up ourselves
-		Atom atomDeleteWindow = XInternAtom(display, "WM_DELETE_WINDOW", False);
-		XSetWMProtocols(display, m->xWindow, &atomDeleteWindow, 1);
+			// Make sure we get the window delete message from WM, so we can clean up ourselves
+			Atom atomDeleteWindow = XInternAtom(display, "WM_DELETE_WINDOW", False);
+			XSetWMProtocols(display, m->xWindow, &atomDeleteWindow, 1);
 
-		// Enable drag and drop
-		LinuxDragAndDrop::makeDNDAware(m->xWindow);
+			// Enable drag and drop
+			LinuxDragAndDrop::makeDNDAware(m->xWindow);
 
-		// Set background image if assigned
-		if(desc.background)
-		{
-			Pixmap pixmap = LinuxPlatform::createPixmap(*desc.background, (UINT32)desc.visualInfo.depth);
+			// Set background image if assigned
+			if(desc.background)
+			{
+				Pixmap pixmap = LinuxPlatform::createPixmap(*desc.background, (UINT32)desc.visualInfo.depth);
 
-			XSetWindowBackgroundPixmap(display, m->xWindow, pixmap);
-			XFreePixmap(display, pixmap);
-			XSync(display, 0);
+				XSetWindowBackgroundPixmap(display, m->xWindow, pixmap);
+				XFreePixmap(display, pixmap);
+				XSync(display, 0);
+			}
+
+			// Show the window (needs to happen after setting the background pixmap)
+			if(!desc.hidden)
+				XMapWindow(display, m->xWindow);
+
+			if(!desc.showOnTaskBar)
+				showOnTaskbar(false);
 		}
-
-		// Show the window (needs to happen after setting the background pixmap)
-		if(!desc.hidden)
-			XMapWindow(display, m->xWindow);
-
-		if(!desc.showOnTaskBar)
-			showOnTaskbar(false);
 
 		m->hasTitleBar = desc.showDecorations;
 		m->resizeDisabled = !desc.allowResize;
@@ -402,11 +415,14 @@ namespace bs
 
 	void LinuxWindow::_destroy()
 	{
-		XUnmapWindow(LinuxPlatform::getXDisplay(), m->xWindow);
-		XSync(LinuxPlatform::getXDisplay(), 0);
+		if (!m->isExternal)
+		{
+			XUnmapWindow(LinuxPlatform::getXDisplay(), m->xWindow);
+			XSync(LinuxPlatform::getXDisplay(), 0);
 
-		XDestroyWindow(LinuxPlatform::getXDisplay(), m->xWindow);
-		XSync(LinuxPlatform::getXDisplay(), 0);
+			XDestroyWindow(LinuxPlatform::getXDisplay(), m->xWindow);
+			XSync(LinuxPlatform::getXDisplay(), 0);
+		}
 
 		LinuxPlatform::_unregisterWindow(m->xWindow);
 		m->xWindow = 0;

@@ -30,6 +30,7 @@ namespace bs
 		bool showOnTaskBar;
 		bool hidden;
 		::Window parent;
+		::Window external;
 		XVisualInfo visualInfo;
 		SPtr<PixelData> background;
 	};
