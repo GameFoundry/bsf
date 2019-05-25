@@ -252,7 +252,8 @@ namespace bs
 					{
 						for (auto& entry : mMappingInfos)
 						{
-							if(!entry.isMappedToBone)
+							// We allow a null bone for the root bone mapping, should be non-null for everything else
+							if(!entry.isMappedToBone || entry.bone == nullptr)
 								continue;
 
 							const UINT32 numBones = skeleton->getNumBones();
