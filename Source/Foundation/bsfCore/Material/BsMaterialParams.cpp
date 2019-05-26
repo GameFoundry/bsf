@@ -36,8 +36,10 @@ namespace bs
 		const Map<String, SHADER_DATA_PARAM_DESC>& dataParams,
 		const Map<String, SHADER_OBJECT_PARAM_DESC>& textureParams,
 		const Map<String, SHADER_OBJECT_PARAM_DESC>& bufferParams,
-		const Map<String, SHADER_OBJECT_PARAM_DESC>& samplerParams
+		const Map<String, SHADER_OBJECT_PARAM_DESC>& samplerParams,
+		UINT64 initialParamVersion
 	)
+		: mParamVersion(initialParamVersion)
 	{
 		mDataSize = 0;
 
@@ -323,12 +325,13 @@ namespace bs
 	}
 
 	template<bool Core>
-	TMaterialParams<Core>::TMaterialParams(const ShaderType& shader)
+	TMaterialParams<Core>::TMaterialParams(const ShaderType& shader, UINT64 initialParamVersion)
 		:MaterialParamsBase(
 			shader->getDataParams(),
 			shader->getTextureParams(),
 			shader->getBufferParams(),
-			shader->getSamplerParams()
+			shader->getSamplerParams(),
+			initialParamVersion
 		)
 	{
 		mStructParams = mAlloc.construct<ParamStructDataType>(mNumStructParams);
@@ -793,8 +796,8 @@ namespace bs
 	template class TMaterialParams<true>;
 	template class TMaterialParams<false>;
 
-	MaterialParams::MaterialParams(const HShader& shader)
-		:TMaterialParams(shader), mLastSyncVersion(1)
+	MaterialParams::MaterialParams(const HShader& shader, UINT64 initialParamVersion)
+		:TMaterialParams(shader, initialParamVersion), mLastSyncVersion(1)
 	{ }
 
 	void MaterialParams::getSyncData(UINT8* buffer, UINT32& size, bool forceAll)
@@ -1130,12 +1133,12 @@ namespace bs
 
 	namespace ct
 	{
-	MaterialParams::MaterialParams(const SPtr<Shader>& shader)
-		:TMaterialParams(shader)
+	MaterialParams::MaterialParams(const SPtr<Shader>& shader, UINT64 initialParamVersion)
+		:TMaterialParams(shader, initialParamVersion)
 	{ }
 
 	MaterialParams::MaterialParams(const SPtr<Shader>& shader, const SPtr<bs::MaterialParams>& params)
-		: TMaterialParams(shader)
+		: TMaterialParams(shader, 1)
 	{
 		memcpy(mDataParamsBuffer, params->mDataParamsBuffer, mDataSize);
 
