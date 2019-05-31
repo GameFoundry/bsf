@@ -63,7 +63,7 @@ target_include_directories(bsf PUBLIC
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/bsfEngine>)
 
 # Defines
-target_compile_definitions(bsf PRIVATE 
+target_compile_definitions(bsf PRIVATE
 	-DBS_EXPORTS
 	-DBS_CORE_EXPORTS
 	-DBS_UTILITY_EXPORTS
@@ -89,7 +89,7 @@ endif()
 
 # Libraries
 ## External lib: NVTT
-target_link_libraries(bsf PRIVATE ${nvtt_LIBRARIES})	
+target_link_libraries(bsf PRIVATE ${nvtt_LIBRARIES})
 
 ## External lib: Snappy
 target_link_libraries(bsf PRIVATE ${snappy_LIBRARIES})
@@ -135,16 +135,16 @@ if(NOT BS_IS_BANSHEE3D)
 	install(
 		DIRECTORY bsfUtility
 		DESTINATION include
-		FILES_MATCHING 
+		FILES_MATCHING
 		PATTERN "*.h"
 		PATTERN "*.hpp"
 		PATTERN "Private" EXCLUDE
 	)
 
 	install(
-		DIRECTORY bsfCore 
+		DIRECTORY bsfCore
 		DESTINATION include
-		FILES_MATCHING 
+		FILES_MATCHING
 		PATTERN "*.h"
 		PATTERN "*.hpp"
 		PATTERN "Private" EXCLUDE
@@ -153,7 +153,7 @@ if(NOT BS_IS_BANSHEE3D)
 	install(
 		DIRECTORY bsfEngine
 		DESTINATION include
-		FILES_MATCHING 
+		FILES_MATCHING
 		PATTERN "*.h"
 		PATTERN "*.hpp"
 		PATTERN "Private" EXCLUDE

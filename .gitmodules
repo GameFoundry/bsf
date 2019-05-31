@@ -1,0 +1,3 @@
+[submodule "Source/Plugins/bsfEnTT/ThirdParty/EnTT"]
+	path = Source/Plugins/bsfEnTT/ThirdParty/EnTT
+	url = https://github.com/skypjack/EnTT.git

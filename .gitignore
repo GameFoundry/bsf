@@ -26,6 +26,7 @@ Documentation/Manuals/static
 Documentation/.version
 Documentation/Timestamp.asset
 /Build
+/build
 *.aps
 *.opendb
 BsEngineConfig.h
