@@ -9,19 +9,19 @@
 #include "Math/BsVector3.h"
 #include "Utility/BsBitwise.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup General
 	 *  @{
 	 */
 
-	/** 
-	 * Allows encoding/decoding of types into a stream of bits. Supports various methods of storing data in a compact form. 
-	 * The bitstream can manage its internal memory or a user can provide an external source of data. If using internal 
+	/**
+	 * Allows encoding/decoding of types into a stream of bits. Supports various methods of storing data in a compact form.
+	 * The bitstream can manage its internal memory or a user can provide an external source of data. If using internal
 	 * memory the bitstream will automatically grow the memory storage as needed.
-	 * 
-	 * The stream keeps an internal cursor that represents the bit at which to perform read & write operations. 
-	 * Read & write operations will operate at the current cursor location and the cursor will be advanced by the number of 
+	 *
+	 * The stream keeps an internal cursor that represents the bit at which to perform read & write operations.
+	 * Read & write operations will operate at the current cursor location and the cursor will be advanced by the number of
 	 * bits read or written. If writing outside of range the internal memory buffer will be automatically expanded, except
 	 * when external memory buffer is used, in which case it is undefined behaviour. Reading outside of range is always
 	 * undefined behaviour.
@@ -30,13 +30,13 @@ namespace bs
 	{
 		using QuantType = uint8_t;
 	public:
-		/** 
-		 * Initializes an empty bitstream. As data is written the stream will grow its internal memory storage 
-		 * automatically. 
+		/**
+		 * Initializes an empty bitstream. As data is written the stream will grow its internal memory storage
+		 * automatically.
 		 */
 		Bitstream() = default;
 
-		/** 
+		/**
 		 * Initializes a bitstream with some initial capacity. If more bytes than capacity is written, the bitstream will
 		 * grow its internal memory storage.
 		 *
@@ -48,9 +48,9 @@ namespace bs
 		 * Initializes a bitstream with external data storage. The bitstream will not manage internal memory and will not
 		 * grow memory storage if capacity is exceeded. The user is responsible for keeping track and not writing outside
 		 * of buffer range.
-		 * 
+		 *
 		 * @param[in]	data	Address of the external memory buffer. The user is responsible of keeping this memory alive
-		 *						for the lifetime of the bitstream, as well as releasing it. Must have enough capacity to 
+		 *						for the lifetime of the bitstream, as well as releasing it. Must have enough capacity to
 		 *						store @p count bits.
 		 * @param[in]	count	Size of the provided data, in bits.
 		 */
@@ -58,25 +58,25 @@ namespace bs
 
 		~Bitstream();
 
-		/** 
-		 * Writes bits from the provided buffer into the stream at the current cursor location and advances the cursor. 
-		 * 
+		/**
+		 * Writes bits from the provided buffer into the stream at the current cursor location and advances the cursor.
+		 *
 		 * @param[in]	data	Buffer to write the data from. Must have enough capacity to store @p count bits.
-		 * @param[in]	count	Number of bits to write. 
+		 * @param[in]	count	Number of bits to write.
 		 */
 		void writeBits(const QuantType* data, uint32_t count);
 
 		/**
 		 * Reads bits from the stream into the provided buffer from the current cursor location and advances the cursor.
-		 * 
+		 *
 		 * @param[out]	data	Buffer to read the data from. Must have enough capacity to store @p count bits.
-		 * @param[in]	count	Number of bits to read. 
+		 * @param[in]	count	Number of bits to read.
 		 */
 		void readBits(QuantType* data, uint32_t count);
 
-		/** 
+		/**
 		 * Writes the provided data into the stream at the current cursor location and advances the cursor.
-		 * 
+		 *
 		 * @param[in]	value	Data to write.
 		 */
 		template<class T>
@@ -85,7 +85,7 @@ namespace bs
 		/**
 		 * Reads bits from the stream and writes them into the provided object. Data is read from the current cursor
 		 * location and advances the cursor.
-		 * 
+		 *
 		 * @param[out]	value	Object to initialize with the read bits.
 		 */
 		template<class T>
@@ -121,56 +121,56 @@ namespace bs
 		void readDelta(bool& value, bool lastValue);
 
 		/**
-		 * Encodes a 32-bit integer value as a base-128 varint and writes it to the stream. Write is performed at the 
+		 * Encodes a 32-bit integer value as a base-128 varint and writes it to the stream. Write is performed at the
 		 * current cursor location and advances the cursor. Varints are a method of serializing integers using one or
 		 * more bytes, where smaller values use less bytes.
 		 */
 		void writeVarInt(uint32_t value);
 
 		/**
-		 * Encodes a 32-bit integer value as a base-128 varint and writes it to the stream. Write is performed at the 
+		 * Encodes a 32-bit integer value as a base-128 varint and writes it to the stream. Write is performed at the
 		 * current cursor location and advances the cursor. Varints are a method of serializing integers using one or
 		 * more bytes, where smaller values use less bytes.
 		 */
 		void writeVarInt(int32_t value);
 
 		/**
-		 * Encodes a 64-bit integer value as a base-128 varint and writes it to the stream. Write is performed at the 
+		 * Encodes a 64-bit integer value as a base-128 varint and writes it to the stream. Write is performed at the
 		 * current cursor location and advances the cursor. Varints are a method of serializing integers using one or
 		 * more bytes, where smaller values use less bytes.
 		 */
 		void writeVarInt(uint64_t value);
 
 		/**
-		 * Encodes a 64-bit integer value as a base-128 varint and writes it to the stream. Write is performed at the 
+		 * Encodes a 64-bit integer value as a base-128 varint and writes it to the stream. Write is performed at the
 		 * current cursor location and advances the cursor. Varints are a method of serializing integers using one or
 		 * more bytes, where smaller values use less bytes.
 		 */
 		void writeVarInt(int64_t value);
 
 		/**
-		 * Decodes a 32-bit integer value encoded as a base-128 varint from the stream. Read is performed at the 
+		 * Decodes a 32-bit integer value encoded as a base-128 varint from the stream. Read is performed at the
 		 * current cursor location and advances the cursor. Varints are a method of serializing integers using one or
 		 * more bytes, where smaller values use less bytes.
 		 */
 		void readVarInt(uint32_t& value);
 
 		/**
-		 * Decodes a 32-bit integer value encoded as a base-128 varint from the stream. Read is performed at the 
+		 * Decodes a 32-bit integer value encoded as a base-128 varint from the stream. Read is performed at the
 		 * current cursor location and advances the cursor. Varints are a method of serializing integers using one or
 		 * more bytes, where smaller values use less bytes.
 		 */
 		void readVarInt(int32_t& value);
 
 		/**
-		 * Decodes a 32-bit integer value encoded as a base-128 varint from the stream. Read is performed at the 
+		 * Decodes a 32-bit integer value encoded as a base-128 varint from the stream. Read is performed at the
 		 * current cursor location and advances the cursor. Varints are a method of serializing integers using one or
 		 * more bytes, where smaller values use less bytes.
 		 */
 		void readVarInt(uint64_t& value);
 
 		/**
-		 * Decodes a 32-bit integer value encoded as a base-128 varint from the stream. Read is performed at the 
+		 * Decodes a 32-bit integer value encoded as a base-128 varint from the stream. Read is performed at the
 		 * current cursor location and advances the cursor. Varints are a method of serializing integers using one or
 		 * more bytes, where smaller values use less bytes.
 		 */
@@ -194,33 +194,33 @@ namespace bs
 		void writeNorm(float value, uint32_t bits = 16);
 
 		/**
-		 * Decodes a float encoded using writeNorm(float, uint32_t). Read is performed at the current cursor location and 
+		 * Decodes a float encoded using writeNorm(float, uint32_t). Read is performed at the current cursor location and
 		 * advances the cursor. Same number of bits need to be used as when the float was encoded.
 		 */
 		void readNorm(float& value, uint32_t bits = 16);
 
 		/**
 		 * Encodes a 3D vector with individual components in range [-1, 1] into a fixed point representation where each
-		 * component uses a specific number of bits, and writes it to the stream. Write is performed at the current cursor 
+		 * component uses a specific number of bits, and writes it to the stream. Write is performed at the current cursor
 		 * location and advances the cursor.
 		 */
 		void writeNorm(const Vector3& value, uint32_t bits = 16);
 
 		/**
-		 * Decodes a 3D vector encoded using writeNorm(Vector3, uint32_t). Read is performed at the current cursor location 
+		 * Decodes a 3D vector encoded using writeNorm(Vector3, uint32_t). Read is performed at the current cursor location
 		 * and advances the cursor. Same number of bits need to be used as when the float was encoded.
 		 */
 		void readNorm(Vector3& value, uint32_t bits = 16);
 
 		/**
 		 * Encodes a quaternion with individual components in range [-1, 1] into a fixed point representation where each
-		 * component uses a specific number of bits, and writes it to the stream. Write is performed at the current cursor 
+		 * component uses a specific number of bits, and writes it to the stream. Write is performed at the current cursor
 		 * location and advances the cursor.
 		 */
 		void writeNorm(const Quaternion& value, uint32_t bits = 16);
 
 		/**
-		 * Decodes a quaternion encoded using writeNorm(Quaternion, uint32_t). Read is performed at the current cursor 
+		 * Decodes a quaternion encoded using writeNorm(Quaternion, uint32_t). Read is performed at the current cursor
 		 * location and advances the cursor. Same number of bits need to be used as when the float was encoded.
 		 */
 		void readNorm(Quaternion& value, uint32_t bits = 16);
@@ -244,7 +244,7 @@ namespace bs
 		void writeRange(const T& value, const T& min, const T& max);
 
 		/**
-		 * Decodes an integer encoded using writeRange(const T&, const T&, const T&). Read is performed at the current 
+		 * Decodes an integer encoded using writeRange(const T&, const T&, const T&). Read is performed at the current
 		 * cursor location and advances the cursor. Same needs to be used as when the value was encoded.
 		 */
 		template<class T>
@@ -252,27 +252,27 @@ namespace bs
 
 		/**
 		 * Checks if the provided value differs from the last provided value, and if they are equivalent writes just a
-		 * single bit signifying no change. Otherwise the value is encoded as if calling 
+		 * single bit signifying no change. Otherwise the value is encoded as if calling
 		 * writeRange(const T&, const T&, const T&).
 		 */
 		template<class T>
 		void writeRangeDelta(const T& value, const T& lastValue, const T& min, const T& max);
 
-		/** 
-		 * Reads the data written by writeRangeDelta(const T&, const T&, const T&, const T&) from the current cursor 
-		 * location and advances the cursor. 
+		/**
+		 * Reads the data written by writeRangeDelta(const T&, const T&, const T&, const T&) from the current cursor
+		 * location and advances the cursor.
 		 */
 		template<class T>
 		void readRangeDelta(T& value, const T& lastValue, const T& min, const T& max);
 
 		/**
-		 * Encodes a float in a specific range into a fixed point representation using a specific number of bits, and 
+		 * Encodes a float in a specific range into a fixed point representation using a specific number of bits, and
 		 * writes it to the stream. Write is performed at the current cursor location and advances the cursor.
 		 */
 		void writeRange(float value, float min, float max, uint32_t bits = 16);
 
 		/**
-		 * Decodes a float encoded using writeRange(float, float, float, uint32_t). Read is performed at the current cursor 
+		 * Decodes a float encoded using writeRange(float, float, float, uint32_t). Read is performed at the current cursor
 		 * location and advances the cursor. Same number of bits, and the same range needs to be used as when the float was
 		 * encoded.
 		 */
@@ -280,33 +280,33 @@ namespace bs
 
 		/**
 		 * Checks if the provided value differs from the last provided value, and if they are equivalent writes just a
-		 * single bit signifying no change. Otherwise the value is encoded as if calling 
+		 * single bit signifying no change. Otherwise the value is encoded as if calling
 		 * writeRange(float, float, float, uint32_t).
 		 */
 		void writeRangeDelta(float value, float lastValue, float min, float max, uint32_t bits = 16);
 
-		/** 
-		 * Reads the data written by writeRangeDelta(float, float, float, float, uint32_t) from the current cursor 
-		 * location and advances the cursor. 
+		/**
+		 * Reads the data written by writeRangeDelta(float, float, float, float, uint32_t) from the current cursor
+		 * location and advances the cursor.
 		 */
 		void readRangeDelta(float& value, float lastValue, float min, float max, uint32_t bits = 16);
 
 		/**
-		 * Skip a defined number of bits, moving the read/write cursor by this amount. This can also be a negative value, 
+		 * Skip a defined number of bits, moving the read/write cursor by this amount. This can also be a negative value,
 		 * in which case the file pointer rewinds a defined number of bits. Note the cursor can never skip past the
 		 * capacity of the buffer, and will be clamped.
 		 */
 		void skip(int32_t count);
 
-		/** 
+		/**
 		 * Repositions the read/write cursor to the specified bit. Note the cursor can never skip past the capacity
 		 * of the buffer, and will be clamped.
 		 */
 		void seek(uint32_t pos);
 
-		/** 
+		/**
 		 * Aligns the read/write cursor to a byte boundary. @p count determines the alignment in bytes. Note the
-		 * requested alignment might not be achieved if count > 1 and it would move the cursor past the capacity of the 
+		 * requested alignment might not be achieved if count > 1 and it would move the cursor past the capacity of the
 		 * buffer, as the cursor will be clamped to buffer end regardless of alignment.
 		 */
 		void align(uint32_t count = 1);
@@ -327,9 +327,10 @@ namespace bs
 		QuantType* data() const { return mData; }
 
 	private:
-		static constexpr uint32_t BYTES_PER_QUANT = sizeof(QuantType);
-		static constexpr uint32_t BITS_PER_QUANT = BYTES_PER_QUANT * 8;
-		static constexpr uint32_t BITS_PER_QUANT_LOG2 = Bitwise::bitsLog2(BITS_PER_QUANT);
+		// c++17 feature allowing for inline variables, otherwise get undefined reference warning.
+		inline static constexpr uint32_t BYTES_PER_QUANT = sizeof(QuantType);
+		inline static constexpr uint32_t BITS_PER_QUANT = BYTES_PER_QUANT * 8;
+		inline static constexpr uint32_t BITS_PER_QUANT_LOG2 = Bitwise::bitsLog2(BITS_PER_QUANT);
 
 		/** Checks if the internal memory buffer needs to grow in order to accomodate @p numBits bits. */
 		void reallocIfNeeded(uint32_t numBits);

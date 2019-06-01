@@ -3,6 +3,7 @@ include(bsfUtility/CMakeSources.cmake)
 include(bsfCore/CMakeSources.cmake)
 include(bsfEngine/CMakeSources.cmake)
 
+
 # Ensure pre-built binary dependencies are up to date
 if(USE_BUNDLED_LIBRARIES)
 	if(EXPERIMENTAL_ENABLE_NETWORKING)
@@ -82,6 +83,8 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "A
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	target_compile_options(bsf PUBLIC
 		-fno-exceptions
+		# add sse4.1 for simdpp compatibility
+		-msse4.1
 		$<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
 else()
 # TODO_OTHER_COMPILERS_GO_HERE
