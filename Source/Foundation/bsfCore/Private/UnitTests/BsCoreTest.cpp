@@ -4,6 +4,8 @@
 #include "Testing/BsTestSuite.h"
 #include "Animation/BsAnimationCurve.h"
 #include "Particles/BsParticleDistribution.h"
+#include "Platform/BsPlatform.h"
+#include "Utility/BsTime.h"
 
 namespace bs
 {
@@ -39,18 +41,18 @@ namespace bs
 
 		// Construct some curves
 		TAnimationCurve<float> curveConstant(
-			{ 
+			{
 				TKeyframe<float>{ 1.0f, 0.0f, 0.0f, 0.0f },
 			});
 
 		TAnimationCurve<float> curveLinear(
-			{ 
+			{
 				TKeyframe<float>{ 0.0f, 0.0f, 1.0f, 0.0f },
 				TKeyframe<float>{ 1.0f, 1.0f, 0.0f, 1.0f }
 			});
 
 		TAnimationCurve<float> curveAcceleration(
-			{ 
+			{
 				TKeyframe<float>{ -9.81f, 0.0f, 0.0f, 0.0f },
 				TKeyframe<float>{ -9.81f, 0.0f, 0.0f, 10.0f }
 			});
@@ -75,7 +77,7 @@ namespace bs
 			float times[] = { 0.0f, 0.5f, 1.0f };
 			for(auto time : times)
 			{
-				BS_TEST_ASSERT(Math::approxEquals(curveConstant.evaluateIntegratedDouble(time, cache), 
+				BS_TEST_ASSERT(Math::approxEquals(curveConstant.evaluateIntegratedDouble(time, cache),
 					evalPosition(1.0f, 0.0f, time), EPSILON));
 			}
 		}
@@ -86,7 +88,7 @@ namespace bs
 			float times[] = { 0.0f, 0.5f, 1.0f, 2.0f, 3.0f, 5.0f, 10.0f };
 			for(auto time : times)
 			{
-				BS_TEST_ASSERT(Math::approxEquals(curveAcceleration.evaluateIntegrated(time, cache), 
+				BS_TEST_ASSERT(Math::approxEquals(curveAcceleration.evaluateIntegrated(time, cache),
 					evalVelocity(-9.81f, time), EPSILON));
 			}
 
@@ -101,7 +103,7 @@ namespace bs
 			float times[] = { 0.0f, 0.5f, 1.0f, 2.0f, 3.0f, 5.0f, 10.0f };
 			for(auto time : times)
 			{
-				BS_TEST_ASSERT(Math::approxEquals(curveAcceleration.evaluateIntegratedDouble(time, cache), 
+				BS_TEST_ASSERT(Math::approxEquals(curveAcceleration.evaluateIntegratedDouble(time, cache),
 					evalPosition(-9.81f, 0.0f, time)));
 			}
 
@@ -138,7 +140,6 @@ namespace bs
 
 			Vector3 valueLookup = Vector3::lerp(lerp, *leftVec, *rightVec);
 			Vector3 valueCurve = curve.evaluate(t);
-
 			for(UINT32 j = 0; j < 3; j++)
 				BS_TEST_ASSERT(Math::approxEquals(valueLookup[j], valueCurve[j], EPSILON));
 		}
@@ -147,11 +148,20 @@ namespace bs
 
 using namespace bs;
 
+void initModules() {
+
+  CrashHandler::startUp();
+  Platform::_startUp();
+  MemStack::beginThread();
+  Time::startUp();
+}
+
 int main()
 {
+	initModules();
 	SPtr<TestSuite> tests = CoreTestSuite::create<CoreTestSuite>();
 
-	ExceptionTestOutput testOutput;
+	ConsoleTestOutput testOutput;
 	tests->run(testOutput);
 
 	return 0;
