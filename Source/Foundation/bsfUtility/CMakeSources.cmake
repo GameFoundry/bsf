@@ -180,18 +180,6 @@ set(BS_UTILITY_SRC_MATH
 	"bsfUtility/Math/BsLine2.cpp"
 )
 
-set(BS_UTILITY_INC_TESTING
-	"bsfUtility/Testing/BsTestSuite.h"
-	"bsfUtility/Testing/BsTestOutput.h"
-	"bsfUtility/Testing/BsConsoleTestOutput.h"
-)
-
-set(BS_UTILITY_SRC_TESTING
-	"bsfUtility/Testing/BsTestSuite.cpp"
-	"bsfUtility/Testing/BsTestOutput.cpp"
-	"bsfUtility/Testing/BsConsoleTestOutput.cpp"
-)
-
 set(BS_UTILITY_SRC_SERIALIZATION
 	"bsfUtility/Serialization/BsMemorySerializer.cpp"
 	"bsfUtility/Serialization/BsFileSerializer.cpp"

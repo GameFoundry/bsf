@@ -17,7 +17,6 @@ set(BS_RENDERBEAST_INC_NOFILTER
 set(BS_RENDERBEAST_SRC_NOFILTER
 	"BsRenderBeast.cpp"
 	"BsRenderBeastFactory.cpp"
-	"BsRenderBeastTestSuite.cpp"
 	"BsRenderBeastPlugin.cpp"
 	"BsRendererLight.cpp"
 	"BsRendererView.cpp"
