@@ -115,7 +115,7 @@ namespace bs
 
 	void CoreTestSuite::testLookupTable()
 	{
-		static constexpr float EPSILON = 0.0001f;
+		static constexpr float EPSILON = 0.001f;
 
 		TAnimationCurve<Vector3> curve
 		({
@@ -140,8 +140,9 @@ namespace bs
 
 			Vector3 valueLookup = Vector3::lerp(lerp, *leftVec, *rightVec);
 			Vector3 valueCurve = curve.evaluate(t);
-			for(UINT32 j = 0; j < 3; j++)
+			for(UINT32 j = 0; j < 3; j++) {
 				BS_TEST_ASSERT(Math::approxEquals(valueLookup[j], valueCurve[j], EPSILON));
+			}
 		}
 	}
 }
