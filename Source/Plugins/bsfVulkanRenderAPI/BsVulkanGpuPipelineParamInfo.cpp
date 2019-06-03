@@ -117,8 +117,7 @@ namespace bs { namespace ct
 					UINT32 bindingIdx = getBindingIdx(entry.second.set, entry.second.slot);
 					assert(bindingIdx != (UINT32)-1);
 
-					LayoutInfo& layoutInfo = mLayoutInfos[entry.second.set];
-					VkDescriptorSetLayoutBinding& binding = layoutInfo.bindings[bindingIdx];
+					VkDescriptorSetLayoutBinding& binding = bindings[bindingIdx];
 					binding.descriptorCount = 1;
 					binding.stageFlags |= stageFlagsLookup[i];
 					binding.descriptorType = descType;
@@ -132,13 +131,12 @@ namespace bs { namespace ct
 					UINT32 bindingIdx = getBindingIdx(entry.second.set, entry.second.slot);
 					assert(bindingIdx != (UINT32)-1);
 
-					LayoutInfo& layoutInfo = mLayoutInfos[entry.second.set];
-					VkDescriptorSetLayoutBinding& binding = layoutInfo.bindings[bindingIdx];
+					VkDescriptorSetLayoutBinding& binding = bindings[bindingIdx];
 					binding.descriptorCount = 1;
 					binding.stageFlags |= stageFlagsLookup[i];
 					binding.descriptorType = descType;
 
-					layoutInfo.types[bindingIdx] = entry.second.type;
+					types[bindingIdx] = entry.second.type;
 				}
 			};
 
@@ -152,8 +150,7 @@ namespace bs { namespace ct
 				UINT32 bindingIdx = getBindingIdx(entry.second.set, entry.second.slot);
 				assert(bindingIdx != (UINT32)-1);
 
-				LayoutInfo& layoutInfo = mLayoutInfos[entry.second.set];
-				VkDescriptorSetLayoutBinding& binding = layoutInfo.bindings[bindingIdx];
+				VkDescriptorSetLayoutBinding& binding = bindings[bindingIdx];
 
 				// If we already assigned an image to this binding slot, then it's a combined image/sampler
 				if(binding.descriptorType == VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE)
@@ -164,7 +161,7 @@ namespace bs { namespace ct
 					binding.stageFlags |= stageFlagsLookup[i];
 					binding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
 
-					layoutInfo.types[bindingIdx] = entry.second.type;
+					types[bindingIdx] = entry.second.type;
 				}
 			}
 
@@ -174,8 +171,7 @@ namespace bs { namespace ct
 				UINT32 bindingIdx = getBindingIdx(entry.second.set, entry.second.slot);
 				assert(bindingIdx != (UINT32)-1);
 
-				LayoutInfo& layoutInfo = mLayoutInfos[entry.second.set];
-				VkDescriptorSetLayoutBinding& binding = layoutInfo.bindings[bindingIdx];
+				VkDescriptorSetLayoutBinding& binding = bindings[bindingIdx];
 				binding.descriptorCount = 1;
 				binding.stageFlags |= stageFlagsLookup[i];
 
@@ -194,7 +190,7 @@ namespace bs { namespace ct
 					break;
 				}
 
-				layoutInfo.types[bindingIdx] = entry.second.type;
+				types[bindingIdx] = entry.second.type;
 			}
 		}
 
