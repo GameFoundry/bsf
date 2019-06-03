@@ -6,6 +6,8 @@
 
 namespace ecs {
 
+struct Inactive {};
+
 void addChildToParent(Registry& reg, EntityType parent, EntityType child);
 
 
