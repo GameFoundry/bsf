@@ -4,9 +4,11 @@
 #include "Math/BsMath.h"
 #include "BsVulkanGpuProgram.h"
 #include "BsVulkanGLSLToSPIRV.h"
+#include "RenderAPI/BsGpuParamDesc.h"
 
 #if BS_PLATFORM == BS_PLATFORM_OSX
 #include "spirv_cross/spirv_msl.hpp"
+#include "spirv_cross/spirv_glsl.hpp"
 #endif
 
 namespace bs { namespace ct
@@ -63,14 +65,110 @@ namespace bs { namespace ct
 
 		// Compile to MSL
 		spirv_cross::CompilerMSL compiler((UINT32*)spirv->instructions.data, spirv->instructions.size / sizeof(UINT32));
+
+		// Remap resource bindings
+		UINT32 bufferIdx = 0;
+		UINT32 samplerIdx = 0;
+		UINT32 textureIdx = 0;
+
+		if(msl->paramDesc)
+		{
+			spv::ExecutionModel stage;
+			switch(desc.type)
+			{
+			case GPT_VERTEX_PROGRAM:
+				stage = spv::ExecutionModelVertex;
+				break;
+			case GPT_FRAGMENT_PROGRAM:
+				stage = spv::ExecutionModelFragment;
+				break;
+			case GPT_GEOMETRY_PROGRAM:
+				stage = spv::ExecutionModelGeometry;
+				break;
+			case GPT_DOMAIN_PROGRAM:
+				stage = spv::ExecutionModelTessellationEvaluation;
+				break;
+			case GPT_HULL_PROGRAM:
+				stage = spv::ExecutionModelTessellationControl;
+				break;
+			case GPT_COMPUTE_PROGRAM:
+				stage = spv::ExecutionModelGLCompute;
+				break;
+			default:
+				assert(false);
+				break;
+			}
+
+			//Vector<ParamBlockMapping> paramBlockMapping;
+			for(auto& entry : msl->paramDesc->paramBlocks)
+			{
+				spirv_cross::MSLResourceBinding binding;
+				binding.stage = stage;
+				binding.desc_set = entry.second.set;
+				binding.binding = entry.second.slot;
+				binding.msl_buffer = bufferIdx;
+
+				compiler.add_msl_resource_binding(binding);
+				bufferIdx++;
+			}
+
+			for(auto& entry : msl->paramDesc->buffers)
+			{
+				spirv_cross::MSLResourceBinding binding;
+				binding.stage = stage;
+				binding.desc_set = entry.second.set;
+				binding.binding = entry.second.slot;
+				binding.msl_buffer = bufferIdx;
+
+				compiler.add_msl_resource_binding(binding);
+				bufferIdx++;
+			}
+
+			for(auto& entry : msl->paramDesc->samplers)
+			{
+				spirv_cross::MSLResourceBinding binding;
+				binding.stage = stage;
+				binding.desc_set = entry.second.set;
+				binding.binding = entry.second.slot;
+				binding.msl_sampler = samplerIdx;
+
+				compiler.add_msl_resource_binding(binding);
+				samplerIdx++;
+			}
+
+			for(auto& entry : msl->paramDesc->textures)
+			{
+				spirv_cross::MSLResourceBinding binding;
+				binding.stage = stage;
+				binding.desc_set = entry.second.set;
+				binding.binding = entry.second.slot;
+				binding.msl_texture = textureIdx;
+
+				compiler.add_msl_resource_binding(binding);
+				textureIdx++;
+			}
+
+			for(auto& entry : msl->paramDesc->loadStoreTextures)
+			{
+				spirv_cross::MSLResourceBinding binding;
+				binding.stage = stage;
+				binding.desc_set = entry.second.set;
+				binding.binding = entry.second.slot;
+				binding.msl_texture = textureIdx;
+
+				compiler.add_msl_resource_binding(binding);
+				textureIdx++;
+			}
+		}
+
 		spirv_cross::CompilerMSL::Options mslOptions;
 		mslOptions.msl_version = spirv_cross::CompilerMSL::Options::make_msl_version(2, 1);
-		mslOptions.argument_buffers = true;
 		compiler.set_msl_options(mslOptions);
 
 		spirv_cross::CompilerGLSL::Options glslOptions;
 		glslOptions.separate_shader_objects = true;
 		glslOptions.vulkan_semantics = true;
+		glslOptions.vertex.flip_vert_y = true;
 
 		compiler.set_common_options(glslOptions);
 		std::string source = compiler.compile();
@@ -86,8 +184,7 @@ namespace bs { namespace ct
 		}
 
 		// Magic numbers as defined in vk_mvk_moltenvk.h
-		constexpr UINT32 MVK_MSL_Source    = 0x19960412;
-		constexpr UINT32 MVK_MSL_Compiled  = 0x19981215;
+		constexpr UINT32 MVK_MSL_Source = 0x19960412;
 
 		UINT32 size = (UINT32)source.size() + sizeof(MVK_MSL_Source) + 1;
 		UINT32 wordSize = Math::divideAndRoundUp(size, 4U);

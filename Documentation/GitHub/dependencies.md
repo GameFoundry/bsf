@@ -121,6 +121,18 @@ Additionally, if the dependency structure still isn't clear, download one of the
 - https://github.com/KhronosGroup/glslang
 - Required by bsfVulkanRenderAPI
 - Compile as a static library
+
+**SPIR-V Cross** (macOS only)
+- Commit ID: 3cd89c0c0a2436f6ae8050a830243bf3536e4f4a
+- https://github.com/KhronosGroup/SPIRV-Cross
+- Required by bsfVulkanRenderAPI
+- Compile as a static library
+
+**MoltenVK** (macOS only)
+- Commit ID: a684b47baab834e12da2af9f5997c867c4265b46
+- https://github.com/KhronosGroup/MoltenVK
+- Required by bsfVulkanRenderAPI
+- Compile and install, then copy contents of `macOS/static/` folder into `lib` sub-folder
    
 **XShaderCompiler**
 - https://github.com/BearishSun/XShaderCompiler (branch *banshee*)

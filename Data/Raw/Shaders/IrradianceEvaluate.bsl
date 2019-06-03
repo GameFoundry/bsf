@@ -216,7 +216,7 @@ shader IrradianceEvaluate
 			return coords;
 		}
 		
-		float3 fsmain(VStoFS input
+		float4 fsmain(VStoFS input
 			#if MSAA_COUNT > 1 && !MSAA_RESOLVE_0TH
 			, uint sampleIdx : SV_SampleIndex
 			#endif
@@ -319,7 +319,7 @@ shader IrradianceEvaluate
 			float ao = gAmbientOcclusionTex.Sample(gLinearSamp, uv);
 			
 			float3 diffuseColor = lerp(surfaceData.albedo.rgb, float3(0.0f, 0.0f, 0.0f), surfaceData.metalness);
-			return irradiance * diffuseColor * ao;
+			return float4(irradiance * diffuseColor * ao, 1.0f);
 		}	
 	};
 };

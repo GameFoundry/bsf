@@ -90,8 +90,8 @@ shader ClearLoadStore
                     }
                 }
 			#else
-                uint thread = groupId.x * NUM_THREADS + groupThreadId.x;
-                uint pos = thread * (TILE_SIZE * TILE_SIZE);
+                uint threadIdx = groupId.x * NUM_THREADS + groupThreadId.x;
+                uint pos = threadIdx * (TILE_SIZE * TILE_SIZE);
 
                 if(pos >= gSize.x)
                     return;

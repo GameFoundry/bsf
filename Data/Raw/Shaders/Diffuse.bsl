@@ -39,7 +39,7 @@ shader Surface
 		
 		void fsmain(
 			in VStoFS input, 
-			out float3 OutSceneColor : SV_Target0,
+			out float4 OutSceneColor : SV_Target0,
 			out float4 OutGBufferA : SV_Target1,
 			out float4 OutGBufferB : SV_Target2,
 			out float2 OutGBufferC : SV_Target3,
@@ -59,7 +59,7 @@ shader Surface
 			
 			encodeGBuffer(surfaceData, OutGBufferA, OutGBufferB, OutGBufferC, OutGBufferD);
 			
-			OutSceneColor = gEmissiveColor * gEmissiveMaskTex.Sample(gEmissiveMaskSamp, uv).x;
+			OutSceneColor = float4(gEmissiveColor * gEmissiveMaskTex.Sample(gEmissiveMaskSamp, uv).x, 1.0f);
 		}	
 	};
 };

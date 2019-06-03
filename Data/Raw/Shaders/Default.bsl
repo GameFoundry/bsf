@@ -10,7 +10,7 @@ shader Surface
 	{
 		void fsmain(
 			in VStoFS input, 
-			out float3 OutSceneColor : SV_Target0,
+			out float4 OutSceneColor : SV_Target0,
 			out float4 OutGBufferA : SV_Target1,
 			out float4 OutGBufferB : SV_Target2,
 			out float2 OutGBufferC : SV_Target3,

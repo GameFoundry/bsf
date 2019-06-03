@@ -27,11 +27,16 @@
 	#include "Linux/BsLinuxVideoModeInfo.h"
 #elif BS_PLATFORM == BS_PLATFORM_OSX
 	#include "MacOS/BsMacOSVideoModeInfo.h"
+	#include <MoltenVK/vk_mvk_moltenvk.h>
 #else
 	static_assert(false, "Other platform includes go here.");
 #endif
 
+#if BS_PLATFORM != BS_PLATFORM_OSX
 #define USE_VALIDATION_LAYERS 1
+#else
+#define USE_VALIDATION_LAYERS 0
+#endif
 
 namespace bs { namespace ct
 {
@@ -182,6 +187,18 @@ namespace bs { namespace ct
 
 		result = vkCreateDebugReportCallbackEXT(mInstance, &debugInfo, nullptr, &mDebugCallback);
 		assert(result == VK_SUCCESS);
+#endif
+
+#if BS_PLATFORM == BS_PLATFORM_OSX
+		MVKConfiguration mvkConfig;
+		size_t mvkConfigSize = sizeof(MVKConfiguration);
+		vkGetMoltenVKConfigurationMVK(mInstance, &mvkConfig, &mvkConfigSize);
+
+#if BS_DEBUG_MODE
+		mvkConfig.debugMode = VK_TRUE;
+#endif
+
+		vkSetMoltenVKConfigurationMVK(mInstance, &mvkConfig, &mvkConfigSize);
 #endif
 
 		// Enumerate all devices
