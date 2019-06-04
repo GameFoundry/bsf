@@ -38,19 +38,21 @@ function(add_engine_dependencies2 target_name all_render_api)
 	else()
 		add_dependencies(${target_name} bsfNullAudio)
 	endif()
-	
+
 	if(PHYSICS_MODULE MATCHES "PhysX")
 		add_dependencies(${target_name} bsfPhysX)
 	else()
 		add_dependencies(${target_name} bsfNullPhysics)
 	endif()
-	
+
 	if(RENDERER_MODULE MATCHES "RenderBeast")
 		add_dependencies(${target_name} bsfRenderBeast)
+	elseif(RENDERER_MODULE MATCHES "ECS")
+		add_dependencies(${target_name} bsfECSRenderer)
 	else()
 		add_dependencies(${target_name} bsfNullRenderer)
 	endif()
-	
+
 	add_dependencies(${target_name} bsfSL)
 endfunction()
 
@@ -90,9 +92,9 @@ MACRO(gen_default_lib_search_dirs LIB_NAME)
 		list(APPEND ${LIB_NAME}_LIBRARY_DEBUG_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib/x64")
 	else()
 		list(APPEND ${LIB_NAME}_LIBRARY_RELEASE_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib/x86")
-		list(APPEND ${LIB_NAME}_LIBRARY_DEBUG_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib/x86")	
+		list(APPEND ${LIB_NAME}_LIBRARY_DEBUG_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib/x86")
 	endif()
-	
+
 	# Allow for paths without a platform specified
 	list(APPEND ${LIB_NAME}_LIBRARY_RELEASE_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib/Release")
 	list(APPEND ${LIB_NAME}_LIBRARY_DEBUG_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib/Debug")
@@ -116,7 +118,7 @@ ENDMACRO()
 MACRO(find_imported_library3 FOLDER_NAME LIB_NAME DEBUG_LIB_NAME IS_SHARED)
 	find_library(${LIB_NAME}_LIBRARY_RELEASE NAMES ${LIB_NAME} PATHS ${${FOLDER_NAME}_LIBRARY_RELEASE_SEARCH_DIRS} NO_DEFAULT_PATH)
 	find_library(${LIB_NAME}_LIBRARY_RELEASE NAMES ${LIB_NAME} PATHS ${${FOLDER_NAME}_LIBRARY_RELEASE_SEARCH_DIRS})
-	
+
 	if(${FOLDER_NAME}_LIBRARY_DEBUG_SEARCH_DIRS)
 		find_library(${LIB_NAME}_LIBRARY_DEBUG NAMES ${DEBUG_LIB_NAME} PATHS ${${FOLDER_NAME}_LIBRARY_DEBUG_SEARCH_DIRS} NO_DEFAULT_PATH)
 		find_library(${LIB_NAME}_LIBRARY_DEBUG NAMES ${DEBUG_LIB_NAME} PATHS ${${FOLDER_NAME}_LIBRARY_DEBUG_SEARCH_DIRS})
@@ -163,7 +165,7 @@ ENDMACRO()
 MACRO(find_imported_includes FOLDER_NAME INCLUDE_FILES)
 	find_path(${FOLDER_NAME}_INCLUDE_DIR NAMES ${INCLUDE_FILES} PATHS ${${FOLDER_NAME}_INCLUDE_SEARCH_DIRS} NO_DEFAULT_PATH)
 	find_path(${FOLDER_NAME}_INCLUDE_DIR NAMES ${INCLUDE_FILES} PATHS ${${FOLDER_NAME}_INCLUDE_SEARCH_DIRS})
-	
+
 	if(${FOLDER_NAME}_INCLUDE_DIR)
 		set(${FOLDER_NAME}_FOUND TRUE)
 	else()
@@ -198,10 +200,10 @@ function(install_dependency_binary FILE_PATH CONFIG)
 	endif()
 
 	get_filename_component(FILE_NAME ${FILE_PATH} NAME)
-	
+
 	# Remove shortest extension (CMake built-in method removes longest)
 	string(REGEX REPLACE "\\.[^.]*$" "" FILE_NAME ${FILE_NAME})
-	
+
 	if(WIN32)
 		if(BS_64BIT)
 			set(PLATFORM "x64")
@@ -240,7 +242,7 @@ function(install_dependency_binary FILE_PATH CONFIG)
 		endif()
 
 		set(SRC_PATH ${FILE_PATH})
-		
+
 		if(NOT BS_IS_BANSHEE3D)
 			set(DEST_DIR lib/bsf-${BS_FRAMEWORK_VERSION_MAJOR}.${BS_FRAMEWORK_VERSION_MINOR}.${BS_FRAMEWORK_VERSION_PATCH})
 		else()
@@ -287,13 +289,13 @@ MACRO(install_dependency_dll FOLDER_NAME SRC_DIR LIB_NAME)
 	set(FULL_FILE_NAME ${LIB_NAME}.dll)
 	set(SRC_RELEASE "${SRC_DIR}/bin/${PLATFORM}/Release/${FULL_FILE_NAME}")
 	set(SRC_DEBUG "${SRC_DIR}/bin/${PLATFORM}/Debug/${FULL_FILE_NAME}")
-	
+
 	install(
 		FILES ${SRC_RELEASE}
 		DESTINATION ${BIN_DIR}
 		CONFIGURATIONS Release RelWithDebInfo MinSizeRel
 	)
-		
+
 	install(
 		FILES ${SRC_DEBUG}
 		DESTINATION ${BIN_DIR}
@@ -317,8 +319,8 @@ mark_as_advanced(BS_BINARY_DEP_WEBSITE)
 
 function(update_binary_deps DEP_PREFIX DEP_NAME DEP_FOLDER DEP_VERSION)
 	# Clean and create a temporary folder
-	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)	
-	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/Temp)	
+	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)
+	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/Temp)
 
 	if(WIN32)
 		set(DEP_TYPE VS2015)
@@ -329,32 +331,32 @@ function(update_binary_deps DEP_PREFIX DEP_NAME DEP_FOLDER DEP_VERSION)
 	endif()
 
 	set(BINARY_DEPENDENCIES_URL ${BS_BINARY_DEP_WEBSITE}/${DEP_PREFIX}_${DEP_TYPE}_Master_${DEP_VERSION}.zip)
-	file(DOWNLOAD ${BINARY_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip 
+	file(DOWNLOAD ${BINARY_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip
 		SHOW_PROGRESS
 		STATUS DOWNLOAD_STATUS)
-		
+
 	list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
 	if(NOT STATUS_CODE EQUAL 0)
 		message(FATAL_ERROR "Binary dependencies failed to download from URL: ${BINARY_DEPENDENCIES_URL}")
 	endif()
-	
+
 	message(STATUS "Extracting files. Please wait...")
 	execute_process(
 		COMMAND ${CMAKE_COMMAND} -E tar xzf ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip
 		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Temp
 	)
-	
+
 	# Copy executables and dynamic libraries
 	if(EXISTS ${PROJECT_SOURCE_DIR}/Temp/bin)
-		execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Temp/bin ${DEP_FOLDER}/../bin)	
+		execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Temp/bin ${DEP_FOLDER}/../bin)
 	endif()
-	
+
 	# Copy static libraries, headers and tools
-	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${DEP_FOLDER})	
+	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${DEP_FOLDER})
 	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Temp/${DEP_NAME} ${DEP_FOLDER})
-	
+
 	# Clean up
-	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)	
+	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)
 endfunction()
 
 function(check_and_update_binary_deps DEP_PREFIX DEP_NAME DEP_FOLDER DEP_VERSION)
@@ -383,12 +385,12 @@ function(strip_symbols targetName outputFilename)
 				add_custom_command(
 					TARGET ${targetName}
 					POST_BUILD
-					VERBATIM 
+					VERBATIM
 					COMMAND ${DSYMUTIL_TOOL} --flat --minimize ${fileToStrip}
 					COMMAND ${STRIP_TOOL} -u -r ${fileToStrip}
 					COMMENT Stripping symbols from ${fileToStrip} into file ${symbolsFile}
 				)
-			
+
 			# Linux
 			else()
 				set(symbolsFile ${fileToStrip}.dbg)
@@ -396,7 +398,7 @@ function(strip_symbols targetName outputFilename)
 				add_custom_command(
 					TARGET ${targetName}
 					POST_BUILD
-					VERBATIM 
+					VERBATIM
 					COMMAND ${OBJCOPY_TOOL} --only-keep-debug ${fileToStrip} ${symbolsFile}
 					COMMAND ${OBJCOPY_TOOL} --strip-unneeded ${fileToStrip}
 					COMMAND ${OBJCOPY_TOOL} --add-gnu-debuglink=${symbolsFile} ${fileToStrip}
@@ -411,7 +413,7 @@ endfunction()
 
 function(install_bsf_target targetName)
 	strip_symbols(${targetName} symbolsFile)
-	
+
 	if(NOT BS_IS_BANSHEE3D)
 		set(BIN_DIR bin)
 		install(
@@ -430,16 +432,16 @@ function(install_bsf_target targetName)
 			LIBRARY DESTINATION lib
 		)
 	endif()
-	
+
 	if(MSVC)
 		install(
-			FILES $<TARGET_PDB_FILE:${targetName}> 
+			FILES $<TARGET_PDB_FILE:${targetName}>
 			DESTINATION ${BIN_DIR}
 			OPTIONAL
 		)
 	else()
 		install(
-			FILES ${symbolsFile} 
+			FILES ${symbolsFile}
 			DESTINATION lib
 			OPTIONAL)
 	endif()
@@ -484,12 +486,12 @@ endfunction()
 function(copy_folder_on_build target srcDir dstDir name filter)
 	set(SRC_DIR ${srcDir}/${name})
 	set(DST_DIR ${dstDir}/${name})
-	
+
 	file(GLOB_RECURSE ALL_FILES RELATIVE ${SRC_DIR} "${SRC_DIR}/${filter}")
 
 	foreach(CUR_PATH ${ALL_FILES})
 		get_filename_component(FILENAME ${CUR_PATH} NAME)
-	
+
 		set(SRC ${SRC_DIR}/${CUR_PATH})
 		set(DST ${DST_DIR}/${CUR_PATH})
 		add_custom_command(
@@ -503,20 +505,20 @@ endfunction()
 
 function(generate_csharp_project folder project_name namespace assembly refs projectRefs)
 	file(GLOB_RECURSE ALL_FILES RELATIVE ${folder} ${folder}/*.cs)
-		
+
 	set(BS_SHARP_FILE_LIST "")
 	foreach(CUR_FILE ${ALL_FILES})
 		if(CUR_FILE MATCHES "obj/")
 			continue()
 		endif()
-	
+
 		string(REGEX REPLACE "/" "\\\\" CUR_FILE_PATH ${CUR_FILE})
 		string(APPEND BS_SHARP_FILE_LIST "\t<Compile Include=\"${CUR_FILE_PATH}\"/>\n")
 	endforeach()
 
 	set(BS_SHARP_ROOT_NS ${namespace})
 	set(BS_SHARP_ASSEMBLY_NAME ${assembly})
-	
+
 	if(BS_IS_BANSHEE3D)
 		set(BS_SHARP_DEFINES "IS_B3D;")
 	endif()
@@ -638,7 +640,7 @@ function(check_for_changes2 _FOLDER _FILTER _TIMESTAMP _IS_CHANGED)
 			return()
 		endif()
 	endforeach()
-	
+
 	set(${_IS_CHANGED} OFF PARENT_SCOPE)
 endfunction()
 
@@ -650,50 +652,50 @@ endfunction()
 
 function(update_builtin_assets ASSET_PREFIX ASSET_FOLDER FOLDER_NAME ASSET_VERSION CLEAR_MANIFEST)
 	# Clean and create a temporary folder
-	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)	
-	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/Temp)	
-	
+	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)
+	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/Temp)
+
 	set(ASSET_DEPENDENCIES_URL ${BS_BINARY_DEP_WEBSITE}/${ASSET_PREFIX}Data_Master_${ASSET_VERSION}.zip)
-	file(DOWNLOAD ${ASSET_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip 
+	file(DOWNLOAD ${ASSET_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip
 		SHOW_PROGRESS
 		STATUS DOWNLOAD_STATUS)
-		
+
 	list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
 	if(NOT STATUS_CODE EQUAL 0)
 		message(FATAL_ERROR "Builtin assets failed to download from URL: ${ASSET_DEPENDENCIES_URL}")
 	endif()
-	
+
 	message(STATUS "Extracting files. Please wait...")
 	execute_process(
 		COMMAND ${CMAKE_COMMAND} -E tar xzf ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip
 		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Temp
 	)
-	
+
 	# Copy files
 	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Temp/${FOLDER_NAME} ${ASSET_FOLDER})
-	
+
 	# Make sure timestamp modify date/times are newer (avoids triggering reimport)
 	execute_process(COMMAND ${CMAKE_COMMAND} -E touch ${ASSET_FOLDER}/Timestamp.asset )
-	
+
 	# Make sure resource manifests get rebuilt
 	if(CLEAR_MANIFEST)
 		execute_process(COMMAND ${CMAKE_COMMAND} -E remove ${ASSET_FOLDER}/ResourceManifest.asset)
 	endif()
-	
+
 	# Clean up
-	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)	
+	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Temp)
 endfunction()
 
 function(check_and_update_builtin_assets ASSET_PREFIX ASSET_FOLDER FOLDER_NAME ASSET_VERSION CLEAR_MANIFEST)
 	set(BUILTIN_ASSETS_VERSION_FILE ${ASSET_FOLDER}/.version)
 	if(NOT EXISTS ${BUILTIN_ASSETS_VERSION_FILE})
 		message(STATUS "Builtin assets for '${ASSET_PREFIX}' are missing. Downloading package...")
-		update_builtin_assets(${ASSET_PREFIX} ${ASSET_FOLDER} ${FOLDER_NAME} ${ASSET_VERSION} ${CLEAR_MANIFEST})	
+		update_builtin_assets(${ASSET_PREFIX} ${ASSET_FOLDER} ${FOLDER_NAME} ${ASSET_VERSION} ${CLEAR_MANIFEST})
 	else()
 		file (STRINGS ${BUILTIN_ASSETS_VERSION_FILE} CURRENT_BUILTIN_ASSET_VERSION)
 		if(${ASSET_VERSION} GREATER ${CURRENT_BUILTIN_ASSET_VERSION})
 			message(STATUS "Your builtin asset package for '${ASSET_PREFIX}' is out of date. Downloading latest package...")
-			update_builtin_assets(${ASSET_PREFIX} ${ASSET_FOLDER} ${FOLDER_NAME} ${ASSET_VERSION} ${CLEAR_MANIFEST})	
+			update_builtin_assets(${ASSET_PREFIX} ${ASSET_FOLDER} ${FOLDER_NAME} ${ASSET_VERSION} ${CLEAR_MANIFEST})
 		endif()
 	endif()
 endfunction()
@@ -709,15 +711,15 @@ function(add_run_asset_import_target _PREFIX _FOLDER _WORKING_DIR _ARGS)
 		set(RunAssetImport_CMD_ARGS ${_ARGS})
 		set(RunAssetImport_PREFIX ${_PREFIX})
 		set(RunAssetImport_WORKING_DIR ${_WORKING_DIR})
-		
+
 		configure_file(
 			${BSF_SOURCE_DIR}/CMake/Scripts/RunAssetImport.cmake.in
 			${CMAKE_CURRENT_BINARY_DIR}/RunAssetImport_${_PREFIX}.cmake
 			@ONLY)
-		
+
 		add_custom_target(RunAssetImport_${_PREFIX} COMMAND ${CMAKE_COMMAND} -P
 			${CMAKE_CURRENT_BINARY_DIR}/RunAssetImport_${_PREFIX}.cmake)
-			
+
 		set_property(TARGET RunAssetImport_${_PREFIX} PROPERTY FOLDER Scripts)
 	endif()
 endfunction()
@@ -733,10 +735,10 @@ function(add_upload_assets_target _PREFIX _NAME _FOLDER _FILES)
 		${BSF_SOURCE_DIR}/CMake/Scripts/UploadAssets.cmake.in
 		${CMAKE_CURRENT_BINARY_DIR}/UploadAssets_${_PREFIX}.cmake
 		@ONLY)
-	
+
 	add_custom_target(UploadAssets_${_PREFIX} COMMAND ${CMAKE_COMMAND} -P
 		${CMAKE_CURRENT_BINARY_DIR}/UploadAssets_${_PREFIX}.cmake)
-		
+
 	set_property(TARGET UploadAssets_${_PREFIX} PROPERTY FOLDER Scripts)
 endfunction()
 

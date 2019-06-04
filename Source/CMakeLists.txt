@@ -106,6 +106,8 @@ endif()
 
 if(RENDERER_MODULE MATCHES "RenderBeast")
 	set(RENDERER_MODULE_LIB bsfRenderBeast)
+elseif(RENDERER_MODULE MATCHES "ECS")
+	set(RENDERER_MODULE_LIB bsfECSRenderer)
 else()
 	set(RENDERER_MODULE_LIB bsfNullRenderer)
 endif()
@@ -142,6 +144,7 @@ if(INCLUDE_ALL_IN_WORKFLOW AND MSVC)
 	add_subdirectory(Plugins/bsfPhysX)
 	add_subdirectory(Plugins/bsfNullPhysics)
 	add_subdirectory(Plugins/bsfRenderBeast)
+	add_subdirectory(Plugins/bsfECSRenderer)
 	add_subdirectory(Plugins/bsfNullRenderer)
 
 	## Scripting
@@ -188,6 +191,8 @@ else() # Otherwise include only chosen ones
 
 	if(RENDERER_MODULE MATCHES "RenderBeast")
 		add_subdirectory(Plugins/bsfRenderBeast)
+	elseif(RENDERER_MODULE MATCHES "ECS")
+		add_subdirectory(Plugins/bsfECSRenderer)
 	else()
 		add_subdirectory(Plugins/bsfNullRenderer)
 	endif()
