@@ -198,6 +198,11 @@ namespace bs
 			return x * vec.x + y * vec.y;
 		}
 
+		String toString() const 
+		{
+			return StringFormat::format("<{0}, {1}>", x, y);
+		}
+
 		static const Vector2I ZERO;
 	};
 

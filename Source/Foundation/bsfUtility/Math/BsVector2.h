@@ -342,6 +342,12 @@ namespace bs
 			return Math::isNaN(x) || Math::isNaN(y);
 		}
 
+		/** Convert the Vector into a human readable string */
+		String toString() const 
+		{
+			return StringFormat::format("<{0}, {1}>", x, y);
+		}
+
 		/** Returns the minimum of all the vector components as a new vector. */
 		static Vector2 min(const Vector2& a, const Vector2& b)
 		{
