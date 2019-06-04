@@ -750,7 +750,7 @@ namespace bs { namespace ct
 			mViews[i]->calculateVisibility(sceneInfo.reflProbeWorldBounds, mVisibility.reflProbes);
 		}
 
-		// Organize light and refl. probe visibility infomation in a more GPU friendly manner
+		// Organize light and refl. probe visibility information in a more GPU friendly manner
 
 		// Note: I'm determining light and refl. probe visibility for the entire group. It might be more performance
 		// efficient to do it per view. Additionally I'm using a single GPU buffer to hold their information, which is

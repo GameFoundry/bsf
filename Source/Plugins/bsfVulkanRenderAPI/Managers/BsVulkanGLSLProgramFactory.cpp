@@ -13,6 +13,29 @@
 
 namespace bs { namespace ct
 {
+	template<class T, class CB>
+	void iterateSorted(const Map<String, T>& entries, CB callback)
+	{
+		auto count = (UINT32)entries.size();
+		auto sortedEntries = bs_managed_stack_alloc<const T*>(count);
+
+		UINT32 i = 0;
+		for(auto& entry : entries)
+			sortedEntries[i++] = &entry.second;
+
+		std::sort(sortedEntries + 0, sortedEntries + count,
+		  [](const T* a, const T* b)
+		  {
+			  if(a->set == b->set)
+				  return a->slot < b->slot;
+
+			  return a->set < b->set;
+		  });
+
+		for(i = 0; i < count; i++)
+			callback(sortedEntries[i]);
+	}
+
 	VulkanGLSLProgramFactory::VulkanGLSLProgramFactory()
 	{
 		GLSLToSPIRV::startUp();
@@ -99,27 +122,28 @@ namespace bs { namespace ct
 				break;
 			}
 
-			for(auto& entry : msl->paramDesc->paramBlocks)
+			iterateSorted(msl->paramDesc->paramBlocks, [stage, &compiler, &bufferIdx](const GpuParamBlockDesc* desc)
 			{
 				spirv_cross::MSLResourceBinding binding;
 				binding.stage = stage;
-				binding.desc_set = entry.second.set;
-				binding.binding = entry.second.slot;
+				binding.desc_set = desc->set;
+				binding.binding = desc->slot;
 				binding.msl_buffer = bufferIdx;
 
 				compiler.add_msl_resource_binding(binding);
 				bufferIdx++;
-			}
+			});
 
-			for(auto& entry : msl->paramDesc->buffers)
+			iterateSorted(msl->paramDesc->buffers,
+					[stage, &compiler, &bufferIdx, &textureIdx](const GpuParamObjectDesc* desc)
 			{
 				spirv_cross::MSLResourceBinding binding;
 				binding.stage = stage;
-				binding.desc_set = entry.second.set;
-				binding.binding = entry.second.slot;
+				binding.desc_set = desc->set;
+				binding.binding = desc->slot;
 
 				// Non-structured buffers treated as textures by MSL
-				if(entry.second.type == GPOT_BYTE_BUFFER || entry.second.type == GPOT_RWBYTE_BUFFER)
+				if(desc->type == GPOT_BYTE_BUFFER || desc->type == GPOT_RWBYTE_BUFFER)
 				{
 					binding.msl_texture = textureIdx;
 					textureIdx++;
@@ -131,43 +155,46 @@ namespace bs { namespace ct
 				}
 
 				compiler.add_msl_resource_binding(binding);
-			}
+			});
 
-			for(auto& entry : msl->paramDesc->samplers)
+			iterateSorted(msl->paramDesc->samplers,
+					[stage, &compiler, &samplerIdx](const GpuParamObjectDesc* desc)
 			{
 				spirv_cross::MSLResourceBinding binding;
 				binding.stage = stage;
-				binding.desc_set = entry.second.set;
-				binding.binding = entry.second.slot;
+				binding.desc_set = desc->set;
+				binding.binding = desc->slot;
 				binding.msl_sampler = samplerIdx;
 
 				compiler.add_msl_resource_binding(binding);
 				samplerIdx++;
-			}
+			});
 
-			for(auto& entry : msl->paramDesc->textures)
+			iterateSorted(msl->paramDesc->textures,
+					[stage, &compiler, &textureIdx](const GpuParamObjectDesc* desc)
 			{
 				spirv_cross::MSLResourceBinding binding;
 				binding.stage = stage;
-				binding.desc_set = entry.second.set;
-				binding.binding = entry.second.slot;
+				binding.desc_set = desc->set;
+				binding.binding = desc->slot;
 				binding.msl_texture = textureIdx;
 
 				compiler.add_msl_resource_binding(binding);
 				textureIdx++;
-			}
+			});
 
-			for(auto& entry : msl->paramDesc->loadStoreTextures)
+			iterateSorted(msl->paramDesc->loadStoreTextures,
+					[stage, &compiler, &textureIdx](const GpuParamObjectDesc* desc)
 			{
 				spirv_cross::MSLResourceBinding binding;
 				binding.stage = stage;
-				binding.desc_set = entry.second.set;
-				binding.binding = entry.second.slot;
+				binding.desc_set = desc->set;
+				binding.binding = desc->slot;
 				binding.msl_texture = textureIdx;
 
 				compiler.add_msl_resource_binding(binding);
 				textureIdx++;
-			}
+			});
 		}
 
 		spirv_cross::CompilerMSL::Options mslOptions;
