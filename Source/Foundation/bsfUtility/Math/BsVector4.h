@@ -263,6 +263,7 @@ namespace bs
 		/** Checks are any of the vector components NaN. */
 		inline bool isNaN() const;
 
+		/** Convert the Vector into a human readable string */
 		String toString() const 
 		{
 			return StringFormat::format("<{0}, {1}, {2}, {3}>", x, y, z, w);

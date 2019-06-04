@@ -198,6 +198,7 @@ namespace bs
 			return x * vec.x + y * vec.y;
 		}
 
+		/** Convert the Vector into a human readable string */
 		String toString() const 
 		{
 			return StringFormat::format("<{0}, {1}>", x, y);

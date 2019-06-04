@@ -62,6 +62,7 @@ namespace bs
 			return !operator==(rhs);
 		}
 
+		/** Convert the Vector into a human readable string */
 		String toString() const 
 		{
 			return StringFormat::format("<{0}, {1}, {2}, {3}>", x, y, z, w);

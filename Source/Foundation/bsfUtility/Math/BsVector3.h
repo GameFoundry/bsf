@@ -406,6 +406,7 @@ namespace bs
 			return Vector3(std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
 		}
 
+		/** Convert the Vector into a human readable string */
 		String toString() const 
 		{
 			return StringFormat::format("<{0}, {1}, {2}>", x, y, z);
