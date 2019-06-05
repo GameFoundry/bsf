@@ -5,12 +5,11 @@
 // #include "Math/BsBounds.h"
 // #include "Math/BsAABox.h"
 // #include "Scene/BsSceneActor.h"
+#include "Material/BsShader.h"
 #include "RenderAPI/BsGpuBuffer.h"
 #include "RenderAPI/BsVertexDeclaration.h"
 #include "RenderAPI/BsVertexBuffer.h"
-
 #include "Mesh/BsMesh.h"
-#include "Material/BsMaterial.h"
 #include "Math/BsBounds.h"
 
 namespace bs::ecs {
@@ -33,9 +32,16 @@ struct EMorphable {
   SPtr<bs::VertexDeclarationProperties> mMorphVertexDeclaration;
 };
 
+struct EMaterial {
+	Shader mShader;
+	SPtr<MaterialParams> mParams;
+	Vector<SPtr<Technique>> mTechniques;
+	ShaderVariation mVariation;
+};
+
 struct ERenderable {
-	MeshBase mMesh;
-	Vector<MaterialBase> mMaterials;
+	MeshProperties mMesh;
+	Vector<EMaterial> mMaterials;
 	UINT64 mLayer = 1;
 	AABox mOverrideBounds;
 	bool mUseOverrideBounds = false;
