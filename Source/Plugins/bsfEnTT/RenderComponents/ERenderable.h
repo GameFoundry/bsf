@@ -32,6 +32,40 @@ struct EMorphable {
   SPtr<bs::VertexDeclarationProperties> mMorphVertexDeclaration;
 };
 
+struct MaterialParamStructData
+{
+	UINT8* data;
+	UINT32 dataSize;
+};
+
+/** Data for a single texture parameter. */
+struct MaterialParamTextureData
+{
+	HTexture texture;
+	HSpriteTexture spriteTexture;
+	bool isLoadStore;
+	TextureSurface surface;
+};
+
+struct MaterialParamBufferData
+{
+	SPtr<GpuBuffer> value;
+};
+
+struct MaterialParamSamplerStateData
+{
+	SPtr<SamplerState> value;
+};
+
+struct EMaterialParams {
+	MaterialParamStructData* mStructParams = nullptr;
+	MaterialParamTextureData* mTextureParams = nullptr;
+	MaterialParamBufferData* mBufferParams = nullptr;
+	MaterialParamSamplerStateData* mSamplerStateParams = nullptr;
+	Texture* mDefaultTextureParams = nullptr;
+	SamplerState* mDefaultSamplerStateParams = nullptr;
+};
+
 struct EMaterial {
 	Shader mShader;
 	SPtr<MaterialParams> mParams;
