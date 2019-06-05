@@ -2,7 +2,7 @@
 
 #include "fwd.h"
 
-namespace ecs {
+namespace bs::ecs {
 
 
 struct ParentChild {

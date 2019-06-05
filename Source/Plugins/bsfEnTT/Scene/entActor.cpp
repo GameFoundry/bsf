@@ -2,7 +2,7 @@
 #include "./entActor.h"
 #include "Components/ParentChild.h"
 
-namespace ecs {
+namespace bs::ecs {
 
 	void removeChildFromCurrentParentIfExists(Registry& reg, ParentChild& child) {
 		if (child.parent != entt::null) {

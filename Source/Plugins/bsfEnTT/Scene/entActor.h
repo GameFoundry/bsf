@@ -4,7 +4,7 @@
 
 // utility methods to wrap utility actor.
 
-namespace ecs {
+namespace bs::ecs {
 
 // tag for disabling entities from being updated.
 struct Inactive {};
@@ -17,4 +17,4 @@ struct TransformLocked {};
 
 void addChildToParent(Registry& reg, EntityType parent, EntityType child);
 
-} // namespace ecs
+} // namespace bs::ecs

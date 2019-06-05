@@ -1,6 +1,6 @@
 #include <entt/fwd.hpp>
 
-namespace ecs {
+namespace bs::ecs {
 	using EntityType = entt::entity;
 	using Registry = entt::registry;
 	using ActorType = entt::actor;
