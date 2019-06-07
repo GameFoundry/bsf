@@ -39,13 +39,15 @@ add_executable(unit_tests ${TEST_SRCS})
 target_compile_options(unit_tests PUBLIC -msse4.1)
 target_include_directories(unit_tests PRIVATE
   "${PROJECT_BINARY_DIR}/Generated/bsfUtility"
+  "Plugins/bsfEnTT/ThirdParty/EnTT/src"
   "Plugins/bsfRenderBeast"
+  "Plugins"
   "Foundation/bsfCore"
   "Foundation/bsfUtility"
   "Foundation/bsfUtility/ThirdParty"
 )
 
-target_link_libraries(unit_tests gtest_main bsf)
+target_link_libraries(unit_tests gtest_main bsf bsfEnTT)
 
 # this isn't working.
 gtest_discover_tests(unit_tests)

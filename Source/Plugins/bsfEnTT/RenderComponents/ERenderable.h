@@ -5,6 +5,9 @@
 // #include "Math/BsBounds.h"
 // #include "Math/BsAABox.h"
 // #include "Scene/BsSceneActor.h"
+// #include "Material/BsShader.h"
+// #include "Material/BsMaterial.h"
+#include "Material/BsMaterialParams.h"
 #include "Material/BsShader.h"
 #include "RenderAPI/BsGpuBuffer.h"
 #include "RenderAPI/BsVertexDeclaration.h"
@@ -23,66 +26,37 @@ enum class RenderableAnimType
 	Count // Keep at end
 };
 
-struct EBoneMatrix {
-  SPtr<bs::GpuBufferProperties> mBoneMatrixBuffer;
-};
-
-struct EMorphable {
-  SPtr<bs::VertexBufferProperties> mMorphShapeBuffer;
-  SPtr<bs::VertexDeclarationProperties> mMorphVertexDeclaration;
-};
-
-struct MaterialParamStructData
-{
-	UINT8* data;
-	UINT32 dataSize;
-};
-
-/** Data for a single texture parameter. */
-struct MaterialParamTextureData
-{
-	HTexture texture;
-	HSpriteTexture spriteTexture;
-	bool isLoadStore;
-	TextureSurface surface;
-};
-
-struct MaterialParamBufferData
-{
-	SPtr<GpuBuffer> value;
-};
-
-struct MaterialParamSamplerStateData
-{
-	SPtr<SamplerState> value;
-};
-
-struct EMaterialParams {
-	MaterialParamStructData* mStructParams = nullptr;
-	MaterialParamTextureData* mTextureParams = nullptr;
-	MaterialParamBufferData* mBufferParams = nullptr;
-	MaterialParamSamplerStateData* mSamplerStateParams = nullptr;
-	Texture* mDefaultTextureParams = nullptr;
-	SamplerState* mDefaultSamplerStateParams = nullptr;
-};
-
-struct EMaterial {
-	Shader mShader;
-	SPtr<MaterialParams> mParams;
-	Vector<SPtr<Technique>> mTechniques;
-	ShaderVariation mVariation;
-};
-
-struct ERenderable {
-	MeshProperties mMesh;
-	Vector<EMaterial> mMaterials;
-	UINT64 mLayer = 1;
+struct BS_CORE_EXPORT ERenderable {
+	HMesh mMesh;
+	Vector<HMaterial> mMaterials;
+	UINT64 mLayer{1};
 	AABox mOverrideBounds;
-	bool mUseOverrideBounds = false;
-	float mCullDistanceFactor = 1.0f;
-	Matrix4 mTfrmMatrix = BsIdentity;
-	Matrix4 mTfrmMatrixNoScale = BsIdentity;
-	RenderableAnimType mAnimType = RenderableAnimType::None;
+	bool mUseOverrideBounds{false};
+	float mCullDistanceFactor{1.0f};
+	Matrix4 mTfrmMatrix{BsIdentity};
+	Matrix4 mTfrmMatrixNoScale{BsIdentity};
+	RenderableAnimType mAnimType{RenderableAnimType::None};
+
+	/**	Gets world bounds of the mesh rendered by this object. */
+	Bounds getBounds() const;
+
+	/** @copydoc setCullDistanceFactor() */
+	float getCullDistanceFactor() const { return mCullDistanceFactor; }
+
+	/** @copydoc setLayer() */
+	UINT64 getLayer() const { return mLayer; }
+
+	/**	@copydoc setMesh() */
+	HMesh getMesh() const { return mMesh; }
+
+	/**	Returns the transform matrix that is applied to the object when its being rendered. */
+	Matrix4 getMatrix() const { return mTfrmMatrix; }
+
+	/**
+	 * Returns the transform matrix that is applied to the object when its being rendered. This transform matrix does
+	 * not include scale values.
+	 */
+	Matrix4 getMatrixNoScale() const { return mTfrmMatrixNoScale; }
 };
 
 }  // namespace bs::ecs

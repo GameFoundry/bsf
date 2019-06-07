@@ -10,11 +10,22 @@
 namespace bs
 {
 
+class AppEnvironment : public ::testing::Environment {
+ public:
+
+  // Override this to define how to set up the environment.
+  void SetUp() override;
+
+  // Override this to define how to tear down the environment.
+  void TearDown() override;
+};
+
+
 class Test : public ::testing::Test {
 protected:
 	// setup once for all tests within the test suite.
-  static void SetUpTestSuite();
-  static void TearDownTestSuite();
+	// static void SetUpTestSuite();
+	// static void TearDownTestSuite();
 };
 
 } // namespace bs

@@ -4,6 +4,7 @@ file(GLOB_RECURSE SRCS
 	RenderComponents/*.cpp
 	Scene/*.cpp
 )
+list(FILTER SRCS EXCLUDE REGEX ".*test.cpp")
 
 
 add_library(bsfEnTT SHARED ${SRCS})
@@ -12,6 +13,8 @@ target_compile_features(bsfEnTT
     PRIVATE
     cxx_std_17
 )
+# prevents the "undefined reference to typeinfo"
+target_compile_options(bsfEnTT PUBLIC -fno-rtti)
 
 add_common_flags(bsfEnTT)
 

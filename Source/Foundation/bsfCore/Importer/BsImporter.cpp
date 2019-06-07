@@ -66,7 +66,7 @@ namespace bs
 		return gResources()._createResourceHandle(importedResource, UUID);
 	}
 
-	TAsyncOp<HResource> Importer::importAsync(const Path& inputFilePath, SPtr<const ImportOptions> importOptions, 
+	TAsyncOp<HResource> Importer::importAsync(const Path& inputFilePath, SPtr<const ImportOptions> importOptions,
 		const UUID& UUID)
 	{
 		TAsyncOp<HResource> output(mAsyncOpSyncData);
@@ -96,7 +96,7 @@ namespace bs
 		return bs_shared_ptr_new<MultiResource>(output);
 	}
 
-	TAsyncOp<SPtr<MultiResource>> Importer::importAllAsync(const Path& inputFilePath, 
+	TAsyncOp<SPtr<MultiResource>> Importer::importAllAsync(const Path& inputFilePath,
 		SPtr<const ImportOptions> importOptions)
 	{
 		TAsyncOp<SPtr<MultiResource>> output(mAsyncOpSyncData);
@@ -120,7 +120,7 @@ namespace bs
 
 		const UINT64 taskId = waitForAsync(importer);
 		SPtr<Resource> output = importer->import(inputFilePath, importOptions);
-		
+
 		if(importer->getAsyncMode() == ImporterAsyncMode::Single)
 		{
 			Lock lock(mLastTaskMutex);
@@ -216,7 +216,7 @@ namespace bs
 	}
 
 	template<class ReturnType>
-	void doImport(TAsyncOp<ReturnType> op, SpecificImporter* importer, const Path& filePath, const UUID& uuid, 
+	void doImport(TAsyncOp<ReturnType> op, SpecificImporter* importer, const Path& filePath, const UUID& uuid,
 		const SPtr<const ImportOptions>& importOptions)
 	{
 		assert(false && "Invalid template instantiation called.");
@@ -254,7 +254,7 @@ namespace bs
 	}
 
 	template<class ReturnType>
-	void Importer::queueForImport(SpecificImporter* importer, const Path& inputFilePath, 
+	void Importer::queueForImport(SpecificImporter* importer, const Path& inputFilePath,
 		const SPtr<const ImportOptions>& importOptions, const UUID& uuid, TAsyncOp<ReturnType>& op)
 	{
 		ImporterAsyncMode asyncMode = importer->getAsyncMode();
@@ -273,9 +273,9 @@ namespace bs
 				dependency = iterFind->second.task;
 		}
 
-		SPtr<Task> task = Task::create("ImportWorker", 
-		[this, importer, inputFilePath, importOptions, uuid, taskId, op] 
-		{ 
+		SPtr<Task> task = Task::create("ImportWorker",
+		[this, importer, inputFilePath, importOptions, uuid, taskId, op]
+		{
 			doImport(op, importer, inputFilePath, uuid, importOptions);
 
 			// Clear itself from the task list so we don't unnecessarily keep a reference. But first make sure we are the
@@ -301,10 +301,10 @@ namespace bs
 		TaskScheduler::instance().addTask(task);
 	}
 
-	template void Importer::queueForImport(SpecificImporter*, const Path&, const SPtr<const ImportOptions>&, const UUID&, 
+	template void Importer::queueForImport(SpecificImporter*, const Path&, const SPtr<const ImportOptions>&, const UUID&,
 		TAsyncOp<HResource>&);
 
-	template void Importer::queueForImport(SpecificImporter*, const Path&, const SPtr<const ImportOptions>&, const UUID&, 
+	template void Importer::queueForImport(SpecificImporter*, const Path&, const SPtr<const ImportOptions>&, const UUID&,
 		TAsyncOp<SPtr<MultiResource>>&);
 
 	SPtr<ImportOptions> Importer::createImportOptions(const Path& inputFilePath)
