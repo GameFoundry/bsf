@@ -173,6 +173,7 @@ RGBA			{ yylval->intValue = 0xF; return TOKEN_COLORMASK; }
 
 	/* Attribute keywords */
 name			{ return TOKEN_NAME; }
+show			{ return TOKEN_SHOW; }
 
 	/* Preprocessor */
 #include				{ BEGIN(INCLUDE); }

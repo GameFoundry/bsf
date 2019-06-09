@@ -112,7 +112,7 @@ typedef struct YYLTYPE {
 %token TOKEN_COLOR TOKEN_ALPHA TOKEN_SOURCE TOKEN_DEST TOKEN_OP
 
 	/* Attribute keywords */
-%token TOKEN_NAME
+%token TOKEN_NAME TOKEN_SHOW
 
 %type <nodePtr>		root;
 %type <nodeOption>	root_statement;
@@ -705,6 +705,7 @@ attributes_body
 	
 attribute
 	: TOKEN_NAME '(' TOKEN_STRING ')'		{ $$.type = OT_AttrName; $$.value.strValue = $3; }
+	| TOKEN_SHOW 							{ $$.type = OT_AttrShow; $$.value.intValue = 0; }
 	;
 
 %%

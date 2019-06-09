@@ -639,6 +639,8 @@ namespace bs
 		TID_RenderTarget = 1193,
 		TID_RenderTexture = 1194,
 		TID_RenderWindow = 1195,
+		TID_ShaderVariationParamInfo = 1196,
+		TID_ShaderVariationParamValue = 1197,
 
 		// Moved from Engine layer
 		TID_CCamera = 30000,

@@ -272,6 +272,110 @@ namespace bs
 		}
 	};
 
+	template<>	struct RTTIPlainType<ShaderVariationParamValue>
+	{
+		enum { id = TID_ShaderVariationParamValue }; enum { hasDynamicSize = 1 };
+
+		/** @copydoc RTTIPlainType::toMemory */
+		static void toMemory(const ShaderVariationParamValue& data, char* memory)
+		{
+			static constexpr UINT32 VERSION = 0;
+
+			UINT32 size = sizeof(UINT32);
+			char* memoryStart = memory;
+			memory += sizeof(UINT32);
+
+			memory = rttiWriteElem(VERSION, memory, size);
+			memory = rttiWriteElem(data.name, memory, size);
+			memory = rttiWriteElem(data.value, memory, size);
+
+			memcpy(memoryStart, &size, sizeof(UINT32));
+		}
+
+		/** @copydoc RTTIPlainType::fromMemory */
+		static UINT32 fromMemory(ShaderVariationParamValue& data, char* memory)
+		{
+			UINT32 size = 0;
+			memory = rttiReadElem(size, memory);
+
+			UINT8 version;
+			memory = rttiReadElem(version, memory);
+			assert(version == 0);
+
+			memory = rttiReadElem(data.name, memory);
+			memory = rttiReadElem(data.value, memory);
+
+			return size;
+		}
+
+		/** @copydoc RTTIPlainType::getDynamicSize */
+		static UINT32 getDynamicSize(const ShaderVariationParamValue& data)
+		{
+			UINT64 dataSize = sizeof(UINT8) + sizeof(UINT32);
+			dataSize += rttiGetElemSize(data.name);
+			dataSize += rttiGetElemSize(data.value);
+
+			assert(dataSize <= std::numeric_limits<UINT32>::max());
+
+			return (UINT32)dataSize;
+		}
+	};
+
+	template<>	struct RTTIPlainType<ShaderVariationParamInfo>
+	{
+		enum { id = TID_ShaderVariationParamInfo }; enum { hasDynamicSize = 1 };
+
+		/** @copydoc RTTIPlainType::toMemory */
+		static void toMemory(const ShaderVariationParamInfo& data, char* memory)
+		{
+			static constexpr UINT32 VERSION = 0;
+
+			UINT32 size = sizeof(UINT32);
+			char* memoryStart = memory;
+			memory += sizeof(UINT32);
+
+			memory = rttiWriteElem(VERSION, memory, size);
+			memory = rttiWriteElem(data.name, memory, size);
+			memory = rttiWriteElem(data.identifier, memory, size);
+			memory = rttiWriteElem(data.internal, memory, size);
+			memory = rttiWriteElem(data.values, memory, size);
+
+			memcpy(memoryStart, &size, sizeof(UINT32));
+		}
+
+		/** @copydoc RTTIPlainType::fromMemory */
+		static UINT32 fromMemory(ShaderVariationParamInfo& data, char* memory)
+		{
+			UINT32 size = 0;
+			memory = rttiReadElem(size, memory);
+
+			UINT8 version;
+			memory = rttiReadElem(version, memory);
+			assert(version == 0);
+
+			memory = rttiReadElem(data.name, memory);
+			memory = rttiReadElem(data.identifier, memory);
+			memory = rttiReadElem(data.internal, memory);
+			memory = rttiReadElem(data.values, memory);
+
+			return size;
+		}
+
+		/** @copydoc RTTIPlainType::getDynamicSize */
+		static UINT32 getDynamicSize(const ShaderVariationParamInfo& data)
+		{
+			UINT64 dataSize = sizeof(UINT8) + sizeof(UINT32);
+			dataSize += rttiGetElemSize(data.name);
+			dataSize += rttiGetElemSize(data.identifier);
+			dataSize += rttiGetElemSize(data.internal);
+			dataSize += rttiGetElemSize(data.values);
+
+			assert(dataSize <= std::numeric_limits<UINT32>::max());
+
+			return (UINT32)dataSize;
+		}
+	};
+
 	class BS_CORE_EXPORT SubShaderRTTI : public RTTIType<SubShader, IReflectable, SubShaderRTTI>
 	{
 	private:
@@ -317,6 +421,7 @@ namespace bs
 			BS_RTTI_MEMBER_REFL_ARRAY_NAMED(mSubShaders, mDesc.subShaders, 14)
 
 			BS_RTTI_MEMBER_PLAIN_ARRAY_NAMED(mParamAttributes, mDesc.paramAttributes, 15)
+			BS_RTTI_MEMBER_PLAIN_ARRAY_NAMED(mVariationParams, mDesc.variationParams, 16)
 		BS_END_RTTI_MEMBERS
 
 		SHADER_DATA_PARAM_DESC& getDataParam(Shader* obj, UINT32 idx)

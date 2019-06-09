@@ -960,6 +960,8 @@ namespace bs
 				{
 					if (entry.first == OT_AttrName)
 						variationData.name = entry.second;
+					else if(entry.first == OT_AttrShow)
+						variationData.internal = false;
 				}
 				}
 			default:
@@ -1774,6 +1776,28 @@ namespace bs
 		return output;
 	}
 
+	void BSLFXCompiler::populateVariationParamInfos(const ShaderMetaData& shaderMetaData, SHADER_DESC& desc)
+	{
+		for(auto& entry : shaderMetaData.variations)
+		{
+			ShaderVariationParamInfo paramInfo;
+			paramInfo.internal = entry.internal;
+			paramInfo.name = entry.name;
+			paramInfo.identifier = entry.identifier;
+
+			for(auto& value : entry.values)
+			{
+				ShaderVariationParamValue paramValue;
+				paramValue.name = value.name;
+				paramValue.value = value.value;
+
+				paramInfo.values.add(paramValue);
+			}
+
+			desc.variationParams.push_back(paramInfo);
+		}
+	}
+
 	BSLFXCompileResult BSLFXCompiler::compileTechniques(
 		const Vector<std::pair<ASTFXNode*, ShaderMetaData>>& shaderMetaData, const String& source,
 		const UnorderedMap<String, String>& defines, ShadingLanguageFlags languages, SHADER_DESC& shaderDesc, 
@@ -2005,6 +2029,15 @@ namespace bs
 
 		if (!output.errorMessage.empty())
 			return output;
+
+		// Note: Must be called after populateVariations, to ensure variations from mixins are inherited
+		for(auto& entry : shaderMetaData)
+		{
+			if(entry.second.isMixin)
+				continue;
+
+			populateVariationParamInfos(entry.second, shaderDesc);
+		}
 
 		output = compileTechniques(shaderMetaData, source, defines, languages, shaderDesc, includes);
 

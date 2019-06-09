@@ -87,6 +87,7 @@ enum tagOptionType
 	OT_Attributes,
 	OT_AttrName,
 	OT_VariationOption,
+	OT_AttrShow,
 	OT_Count
 };
 

@@ -80,6 +80,7 @@ namespace bs
 		{
 			String name;
 			String identifier;
+			bool internal = true;
 			Vector<VariationOption> values;
 		};
 
@@ -254,6 +255,9 @@ namespace bs
 		 * the @p shaderMetaData array, for any non-mixins.
 		 */
 		static BSLFXCompileResult populateVariations(Vector<std::pair<ASTFXNode*, ShaderMetaData>>& shaderMetaData);
+
+		/** Populates the information about variation parameters and their values. */
+		static void populateVariationParamInfos(const ShaderMetaData& shaderMetaData, SHADER_DESC& desc);
 
 		/**
 		 * Parses the provided source and generates a SHADER_DESC containing techniques for all shader variations, any

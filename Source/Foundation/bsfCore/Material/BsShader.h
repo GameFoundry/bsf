@@ -150,6 +150,32 @@ namespace bs
 		UINT32 nextParamIdx = (UINT32)-1;
 	};
 
+	/** Represents a single potential value of a shader variation parameter and optionally its name. */
+	struct BS_SCRIPT_EXPORT(m:Renderer,pl:true) ShaderVariationParamValue
+	{
+		/** Optional human-readable name describing what this particular value represents. */
+		String name;
+
+		/** Integer value of the parameter. */
+		INT32 value = 0;
+	};
+
+	/** Represents a single shader variation parameter and a set of all possible values. */
+	struct BS_SCRIPT_EXPORT(m:Renderer,pl:true) ShaderVariationParamInfo
+	{
+		/** Optional human-readable name describing the variation parameter. */
+		String name;
+
+		/** BSL identifier for the parameter. */
+		String identifier;
+
+		/** True if the parameter is for internal use by the renderer, and false if its intended to be set by the user. */
+		bool internal = true;
+
+		/** A list of potential values this parameter can take on. */
+		SmallVector<ShaderVariationParamValue, 4> values;
+	};
+
 	/** 
 	 * Sub-shader represents a set of techniques not used by the main shader, but rather a specialized set of techniques
 	 * used by the renderer for a specific purpose. The renderer identifies these techniques by a unique name, and utilizes
@@ -309,6 +335,12 @@ namespace bs
 		/** Optional set of sub-shaders to initialize the shader with. */
 		Vector<SubShaderType> subShaders;
 
+		/** 
+		 * Information about all variation parameters and their possible values. Each permutation of variation parameters
+		 * represents a separate shader technique.
+		 */
+		Vector<ShaderVariationParamInfo> variationParams;
+
 		Map<String, SHADER_DATA_PARAM_DESC> dataParams;
 		Map<String, SHADER_OBJECT_PARAM_DESC> textureParams;
 		Map<String, SHADER_OBJECT_PARAM_DESC> bufferParams;
@@ -366,6 +398,13 @@ namespace bs
 
 		/** Returns a list of all sub-shaders in this shader. */
 		const Vector<SubShaderType>& getSubShaders() const { return mDesc.subShaders; }
+
+		/** 
+		 * Returns the list of all variation parameters supported by this shader, possible values of each parameter and
+		 * other meta-data.
+		 */
+		BS_SCRIPT_EXPORT(n:VariationParams,pr:getter)
+		const Vector<ShaderVariationParamInfo> getVariationParams() const { return mDesc.variationParams; }
 
 		/**
 		 * Returns currently active queue sort type.

@@ -4,11 +4,13 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "Wrappers/BsScriptResource.h"
+#include "../../../Foundation/bsfCore/Material/BsShader.h"
 #include "../Extensions/BsShaderEx.h"
 
 namespace bs
 {
 	class Shader;
+	struct __ShaderVariationParamInfoInterop;
 	class ShaderEx;
 	struct __ShaderParameterInterop;
 
@@ -24,6 +26,7 @@ namespace bs
 	private:
 		static MonoObject* Internal_getRef(ScriptShader* thisPtr);
 
+		static MonoArray* Internal_getVariationParams(ScriptShader* thisPtr);
 		static MonoArray* Internal_getParameters(ScriptShader* thisPtr);
 	};
 }

@@ -5,6 +5,7 @@
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
 #include "../../../Foundation/bsfCore/Material/BsShader.h"
+#include "BsScriptShaderVariationParamInfo.generated.h"
 #include "BsScriptShaderParameter.generated.h"
 #include "../Extensions/BsShaderEx.h"
 
@@ -18,6 +19,7 @@ namespace bs
 	void ScriptShader::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_GetRef", (void*)&ScriptShader::Internal_getRef);
+		metaData.scriptClass->addInternalCall("Internal_getVariationParams", (void*)&ScriptShader::Internal_getVariationParams);
 		metaData.scriptClass->addInternalCall("Internal_getParameters", (void*)&ScriptShader::Internal_getParameters);
 
 	}
@@ -32,6 +34,23 @@ namespace bs
 	MonoObject* ScriptShader::Internal_getRef(ScriptShader* thisPtr)
 	{
 		return thisPtr->getRRef();
+	}
+
+	MonoArray* ScriptShader::Internal_getVariationParams(ScriptShader* thisPtr)
+	{
+		Vector<ShaderVariationParamInfo> vec__output;
+		vec__output = thisPtr->getHandle()->getVariationParams();
+
+		MonoArray* __output;
+		int arraySize__output = (int)vec__output.size();
+		ScriptArray array__output = ScriptArray::create<ScriptShaderVariationParamInfo>(arraySize__output);
+		for(int i = 0; i < arraySize__output; i++)
+		{
+			array__output.set(i, ScriptShaderVariationParamInfo::toInterop(vec__output[i]));
+		}
+		__output = array__output.getInternal();
+
+		return __output;
 	}
 
 	MonoArray* ScriptShader::Internal_getParameters(ScriptShader* thisPtr)

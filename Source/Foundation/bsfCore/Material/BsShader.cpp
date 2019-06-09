@@ -511,6 +511,8 @@ namespace bs
 
 			output.subShaders.push_back(subShader);
 		}
+
+		output.variationParams = desc.variationParams;
 		
 		// Ignoring default values as they are not needed for syncing since
 		// they're initialized through the material.
