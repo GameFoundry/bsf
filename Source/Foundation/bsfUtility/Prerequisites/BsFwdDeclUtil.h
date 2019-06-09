@@ -191,6 +191,7 @@ namespace bs
 		TID_DataBlob = 70,
 		TID_ColorGradient = 71,
 		TID_SerializationContext = 72,
-		TID_List = 73
+		TID_List = 73,
+		TID_SmallVector = 74
 	};
 }
