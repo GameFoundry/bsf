@@ -55,7 +55,7 @@ namespace bs { namespace ct
 	{
 		Renderer::initialize();
 
-		ecs::ECSManager::startUp();
+		ecs::startUp();
 		gCoreThread().queueCommand(std::bind(&RenderECS::initializeCore, this), CTQF_InternalQueue);
 	}
 
@@ -65,7 +65,7 @@ namespace bs { namespace ct
 
 		gCoreThread().queueCommand(std::bind(&RenderECS::destroyCore, this));
 		gCoreThread().submit(true);
-		ecs::ECSManager::shutDown();
+		ecs::shutDown();
 	}
 
 	void RenderECS::initializeCore()

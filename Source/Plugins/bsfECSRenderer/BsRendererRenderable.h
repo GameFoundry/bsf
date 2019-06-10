@@ -10,6 +10,8 @@
 #include "RenderAPI/BsGpuPipelineParamInfo.h"
 #include "BsRendererReflectionProbe.h"
 
+#include <entt/core/type_traits.hpp>
+
 namespace bs { namespace ct
 {
 	/** @addtogroup RenderECS
@@ -116,3 +118,5 @@ namespace bs { namespace ct
 
 	/** @} */
 }}
+
+ENTT_NAMED_TYPE(bs::ct::RendererRenderable);

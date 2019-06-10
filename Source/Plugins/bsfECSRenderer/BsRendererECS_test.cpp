@@ -12,6 +12,7 @@
 #include "Scene/BsSceneManager.h"
 #include "bsfEnTT/Scene/Registry.h"
 #include "CoreThread/BsCoreThread.h"
+#include "BsRendererRenderable.h"
 
 
 namespace bs::ecs {
@@ -59,13 +60,11 @@ namespace bs::ecs {
 		boxRenderable->setMaterial(material);
 		boxSO->setPosition(Vector3(0.0f, 0.0f, 0.0f));
 
-		ASSERT_TRUE(SceneManager::isStarted());
-		ASSERT_TRUE(ECSManager::isStarted());
-
     	Application::instance().runMainSteps(4);
 
-    	auto reg = ECSManager::instance().getRegistry();
+    	auto reg = gRegistry();
     	ASSERT_GT(reg->size(), 0);
+    	ASSERT_GT(reg->size<bs::ct::RendererRenderable>(), 0);
 
     	bool forceRemoveAll = true;
     	SceneManager::instance().clearScene(forceRemoveAll);

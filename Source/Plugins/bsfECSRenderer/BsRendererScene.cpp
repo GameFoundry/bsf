@@ -44,7 +44,7 @@ namespace bs {	namespace ct
 		:mOptions(options)
 	{
 		mPerFrameParamBuffer = gPerFrameParamDef.createBuffer();
-		mInfo.registry = ecs::ECSManager::instance().getRegistry();
+		mInfo.registry = ecs::gRegistry();
 	}
 
 	RendererScene::~RendererScene()
@@ -247,11 +247,14 @@ namespace bs {	namespace ct
 
 		assert(mInfo.registry != nullptr);
 		ecs::EntityType id = mInfo.registry->create();
+		std::cout << "REGISTER RENDERABLE? " << id << std::endl;
 		auto& rendererRenderable = mInfo.registry->assign<RendererRenderable>(id);
 		mInfo.registry->assign<CVisible>(id);
 		mInfo.registry->assign<CReady>(id);
 		mInfo.registry->assign<CullInfo>(id, renderable->getBounds(), renderable->getLayer(), renderable->getCullDistanceFactor());
 
+		// std::cout << "REG " << mInfo.registry << std::endl;
+		std::cout << "DONE? " << mInfo.registry->size<RendererRenderable>() << std::endl;
 
 		renderable->setRendererId(id);
 
@@ -454,8 +457,9 @@ namespace bs {	namespace ct
 
 	void RendererScene::unregisterRenderable(Renderable* renderable)
 	{
-		ecs::EntityType id = renderable->getRendererId();
 
+		ecs::EntityType id = renderable->getRendererId();
+		std::cout << "UNREGISTER " << id << std::endl;
 		auto& renderRenderable = mInfo.registry->get<RendererRenderable>(id);
 		Vector<RenderableElement>& elements = renderRenderable.elements;
 		for (auto& element : elements)

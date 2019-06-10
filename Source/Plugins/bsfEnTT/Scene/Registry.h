@@ -6,14 +6,7 @@
 
 namespace bs::ecs {
 
-  class BS_CORE_EXPORT ECSManager : public Module<ECSManager> {
-    std::unique_ptr<Registry> registry;
-
-  public:
-    ECSManager();
-    ~ECSManager();
-    void onStartUp() override;
-    void onShutDown() override;
-    Registry* getRegistry() { return registry.get(); }
-  };
+  void startUp();
+  void shutDown();
+  Registry* gRegistry();
 }  // namespace bs

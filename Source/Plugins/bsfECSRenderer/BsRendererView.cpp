@@ -758,6 +758,7 @@ namespace bs { namespace ct
 
 		for(UINT32 i = 0; i < numViews; i++)
 		{
+			mViews[i]->calculateVisible(sceneInfo.registry, i);
 			// mViews[i]->determineVisible(sceneInfo.renderables, sceneInfo.renderableCullInfos, &mVisibility.renderables);
 			mViews[i]->determineVisible(sceneInfo.particleSystems, sceneInfo.particleSystemCullInfos, &mVisibility.particleSystems);
 			mViews[i]->determineVisible(sceneInfo.decals, sceneInfo.decalCullInfos, &mVisibility.decals);

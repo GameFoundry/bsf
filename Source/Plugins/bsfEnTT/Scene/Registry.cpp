@@ -2,7 +2,27 @@
 #include <entt/entt.hpp>
 
 namespace bs::ecs {
+
+  class BS_CORE_EXPORT ECSManager : public Module<ECSManager> {
+    std::unique_ptr<Registry> registry;
+
+  public:
+    ECSManager();
+    ~ECSManager();
+    void onStartUp() override;
+    void onShutDown() override;
+    Registry* getRegistry() { return registry.get(); }
+  };
+
+
   ECSManager::~ECSManager() {}
+
+  void shutDown() {
+  	ECSManager::shutDown();
+  }
+  void startUp() {
+  	ECSManager::startUp();
+  }
 
 
   void ECSManager::onStartUp() {
@@ -11,6 +31,10 @@ namespace bs::ecs {
 
   void ECSManager::onShutDown() {
   	std::cout << "ECS DOWN " << std::endl;
+  }
+
+  Registry* gRegistry() {
+  	return ECSManager::instance().getRegistry();
   }
 
   ECSManager::ECSManager() :
