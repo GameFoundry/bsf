@@ -474,13 +474,16 @@ namespace bs { namespace ct
 
 				// Make a list of relevant renderables and prepare them for rendering
 				// for (UINT32 i = 0; i < sceneInfo.renderables.size(); i++)
-				for (auto& [renderable, cull] : sceneInfo.registry->view<RendererRenderable, CullInfo>())
+				auto view = sceneInfo.registry->view<RendererRenderable, CullInfo>();
+				for (auto ent : view)
 				{
+					auto& renderable = view.get<RendererRenderable>(ent);
+					const auto& cull = view.get<CullInfo>(ent);
 					const Sphere& bounds = cull.bounds.getSphere();
 					if (!opt.intersects(bounds))
 						continue;
 
-					scene.prepareRenderable(i, frameInfo);
+					scene.prepareRenderable(ent, frameInfo);
 
 					Command renderableCommand;
 					renderableCommand.mask = 0;
@@ -494,7 +497,7 @@ namespace bs { namespace ct
 					bool renderableBound[4];
 					bs_zero_out(renderableBound);
 
-					for (auto& element : renderable->elements)
+					for (auto& element : renderable.elements)
 					{
 						UINT32 arrayIdx = (int)element.animType;
 

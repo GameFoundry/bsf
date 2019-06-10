@@ -53,7 +53,10 @@ namespace bs
 		 * This will run infinitely until stopMainLoop is called (usually from another thread or internally).
 		 */
 		void runMainLoop();
-
+		/**
+		 * Executes the main lop within certain number of steps. Useful for unit-testing purposes only.
+		 */
+		void runMainLoop(UINT32 steps);
 		/**	Stops the (infinite) main loop from running. The loop will complete its current cycle before stopping. */
 		void stopMainLoop();
 
@@ -108,6 +111,9 @@ namespace bs
 		/**	Initializes the renderer specified during construction. Called during initialization. */
 		virtual void startUpRenderer();
 
+		/* Called for each main loop step */
+		virtual void update();
+
 		/**	Returns a handler that is used for resolving shader include file paths. */
 		virtual SPtr<IShaderIncludeHandler> getShaderIncludeHandler() const;
 
@@ -120,6 +126,7 @@ namespace bs
 
 		/**	Called by the core thread to end profiling. */
 		void endCoreProfiling();
+
 
 	protected:
 		typedef void(*UpdatePluginFunc)();

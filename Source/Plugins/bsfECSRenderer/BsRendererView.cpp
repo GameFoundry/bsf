@@ -180,29 +180,29 @@ namespace bs { namespace ct
 		mDecalQueue->clear();
 	}
 
-	void RendererView::determineVisible(const Vector<RendererRenderable*>& renderables, const Vector<CullInfo>& cullInfos,
-		Vector<bool>* visibility)
-	{
-		mVisibility.renderables.clear();
-		mVisibility.renderables.resize(renderables.size(), false);
+	// void RendererView::determineVisible(const Vector<RendererRenderable*>& renderables, const Vector<CullInfo>& cullInfos,
+	// 	Vector<bool>* visibility)
+	// {
+	// 	mVisibility.renderables.clear();
+	// 	mVisibility.renderables.resize(renderables.size(), false);
 
-		if (mRenderSettings->overlayOnly)
-			return;
+	// 	if (mRenderSettings->overlayOnly)
+	// 		return;
 
-		calculateVisibility(cullInfos, mVisibility.renderables);
+	// 	calculateVisibility(cullInfos, mVisibility.renderables);
 
-		if(visibility != nullptr)
-		{
-			for (UINT32 i = 0; i < (UINT32)renderables.size(); i++)
-			{
-				bool visible = (*visibility)[i];
+	// 	if(visibility != nullptr)
+	// 	{
+	// 		for (UINT32 i = 0; i < (UINT32)renderables.size(); i++)
+	// 		{
+	// 			bool visible = (*visibility)[i];
 
-				(*visibility)[i] = visible || mVisibility.renderables[i];
-			}
-		}
-	}
+	// 			(*visibility)[i] = visible || mVisibility.renderables[i];
+	// 		}
+	// 	}
+	// }
 
-	void RendererView::calculateVisible(ecs::Registry* reg)
+	void RendererView::calculateVisible(ecs::Registry* reg, UINT32 viewIdx)
 	{
 		if (mRenderSettings->overlayOnly) {
 			return;
@@ -214,8 +214,12 @@ namespace bs { namespace ct
 		float baseCullDistance = mRenderSettings->cullDistance;
 
 		// for (UINT32 i = 0; i < (UINT32)cullInfos.size(); i++)
-		for (auto& [cullInfo] : reg->view<CullInfo>())
+		auto view = reg->view<CullInfo, CVisible>();
+		for (ecs::EntityType ent : view)
 		{
+			const auto& cullInfo = view.get<CullInfo>(ent);
+			auto& visibility = view.get<CVisible>(ent);
+
 			if ((cullInfo.layer & cameraLayers) == 0)
 				continue;
 
@@ -238,8 +242,10 @@ namespace bs { namespace ct
 				// More precise with the box
 				const AABox& boundingBox = cullInfo.bounds.getBox();
 
-				if (worldFrustum.intersects(boundingBox))
-					visibility[i] = true;
+				if (worldFrustum.intersects(boundingBox)) {
+					assert(viewIdx < visibility.visibleViews.size());
+					visibility.visibleViews[viewIdx] = true;
+				}
 			}
 		}
 	}
@@ -397,15 +403,21 @@ namespace bs { namespace ct
 			return;
 
 		// Queue renderables
-		for(UINT32 i = 0; i < (UINT32)sceneInfo.renderables.size(); i++)
+		// for(UINT32 i = 0; i < (UINT32)sceneInfo.renderables.size(); i++)
+		auto view = sceneInfo.registry->view<RendererRenderable, CullInfo, CVisible>();
+		for (auto ent : view)
 		{
-			if (!mVisibility.renderables[i])
+			auto& renderable = view.get<RendererRenderable>(ent);
+			const auto& cullInfo = view.get<CullInfo>(ent);
+			const auto& visible = view.get<CVisible>(ent);
+
+			if (!visible.anyVisible())
 				continue;
 
-			const AABox& boundingBox = sceneInfo.renderableCullInfos[i].bounds.getBox();
+			const AABox& boundingBox = cullInfo.bounds.getBox();
 			const float distanceToCamera = (mProperties.viewOrigin - boundingBox.getCenter()).length();
 
-			for (auto& renderElem : sceneInfo.renderables[i]->elements)
+			for (auto& renderElem : renderable.elements)
 			{
 				// Note: I could keep renderables in multiple separate arrays, so I don't need to do the check here
 				ShaderFlags shaderFlags = renderElem.material->getShader()->getFlags();

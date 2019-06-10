@@ -34,6 +34,7 @@
 #include "BsRenderCompositor.h"
 #include "Shading/BsGpuParticleSimulation.h"
 #include "bsfEnTT/Scene/Registry.h"
+#include <entt/entt.hpp>
 
 using namespace std::placeholders;
 
@@ -378,8 +379,8 @@ namespace bs { namespace ct
 		if(perFrameData.particles)
 			PROFILE_CALL(mScene->updateParticleSystemBounds(perFrameData.particles), "Particle bounds")
 
-		sceneInfo.renderableReady.resize(sceneInfo.renderables.size(), false);
-		sceneInfo.renderableReady.assign(sceneInfo.renderables.size(), false);
+		// sceneInfo.renderableReady.resize(sceneInfo.renderables.size(), false);
+		// sceneInfo.renderableReady.assign(sceneInfo.renderables.size(), false);
 
 		FrameInfo frameInfo(timings, perFrameData);
 
@@ -390,12 +391,13 @@ namespace bs { namespace ct
 		updateReflProbeArray();
 
 		// Update material parameters & animation times for all renderables
-		for (UINT32 i = 0; i < sceneInfo.renderables.size(); i++)
-		{
-			RendererRenderable* renderable = sceneInfo.renderables[i];
-			for (auto& element : renderable->elements)
+		// for (UINT32 i = 0; i < sceneInfo.renderables.size(); i++)
+		sceneInfo.registry->view<RendererRenderable>().each([&timings](auto& renderable) {
+			// RendererRenderable* renderable = sceneInfo.renderables[i];
+			for (auto& element : renderable.elements)
 				element.materialAnimationTime += timings.timeDelta;
-		}
+		});
+
 
 		for (UINT32 i = 0; i < sceneInfo.particleSystems.size(); i++)
 			mScene->prepareParticleSystem(i, frameInfo);
@@ -440,20 +442,23 @@ namespace bs { namespace ct
 	void RenderECS::renderViews(RendererViewGroup& viewGroup, const FrameInfo& frameInfo)
 	{
 		const SceneInfo& sceneInfo = mScene->getSceneInfo();
-		const VisibilityInfo& visibility = viewGroup.getVisibilityInfo();
+		// const VisibilityInfo& visibility = viewGroup.getVisibilityInfo();
 
 		// Render shadow maps
 		ShadowRendering& shadowRenderer = viewGroup.getShadowRenderer();
 		shadowRenderer.renderShadowMaps(*mScene, viewGroup, frameInfo);
 
 		// Update various buffers required by each renderable
-		UINT32 numRenderables = (UINT32)sceneInfo.renderables.size();
-		for (UINT32 i = 0; i < numRenderables; i++)
+		// UINT32 numRenderables = (UINT32)sceneInfo.renderables.size();
+		auto view  = sceneInfo.registry->view<RendererRenderable, CVisible>();
+		// for (UINT32 i = 0; i < numRenderables; i++)
+		for (auto ent : view)
 		{
-			if (!visibility.renderables[i])
+			const auto& visible = view.get<CVisible>(ent);
+			if (!visible.anyVisible())
 				continue;
 
-			mScene->prepareRenderable(i, frameInfo);
+			mScene->prepareRenderable(ent, frameInfo);
 		}
 
 		UINT32 numViews = viewGroup.getNumViews();

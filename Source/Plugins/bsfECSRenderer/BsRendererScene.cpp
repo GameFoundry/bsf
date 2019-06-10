@@ -455,7 +455,7 @@ namespace bs {	namespace ct
 	void RendererScene::unregisterRenderable(Renderable* renderable)
 	{
 		ecs::EntityType renderableId = renderable->getRendererId();
-		mInfo.registry->destory(renderableId);
+		mInfo.registry->destroy(renderableId);
 
 		// UINT32 renderableId = renderable->getRendererId();
 		// Renderable* lastRenerable = mInfo.renderables.back()->renderable;
@@ -1241,8 +1241,10 @@ namespace bs {	namespace ct
 
 		// UINT32 numRenderables = (UINT32)mInfo.renderables.size();
 		// for (UINT32 i = 0; i < numRenderables; i++)
-		for (auto& renderable : mInfo->registry.view<RendererRenderable>())
+		auto view = mInfo.registry->view<RendererRenderable>();
+		for (auto ent : view)
 		{
+			auto& renderable = view.get(ent);
 			for(auto& element : renderable.elements)
 			{
 				MaterialSamplerOverrides* overrides = element.samplerOverrides;
@@ -1288,22 +1290,22 @@ namespace bs {	namespace ct
 		gPerFrameParamDef.gTime.set(mPerFrameParamBuffer, time);
 	}
 
-	void RendererScene::prepareRenderable(UINT32 idx, const FrameInfo& frameInfo)
+	void RendererScene::prepareRenderable(ecs::EntityType ent, const FrameInfo& frameInfo)
 	{
-		if (mInfo.registry->get<CReady>(idx).ready)
+		if (mInfo.registry->get<CReady>(ent).ready)
 			return;
 
 		// Note: Before uploading bone matrices perhaps check if they has actually been changed since last frame
 		if(frameInfo.perFrameData.animation != nullptr)
-			mInfo.registry->get<RendererRenderable>(idx)->renderable->updateAnimationBuffers(*frameInfo.perFrameData.animation);
+			mInfo.registry->get<RendererRenderable>(ent).renderable->updateAnimationBuffers(*frameInfo.perFrameData.animation);
 
 		// Note: Could this step be moved in notifyRenderableUpdated, so it only triggers when material actually gets
 		// changed? Although it shouldn't matter much because if the internal versions keeping track of dirty params.
-		for (auto& element : mInfo.registry->get<RendererRenderable>(idx)->elements)
+		for (auto& element : mInfo.registry->get<RendererRenderable>(ent).elements)
 			element.material->updateParamsSet(element.params, element.materialAnimationTime);
 
-		mInfo.registry->get<RendererRenderable>(idx)->perObjectParamBuffer->flushToGPU();
-		mInfo.registry->get<CReady>(idx).ready = true;
+		mInfo.registry->get<RendererRenderable>(ent).perObjectParamBuffer->flushToGPU();
+		mInfo.registry->get<CReady>(ent).ready = true;
 	}
 
 	void RendererScene::prepareParticleSystem(UINT32 idx, const FrameInfo& frameInfo)

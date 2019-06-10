@@ -27,6 +27,7 @@
 #include "Profiling/BsProfilerGPU.h"
 #include "Shading/BsGpuParticleSimulation.h"
 #include "Profiling/BsProfilerCPU.h"
+#include <entt/entt.hpp>
 
 namespace bs { namespace ct
 {
@@ -313,16 +314,22 @@ namespace bs { namespace ct
 		// Prepare all visible objects. Note that this also prepares non-opaque objects.
 		//// Prepare normal renderables
 		const VisibilityInfo& visibility = inputs.view.getVisibilityMasks();
-		const auto numRenderables = (UINT32)inputs.scene.renderables.size();
-		for (UINT32 i = 0; i < numRenderables; i++)
+		// const auto numRenderables = (UINT32)inputs.scene.renderables.size();
+		auto view = inputs.scene.registry->view<RendererRenderable, CVisible>();
+		// for (UINT32 i = 0; i < numRenderables; i++)
+		for (auto ent : view)
 		{
-			if (!visibility.renderables[i])
+			const auto& visibility = view.get<CVisible>(ent);
+			// if (!visibility.renderables[i])
+			if (!visibility.anyVisible()) {
 				continue;
+			}
 
-			RendererRenderable* rendererRenderable = inputs.scene.renderables[i];
-			rendererRenderable->updatePerCallBuffer(viewProps.viewProjTransform);
+			auto& rendererRenderable = view.get<RendererRenderable>(ent);
+			// RendererRenderable* rendererRenderable = inputs.scene.renderables[i];
+			rendererRenderable.updatePerCallBuffer(viewProps.viewProjTransform);
 
-			for (auto& element : inputs.scene.renderables[i]->elements)
+			for (auto& element : rendererRenderable.elements)
 			{
 				SPtr<GpuParams> gpuParams = element.params->getGpuParams();
 				for(UINT32 j = 0; j < GPT_COUNT; j++)
@@ -1440,13 +1447,19 @@ namespace bs { namespace ct
 		// Prepare objects for rendering by binding forward lighting data
 		//// Normal renderables
 		const VisibilityInfo& visibility = inputs.view.getVisibilityMasks();
-		const auto numRenderables = (UINT32)sceneInfo.renderables.size();
-		for (UINT32 i = 0; i < numRenderables; i++)
+		// const auto numRenderables = (UINT32)sceneInfo.renderables.size();
+		// for (UINT32 i = 0; i < numRenderables; i++)
+		auto view = sceneInfo.registry->view<RendererRenderable, CVisible, CullInfo>();
+		for (auto ent : view)
 		{
-			if (!visibility.renderables[i])
+			auto& renderable = view.get<RendererRenderable>(ent);
+			const auto& visibility = view.get<CVisible>(ent);
+			const auto& cullInfo = view.get<CullInfo>(ent);
+			// if (!visibility.renderables[i])
+			if (!visibility.anyVisible())
 				continue;
 
-			for (auto& element : sceneInfo.renderables[i]->elements)
+			for (auto& element : renderable.elements)
 			{
 				ShaderFlags shaderFlags = element.material->getShader()->getFlags();
 
@@ -1462,7 +1475,7 @@ namespace bs { namespace ct
 				else
 				{
 					// Populate light & probe buffers
-					const Bounds& bounds = sceneInfo.renderableCullInfos[i].bounds;
+					const Bounds& bounds = cullInfo.bounds;
 					bindParamsForStandardForward(*gpuParams, bounds, element.forwardLightingParams, element.imageBasedParams);
 				}
 

@@ -191,7 +191,7 @@ namespace bs { namespace ct
 	/** Information whether certain scene objects are visible in a view, per object type. */
 	struct VisibilityInfo
 	{
-		Vector<bool> renderables;
+		// Vector<bool> renderables;
 		Vector<bool> radialLights;
 		Vector<bool> spotLights;
 		Vector<bool> reflProbes;
@@ -287,8 +287,8 @@ namespace bs { namespace ct
 		 *									As a side-effect, per-view visibility data is also calculated and can be
 		 *									retrieved by calling getVisibilityMask().
 		 */
-		void determineVisible(const Vector<RendererRenderable*>& renderables, const Vector<CullInfo>& cullInfos,
-			Vector<bool>* visibility = nullptr);
+		// void determineVisible(const Vector<RendererRenderable*>& renderables, const Vector<CullInfo>& cullInfos,
+		// 	Vector<bool>* visibility = nullptr);
 
 		/**
 		 * Populates view render queues by determining visible particle systems.
@@ -348,7 +348,7 @@ namespace bs { namespace ct
 		 */
 		void calculateVisibility(const Vector<CullInfo>& cullInfos, Vector<bool>& visibility) const;
 
-		void calculateVisible(ecs::Registry* reg);
+		void calculateVisible(ecs::Registry* reg, UINT32 viewIdx);
 		/**
 		 * Culls the provided set of bounds against the current frustum and outputs a set of visibility flags determining
 		 * which entry is or isn't visible by this view. Both inputs must be arrays of the same size.
