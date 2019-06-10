@@ -44,7 +44,7 @@ namespace bs {	namespace ct
 		:mOptions(options)
 	{
 		mPerFrameParamBuffer = gPerFrameParamDef.createBuffer();
-		// mInfo.registry = ecs::ECSManager::instance().getRegistry();
+		mInfo.registry = ecs::ECSManager::instance().getRegistry();
 	}
 
 	RendererScene::~RendererScene()
@@ -454,8 +454,17 @@ namespace bs {	namespace ct
 
 	void RendererScene::unregisterRenderable(Renderable* renderable)
 	{
-		ecs::EntityType renderableId = renderable->getRendererId();
-		mInfo.registry->destroy(renderableId);
+		ecs::EntityType id = renderable->getRendererId();
+
+		auto& renderRenderable = mInfo.registry->get<RendererRenderable>(id);
+		Vector<RenderableElement>& elements = renderRenderable.elements;
+		for (auto& element : elements)
+		{
+			freeSamplerStateOverrides(element);
+			element.samplerOverrides = nullptr;
+		}
+
+		mInfo.registry->destroy(id);
 
 		// UINT32 renderableId = renderable->getRendererId();
 		// Renderable* lastRenerable = mInfo.renderables.back()->renderable;

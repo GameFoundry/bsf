@@ -7,7 +7,7 @@
 #include "BsRendererView.h"
 #include "BsRendererParticles.h"
 #include "Shading/BsLightProbes.h"
-#include "Utility/BsSamplerOverrides.h"z
+#include "Utility/BsSamplerOverrides.h"
 
 namespace bs
 {

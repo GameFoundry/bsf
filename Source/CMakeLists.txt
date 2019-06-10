@@ -128,8 +128,8 @@ set_directory_properties(PROPERTIES
 
 # Sub-directories
 ## Foundation
-add_subdirectory(Foundation)
 add_subdirectory(Plugins/bsfEnTT)
+add_subdirectory(Foundation)
 
 ## Plugins
 ### If using MSVC include all plugins in the solution (which ones actually build is controlled by dependencies)

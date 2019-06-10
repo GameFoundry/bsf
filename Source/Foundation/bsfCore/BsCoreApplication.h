@@ -54,9 +54,9 @@ namespace bs
 		 */
 		void runMainLoop();
 		/**
-		 * Executes the main lop within certain number of steps. Useful for unit-testing purposes only.
+		 * Executes the main loop within certain number of steps. Useful for unit-testing purposes only.
 		 */
-		void runMainLoop(UINT32 steps);
+		void runMainSteps(UINT32 steps);
 		/**	Stops the (infinite) main loop from running. The loop will complete its current cycle before stopping. */
 		void stopMainLoop();
 

@@ -10,13 +10,15 @@
 #include "Components/BsCCamera.h"
 #include "Components/BsCRenderable.h"
 #include "Scene/BsSceneManager.h"
+#include "bsfEnTT/Scene/Registry.h"
+#include "CoreThread/BsCoreThread.h"
 
 
 namespace bs::ecs {
-	class RenderableTestSuite : public bs::Test {};
+	class ECSRenderableTestSuite : public bs::Test {};
 
 	// TEST_F is required.
-	TEST_F(RenderableTestSuite, MakeRenderable) {
+	TEST_F(ECSRenderableTestSuite, MakeRenderable) {
 		Registry reg;
 		EntityType ent = reg.create();
 		auto& renderable = reg.assign<bs::ecs::ERenderable>(ent);
@@ -38,7 +40,7 @@ namespace bs::ecs {
 
 
 
-	TEST_F(RenderableTestSuite, MakeStandard) {
+	TEST_F(ECSRenderableTestSuite, MakeStandard) {
 
 		HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
 		HCamera sceneCamera = sceneCameraSO->addComponent<CCamera>();
@@ -57,8 +59,13 @@ namespace bs::ecs {
 		boxRenderable->setMaterial(material);
 		boxSO->setPosition(Vector3(0.0f, 0.0f, 0.0f));
 
+		ASSERT_TRUE(SceneManager::isStarted());
+		ASSERT_TRUE(ECSManager::isStarted());
 
     	Application::instance().runMainSteps(4);
+
+    	auto reg = ECSManager::instance().getRegistry();
+    	ASSERT_GT(reg->size(), 0);
 
     	bool forceRemoveAll = true;
     	SceneManager::instance().clearScene(forceRemoveAll);

@@ -55,6 +55,7 @@ namespace bs { namespace ct
 	{
 		Renderer::initialize();
 
+		ecs::ECSManager::startUp();
 		gCoreThread().queueCommand(std::bind(&RenderECS::initializeCore, this), CTQF_InternalQueue);
 	}
 
@@ -64,6 +65,7 @@ namespace bs { namespace ct
 
 		gCoreThread().queueCommand(std::bind(&RenderECS::destroyCore, this));
 		gCoreThread().submit(true);
+		ecs::ECSManager::shutDown();
 	}
 
 	void RenderECS::initializeCore()
@@ -81,7 +83,6 @@ namespace bs { namespace ct
 		// Ensure profiler methods can be called from start-up methods
 		gProfilerGPU().beginFrame();
 
-		ecs::ECSManager::startUp();
 		RendererUtility::startUp();
 		GpuSort::startUp();
 		GpuResourcePool::startUp();
@@ -145,7 +146,6 @@ namespace bs { namespace ct
 		GpuResourcePool::shutDown();
 		GpuSort::shutDown();
 		RendererUtility::shutDown();
-		ecs::ECSManager::shutDown();
 	}
 
 	void RenderECS::notifyRenderableAdded(Renderable* renderable)
@@ -392,6 +392,7 @@ namespace bs { namespace ct
 
 		// Update material parameters & animation times for all renderables
 		// for (UINT32 i = 0; i < sceneInfo.renderables.size(); i++)
+		assert(sceneInfo.registry != nullptr);
 		sceneInfo.registry->view<RendererRenderable>().each([&timings](auto& renderable) {
 			// RendererRenderable* renderable = sceneInfo.renderables[i];
 			for (auto& element : renderable.elements)
