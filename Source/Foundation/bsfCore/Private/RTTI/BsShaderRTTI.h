@@ -279,7 +279,7 @@ namespace bs
 		/** @copydoc RTTIPlainType::toMemory */
 		static void toMemory(const ShaderVariationParamValue& data, char* memory)
 		{
-			static constexpr UINT32 VERSION = 0;
+			static constexpr UINT8 VERSION = 0;
 
 			UINT32 size = sizeof(UINT32);
 			char* memoryStart = memory;
@@ -328,7 +328,7 @@ namespace bs
 		/** @copydoc RTTIPlainType::toMemory */
 		static void toMemory(const ShaderVariationParamInfo& data, char* memory)
 		{
-			static constexpr UINT32 VERSION = 0;
+			static constexpr UINT8 VERSION = 0;
 
 			UINT32 size = sizeof(UINT32);
 			char* memoryStart = memory;
