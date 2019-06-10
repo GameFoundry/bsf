@@ -289,10 +289,12 @@ namespace bs { namespace ct
 
 	TiledImageBasedLightingParamDef gTiledImageBasedLightingParamDef;
 
-	// Note: Using larger tiles than in tiled deferred lighting since we use AABB for intersections, which is more
-	// expensive to compute than frustums. This way we amortize the cost even though other parts of the shader might suffer
-	// due to increased thread group load.
-	const UINT32 TiledDeferredImageBasedLightingMat::TILE_SIZE = 32;
+	// Note: Tile size was reduced from 32 to 16 because of macOS limitations. Ideally we should try keeping the larger
+	// size on non-macOS platforms, but currently where don't have a platform-specific way of setting this.
+	//
+	// The theory is that using larger tiles will amortize the cost of computing tile AABB's (which this shader uses, 
+	// compared to the cheaper-to-compute frustums).
+	const UINT32 TiledDeferredImageBasedLightingMat::TILE_SIZE = 16;
 
 	TiledDeferredImageBasedLightingMat::TiledDeferredImageBasedLightingMat()
 	{
