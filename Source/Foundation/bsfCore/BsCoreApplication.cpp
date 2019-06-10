@@ -82,16 +82,16 @@ namespace bs
 		ParticleManager::shutDown();
 		AnimationManager::shutDown();
 
-		// This must be done after all resources are released since it will unload the physics plugin, and some resources
-		// might be instances of types from that plugin.
-		PhysicsManager::shutDown();
-
-		RendererManager::shutDown();
 		// All CoreObject related modules should be shut down now. They have likely queued CoreObjects for destruction, so
 		// we need to wait for those objects to get destroyed before continuing.
+		// update the coreThread before rendermanager and physicsmanager shutdown...
 		CoreObjectManager::instance().syncToCore();
 		gCoreThread().update();
 		gCoreThread().submitAll(true);
+		// This must be done after all resources are released since it will unload the physics plugin, and some resources
+		// might be instances of types from that plugin.
+		PhysicsManager::shutDown();
+		RendererManager::shutDown();
 
 		unloadPlugin(mRendererPlugin);
 

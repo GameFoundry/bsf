@@ -2,12 +2,13 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #pragma once
 
-#include "BsRenderBeastPrerequisites.h"
+#include "BsRenderECSPrerequisites.h"
 #include "BsRendererLight.h"
 #include "BsRendererView.h"
 #include "BsRendererParticles.h"
 #include "Shading/BsLightProbes.h"
-#include "Utility/BsSamplerOverrides.h"z
+#include "Utility/BsSamplerOverrides.h"
+#include "bsfEnTT/fwd.h"
 
 namespace bs
 {
@@ -20,24 +21,32 @@ namespace bs
 		class Decal;
 		struct FrameInfo;
 
-	/** @addtogroup RenderBeast
+	/** @addtogroup RenderECS
 	 *  @{
 	 */
 
 	// Limited by max number of array elements in texture for DX11 hardware
 	constexpr UINT32 MaxReflectionCubemaps = 2048 / 6;
 
+	struct CVisible {
+		bool visible{false};
+	};
+	struct CReady {
+		bool ready{false};
+	};
+
 	/** Contains most scene objects relevant to the renderer. */
 	struct SceneInfo
 	{
+		ecs::Registry* registry = nullptr;
 		// Cameras and render targets
 		Vector<RendererRenderTarget> renderTargets;
 		Vector<RendererView*> views;
 		UnorderedMap<const Camera*, UINT32> cameraToView;
 
 		// Renderables
-		Vector<RendererRenderable*> renderables;
-		Vector<CullInfo> renderableCullInfos;
+		// Vector<RendererRenderable*> renderables;
+		// Vector<CullInfo> renderableCullInfos;
 
 		// Lights
 		Vector<RendererLight> directionalLights;
@@ -75,7 +84,7 @@ namespace bs
 	class RendererScene
 	{
 	public:
-		RendererScene(const SPtr<RenderBeastOptions>& options);
+		RendererScene(const SPtr<RenderECSOptions>& options);
 		~RendererScene();
 
 		/** Registers a new camera in the scene. */
@@ -160,7 +169,7 @@ namespace bs
 		const SceneInfo& getSceneInfo() const { return mInfo; }
 
 		/** Updates scene according to the newly provided renderer options. */
-		void setOptions(const SPtr<RenderBeastOptions>& options);
+		void setOptions(const SPtr<RenderECSOptions>& options);
 
 		/**
 		 * Checks all sampler overrides in case material sampler states changed, and updates them.
@@ -229,7 +238,7 @@ namespace bs
 		SPtr<GpuParamBlockBuffer> mPerFrameParamBuffer;
 		UnorderedMap<SamplerOverrideKey, MaterialSamplerOverrides*> mSamplerOverrides;
 
-		SPtr<RenderBeastOptions> mOptions;
+		SPtr<RenderECSOptions> mOptions;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(PerFrameParamDef)

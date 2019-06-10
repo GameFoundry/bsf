@@ -2,13 +2,21 @@
 include(CMakeSources.cmake)
 
 # Target
-add_library(bsfECSRenderer SHARED ${BS_ECSRENDERER_SRC})
+add_library(bsfECSRenderer SHARED ${BS_ECS_SRC})
 
 # Common flags
 add_common_flags(bsfECSRenderer)
 
 # Includes
-target_include_directories(bsfECSRenderer PRIVATE "./")
+target_include_directories(bsfECSRenderer PRIVATE
+  "./"
+  "${CMAKE_SOURCE_DIR}/Source/Plugins"
+  "${CMAKE_SOURCE_DIR}/Source/Plugins/bsfEnTT"
+  "${CMAKE_SOURCE_DIR}/Source/Plugins/bsfEnTT/ThirdParty/EnTT/src"
+)
+
+# Defines
+target_compile_definitions(bsfECSRenderer PRIVATE -DBS_BSRND_EXPORTS)
 
 # Libraries
 ## Local libs

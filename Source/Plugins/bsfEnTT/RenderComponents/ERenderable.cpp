@@ -14,7 +14,7 @@ Bounds ERenderable::getBounds() const
 		return bounds;
 	}
 
-	HMesh mesh = getMesh();
+	HMesh mesh = mMesh;
 
 	if (!mMesh.isLoaded())
 	{

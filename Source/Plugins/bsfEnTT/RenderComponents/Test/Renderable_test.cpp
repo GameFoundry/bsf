@@ -3,6 +3,8 @@
 #include <entt/entt.hpp>
 #include "bsfEnTT/RenderComponents/ERenderable.h"
 #include "Importer/BsImporter.h"
+#include "Resources/BsBuiltinResources.h"
+#include "Material/BsMaterial.h"
 
 
 
@@ -23,6 +25,10 @@ namespace bs::ecs {
 		ASSERT_TRUE(mesh->getCore());
 		auto bounds = renderable.getBounds();
 		ASSERT_GT(bounds.getSphere().getRadius(), 0);
-		HMesh m = renderable.getMesh();
+
+		HShader shader = BuiltinResources::instance().getBuiltinShader(BuiltinShader::Standard);
+		HMaterial material = Material::create(shader);
+
+		renderable.mMaterials.push_back(material);
 	}
 }

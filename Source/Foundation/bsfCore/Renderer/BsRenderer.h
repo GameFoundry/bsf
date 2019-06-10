@@ -7,8 +7,8 @@
 #include "Renderer/BsRendererMeshData.h"
 #include "Material/BsShaderVariation.h"
 
-namespace bs 
-{ 
+namespace bs
+{
 	class RendererExtension;
 	class LightProbeVolume;
 	struct RenderSettings;
@@ -66,7 +66,7 @@ namespace bs
 	static StringID RTag_Morph = "Morph";
 	static StringID RTag_SkinnedMorph = "SkinnedMorph";
 
-	/**	Set of options that can be used for controlling the renderer. */	
+	/**	Set of options that can be used for controlling the renderer. */
 	struct BS_CORE_EXPORT RendererOptions
 	{
 		virtual ~RendererOptions() = default;
@@ -74,12 +74,12 @@ namespace bs
 
 	/** Settings that control renderer scene capture. */
 	struct CaptureSettings
-	{	
+	{
 		/** If true scene will be captured in a format that supports high dynamic range. */
 		bool hdr = true;
 
-		/** 
-		 * When enabled the alpha channel of the final render target will be populated with an encoded depth value. 
+		/**
+		 * When enabled the alpha channel of the final render target will be populated with an encoded depth value.
 		 * Parameters @p depthEncodeNear and @p depthEncodeFar control which range of the depth buffer to encode.
 		 */
 		bool encodeDepth = false;
@@ -97,7 +97,7 @@ namespace bs
 		float depthEncodeFar = 0.0f;
 	};
 
-	/** 
+	/**
 	 * Information about a shader that is part of a renderer extension point. These shaders can be specialized by the
 	 * outside world, by overriding parts of their functionality through mixins. Those specialized shaders are then,
 	 * depending on the extension point, either attached to a normal Shader as subshaders, or sent back to the renderer
@@ -112,8 +112,8 @@ namespace bs
 
 	/**
 	 * Information about a shader extension point provided by the renderer. Extension points allow the outside world to
-	 * generate a customized version of shaders used by the renderer, usually overriding some functionality with custom 
-	 * code. Extension point can contain one or multiple shaders whose functionality can be overriden. 
+	 * generate a customized version of shaders used by the renderer, usually overriding some functionality with custom
+	 * code. Extension point can contain one or multiple shaders whose functionality can be overriden.
 	 */
 	struct ShaderExtensionPointInfo
 	{
@@ -124,8 +124,8 @@ namespace bs
 	 * Primarily rendering class that allows you to specify how to render objects that exist in the scene graph. You need
 	 * to provide your own implementation of your class.
 	 *
-	 * @note	
-	 * Normally you would iterate over all cameras, find visible objects for each camera and render those objects in some 
+	 * @note
+	 * Normally you would iterate over all cameras, find visible objects for each camera and render those objects in some
 	 * way.
 	 */
 	class BS_CORE_EXPORT Renderer
@@ -313,55 +313,55 @@ namespace bs
 		 */
 		virtual void notifyDecalRemoved(Decal* decal) { }
 
-		/** 
-		 * Captures the scene at the specified location into a cubemap. 
-		 * 
+		/**
+		 * Captures the scene at the specified location into a cubemap.
+		 *
 		 * @param[in]	cubemap		Cubemap to store the results in.
 		 * @param[in]	position	Position to capture the scene at.
 		 * @param[in]	settings	Settings that allow you to customize the capture.
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position, 
+		virtual void captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position,
 			const CaptureSettings& settings) = 0;
 
 		/**
 		 * Creates a new empty renderer mesh data.
 		 *
 		 * @note	Sim thread.
-		 *			
+		 *
 		 * @see		RendererMeshData
 		 */
-		virtual SPtr<RendererMeshData> _createMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, 
+		virtual SPtr<RendererMeshData> _createMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout,
 													   IndexType indexType = IT_32BIT);
 
 		/**
 		 * Creates a new renderer mesh data using an existing generic mesh data buffer.
 		 *
 		 * @note	Sim thread.
-		 *			
+		 *
 		 * @see		RendererMeshData
 		 */
 		virtual SPtr<RendererMeshData> _createMeshData(const SPtr<MeshData>& meshData);
 
-		/** 
+		/**
 		 * Registers an extension object that will be called every frame by the renderer. Allows external code to perform
 		 * custom rendering interleaved with the renderer's output.
-		 * 
+		 *
 		 * @note	Core thread.
 		 */
 		void addPlugin(RendererExtension* plugin) { mCallbacks.insert(plugin); }
 
-		/** 
-		 * Unregisters an extension registered with addPlugin(). 
-		 * 
+		/**
+		 * Unregisters an extension registered with addPlugin().
+		 *
 		 * @note	Core thread.
 		 */
 		void removePlugin(RendererExtension* plugin) { mCallbacks.erase(plugin); }
 
 		/**
 		 * Registers a new task for execution on the core thread.
-		 * 
+		 *
 		 * @note	Thread safe.
 		 */
 		void addTask(const SPtr<RendererTask>& task);
@@ -372,22 +372,22 @@ namespace bs
 		/**	Returns current set of options used for controlling the rendering. */
 		virtual SPtr<RendererOptions> getOptions() const { return SPtr<RendererOptions>(); }
 
-		/** 
+		/**
 		 * Returns information about a set of shaders corresponding to a renderer extension point. These shaders are the
 		 * built-in shaders used by the renderer for specific functionality (e.g. deferred rendering). These shaders can
-		 * be customized (usually through BSL mixin overrides) to provide user specific functionality (e.g. a custom BRDF 
-		 * model), without having to modify the (usually complex) original shaders. 
-		 * 
+		 * be customized (usually through BSL mixin overrides) to provide user specific functionality (e.g. a custom BRDF
+		 * model), without having to modify the (usually complex) original shaders.
+		 *
 		 * These modified shaders can then be passed back to the renderer through some means. If it's an extension point
 		 * that does some kind of per-object rendering (e.g. shadow projection, or lighting in a forward renderer), then
 		 * the shader should be passed as a SubShader of the Shader used by the Renderable's Material. If it's some global
 		 * shader (e.g. deferred rendering lighting) then call setGlobalShaderOverride(). In both cases, the name of the
 		 * extension point shader should be provided, as returned by this method.
-		 * 
+		 *
 		 * A single extension point can provide multiple shaders (e.g. deferred rendering can be implemented as both
 		 * standard and tiled deferred), in which case you'll likely want to override all the relevant shaders.
-		 * 
-		 * @param[in]	name		Name of the sub-shader extension point, e.g. "DeferredDirectLighting", 
+		 *
+		 * @param[in]	name		Name of the sub-shader extension point, e.g. "DeferredDirectLighting",
 		 *							"ShadowProjection". These are renderer specific and you should look them up in
 		 *							renderer documentation.
 		 * @returns					A list of overridable shaders in the extension point.
@@ -425,7 +425,7 @@ namespace bs
 		 * @param[in]	forceAll	If true, multi-frame tasks will be forced to execute fully within this call.
 		 * @param[in]	upToFrame	Only tasks that were queued before or during the frame with the provided index will
 		 *							be processed.
-		 * 
+		 *
 		 * @note	Core thread.
 		 */
 		void processTasks(bool forceAll, UINT64 upToFrame = std::numeric_limits<UINT64>::max());
@@ -435,7 +435,7 @@ namespace bs
 		 *
 		 * @param[in]	task		Task to execute.
 		 * @param[in]	forceAll	If true, multi-frame tasks will be forced to execute fully within this call.
-		 * 
+		 *
 		 * @note	Core thread.
 		 */
 		void processTask(RendererTask& task, bool forceAll);
@@ -491,7 +491,7 @@ namespace bs
 		/** Cancels the task and removes it from the Renderer's queue. */
 		void cancel();
 
-		/** 
+		/**
 		 * Callback triggered on the sim thread, when the task completes. Is not triggered if the task is cancelled.
 		 *
 		 * @note	Sim thread only.

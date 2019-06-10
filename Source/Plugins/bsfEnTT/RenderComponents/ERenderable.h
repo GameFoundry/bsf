@@ -40,23 +40,6 @@ struct BS_CORE_EXPORT ERenderable {
 	/**	Gets world bounds of the mesh rendered by this object. */
 	Bounds getBounds() const;
 
-	/** @copydoc setCullDistanceFactor() */
-	float getCullDistanceFactor() const { return mCullDistanceFactor; }
-
-	/** @copydoc setLayer() */
-	UINT64 getLayer() const { return mLayer; }
-
-	/**	@copydoc setMesh() */
-	HMesh getMesh() const { return mMesh; }
-
-	/**	Returns the transform matrix that is applied to the object when its being rendered. */
-	Matrix4 getMatrix() const { return mTfrmMatrix; }
-
-	/**
-	 * Returns the transform matrix that is applied to the object when its being rendered. This transform matrix does
-	 * not include scale values.
-	 */
-	Matrix4 getMatrixNoScale() const { return mTfrmMatrixNoScale; }
 };
 
 }  // namespace bs::ecs

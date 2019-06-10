@@ -15,7 +15,7 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName",            "Marko Pintera and contributors"
-            VALUE "FileDescription",        "ECS renderer plugin for bs::framework"
+            VALUE "FileDescription",        "RenderECS renderer plugin for bs::framework"
             VALUE "FileVersion",            BS_VERSION_STRING
             VALUE "ProductName",            "bs::framework"
             VALUE "Licence",                "Released under the MIT License"

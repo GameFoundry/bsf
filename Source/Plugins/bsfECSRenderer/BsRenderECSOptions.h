@@ -1,0 +1,49 @@
+//************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
+//*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
+#pragma once
+
+#include "BsRenderECSPrerequisites.h"
+#include "Renderer/BsRenderer.h"
+#include "Renderer/BsRenderQueue.h"
+
+namespace bs { namespace ct
+{
+	/** @addtogroup RenderECS
+	 *  @{
+	 */
+
+	/** Texture filtering options for RenderECS. */
+	enum class RenderECSFiltering
+	{
+		Bilinear, /**< Sample linearly in X and Y directions within a texture mip level. */
+		Trilinear, /**< Sample bilinearly and also between texture mip levels to hide the mip transitions. */
+		Anisotropic /**< High quality dynamic filtering that improves quality of angled surfaces */
+	};
+
+	/** A set of options used for controlling the rendering of the RenderECS renderer. */
+	struct RenderECSOptions : public RendererOptions
+	{
+		/**	Type of filtering to use for all textures on scene elements. */
+		RenderECSFiltering filtering = RenderECSFiltering::Anisotropic;
+
+		/**
+		 * Maximum number of samples to be used when performing anisotropic filtering. Only relevant if #filtering is set to
+		 * RenderECSFiltering::Anisotropic.
+		 */
+		UINT32 anisotropyMax = 16;
+
+		/**
+		 * Controls if and how a render queue groups renderable objects by material in order to reduce number of state
+		 * changes. Sorting by material can reduce CPU usage but could increase overdraw.
+		 */
+		StateReduction stateReductionMode = StateReduction::Distance;
+
+		/**
+		 * Determines the maximum shadow map size, in pixels. The system might decide to use smaller resolution maps for
+		 * shadows far away, but will never increase the resolution past the provided value.
+		 */
+		UINT32 shadowMapSize = 2048;
+	};
+
+	/** @} */
+}}

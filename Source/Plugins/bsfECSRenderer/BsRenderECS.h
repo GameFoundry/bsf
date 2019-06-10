@@ -2,7 +2,7 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #pragma once
 
-#include "BsRenderBeastPrerequisites.h"
+#include "BsRenderECSPrerequisites.h"
 #include "Renderer/BsRenderer.h"
 #include "Renderer/BsRendererMaterial.h"
 #include "BsRendererView.h"
@@ -16,7 +16,7 @@ namespace bs
 	{
 	class LightGrid;
 
-	/** @addtogroup RenderBeast
+	/** @addtogroup RenderECS
 	 *  @{
 	 */
 
@@ -44,7 +44,7 @@ namespace bs
 	 * Default framework renderer. Performs frustum culling, sorting and renders all scene objects while applying
 	 * lighting, shadowing, special effects and post-processing.
 	 */
-	class RenderBeast : public Renderer
+	class RenderECS : public Renderer
 	{
 		/** Renderer information for a single material. */
 		struct RendererMaterial
@@ -54,8 +54,8 @@ namespace bs
 		};
 
 	public:
-		RenderBeast();
-		~RenderBeast() = default;
+		RenderECS();
+		~RenderECS() = default;
 
 		/** @copydoc Renderer::getName */
 		const StringID& getName() const override;
@@ -70,7 +70,7 @@ namespace bs
 		SPtr<RendererOptions> getOptions() const override;
 
 		/** Returns the feature set the renderer is operating on. Core thread only. */
-		RenderBeastFeatureSet getFeatureSet() const { return mFeatureSet; }
+		RenderECSFeatureSet getFeatureSet() const { return mFeatureSet; }
 
 		/** @copydoc Renderer::initialize */
 		void initialize() override;
@@ -163,7 +163,7 @@ namespace bs
 		 *
 		 * @note	Core thread only.
 		 */
-		void syncOptions(const RenderBeastOptions& options);
+		void syncOptions(const RenderECSOptions& options);
 
 		/**
 		 * Performs rendering over all camera proxies.
@@ -206,23 +206,23 @@ namespace bs
 		void updateReflProbeArray();
 
 		// Core thread only fields
-		RenderBeastFeatureSet mFeatureSet = RenderBeastFeatureSet::Desktop;
+		RenderECSFeatureSet mFeatureSet = RenderECSFeatureSet::Desktop;
 
 		// Scene data
 		SPtr<RendererScene> mScene;
 
-		SPtr<RenderBeastOptions> mCoreOptions;
+		SPtr<RenderECSOptions> mCoreOptions;
 
 		// Helpers to avoid memory allocations
 		RendererViewGroup* mMainViewGroup = nullptr;
 
 		// Sim thread only fields
-		SPtr<RenderBeastOptions> mOptions;
+		SPtr<RenderECSOptions> mOptions;
 		bool mOptionsDirty = true;
 	};
 
-	/**	Provides easy access to the RenderBeast renderer. */
-	SPtr<RenderBeast> gRenderBeast();
+	/**	Provides easy access to the RenderECS renderer. */
+	SPtr<RenderECS> gRenderECS();
 
 	/** @} */
 }}
