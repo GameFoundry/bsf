@@ -17,6 +17,10 @@ namespace bs::ecs {
 
   ECSManager::~ECSManager() {}
 
+  ECSManager::ECSManager() :
+    registry(std::make_unique<Registry>())
+  {}
+
   void shutDown() {
   	ECSManager::shutDown();
   }
@@ -24,20 +28,16 @@ namespace bs::ecs {
   	ECSManager::startUp();
   }
 
-
   void ECSManager::onStartUp() {
-  	std::cout << "ECS MANA UP" << std::endl;
+  	// std::cout << "ECS MANA UP" << std::endl;
   }
 
   void ECSManager::onShutDown() {
-  	std::cout << "ECS DOWN " << std::endl;
+  	// std::cout << "ECS DOWN " << std::endl;
   }
 
   Registry* gRegistry() {
   	return ECSManager::instance().getRegistry();
   }
 
-  ECSManager::ECSManager() :
-    registry(std::make_unique<Registry>())
-  {}
 }

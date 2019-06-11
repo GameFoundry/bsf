@@ -6,7 +6,7 @@
 #include "Renderer/BsCamera.h"
 #include "Scene/BsComponent.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Components-Core
 	 *  @{
@@ -14,13 +14,21 @@ namespace bs
 
 	/**
 	 * @copydoc	Camera
-	 * 			
+	 *
 	 * Wraps a Camera as a Component.
 	 */
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering,n:Camera) CCamera : public Component
 	{
 	public:
 		CCamera(const HSceneObject& parent);
+
+		// template<typename... Args>
+		// CCamera(const HSceneObject& parent, const Args...)
+		// 	: CCamera(parent),
+		// 	mInternal()
+		// {
+
+		// }
 		virtual ~CCamera() = default;
 
 		/** @copydoc Camera::getViewport */
@@ -93,7 +101,7 @@ namespace bs
 
 		/** @copydoc Camera::isCustomViewMatrixEnabled */
 		virtual bool isCustomViewMatrixEnabled() const { return mInternal->isCustomViewMatrixEnabled(); }
-		
+
 		/** @copydoc Camera::setCustomProjectionMatrix */
 		virtual void setCustomProjectionMatrix(bool enable, const Matrix4& projectionMatrix = Matrix4::IDENTITY)
 		{
@@ -231,7 +239,7 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		Vector3 unprojectPoint(const Vector3& point) const { return mInternal->unprojectPoint(point); }
 
-		/** @copydoc Camera::setMain */	
+		/** @copydoc Camera::setMain */
 		BS_SCRIPT_EXPORT(n:Main,pr:setter)
 		void setMain(bool main);
 
@@ -239,7 +247,7 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:Main,pr:getter)
 		bool isMain() const { return mInternal->isMain(); }
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 

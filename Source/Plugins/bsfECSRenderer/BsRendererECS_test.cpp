@@ -13,6 +13,8 @@
 #include "bsfEnTT/Scene/Registry.h"
 #include "CoreThread/BsCoreThread.h"
 #include "BsRendererRenderable.h"
+#include "Image/BsTexture.h"
+#include "Components/BsCDecal.h"
 
 
 namespace bs::ecs {
@@ -40,6 +42,60 @@ namespace bs::ecs {
 	}
 
 
+	void addBox() {
+		HShader shader = gBuiltinResources().getBuiltinShader(BuiltinShader::Standard);
+		HMaterial material = Material::create(shader);
+		HMesh boxMesh = gBuiltinResources().getMesh(BuiltinMesh::Box);
+		HSceneObject boxSO = SceneObject::create("Box");
+		HRenderable boxRenderable = boxSO->addComponent<CRenderable>();
+		boxRenderable->setMesh(boxMesh);
+		boxRenderable->setMaterial(material);
+		boxSO->setPosition(Vector3(0.0f, 0.0f, 0.0f));
+	}
+
+	void screenShot() {
+		TEXTURE_DESC colorDesc;
+		colorDesc.type = TEX_TYPE_2D;
+		colorDesc.width = 1920 / 2;
+		colorDesc.height = 1080 / 2;
+		// colorDesc.format = PF_RGB32F;
+		colorDesc.usage = TU_RENDERTARGET | TU_CPUREADABLE;
+		HTexture color = Texture::create(colorDesc);
+
+		RENDER_TEXTURE_DESC desc;
+		desc.colorSurfaces[0].texture = color;
+		desc.colorSurfaces[0].face = 0;
+		desc.colorSurfaces[0].mipLevel = 0;
+		SPtr<RenderTexture> renderTexture = RenderTexture::create(desc);
+
+		// auto cam = Camera::create(renderTexture);
+		// HSceneObject cameraSO = SceneObject::create("Camera");
+		// HCamera camera = cameraSO->addComponent<CCamera>();
+		SPtr<Camera> cam = gSceneManager().getMainCamera();
+		auto origTarget = cam->getViewport()->getTarget();
+		cam->getViewport()->setTarget(renderTexture);
+    	Application::instance().runMainSteps(1);
+    	cam->getViewport()->setTarget(origTarget);
+
+    	ASSERT_TRUE(renderTexture->getColorTexture(0));
+    	ASSERT_TRUE(renderTexture->getColorTexture(0).isLoaded(false));
+
+    	// unfotunately there's no utility for
+    	// taking a texture and writing it out as an image file.
+    	// it will be a very useful utility for future.
+
+	}
+
+	void addDecal() {
+		HShader decalShader = gBuiltinResources().getBuiltinShader(BuiltinShader::Decal);
+		HMaterial decalMaterial = Material::create(decalShader);
+		HSceneObject decalSO = SceneObject::create("Decal");
+		decalSO->setPosition(Vector3(0.0f, 6.0f, 0.0f));
+		decalSO->lookAt(Vector3(0.0f, 0.0f, 0.0f));
+		HDecal decal = decalSO->addComponent<CDecal>();
+		decal->setMaterial(decalMaterial);
+	}
+
 
 	TEST_F(ECSRenderableTestSuite, MakeStandard) {
 
@@ -51,14 +107,7 @@ namespace bs::ecs {
 
 
 		// Default Box
-		HShader shader = gBuiltinResources().getBuiltinShader(BuiltinShader::Standard);
-		HMaterial material = Material::create(shader);
-		HMesh boxMesh = gBuiltinResources().getMesh(BuiltinMesh::Box);
-		HSceneObject boxSO = SceneObject::create("Box");
-		HRenderable boxRenderable = boxSO->addComponent<CRenderable>();
-		boxRenderable->setMesh(boxMesh);
-		boxRenderable->setMaterial(material);
-		boxSO->setPosition(Vector3(0.0f, 0.0f, 0.0f));
+		addBox();
 
     	Application::instance().runMainSteps(4);
 
@@ -66,7 +115,14 @@ namespace bs::ecs {
     	ASSERT_GT(reg->size(), 0);
     	ASSERT_GT(reg->size<bs::ct::RendererRenderable>(), 0);
 
+    	screenShot();
+
+    	addDecal();
+
+    	Application::instance().runMainSteps(4);
+
     	bool forceRemoveAll = true;
     	SceneManager::instance().clearScene(forceRemoveAll);
 	}
+
 }

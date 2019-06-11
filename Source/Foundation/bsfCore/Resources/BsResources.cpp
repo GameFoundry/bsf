@@ -86,7 +86,7 @@ namespace bs
 		return loadInternal(uuid, filePath, !async, loadFlags).resource;
 	}
 
-	Resources::LoadInfo Resources::loadInternal(const UUID& uuid, const Path& filePath, bool synchronous, 
+	Resources::LoadInfo Resources::loadInternal(const UUID& uuid, const Path& filePath, bool synchronous,
 		ResourceLoadFlags loadFlags)
 	{
 		LoadInfo output;
@@ -158,7 +158,7 @@ namespace bs
 			}
 
 			// If we have nowhere to load from, warn and complete load if a file path was provided, otherwise pass through
-			// as we might just want to complete a previously queued load 
+			// as we might just want to complete a previously queued load
 			if (filePath.isEmpty())
 			{
 				if (!alreadyLoading)
@@ -181,7 +181,7 @@ namespace bs
 				if (!filePath.isEmpty())
 				{
 					// Note: Ideally this data gets cached eventually (e.g. as part of the manifest). When loading objects
-					// with a lot of dependencies (e.g. scenes) this will get called for every dependency, synchronously, 
+					// with a lot of dependencies (e.g. scenes) this will get called for every dependency, synchronously,
 					// which might take a while. It would be nice to just read it from a single location. Another option is
 					// to make this whole block asynchronous so every dependency does it on its own thread.
 					FileDecoder fs(filePath);
@@ -396,7 +396,7 @@ namespace bs
 				String taskName = "Resource load: " + fileName;
 
 				bool keepSourceData = loadFlags.isSet(ResourceLoadFlag::KeepSourceData);
-				SPtr<Task> task = Task::create(taskName, 
+				SPtr<Task> task = Task::create(taskName,
 					std::bind(&Resources::loadCallback, this, filePath, output.resource, keepSourceData));
 
 				// Register the task
@@ -424,7 +424,7 @@ namespace bs
 		return output;
 	}
 
-	SPtr<Resource> Resources::loadFromDiskAndDeserialize(const Path& filePath, bool loadWithSaveData, 
+	SPtr<Resource> Resources::loadFromDiskAndDeserialize(const Path& filePath, bool loadWithSaveData,
 		std::atomic<float>& progress)
 	{
 		Lock fileLock = FileScheduler::getLock(filePath);
@@ -531,7 +531,7 @@ namespace bs
 					assert(resData.numInternalRefs > 0);
 					resData.numInternalRefs--;
 					resource.removeInternalRef();
-					
+
 					std::uint32_t refCount = resource.getHandleData()->mRefCount.load(std::memory_order_relaxed);
 					lostLastRef = refCount == 0;
 				}
@@ -573,7 +573,7 @@ namespace bs
 	{
 		// Unload and invalidate all resources
 		UnorderedMap<UUID, LoadedResourceData> loadedResourcesCopy;
-		
+
 		{
 			Lock lock(mLoadedResourceMutex);
 			loadedResourcesCopy = mLoadedResources;
@@ -640,6 +640,7 @@ namespace bs
 
 	void Resources::save(const HResource& resource, const Path& filePath, bool overwrite, bool compress)
 	{
+		std::cout << "SAVE??" << std::endl;
 		if (resource == nullptr)
 			return;
 
@@ -686,6 +687,7 @@ namespace bs
 
 	void Resources::_save(const SPtr<Resource>& resource, const Path& filePath, bool compress)
 	{
+		std::cout << "SAVE?" << std::endl;
 		if (!resource->mKeepSourceData)
 		{
 			BS_LOG(Warning, Resources, "Saving a resource that was created/loaded without KeepSourceData flag." 
@@ -698,7 +700,7 @@ namespace bs
 			dependencyUUIDs[i] = dependencyList[i].resource.getUUID();
 
 		UINT32 compressionMethod = (compress && resource->isCompressible()) ? 1 : 0;
-		SPtr<SavedResourceData> resourceData = bs_shared_ptr_new<SavedResourceData>(dependencyUUIDs, 
+		SPtr<SavedResourceData> resourceData = bs_shared_ptr_new<SavedResourceData>(dependencyUUIDs,
 			resource->allowAsyncLoading(), compressionMethod);
 
 		Path parentDir = filePath.getDirectory();
@@ -734,7 +736,7 @@ namespace bs
 		}
 		else
 			savePath = filePath;
-		
+
 		Lock fileLock = FileScheduler::getLock(filePath);
 
 		std::ofstream stream;
@@ -747,10 +749,10 @@ namespace bs
 			MemorySerializer ms;
 			UINT32 numBytes = 0;
 			UINT8* bytes = ms.encode(resourceData.get(), numBytes);
-			
+
 			stream.write((char*)&numBytes, sizeof(numBytes));
 			stream.write((char*)bytes, numBytes);
-			
+
 			bs_free(bytes);
 		}
 
@@ -837,7 +839,7 @@ namespace bs
 
 	SPtr<ResourceManifest> Resources::getResourceManifest(const String& name) const
 	{
-		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
+		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter)
 		{
 			if(name == (*iter)->getName())
 				return (*iter);
@@ -960,8 +962,8 @@ namespace bs
 	bool Resources::getFilePathFromUUID(const UUID& uuid, Path& filePath) const
 	{
 		// Default manifest is at 0th index but all other take priority since Default manifest could
-		// contain obsolete data. 
-		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
+		// contain obsolete data.
+		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter)
 		{
 			if((*iter)->uuidToFilePath(uuid, filePath))
 				return true;
@@ -976,7 +978,7 @@ namespace bs
 		if (!manifestPath.isAbsolute())
 			manifestPath.makeAbsolute(FileSystem::getWorkingDirectoryPath());
 
-		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
+		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter)
 		{
 			if ((*iter)->filePathToUUID(manifestPath, uuid))
 				return true;
