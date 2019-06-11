@@ -196,7 +196,7 @@ namespace bs { namespace ct
 		Vector<bool> spotLights;
 		Vector<bool> reflProbes;
 		Vector<bool> particleSystems;
-		Vector<bool> decals;
+		// Vector<bool> decals;
 	};
 
 	/** Information used for culling an object against a view. */
@@ -304,8 +304,8 @@ namespace bs { namespace ct
 		 *									As a side-effect, per-view visibility data is also calculated and can be
 		 *									retrieved by calling getVisibilityMask().
 		 */
-		void determineVisible(const Vector<RendererParticles>& particleSystems, const Vector<CullInfo>& cullInfos,
-			Vector<bool>* visibility = nullptr);
+		// void determineVisible(const Vector<RendererParticles>& particleSystems, const Vector<CullInfo>& cullInfos,
+		// 	Vector<bool>* visibility = nullptr);
 
 		/**
 		 * Populates view render queues by determining visible decals.
@@ -321,8 +321,8 @@ namespace bs { namespace ct
 		 *									As a side-effect, per-view visibility data is also calculated and can be
 		 *									retrieved by calling getVisibilityMask().
 		 */
-		void determineVisible(const Vector<RendererDecal>& decals, const Vector<CullInfo>& cullInfos,
-			Vector<bool>* visibility = nullptr);
+		// void determineVisible(const Vector<RendererDecal>& decals, const Vector<CullInfo>& cullInfos,
+		// 	Vector<bool>* visibility = nullptr);
 
 		/**
 		 * Calculates the visibility masks for all the lights of the provided type.

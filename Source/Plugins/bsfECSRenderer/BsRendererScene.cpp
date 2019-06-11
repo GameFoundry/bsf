@@ -247,14 +247,11 @@ namespace bs {	namespace ct
 
 		assert(mInfo.registry != nullptr);
 		ecs::EntityType id = mInfo.registry->create();
-		std::cout << "REGISTER RENDERABLE? " << id << std::endl;
 		auto& rendererRenderable = mInfo.registry->assign<RendererRenderable>(id);
 		mInfo.registry->assign<CVisible>(id);
 		mInfo.registry->assign<CReady>(id);
 		mInfo.registry->assign<CullInfo>(id, renderable->getBounds(), renderable->getLayer(), renderable->getCullDistanceFactor());
 
-		// std::cout << "REG " << mInfo.registry << std::endl;
-		std::cout << "DONE? " << mInfo.registry->size<RendererRenderable>() << std::endl;
 
 		renderable->setRendererId(id);
 
@@ -459,7 +456,6 @@ namespace bs {	namespace ct
 	{
 
 		ecs::EntityType id = renderable->getRendererId();
-		std::cout << "UNREGISTER " << id << std::endl;
 		auto& renderRenderable = mInfo.registry->get<RendererRenderable>(id);
 		Vector<RenderableElement>& elements = renderRenderable.elements;
 		for (auto& element : elements)
@@ -614,13 +610,18 @@ namespace bs {	namespace ct
 
 	void RendererScene::registerParticleSystem(ParticleSystem* particleSystem)
 	{
-		const auto rendererId = (UINT32)mInfo.particleSystems.size();
-		particleSystem->setRendererId(rendererId);
+		auto id = mInfo.registry->create();
+		// const auto rendererId = (UINT32)mInfo.particleSystems.size();
+		particleSystem->setRendererId(id);
+		auto& rendererParticles = mInfo.registry->assign<RendererParticles>(id);
+		mInfo.registry->assign<CVisible>(id);
+		mInfo.registry->assign<CReady>(id);
+		mInfo.registry->assign<CullInfo>(id, Bounds(), particleSystem->getLayer());
 
-		mInfo.particleSystems.push_back(RendererParticles());
-		mInfo.particleSystemCullInfos.push_back(CullInfo(Bounds(), particleSystem->getLayer()));
+		// mInfo.particleSystems.push_back(RendererParticles());
+		// mInfo.particleSystemCullInfos.push_back(CullInfo(Bounds(), particleSystem->getLayer()));
 
-		RendererParticles& rendererParticles = mInfo.particleSystems.back();
+		// RendererParticles& rendererParticles = mInfo.particleSystems.back();
 		rendererParticles.particleSystem = particleSystem;
 
 		updateParticleSystem(particleSystem, false);
@@ -628,8 +629,8 @@ namespace bs {	namespace ct
 
 	void RendererScene::updateParticleSystem(ParticleSystem* particleSystem, bool tfrmOnly)
 	{
-		const UINT32 rendererId = particleSystem->getRendererId();
-		RendererParticles& rendererParticles = mInfo.particleSystems[rendererId];
+		const ecs::EntityType id = particleSystem->getRendererId();
+		auto& rendererParticles = mInfo.registry->get<RendererParticles>(id);
 
 		const ParticleSystemSettings& settings = particleSystem->getSettings();
 		const UINT32 layer = Bitwise::mostSignificantBit(particleSystem->getLayer());
@@ -924,9 +925,8 @@ namespace bs {	namespace ct
 
 	void RendererScene::unregisterParticleSystem(ParticleSystem* particleSystem)
 	{
-		const UINT32 rendererId = particleSystem->getRendererId();
-		RendererParticles& rendererParticles = mInfo.particleSystems[rendererId];
-
+		const ecs::EntityType id = particleSystem->getRendererId();
+		auto& rendererParticles = mInfo.registry->get<RendererParticles>(id);
 		// Free curves
 		GpuParticleCurves& curves = GpuParticleSimulation::instance().getResources().getCurveTexture();
 		curves.free(rendererParticles.colorCurveAlloc);
@@ -938,32 +938,34 @@ namespace bs {	namespace ct
 			rendererParticles.gpuParticleSystem = nullptr;
 		}
 
-		ParticleSystem* lastSystem = mInfo.particleSystems.back().particleSystem;
-		const UINT32 lastRendererId = lastSystem->getRendererId();
+		mInfo.registry->destroy(id);
+		// ParticleSystem* lastSystem = mInfo.particleSystems.back().particleSystem;
+		// const UINT32 lastRendererId = lastSystem->getRendererId();
 
-		if (rendererId != lastRendererId)
-		{
-			// Swap current last element with the one we want to erase
-			std::swap(mInfo.particleSystems[rendererId], mInfo.particleSystems[lastRendererId]);
-			std::swap(mInfo.particleSystemCullInfos[rendererId], mInfo.particleSystemCullInfos[lastRendererId]);
+		// if (rendererId != lastRendererId)
+		// {
+		// 	// Swap current last element with the one we want to erase
+		// 	std::swap(mInfo.particleSystems[rendererId], mInfo.particleSystems[lastRendererId]);
+		// 	std::swap(mInfo.particleSystemCullInfos[rendererId], mInfo.particleSystemCullInfos[lastRendererId]);
 
-			lastSystem->setRendererId(rendererId);
-		}
+		// 	lastSystem->setRendererId(rendererId);
+		// }
 
-		// Last element is the one we want to erase
-		mInfo.particleSystems.erase(mInfo.particleSystems.end() - 1);
-		mInfo.particleSystemCullInfos.erase(mInfo.particleSystemCullInfos.end() - 1);
+		// // Last element is the one we want to erase
+		// mInfo.particleSystems.erase(mInfo.particleSystems.end() - 1);
+		// mInfo.particleSystemCullInfos.erase(mInfo.particleSystemCullInfos.end() - 1);
 	}
 
 	void RendererScene::registerDecal(Decal* decal)
 	{
 		// const auto renderableId = (UINT32)mInfo.decals.size();
-		// decal->setRendererId(renderableId);
+		ecs::EntityType id = mInfo.registry->create();
+		decal->setRendererId(id);
+		auto& rendererDecal = mInfo.registry->assign<RendererDecal>(id);
+		mInfo.registry->assign<CVisible>(id);
+		mInfo.registry->assign<CReady>(id);
+		mInfo.registry->assign<CullInfo>(id, decal->getBounds(), decal->getLayer());
 
-		mInfo.decals.emplace_back();
-		mInfo.decalCullInfos.push_back(CullInfo(decal->getBounds(), decal->getLayer()));
-
-		RendererDecal& rendererDecal = mInfo.decals.back();
 		rendererDecal.decal = decal;
 		rendererDecal.updatePerObjectBuffer();
 
@@ -1033,37 +1035,44 @@ namespace bs {	namespace ct
 
 	void RendererScene::updateDecal(Decal* decal)
 	{
-		const UINT32 rendererId = decal->getRendererId();
+		// const UINT32 rendererId = decal->getRendererId();
+		ecs::EntityType id = decal->getRendererId();
 
-		mInfo.decals[rendererId].updatePerObjectBuffer();
-		mInfo.decalCullInfos[rendererId].bounds = decal->getBounds();
+		mInfo.registry->get<RendererDecal>(id).updatePerObjectBuffer();
+		mInfo.registry->get<CullInfo>(id).bounds = decal->getBounds();
+
+		// mInfo.decals[rendererId].updatePerObjectBuffer();
+		// mInfo.decalCullInfos[rendererId].bounds = decal->getBounds();
 	}
 
 	void RendererScene::unregisterDecal(Decal* decal)
 	{
-		const UINT32 rendererId = decal->getRendererId();
-		Decal* lastDecal = mInfo.decals.back().decal;
-		const UINT32 lastDecalId = lastDecal->getRendererId();
+		// const UINT32 rendererId = decal->getRendererId();
+		// Decal* lastDecal = mInfo.decals.back().decal;
+		// const UINT32 lastDecalId = lastDecal->getRendererId();
 
-		RendererDecal& rendererDecal = mInfo.decals[rendererId];
+		ecs::EntityType id = decal->getRendererId();
+		auto& rendererDecal = mInfo.registry->get<RendererDecal>(id);
+		// RendererDecal& rendererDecal = mInfo.decals[rendererId];
 		DecalRenderElement& renElement = rendererDecal.renderElement;
 
 		// Unregister sampler overrides
 		freeSamplerStateOverrides(renElement);
 		renElement.samplerOverrides = nullptr;
 
-		if (rendererId != lastDecalId)
-		{
-			// Swap current last element with the one we want to erase
-			std::swap(mInfo.decals[rendererId], mInfo.decals[lastDecalId]);
-			std::swap(mInfo.decalCullInfos[rendererId], mInfo.decalCullInfos[lastDecalId]);
+		mInfo.registry->destroy(id);
+		// if (rendererId != lastDecalId)
+		// {
+		// 	// Swap current last element with the one we want to erase
+		// 	std::swap(mInfo.decals[rendererId], mInfo.decals[lastDecalId]);
+		// 	std::swap(mInfo.decalCullInfos[rendererId], mInfo.decalCullInfos[lastDecalId]);
 
-			lastDecal->setRendererId(rendererId);
-		}
+		// 	lastDecal->setRendererId(rendererId);
+		// }
 
 		// Last element is the one we want to erase
-		mInfo.decals.erase(mInfo.decals.end() - 1);
-		mInfo.decalCullInfos.erase(mInfo.decalCullInfos.end() - 1);
+		// mInfo.decals.erase(mInfo.decals.end() - 1);
+		// mInfo.decalCullInfos.erase(mInfo.decalCullInfos.end() - 1);
 	}
 
 	void RendererScene::setOptions(const SPtr<RenderECSOptions>& options)
@@ -1321,20 +1330,22 @@ namespace bs {	namespace ct
 		mInfo.registry->get<CReady>(ent).ready = true;
 	}
 
-	void RendererScene::prepareParticleSystem(UINT32 idx, const FrameInfo& frameInfo)
+	void RendererScene::prepareParticleSystem(ecs::EntityType id, const FrameInfo& frameInfo)
 	{
-		ParticlesRenderElement& renElement = mInfo.particleSystems[idx].renderElement;
+		auto& particles = mInfo.registry->get<RendererParticles>(id);
+		ParticlesRenderElement& renElement = particles.renderElement;
 		renElement.material->updateParamsSet(renElement.params, 0.0f);
 
-		mInfo.particleSystems[idx].perObjectParamBuffer->flushToGPU();
+		particles.perObjectParamBuffer->flushToGPU();
 	}
 
-	void RendererScene::prepareDecal(UINT32 idx, const FrameInfo& frameInfo)
+	void RendererScene::prepareDecal(ecs::EntityType id, const FrameInfo& frameInfo)
 	{
-		DecalRenderElement& renElement = mInfo.decals[idx].renderElement;
+		auto& decal = mInfo.registry->get<RendererDecal>(id);
+		DecalRenderElement& renElement = decal.renderElement;
 		renElement.material->updateParamsSet(renElement.params, renElement.materialAnimationTime);
 
-		mInfo.decals[idx].perObjectParamBuffer->flushToGPU();
+		decal.perObjectParamBuffer->flushToGPU();
 	}
 
 	void RendererScene::updateParticleSystemBounds(const ParticlePerFrameData* particleRenderData)
@@ -1342,9 +1353,13 @@ namespace bs {	namespace ct
 		// Note: Avoid updating bounds for deterministic particle systems every frame. Also see if this can be copied
 		// over in a faster way (or ideally just assigned)
 
-		for(auto& entry : mInfo.particleSystems)
+		auto view = mInfo.registry->view<RendererParticles, CullInfo>();
+		// for(auto& entry : mInfo.particleSystems)
+		for (auto id : view)
 		{
-			const UINT32 rendererId = entry.particleSystem->getRendererId();
+			auto& entry = view.get<RendererParticles>(id);
+			auto& cullInfo = view.get<CullInfo>(id);
+			// const UINT32 rendererId = entry.particleSystem->getRendererId();
 
 			AABox worldAABox = AABox::INF_BOX;
 			const auto iterFind = particleRenderData->cpuData.find(entry.particleSystem->getId());
@@ -1358,7 +1373,7 @@ namespace bs {	namespace ct
 				worldAABox.transformAffine(entry.localToWorld);
 
 			const Sphere worldSphere(worldAABox.getCenter(), worldAABox.getRadius());
-			mInfo.particleSystemCullInfos[rendererId].bounds = Bounds(worldAABox, worldSphere);
+			cullInfo.bounds = Bounds(worldAABox, worldSphere);
 		}
 	}
 

@@ -16,6 +16,7 @@
 #include "BsRendererScene.h"
 #include "BsRenderECS.h"
 #include "Utility/BsGpuSort.h"
+#include <entt/entt.hpp>
 
 namespace bs { namespace ct
 {
@@ -800,7 +801,7 @@ namespace bs { namespace ct
 						continue;
 				}
 
-				const RendererParticles& rendererParticles = sceneInfo.particleSystems[parentSystem->getRendererId()];
+				const RendererParticles& rendererParticles = sceneInfo.registry->get<RendererParticles>(parentSystem->getRendererId());
 
 				prepareBuffers(entry, rendererParticles);
 

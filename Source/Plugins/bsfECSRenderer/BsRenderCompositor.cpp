@@ -313,30 +313,32 @@ namespace bs { namespace ct
 
 		// Prepare all visible objects. Note that this also prepares non-opaque objects.
 		//// Prepare normal renderables
-		const VisibilityInfo& visibility = inputs.view.getVisibilityMasks();
+		// const VisibilityInfo& visibility = inputs.view.getVisibilityMasks();
 		// const auto numRenderables = (UINT32)inputs.scene.renderables.size();
-		auto view = inputs.scene.registry->view<RendererRenderable, CVisible>();
-		// for (UINT32 i = 0; i < numRenderables; i++)
-		for (auto ent : view)
 		{
-			const auto& visibility = view.get<CVisible>(ent);
-			// if (!visibility.renderables[i])
-			if (!visibility.anyVisible()) {
-				continue;
-			}
-
-			auto& rendererRenderable = view.get<RendererRenderable>(ent);
-			// RendererRenderable* rendererRenderable = inputs.scene.renderables[i];
-			rendererRenderable.updatePerCallBuffer(viewProps.viewProjTransform);
-
-			for (auto& element : rendererRenderable.elements)
+			auto view = inputs.scene.registry->view<RendererRenderable, CVisible>();
+			// for (UINT32 i = 0; i < numRenderables; i++)
+			for (auto ent : view)
 			{
-				SPtr<GpuParams> gpuParams = element.params->getGpuParams();
-				for(UINT32 j = 0; j < GPT_COUNT; j++)
+				const auto& visibility = view.get<CVisible>(ent);
+				// if (!visibility.renderables[i])
+				if (!visibility.anyVisible()) {
+					continue;
+				}
+
+				auto& rendererRenderable = view.get<RendererRenderable>(ent);
+				// RendererRenderable* rendererRenderable = inputs.scene.renderables[i];
+				rendererRenderable.updatePerCallBuffer(viewProps.viewProjTransform);
+
+				for (auto& element : rendererRenderable.elements)
 				{
-					const GpuParamBinding& binding = element.perCameraBindings[j];
-					if(binding.slot != (UINT32)-1)
-						gpuParams->setParamBlockBuffer(binding.set, binding.slot, inputs.view.getPerViewBuffer());
+					SPtr<GpuParams> gpuParams = element.params->getGpuParams();
+					for(UINT32 j = 0; j < GPT_COUNT; j++)
+					{
+						const GpuParamBinding& binding = element.perCameraBindings[j];
+						if(binding.slot != (UINT32)-1)
+							gpuParams->setParamBlockBuffer(binding.set, binding.slot, inputs.view.getPerViewBuffer());
+					}
 				}
 			}
 		}
@@ -345,15 +347,18 @@ namespace bs { namespace ct
 		const ParticlePerFrameData* particleData = inputs.frameInfo.perFrameData.particles;
 		if(particleData)
 		{
-			const auto numParticleSystems = (UINT32)inputs.scene.particleSystems.size();
-
+			// const auto numParticleSystems = (UINT32)inputs.scene.particleSystems.size();
+			auto view = inputs.scene.registry->view<RendererParticles, CVisible>();
 			const GpuParticleResources& gpuSimResources = GpuParticleSimulation::instance().getResources();
-			for (UINT32 i = 0; i < numParticleSystems; i++)
+			// for (UINT32 i = 0; i < numParticleSystems; i++)
+			for (auto ent : view)
 			{
-				if (!visibility.particleSystems[i])
+				auto& visibility = view.get<CVisible>(ent);
+				if (!visibility.anyVisible())
 					continue;
 
-				const RendererParticles& rendererParticles = inputs.scene.particleSystems[i];
+				// const RendererParticles& rendererParticles = inputs.scene.particleSystems[i];
+				const auto& rendererParticles = view.get<RendererParticles>(ent);
 				ParticlesRenderElement& renderElement = rendererParticles.renderElement;
 
 				if(!renderElement.isValid())
@@ -375,27 +380,33 @@ namespace bs { namespace ct
 		}
 
 		//// Prepare decals
-		const auto numDecals = (UINT32)inputs.scene.decals.size();
-		for (UINT32 i = 0; i < numDecals; i++)
 		{
-			if (!visibility.decals[i])
-				continue;
-
-			const RendererDecal& rendererDecal = inputs.scene.decals[i];
-			DecalRenderElement& renderElement = rendererDecal.renderElement;
-
-			rendererDecal.updatePerCallBuffer(viewProps.viewProjTransform);
-
-			SPtr<GpuParams> gpuParams = renderElement.params->getGpuParams();
-			for (UINT32 j = 0; j < GPT_COUNT; j++)
+			// const auto numDecals = (UINT32)inputs.scene.decals.size();
+			// for (UINT32 i = 0; i < numDecals; i++)
+			auto view = inputs.scene.registry->view<RendererDecal, CVisible>();
+			for (auto ent : view)
 			{
-				const GpuParamBinding& binding = renderElement.perCameraBindings[j];
-				if (binding.slot != (UINT32)-1)
-					gpuParams->setParamBlockBuffer(binding.set, binding.slot, inputs.view.getPerViewBuffer());
-			}
+				const auto& visibility = view.get<CVisible>(ent);
+				if (!visibility.anyVisible())
+					continue;
 
-			renderElement.depthInputTexture.set(sceneDepthTex->texture);
-			renderElement.maskInputTexture.set(idTex->texture);
+				auto& rendererDecal = view.get<RendererDecal>(ent);
+				// const RendererDecal& rendererDecal = inputs.scene.decals[i];
+				DecalRenderElement& renderElement = rendererDecal.renderElement;
+
+				rendererDecal.updatePerCallBuffer(viewProps.viewProjTransform);
+
+				SPtr<GpuParams> gpuParams = renderElement.params->getGpuParams();
+				for (UINT32 j = 0; j < GPT_COUNT; j++)
+				{
+					const GpuParamBinding& binding = renderElement.perCameraBindings[j];
+					if (binding.slot != (UINT32)-1)
+						gpuParams->setParamBlockBuffer(binding.set, binding.slot, inputs.view.getPerViewBuffer());
+				}
+
+				renderElement.depthInputTexture.set(sceneDepthTex->texture);
+				renderElement.maskInputTexture.set(idTex->texture);
+			}
 		}
 
 		Camera* sceneCamera = inputs.view.getSceneCamera();
@@ -644,8 +655,8 @@ namespace bs { namespace ct
 			return;
 
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
-		const VisibilityInfo& visibility = inputs.view.getVisibilityMasks();
-		const auto numParticleSystems = (UINT32)inputs.scene.particleSystems.size();
+		// const VisibilityInfo& visibility = inputs.view.getVisibilityMasks();
+		// const auto numParticleSystems = (UINT32)inputs.scene.particleSystems.size();
 
 		// Sort particles
 		bs_frame_mark();
@@ -657,12 +668,17 @@ namespace bs { namespace ct
 			};
 
 			FrameVector<SortData> systemsToSort;
-			for (UINT32 i = 0; i < numParticleSystems; i++)
+
+			auto view = inputs.scene.registry->view<RendererParticles, CVisible>();
+			// for (UINT32 i = 0; i < numParticleSystems; i++)
+			for (auto ent : view)
 			{
-				if (!visibility.particleSystems[i])
+				const auto& visibility = view.get<CVisible>(ent);
+				if (!visibility.anyVisible())
 					continue;
 
-				const RendererParticles& rendererParticles = inputs.scene.particleSystems[i];
+				// const RendererParticles& rendererParticles = inputs.scene.particleSystems[i];
+				const auto& rendererParticles = view.get<RendererParticles>(ent);
 
 				ParticleSystem* particleSystem = rendererParticles.particleSystem;
 				const auto iterFind = particleData->cpuData.find(particleSystem->getId());
@@ -1446,7 +1462,7 @@ namespace bs { namespace ct
 
 		// Prepare objects for rendering by binding forward lighting data
 		//// Normal renderables
-		const VisibilityInfo& visibility = inputs.view.getVisibilityMasks();
+		// const VisibilityInfo& visibility = inputs.view.getVisibilityMasks();
 		// const auto numRenderables = (UINT32)sceneInfo.renderables.size();
 		// for (UINT32 i = 0; i < numRenderables; i++)
 		auto view = sceneInfo.registry->view<RendererRenderable, CVisible, CullInfo>();
@@ -1454,7 +1470,6 @@ namespace bs { namespace ct
 		{
 			auto& renderable = view.get<RendererRenderable>(ent);
 			const auto& visibility = view.get<CVisible>(ent);
-			const auto& cullInfo = view.get<CullInfo>(ent);
 			// if (!visibility.renderables[i])
 			if (!visibility.anyVisible())
 				continue;
@@ -1475,6 +1490,7 @@ namespace bs { namespace ct
 				else
 				{
 					// Populate light & probe buffers
+					const auto& cullInfo = view.get<CullInfo>(ent);
 					const Bounds& bounds = cullInfo.bounds;
 					bindParamsForStandardForward(*gpuParams, bounds, element.forwardLightingParams, element.imageBasedParams);
 				}
@@ -1487,14 +1503,17 @@ namespace bs { namespace ct
 		const ParticlePerFrameData* particleData = inputs.frameInfo.perFrameData.particles;
 		if(particleData)
 		{
-			const auto numParticleSystems = (UINT32)inputs.scene.particleSystems.size();
-
-			for (UINT32 i = 0; i < numParticleSystems; i++)
+			// const auto numParticleSystems = (UINT32)inputs.scene.particleSystems.size();
+			// for (UINT32 i = 0; i < numParticleSystems; i++)
+			auto view = sceneInfo.registry->view<RendererParticles, CVisible, CullInfo>();
+			for (auto ent : view)
 			{
-				if (!visibility.particleSystems[i])
+				const auto& visibility = view.get<CVisible>(ent);
+				if (!visibility.anyVisible())
 					continue;
 
-				const RendererParticles& rendererParticles = inputs.scene.particleSystems[i];
+				const auto& rendererParticles = view.get<RendererParticles>(ent);
+				// const RendererParticles& rendererParticles = inputs.scene.particleSystems[i];
 				ParticlesRenderElement& renderElement = rendererParticles.renderElement;
 
 				ShaderFlags shaderFlags = renderElement.material->getShader()->getFlags();
@@ -1518,7 +1537,8 @@ namespace bs { namespace ct
 				else
 				{
 					// Populate light & probe buffers
-					const Bounds& bounds = sceneInfo.particleSystemCullInfos[i].bounds;
+					const auto& cullInfo = view.get<CullInfo>(ent);
+					const Bounds& bounds = cullInfo.bounds;
 					bindParamsForStandardForward(*gpuParams, bounds, renderElement.forwardLightingParams, renderElement.imageBasedParams);
 				}
 

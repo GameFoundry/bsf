@@ -399,17 +399,15 @@ namespace bs { namespace ct
 				element.materialAnimationTime += timings.timeDelta;
 		});
 
+		sceneInfo.registry->view<RendererParticles>().each([this, &frameInfo](ecs::EntityType id, const auto& particles) {
+			mScene->prepareParticleSystem(id, frameInfo);
+		});
 
-		for (UINT32 i = 0; i < sceneInfo.particleSystems.size(); i++)
-			mScene->prepareParticleSystem(i, frameInfo);
-
-		for (UINT32 i = 0; i < sceneInfo.decals.size(); i++)
-		{
-			const RendererDecal& decal = sceneInfo.decals[i];
+		// for (UINT32 i = 0; i < sceneInfo.decals.size(); i++)
+		sceneInfo.registry->view<RendererDecal>().each([this, &timings, &frameInfo](ecs::EntityType id, auto& decal) {
 			decal.renderElement.materialAnimationTime += timings.timeDelta;
-
-			mScene->prepareDecal(i, frameInfo);
-		}
+			mScene->prepareDecal(id, frameInfo);
+		});
 
 		// Gather all views
 		for (auto& rtInfo : sceneInfo.renderTargets)

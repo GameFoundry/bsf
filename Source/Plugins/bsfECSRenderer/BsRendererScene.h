@@ -69,12 +69,12 @@ namespace bs
 		LightProbes lightProbes;
 
 		// Particles
-		Vector<RendererParticles> particleSystems;
-		Vector<CullInfo> particleSystemCullInfos;
+		// Vector<RendererParticles> particleSystems;
+		// Vector<CullInfo> particleSystemCullInfos;
 
 		// Decals
-		Vector<RendererDecal> decals;
-		Vector<CullInfo> decalCullInfos;
+		// Vector<RendererDecal> decals;
+		// Vector<CullInfo> decalCullInfos;
 
 		// Sky
 		Skybox* skybox = nullptr;
