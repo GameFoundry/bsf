@@ -204,6 +204,7 @@ namespace bs { namespace ct
 
 	void RendererView::calculateVisible(ecs::Registry* reg, UINT32 viewIdx)
 	{
+		// if overlay only no need to calculate visibility.
 		if (mRenderSettings->overlayOnly) {
 			return;
 		}
@@ -213,41 +214,64 @@ namespace bs { namespace ct
 		const Vector3& worldCameraPosition = mProperties.viewOrigin;
 		float baseCullDistance = mRenderSettings->cullDistance;
 
-		// for (UINT32 i = 0; i < (UINT32)cullInfos.size(); i++)
-		auto view = reg->view<CullInfo, CVisible>();
-		for (ecs::EntityType ent : view)
+		/*----------  Calculate visibility of decals, particles, renderables  ----------*/
+
+
 		{
-			const auto& cullInfo = view.get<CullInfo>(ent);
-			auto& visibility = view.get<CVisible>(ent);
-
-			if ((cullInfo.layer & cameraLayers) == 0)
-				continue;
-
-			// Do distance culling
-			const Sphere& boundingSphere = cullInfo.bounds.getSphere();
-			const Vector3& worldRenderablePosition = boundingSphere.getCenter();
-
-			float distanceToCameraSq = worldCameraPosition.squaredDistance(worldRenderablePosition);
-			float correctedCullDistance = cullInfo.cullDistanceFactor * baseCullDistance;
-			float maxDistanceToCamera = correctedCullDistance + boundingSphere.getRadius();
-
-			if (distanceToCameraSq > maxDistanceToCamera * maxDistanceToCamera)
-				continue;
-
-			// Do frustum culling
-			// Note: This is bound to be a bottleneck at some point. When it is ensure that intersect methods use vector
-			// operations, as it is trivial to update them. Also consider spatial partitioning.
-			if (worldFrustum.intersects(boundingSphere))
+			// for (UINT32 i = 0; i < (UINT32)cullInfos.size(); i++)
+			auto view = reg->view<CullInfo, CVisible>();
+			for (ecs::EntityType ent : view)
 			{
-				// More precise with the box
-				const AABox& boundingBox = cullInfo.bounds.getBox();
+				const auto& cullInfo = view.get<CullInfo>(ent);
+				auto& visibility = view.get<CVisible>(ent);
 
-				if (worldFrustum.intersects(boundingBox)) {
-					assert(viewIdx < visibility.visibleViews.size());
-					visibility.visibleViews[viewIdx] = true;
+				if ((cullInfo.layer & cameraLayers) == 0)
+					continue;
+
+				// Do distance culling
+				const Sphere& boundingSphere = cullInfo.bounds.getSphere();
+				const Vector3& worldRenderablePosition = boundingSphere.getCenter();
+
+				float distanceToCameraSq = worldCameraPosition.squaredDistance(worldRenderablePosition);
+				float correctedCullDistance = cullInfo.cullDistanceFactor * baseCullDistance;
+				float maxDistanceToCamera = correctedCullDistance + boundingSphere.getRadius();
+
+				if (distanceToCameraSq > maxDistanceToCamera * maxDistanceToCamera)
+					continue;
+
+				// Do frustum culling
+				// Note: This is bound to be a bottleneck at some point. When it is ensure that intersect methods use vector
+				// operations, as it is trivial to update them. Also consider spatial partitioning.
+				if (worldFrustum.intersects(boundingSphere))
+				{
+					// More precise with the box
+					const AABox& boundingBox = cullInfo.bounds.getBox();
+
+					if (worldFrustum.intersects(boundingBox)) {
+						assert(viewIdx < visibility.visibleViews.size());
+						visibility.visibleViews[viewIdx] = true;
+					}
 				}
 			}
 		}
+
+		/*----------  Calculate Light Visibility  ----------*/
+
+		{
+			auto view = reg->view<RendererLight, Sphere, CVisible>();
+			for (ecs::EntityType ent : view)
+			{
+				for (auto ent : view)
+				{
+					auto& visibility = view.get<CVisible>(ent);
+					const auto& bounds = view.get<Sphere>(ent);
+					if (worldFrustum.intersects(bounds)) {
+						visibility.visibleViews[viewIdx] = true;
+					}
+				}
+			}
+		}
+
 	}
 
 	// void RendererView::determineVisible(const Vector<RendererParticles>& particleSystems, const Vector<CullInfo>& cullInfos,
@@ -294,49 +318,49 @@ namespace bs { namespace ct
 	// 	}
 	// }
 
-	void RendererView::determineVisible(const Vector<RendererLight>& lights, const Vector<Sphere>& bounds,
-		LightType lightType, Vector<bool>* visibility)
-	{
-		// Special case for directional lights, they're always visible
-		if(lightType == LightType::Directional)
-		{
-			if (visibility)
-				visibility->assign(lights.size(), true);
+	// void RendererView::determineVisible(const Vector<RendererLight>& lights, const Vector<Sphere>& bounds,
+	// 	LightType lightType, Vector<bool>* visibility)
+	// {
+	// 	// Special case for directional lights, they're always visible
+	// 	if(lightType == LightType::Directional)
+	// 	{
+	// 		if (visibility)
+	// 			visibility->assign(lights.size(), true);
 
-			return;
-		}
+	// 		return;
+	// 	}
 
-		Vector<bool>* perViewVisibility;
-		if(lightType == LightType::Radial)
-		{
-			mVisibility.radialLights.clear();
-			mVisibility.radialLights.resize(lights.size(), false);
+	// 	Vector<bool>* perViewVisibility;
+	// 	if(lightType == LightType::Radial)
+	// 	{
+	// 		mVisibility.radialLights.clear();
+	// 		mVisibility.radialLights.resize(lights.size(), false);
 
-			perViewVisibility = &mVisibility.radialLights;
-		}
-		else // Spot
-		{
-			mVisibility.spotLights.clear();
-			mVisibility.spotLights.resize(lights.size(), false);
+	// 		perViewVisibility = &mVisibility.radialLights;
+	// 	}
+	// 	else // Spot
+	// 	{
+	// 		mVisibility.spotLights.clear();
+	// 		mVisibility.spotLights.resize(lights.size(), false);
 
-			perViewVisibility = &mVisibility.spotLights;
-		}
+	// 		perViewVisibility = &mVisibility.spotLights;
+	// 	}
 
-		if (mRenderSettings->overlayOnly)
-			return;
+	// 	if (mRenderSettings->overlayOnly)
+	// 		return;
 
-		calculateVisibility(bounds, *perViewVisibility);
+	// 	calculateVisibility(bounds, *perViewVisibility);
 
-		if(visibility != nullptr)
-		{
-			for (UINT32 i = 0; i < (UINT32)lights.size(); i++)
-			{
-				bool visible = (*visibility)[i];
+	// 	if(visibility != nullptr)
+	// 	{
+	// 		for (UINT32 i = 0; i < (UINT32)lights.size(); i++)
+	// 		{
+	// 			bool visible = (*visibility)[i];
 
-				(*visibility)[i] = visible || (*perViewVisibility)[i];
-			}
-		}
-	}
+	// 			(*visibility)[i] = visible || (*perViewVisibility)[i];
+	// 		}
+	// 	}
+	// }
 
 	void RendererView::calculateVisibility(const Vector<CullInfo>& cullInfos, Vector<bool>& visibility) const
 	{
@@ -785,25 +809,25 @@ namespace bs { namespace ct
 			mViews[i]->queueRenderElements(sceneInfo);
 
 		// Calculate light visibility for all views
-		const auto numRadialLights = (UINT32)sceneInfo.radialLights.size();
-		mVisibility.radialLights.resize(numRadialLights, false);
-		mVisibility.radialLights.assign(numRadialLights, false);
+		// const auto numRadialLights = (UINT32)sceneInfo.radialLights.size();
+		// mVisibility.radialLights.resize(numRadialLights, false);
+		// mVisibility.radialLights.assign(numRadialLights, false);
 
-		const auto numSpotLights = (UINT32)sceneInfo.spotLights.size();
-		mVisibility.spotLights.resize(numSpotLights, false);
-		mVisibility.spotLights.assign(numSpotLights, false);
+		// const auto numSpotLights = (UINT32)sceneInfo.spotLights.size();
+		// mVisibility.spotLights.resize(numSpotLights, false);
+		// mVisibility.spotLights.assign(numSpotLights, false);
 
-		for (UINT32 i = 0; i < numViews; i++)
-		{
-			if (mViews[i]->getRenderSettings().overlayOnly)
-				continue;
+		// for (UINT32 i = 0; i < numViews; i++)
+		// {
+		// 	if (mViews[i]->getRenderSettings().overlayOnly)
+		// 		continue;
 
-			mViews[i]->determineVisible(sceneInfo.radialLights, sceneInfo.radialLightWorldBounds, LightType::Radial,
-				&mVisibility.radialLights);
+		// 	mViews[i]->determineVisible(sceneInfo.radialLights, sceneInfo.radialLightWorldBounds, LightType::Radial,
+		// 		&mVisibility.radialLights);
 
-			mViews[i]->determineVisible(sceneInfo.spotLights, sceneInfo.spotLightWorldBounds, LightType::Spot,
-				&mVisibility.spotLights);
-		}
+		// 	mViews[i]->determineVisible(sceneInfo.spotLights, sceneInfo.spotLightWorldBounds, LightType::Spot,
+		// 		&mVisibility.spotLights);
+		// }
 
 		// Calculate refl. probe visibility for all views
 		const auto numProbes = (UINT32)sceneInfo.reflProbes.size();

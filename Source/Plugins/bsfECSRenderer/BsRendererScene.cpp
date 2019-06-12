@@ -144,101 +144,69 @@ namespace bs {	namespace ct
 
 	void RendererScene::registerLight(Light* light)
 	{
-		if (light->getType() == LightType::Directional)
-		{
-			UINT32 lightId = (UINT32)mInfo.directionalLights.size();
-			light->setRendererId(lightId);
+		auto id = mInfo.registry->create();
+		light->setRendererId(id);
 
-			mInfo.directionalLights.push_back(RendererLight(light));
-		}
-		else
-		{
-			if (light->getType() == LightType::Radial)
+		mInfo.registry->assign<RendererLight>(id, light);
+		mInfo.registry->assign<CVisible>(id);
+		switch(light->getType()) {
+			case LightType::Directional:
 			{
-				UINT32 lightId = (UINT32)mInfo.radialLights.size();
-				light->setRendererId(lightId);
-
-				mInfo.radialLights.push_back(RendererLight(light));
-				mInfo.radialLightWorldBounds.push_back(light->getBounds());
-			}
-			else // Spot
+			} break;
+			case LightType::Radial:
 			{
-				UINT32 lightId = (UINT32)mInfo.spotLights.size();
-				light->setRendererId(lightId);
-
-				mInfo.spotLights.push_back(RendererLight(light));
-				mInfo.spotLightWorldBounds.push_back(light->getBounds());
+				mInfo.registry->assign<Sphere>(id, light->getBounds());
+			} break;
+			default: // spotlight
+			{
+				mInfo.registry->assign<Sphere>(id, light->getBounds());
 			}
 		}
+		// if (light->getType() == LightType::Directional)
+		// {
+		// 	UINT32 lightId = (UINT32)mInfo.directionalLights.size();
+		// 	light->setRendererId(lightId);
+
+		// 	mInfo.directionalLights.push_back(RendererLight(light));
+		// }
+		// else
+		// {
+		// 	if (light->getType() == LightType::Radial)
+		// 	{
+		// 		UINT32 lightId = (UINT32)mInfo.radialLights.size();
+		// 		light->setRendererId(lightId);
+
+		// 		mInfo.radialLights.push_back(RendererLight(light));
+		// 		mInfo.radialLightWorldBounds.push_back(light->getBounds());
+		// 	}
+		// 	else // Spot
+		// 	{
+		// 		UINT32 lightId = (UINT32)mInfo.spotLights.size();
+		// 		light->setRendererId(lightId);
+
+		// 		mInfo.spotLights.push_back(RendererLight(light));
+		// 		mInfo.spotLightWorldBounds.push_back(light->getBounds());
+		// 	}
+		// }
 	}
 
 	void RendererScene::updateLight(Light* light)
 	{
-		UINT32 lightId = light->getRendererId();
+		ecs::EntityType id = light->getRendererId();
 
-		if (light->getType() == LightType::Radial)
-			mInfo.radialLightWorldBounds[lightId] = light->getBounds();
-		else if(light->getType() == LightType::Spot)
-			mInfo.spotLightWorldBounds[lightId] = light->getBounds();
+		if (light->getType() == LightType::Radial) {
+			// mInfo.radialLightWorldBounds[lightId] = light->getBounds();
+			mInfo.registry->replace<Sphere>(id, light->getBounds());
+		} else if(light->getType() == LightType::Spot) {
+			mInfo.registry->replace<Sphere>(id, light->getBounds());
+			// mInfo.spotLightWorldBounds[lightId] = light->getBounds();
+		}
 	}
 
 	void RendererScene::unregisterLight(Light* light)
 	{
-		UINT32 lightId = light->getRendererId();
-		if (light->getType() == LightType::Directional)
-		{
-			Light* lastLight = mInfo.directionalLights.back().internal;
-			UINT32 lastLightId = lastLight->getRendererId();
-
-			if (lightId != lastLightId)
-			{
-				// Swap current last element with the one we want to erase
-				std::swap(mInfo.directionalLights[lightId], mInfo.directionalLights[lastLightId]);
-				lastLight->setRendererId(lightId);
-			}
-
-			// Last element is the one we want to erase
-			mInfo.directionalLights.erase(mInfo.directionalLights.end() - 1);
-		}
-		else
-		{
-			if (light->getType() == LightType::Radial)
-			{
-				Light* lastLight = mInfo.radialLights.back().internal;
-				UINT32 lastLightId = lastLight->getRendererId();
-
-				if (lightId != lastLightId)
-				{
-					// Swap current last element with the one we want to erase
-					std::swap(mInfo.radialLights[lightId], mInfo.radialLights[lastLightId]);
-					std::swap(mInfo.radialLightWorldBounds[lightId], mInfo.radialLightWorldBounds[lastLightId]);
-
-					lastLight->setRendererId(lightId);
-				}
-
-				// Last element is the one we want to erase
-				mInfo.radialLights.erase(mInfo.radialLights.end() - 1);
-				mInfo.radialLightWorldBounds.erase(mInfo.radialLightWorldBounds.end() - 1);
-			}
-			else // Spot
-			{
-				Light* lastLight = mInfo.spotLights.back().internal;
-				UINT32 lastLightId = lastLight->getRendererId();
-
-				if (lightId != lastLightId)
-				{
-					// Swap current last element with the one we want to erase
-					std::swap(mInfo.spotLights[lightId], mInfo.spotLights[lastLightId]);
-					std::swap(mInfo.spotLightWorldBounds[lightId], mInfo.spotLightWorldBounds[lastLightId]);
-
-					lastLight->setRendererId(lightId);
-				}
-
-				// Last element is the one we want to erase
-				mInfo.spotLights.erase(mInfo.spotLights.end() - 1);
-				mInfo.spotLightWorldBounds.erase(mInfo.spotLightWorldBounds.end() - 1);
-			}
-		}
+		ecs::EntityType id = light->getRendererId();
+		mInfo.registry->destroy(id);
 	}
 
 	void RendererScene::registerRenderable(Renderable* renderable)
@@ -445,11 +413,12 @@ namespace bs {	namespace ct
 	void RendererScene::updateRenderable(Renderable* renderable)
 	{
 		// UINT32 renderableId = renderable->getRendererId();
-		ecs::EntityType renderableId = renderable->getRendererId();
+		ecs::EntityType id = renderable->getRendererId();
 
-		mInfo.registry->get<RendererRenderable>(renderableId).updatePerObjectBuffer();
-		mInfo.registry->get<CullInfo>(renderableId).bounds = renderable->getBounds();
-		mInfo.registry->get<CullInfo>(renderableId).cullDistanceFactor = renderable->getCullDistanceFactor();
+		mInfo.registry->get<RendererRenderable>(id).updatePerObjectBuffer();
+		mInfo.registry->replace<CullInfo>(id, renderable->getBounds(), renderable->getLayer(), renderable->getCullDistanceFactor());
+		// mInfo.registry->get<CullInfo>(renderableId).bounds = renderable->getBounds();
+		// mInfo.registry->get<CullInfo>(renderableId).cullDistanceFactor = renderable->getCullDistanceFactor();
 	}
 
 	void RendererScene::unregisterRenderable(Renderable* renderable)
@@ -1039,7 +1008,8 @@ namespace bs {	namespace ct
 		ecs::EntityType id = decal->getRendererId();
 
 		mInfo.registry->get<RendererDecal>(id).updatePerObjectBuffer();
-		mInfo.registry->get<CullInfo>(id).bounds = decal->getBounds();
+		// mInfo.registry->get<CullInfo>(id).bounds = decal->getBounds();
+		mInfo.registry->replace<CullInfo>(id, decal->getBounds(), decal->getLayer());
 
 		// mInfo.decals[rendererId].updatePerObjectBuffer();
 		// mInfo.decalCullInfos[rendererId].bounds = decal->getBounds();

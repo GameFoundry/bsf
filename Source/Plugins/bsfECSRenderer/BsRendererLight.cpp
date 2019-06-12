@@ -188,67 +188,67 @@ namespace bs { namespace ct
 
 	void VisibleLightData::update(const SceneInfo& sceneInfo, const RendererViewGroup& viewGroup)
 	{
-		const VisibilityInfo& visibility = viewGroup.getVisibilityInfo();
+		// const VisibilityInfo& visibility = viewGroup.getVisibilityInfo();
 
-		for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
-			mVisibleLights[i].clear();
+		// for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
+		// 	mVisibleLights[i].clear();
 
-		// Generate a list of lights and their GPU buffers
-		UINT32 numDirLights = (UINT32)sceneInfo.directionalLights.size();
-		for (UINT32 i = 0; i < numDirLights; i++)
-			mVisibleLights[(UINT32)LightType::Directional].push_back(&sceneInfo.directionalLights[i]);
+		// // Generate a list of lights and their GPU buffers
+		// UINT32 numDirLights = (UINT32)sceneInfo.directionalLights.size();
+		// for (UINT32 i = 0; i < numDirLights; i++)
+		// 	mVisibleLights[(UINT32)LightType::Directional].push_back(&sceneInfo.directionalLights[i]);
 
-		UINT32 numRadialLights = (UINT32)sceneInfo.radialLights.size();
-		for(UINT32 i = 0; i < numRadialLights; i++)
-		{
-			if (!visibility.radialLights[i])
-				continue;
+		// UINT32 numRadialLights = (UINT32)sceneInfo.radialLights.size();
+		// for(UINT32 i = 0; i < numRadialLights; i++)
+		// {
+		// 	if (!visibility.radialLights[i])
+		// 		continue;
 
-			mVisibleLights[(UINT32)LightType::Radial].push_back(&sceneInfo.radialLights[i]);
-		}
+		// 	mVisibleLights[(UINT32)LightType::Radial].push_back(&sceneInfo.radialLights[i]);
+		// }
 
-		UINT32 numSpotLights = (UINT32)sceneInfo.spotLights.size();
-		for (UINT32 i = 0; i < numSpotLights; i++)
-		{
-			if (!visibility.spotLights[i])
-				continue;
+		// UINT32 numSpotLights = (UINT32)sceneInfo.spotLights.size();
+		// for (UINT32 i = 0; i < numSpotLights; i++)
+		// {
+		// 	if (!visibility.spotLights[i])
+		// 		continue;
 
-			mVisibleLights[(UINT32)LightType::Spot].push_back(&sceneInfo.spotLights[i]);
-		}
+		// 	mVisibleLights[(UINT32)LightType::Spot].push_back(&sceneInfo.spotLights[i]);
+		// }
 
-		for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
-			mNumLights[i] = (UINT32)mVisibleLights[i].size();
+		// for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
+		// 	mNumLights[i] = (UINT32)mVisibleLights[i].size();
 
 		// Partition all visible lights so that unshadowed ones come first
-		auto partition = [](Vector<const RendererLight*>& entries)
-		{
-			UINT32 numUnshadowed = 0;
-			int first = -1;
-			for (UINT32 i = 0; i < (UINT32)entries.size(); ++i)
-			{
-				if(entries[i]->internal->getCastsShadow())
-				{
-					first = i;
-					break;
-				}
-				else
-					++numUnshadowed;
-			}
+		// auto partition = [](Vector<const RendererLight*>& entries)
+		// {
+		// 	UINT32 numUnshadowed = 0;
+		// 	int first = -1;
+		// 	for (UINT32 i = 0; i < (UINT32)entries.size(); ++i)
+		// 	{
+		// 		if(entries[i]->internal->getCastsShadow())
+		// 		{
+		// 			first = i;
+		// 			break;
+		// 		}
+		// 		else
+		// 			++numUnshadowed;
+		// 	}
 
-			if(first != -1)
-			{
-				for(UINT32 i = first + 1; i < (UINT32)entries.size(); ++i)
-				{
-					if(!entries[i]->internal->getCastsShadow())
-					{
-						std::swap(entries[i], entries[first]);
-						++numUnshadowed;
-					}
-				}
-			}
+		// 	if(first != -1)
+		// 	{
+		// 		for(UINT32 i = first + 1; i < (UINT32)entries.size(); ++i)
+		// 		{
+		// 			if(!entries[i]->internal->getCastsShadow())
+		// 			{
+		// 				std::swap(entries[i], entries[first]);
+		// 				++numUnshadowed;
+		// 			}
+		// 		}
+		// 	}
 
-			return numUnshadowed;
-		};
+		// 	return numUnshadowed;
+		// };
 
 		for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
 			mNumShadowedLights[i] = mNumLights[i] - partition(mVisibleLights[i]);
