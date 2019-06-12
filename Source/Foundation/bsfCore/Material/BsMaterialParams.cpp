@@ -48,11 +48,11 @@ namespace bs
 			if(param.second.type == GPDT_UNKNOWN)
 				continue;
 
+			UINT32 arraySize = param.second.arraySize > 1 ? param.second.arraySize : 1;
 			if(param.second.type == GPDT_STRUCT)
-				mNumStructParams++;
+				mNumStructParams += arraySize;
 			else
 			{
-				UINT32 arraySize = param.second.arraySize > 1 ? param.second.arraySize : 1;
 				const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[(int)param.second.type];
 				UINT32 paramSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
@@ -948,7 +948,7 @@ namespace bs
 					{
 						memcpy(writeDest, mStructParams[param.index + j].data, paramData.dataSize);
 						writeDest += paramData.dataSize;
-						dirtyDataParamOffset += paramData.dataSize;
+						dirtyStructParamOffset += paramData.dataSize;
 					}
 				}
 				else
