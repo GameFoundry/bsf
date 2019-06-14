@@ -9,6 +9,7 @@
 #include "Renderer/BsRendererUtility.h"
 #include "BsRenderECS.h"
 #include "Shading/BsStandardDeferred.h"
+#include <entt/entt.hpp>
 
 namespace bs { namespace ct
 {
@@ -250,8 +251,8 @@ namespace bs { namespace ct
 		// 	return numUnshadowed;
 		// };
 
-		for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
-			mNumShadowedLights[i] = mNumLights[i] - partition(mVisibleLights[i]);
+		// for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
+		// 	mNumShadowedLights[i] = mNumLights[i] - partition(mVisibleLights[i]);
 
 		// Generate light data to initialize the GPU buffer with
 		mVisibleLightData.clear();

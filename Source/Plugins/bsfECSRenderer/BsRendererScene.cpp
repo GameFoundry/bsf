@@ -147,8 +147,11 @@ namespace bs {	namespace ct
 		auto id = mInfo.registry->create();
 		light->setRendererId(id);
 
-		mInfo.registry->assign<RendererLight>(id, light);
+		auto& renderer=  mInfo.registry->assign<RendererLight>(id, light);
 		mInfo.registry->assign<CVisible>(id);
+		auto& lightData = mInfo.registry->assign<LightData>(id);
+		// populate the light data.
+		renderer.getParameters(lightData);
 		switch(light->getType()) {
 			case LightType::Directional:
 			{
