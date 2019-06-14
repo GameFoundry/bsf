@@ -255,15 +255,18 @@ namespace bs { namespace ct
 		// 	mNumShadowedLights[i] = mNumLights[i] - partition(mVisibleLights[i]);
 
 		// Generate light data to initialize the GPU buffer with
-		mVisibleLightData.clear();
-		for(auto& lightsPerType : mVisibleLights)
-		{
-			for(auto& entry : lightsPerType)
-			{
-				mVisibleLightData.push_back(LightData());
-				entry->getParameters(mVisibleLightData.back());
-			}
-		}
+		// mVisibleLightData.clear();
+		// for(auto& lightsPerType : mVisibleLights)
+		// {
+		// 	for(auto& entry : lightsPerType)
+		// 	{
+		// 		mVisibleLightData.push_back(LightData());
+		// 		entry->getParameters(mVisibleLightData.back());
+		// 	}
+		// }
+
+		// so instead we just sort the LightData array and then use ecs view size
+		// to set the mNumShadowedLights and mNumLights.
 
 		bool supportsStructuredBuffers = gRenderECS()->getFeatureSet() == RenderECSFeatureSet::Desktop;
 		if(supportsStructuredBuffers)

@@ -24,6 +24,11 @@ namespace ct
 	/** Maximum number of lights that can influence an object when basic forward rendering is used. */
 	static constexpr UINT32 STANDARD_FORWARD_MAX_NUM_LIGHTS = 8;
 
+	struct DirectionalLightTag {};
+	struct SpotLightTag {};
+	struct RadialLightTag {};
+	struct ShadowedTag {};
+
 	/** Information about a single light, as seen by the lighting shader. */
 	struct LightData
 	{

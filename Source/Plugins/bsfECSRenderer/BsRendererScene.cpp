@@ -152,16 +152,24 @@ namespace bs {	namespace ct
 		auto& lightData = mInfo.registry->assign<LightData>(id);
 		// populate the light data.
 		renderer.getParameters(lightData);
+
+		if (light->getCastsShadow()) {
+			mInfo.registry->assign<ShadowedTag>(id);
+		}
+
 		switch(light->getType()) {
 			case LightType::Directional:
 			{
+				mInfo.registry->assign<DirectionalLightTag>(id);
 			} break;
 			case LightType::Radial:
 			{
+				mInfo.registry->assign<RadialLightTag>(id);
 				mInfo.registry->assign<Sphere>(id, light->getBounds());
 			} break;
 			default: // spotlight
 			{
+				mInfo.registry->assign<SpotLightTag>(id);
 				mInfo.registry->assign<Sphere>(id, light->getBounds());
 			}
 		}
