@@ -875,16 +875,12 @@ namespace bs
 		start = Math::clamp(start, mStart, mEnd);
 		end = Math::clamp(end, mStart, mEnd);
 
-		if (Math::approxEquals(end - start, 0.0f))
-			return TAnimationCurve<T>();
-
 		UINT32 startKeyIdx = findKey(start);
 		UINT32 endKeyIdx = findKey(end);
 
 		keyFrames.reserve(endKeyIdx - startKeyIdx + 2);
 
 		const KeyFrame& startKey = mKeyframes[startKeyIdx];
-		const KeyFrame& endKey = mKeyframes[endKeyIdx];
 
 		if (!Math::approxEquals(startKey.time, start))
 		{
@@ -922,39 +918,43 @@ namespace bs
 			startKeyIdx++;
 		}
 
-		if(!Math::approxEquals(endKey.time, end))
+		if (!Math::approxEquals(end - start, 0.0f))
 		{
-			if(end > endKey.time)
+			const KeyFrame& endKey = mKeyframes[endKeyIdx];
+			if(!Math::approxEquals(endKey.time, end))
 			{
-				if (mKeyframes.size() > (endKeyIdx + 1))
-					keyFrames.push_back(evaluateKey(endKey, mKeyframes[endKeyIdx + 1], end));
-				else
+				if(end > endKey.time)
 				{
-					TKeyframe<T> keyCopy = endKey;
-					keyCopy.time = end;
+					if (mKeyframes.size() > (endKeyIdx + 1))
+						keyFrames.push_back(evaluateKey(endKey, mKeyframes[endKeyIdx + 1], end));
+					else
+					{
+						TKeyframe<T> keyCopy = endKey;
+						keyCopy.time = end;
 
-					keyFrames.push_back(keyCopy);
-				}
-			}
-			else
-			{
-				if(endKeyIdx > 0)
-				{
-					keyFrames.push_back(evaluateKey(mKeyframes[endKeyIdx - 1], endKey, end));
-					endKeyIdx--;
+						keyFrames.push_back(keyCopy);
+					}
 				}
 				else
 				{
-					TKeyframe<T> keyCopy = endKey;
-					keyCopy.time = end;
+					if(endKeyIdx > 0)
+					{
+						keyFrames.push_back(evaluateKey(mKeyframes[endKeyIdx - 1], endKey, end));
+						endKeyIdx--;
+					}
+					else
+					{
+						TKeyframe<T> keyCopy = endKey;
+						keyCopy.time = end;
 
-					keyFrames.push_back(keyCopy);
+						keyFrames.push_back(keyCopy);
+					}
 				}
 			}
+
+			if (startKeyIdx < (UINT32)mKeyframes.size() && endKeyIdx > startKeyIdx)
+				keyFrames.insert(keyFrames.begin() + 1, mKeyframes.begin() + startKeyIdx, mKeyframes.begin() + endKeyIdx + 1);
 		}
-
-		if(startKeyIdx < (UINT32)mKeyframes.size() && endKeyIdx > startKeyIdx)
-			keyFrames.insert(keyFrames.begin() + 1, mKeyframes.begin() + startKeyIdx, mKeyframes.begin() + endKeyIdx + 1);
 
 		for (auto& entry : keyFrames)
 			entry.time -= start;
