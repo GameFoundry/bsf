@@ -38,29 +38,29 @@ namespace bs::ecs {
 
 
 
-	TEST_F(RenderableTestSuite, MakeStandard) {
+TEST_F(RenderableTestSuite, MakeStandard) {
 
-		HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
-		HCamera sceneCamera = sceneCameraSO->addComponent<CCamera>();
-		sceneCamera->setMain(true);
-		sceneCameraSO->setPosition(Vector3(10.0f, 10.0f, 10.0f));
-		sceneCameraSO->lookAt(Vector3(0, 0, 0));
-
-
-		// Default Box
-		HShader shader = gBuiltinResources().getBuiltinShader(BuiltinShader::Standard);
-		HMaterial material = Material::create(shader);
-		HMesh boxMesh = gBuiltinResources().getMesh(BuiltinMesh::Box);
-		HSceneObject boxSO = SceneObject::create("Box");
-		HRenderable boxRenderable = boxSO->addComponent<CRenderable>();
-		boxRenderable->setMesh(boxMesh);
-		boxRenderable->setMaterial(material);
-		boxSO->setPosition(Vector3(0.0f, 0.0f, 0.0f));
+	HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
+	HCamera sceneCamera = sceneCameraSO->addComponent<CCamera>();
+	sceneCamera->setMain(true);
+	sceneCameraSO->setPosition(Vector3(10.0f, 10.0f, 10.0f));
+	sceneCameraSO->lookAt(Vector3(0, 0, 0));
 
 
-    	Application::instance().runMainSteps(4);
+	// Default Box
+	HShader shader = gBuiltinResources().getBuiltinShader(BuiltinShader::Standard);
+	HMaterial material = Material::create(shader);
+	HMesh boxMesh = gBuiltinResources().getMesh(BuiltinMesh::Box);
+	HSceneObject boxSO = SceneObject::create("Box");
+	HRenderable boxRenderable = boxSO->addComponent<CRenderable>();
+	boxRenderable->setMesh(boxMesh);
+	boxRenderable->setMaterial(material);
+	boxSO->setPosition(Vector3(0.0f, 0.0f, 0.0f));
 
-    	bool forceRemoveAll = true;
-    	SceneManager::instance().clearScene(forceRemoveAll);
-	}
+	Application::instance().runMainSteps(4);
+
+	bool forceRemoveAll = true;
+	SceneManager::instance().clearScene(forceRemoveAll);
 }
+
+}  // namespace bs::ecs

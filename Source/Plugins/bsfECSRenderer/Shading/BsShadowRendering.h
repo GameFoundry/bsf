@@ -12,6 +12,9 @@
 #include "Image/BsTextureAtlasLayout.h"
 #include "BsRendererLight.h"
 
+#include "bsfEnTT/fwd.h"
+#include <entt/entity/entity.hpp>
+
 namespace bs { namespace ct
 {
 	struct FrameInfo;
@@ -372,7 +375,7 @@ namespace bs { namespace ct
 		/** Updates normalized area coordinates based on the non-normalized ones and the provided atlas size. */
 		void updateNormArea(UINT32 atlasSize);
 
-		UINT32 lightIdx; /**< Index of the light casting this shadow. */
+		ecs::EntityType lightId; /**< Index of the light casting this shadow. */
 		Rect2I area; /**< Area of the shadow map in pixels, relative to its source texture. */
 		Rect2 normArea; /**< Normalized shadow map area in [0, 1] range. */
 		UINT32 textureIdx; /**< Index of the texture the shadow map is stored in. */
@@ -509,29 +512,31 @@ namespace bs { namespace ct
 		Vector<ShadowInfo> mShadowInfos;
 	};
 
+
+	/** Contains references to all shadows cast by a specific light. */
+	struct LightShadows
+	{
+		UINT32 startIdx;
+		UINT32 numShadows = 0;
+	};
+
+	/** Contains references to all shadows cast by a specific light, per view. */
+	struct PerViewLightShadows
+	{
+		SmallVector<LightShadows, 6> viewShadows;
+	};
+
 	/** Provides functionality for rendering shadow maps. */
 	class ShadowRendering
 	{
 		/** Contains information required for generating a shadow map for a specific light. */
 		struct ShadowMapOptions
 		{
-			UINT32 lightIdx;
+			ecs::EntityType lightId{entt::null};
 			UINT32 mapSize;
 			SmallVector<float, 6> fadePercents;
 		};
 
-		/** Contains references to all shadows cast by a specific light. */
-		struct LightShadows
-		{
-			UINT32 startIdx = 0;
-			UINT32 numShadows = 0;
-		};
-
-		/** Contains references to all shadows cast by a specific light, per view. */
-		struct PerViewLightShadows
-		{
-			SmallVector<LightShadows, 6> viewShadows;
-		};
 	public:
 		ShadowRendering(UINT32 shadowMapSize);
 
@@ -663,6 +668,8 @@ namespace bs { namespace ct
 		/** Percent of the length of a single cascade in a CSM, in which to fade out the cascade. */
 		static const float CASCADE_FRACTION_FADE;
 
+		ecs::Registry* registry;
+
 		UINT32 mShadowMapSize;
 
 		Vector<ShadowMapAtlas> mDynamicShadowMaps;
@@ -671,9 +678,9 @@ namespace bs { namespace ct
 
 		Vector<ShadowInfo> mShadowInfos;
 
-		Vector<LightShadows> mSpotLightShadows;
-		Vector<LightShadows> mRadialLightShadows;
-		Vector<PerViewLightShadows> mDirectionalLightShadows;
+		// Vector<LightShadows> mSpotLightShadows;
+		// Vector<LightShadows> mRadialLightShadows;
+		// Vector<PerViewLightShadows> mDirectionalLightShadows;
 
 		SPtr<VertexDeclaration> mPositionOnlyVD;
 

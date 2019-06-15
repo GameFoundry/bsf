@@ -788,14 +788,15 @@ namespace bs { namespace ct
 		// used for adding high quality shadows on specific objects (e.g. important characters during cinematics).
 
 		const SceneInfo& sceneInfo = scene.getSceneInfo();
-		const VisibilityInfo& visibility = viewGroup.getVisibilityInfo();
+		registry = sceneInfo.registry;
+		// const VisibilityInfo& visibility = viewGroup.getVisibilityInfo();
 
 		// Clear all transient data from last frame
 		mShadowInfos.clear();
 
-		mSpotLightShadows.resize(sceneInfo.spotLights.size());
-		mRadialLightShadows.resize(sceneInfo.radialLights.size());
-		mDirectionalLightShadows.resize(sceneInfo.directionalLights.size());
+		// mSpotLightShadows.resize(sceneInfo.registry->size<SpotLightTag>());
+		// mRadialLightShadows.resize(sceneInfo.registry->size<RadialLightTag>());
+		// mDirectionalLightShadows.resize(sceneInfo.registry->size<DirectionalLightTag>());
 
 		mSpotLightShadowOptions.clear();
 		mRadialLightShadowOptions.clear();
@@ -812,55 +813,66 @@ namespace bs { namespace ct
 
 		// Determine shadow map sizes and sort them
 		UINT32 shadowInfoCount = 0;
-		for (UINT32 i = 0; i < (UINT32)sceneInfo.spotLights.size(); ++i)
+		// for (UINT32 i = 0; i < (UINT32)sceneInfo.spotLights.size(); ++i)
 		{
-			const RendererLight& light = sceneInfo.spotLights[i];
-			mSpotLightShadows[i].startIdx = shadowInfoCount;
-			mSpotLightShadows[i].numShadows = 0;
+			auto view = sceneInfo.registry->view<RendererLight, LightShadows, CVisible, SpotLightTag>();
+			for (auto ent : view)
+			{
+				const auto& light = view.get<RendererLight>(ent);
+				const auto& visibility = view.get<CVisible>(ent);
+				auto& spotLightShadows = view.get<LightShadows>(ent);
+				spotLightShadows.startIdx = shadowInfoCount;
+				spotLightShadows.numShadows = 0;
 
-			// Note: I'm using visibility across all views, while I could be using visibility for every view individually,
-			// if I kept that information somewhere
-			if (!light.internal->getCastsShadow() || !visibility.spotLights[i])
-				continue;
+				// Note: I'm using visibility across all views, while I could be using visibility for every view individually,
+				// if I kept that information somewhere
+				if (!light.internal->getCastsShadow() || !visibility.anyVisible())
+					continue;
 
-			ShadowMapOptions options;
-			options.lightIdx = i;
+				ShadowMapOptions options;
+				options.lightId = ent;
 
-			float maxFadePercent;
-			calcShadowMapProperties(light, viewGroup, SHADOW_MAP_BORDER, options.mapSize, options.fadePercents, maxFadePercent);
+				float maxFadePercent;
+				calcShadowMapProperties(light, viewGroup, SHADOW_MAP_BORDER, options.mapSize, options.fadePercents, maxFadePercent);
 
-			// Don't render shadow maps that will end up nearly completely faded out
-			if (maxFadePercent < 0.005f)
-				continue;
+				// Don't render shadow maps that will end up nearly completely faded out
+				if (maxFadePercent < 0.005f)
+					continue;
 
-			mSpotLightShadowOptions.push_back(options);
-			shadowInfoCount++; // For now, always a single fully dynamic shadow for a single light, but that may change
+				mSpotLightShadowOptions.push_back(options);
+				shadowInfoCount++; // For now, always a single fully dynamic shadow for a single light, but that may change
+			}
 		}
 
-		for (UINT32 i = 0; i < (UINT32)sceneInfo.radialLights.size(); ++i)
 		{
-			const RendererLight& light = sceneInfo.radialLights[i];
-			mRadialLightShadows[i].startIdx = shadowInfoCount;
-			mRadialLightShadows[i].numShadows = 0;
+			// for (UINT32 i = 0; i < (UINT32)sceneInfo.radialLights.size(); ++i)
+			auto view = sceneInfo.registry->view<RendererLight, LightShadows, CVisible, RadialLightTag>();
+			for (auto ent : view)
+			{
+				const auto& light = view.get<RendererLight>(ent);
+				const auto& visibility = view.get<CVisible>(ent);
+				auto& radialLightShadows = view.get<LightShadows>(ent);
+				radialLightShadows.startIdx = shadowInfoCount;
+				radialLightShadows.numShadows = 0;
+				// Note: I'm using visibility across all views, while I could be using visibility for every view individually,
+				// if I kept that information somewhere
+				if (!light.internal->getCastsShadow() || !visibility.anyVisible())
+					continue;
 
-			// Note: I'm using visibility across all views, while I could be using visibility for every view individually,
-			// if I kept that information somewhere
-			if (!light.internal->getCastsShadow() || !visibility.radialLights[i])
-				continue;
+				ShadowMapOptions options;
+				options.lightId = ent;
 
-			ShadowMapOptions options;
-			options.lightIdx = i;
+				float maxFadePercent;
+				calcShadowMapProperties(light, viewGroup, 0, options.mapSize, options.fadePercents, maxFadePercent);
 
-			float maxFadePercent;
-			calcShadowMapProperties(light, viewGroup, 0, options.mapSize, options.fadePercents, maxFadePercent);
+				// Don't render shadow maps that will end up nearly completely faded out
+				if (maxFadePercent < 0.005f)
+					continue;
 
-			// Don't render shadow maps that will end up nearly completely faded out
-			if (maxFadePercent < 0.005f)
-				continue;
+				mRadialLightShadowOptions.push_back(options);
 
-			mRadialLightShadowOptions.push_back(options);
-
-			shadowInfoCount++; // For now, always a single fully dynamic shadow for a single light, but that may change
+				shadowInfoCount++; // For now, always a single fully dynamic shadow for a single light, but that may change
+			}
 		}
 
 		// Sort spot lights by size so they fit neatly in the texture atlas
@@ -898,30 +910,36 @@ namespace bs { namespace ct
 		}
 
 		// Render shadow maps
-		for (UINT32 i = 0; i < (UINT32)sceneInfo.directionalLights.size(); ++i)
 		{
-			const RendererLight& light = sceneInfo.directionalLights[i];
+			// for (UINT32 i = 0; i < (UINT32)sceneInfo.directionalLights.size(); ++i)
+			auto view = sceneInfo.registry->view<RendererLight, PerViewLightShadows, DirectionalLightTag>();
+			for (auto ent : view)
+			{
+				// const RendererLight& light = sceneInfo.directionalLights[i];
+				const auto& light = view.get<RendererLight>(ent);
 
-			if (!light.internal->getCastsShadow())
-				return;
+				if (!light.internal->getCastsShadow())
+					return;
 
-			UINT32 numViews = viewGroup.getNumViews();
-			mDirectionalLightShadows[i].viewShadows.resize(numViews);
+				UINT32 numViews = viewGroup.getNumViews();
+				auto& directionalLightShadows = view.get<PerViewLightShadows>(ent);
+				directionalLightShadows.viewShadows.resize(numViews);
 
-			for (UINT32 j = 0; j < numViews; ++j)
-				renderCascadedShadowMaps(*viewGroup.getView(j), i, scene, frameInfo);
+				for (UINT32 j = 0; j < numViews; ++j)
+					renderCascadedShadowMaps(*viewGroup.getView(j), ent, scene, frameInfo);
+			}
 		}
 
 		for(auto& entry : mSpotLightShadowOptions)
 		{
-			UINT32 lightIdx = entry.lightIdx;
-			renderSpotShadowMap(sceneInfo.spotLights[lightIdx], entry, scene, frameInfo);
+			ecs::EntityType lightId = entry.lightId;
+			renderSpotShadowMap(sceneInfo.registry->get<RendererLight>(lightId), entry, scene, frameInfo);
 		}
 
 		for (auto& entry : mRadialLightShadowOptions)
 		{
-			UINT32 lightIdx = entry.lightIdx;
-			renderRadialShadowMap(sceneInfo.radialLights[lightIdx], entry, scene, frameInfo);
+			ecs::EntityType lightId = entry.lightId;
+			renderRadialShadowMap(sceneInfo.registry->get<RendererLight>(lightId), entry, scene, frameInfo);
 		}
 	}
 
@@ -1012,7 +1030,7 @@ namespace bs { namespace ct
 		UINT32 shadowQuality = view.getRenderSettings().shadowSettings.shadowFilteringQuality;
 
 		const Light* light = rendererLight.internal;
-		UINT32 lightIdx = light->getRendererId();
+		ecs::EntityType lightId = light->getRendererId();
 
 		auto viewProps = view.getProperties();
 
@@ -1034,7 +1052,7 @@ namespace bs { namespace ct
 
 		if(light->getType() == LightType::Radial)
 		{
-			const LightShadows& shadows = mRadialLightShadows[lightIdx];
+			const LightShadows& shadows = registry->get<LightShadows>(lightId);
 
 			for(UINT32 i = 0; i < shadows.numShadows; ++i)
 			{
@@ -1080,7 +1098,7 @@ namespace bs { namespace ct
 			bool isCSM = light->getType() == LightType::Directional;
 			if(!isCSM)
 			{
-				const LightShadows& shadows = mSpotLightShadows[lightIdx];
+				const LightShadows& shadows = registry->get<LightShadows>(lightId);
 				for (UINT32 i = 0; i < shadows.numShadows; ++i)
 				{
 					UINT32 shadowIdx = shadows.startIdx + i;
@@ -1094,7 +1112,7 @@ namespace bs { namespace ct
 			}
 			else // Directional
 			{
-				const LightShadows& shadows = mDirectionalLightShadows[lightIdx].viewShadows[viewIdx];
+				const LightShadows& shadows = registry->get<PerViewLightShadows>(lightId).viewShadows[viewIdx];
 				if (shadows.numShadows > 0)
 				{
 					UINT32 mapIdx = shadows.startIdx;
@@ -1208,11 +1226,18 @@ namespace bs { namespace ct
 		}
 	}
 
-	void ShadowRendering::renderCascadedShadowMaps(const RendererView& view, UINT32 lightIdx, RendererScene& scene,
+	void ShadowRendering::renderCascadedShadowMaps(const RendererView& view, ecs::EntityType lightId, RendererScene& scene,
 		const FrameInfo& frameInfo)
 	{
+		// Note: Currently I'm using spherical bounds for the cascaded frustum which might result in non-optimal usage
+		// of the shadow map. A different approach would be to generate a bounding box and then both adjust the aspect
+		// ratio (and therefore dimensions) of the shadow map, as well as rotate the camera so the visible area best fits
+		// in the map. It remains to be seen if this is viable.
+		//  - Note2: Actually both of these will likely have serious negative impact on shadow stability.
+		const SceneInfo& sceneInfo = scene.getSceneInfo();
+
 		UINT32 viewIdx = view.getViewIdx();
-		LightShadows& lightShadows = mDirectionalLightShadows[lightIdx].viewShadows[viewIdx];
+		LightShadows& lightShadows = sceneInfo.registry->get<PerViewLightShadows>(lightId).viewShadows[viewIdx];
 
 		if (!view.getRenderSettings().enableShadows)
 		{
@@ -1221,14 +1246,8 @@ namespace bs { namespace ct
 			return;
 		}
 
-		// Note: Currently I'm using spherical bounds for the cascaded frustum which might result in non-optimal usage
-		// of the shadow map. A different approach would be to generate a bounding box and then both adjust the aspect
-		// ratio (and therefore dimensions) of the shadow map, as well as rotate the camera so the visible area best fits
-		// in the map. It remains to be seen if this is viable.
-		//  - Note2: Actually both of these will likely have serious negative impact on shadow stability.
-		const SceneInfo& sceneInfo = scene.getSceneInfo();
 
-		const RendererLight& rendererLight = sceneInfo.directionalLights[lightIdx];
+		const RendererLight& rendererLight = sceneInfo.registry->get<RendererLight>(lightId);
 		Light* light = rendererLight.internal;
 
 		RenderAPI& rapi = RenderAPI::instance();
@@ -1238,7 +1257,7 @@ namespace bs { namespace ct
 		SPtr<GpuParamBlockBuffer> shadowParamsBuffer = gShadowParamsDef.createBuffer();
 
 		ShadowInfo shadowInfo;
-		shadowInfo.lightIdx = lightIdx;
+		shadowInfo.lightId = lightId;
 		shadowInfo.textureIdx = -1;
 
 		UINT32 mapSize = std::min(mShadowMapSize, MAX_ATLAS_SIZE);
@@ -1362,7 +1381,7 @@ namespace bs { namespace ct
 
 		ShadowInfo mapInfo;
 		mapInfo.fadePerView = options.fadePercents;
-		mapInfo.lightIdx = options.lightIdx;
+		mapInfo.lightId = options.lightId;
 		mapInfo.cascadeIdx = -1;
 
 		bool foundSpace = false;
@@ -1444,7 +1463,7 @@ namespace bs { namespace ct
 		// Restore viewport
 		rapi.setViewport(Rect2(0.0f, 0.0f, 1.0f, 1.0f));
 
-		LightShadows& lightShadows = mSpotLightShadows[options.lightIdx];
+		LightShadows& lightShadows = registry->get<LightShadows>(options.lightId);
 
 		mShadowInfos[lightShadows.startIdx + lightShadows.numShadows] = mapInfo;
 		lightShadows.numShadows++;
@@ -1458,7 +1477,7 @@ namespace bs { namespace ct
 		SPtr<GpuParamBlockBuffer> shadowParamsBuffer = gShadowParamsDef.createBuffer();
 
 		ShadowInfo mapInfo;
-		mapInfo.lightIdx = options.lightIdx;
+		mapInfo.lightId = options.lightId;
 		mapInfo.textureIdx = -1;
 		mapInfo.fadePerView = options.fadePercents;
 		mapInfo.cascadeIdx = -1;
@@ -1646,7 +1665,7 @@ namespace bs { namespace ct
 			ShadowRenderQueue::execute(scene, frameInfo, cubeOptions);
 		}
 
-		LightShadows& lightShadows = mRadialLightShadows[options.lightIdx];
+		LightShadows& lightShadows = registry->get<LightShadows>(options.lightId);
 
 		mShadowInfos[lightShadows.startIdx + lightShadows.numShadows] = mapInfo;
 		lightShadows.numShadows++;

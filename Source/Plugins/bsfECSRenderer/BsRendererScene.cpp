@@ -18,6 +18,7 @@
 #include "Shading/BsGpuParticleSimulation.h"
 #include "Renderer/BsDecal.h"
 #include "Renderer/BsRendererUtility.h"
+#include "Shading/BsShadowRendering.h"
 
 #include "bsfEnTT/Scene/Registry.h"
 #include <entt/entt.hpp>
@@ -152,25 +153,27 @@ namespace bs {	namespace ct
 		auto& lightData = mInfo.registry->assign<LightData>(id);
 		// populate the light data.
 		renderer.getParameters(lightData);
-
-		if (light->getCastsShadow()) {
-			mInfo.registry->assign<ShadowedTag>(id);
-		}
+		// populate the gpu param buffer
+		// auto& gpuParamData = mInfo.registry->assign<
+		// renderer.getParameters(gpuParamData)
 
 		switch(light->getType()) {
 			case LightType::Directional:
 			{
 				mInfo.registry->assign<DirectionalLightTag>(id);
+				mInfo.registry->assign<PerViewLightShadows>(id);
 			} break;
 			case LightType::Radial:
 			{
-				mInfo.registry->assign<RadialLightTag>(id);
 				mInfo.registry->assign<Sphere>(id, light->getBounds());
+				mInfo.registry->assign<RadialLightTag>(id);
+				mInfo.registry->assign<LightShadows>(id);
 			} break;
 			default: // spotlight
 			{
-				mInfo.registry->assign<SpotLightTag>(id);
 				mInfo.registry->assign<Sphere>(id, light->getBounds());
+				mInfo.registry->assign<SpotLightTag>(id);
+				mInfo.registry->assign<LightShadows>(id);
 			}
 		}
 		// if (light->getType() == LightType::Directional)

@@ -261,13 +261,10 @@ namespace bs { namespace ct
 			auto view = reg->view<RendererLight, Sphere, CVisible>();
 			for (ecs::EntityType ent : view)
 			{
-				for (auto ent : view)
-				{
-					auto& visibility = view.get<CVisible>(ent);
-					const auto& bounds = view.get<Sphere>(ent);
-					if (worldFrustum.intersects(bounds)) {
-						visibility.visibleViews[viewIdx] = true;
-					}
+				auto& visibility = view.get<CVisible>(ent);
+				const auto& bounds = view.get<Sphere>(ent);
+				if (worldFrustum.intersects(bounds)) {
+					visibility.visibleViews[viewIdx] = true;
 				}
 			}
 		}

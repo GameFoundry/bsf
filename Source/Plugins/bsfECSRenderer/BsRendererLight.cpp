@@ -11,7 +11,7 @@
 #include "Shading/BsStandardDeferred.h"
 #include <entt/entt.hpp>
 
-namespace bs { namespace ct
+namespace bs::ct
 {
 	static const UINT32 LIGHT_DATA_BUFFER_INCREMENT = 16 * sizeof(LightData);
 
@@ -190,11 +190,33 @@ namespace bs { namespace ct
 	void VisibleLightData::update(const SceneInfo& sceneInfo, const RendererViewGroup& viewGroup)
 	{
 		// const VisibilityInfo& visibility = viewGroup.getVisibilityInfo();
+		// hack for now for keeping registry available for other functions...
+		registry = sceneInfo.registry;
 
-		// for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
-		// 	mVisibleLights[i].clear();
+		for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
+			mVisibleLights[i].clear();
 
-		// // Generate a list of lights and their GPU buffers
+		// Generate a list of lights and their GPU buffers
+		{
+			auto view = sceneInfo.registry->view<RendererLight, DirectionalLightTag>();
+			view.less([this](RendererLight& l) {
+				mVisibleLights[(UINT32)LightType::Directional].push_back(&l);
+			});
+		}
+		{
+			auto view = sceneInfo.registry->view<RendererLight, CVisible, RadialLightTag>();
+			view.less([this](RendererLight& l, const auto& visible) {
+				if (!visible.anyVisible()) return;
+				mVisibleLights[(UINT32)LightType::Radial].push_back(&l);
+			});
+		}
+		{
+			auto view = sceneInfo.registry->view<RendererLight, CVisible, SpotLightTag>();
+			view.less([this](RendererLight& l, const auto& visible) {
+				if (!visible.anyVisible()) return;
+				mVisibleLights[(UINT32)LightType::Spot].push_back(&l);
+			});
+		}
 		// UINT32 numDirLights = (UINT32)sceneInfo.directionalLights.size();
 		// for (UINT32 i = 0; i < numDirLights; i++)
 		// 	mVisibleLights[(UINT32)LightType::Directional].push_back(&sceneInfo.directionalLights[i]);
@@ -217,56 +239,54 @@ namespace bs { namespace ct
 		// 	mVisibleLights[(UINT32)LightType::Spot].push_back(&sceneInfo.spotLights[i]);
 		// }
 
-		// for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
-		// 	mNumLights[i] = (UINT32)mVisibleLights[i].size();
+		for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
+			mNumLights[i] = (UINT32)mVisibleLights[i].size();
 
 		// Partition all visible lights so that unshadowed ones come first
-		// auto partition = [](Vector<const RendererLight*>& entries)
-		// {
-		// 	UINT32 numUnshadowed = 0;
-		// 	int first = -1;
-		// 	for (UINT32 i = 0; i < (UINT32)entries.size(); ++i)
-		// 	{
-		// 		if(entries[i]->internal->getCastsShadow())
-		// 		{
-		// 			first = i;
-		// 			break;
-		// 		}
-		// 		else
-		// 			++numUnshadowed;
-		// 	}
+		auto partition = [](Vector<const RendererLight*>& entries)
+		{
+			UINT32 numUnshadowed = 0;
+			int first = -1;
+			for (UINT32 i = 0; i < (UINT32)entries.size(); ++i)
+			{
+				if(entries[i]->internal->getCastsShadow())
+				{
+					first = i;
+					break;
+				}
+				else
+					++numUnshadowed;
+			}
 
-		// 	if(first != -1)
-		// 	{
-		// 		for(UINT32 i = first + 1; i < (UINT32)entries.size(); ++i)
-		// 		{
-		// 			if(!entries[i]->internal->getCastsShadow())
-		// 			{
-		// 				std::swap(entries[i], entries[first]);
-		// 				++numUnshadowed;
-		// 			}
-		// 		}
-		// 	}
+			if(first != -1)
+			{
+				for(UINT32 i = first + 1; i < (UINT32)entries.size(); ++i)
+				{
+					if(!entries[i]->internal->getCastsShadow())
+					{
+						std::swap(entries[i], entries[first]);
+						++numUnshadowed;
+					}
+				}
+			}
 
-		// 	return numUnshadowed;
-		// };
+			return numUnshadowed;
+		};
 
-		// for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
-		// 	mNumShadowedLights[i] = mNumLights[i] - partition(mVisibleLights[i]);
+		for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
+			mNumShadowedLights[i] = mNumLights[i] - partition(mVisibleLights[i]);
 
 		// Generate light data to initialize the GPU buffer with
 		// mVisibleLightData.clear();
-		// for(auto& lightsPerType : mVisibleLights)
-		// {
-		// 	for(auto& entry : lightsPerType)
-		// 	{
-		// 		mVisibleLightData.push_back(LightData());
-		// 		entry->getParameters(mVisibleLightData.back());
-		// 	}
-		// }
+		for(auto& lightsPerType : mVisibleLights)
+		{
+			for(auto& entry : lightsPerType)
+			{
+				mVisibleLightData.push_back(LightData());
+				entry->getParameters(mVisibleLightData.back());
+			}
+		}
 
-		// so instead we just sort the LightData array and then use ecs view size
-		// to set the mNumShadowedLights and mNumLights.
 
 		bool supportsStructuredBuffers = gRenderECS()->getFeatureSet() == RenderECSFeatureSet::Desktop;
 		if(supportsStructuredBuffers)
@@ -399,4 +419,4 @@ namespace bs { namespace ct
 
 	LightsParamDef gLightsParamDef;
 	LightAndReflProbeParamsParamDef gLightAndReflProbeParamsParamDef;
-}}
+}  // namespace bs::ct

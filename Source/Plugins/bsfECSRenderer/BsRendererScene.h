@@ -29,6 +29,7 @@ namespace bs
 	// Limited by max number of array elements in texture for DX11 hardware
 	constexpr UINT32 MaxReflectionCubemaps = 2048 / 6;
 
+	struct VisibleTag {};
 	// each view index/id? can check itself on the bitset...
 	struct CVisible {
 		// bool visible{false};
@@ -53,11 +54,11 @@ namespace bs
 		// Vector<CullInfo> renderableCullInfos;
 
 		// Lights
-		Vector<RendererLight> directionalLights;
-		Vector<RendererLight> radialLights;
-		Vector<RendererLight> spotLights;
-		Vector<Sphere> radialLightWorldBounds;
-		Vector<Sphere> spotLightWorldBounds;
+		// Vector<RendererLight> directionalLights;
+		// Vector<RendererLight> radialLights;
+		// Vector<RendererLight> spotLights;
+		// Vector<Sphere> radialLightWorldBounds;
+		// Vector<Sphere> spotLightWorldBounds;
 
 		// Reflection probes
 		Vector<RendererReflectionProbe> reflProbes;

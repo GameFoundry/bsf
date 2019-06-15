@@ -8,6 +8,8 @@
 #include "Renderer/BsLight.h"
 #include "RenderAPI/BsGpuPipelineParamInfo.h"
 
+#include "bsfEnTT/fwd.h"
+
 namespace bs
 {
 	class Bounds;
@@ -194,6 +196,7 @@ namespace ct
 		/** Returns a list of all visible lights of the specified type. */
 		const Vector<const RendererLight*>& getLights(LightType type) const { return mVisibleLights[(UINT32)type]; }
 	private:
+		ecs::Registry* registry;
 		SPtr<GpuBuffer> mLightBuffer;
 
 		UINT32 mNumLights[(UINT32)LightType::Count];
