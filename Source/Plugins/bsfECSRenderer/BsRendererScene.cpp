@@ -479,13 +479,19 @@ namespace bs {	namespace ct
 
 	void RendererScene::registerReflectionProbe(ReflectionProbe* probe)
 	{
-		UINT32 probeId = (UINT32)mInfo.reflProbes.size();
-		probe->setRendererId(probeId);
+		// UINT32 probeId = (UINT32)mInfo.reflProbes.size();
+		// probe->setRendererId(probeId);
 
-		mInfo.reflProbes.push_back(RendererReflectionProbe(probe));
-		RendererReflectionProbe& probeInfo = mInfo.reflProbes.back();
+		// mInfo.reflProbes.push_back(RendererReflectionProbe(probe));
+		// RendererReflectionProbe& probeInfo = mInfo.reflProbes.back();
 
-		mInfo.reflProbeWorldBounds.push_back(probe->getBounds());
+		auto id = mInfo.registry->create();
+		probe->setRendererId(id);
+		auto& probeInfo = mInfo.registry->assign<RendererReflectionProbe>(id, probe);
+		mInfo.registry->assign<Sphere>(id, probe->getBounds());
+		mInfo.registry->assign<CVisible>(id);
+
+		// mInfo.reflProbeWorldBounds.push_back(probe->getBounds());
 
 		// Find a spot in cubemap array
 		UINT32 numArrayEntries = (UINT32)mInfo.reflProbeCubemapArrayUsedSlots.size();
@@ -493,7 +499,7 @@ namespace bs {	namespace ct
 		{
 			if(!mInfo.reflProbeCubemapArrayUsedSlots[i])
 			{
-				setReflectionProbeArrayIndex(probeId, i, false);
+				setReflectionProbeArrayIndex(id, i, false);
 				mInfo.reflProbeCubemapArrayUsedSlots[i] = true;
 				break;
 			}
@@ -502,7 +508,7 @@ namespace bs {	namespace ct
 		// No empty slot was found
 		if (probeInfo.arrayIdx == (UINT32)-1)
 		{
-			setReflectionProbeArrayIndex(probeId, numArrayEntries, false);
+			setReflectionProbeArrayIndex(id, numArrayEntries, false);
 			mInfo.reflProbeCubemapArrayUsedSlots.push_back(true);
 		}
 
@@ -516,48 +522,52 @@ namespace bs {	namespace ct
 	void RendererScene::updateReflectionProbe(ReflectionProbe* probe, bool texture)
 	{
 		// Should only get called if transform changes, any other major changes and ReflProbeInfo entry gets rebuild
-		UINT32 probeId = probe->getRendererId();
-		mInfo.reflProbeWorldBounds[probeId] = probe->getBounds();
+		ecs::EntityType id = probe->getRendererId();
+		// mInfo.reflProbeWorldBounds[probeId] = probe->getBounds();
+		mInfo.registry->replace<Sphere>(id, probe->getBounds());
 
 		if (texture)
 		{
-			RendererReflectionProbe& probeInfo = mInfo.reflProbes[probeId];
+			auto& probeInfo = mInfo.registry->get<RendererReflectionProbe>(id);
+			// RendererReflectionProbe& probeInfo = mInfo.reflProbes[probeId];
 			probeInfo.arrayDirty = true;
 		}
 	}
 
 	void RendererScene::unregisterReflectionProbe(ReflectionProbe* probe)
 	{
-		UINT32 probeId = probe->getRendererId();
-		UINT32 arrayIdx = mInfo.reflProbes[probeId].arrayIdx;
+		ecs::EntityType id = probe->getRendererId();
+		const auto& probeInfo = mInfo.registry->get<RendererReflectionProbe>(id);
+		UINT32 arrayIdx = probeInfo.arrayIdx;
 
-		if (arrayIdx != (UINT32)-1)
+		if (arrayIdx != (UINT32)-1) {
 			mInfo.reflProbeCubemapArrayUsedSlots[arrayIdx] = false;
-
-		ReflectionProbe* lastProbe = mInfo.reflProbes.back().probe;
-		UINT32 lastProbeId = lastProbe->getRendererId();
-
-		if (probeId != lastProbeId)
-		{
-			// Swap current last element with the one we want to erase
-			std::swap(mInfo.reflProbes[probeId], mInfo.reflProbes[lastProbeId]);
-			std::swap(mInfo.reflProbeWorldBounds[probeId], mInfo.reflProbeWorldBounds[lastProbeId]);
-
-			lastProbe->setRendererId(probeId);
 		}
 
-		// Last element is the one we want to erase
-		mInfo.reflProbes.erase(mInfo.reflProbes.end() - 1);
-		mInfo.reflProbeWorldBounds.erase(mInfo.reflProbeWorldBounds.end() - 1);
+		// ReflectionProbe* lastProbe = mInfo.reflProbes.back().probe;
+		// UINT32 lastProbeId = lastProbe->getRendererId();
+
+		// if (probeId != lastProbeId)
+		// {
+		// 	// Swap current last element with the one we want to erase
+		// 	std::swap(mInfo.reflProbes[probeId], mInfo.reflProbes[lastProbeId]);
+		// 	std::swap(mInfo.reflProbeWorldBounds[probeId], mInfo.reflProbeWorldBounds[lastProbeId]);
+
+		// 	lastProbe->setRendererId(probeId);
+		// }
+
+		// // Last element is the one we want to erase
+		// mInfo.reflProbes.erase(mInfo.reflProbes.end() - 1);
+		// mInfo.reflProbeWorldBounds.erase(mInfo.reflProbeWorldBounds.end() - 1);
 	}
 
-	void RendererScene::setReflectionProbeArrayIndex(UINT32 probeIdx, UINT32 arrayIdx, bool markAsClean)
+	void RendererScene::setReflectionProbeArrayIndex(ecs::EntityType probeId, UINT32 arrayIdx, bool markAsClean)
 	{
-		RendererReflectionProbe* probe = &mInfo.reflProbes[probeIdx];
-		probe->arrayIdx = arrayIdx;
+		auto& probe = mInfo.registry->get<RendererReflectionProbe>(probeId);
+		probe.arrayIdx = arrayIdx;
 
 		if (markAsClean)
-			probe->arrayDirty = false;
+			probe.arrayDirty = false;
 	}
 
 	void RendererScene::registerLightProbeVolume(LightProbeVolume* volume)

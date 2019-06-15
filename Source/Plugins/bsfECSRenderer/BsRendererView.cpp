@@ -256,9 +256,22 @@ namespace bs { namespace ct
 		}
 
 		/*----------  Calculate Light Visibility  ----------*/
-
 		{
 			auto view = reg->view<RendererLight, Sphere, CVisible>();
+			for (ecs::EntityType ent : view)
+			{
+				auto& visibility = view.get<CVisible>(ent);
+				const auto& bounds = view.get<Sphere>(ent);
+				if (worldFrustum.intersects(bounds)) {
+					visibility.visibleViews[viewIdx] = true;
+				}
+			}
+		}
+		/*----------  Calculate Reflection Probe Visibility  ----------*/
+		// only calculate if not capturing reflections to prevent recursion.
+		if (!getProperties().capturingReflections)
+		{
+			auto view = reg->view<RendererReflectionProbe, Sphere, CVisible>();
 			for (ecs::EntityType ent : view)
 			{
 				auto& visibility = view.get<CVisible>(ent);
@@ -826,22 +839,22 @@ namespace bs { namespace ct
 		// 		&mVisibility.spotLights);
 		// }
 
-		// Calculate refl. probe visibility for all views
-		const auto numProbes = (UINT32)sceneInfo.reflProbes.size();
-		mVisibility.reflProbes.resize(numProbes, false);
-		mVisibility.reflProbes.assign(numProbes, false);
+		// // Calculate refl. probe visibility for all views
+		// const auto numProbes = (UINT32)sceneInfo.reflProbes.size();
+		// mVisibility.reflProbes.resize(numProbes, false);
+		// mVisibility.reflProbes.assign(numProbes, false);
 
-		// Note: Per-view visibility for refl. probes currently isn't calculated
-		for (UINT32 i = 0; i < numViews; i++)
-		{
-			const auto& viewProps = mViews[i]->getProperties();
+		// // Note: Per-view visibility for refl. probes currently isn't calculated
+		// for (UINT32 i = 0; i < numViews; i++)
+		// {
+		// 	const auto& viewProps = mViews[i]->getProperties();
 
-			// Don't recursively render reflection probes when generating reflection probe maps
-			if (viewProps.capturingReflections)
-				continue;
+		// 	// Don't recursively render reflection probes when generating reflection probe maps
+		// 	if (viewProps.capturingReflections)
+		// 		continue;
 
-			mViews[i]->calculateVisibility(sceneInfo.reflProbeWorldBounds, mVisibility.reflProbes);
-		}
+		// 	mViews[i]->calculateVisibility(sceneInfo.reflProbeWorldBounds, mVisibility.reflProbes);
+		// }
 
 		// Organize light and refl. probe visibility infomation in a more GPU friendly manner
 

@@ -192,8 +192,8 @@ namespace bs { namespace ct
 	struct VisibilityInfo
 	{
 		// Vector<bool> renderables;
-		Vector<bool> radialLights;
-		Vector<bool> spotLights;
+		// Vector<bool> radialLights;
+		// Vector<bool> spotLights;
 		Vector<bool> reflProbes;
 		// Vector<bool> particleSystems;
 		// Vector<bool> decals;
@@ -369,7 +369,7 @@ namespace bs { namespace ct
 		void queueRenderElements(const SceneInfo& sceneInfo);
 
 		/** Returns the visibility mask calculated with the last call to determineVisible(). */
-		const VisibilityInfo& getVisibilityMasks() const { return mVisibility; }
+		// const VisibilityInfo& getVisibilityMasks() const { return mVisibility; }
 
 		/** Returns per-view settings that control rendering. */
 		const RenderSettings& getRenderSettings() const { return *mRenderSettings; }

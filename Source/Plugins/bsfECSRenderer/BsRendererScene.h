@@ -61,8 +61,8 @@ namespace bs
 		// Vector<Sphere> spotLightWorldBounds;
 
 		// Reflection probes
-		Vector<RendererReflectionProbe> reflProbes;
-		Vector<Sphere> reflProbeWorldBounds;
+		// Vector<RendererReflectionProbe> reflProbes;
+		// Vector<Sphere> reflProbeWorldBounds;
 		Vector<bool> reflProbeCubemapArrayUsedSlots;
 		SPtr<Texture> reflProbeCubemapsTex;
 

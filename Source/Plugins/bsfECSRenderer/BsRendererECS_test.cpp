@@ -11,12 +11,15 @@
 #include "Components/BsCCamera.h"
 #include "Components/BsCRenderable.h"
 #include "Components/BsCParticleSystem.h"
+#include "Components/BsCSkybox.h"
+#include "Components/BsCReflectionProbe.h"
 #include "Scene/BsSceneManager.h"
 #include "bsfEnTT/Scene/Registry.h"
 #include "CoreThread/BsCoreThread.h"
 #include "BsRendererRenderable.h"
 #include "Image/BsTexture.h"
 #include "Components/BsCDecal.h"
+#include "Importer/BsTextureImportOptions.h"
 
 
 namespace bs::ecs {
@@ -61,6 +64,22 @@ HSceneObject addPlane() {
 
 	HShader shader = gBuiltinResources().getBuiltinShader(BuiltinShader::Standard);
 	HMaterial material = Material::create(shader);
+	HMesh planeMesh = gBuiltinResources().getMesh(BuiltinMesh::Quad);
+	HSceneObject planeSO = SceneObject::create("Quad");
+	HRenderable boxRenderable = planeSO->addComponent<CRenderable>();
+	boxRenderable->setMesh(planeMesh);
+	boxRenderable->setMaterial(material);
+	planeSO->setPosition(Vector3(0.0f, 0.0f, 0.0f));
+	planeSO->setScale(Vector3(10.0f, 1.0f, 10.0f));
+	return planeSO;
+}
+
+HSceneObject addMirror() {
+
+	HShader shader = gBuiltinResources().getBuiltinShader(BuiltinShader::Standard);
+	HMaterial material = Material::create(shader);
+	material->setTexture("gMetalnessTex", gBuiltinResources().getTexture(BuiltinTexture::White));
+	material->setTexture("gRoughnessTex", gBuiltinResources().getTexture(BuiltinTexture::Black));
 	HMesh planeMesh = gBuiltinResources().getMesh(BuiltinMesh::Quad);
 	HSceneObject planeSO = SceneObject::create("Quad");
 	HRenderable boxRenderable = planeSO->addComponent<CRenderable>();
@@ -215,7 +234,6 @@ TEST_F(ECSRenderableTestSuite, MakeStandard) {
 
 	auto plane = addPlane();
 	addDecal();
-	Application::instance().runMainLoop();
 	Application::instance().runMainSteps(4);
 
 	box->destroy();
@@ -247,6 +265,63 @@ TEST_F(ECSRenderableTestSuite, TestLighting) {
 	addRadialLight();
 	addSpotLight();
 
+	Application::instance().runMainSteps(4);
+
+	bool forceRemoveAll = true;
+	SceneManager::instance().clearScene(forceRemoveAll);
+}
+
+HSceneObject addReflectionProbe() {
+	HSceneObject reflProbeSO = SceneObject::create("Refl. probe");
+	HReflectionProbe reflProbe = reflProbeSO->addComponent<CReflectionProbe>();
+
+	reflProbe->setType(ReflectionProbeType::Box);
+	reflProbe->setExtents(Vector3(6.0f, 6.0f, 6.0f));
+}
+
+
+void addSkybox() {
+
+	auto tio = TextureImportOptions::create();
+	tio->cubemap = true;
+	tio->cubemapSourceType = CubemapSourceType::Cylindrical;
+	tio->format = PF_RG11B10F; // Or the 16-bit floating point format
+
+	std::cout << "IMPORTING.. " << std::endl;
+	HTexture skyTexture = gImporter().import<Texture>("daytime.hdr", tio);
+	std::cout << "DONE IMPROT" << std::endl;
+	// Set up the skybox
+	HSceneObject skyboxSO = SceneObject::create("Skybox");
+	HSkybox skybox = skyboxSO->addComponent<CSkybox>();
+
+	skybox->setTexture(skyTexture);
+}
+
+TEST_F(ECSRenderableTestSuite, TestReflection) {
+
+	HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
+	HCamera sceneCamera = sceneCameraSO->addComponent<CCamera>();
+	sceneCamera->setMain(true);
+	sceneCameraSO->setPosition(Vector3(10.0f, 10.0f, 10.0f));
+	sceneCameraSO->lookAt(Vector3(0, 0, 0));
+
+	// Default Box
+	auto box = addBox();
+	box->setPosition(Vector3(0, 2, 0));
+	addReflectionProbe();
+	addMirror();
+	// addSkybox();
+	// auto plane = addPlane();
+	// const auto planeRenderable = plane->getComponent<CRenderable>();
+	// auto mat = planeRenderable->getMaterial(0);
+	// mat->setTexture("gMetalnessTex", gBuiltinResources().getTexture(BuiltinTexture::Black));
+
+	addDirectionalLight();
+	// // dirLight->destroy();
+	// addRadialLight();
+	// addSpotLight();
+
+	// Application::instance().runMainSteps(4);
 	Application::instance().runMainLoop();
 
 	bool forceRemoveAll = true;

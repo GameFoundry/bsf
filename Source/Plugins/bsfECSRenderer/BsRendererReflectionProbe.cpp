@@ -8,6 +8,8 @@
 #include "Renderer/BsRendererUtility.h"
 #include "Renderer/BsSkybox.h"
 
+#include <entt/entt.hpp>
+
 namespace bs { namespace ct
 {
 	static const UINT32 REFL_PROBE_BUFFER_INCREMENT = 16 * sizeof(ReflProbeData);
@@ -18,17 +20,22 @@ namespace bs { namespace ct
 	{
 		mReflProbeData.clear();
 
-		const VisibilityInfo& visibility = viewGroup.getVisibilityInfo();
+		// const VisibilityInfo& visibility = viewGroup.getVisibilityInfo();
 
-		// Generate refl. probe data for the visible ones
-		UINT32 numProbes = (UINT32)sceneInfo.reflProbes.size();
-		for(UINT32 i = 0; i < numProbes; i++)
+		// // Generate refl. probe data for the visible ones
+		// UINT32 numProbes = (UINT32)sceneInfo.reflProbes.size();
+		// for(UINT32 i = 0; i < numProbes; i++)
+		auto view = sceneInfo.registry->view<RendererReflectionProbe, CVisible>();
+		for (auto ent : view)
 		{
-			if (!visibility.reflProbes[i])
+			const auto& visibility = view.get<CVisible>(ent);
+			if (!visibility.anyVisible()) {
 				continue;
+			}
+			const auto& reflProbe = view.get<RendererReflectionProbe>(ent);
 
 			mReflProbeData.push_back(ReflProbeData());
-			sceneInfo.reflProbes[i].getParameters(mReflProbeData.back());
+			reflProbe.getParameters(mReflProbeData.back());
 		}
 
 		// Sort probes so bigger ones get accessed first, this way we overlay smaller ones on top of biggers ones when

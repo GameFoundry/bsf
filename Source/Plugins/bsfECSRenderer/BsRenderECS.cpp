@@ -31,6 +31,7 @@
 #include "Shading/BsTiledDeferred.h"
 #include "BsRenderECSOptions.h"
 #include "BsRenderECSIBLUtility.h"
+#include "BsRendererReflectionProbe.h"
 #include "BsRenderCompositor.h"
 #include "Shading/BsGpuParticleSimulation.h"
 #include "bsfEnTT/Scene/Registry.h"
@@ -585,7 +586,8 @@ namespace bs { namespace ct
 	void RenderECS::updateReflProbeArray()
 	{
 		SceneInfo& sceneInfo = mScene->_getSceneInfo();
-		UINT32 numProbes = (UINT32)sceneInfo.reflProbes.size();
+		// UINT32 numProbes = (UINT32)sceneInfo.reflProbes.size();
+		UINT32 numProbes = sceneInfo.registry->size<RendererReflectionProbe>();
 
 		bs_frame_mark();
 		{
@@ -613,9 +615,12 @@ namespace bs { namespace ct
 			auto& cubemapArrayProps = sceneInfo.reflProbeCubemapsTex->getProperties();
 
 			FrameQueue<UINT32> emptySlots;
-			for (UINT32 i = 0; i < numProbes; i++)
+			// for (UINT32 i = 0; i < numProbes; i++)
+			auto view = sceneInfo.registry->view<RendererReflectionProbe>();
+			for (auto ent : view)
 			{
-				const RendererReflectionProbe& probeInfo = sceneInfo.reflProbes[i];
+				const auto& probeInfo = view.get(ent);
+				// const RendererReflectionProbe& probeInfo = sceneInfo.reflProbes[i];
 
 				if (probeInfo.arrayIdx > MaxReflectionCubemaps)
 					continue;
@@ -661,7 +666,7 @@ namespace bs { namespace ct
 						}
 					}
 
-					mScene->setReflectionProbeArrayIndex(i, probeInfo.arrayIdx, true);
+					mScene->setReflectionProbeArrayIndex(ent, probeInfo.arrayIdx, true);
 				}
 
 				// Note: Consider pruning the reflection cubemap array if empty slot count becomes too high
