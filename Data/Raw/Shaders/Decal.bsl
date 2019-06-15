@@ -23,11 +23,14 @@ shader Surface
 
 	variations
 	{
-		// 0 - Transparent
-		// 1 - Stain
-		// 2 - Normal
-		// 3 - Emissive
-		BLEND_MODE = { 0, 1, 2, 3 };
+		[name("Blend mode"),show]
+		BLEND_MODE = 
+		{ 
+			[name("Transparent")] 0, 
+			[name("Stain")] 1, 
+			[name("Normals")] 2, 
+			[name("Emissive")] 3 
+		};
 		INSIDE_GEOMETRY = { true, false };
 		// 0 - None
 		// 1 - Resolve single sample only
