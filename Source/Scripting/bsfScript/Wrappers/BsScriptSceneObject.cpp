@@ -27,6 +27,8 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_SetName", (void*)&ScriptSceneObject::internal_setName);
 		metaData.scriptClass->addInternalCall("Internal_GetActive", (void*)&ScriptSceneObject::internal_getActive);
 		metaData.scriptClass->addInternalCall("Internal_SetActive", (void*)&ScriptSceneObject::internal_setActive);
+		metaData.scriptClass->addInternalCall("Internal_HasFlag", (void*)&ScriptSceneObject::internal_hasFlag);
+
 		metaData.scriptClass->addInternalCall("Internal_GetMobility", (void*)&ScriptSceneObject::internal_getMobility);
 		metaData.scriptClass->addInternalCall("Internal_SetMobility", (void*)&ScriptSceneObject::internal_setMobility);
 		metaData.scriptClass->addInternalCall("Internal_GetParent", (void*)&ScriptSceneObject::internal_getParent);
@@ -106,6 +108,14 @@ namespace bs
 			return false;
 
 		return nativeInstance->mSceneObject->getActive(true);
+	}
+
+	bool ScriptSceneObject::internal_hasFlag(ScriptSceneObject* nativeInstance, bs::UINT32 flag)
+	{
+		if (checkIfDestroyed(nativeInstance))
+			return false;
+
+		return nativeInstance->mSceneObject->hasFlag(flag);
 	}
 
 	void ScriptSceneObject::internal_setMobility(ScriptSceneObject* nativeInstance, int value)
