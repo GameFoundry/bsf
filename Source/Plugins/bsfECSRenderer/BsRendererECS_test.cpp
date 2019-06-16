@@ -276,7 +276,7 @@ HSceneObject addReflectionProbe() {
 	HReflectionProbe reflProbe = reflProbeSO->addComponent<CReflectionProbe>();
 
 	reflProbe->setType(ReflectionProbeType::Box);
-	reflProbe->setExtents(Vector3(6.0f, 6.0f, 6.0f));
+	reflProbe->setExtents(Vector3(16.0f, 16.0f, 16.0f));
 }
 
 
@@ -299,11 +299,12 @@ void addSkybox() {
 
 TEST_F(ECSRenderableTestSuite, TestReflection) {
 
-	HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
-	HCamera sceneCamera = sceneCameraSO->addComponent<CCamera>();
-	sceneCamera->setMain(true);
-	sceneCameraSO->setPosition(Vector3(10.0f, 10.0f, 10.0f));
-	sceneCameraSO->lookAt(Vector3(0, 0, 0));
+	// HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
+	// HCamera sceneCamera = sceneCameraSO->addComponent<CCamera>();
+	// sceneCamera->setMain(true);
+	// sceneCameraSO->setPosition(Vector3(10.0f, 10.0f, 10.0f));
+	// sceneCameraSO->lookAt(Vector3(0, 0, 0));
+	addFlyableCamera();
 
 	// Default Box
 	auto box = addBox();

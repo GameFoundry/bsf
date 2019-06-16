@@ -322,7 +322,7 @@ namespace bs { namespace ct
 			{
 				const auto& visibility = view.get<CVisible>(ent);
 				// if (!visibility.renderables[i])
-				if (!visibility.anyVisible()) {
+				if (!visibility.isVisible(inputs.view.getViewIdx())) {
 					continue;
 				}
 
@@ -354,7 +354,7 @@ namespace bs { namespace ct
 			for (auto ent : view)
 			{
 				auto& visibility = view.get<CVisible>(ent);
-				if (!visibility.anyVisible())
+				if (!visibility.isVisible(inputs.view.getViewIdx()))
 					continue;
 
 				// const RendererParticles& rendererParticles = inputs.scene.particleSystems[i];
@@ -387,7 +387,7 @@ namespace bs { namespace ct
 			for (auto ent : view)
 			{
 				const auto& visibility = view.get<CVisible>(ent);
-				if (!visibility.anyVisible())
+				if (!visibility.isVisible(inputs.view.getViewIdx()))
 					continue;
 
 				auto& rendererDecal = view.get<RendererDecal>(ent);
@@ -674,7 +674,7 @@ namespace bs { namespace ct
 			for (auto ent : view)
 			{
 				const auto& visibility = view.get<CVisible>(ent);
-				if (!visibility.anyVisible())
+				if (!visibility.isVisible(inputs.view.getViewIdx()))
 					continue;
 
 				// const RendererParticles& rendererParticles = inputs.scene.particleSystems[i];
@@ -1471,7 +1471,7 @@ namespace bs { namespace ct
 			auto& renderable = view.get<RendererRenderable>(ent);
 			const auto& visibility = view.get<CVisible>(ent);
 			// if (!visibility.renderables[i])
-			if (!visibility.anyVisible())
+			if (!visibility.isVisible(inputs.view.getViewIdx()))
 				continue;
 
 			for (auto& element : renderable.elements)
@@ -1509,7 +1509,7 @@ namespace bs { namespace ct
 			for (auto ent : view)
 			{
 				const auto& visibility = view.get<CVisible>(ent);
-				if (!visibility.anyVisible())
+				if (!visibility.isVisible(inputs.view.getViewIdx()))
 					continue;
 
 				const auto& rendererParticles = view.get<RendererParticles>(ent);

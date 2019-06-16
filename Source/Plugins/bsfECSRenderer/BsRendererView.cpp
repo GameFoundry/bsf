@@ -372,64 +372,64 @@ namespace bs { namespace ct
 	// 	}
 	// }
 
-	void RendererView::calculateVisibility(const Vector<CullInfo>& cullInfos, Vector<bool>& visibility) const
-	{
-		UINT64 cameraLayers = mProperties.visibleLayers;
-		const ConvexVolume& worldFrustum = mProperties.cullFrustum;
-		const Vector3& worldCameraPosition = mProperties.viewOrigin;
-		float baseCullDistance = mRenderSettings->cullDistance;
+	// void RendererView::calculateVisibility(const Vector<CullInfo>& cullInfos, Vector<bool>& visibility) const
+	// {
+	// 	UINT64 cameraLayers = mProperties.visibleLayers;
+	// 	const ConvexVolume& worldFrustum = mProperties.cullFrustum;
+	// 	const Vector3& worldCameraPosition = mProperties.viewOrigin;
+	// 	float baseCullDistance = mRenderSettings->cullDistance;
 
-		for (UINT32 i = 0; i < (UINT32)cullInfos.size(); i++)
-		{
-			if ((cullInfos[i].layer & cameraLayers) == 0)
-				continue;
+	// 	for (UINT32 i = 0; i < (UINT32)cullInfos.size(); i++)
+	// 	{
+	// 		if ((cullInfos[i].layer & cameraLayers) == 0)
+	// 			continue;
 
-			// Do distance culling
-			const Sphere& boundingSphere = cullInfos[i].bounds.getSphere();
-			const Vector3& worldRenderablePosition = boundingSphere.getCenter();
+	// 		// Do distance culling
+	// 		const Sphere& boundingSphere = cullInfos[i].bounds.getSphere();
+	// 		const Vector3& worldRenderablePosition = boundingSphere.getCenter();
 
-			float distanceToCameraSq = worldCameraPosition.squaredDistance(worldRenderablePosition);
-			float correctedCullDistance = cullInfos[i].cullDistanceFactor * baseCullDistance;
-			float maxDistanceToCamera = correctedCullDistance + boundingSphere.getRadius();
+	// 		float distanceToCameraSq = worldCameraPosition.squaredDistance(worldRenderablePosition);
+	// 		float correctedCullDistance = cullInfos[i].cullDistanceFactor * baseCullDistance;
+	// 		float maxDistanceToCamera = correctedCullDistance + boundingSphere.getRadius();
 
-			if (distanceToCameraSq > maxDistanceToCamera * maxDistanceToCamera)
-				continue;
+	// 		if (distanceToCameraSq > maxDistanceToCamera * maxDistanceToCamera)
+	// 			continue;
 
-			// Do frustum culling
-			// Note: This is bound to be a bottleneck at some point. When it is ensure that intersect methods use vector
-			// operations, as it is trivial to update them. Also consider spatial partitioning.
-			if (worldFrustum.intersects(boundingSphere))
-			{
-				// More precise with the box
-				const AABox& boundingBox = cullInfos[i].bounds.getBox();
+	// 		// Do frustum culling
+	// 		// Note: This is bound to be a bottleneck at some point. When it is ensure that intersect methods use vector
+	// 		// operations, as it is trivial to update them. Also consider spatial partitioning.
+	// 		if (worldFrustum.intersects(boundingSphere))
+	// 		{
+	// 			// More precise with the box
+	// 			const AABox& boundingBox = cullInfos[i].bounds.getBox();
 
-				if (worldFrustum.intersects(boundingBox))
-					visibility[i] = true;
-			}
-		}
-	}
+	// 			if (worldFrustum.intersects(boundingBox))
+	// 				visibility[i] = true;
+	// 		}
+	// 	}
+	// }
 
-	void RendererView::calculateVisibility(const Vector<Sphere>& bounds, Vector<bool>& visibility) const
-	{
-		const ConvexVolume& worldFrustum = mProperties.cullFrustum;
+	// void RendererView::calculateVisibility(const Vector<Sphere>& bounds, Vector<bool>& visibility) const
+	// {
+	// 	const ConvexVolume& worldFrustum = mProperties.cullFrustum;
 
-		for (UINT32 i = 0; i < (UINT32)bounds.size(); i++)
-		{
-			if (worldFrustum.intersects(bounds[i]))
-				visibility[i] = true;
-		}
-	}
+	// 	for (UINT32 i = 0; i < (UINT32)bounds.size(); i++)
+	// 	{
+	// 		if (worldFrustum.intersects(bounds[i]))
+	// 			visibility[i] = true;
+	// 	}
+	// }
 
-	void RendererView::calculateVisibility(const Vector<AABox>& bounds, Vector<bool>& visibility) const
-	{
-		const ConvexVolume& worldFrustum = mProperties.cullFrustum;
+	// void RendererView::calculateVisibility(const Vector<AABox>& bounds, Vector<bool>& visibility) const
+	// {
+	// 	const ConvexVolume& worldFrustum = mProperties.cullFrustum;
 
-		for (UINT32 i = 0; i < (UINT32)bounds.size(); i++)
-		{
-			if (worldFrustum.intersects(bounds[i]))
-				visibility[i] = true;
-		}
-	}
+	// 	for (UINT32 i = 0; i < (UINT32)bounds.size(); i++)
+	// 	{
+	// 		if (worldFrustum.intersects(bounds[i]))
+	// 			visibility[i] = true;
+	// 	}
+	// }
 
 	void RendererView::queueRenderElements(const SceneInfo& sceneInfo)
 	{
@@ -446,7 +446,7 @@ namespace bs { namespace ct
 				const auto& cullInfo = view.get<CullInfo>(ent);
 				const auto& visible = view.get<CVisible>(ent);
 
-				if (!visible.anyVisible())
+				if (!visible.isVisible(getViewIdx()))
 					continue;
 
 				const AABox& boundingBox = cullInfo.bounds.getBox();
@@ -476,12 +476,14 @@ namespace bs { namespace ct
 				auto& particles = view.get<RendererParticles>(ent);
 				const auto& cullInfo = view.get<CullInfo>(ent);
 				const auto& visible = view.get<CVisible>(ent);
-				if (!visible.anyVisible())
+				if (!visible.isVisible(getViewIdx())) {
 					continue;
+				}
 
 				const ParticlesRenderElement& renderElem = particles.renderElement;
-				if (!renderElem.isValid())
+				if (!renderElem.isValid()) {
 					continue;
+				}
 
 				const AABox& boundingBox = cullInfo.bounds.getBox();
 				const float distanceToCamera = (mProperties.viewOrigin - boundingBox.getCenter()).length();
@@ -507,8 +509,9 @@ namespace bs { namespace ct
 				auto& decal = view.get<RendererDecal>(ent);
 				const auto& cullInfo = view.get<CullInfo>(ent);
 				const auto& visible = view.get<CVisible>(ent);
-				if (!visible.anyVisible())
+				if (!visible.isVisible(getViewIdx())) {
 					continue;
+				}
 
 				const DecalRenderElement& renderElem = decal.renderElement;
 

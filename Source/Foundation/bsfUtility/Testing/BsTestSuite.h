@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 #include "Prerequisites/BsPrerequisitesUtil.h"
+#include "BsCorePrerequisites.h"
 
 
 
@@ -26,6 +27,8 @@ protected:
 	// setup once for all tests within the test suite.
 	// static void SetUpTestSuite();
 	// static void TearDownTestSuite();
+
+  HSceneObject addFlyableCamera();
 };
 
 } // namespace bs

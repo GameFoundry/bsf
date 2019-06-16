@@ -35,6 +35,7 @@ namespace bs
 		// bool visible{false};
 		std::bitset<16> visibleViews;
 		bool anyVisible() const { return visibleViews.any(); }
+		bool isVisible(UINT32 viewIdx) const { assert(viewIdx < visibleViews.size()); return visibleViews[viewIdx]; }
 	};
 	struct CReady {
 		bool ready{false};

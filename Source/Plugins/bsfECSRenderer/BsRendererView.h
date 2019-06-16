@@ -189,15 +189,15 @@ namespace bs { namespace ct
 	};
 
 	/** Information whether certain scene objects are visible in a view, per object type. */
-	struct VisibilityInfo
-	{
-		// Vector<bool> renderables;
-		// Vector<bool> radialLights;
-		// Vector<bool> spotLights;
-		Vector<bool> reflProbes;
-		// Vector<bool> particleSystems;
-		// Vector<bool> decals;
-	};
+	// struct VisibilityInfo
+	// {
+	// 	// Vector<bool> renderables;
+	// 	// Vector<bool> radialLights;
+	// 	// Vector<bool> spotLights;
+	// 	// Vector<bool> reflProbes;
+	// 	// Vector<bool> particleSystems;
+	// 	// Vector<bool> decals;
+	// };
 
 	/** Information used for culling an object against a view. */
 	struct CullInfo
@@ -346,20 +346,20 @@ namespace bs { namespace ct
 		 * Culls the provided set of bounds against the current frustum and outputs a set of visibility flags determining
 		 * which entry is or isn't visible by this view. Both inputs must be arrays of the same size.
 		 */
-		void calculateVisibility(const Vector<CullInfo>& cullInfos, Vector<bool>& visibility) const;
+		// void calculateVisibility(const Vector<CullInfo>& cullInfos, Vector<bool>& visibility) const;
 
 		void calculateVisible(ecs::Registry* reg, UINT32 viewIdx);
 		/**
 		 * Culls the provided set of bounds against the current frustum and outputs a set of visibility flags determining
 		 * which entry is or isn't visible by this view. Both inputs must be arrays of the same size.
 		 */
-		void calculateVisibility(const Vector<Sphere>& bounds, Vector<bool>& visibility) const;
+		// void calculateVisibility(const Vector<Sphere>& bounds, Vector<bool>& visibility) const;
 
 		/**
 		 * Culls the provided set of bounds against the current frustum and outputs a set of visibility flags determining
 		 * which entry is or isn't visible by this view. Both inputs must be arrays of the same size.
 		 */
-		void calculateVisibility(const Vector<AABox>& bounds, Vector<bool>& visibility) const;
+		// void calculateVisibility(const Vector<AABox>& bounds, Vector<bool>& visibility) const;
 
 		/**
 		 * Inserts all visible renderable elements into render queues. Assumes visibility has been calculated beforehand
@@ -448,7 +448,7 @@ namespace bs { namespace ct
 		UINT32 mRenderSettingsHash;
 
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
-		VisibilityInfo mVisibility;
+		// VisibilityInfo mVisibility;
 		LightGrid mLightGrid;
 		UINT32 mViewIdx;
 	};
@@ -479,7 +479,7 @@ namespace bs { namespace ct
 		 * group (visibility will be true if the object is visible from any of the views. determineVisibility() must be
 		 * called whenever the scene or view information changes (usually every frame).
 		 */
-		const VisibilityInfo& getVisibilityInfo() const { return mVisibility; }
+		// const VisibilityInfo& getVisibilityInfo() const { return mVisibility; }
 
 		/**
 		 * Returns information about lights visible from this group of views. Only valid after a call to
@@ -508,7 +508,7 @@ namespace bs { namespace ct
 
 	private:
 		Vector<RendererView*> mViews;
-		VisibilityInfo mVisibility;
+		// VisibilityInfo mVisibility;
 		bool mIsMainPass = false;
 
 		VisibleLightData mVisibleLightData;
