@@ -463,6 +463,15 @@ namespace bs
         }
 
         /// <summary>
+        /// Checks if the scene object has a specific bit flag set..
+        /// </summary>
+        /// <param name="flag">The flag to check.</param>
+        internal bool HasFlag(SceneObjectEditorFlags flag)
+        {
+            return Internal_HasFlag(mCachedPtr, (int)flag);
+        }
+
+        /// <summary>
         /// Destroys the scene object, removing it from scene and stopping component updates.
         /// </summary>
         /// <param name="immediate">If true the scene object will be fully destroyed immediately. This means that objects
@@ -589,6 +598,9 @@ namespace bs
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetRight(IntPtr nativeInstance, out Vector3 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_HasFlag(IntPtr nativeInstance, int flag);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Destroy(IntPtr nativeInstance, bool immediate);

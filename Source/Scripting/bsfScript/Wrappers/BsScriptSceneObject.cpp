@@ -65,6 +65,8 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_GetUp", (void*)&ScriptSceneObject::internal_getUp);
 		metaData.scriptClass->addInternalCall("Internal_GetRight", (void*)&ScriptSceneObject::internal_getRight);
 
+		metaData.scriptClass->addInternalCall("Internal_HasFlag", (void*)&ScriptSceneObject::internal_hasFlag);
+
 		metaData.scriptClass->addInternalCall("Internal_Destroy", (void*)&ScriptSceneObject::internal_destroy);
 	}
 
@@ -436,5 +438,13 @@ namespace bs
 	void ScriptSceneObject::setNativeHandle(const HGameObject& gameObject)
 	{
 		mSceneObject = static_object_cast<SceneObject>(gameObject);
+	}
+
+	bool ScriptSceneObject::internal_hasFlag(ScriptSceneObject* nativeInstance, bs::UINT32 flag)
+	{
+		if (checkIfDestroyed(nativeInstance))
+			return false;
+
+		return nativeInstance->mSceneObject->hasFlag(flag);
 	}
 }

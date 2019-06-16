@@ -99,6 +99,8 @@ namespace bs
 		static void internal_getUp(ScriptSceneObject* nativeInstance, Vector3* value);
 		static void internal_getRight(ScriptSceneObject* nativeInstance, Vector3* value);
 
+		static bool internal_hasFlag(ScriptSceneObject* nativeInstance, UINT32 flag);
+
 		static void internal_destroy(ScriptSceneObject* nativeInstance, bool immediate);
 	};
 
