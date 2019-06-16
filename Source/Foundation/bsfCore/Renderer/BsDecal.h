@@ -146,6 +146,9 @@ namespace bs
 		/** @copydoc CoreObject::createCore */
 		SPtr<ct::CoreObject> createCore() const override;
 
+		/** @copydoc CoreObject::getCoreDependencies */
+		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
+
 		/** @copydoc DecalBase::_markCoreDirty */
 		void _markCoreDirty(ActorDirtyFlag flags = ActorDirtyFlag::Everything) override;
 

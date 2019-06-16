@@ -116,6 +116,12 @@ namespace bs
 		return decalPtr;
 	}
 
+	void Decal::getCoreDependencies(Vector<CoreObject*>& dependencies)
+	{
+		if (mMaterial.isLoaded())
+			dependencies.push_back(mMaterial.get());
+	}
+
 	CoreSyncData Decal::syncToCore(FrameAlloc* allocator)
 	{
 		UINT32 size = 0;
