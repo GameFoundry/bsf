@@ -1523,14 +1523,14 @@ namespace bs { namespace ct
 		ProfileGPUBlock profileSample("Project radial light shadows");
 
 		const RenderAPICapabilities& caps = gCaps();
-		const Conventions& rapiConventions = gCaps().conventions;
+		const Conventions& rapiConventions = caps.conventions;
 
 		RenderAPI& rapi = RenderAPI::instance();
 		rapi.convertProjectionMatrix(proj, proj);
 
 		// Render cubemaps upside down if necessary
 		Matrix4 adjustedProj = proj;
-		if(caps.conventions.uvYAxis == Conventions::Axis::Up)
+		if(rapiConventions.uvYAxis == Conventions::Axis::Up)
 		{
 			// All big APIs use the same cubemap sampling coordinates, as well as the same face order. But APIs that
 			// use bottom-up UV coordinates require the cubemap faces to be stored upside down in order to get the same

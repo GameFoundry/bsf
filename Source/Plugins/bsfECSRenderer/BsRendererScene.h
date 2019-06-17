@@ -83,7 +83,7 @@ namespace bs
 
 		// Buffers for various transient data that gets rebuilt every frame
 		//// Rebuilt every frame
-		mutable Vector<bool> renderableReady;
+		// mutable Vector<bool> renderableReady;
 	};
 
 	/** Contains information about the scene (e.g. renderables, lights, cameras) required by the renderer. */
