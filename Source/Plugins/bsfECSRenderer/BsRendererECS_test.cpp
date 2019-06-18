@@ -213,12 +213,7 @@ HSceneObject addSpotLight() {
 
 TEST_F(ECSRenderableTestSuite, MakeStandard) {
 
-	HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
-	HCamera sceneCamera = sceneCameraSO->addComponent<CCamera>();
-	sceneCamera->setMain(true);
-	sceneCameraSO->setPosition(Vector3(10.0f, 10.0f, 10.0f));
-	sceneCameraSO->lookAt(Vector3(0, 0, 0));
-
+	addFlyableCamera();
 
 	// Default Box
 	auto box = addBox();
@@ -248,11 +243,7 @@ TEST_F(ECSRenderableTestSuite, MakeStandard) {
 
 TEST_F(ECSRenderableTestSuite, TestLighting) {
 
-	HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
-	HCamera sceneCamera = sceneCameraSO->addComponent<CCamera>();
-	sceneCamera->setMain(true);
-	sceneCameraSO->setPosition(Vector3(10.0f, 10.0f, 10.0f));
-	sceneCameraSO->lookAt(Vector3(0, 0, 0));
+	addFlyableCamera();
 
 	// Default Box
 	auto box = addBox();
@@ -299,11 +290,6 @@ void addSkybox() {
 
 TEST_F(ECSRenderableTestSuite, TestReflection) {
 
-	// HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
-	// HCamera sceneCamera = sceneCameraSO->addComponent<CCamera>();
-	// sceneCamera->setMain(true);
-	// sceneCameraSO->setPosition(Vector3(10.0f, 10.0f, 10.0f));
-	// sceneCameraSO->lookAt(Vector3(0, 0, 0));
 	addFlyableCamera();
 
 	// Default Box
