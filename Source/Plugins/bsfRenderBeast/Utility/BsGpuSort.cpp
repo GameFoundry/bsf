@@ -45,6 +45,8 @@ namespace bs { namespace ct
 		defines.set("MAX_NUM_GROUPS", MAX_NUM_GROUPS);
 	}
 
+	void runSortTest();
+
 	/** 
 	 * Creates a new GPU parameter block buffer according to gRadixSortParamDef definition and writes GpuSort properties
 	 * into the buffer.
@@ -453,6 +455,7 @@ namespace bs { namespace ct
 		// PARALLEL:
 		RadixSortClearMat::get()->execute(helperBuffers[0]);
 		RadixSortCountMat::get()->execute(gpuSortProps.numGroups, params, sortBuffers.keys[0], helperBuffers[0]);
+		RenderAPI::instance().submitCommandBuffer(nullptr);
 
 		// Compare with GPU count
 		const UINT32 helperBufferLength = helperBuffers[0]->getProperties().getElementCount();
@@ -549,6 +552,7 @@ namespace bs { namespace ct
 
 		// PARALLEL:
 		RadixSortPrefixScanMat::get()->execute(params, helperBuffers[0], helperBuffers[1]);
+		RenderAPI::instance().submitCommandBuffer(nullptr);
 
 		// Compare with GPU offsets
 		Vector<UINT32> bufferOffsets(helperBufferLength);
@@ -779,6 +783,7 @@ namespace bs { namespace ct
 
 		// PARALLEL:
 		RadixSortReorderMat::get()->execute(gpuSortProps.numGroups, params, helperBuffers[1], sortBuffers, 0);
+		RenderAPI::instance().submitCommandBuffer(nullptr);
 
 		// Compare with GPU keys
 		Vector<UINT32> bufferSortedKeys(count);
