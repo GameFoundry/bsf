@@ -839,23 +839,26 @@ namespace bs
 
 		state = yy_scan_string(source, scanner);
 
-		if (yyparse(parseState, scanner))
+		bool parsingFailed = yyparse(parseState, scanner) > 0;
+
+		if (parseState->hasError > 0)
 		{
-			if (parseState->hasError > 0)
-			{
-				output.errorMessage = parseState->errorMessage;
-				output.errorLine = parseState->errorLine;
-				output.errorColumn = parseState->errorColumn;
+			output.errorMessage = parseState->errorMessage;
+			output.errorLine = parseState->errorLine;
+			output.errorColumn = parseState->errorColumn;
 
-				if (parseState->errorFile != nullptr)
-					output.errorFile = parseState->errorFile;
-			}
-			else
-				output.errorMessage = "Internal error: Parsing failed.";
+			if (parseState->errorFile != nullptr)
+				output.errorFile = parseState->errorFile;
 
-			return output;
+			goto cleanup;
+		}
+		else if(parsingFailed)
+		{
+			output.errorMessage = "Internal error: Parsing failed.";
+			goto cleanup;
 		}
 
+cleanup:
 		yy_delete_buffer(state, scanner);
 		yylex_destroy(scanner);
 
