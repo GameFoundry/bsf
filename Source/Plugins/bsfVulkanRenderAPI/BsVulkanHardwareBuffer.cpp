@@ -265,9 +265,27 @@ namespace bs { namespace ct
 
 		mBufferCI.size = size;
 
-		VkMemoryPropertyFlags flags = (mDirectlyMappable || staging) ?
-			(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) : // Note: Try using cached memory
-			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+		VkMemoryPropertyFlags flags;
+		if(mDirectlyMappable || staging)
+		{
+			flags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+
+#if BS_PLATFORM == BS_PLATFORM_OSX
+			// Note: Use non-coherent memory when the buffer will be used as a uniform texel buffer. This is because
+			// coherent memory gets allocated under 'shared' storage mode under Metal, which is not supported as backing
+			// storage mode for textures (and a uniform texel buffer is classified as a texture in Metal). Technically
+			// this still works but will cause a Metal validation error.
+			//
+			// Note that we also don't need to perform explicit flushing, despite being non-coherent, as that will be handled
+			// by MoltenVK internally.
+			if(staging || (usage & VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT) == 0)
+				flags |= VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+#else
+			flags |= VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+#endif
+		}
+		else
+			flags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 
 		VkDevice vkDevice = device.getLogical();
 

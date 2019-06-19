@@ -122,7 +122,7 @@ namespace bs { namespace ct
 
 #if BS_PLATFORM == BS_PLATFORM_OSX
 					if(mType == GPT_COMPUTE_PROGRAM)
-						vkSetThreadgroupSizeMVK(shaderModule, workgroupSize[0], workgroupSize[1], workgroupSize[2]);
+						vkSetWorkgroupSizeMVK(shaderModule, workgroupSize[0], workgroupSize[1], workgroupSize[2]);
 #endif
 					mModules[i] = rescManager.create<VulkanShaderModule>(shaderModule);
 				}

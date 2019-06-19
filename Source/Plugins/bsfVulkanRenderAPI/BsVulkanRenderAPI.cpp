@@ -114,7 +114,14 @@ namespace bs { namespace ct
 		appInfo.applicationVersion = 1;
 		appInfo.pEngineName = "bs::framework";
 		appInfo.engineVersion = (BS_VERSION_MAJOR << 24) | (BS_VERSION_MINOR << 16) | BS_VERSION_PATCH;
+
+		// MoltenVK doesn't support 1.1, but we don't need it since the only feature we use from it right now is SPIR-V 1.3,
+		// and that's not relevant for MoltenVK as SPIR-V gets translated to MSL anyway.
+#if BS_PLATFORM == BS_PLATFORM_OSX
+		appInfo.apiVersion = VK_API_VERSION_1_0;
+#else
 		appInfo.apiVersion = VK_API_VERSION_1_1;
+#endif
 
 #if BS_DEBUG_MODE && USE_VALIDATION_LAYERS
 		const char* layers[] =
