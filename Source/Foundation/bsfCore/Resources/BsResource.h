@@ -35,11 +35,29 @@ namespace bs
 		friend class Resources;
 		friend class ResourceHandleBase;
 
-		/**	Retrieves a list of all resources that this resource depends on. */
-		virtual void getResourceDependencies(FrameVector<HResource>& dependencies) const { }
+		/**	
+		 * Retrieves a list of all resources that this resource depends on. 
+		 *
+		 * @note Thread safe.
+		 */
+		void getResourceDependencies(FrameVector<HResource>& dependencies) const;
 
 		/**	Checks if all the resources this object is dependent on are fully loaded. */
 		bool areDependenciesLoaded() const;
+
+		/** 
+		 * Registers a new resource that this resource is dependent on.
+		 *
+		 * @note Thread safe.
+		 */
+		void addResourceDependency(const HResource& resource);
+
+		/** 
+		 * Unregisters a previously registered dependency. 
+		 * 
+		 * @note Thread safe.
+		 */
+		void removeResourceDependency(const HResource& resource);
 
 		/** 
 		 * Returns true if the resource can be compressed using a generic compression when saved on a storage device. 
@@ -57,7 +75,13 @@ namespace bs
 		 * the resource destroys original data during normal usage, but it might still be required for special purposes
 		 * (like saving in the editor).
 		 */
-		bool mKeepSourceData; 
+		bool mKeepSourceData;
+
+		/** A list of all other resources this resource depends on. */
+		Vector<WeakResourceHandle<Resource>> mDependencies;
+
+		/** Mutex ensuring dependencies list updates and queries are thread safe. */
+		mutable Mutex mDependenciesMutex;
 		
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/

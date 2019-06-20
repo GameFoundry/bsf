@@ -112,9 +112,6 @@ namespace bs
 
 		Font();
 
-		/** @copydoc Resource::getResourceDependencies */
-		void getResourceDependencies(FrameVector<HResource>& dependencies) const override;
-
 		/** @copydoc CoreObject::getCoreDependencies */
 		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 

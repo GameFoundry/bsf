@@ -584,6 +584,7 @@ namespace bs
 
 	void Material::initialize()
 	{
+		addResourceDependency(mShader);
 		_markResourcesDirty();
 		initializeIfLoaded();
 
@@ -595,7 +596,10 @@ namespace bs
 		if (mShader == shader)
 			return;
 
+		removeResourceDependency(mShader);
 		mShader = shader;
+		addResourceDependency(mShader);
+
 		mTechniques.clear();
 		mLoadFlags = Load_None;
 
@@ -724,12 +728,6 @@ namespace bs
 
 		if (mParams != nullptr)
 			mParams->getResourceDependencies(resources);
-	}
-
-	void Material::getResourceDependencies(FrameVector<HResource>& dependencies) const
-	{
-		if (mShader != nullptr)
-			dependencies.push_back(mShader);
 	}
 
 	void Material::initializeIfLoaded()

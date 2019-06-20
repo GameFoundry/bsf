@@ -820,9 +820,6 @@ namespace bs
 		/** @copydoc IResourceListener::notifyResourceChanged */
 		void notifyResourceChanged(const HResource& resource) override;
 
-		/** @copydoc Resource::getResourceDependencies */
-		void getResourceDependencies(FrameVector<HResource>& dependencies) const override;
-
 		/**	Performs material initialization when all resources are ready. */
 		void initializeIfLoaded();
 

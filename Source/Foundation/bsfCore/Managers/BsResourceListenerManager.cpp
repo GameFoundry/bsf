@@ -4,11 +4,24 @@
 #include "Resources/BsResources.h"
 #include "Resources/BsIResourceListener.h"
 #include "CoreThread/BsCoreThread.h"
+#include "BsCoreApplication.h"
 
 using namespace std::placeholders;
 
 namespace bs
 {
+#if BS_DEBUG_MODE
+	void throwIfNotSimThread()
+	{
+		if(BS_THREAD_CURRENT_ID != CoreApplication::instance().getSimThreadId())
+			BS_EXCEPT(InternalErrorException, "This method can only be accessed from the simulation thread.");
+	}
+
+#define THROW_IF_NOT_SIM_THREAD throwIfNotSimThread();
+#else
+#define THROW_IF_NOT_SIM_THREAD 
+#endif
+
 	ResourceListenerManager::ResourceListenerManager()
 	{
 		mResourceLoadedConn = gResources().onResourceLoaded.connect(std::bind(&ResourceListenerManager::onResourceLoaded, this, _1));
@@ -56,6 +69,7 @@ namespace bs
 
 	void ResourceListenerManager::update()
 	{
+		THROW_IF_NOT_SIM_THREAD
 		updateListeners();
 
 		{
@@ -95,6 +109,7 @@ namespace bs
 
 	void ResourceListenerManager::notifyListeners(const UUID& resourceUUID)
 	{
+		THROW_IF_NOT_SIM_THREAD
 		updateListeners();
 
 		HResource loadedResource;

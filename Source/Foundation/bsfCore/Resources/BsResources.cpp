@@ -17,6 +17,7 @@
 #include "FileSystem/BsDataStream.h"
 #include "Serialization/BsBinarySerializer.h"
 #include "Reflection/BsRTTIType.h"
+#include "BsCoreApplication.h"
 
 namespace bs
 {
@@ -206,8 +207,8 @@ namespace bs
 					loadData->remainingDependencies = 1; // Self
 					loadData->progress.store(0.0f, std::memory_order_relaxed);
 
-					// Make resource listener trigger before exit if loading synchronously
-					loadData->notifyImmediately = synchronous;
+					// Make resource listener trigger before exit if loading synchronously on the main thread
+					loadData->notifyImmediately = synchronous && BS_THREAD_CURRENT_ID == gCoreApplication().getSimThreadId();
 
 					// Register dependencies and count them so we know when the resource is fully loaded
 					if (loadDependencies && savedResourceData != nullptr)
@@ -239,7 +240,7 @@ namespace bs
 							loadData->progress.store(0.0f, std::memory_order_relaxed);
 
 							// Make resource listener trigger before exit if loading synchronously
-							loadData->notifyImmediately = synchronous;
+							loadData->notifyImmediately = synchronous && BS_THREAD_CURRENT_ID == gCoreApplication().getSimThreadId();
 						}
 						else
 							loadData = mInProgressResources[uuid];

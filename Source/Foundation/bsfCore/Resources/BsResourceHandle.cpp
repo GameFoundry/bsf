@@ -6,6 +6,7 @@
 #include "Private/RTTI/BsResourceHandleRTTI.h"
 #include "Resources/BsResources.h"
 #include "Managers/BsResourceListenerManager.h"
+#include "BsCoreApplication.h"
 
 namespace bs
 {
@@ -35,9 +36,10 @@ namespace bs
 				mResourceCreatedCondition.wait(lock);
 			}
 
-			// Send out ResourceListener events right away, as whatever called this method
-			// probably also expects the listener events to trigger immediately as well
-			ResourceListenerManager::instance().notifyListeners(mData->mUUID);
+			// Send out ResourceListener events right away, as whatever called this method probably also expects the 
+			// listener events to trigger immediately as well
+			if(BS_THREAD_CURRENT_ID == gCoreApplication().getSimThreadId())
+				ResourceListenerManager::instance().notifyListeners(mData->mUUID);
 		}
 
 		if (waitForDependencies)

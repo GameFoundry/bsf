@@ -94,6 +94,15 @@ namespace bs
 		return tex != nullptr && tex.isLoaded(false) && tex->getTexture() != nullptr && tex->getTexture().isLoaded(false);
 	}
 
+	void SpriteTexture::setTexture(const HTexture& texture)
+	{
+		removeResourceDependency(mAtlasTexture);
+		mAtlasTexture = texture;
+		addResourceDependency(mAtlasTexture);
+
+		markDependenciesDirty();
+	}
+
 	UINT32 SpriteTexture::getWidth() const
 	{
 		return Math::roundToInt(mAtlasTexture->getProperties().getWidth() * mUVScale.x);
@@ -117,6 +126,11 @@ namespace bs
 	void SpriteTexture::_markCoreDirty()
 	{
 		markCoreDirty();
+	}
+
+	void SpriteTexture::initialize()
+	{
+		addResourceDependency(mAtlasTexture);
 	}
 
 	SPtr<ct::CoreObject> SpriteTexture::createCore() const
@@ -143,12 +157,6 @@ namespace bs
 		dataPtr = coreSyncWriteElem(*this, dataPtr);
 
 		return CoreSyncData(buffer, size);
-	}
-
-	void SpriteTexture::getResourceDependencies(FrameVector<HResource>& dependencies) const
-	{
-		if (mAtlasTexture != nullptr)
-			dependencies.push_back(mAtlasTexture);
 	}
 
 	void SpriteTexture::getCoreDependencies(Vector<CoreObject*>& dependencies)

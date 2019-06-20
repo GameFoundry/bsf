@@ -174,7 +174,7 @@ namespace bs
 	public:
 		/**	Determines the internal texture that the sprite texture references. */
 		BS_SCRIPT_EXPORT(n:Texture,pr:setter)
-		void setTexture(const HTexture& texture) { mAtlasTexture = texture; markDependenciesDirty(); }
+		void setTexture(const HTexture& texture);
 
 		/**	@copydoc setTexture() */
 		BS_SCRIPT_EXPORT(n:Texture,pr:getter)
@@ -239,14 +239,14 @@ namespace bs
 		/** @copydoc create(const Vector2&, const Vector2&, const HTexture&) */
 		SpriteTexture(const Vector2& uvOffset, const Vector2& uvScale, const HTexture& texture);
 
+		/** @copydoc CoreObject::initialize */
+		void initialize() override;
+
 		/** @copydoc CoreObject::createCore */
 		SPtr<ct::CoreObject> createCore() const override;
 
 		/** @copydoc CoreObject::syncToCore */
 		CoreSyncData syncToCore(FrameAlloc* allocator) override;
-
-		/** @copydoc Resource::getResourceDependencies */
-		void getResourceDependencies(FrameVector<HResource>& dependencies) const override;
 
 		/** @copydoc CoreObject::getCoreDependencies */
 		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;

@@ -22,16 +22,25 @@ namespace bs
 		mMetaData->displayName = name; 
 	}
 
+	void Resource::getResourceDependencies(FrameVector<HResource>& dependencies) const
+	{
+		Lock lock(mDependenciesMutex);
+
+		for(auto& dependency : mDependencies)
+		{
+			if(dependency != nullptr)
+				dependencies.push_back(static_resource_cast<Resource>(dependency));
+		}
+	}
+
 	bool Resource::areDependenciesLoaded() const
 	{
+		Lock lock(mDependenciesMutex);
 		bs_frame_mark();
 
 		bool areLoaded = true;
 		{
-			FrameVector<HResource> dependencies;
-			getResourceDependencies(dependencies);
-
-			for (auto& dependency : dependencies)
+			for (auto& dependency : mDependencies)
 			{
 				if (dependency != nullptr && !dependency.isLoaded())
 				{
@@ -43,6 +52,22 @@ namespace bs
 
 		bs_frame_clear();
 		return areLoaded;
+	}
+
+	void Resource::addResourceDependency(const HResource& resource)
+	{
+		if(resource == nullptr)
+			return;
+
+		Lock lock(mDependenciesMutex);
+		mDependencies.push_back(resource.getWeak());
+	}
+
+	void Resource::removeResourceDependency(const HResource& resource)
+	{
+		Lock lock(mDependenciesMutex);
+		mDependencies.erase(std::remove(mDependencies.begin(), mDependencies.end(), resource.getWeak()), 
+			mDependencies.end());
 	}
 
 	RTTITypeBase* Resource::getRTTIStatic()

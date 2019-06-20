@@ -34,7 +34,15 @@ namespace bs
 	void Font::initialize(const Vector<SPtr<FontBitmap>>& fontData)
 	{
 		for(auto iter = fontData.begin(); iter != fontData.end(); ++iter)
+		{
 			mFontDataPerSize[(*iter)->size] = *iter;
+
+			for (auto& texture : (*iter)->texturePages)
+			{
+				if (texture != nullptr)
+					addResourceDependency(texture);
+			}
+		}
 
 		Resource::initialize();
 	}
@@ -79,18 +87,6 @@ namespace bs
 		}
 
 		return bestSize;
-	}
-
-	void Font::getResourceDependencies(FrameVector<HResource>& dependencies) const
-	{
-		for (auto& fontDataEntry : mFontDataPerSize)
-		{
-			for (auto& texture : fontDataEntry.second->texturePages)
-			{
-				if (texture != nullptr)
-					dependencies.push_back(texture);
-			}
-		}
 	}
 
 	void Font::getCoreDependencies(Vector<CoreObject*>& dependencies)
