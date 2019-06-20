@@ -119,7 +119,7 @@ namespace bs { namespace ct
 		VulkanResource::notifyUnbound();
 	}
 
-	VkBufferView VulkanBuffer::createView(VkFormat format)
+	VkBufferView VulkanBuffer::getView(VkFormat format)
 	{
 		const auto iterFind = std::find_if(mViews.begin(), mViews.end(), 
 			[format](const ViewInfo& x) { return x.format == format; });

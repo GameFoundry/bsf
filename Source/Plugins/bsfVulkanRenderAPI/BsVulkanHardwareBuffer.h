@@ -80,8 +80,12 @@ namespace bs { namespace ct
 		/** @copydoc VulkanResource::notifyUnbound */
 		void notifyUnbound() override;
 
-		/** Creates a new view of this buffer. Only usable on UNIFORM_TEXEL and STORAGE_TEXEL buffer types. */
-		VkBufferView createView(VkFormat format);
+		/** 
+		 * Creates a new view of this buffer or returns an existing view if one of this format was already created. Views
+		 * must be freed by calling freeView() when doing using them. Only UNIFORM_TEXEL and STORAGE_TEXEL buffer types
+		 * support buffer views. 
+		 */
+		VkBufferView getView(VkFormat format);
 
 		/** 
 		 * Frees a previously allocated buffer view. Calling this is optional as all buffer views will be deallocated

@@ -32,9 +32,14 @@ namespace bs
 		/** @copydoc TextureManager::onStartUp */
 		void onStartUp() override;
 
-		/** Returns a image view that can be used for shader operations when no other image is bound. */
-		VkImageView getDummyImageView(GpuParamObjectType type, GpuBufferFormat elementType, UINT32 deviceIdx) const;
+		/** Returns a dummy (empty) texture that can be bound in a shader slot of the requested type. */
+		VulkanTexture* getDummyTexture(GpuParamObjectType type) const;
 
+		/** 
+		 * Determines Vulkan format required for binding a dummy texture (as returned by getDummyTexture()) to the shader
+		 * expecting a format of type @p format.
+		 */
+		static VkFormat getDummyViewFormat(GpuBufferFormat format);
 	protected:
 		/** @copydoc TextureManager::createTextureInternal */
 		SPtr<Texture> createTextureInternal(const TEXTURE_DESC& desc, 

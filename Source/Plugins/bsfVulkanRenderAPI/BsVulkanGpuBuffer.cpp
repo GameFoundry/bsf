@@ -118,7 +118,7 @@ namespace bs { namespace ct
 			if (mCachedBuffers[i] != newBufferHandle)
 			{
 				if(newBufferHandle != VK_NULL_HANDLE)
-					mBufferViews[i] = buffer->createView(VulkanUtility::getBufferFormat(mProperties.getFormat()));
+					mBufferViews[i] = buffer->getView(VulkanUtility::getBufferFormat(mProperties.getFormat()));
 				else
 					mBufferViews[i] = VK_NULL_HANDLE;
 
