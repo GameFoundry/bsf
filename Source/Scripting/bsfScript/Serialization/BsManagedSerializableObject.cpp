@@ -11,7 +11,7 @@
 
 namespace bs
 {
-	inline size_t ManagedSerializableObject::Hash::operator()(const ManagedSerializableFieldKey& x) const
+	size_t ManagedSerializableObject::Hash::operator()(const ManagedSerializableFieldKey& x) const
 	{
 		size_t seed = 0;
 		bs_hash_combine(seed, (UINT32)x.mFieldId);
@@ -20,7 +20,7 @@ namespace bs
 		return seed;
 	}
 
-	inline bool ManagedSerializableObject::Equals::operator()(const ManagedSerializableFieldKey& a, const ManagedSerializableFieldKey& b) const
+	bool ManagedSerializableObject::Equals::operator()(const ManagedSerializableFieldKey& a, const ManagedSerializableFieldKey& b) const
 	{
 		return a.mFieldId == b.mFieldId && a.mTypeId == b.mTypeId;
 	}
