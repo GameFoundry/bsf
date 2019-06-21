@@ -144,6 +144,12 @@ namespace bs
 		/**	Returns absolute path to the builtin icons folder. */
 		static Path getIconFolder();
 
+#if BS_IS_BANSHEE3D || defined BS_IS_ASSET_TOOL
+		/**	Returns absolute path to the editor builtin shader include folder. */
+		static Path getEditorShaderIncludeFolder();
+
+#endif
+
 		static constexpr const char* IconTextureName = "bsfIcon.png";
 		static constexpr const char* MultiLineLabelStyle = "MultiLineLabel";
 

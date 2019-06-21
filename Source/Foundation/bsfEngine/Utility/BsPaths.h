@@ -8,7 +8,13 @@ namespace bs
 	 *  @{
 	 */
 
-#if BS_IS_BANSHEE3D
+#if BS_IS_BANSHEE3D || defined BS_IS_ASSET_TOOL
+	#define BS_INCLUDE_B3D_PATHS 1
+#else
+	#define BS_INCLUDE_B3D_PATHS 0
+#endif
+
+#if BS_INCLUDE_B3D_PATHS 
 	constexpr const char* GAME_RESOURCES_FOLDER_NAME = "Resources/";
 	constexpr const char* GAME_SETTINGS_NAME = "GameSettings.asset";
 	constexpr const char* GAME_RESOURCE_MANIFEST_NAME = "ResourceManifest.asset";
@@ -25,7 +31,10 @@ namespace bs
 		/** Returns the absolute path where the engine binaries are located in. */
 		static const Path& getBinariesPath();
 
-#if BS_IS_BANSHEE3D
+#if BS_INCLUDE_B3D_PATHS
+		/**	Returns the absolute path where the builtin editor-specific assets are located. */
+		static const Path& getEditorDataPath();
+
 		/**	Returns the absolute path to the game settings file used by editor-built executables. */
 		static const Path& getGameSettingsPath();
 
@@ -51,6 +60,11 @@ namespace bs
 
 		/** Path where the debug configuration managed assemblies are located at, relative to the working directory. */
 		static const Path DEBUG_ASSEMBLY_PATH;;
+
+#if BS_INCLUDE_B3D_PATHS
+		/** Path to the root editor data directory. Relative to working directory, or RAW_APP_ROOT. */
+		static const Path EDITOR_DATA_PATH;
+#endif
 	};
 
 	/** @} */

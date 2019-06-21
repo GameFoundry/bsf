@@ -300,6 +300,13 @@ namespace bs
 		return Paths::getDataPath() + ICON_FOLDER;
 	}
 
+#if BS_IS_BANSHEE3D || defined BS_IS_ASSET_TOOL
+	Path BuiltinResources::getEditorShaderIncludeFolder()
+	{
+		return Paths::getEditorDataPath() + SHADER_INCLUDE_FOLDER;
+	}
+#endif
+
 	HMesh BuiltinResources::getMesh(BuiltinMesh mesh) const
 	{
 		Path meshPath = mEngineMeshFolder;

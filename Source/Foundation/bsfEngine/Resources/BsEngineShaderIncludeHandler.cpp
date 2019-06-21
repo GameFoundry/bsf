@@ -17,7 +17,7 @@ namespace bs
 
 		if (name.size() >= 8)
 		{
-			if (name.substr(0, 8) == "$ENGINE$")
+			if (name.substr(0, 8) == "$ENGINE$" || name.substr(0, 8) == "$EDITOR$")
 				return static_resource_cast<ShaderInclude>(Resources::instance().load(path));
 		}
 
@@ -52,6 +52,21 @@ namespace bs
 				return fullPath;
 			}
 		}
+#ifdef BS_IS_ASSET_TOOL
+		else if (name.substr(0, 8) == "$EDITOR$")
+		{
+			if (name.size() > 8)
+			{
+				Path fullPath = BuiltinResources::getEditorShaderIncludeFolder();
+				Path includePath = name.substr(9, name.size() - 9);
+
+				fullPath.append(includePath);
+				fullPath.setFilename(includePath.getFilename() + ".asset");
+
+				return fullPath;
+			}
+		}
+#endif
 
 		return name;
 	}
