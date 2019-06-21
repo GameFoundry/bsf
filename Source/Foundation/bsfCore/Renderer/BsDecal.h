@@ -23,20 +23,26 @@ namespace bs
 		DecalBase(const Vector2& size, float maxDistance);
 		virtual ~DecalBase() = default;
 
-		/** Size of the decal in world space units. */
-		void setSize(const Vector2& size) { mSize = size; _markCoreDirty(); updateBounds(); }
+		/** Width and height of the decal. */
+		void setSize(const Vector2& size) { mSize = Vector2::max(Vector2::ZERO, size); _markCoreDirty(); updateBounds(); }
 
 		/** @copydoc setSize */
-		Vector2 getSize() const
+		Vector2 getSize() const { return mSize; }
+
+		/** Returns width and height of the decal, scaled by decal's transform. */
+		Vector2 getWorldSize() const
 		{
 			return Vector2(mSize.x * mTransform.getScale().x, mSize.y * mTransform.getScale().y);
 		}
 
 		/** Determines the maximum distance (from its origin) at which the decal is displayed. */
-		void setMaxDistance(float distance) { mMaxDistance = distance; _markCoreDirty(); updateBounds(); }
+		void setMaxDistance(float distance) { mMaxDistance = Math::max(0.0f, distance); _markCoreDirty(); updateBounds(); }
 
 		/** @copydoc getSize */
-		float getMaxDistance() const { return mMaxDistance * mTransform.getScale().z; }
+		float getMaxDistance() const { return mMaxDistance; }
+
+		/** Maximum distance (from its origin) at which the decal is displayed, scaled by decal's transform. */
+		float getWorldMaxDistance() const { return mMaxDistance * mTransform.getScale().z; }
 
 		/** 
 		 * Bitfield that allows you to mask on which objects will the decal be projected onto. Only objects with the 

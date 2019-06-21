@@ -24,9 +24,9 @@ namespace bs { namespace ct
 
 	void RendererDecal::updatePerObjectBuffer()
 	{
-		const Vector2 size = decal->getSize();
+		const Vector2 size = decal->getWorldSize();
 		const Vector2 extent = size * 0.5f;
-		const float maxDistance = decal->getMaxDistance();
+		const float maxDistance = decal->getWorldMaxDistance();
 
 		const Vector3 scale(extent.x, extent.y, maxDistance * 0.5f);
 		const Vector3 offset(0.0f, 0.0f, -maxDistance * 0.5f);
@@ -42,7 +42,7 @@ namespace bs { namespace ct
 
 		const Matrix4 view = Matrix4::view(tfrm.getPosition(), tfrm.getRotation());
 		const Matrix4 proj = Matrix4::projectionOrthographic(-extent.x, extent.x, -extent.y, extent.y, 0.0f, 
-			decal->getMaxDistance());
+			decal->getWorldMaxDistance());
 
 		const Matrix4 worldToDecal = proj * view;
 		const Vector3 decalNormal = -decal->getTransform().getRotation().zAxis();
