@@ -131,6 +131,8 @@ namespace bs
 	void SpriteTexture::initialize()
 	{
 		addResourceDependency(mAtlasTexture);
+
+		Resource::initialize();
 	}
 
 	SPtr<ct::CoreObject> SpriteTexture::createCore() const
