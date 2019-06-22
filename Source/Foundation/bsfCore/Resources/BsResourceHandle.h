@@ -418,6 +418,11 @@ namespace bs
 	}
 
 	/**	Casts one resource handle to another. */
+	// we cannot use default template argument when it has already been
+	// declared as a friend. see
+	// https://stackoverflow.com/questions/54859285/c-static-template-class-member-as-friend-template-function-default-parameter
+	// for best example. The quickest solution is to declare
+	// static_resource_cast as separate template functions.
 	template<class _Ty1, class _Ty2, bool _Weak2>
 	TResourceHandle<_Ty1, false> static_resource_cast(const TResourceHandle<_Ty2, _Weak2>& other)
 	{
