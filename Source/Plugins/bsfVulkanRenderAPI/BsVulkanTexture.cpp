@@ -12,13 +12,14 @@
 
 namespace bs { namespace ct
 {
-	VULKAN_IMAGE_DESC createDesc(VkImage image, VmaAllocation allocation, VkImageLayout layout, const TextureProperties& props)
+	VULKAN_IMAGE_DESC createDesc(VkImage image, VmaAllocation allocation, VkImageLayout layout, VkFormat actualFormat, 
+		const TextureProperties& props)
 	{
 		VULKAN_IMAGE_DESC desc;
 		desc.image = image;
 		desc.allocation = allocation;
 		desc.type = props.getTextureType();
-		desc.format = VulkanUtility::getPixelFormat(props.getFormat(), props.isHardwareGammaEnabled());
+		desc.format = actualFormat;
 		desc.numFaces = props.getNumFaces();
 		desc.numMipLevels = props.getNumMipmaps() + 1;
 		desc.layout = layout;
@@ -28,8 +29,8 @@ namespace bs { namespace ct
 	}
 
 	VulkanImage::VulkanImage(VulkanResourceManager* owner, VkImage image, VmaAllocation allocation, VkImageLayout layout,
-							 const TextureProperties& props, bool ownsImage)
-		: VulkanImage(owner, createDesc(image, allocation, layout, props), ownsImage)
+							 VkFormat actualFormat, const TextureProperties& props, bool ownsImage)
+		: VulkanImage(owner, createDesc(image, allocation, layout, actualFormat, props), ownsImage)
 	{ }
 
 	VulkanImage::VulkanImage(VulkanResourceManager* owner, const VULKAN_IMAGE_DESC& desc, bool ownsImage)
@@ -749,7 +750,8 @@ namespace bs { namespace ct
 		assert(result == VK_SUCCESS);
 
 		VmaAllocation allocation = device.allocateMemory(image, flags);
-		return device.getResourceManager().create<VulkanImage>(image, allocation, mImageCI.initialLayout, getProperties());
+		return device.getResourceManager().create<VulkanImage>(image, allocation, mImageCI.initialLayout, mImageCI.format,
+			getProperties());
 	}
 
 	VulkanBuffer* VulkanTexture::createStaging(VulkanDevice& device, const PixelData& pixelData, bool readable)

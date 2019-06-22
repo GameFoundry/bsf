@@ -32,16 +32,17 @@ namespace bs { namespace ct
 	{
 	public:
 		/**
-		 * @param[in]	owner		Resource manager that keeps track of lifetime of this resource.
-		 * @param[in]	image		Internal image Vulkan object.
-		 * @param[in]	allocation	Information about the memory bound to the image.
-		 * @param[in]	layout		Initial layout of the image.
-		 * @param[in]	props		Properties describing the image.
-		 * @param[in]	ownsImage	If true, this object will take care of releasing the image and its memory, otherwise
-		 *							it is expected they will be released externally.
+		 * @param[in]	owner			Resource manager that keeps track of lifetime of this resource.
+		 * @param[in]	image			Internal image Vulkan object.
+		 * @param[in]	allocation		Information about the memory bound to the image.
+		 * @param[in]	layout			Initial layout of the image.
+		 * @param[in]	actualFormat	Actual format the image was created with (rather than the requested format).
+		 * @param[in]	props			Properties describing the image.
+		 * @param[in]	ownsImage		If true, this object will take care of releasing the image and its memory, otherwise
+		 *								it is expected they will be released externally.
 		 */
 		VulkanImage(VulkanResourceManager* owner, VkImage image, VmaAllocation allocation, VkImageLayout layout,
-					const TextureProperties& props, bool ownsImage = true);
+					VkFormat actualFormat, const TextureProperties& props, bool ownsImage = true);
 
 		/**
 		 * @param[in]	owner		Resource manager that keeps track of lifetime of this resource.
