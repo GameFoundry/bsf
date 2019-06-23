@@ -61,7 +61,7 @@ namespace bs
 				memory = rttiReadElem(data.mDuration, memory);
 				break;
 			default:
-				LOGERR("Unknown version of ColorGradient data. Unable to deserialize.");
+				BS_LOG(Error, RTTI, "Unknown version of ColorGradient data. Unable to deserialize.");
 				break;
 			}
 

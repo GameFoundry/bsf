@@ -846,7 +846,7 @@ namespace bs
 
 		if(!rtti_is_subclass<Component>(newObj.get()))
 		{
-			LOGERR("Specified type is not a valid Component.");
+			BS_LOG(Error, Scene, "Specified type is not a valid Component.");
 			return HComponent();
 		}
 

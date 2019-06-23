@@ -837,8 +837,8 @@ namespace bs
 		BlockInfo& blockInfo = mBlocks[index];
 		if (!blockInfo.shareable)
 		{
-			LOGERR("Cannot set parameter block buffer with the name \"" + blockInfo.name + 
-				"\". Buffer is not assignable. ");
+			BS_LOG(Error, RenderBackend, "Cannot set parameter block buffer with the name \"{0}\". "
+				"Buffer is not assignable. ", blockInfo.name);
 			return;
 		}
 
@@ -875,7 +875,8 @@ namespace bs
 		UINT32 bufferIdx = getParamBlockBufferIndex(name);
 		if(bufferIdx == (UINT32)-1)
 		{
-			LOGERR("Cannot set parameter block buffer with the name \"" + name + "\". Buffer name not found. ");
+			BS_LOG(Error, RenderBackend, "Cannot set parameter block buffer with the name \"{0}\". Buffer name not found. ",
+				name);
 			return;
 		}
 

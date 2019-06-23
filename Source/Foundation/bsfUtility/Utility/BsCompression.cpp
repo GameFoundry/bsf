@@ -192,7 +192,7 @@ namespace bs
 
 		if (!snappy::Uncompress(&src, &dst))
 		{
-			LOGERR("Decompression failed, corrupt data.");
+			BS_LOG(Error, Generic, "Decompression failed, corrupt data.");
 			return nullptr;
 		}
 

@@ -311,7 +311,7 @@ namespace bs
 				memory = rttiReadElem(data.interval, memory);
 				break;
 			default:
-				LOGERR("Unknown version of ParticleBurst data. Unable to deserialize.");
+				BS_LOG(Error, RTTI, "Unknown version of ParticleBurst data. Unable to deserialize.");
 				break;
 			}
 

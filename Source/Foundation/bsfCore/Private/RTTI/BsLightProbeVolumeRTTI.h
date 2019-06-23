@@ -60,7 +60,7 @@ namespace bs
 				memory = rttiReadElem(data.coefficients, memory);
 				break;
 			default:
-				LOGERR("Unknown version of SavedLightProbeInfo data. Unable to deserialize.");
+				BS_LOG(Error, RTTI, "Unknown version of SavedLightProbeInfo data. Unable to deserialize.");
 				break;
 			}
 

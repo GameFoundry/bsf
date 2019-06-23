@@ -32,7 +32,7 @@ namespace bs
 	{
 		if (mIsFrameActive)
 		{
-			LOGERR("Cannot begin a frame because another frame is active.");
+			BS_LOG(Error, Profiler, "Cannot begin a frame because another frame is active.");
 			return;
 		}
 
@@ -47,7 +47,7 @@ namespace bs
 	{
 		if (!mActiveSamples.empty())
 		{
-			LOGERR("Attempting to end a frame while a sample is active.");
+			BS_LOG(Error, Profiler, "Attempting to end a frame while a sample is active.");
 			return;
 		}
 
@@ -66,7 +66,7 @@ namespace bs
 	{
 		if (!mIsFrameActive)
 		{
-			LOGERR("Cannot begin a sample because no frame is active.");
+			BS_LOG(Error, Profiler, "Cannot begin a sample because no frame is active.");
 			return;
 		}
 
@@ -93,10 +93,8 @@ namespace bs
 		ProfiledSample* lastSample = mActiveSamples.top();
 		if (lastSample->name != name)
 		{
-			String errorStr = "Attempting to end a sample that doesn't match. Got: " +
-				String(name.c_str()) + ". Expected: " + String(lastSample->name.c_str());
-
-			LOGERR(errorStr);
+			BS_LOG(Error, Profiler, "Attempting to end a sample that doesn't match. Got: {0}. Expected: {1}", 
+				name.c_str(), lastSample->name.c_str());
 			return;
 		}
 
@@ -117,7 +115,7 @@ namespace bs
 
 		if (mReportCount == 0)
 		{
-			LOGERR("No reports are available.")
+			BS_LOG(Error, Profiler, "No reports are available.")
 			return GPUProfilerReport();
 		}
 

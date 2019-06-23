@@ -35,7 +35,7 @@ namespace bs
 	{
 		if(paramDesc.type == GPDT_STRUCT && paramDesc.elementSize <= 0)
 		{
-			LOGERR("You need to provide a non-zero element size for a struct parameter.");
+			BS_LOG(Error, Material, "You need to provide a non-zero element size for a struct parameter.");
 			return;
 		}
 

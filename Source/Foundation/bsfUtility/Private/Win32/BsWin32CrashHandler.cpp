@@ -215,7 +215,7 @@ namespace bs
 		SymSetOptions(options);
 		if(!SymInitialize(hProcess, nullptr, false))
 		{
-			LOGERR("SymInitialize failed. Error code: " + toString((UINT32)GetLastError()));
+			BS_LOG(Error, Generic, "SymInitialize failed. Error code: {0}", + (UINT32)GetLastError());
 			return;
 		}
 

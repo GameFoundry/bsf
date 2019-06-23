@@ -55,7 +55,7 @@ namespace bs
 	{
 		if (nearPlane <= 0)
 		{
-			LOGERR("Near clip distance must be greater than zero.");
+			BS_LOG(Error, Renderer, "Near clip distance must be greater than zero.");
 			return;
 		}
 

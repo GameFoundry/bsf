@@ -880,5 +880,10 @@ BS_LOG_CATEGORY(Resources, 28)
 BS_LOG_CATEGORY(FBXImporter, 29)
 BS_LOG_CATEGORY(PixelUtility, 30)
 BS_LOG_CATEGORY(Texture, 31)
+BS_LOG_CATEGORY(Mesh, 32)
+BS_LOG_CATEGORY(GUI, 33)
+BS_LOG_CATEGORY(Profiler, 34)
+BS_LOG_CATEGORY(Material, 35)
+BS_LOG_CATEGORY(FreeImageImporter, 36)
 
 #include "Utility/BsCommonTypes.h"

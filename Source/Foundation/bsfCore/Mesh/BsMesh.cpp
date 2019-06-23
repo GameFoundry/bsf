@@ -134,7 +134,7 @@ namespace bs
 
 		if (subresourceIdx > 0)
 		{
-			LOGERR("Invalid subresource index: " + toString(subresourceIdx) + ". Supported range: 0 .. 1.");
+			BS_LOG(Error, Mesh, "Invalid subresource index: {0}. Supported range: 0 .. 1.", subresourceIdx);
 			return;
 		}
 
@@ -143,7 +143,7 @@ namespace bs
 			pixelData.getIndexType() != mIndexType ||
 			pixelData.getVertexDesc()->getVertexStride() != mVertexDesc->getVertexStride())
 		{
-			LOGERR("Provided buffer is not of valid dimensions or format in order to update this mesh.");
+			BS_LOG(Error, Mesh, "Provided buffer is not of valid dimensions or format in order to update this mesh.");
 			return;
 		}
 
@@ -368,8 +368,8 @@ namespace bs
 
 		if (meshData.getIndexElementSize() != ibProps.getIndexSize())
 		{
-			LOGERR("Provided index size doesn't match meshes index size. Needed: " +
-				toString(ibProps.getIndexSize()) + ". Got: " + toString(meshData.getIndexElementSize()));
+			BS_LOG(Error, Mesh, "Provided index size doesn't match meshes index size. Needed: {0}. Got: {1}", 
+				ibProps.getIndexSize(), meshData.getIndexElementSize());
 
 			return;
 		}
@@ -377,7 +377,7 @@ namespace bs
 		if (indicesSize > mIndexBuffer->getSize())
 		{
 			indicesSize = mIndexBuffer->getSize();
-			LOGERR("Index buffer values are being written out of valid range.");
+			BS_LOG(Error, Mesh, "Index buffer values are being written out of valid range.");
 		}
 
 		mIndexBuffer->writeData(0, indicesSize, srcIdxData, discardEntireBuffer ? BWT_DISCARD : BWT_NORMAL, queueIdx);
@@ -396,8 +396,8 @@ namespace bs
 			UINT32 otherVertSize = meshData.getVertexDesc()->getVertexStride(i);
 			if (myVertSize != otherVertSize)
 			{
-				LOGERR("Provided vertex size for stream " + toString(i) + " doesn't match meshes vertex size. Needed: " +
-					toString(myVertSize) + ". Got: " + toString(otherVertSize));
+				BS_LOG(Error, Mesh, "Provided vertex size for stream {0} doesn't match meshes vertex size. "
+					"Needed: {1}. Got: {2}", i, myVertSize, otherVertSize);
 
 				continue;
 			}
@@ -410,7 +410,7 @@ namespace bs
 			if (bufferSize > vertexBuffer->getSize())
 			{
 				bufferSize = vertexBuffer->getSize();
-				LOGERR("Vertex buffer values for stream \"" + toString(i) + "\" are being written out of valid range.");
+				BS_LOG(Error, Mesh, "Vertex buffer values for stream \"{0}\" are being written out of valid range.", i);
 			}
 
 			vertexBuffer->writeData(0, bufferSize, srcVertBufferData, discardEntireBuffer ? BWT_DISCARD : BWT_NORMAL,
@@ -435,8 +435,8 @@ namespace bs
 
 			if (meshData.getIndexElementSize() != ibProps.getIndexSize())
 			{
-				LOGERR("Provided index size doesn't match meshes index size. Needed: " +
-					toString(ibProps.getIndexSize()) + ". Got: " + toString(meshData.getIndexElementSize()));
+				BS_LOG(Error, Mesh, "Provided index size doesn't match meshes index size. Needed: {0}. Got: {1}",
+					ibProps.getIndexSize(), meshData.getIndexElementSize());
 				return;
 			}
 
@@ -455,7 +455,7 @@ namespace bs
 			UINT32 indicesSize = numIndicesToCopy * idxElemSize;
 			if (indicesSize > meshData.getIndexBufferSize())
 			{
-				LOGERR("Provided buffer doesn't have enough space to store mesh indices.");
+				BS_LOG(Error, Mesh, "Provided buffer doesn't have enough space to store mesh indices.");
 				return;
 			}
 
@@ -482,8 +482,8 @@ namespace bs
 				UINT32 otherVertSize = meshData.getVertexDesc()->getVertexStride(streamIdx);
 				if (myVertSize != otherVertSize)
 				{
-					LOGERR("Provided vertex size for stream " + toString(streamIdx) + " doesn't match meshes vertex size. Needed: " +
-						toString(myVertSize) + ". Got: " + toString(otherVertSize));
+					BS_LOG(Error, Mesh, "Provided vertex size for stream {0} doesn't match meshes vertex size. "
+						"Needed: {1}. Got: {2}", streamIdx, myVertSize, otherVertSize);
 
 					continue;
 				}
@@ -493,7 +493,8 @@ namespace bs
 
 				if (bufferSize > vertexBuffer->getSize())
 				{
-					LOGERR("Vertex buffer values for stream \"" + toString(streamIdx) + "\" are being read out of valid range.");
+					BS_LOG(Error, Mesh, "Vertex buffer values for stream \"{0}\" are being read out of valid range.", 
+						streamIdx);
 					continue;
 				}
 

@@ -66,7 +66,7 @@ namespace bs
 					memory = rttiReadElem(data.attribIdx, memory);
 					break;
 				default:
-					LOGERR("Unknown version. Unable to deserialize.");
+					BS_LOG(Error, RTTI, "Unknown version. Unable to deserialize.");
 					break;
 				}
 			}
@@ -139,7 +139,7 @@ namespace bs
 					memory = rttiReadElem(data.attribIdx, memory);
 					break;
 				default:
-					LOGERR("Unknown version. Unable to deserialize.");
+					BS_LOG(Error, RTTI, "Unknown version. Unable to deserialize.");
 					break;
 				}
 			}
@@ -249,7 +249,7 @@ namespace bs
 				memory = rttiReadElem(data.nextParamIdx, memory);
 				break;
 			default:
-				LOGERR("Unknown version. Unable to deserialize.");
+				BS_LOG(Error, RTTI, "Unknown version. Unable to deserialize.");
 				break;
 			}
 

@@ -108,7 +108,7 @@ namespace bs
 
 		if (FAILED(hr))
 		{
-			LOGERR("Failed to read keyboard input. Internal error. ");
+			BS_LOG(Error, Platform, "Failed to read keyboard input. Internal error. ");
 			return;
 		}
 

@@ -70,8 +70,8 @@ namespace bs { namespace ct
 #if BS_DEBUG_MODE
 			if (arrayIdx >= mParamDesc.arraySize)
 			{
-				LOGERR("Array index out of range. Array size: " + toString(mParamDesc.arraySize) + ". Requested size: " +
-					toString(arrayIdx));
+				BS_LOG(Error, Material, "Array index out of range. Array size: {0}. Requested size: {1}", 
+					mParamDesc.arraySize, arrayIdx);
 				return T();
 			}
 #endif

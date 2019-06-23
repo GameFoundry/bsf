@@ -341,7 +341,7 @@ namespace bs
 	{
 		if(!FileSystem::isDirectory(folderPath))
 		{
-			LOGERR("Provided path \"" + folderPath.toString() + "\" is not a directory");
+			BS_LOG(Error, Generic, "Provided path \"{0}\" is not a directory", folderPath);
 			return;
 		}
 

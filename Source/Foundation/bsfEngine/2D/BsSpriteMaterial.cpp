@@ -54,7 +54,7 @@ namespace bs
 		mParamBufferIdx = mParams->getParamBlockBufferIndex("GUIParams");
 
 		if(mParamBufferIdx == (UINT32)-1)
-			LOGERR("Sprite material shader missing \"GUIParams\" block.");
+			BS_LOG(Error, GUI, "Sprite material shader missing \"GUIParams\" block.");
 	}
 
 	void SpriteMaterial::destroy(const SPtr<ct::Material>& material, const SPtr<ct::GpuParamsSet>& params)

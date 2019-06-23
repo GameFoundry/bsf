@@ -115,7 +115,7 @@ namespace bs
 			return charRect;
 		}
 
-		LOGERR("Invalid character index: " + toString(charIdx));
+		BS_LOG(Error, GUI, "Invalid character index: {0}", charIdx)
 		return Rect2I();
 	}
 
@@ -192,7 +192,7 @@ namespace bs
 			idx++;
 		}
 
-		LOGERR("Invalid character index: " + toString(charIdx));
+		BS_LOG(Error, Profiler, "Invalid character index: {0}", charIdx);
 		return 0;
 	}
 

@@ -82,7 +82,7 @@ namespace bs
 		{
 			if (mSyncData == nullptr)
 			{
-				LOGERR("No sync data is available. Cannot block until AsyncOp is complete.");
+				BS_LOG(Error, Generic, "No sync data is available. Cannot block until AsyncOp is complete.");
 				return;
 			}
 
@@ -99,7 +99,7 @@ namespace bs
 		{
 #if BS_DEBUG_MODE
 			if(!hasCompleted())
-				LOGERR("Trying to get AsyncOp return value but the operation hasn't completed.");
+				BS_LOG(Error, Generic, "Trying to get AsyncOp return value but the operation hasn't completed.");
 #endif
 
 			return mData->mReturnValue;
@@ -142,7 +142,7 @@ namespace bs
 		{ 
 #if BS_DEBUG_MODE
 			if(!hasCompleted())
-				LOGERR("Trying to get AsyncOp return value but the operation hasn't completed.");
+				BS_LOG(Error, Generic, "Trying to get AsyncOp return value but the operation hasn't completed.");
 #endif
 
 			return any_cast<ReturnType>(mData->mReturnValue);

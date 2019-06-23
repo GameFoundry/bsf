@@ -208,7 +208,7 @@ namespace bs
 
 		if(size.x < 0 || size.y < 0 || size.z < 0)
 		{
-			LOGERR("Invalid dimensions.");
+			BS_LOG(Error, Particles, "Invalid dimensions.");
 			return nullptr;
 		}
 
@@ -218,7 +218,7 @@ namespace bs
 		
 		if(*readPos == '\0')
 		{
-			LOGERR("Unexpected end of file.");
+			BS_LOG(Error, Particles, "Unexpected end of file.");
 			return nullptr;
 		}
 		
@@ -232,7 +232,7 @@ namespace bs
 
 		if(*readPos == '\0')
 		{
-			LOGERR("Unexpected end of file.");
+			BS_LOG(Error, Particles, "Unexpected end of file.");
 			return nullptr;
 		}
 
@@ -250,14 +250,15 @@ namespace bs
 
 			if ((i != (count - 1)) && *readPos == '\0')
 			{
-				LOGERR("Unexpected end of file.");
+				BS_LOG(Error, Particles, "Unexpected end of file.");
 				return nullptr;
 			}
 		}
 
 		if(*readPos != '\0')
 		{
-			LOGWRN("Unexpected excess data. This might indicate corrupt data. Remaining data will be truncated.");
+			BS_LOG(Warning, Particles, 
+				"Unexpected excess data. This might indicate corrupt data. Remaining data will be truncated.");
 		}
 
 		const String fileName = filePath.getFilename(false);

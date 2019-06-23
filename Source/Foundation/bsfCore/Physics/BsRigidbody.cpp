@@ -25,7 +25,7 @@ namespace bs
 
 		if(!scene)
 		{
-			LOGERR("Trying to create a Rigidbody with an uninstantiated scene object.")
+			BS_LOG(Error, Physics, "Trying to create a Rigidbody with an uninstantiated scene object.")
 			return nullptr;
 		}
 

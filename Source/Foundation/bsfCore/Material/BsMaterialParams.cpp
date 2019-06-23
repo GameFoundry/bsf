@@ -903,7 +903,7 @@ namespace bs
 
 		if(size != totalSize)
 		{
-			LOGERR("Invalid buffer size provided, ignoring.");
+			BS_LOG(Error, Material, "Invalid buffer size provided, ignoring.");
 			return;
 		}
 

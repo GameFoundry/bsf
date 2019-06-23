@@ -50,7 +50,7 @@ namespace bs
 				memory = rttiReadElem(data.mMaxGradient, memory);
 				break;
 			default:
-				LOGERR("Unknown version of TDistribution<T> data. Unable to deserialize.");
+				BS_LOG(Error, RTTI, "Unknown version of TDistribution<T> data. Unable to deserialize.");
 				break;
 			}
 
@@ -108,7 +108,7 @@ namespace bs
 				memory = rttiReadElem(data.mMaxCurve, memory);
 				break;
 			default:
-				LOGERR("Unknown version of TDistribution<T> data. Unable to deserialize.");
+				BS_LOG(Error, RTTI, "Unknown version of TDistribution<T> data. Unable to deserialize.");
 				break;
 			}
 

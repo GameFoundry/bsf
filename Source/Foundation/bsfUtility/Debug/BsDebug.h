@@ -123,6 +123,9 @@ namespace bs
 
 BS_LOG_CATEGORY(Uncategorized, 0)
 BS_LOG_CATEGORY(FileSystem, 1)
+BS_LOG_CATEGORY(RTTI, 2)
+BS_LOG_CATEGORY(Generic, 3)
+BS_LOG_CATEGORY(Platform, 4)
 
 	/** @} */
 }
