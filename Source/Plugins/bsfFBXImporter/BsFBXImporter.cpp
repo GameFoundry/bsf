@@ -157,7 +157,7 @@ namespace bs
 				}
 				else
 				{
-					LOGWRN("Cannot generate a collision mesh as the physics module was not started.");
+					BS_LOG(Warning, FBXImporter, "Cannot generate a collision mesh as the physics module was not started.");
 				}
 			}
 
@@ -336,7 +336,7 @@ namespace bs
 			if (numProcessedBones == numAllBones)
 				return Skeleton::create(allBones.data(), numAllBones);
 
-			LOGERR("Not all bones were found in the node hierarchy. Skeleton invalid.");
+			BS_LOG(Error, FBXImporter, "Not all bones were found in the node hierarchy. Skeleton invalid.");
 		}
 
 		return nullptr;
@@ -408,7 +408,7 @@ namespace bs
 						}
 						else
 						{
-							LOGERR("Corrupt blend shape frame. Number of vertices doesn't match the number of mesh vertices.");
+							BS_LOG(Error, FBXImporter, "Corrupt blend shape frame. Number of vertices doesn't match the number of mesh vertices.");
 						}
 					}
 				}
@@ -450,7 +450,7 @@ namespace bs
 		mFBXManager = FbxManager::Create();
 		if (mFBXManager == nullptr)
 		{
-			LOGERR("FBX import failed: FBX SDK failed to initialize. FbxManager::Create() failed.");
+			BS_LOG(Error, FBXImporter, "FBX import failed: FBX SDK failed to initialize. FbxManager::Create() failed.");
 			return false;
 		}
 
@@ -460,7 +460,7 @@ namespace bs
 		scene = FbxScene::Create(mFBXManager, "Import Scene");
 		if (scene == nullptr)
 		{
-			LOGWRN("FBX import failed: Failed to create FBX scene.");
+			BS_LOG(Warning, FBXImporter, "FBX import failed: Failed to create FBX scene.");
 			return false;
 		}
 
@@ -487,8 +487,8 @@ namespace bs
 
 		if(!importStatus)
 		{
-			LOGERR("FBX import failed: Call to FbxImporter::Initialize() failed.\n" +
-				String("Error returned: %s\n\n") + String(importer->GetStatus().GetErrorString()));
+			BS_LOG(Error, FBXImporter, "FBX import failed: Call to FbxImporter::Initialize() failed.\n"
+				"Error returned: %s\n\n{0}", importer->GetStatus().GetErrorString());
 			return false;
 		}
 
@@ -501,8 +501,8 @@ namespace bs
 		{
 			importer->Destroy();
 			
-			LOGERR("FBX import failed: Call to FbxImporter::Import() failed.\n" +
-				String("Error returned: %s\n\n") + String(importer->GetStatus().GetErrorString()));
+			BS_LOG(Error, FBXImporter, "FBX import failed: Call to FbxImporter::Import() failed.\n"
+				"Error returned: %s\n\n{0}", importer->GetStatus().GetErrorString());
 			return false;
 		}
 
@@ -1230,7 +1230,7 @@ namespace bs
 		}
 			break;
 		default:
-			LOGWRN("FBX Import: Unsupported layer mapping mode.");
+			BS_LOG(Warning, FBXImporter, "FBX Import: Unsupported layer mapping mode.");
 			break;
 		}
 	}
@@ -1245,7 +1245,7 @@ namespace bs
 		else if (refMode == FbxLayerElement::eIndexToDirect)
 			readLayerData<TFBX, TNative, FBXIndexIndexer<TFBX, TNative> >(layer, output, indices);
 		else
-			LOGWRN("FBX Import: Unsupported layer reference mode.");
+			BS_LOG(Warning, FBXImporter,"FBX Import: Unsupported layer reference mode.");
 	}
 
 	void FBXImporter::parseMesh(FbxMesh* mesh, FBXImportNode* parentNode, const FBXImportOptions& options, FBXImportScene& outputScene)
@@ -1587,7 +1587,7 @@ namespace bs
 				// each such mesh, since they will all require their own bind poses. Animation curves will also need to be
 				// handled specially (likely by allowing them to be applied to multiple bones at once). The other option is
 				// not to bake the node transform into mesh vertices and handle it on a Scene Object level.
-				LOGWRN("Skinned mesh has multiple different instances. This is not supported.");
+				BS_LOG(Warning, FBXImporter,"Skinned mesh has multiple different instances. This is not supported.");
 			}
 
 			FBXImportNode* parentNode = mesh.referencedBy[0];
@@ -1655,7 +1655,10 @@ namespace bs
 
 		UINT32 numBones = (UINT32)mesh.bones.size();
 		if (numBones > 256)
-			LOGWRN("A maximum of 256 bones per skeleton are supported. Imported skeleton has " + toString(numBones) + " bones");
+		{
+			BS_LOG(Warning, FBXImporter, 
+				"A maximum of 256 bones per skeleton are supported. Imported skeleton has {0} bones.", numBones);
+		}
 
 		// Normalize weights
 		UINT32 numInfluences = (UINT32)mesh.boneInfluences.size();
@@ -2179,7 +2182,7 @@ namespace bs
 
 		// Resample keys
 		if (!importOptions.animResample && forceResample)
-			LOGWRN_VERBOSE("Animation has different keyframes for different curve components, forcing resampling.");
+			BS_LOG(Verbose, FBXImporter, "Animation has different keyframes for different curve components, forcing resampling.")
 
 		// Make sure to resample along the length of the entire clip
 		curveStart = std::min(curveStart, clipStart);

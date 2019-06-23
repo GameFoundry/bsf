@@ -731,7 +731,7 @@ namespace bs
 				StringStream logOutput;
 				log.getMessages(logOutput);
 
-				LOGERR("Shader cross compilation failed. Log: \n\n" + logOutput.str());
+				BS_LOG(Error, BSLCompiler, "Shader cross compilation failed. Log: \n\n{0}", logOutput.str());
 				return "";
 			}
 		}
@@ -769,7 +769,7 @@ namespace bs
 				StringStream logOutput;
 				log.getMessages(logOutput);
 
-				LOGERR("Shader cross compilation failed. Log: \n\n" + logOutput.str());
+				BS_LOG(Error, BSLCompiler, "Shader cross compilation failed. Log: \n\n{0}", logOutput.str());
 				return "";
 			}
 		}

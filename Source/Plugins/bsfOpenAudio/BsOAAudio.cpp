@@ -61,7 +61,7 @@ namespace bs
 			mDevice = alcOpenDevice(nullptr);
 
 		if (mDevice == nullptr)
-			LOGERR("Failed to open OpenAL device: " + defaultDeviceName);
+			BS_LOG(Error, Audio, "Failed to open OpenAL device: {0}", defaultDeviceName);
 
 		rebuildContexts();
 	}
@@ -130,7 +130,7 @@ namespace bs
 		String narrowName = device.name;
 		mDevice = alcOpenDevice(narrowName.c_str());
 		if (mDevice == nullptr)
-			LOGERR("Failed to open OpenAL device: " + narrowName);
+			BS_LOG(Error, Audio, "Failed to open OpenAL device: ", narrowName);
 
 		rebuildContexts();
 	}
@@ -204,7 +204,7 @@ namespace bs
 		else
 			return mContexts[0];
 
-		LOGERR("Unable to find context for an audio listener.");
+		BS_LOG(Error, Audio, "Unable to find context for an audio listener.");
 		return nullptr;
 	}
 

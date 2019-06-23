@@ -190,15 +190,14 @@ namespace bs
 #if BS_DEBUG_MODE
 		if (set >= mNumSets)
 		{
-			LOGERR("Set index out of range: Valid range: [0, " +
-				   toString(mNumSets) + "). Requested: " + toString(set) + ".");
+			BS_LOG(Error, RenderBackend, "Set index out of range: Valid range: [0, {0}). Requested: {1}.", mNumSets, set);
 			return -1;
 		}
 
 		if (slot >= mSetInfos[set].numSlots)
 		{
-			LOGERR("Slot index out of range: Valid range: [0, " +
-				   toString(mSetInfos[set].numSlots) + "). Requested: " + toString(slot) + ".");
+			BS_LOG(Error, RenderBackend, "Slot index out of range: Valid range: [0, {0}). Requested: {1}.", 
+				mSetInfos[set].numSlots, slot);
 			return -1;
 		}
 
@@ -212,8 +211,8 @@ namespace bs
 					return mSetInfos[set].slotSamplers[slot];
 			}
 
-			LOGERR("Requested parameter is not of the valid type. Requested: " + toString((UINT32)type) + ". Actual: " +
-					toString((UINT32)mSetInfos[set].slotTypes[slot]) + ".");
+			BS_LOG(Error, RenderBackend, "Requested parameter is not of the valid type. Requested: {0}. Actual: {1}.", 
+				(UINT32)type, (UINT32)mSetInfos[set].slotTypes[slot]);
 			return -1;
 		}
 
@@ -227,8 +226,8 @@ namespace bs
 #if BS_DEBUG_MODE
 		if(sequentialSlot >= mNumElementsPerType[(int)type])
 		{
-			LOGERR("Sequential slot index out of range: Valid range: [0, " + toString(mNumElementsPerType[(int)type]) + 
-				"). Requested: " + toString(sequentialSlot) + ".");
+			BS_LOG(Error, RenderBackend, "Sequential slot index out of range: Valid range: [0, {0}). Requested: {1}.", 
+				mNumElementsPerType[(int)type], sequentialSlot);
 
 			set = 0;
 			slot = 0;

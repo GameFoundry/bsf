@@ -30,7 +30,7 @@ namespace bs
 		
 		if (!parseHeader(info))
 		{
-			LOGERR("Provided file is not a valid WAVE file.");
+			BS_LOG(Error, Audio, "Provided file is not a valid WAVE file.");
 			return false;
 		}
 
@@ -81,7 +81,7 @@ namespace bs
 
 				if (format != WAVE_FORMAT_PCM && format != WAVE_FORMAT_EXTENDED)
 				{
-					LOGWRN("Wave file doesn't contain raw PCM data. Not supported.");
+					BS_LOG(Warning, Audio, "Wave file doesn't contain raw PCM data. Not supported.");
 					return false;
 				}
 
@@ -111,7 +111,7 @@ namespace bs
 
 				if (bitDepth != 8 && bitDepth != 16 && bitDepth != 24 && bitDepth != 32)
 				{
-					LOGERR("Unsupported number of bits per sample: " + toString(bitDepth));
+					BS_LOG(Error, Audio, "Unsupported number of bits per sample: {0}", bitDepth);
 					return false;
 				}
 
@@ -124,7 +124,7 @@ namespace bs
 
 					if(extensionSize != 22)
 					{
-						LOGWRN("Wave file doesn't contain raw PCM data. Not supported.");
+						BS_LOG(Warning, Audio, "Wave file doesn't contain raw PCM data. Not supported.");
 						return false;
 					}
 
@@ -143,7 +143,7 @@ namespace bs
 					memcpy(&format, subFormat, sizeof(format));
 					if (format != WAVE_FORMAT_PCM)
 					{
-						LOGWRN("Wave file doesn't contain raw PCM data. Not supported.");
+						BS_LOG(Warning, Audio, "Wave file doesn't contain raw PCM data. Not supported.");
 						return false;
 					}
 				}

@@ -71,7 +71,7 @@ namespace bs
 					if (reader.open(stream, info, offset))
 						reader.read(sampleBuffer, info.numSamples);
 					else
-						LOGERR("Failed decompressing AudioClip stream.");
+						BS_LOG(Error, Audio, "Failed decompressing AudioClip stream.");
 				}
 				// Load directly
 				else
@@ -123,7 +123,7 @@ namespace bs
 				if (mStreamData != nullptr)
 				{
 					if (!mVorbisReader.open(mStreamData, info, mStreamOffset))
-						LOGERR("Failed decompressing AudioClip stream.");
+						BS_LOG(Error, Audio, "Failed decompressing AudioClip stream.");
 				}
 			}
 		}

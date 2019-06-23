@@ -14,60 +14,60 @@ namespace bs
 		switch (error)
 		{
 		case ERROR_FILE_NOT_FOUND:
-			LOGERR("File at path: \"" + toString(path) + "\" not found.");
+			BS_LOG(Error, FileSystem, "File at path: \"{0}\" not found.", path);
 			break;
 		case ERROR_PATH_NOT_FOUND:
 		case ERROR_BAD_NETPATH:
 		case ERROR_CANT_RESOLVE_FILENAME:
 		case ERROR_INVALID_DRIVE:
-			LOGERR("Path \"" + toString(path) + "\" not found.");
+			BS_LOG(Error, FileSystem, "Path \"{0}\" not found.", path);
 			break;
 		case ERROR_ACCESS_DENIED:
-			LOGERR("Access to path \"" + toString(path) + "\" denied.");
+			BS_LOG(Error, FileSystem, "Access to path \"{0}\" denied.", path);
 			break;
 		case ERROR_ALREADY_EXISTS:
 		case ERROR_FILE_EXISTS:
-			LOGERR("File/folder at path \"" + toString(path) + "\" already exists.");
+			BS_LOG(Error, FileSystem, "File/folder at path \"{0}\" already exists.", path);
 			break;
 		case ERROR_INVALID_NAME:
 		case ERROR_DIRECTORY:
 		case ERROR_FILENAME_EXCED_RANGE:
 		case ERROR_BAD_PATHNAME:
-			LOGERR("Invalid path string: \"" + toString(path) + "\".");
+			BS_LOG(Error, FileSystem, "Invalid path string: \"{0}\".", path);
 			break;
 		case ERROR_FILE_READ_ONLY:
-			LOGERR("File at path \"" + toString(path) + "\" is read only.");
+			BS_LOG(Error, FileSystem, "File at path \"{0}\" is read only.", path);
 			break;
 		case ERROR_CANNOT_MAKE:
-			LOGERR("Cannot create file/folder at path: \"" + toString(path) + "\".");
+			BS_LOG(Error, FileSystem, "Cannot create file/folder at path: \"{0}\".", path);
 			break;
 		case ERROR_DIR_NOT_EMPTY:
-			LOGERR("Directory at path \"" + toString(path) + "\" not empty.");
+			BS_LOG(Error, FileSystem, "Directory at path \"{0}\" not empty.", path);
 			break;
 		case ERROR_WRITE_FAULT:
-			LOGERR("Error while writing a file at path \"" + toString(path) + "\".");
+			BS_LOG(Error, FileSystem, "Error while writing a file at path \"{0}\".", path);
 			break;
 		case ERROR_READ_FAULT:
-			LOGERR("Error while reading a file at path \"" + toString(path) + "\".");
+			BS_LOG(Error, FileSystem, "Error while reading a file at path \"{0}\".", path);
 			break;
 		case ERROR_SHARING_VIOLATION:
-			LOGERR("Sharing violation at path \"" + toString(path) + "\".");
+			BS_LOG(Error, FileSystem, "Sharing violation at path \"{0}\".", path);
 			break;
 		case ERROR_LOCK_VIOLATION:
-			LOGERR("Lock violation at path \"" + toString(path) + "\".");
+			BS_LOG(Error, FileSystem, "Lock violation at path \"{0}\".", path);
 			break;
 		case ERROR_HANDLE_EOF:
-			LOGERR("End of file reached for file at path \"" + toString(path) + "\".");
+			BS_LOG(Error, FileSystem, "End of file reached for file at path \"{0}\".", path);
 			break;
 		case ERROR_HANDLE_DISK_FULL:
 		case ERROR_DISK_FULL:
-			LOGERR("Disk full.");
+			BS_LOG(Error, FileSystem, "Disk full.");
 			break;
 		case ERROR_NEGATIVE_SEEK:
-			LOGERR("Negative seek.");
+			BS_LOG(Error, FileSystem, "Negative seek.");
 			break;
 		default:
-			LOGERR("Undefined file system exception: " + toString((UINT32)error));
+			BS_LOG(Error, FileSystem, "Undefined file system exception: {0}", (UINT32)error);
 			break;
 		}
 	}

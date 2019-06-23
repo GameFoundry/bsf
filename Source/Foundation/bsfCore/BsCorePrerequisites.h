@@ -875,5 +875,10 @@ BS_LOG_CATEGORY(Physics, 23)
 BS_LOG_CATEGORY(Audio, 24)
 BS_LOG_CATEGORY(RenderBackend, 25)
 BS_LOG_CATEGORY(BSLCompiler, 26)
+BS_LOG_CATEGORY(Particles, 27)
+BS_LOG_CATEGORY(Resources, 28)
+BS_LOG_CATEGORY(FBXImporter, 29)
+BS_LOG_CATEGORY(PixelUtility, 30)
+BS_LOG_CATEGORY(Texture, 31)
 
 #include "Utility/BsCommonTypes.h"

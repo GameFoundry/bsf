@@ -191,77 +191,65 @@ namespace bs
 		}
 
 		/**	Helper method for converting any data type to a narrow string. */
-		template<class T> static std::string toString(const T& param) { return std::to_string(param); }
+		template<class T> static String toString(const T& param) { return bs::toString(param); }
 
 		/**	Helper method that "converts" a narrow string to a narrow string (simply a pass through). */
-		static std::string toString(const std::string& param) { return param; }
-
-		/**	Helper method that converts a framework narrow string to a standard narrow string. */
-		static std::string toString(const String& param)
-		{
-			return std::string(param.c_str());
-		}
+		static String toString(const String& param) { return param; }
 
 		/**	Helper method that converts a narrow character array to a narrow string. */
-		template<class T> static std::string toString(T* param)
+		template<class T> static String toString(T* param)
 		{
 			static_assert(!std::is_same<T,T>::value, "Invalid pointer type.");
 			return "";
 		}
 
 		/**	Helper method that converts a narrow character array to a narrow string. */
-		static std::string toString(const char* param)
+		static String toString(const char* param)
 		{
 			if (param == nullptr)
-				return std::string();
+				return String();
 
-			return std::string(param);
+			return String(param);
 		}
 
 		/**	Helper method that converts a narrow character array to a narrow string. */
-		static std::string toString(char* param)
+		static String toString(char* param)
 		{
 			if (param == nullptr)
-				return std::string();
+				return String();
 
-			return std::string(param);
+			return String(param);
 		}
 
 		/**	Helper method for converting any data type to a wide string. */
-		template<class T> static std::wstring toWString(const T& param) { return std::to_wstring(param); }
+		template<class T> static WString toWString(const T& param) { return bs::toWString(param); }
 
 		/**	Helper method that "converts" a wide string to a wide string (simply a pass through). */
-		static std::wstring toWString(const std::wstring& param) { return param; }
-
-		/**	Helper method that converts a framework wide string to a standard wide string. */
-		static std::wstring toWString(const WString& param)
-		{
-			return std::wstring(param.c_str());
-		}
+		static WString toWString(const WString& param) { return param; }
 
 		/**	Helper method that converts a wide character array to a wide string. */
-		template<class T> static std::wstring toWString(T* param)
+		template<class T> static WString toWString(T* param)
 		{
 			static_assert(!std::is_same<T,T>::value, "Invalid pointer type.");
 			return L"";
 		}
 
 		/**	Helper method that converts a wide character array to a wide string. */
-		static std::wstring toWString(const wchar_t* param)
+		static WString toWString(const wchar_t* param)
 		{
 			if (param == nullptr)
-				return std::wstring();
+				return WString();
 
-			return std::wstring(param);
+			return WString(param);
 		}
 
 		/**	Helper method that converts a wide character array to a wide string. */
-		static std::wstring toWString(wchar_t* param)
+		static WString toWString(wchar_t* param)
 		{
 			if (param == nullptr)
-				return std::wstring();
+				return WString();
 
-			return std::wstring(param);
+			return WString(param);
 		}
 
 		/**
@@ -273,7 +261,7 @@ namespace bs
 			if (idx >= MAX_PARAMS)
 				return;
 
-			std::basic_string<char> sourceParam = toString(param);
+			BasicString<char> sourceParam = toString(param);
 			parameters[idx].buffer = (char*)bs_alloc((UINT32)sourceParam.size() * sizeof(char));
 			parameters[idx].size = (UINT32)sourceParam.size();
 
@@ -291,7 +279,7 @@ namespace bs
 			if (idx >= MAX_PARAMS)
 				return;
 
-			std::basic_string<wchar_t> sourceParam = toWString(param);
+			BasicString<wchar_t> sourceParam = toWString(param);
 			parameters[idx].buffer = (wchar_t*)bs_alloc((UINT32)sourceParam.size() * sizeof(wchar_t));
 			parameters[idx].size = (UINT32)sourceParam.size();
 			

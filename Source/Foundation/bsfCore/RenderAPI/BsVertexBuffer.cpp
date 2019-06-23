@@ -136,7 +136,8 @@ namespace bs
 		UINT32 elemSize = type == GBT_STANDARD ? bs::GpuBuffer::getFormatSize(format) : elementSize;
 		if((mBuffer->getSize() % elemSize) != 0)
 		{
-			LOGERR("Size of the buffer isn't divisible by individual element size provided for the buffer view.");
+			BS_LOG(Error, RenderBackend, 
+				"Size of the buffer isn't divisible by individual element size provided for the buffer view.");
 			return nullptr;
 		}
 

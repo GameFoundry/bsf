@@ -165,7 +165,7 @@ namespace bs
 		mDecoder = FLAC__stream_decoder_new();
 		if (mDecoder == nullptr)
 		{
-			LOGERR("Failed to open a FLAC file.");
+			BS_LOG(Error, Audio, "Failed to open a FLAC file.");
 			return false;
 		}
 
@@ -177,7 +177,7 @@ namespace bs
 		if (!FLAC__stream_decoder_process_until_end_of_metadata(mDecoder))
 		{
 			close();
-			LOGERR("Failed to open a FLAC file.");
+			BS_LOG(Error, Audio, "Failed to open a FLAC file.");
 			return false;
 		}
 

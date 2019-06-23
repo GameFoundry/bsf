@@ -500,7 +500,7 @@ namespace bs {	namespace ct
 
 		if(probeInfo.arrayIdx > MaxReflectionCubemaps)
 		{
-			LOGERR("Reached the maximum number of allowed reflection probe cubemaps at once. "
+			BS_LOG(Error, Renderer, "Reached the maximum number of allowed reflection probe cubemaps at once. "
 				"Ignoring reflection probe data.");
 		}
 	}

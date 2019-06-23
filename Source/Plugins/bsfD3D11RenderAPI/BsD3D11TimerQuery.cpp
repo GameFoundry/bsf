@@ -137,8 +137,6 @@ namespace bs { namespace ct
 			mTimeDelta = (delta / (float)frequency) * 1000.0f;
 		}       
 		else
-		{
-			LOGWRN_VERBOSE("Unrealiable GPU timer query detected.");
-		}
+			BS_LOG(Verbose, RenderBackend, "Unrealiable GPU timer query detected.");
 	}
 }}

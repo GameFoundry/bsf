@@ -39,8 +39,7 @@ namespace bs
 	{
 		if (!FileSystem::isFile(filePath))
 		{
-			LOGWRN("Cannot load resource. Specified file: " + filePath.toString() + " doesn't exist.");
-
+			BS_LOG(Warning, Resources, "Cannot load resource. Specified file: {0} doesn't exist.", filePath);
 			return HResource();
 		}
 
@@ -66,8 +65,7 @@ namespace bs
 	{
 		if (!FileSystem::isFile(filePath))
 		{
-			LOGWRN("Cannot load resource. Specified file: " + filePath.toString() + " doesn't exist.");
-
+			BS_LOG(Warning, Resources, "Cannot load resource. Specified file: '{0}' doesn't exist.", filePath);
 			return HResource();
 		}
 
@@ -165,13 +163,13 @@ namespace bs
 			{
 				if (!alreadyLoading)
 				{
-					LOGWRN_VERBOSE("Cannot load resource. Resource with UUID '" + uuid.toString() + "' doesn't exist.");
+					BS_LOG(Verbose, Resources, "Cannot load resource. Resource with UUID '{0}' doesn't exist.", uuid);
 					loadFailed = true;
 				}
 			}
 			else if (!FileSystem::isFile(filePath))
 			{
-				LOGWRN_VERBOSE("Cannot load resource. Specified file: " + filePath.toString() + " doesn't exist.");
+				BS_LOG(Verbose, Resources, "Cannot load resource. Specified file: '{0}' doesn't exist.", filePath);
 				loadFailed = true;
 			}
 
@@ -490,9 +488,7 @@ namespace bs
 		}
 
 		if (loadedData == nullptr)
-		{
-			LOGERR("Unable to load resource at path \"" + filePath.toString() + "\"");
-		}
+			BS_LOG(Error, Resources, "Unable to load resource at path \"{0}\"", filePath)
 		else
 		{
 			if (!loadedData->isDerivedFrom(Resource::getRTTIStatic()))
@@ -666,7 +662,7 @@ namespace bs
 		const bool fileExists = FileSystem::isFile(filePath);
 		if(fileExists && !overwrite)
 		{
-			LOGERR("Another file exists at the specified location. Not saving.");
+			BS_LOG(Error, Resources, "Another file exists at the specified location. Not saving.");
 			return;
 		}
 
@@ -692,8 +688,8 @@ namespace bs
 	{
 		if (!resource->mKeepSourceData)
 		{
-			LOGWRN("Saving a resource that was created/loaded without ResourceLoadFlag::KeepSourceData. Some data might "
-				"not be available for saving. File path: " + filePath.toString());
+			BS_LOG(Warning, Resources, "Saving a resource that was created/loaded without KeepSourceData flag." 
+				"Some data might not be available for saving. File path: {0}", filePath);
 		}
 
 		Vector<ResourceDependency> dependencyList = Utility::findResourceDependencies(*resource);
@@ -726,7 +722,8 @@ namespace bs
 			{
 				if(safetyCounter > 10)
 				{
-					LOGERR("Internal error. Unable to save resource due to not being able to find a unique filename.");
+					BS_LOG(Error, Resources, 
+						"Internal error. Unable to save resource due to not being able to find a unique filename.");
 					return;
 				}
 
@@ -743,7 +740,7 @@ namespace bs
 		std::ofstream stream;
 		stream.open(savePath.toPlatformString().c_str(), std::ios::out | std::ios::binary);
 		if (stream.fail())
-			LOGWRN("Failed to save file: \"" + filePath.toString() + "\". Error: " + strerror(errno) + ".");
+			BS_LOG(Warning, Resources, "Failed to save file: \"{0}\". Error: {1}.", filePath, strerror(errno));
 	
 		// Write meta-data
 		{

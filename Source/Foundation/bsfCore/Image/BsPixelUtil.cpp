@@ -1644,7 +1644,7 @@ namespace bs
 
 		if (format == PF_RGB10A2)
 		{
-			LOGERR("packColor() not implemented for format \"" + getFormatName(PF_RGB10A2) + "\".");
+			BS_LOG(Error, PixelUtility, "packColor() not implemented for format \"{0}\".", getFormatName(PF_RGB10A2));
 			return;
 		}
 
@@ -1703,7 +1703,7 @@ namespace bs
 			}
 			else
 			{
-				LOGERR("packColor() not implemented for format \"" + getFormatName(format) + "\".");
+				BS_LOG(Error, PixelUtility, "packColor() not implemented for format \"{0}\".", getFormatName(format));
 				return;
 			}
 
@@ -1771,7 +1771,7 @@ namespace bs
 
 		if(format == PF_RGB10A2)
 		{
-			LOGERR("unpackColor() not implemented for format \"" + getFormatName(PF_RGB10A2) + "\".");
+			BS_LOG(Error, PixelUtility,"unpackColor() not implemented for format \"{0}\".", getFormatName(PF_RGB10A2));
 			return;
 		}
 
@@ -1819,7 +1819,7 @@ namespace bs
 			}
 			else
 			{
-				LOGERR("unpackColor() not implemented for format \"" + getFormatName(format) + "\".");
+				BS_LOG(Error, PixelUtility, "unpackColor() not implemented for format \"{0}\".", getFormatName(format));
 				return;
 			}
 
@@ -1838,11 +1838,11 @@ namespace bs
 	{
 		if (!isDepth(format))
 		{
-			LOGERR("Cannot convert depth to " + getFormatName(format) + ": it is not a depth format");
+			BS_LOG(Error, PixelUtility, "Cannot convert depth to {0}: it is not a depth format", getFormatName(format));
 			return;
 		}
 
-		LOGERR("Method is not implemented");
+		BS_LOG(Error, PixelUtility, "Method is not implemented");
 		//TODO implement depth packing
 	}
 
@@ -1850,7 +1850,7 @@ namespace bs
 	{
 		if (!isDepth(format))
 		{
-			LOGERR("Cannot unpack from " + getFormatName(format) + ": it is not a depth format");
+			BS_LOG(Error, PixelUtility, "Cannot unpack from {0}: it is not a depth format", getFormatName(format));
 			return 0;
 		}
 
@@ -1873,7 +1873,7 @@ namespace bs
 			return *( (float*) &masked );
 			break;
 		default:
-			LOGERR("Cannot unpack from " + getFormatName(format));
+			BS_LOG(Error, PixelUtility, "Cannot unpack from {0}", getFormatName(format));
 			return 0;
 			break;
 		}
@@ -1895,7 +1895,7 @@ namespace bs
 			}
 			else
 			{
-				LOGERR("bulkPixelConversion() cannot be used to compress or decompress images");
+				BS_LOG(Error, PixelUtility, "bulkPixelConversion() cannot be used to compress or decompress images");
 				return;
 			}
 		}
@@ -2002,14 +2002,14 @@ namespace bs
 	{
 		if (isCompressed(data.getFormat()))
 		{
-			LOGERR("flipComponentOrder() not supported on compressed images.");
+			BS_LOG(Error, PixelUtility, "flipComponentOrder() not supported on compressed images.");
 			return;
 		}
 
 		const PixelFormatDescription& pfd = getDescriptionFor(data.getFormat());
 		if(pfd.elemBytes > 4)
 		{
-			LOGERR("flipComponentOrder() only supported on 4 byte or smaller pixel formats.");
+			BS_LOG(Error, PixelUtility, "flipComponentOrder() only supported on 4 byte or smaller pixel formats.");
 			return;
 		}
 
@@ -2028,7 +2028,8 @@ namespace bs
 
 		if(bitCountMismatch)
 		{
-			LOGERR("flipComponentOrder() not supported for formats that don't have the same number of bytes for all components.");
+			BS_LOG(Error, PixelUtility, "flipComponentOrder() not supported for formats that don't have the same number "
+				"of bytes for all components.");
 			return;
 		}
 
@@ -2223,8 +2224,8 @@ namespace bs
 	{
 		if(src.getFormat() != dst.getFormat())
 		{
-			LOGERR("Source format is different from destination format for copy(). This operation cannot be used for "
-				   "a format conversion. Aborting copy.");
+			BS_LOG(Error, PixelUtility, "Source format is different from destination format for copy(). This operation "
+				"cannot be used for a format conversion. Aborting copy.");
 			return;
 		}
 
@@ -2234,8 +2235,8 @@ namespace bs
 
 		if(right > src.getWidth() || bottom > src.getHeight() || back > src.getDepth())
 		{
-			LOGERR("Provided offset or destination size is too large and is referencing pixels that are out of bounds"
-				   " on the source texture. Aborting copy().");
+			BS_LOG(Error, PixelUtility, "Provided offset or destination size is too large and is referencing pixels that "
+				"are out of bounds on the source texture. Aborting copy().");
 			return;
 		}
 
@@ -2461,19 +2462,19 @@ namespace bs
 	{
 		if (!isCompressed(options.format))
 		{
-			LOGERR("Compression failed. Destination format is not a valid compressed format.")
+			BS_LOG(Error, PixelUtility, "Compression failed. Destination format is not a valid compressed format.")
 			return;
 		}
 
 		if (src.getDepth() != 1)
 		{
-			LOGERR("Compression failed. 3D texture compression not supported.")
+			BS_LOG(Error, PixelUtility, "Compression failed. 3D texture compression not supported.")
 			return;
 		}
 
 		if (isCompressed(src.getFormat()))
 		{
-			LOGERR("Compression failed. Source data cannot be compressed.");
+			BS_LOG(Error, PixelUtility, "Compression failed. Source data cannot be compressed.");
 			return;
 		}
 
@@ -2514,7 +2515,7 @@ namespace bs
 		nvtt::Compressor compressor;
 		if (!compressor.process(io, co, oo))
 		{
-			LOGERR("Compression failed. Internal error.");
+			BS_LOG(Error, PixelUtility, "Compression failed. Internal error.");
 			return;
 		}
 	}
@@ -2525,19 +2526,19 @@ namespace bs
 
 		if (src.getDepth() != 1)
 		{
-			LOGERR("Mipmap generation failed. 3D texture formats not supported.")
+			BS_LOG(Error, PixelUtility, "Mipmap generation failed. 3D texture formats not supported.")
 			return outputMipBuffers;
 		}
 
 		if (isCompressed(src.getFormat()))
 		{
-			LOGERR("Mipmap generation failed. Source data cannot be compressed.")
+			BS_LOG(Error, PixelUtility, "Mipmap generation failed. Source data cannot be compressed.")
 			return outputMipBuffers;
 		}
 
 		if (!Bitwise::isPow2(src.getWidth()) || !Bitwise::isPow2(src.getHeight()))
 		{
-			LOGERR("Mipmap generation failed. Texture width & height must be powers of 2.");
+			BS_LOG(Error, PixelUtility, "Mipmap generation failed. Texture width & height must be powers of 2.");
 			return outputMipBuffers;
 		}
 
@@ -2616,7 +2617,7 @@ namespace bs
 		nvtt::Compressor compressor;
 		if (!compressor.process(io, co, oo))
 		{
-			LOGERR("Mipmap generation failed. Internal error.");
+			BS_LOG(Error, PixelUtility, "Mipmap generation failed. Internal error.");
 			return outputMipBuffers;
 		}
 

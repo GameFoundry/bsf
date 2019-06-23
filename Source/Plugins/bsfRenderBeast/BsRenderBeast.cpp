@@ -629,11 +629,10 @@ namespace bs { namespace ct
 					{
 						if (!probeInfo.errorFlagged)
 						{
-							String errMsg = StringUtil::format("Cubemap texture invalid to use as a reflection cubemap. " 
+							BS_LOG(Error, Renderer, "Cubemap texture invalid to use as a reflection cubemap. " 
 								"Check texture size (must be {0}x{0}) and mip-map count", 
 								IBLUtility::REFLECTION_CUBEMAP_SIZE);
 
-							LOGERR(errMsg);
 							probeInfo.errorFlagged = true;
 						}
 					}

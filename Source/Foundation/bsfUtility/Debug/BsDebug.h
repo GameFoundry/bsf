@@ -115,13 +115,14 @@ namespace bs
 /** Defines a new log category to use with BS_LOG. Each category must have a unique ID. */
 #define BS_LOG_CATEGORY(name, id) struct LogCategory##name { enum { _id = id }; };
 
-#define BS_LOG(verbosity, category, message, ...)																			\
+#define BS_LOG(verbosity, category, message, ...)	{																		\
 	if((INT32)LogVerbosity::verbosity <= (INT32)BS_LOG_VERBOSITY) {															\
 		bs::gDebug().log(StringUtil::format(message, __VA_ARGS__) + String("\n\t\t in ") + __PRETTY_FUNCTION__ +			\
 			" [" + __FILE__ + ":" + toString(__LINE__) + "]\n", LogVerbosity::verbosity, LogCategory##category::_id);		\
-	}
+	}}
 
 BS_LOG_CATEGORY(Uncategorized, 0)
+BS_LOG_CATEGORY(FileSystem, 1)
 
 	/** @} */
 }

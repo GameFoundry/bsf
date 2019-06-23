@@ -160,7 +160,7 @@ namespace ct
 		{
 			auto findIter = mNodeTypes.find(T::getNodeId());
 			if (findIter != mNodeTypes.end())
-				LOGERR("Found two render compositor nodes with the same name \"" + String(T::getNodeId().c_str()) + "\".");
+				BS_LOG(Error, Renderer, "Found two render compositor nodes with the same name \"{0}\".", String(T::getNodeId().c_str()));
 
 			mNodeTypes[T::getNodeId()] = bs_new<TNodeType<T>>();
 		}

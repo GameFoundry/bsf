@@ -79,7 +79,7 @@ namespace bs
 		int status = ov_open_callbacks(&mDecoderData, &mOggVorbisFile, nullptr, 0, callbacks);
 		if (status < 0)
 		{
-			LOGERR("Failed to open Ogg Vorbis file.");
+			BS_LOG(Error, Audio, "Failed to open Ogg Vorbis file.");
 			return false;
 		}
 

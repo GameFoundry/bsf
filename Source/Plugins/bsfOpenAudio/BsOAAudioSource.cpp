@@ -539,7 +539,7 @@ namespace bs
 
 				if (bufferBits == 0)
 				{
-					LOGERR("Error decoding stream.");
+					BS_LOG(Error, Audio, "Error decoding stream.");
 					return;
 				}
 				else

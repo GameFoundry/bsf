@@ -66,7 +66,7 @@ namespace bs { namespace ct
 				auto iterFind = mNodeTypes.find(nodeId);
 				if (iterFind == mNodeTypes.end())
 				{
-					LOGERR("Cannot find render compositor node of type \"" + String(nodeId.c_str()) + "\".");
+					BS_LOG(Error, Renderer, "Cannot find render compositor node of type \"{0}\".", String(nodeId.c_str()));
 					return false;
 				}
 
@@ -122,9 +122,9 @@ namespace bs { namespace ct
 					// Check if invalid
 					if (curIdx == (UINT32)-1)
 					{
-						LOGERR("Render compositor nodes recursion detected. Node \"" + String(nodeId.c_str()) + "\" " +
-							"depends on node \"" + String(iterFind->first.c_str()) + "\" which is not available at " +
-							"this stage.");
+						BS_LOG(Error, Renderer, "Render compositor nodes recursion detected. Node \"{0}\" "
+							"depends on node \"{1}\" which is not available at this stage.", 
+							String(nodeId.c_str()), String(iterFind->first.c_str()));
 						return false;
 					}
 				}

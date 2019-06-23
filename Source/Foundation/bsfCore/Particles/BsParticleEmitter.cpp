@@ -760,7 +760,8 @@ namespace bs
 
 			if(!mMeshData)
 			{
-				LOGWRN_VERBOSE("Particle emitter mesh not created with CPU caching, performing an expensive GPU read.");
+				BS_LOG(Verbose, Particles, 
+					"Particle emitter mesh not created with CPU caching, performing an expensive GPU read.");
 
 				mMeshData = mesh->allocBuffer();
 				mesh->readData(mMeshData);
@@ -779,20 +780,22 @@ namespace bs
 		const VertexElement* positionElement = vertexDesc->getElement(VES_POSITION);
 		if(positionElement == nullptr)
 		{
-			LOGERR("Mesh particle emitter requires position vertex data to be present in the provided mesh data.");
+			BS_LOG(Error, Particles, 
+				"Mesh particle emitter requires position vertex data to be present in the provided mesh data.");
 			return false;
 		}
 
 		if(positionElement->getType() != VET_FLOAT3)
 		{
-			LOGERR("Mesh particle emitter requires position vertex data to use 3D vectors for individual elements.");
+			BS_LOG(Error, Particles, 
+				"Mesh particle emitter requires position vertex data to use 3D vectors for individual elements.");
 			return false;
 		}
 
 		if(!perVertex && (mMeshData->getNumIndices() % 3 != 0))
 		{
-			LOGERR("Unless using the per-vertex emission mode, mesh particle emitter requires the number of indices to be \
-				 divisible by three, using a triangle list layout.");
+			BS_LOG(Error, Particles, "Unless using the per-vertex emission mode, mesh particle emitter requires the number "
+				"of indices to be divisible by three, using a triangle list layout.");
 			return false;
 		}
 
@@ -803,20 +806,23 @@ namespace bs
 
 			if (blendIdxElement == nullptr || blendWeightElement == nullptr)
 			{
-				LOGERR("Skinned mesh particle emitter requires blend indices and blend weight data to be present in the \
-				provided mesh data.");
+				BS_LOG(Error, Particles, 
+					"Skinned mesh particle emitter requires blend indices and blend weight data to be present in the "
+					"provided mesh data.");
 				return false;
 			}
 
 			if (blendIdxElement->getType() != VET_UBYTE4)
 			{
-				LOGERR("Skinned mesh particle emitter requires blend indices to be a 4-byte encoded format.");
+				BS_LOG(Error, Particles, 
+					"Skinned mesh particle emitter requires blend indices to be a 4-byte encoded format.");
 				return false;
 			}
 
 			if (blendWeightElement->getType() != VET_FLOAT4)
 			{
-				LOGERR("Skinned mesh particle emitter requires blend weights to be a 4D vector format.");
+				BS_LOG(Error, Particles, 
+					"Skinned mesh particle emitter requires blend weights to be a 4D vector format.");
 				return false;
 			}
 		}

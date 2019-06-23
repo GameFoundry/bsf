@@ -239,7 +239,7 @@ namespace bs { namespace ct
 	{
 		if (mProperties.getNumSamples() > 1)
 		{
-			LOGERR("Multisampled textures cannot be accessed from the CPU directly.");
+			BS_LOG(Error, RenderBackend, "Multisampled textures cannot be accessed from the CPU directly.");
 			return;
 		}
 
@@ -255,7 +255,7 @@ namespace bs { namespace ct
 
 		if (mProperties.getNumSamples() > 1)
 		{
-			LOGERR("Multisampled textures cannot be accessed from the CPU directly.");
+			BS_LOG(Error, RenderBackend, "Multisampled textures cannot be accessed from the CPU directly.");
 			return;
 		}
 
@@ -264,7 +264,7 @@ namespace bs { namespace ct
 
 		if (face > 0 && mProperties.getTextureType() == TEX_TYPE_3D)
 		{
-			LOGERR("3D texture arrays are not supported.");
+			BS_LOG(Error, RenderBackend, "3D texture arrays are not supported.");
 			return;
 		}
 

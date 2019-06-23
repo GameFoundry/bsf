@@ -46,8 +46,8 @@ namespace bs
 			else
 				file = result.errorFile;
 
-			LOGERR("Compilation error when importing shader \"" + file + "\":\n" + result.errorMessage + ". Location: " +
-				toString(result.errorLine) + " (" + toString(result.errorColumn) + ")");
+			BS_LOG(Error, BSLCompiler, "Compilation error when importing shader \"{0}\":\n{1}. Location: {2} ({3})", 
+				file, result.errorMessage, result.errorLine, result.errorColumn);
 		}
 
 		return result.shader;

@@ -84,7 +84,14 @@ namespace bs
 		static UUID generateRandom();
 	};
 
+	/** @cond SPECIALIZATIONS */
+
+	/** Converts a path to a string. */
+	BS_UTILITY_EXPORT inline String toString(const UUID& val) { return val.toString(); }
+	/** @endcond */
+
 	/** @} */
+
 }
 
 /** @cond STDLIB */

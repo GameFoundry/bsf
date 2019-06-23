@@ -192,7 +192,7 @@ namespace bs
 		UINT32 totalNumElements = width * height * depth;
 		if (numElements != totalNumElements)
 		{
-			LOGERR("Unable to set colors, invalid array size.");
+			BS_LOG(Error, PixelUtility, "Unable to set colors, invalid array size.");
 			return;
 		}
 

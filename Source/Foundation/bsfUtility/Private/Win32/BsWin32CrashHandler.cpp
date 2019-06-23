@@ -132,7 +132,7 @@ namespace bs
 				Path filePath = lineData.FileName;
 
 				outputStream << StringUtil::format("0x{0} File[{1}:{2} ({3})]", addressString, 
-					filePath.getFilename(), lineData.LineNumber, column);
+					filePath.getFilename(), (UINT32)lineData.LineNumber, (UINT32)column);
 			}
 			else
 			{

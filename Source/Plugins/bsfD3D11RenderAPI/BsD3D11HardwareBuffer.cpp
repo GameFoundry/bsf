@@ -188,10 +188,10 @@ namespace bs { namespace ct
 			}
 
 			if(D3D11Mappings::isMappingRead(mapType) && (mDesc.CPUAccessFlags & D3D11_CPU_ACCESS_READ) == 0)
-				LOGERR("Trying to read a buffer, but buffer wasn't created with a read access flag.");
+				BS_LOG(Error, RenderBackend, "Trying to read a buffer, but buffer wasn't created with a read access flag.");
 
 			if(D3D11Mappings::isMappingWrite(mapType) && (mDesc.CPUAccessFlags & D3D11_CPU_ACCESS_WRITE) == 0)
-				LOGERR("Trying to write to a buffer, but buffer wasn't created with a write access flag.");
+				BS_LOG(Error, RenderBackend, "Trying to write to a buffer, but buffer wasn't created with a write access flag.");
 
 			D3D11_MAPPED_SUBRESOURCE mappedSubResource;
 			mappedSubResource.pData = nullptr;
@@ -343,8 +343,6 @@ namespace bs { namespace ct
 			}
 		}
 		else
-		{
-			LOGERR("Trying to write into a buffer with unsupported usage: " + toString(mDesc.Usage));
-		}
+			BS_LOG(Error, RenderBackend, "Trying to write into a buffer with unsupported usage: {0}", mDesc.Usage);
 	}
 }}
