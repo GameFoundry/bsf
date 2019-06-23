@@ -65,7 +65,7 @@ namespace bs { namespace ct
 				errorCode = glGetError();
 			}
 
-			gDebug().logWarning(errorOutput.str());
+			BS_LOG(Warning, RenderBackend, errorOutput.str());
 		}
 	}
 
