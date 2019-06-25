@@ -158,6 +158,9 @@ namespace bs
 		/** Assigns a CALayer to the windows' view, and enables layer backing on the view. */
 		void _setLayer(void* layer);
 
+		/** Returns the assigned CALayer to the window view. */
+		void* _getLayer() const;
+
 		/** Returns internal private data for use by friends. */
 		Pimpl* _getPrivateData() const { return m; }
 

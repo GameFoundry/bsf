@@ -912,7 +912,13 @@ namespace bs
 
 	void CocoaWindow::_setLayer(void* layer)
 	{
-		[m->view setWantsLayer:TRUE];
 		[m->view setLayer:(__bridge CALayer*)layer];
+		[m->view setWantsLayer:TRUE];
+	}
+
+	void* CocoaWindow::_getLayer() const
+	{
+		CALayer* layer = m->view.layer;
+		return (__bridge void *)layer;
 	}
 }

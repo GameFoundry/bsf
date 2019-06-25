@@ -68,6 +68,9 @@ namespace bs
 		if(props.isHidden)
 			mWindow->hide();
 
+		CAMetalLayer* layer = [[CAMetalLayer alloc] init];
+		mWindow->_setLayer((__bridge void *)layer);
+
 		{
 			ScopedSpinLock lock(getCore()->mLock);
 			getCore()->mSyncedProperties = props;
@@ -429,15 +432,12 @@ namespace bs
 				return;
 			}
 
-			CAMetalLayer* layer = [[CAMetalLayer alloc] init];
-			window->_setLayer((__bridge void *)layer);
-
 			// Create Vulkan surface
 			VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo;
 			surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
 			surfaceCreateInfo.pNext = nullptr;
 			surfaceCreateInfo.flags = 0;
-			surfaceCreateInfo.pView = (__bridge const void *)(layer);
+			surfaceCreateInfo.pView = window->_getLayer();
 
 			VkResult result = vkCreateMacOSSurfaceMVK(mRenderAPI._getInstance(), &surfaceCreateInfo,
 					bs::ct::gVulkanAllocator, &mSurface);
