@@ -292,7 +292,7 @@ namespace bs
 			gCoreThread().queueCommand(std::bind(&ct::RenderWindowManager::_update, ct::RenderWindowManager::instancePtr()), CTQF_InternalQueue);
 
 			gCoreThread().update(); 
-			gCoreThread().submitAll(); 
+			gCoreThread().submitAll();
 
 			gCoreThread().queueCommand(std::bind(&CoreApplication::frameRenderingFinishedCallback, this), CTQF_InternalQueue);
 
@@ -365,15 +365,19 @@ namespace bs
 
 	void CoreApplication::beginCoreProfiling()
 	{
+#if !BS_FORCE_SINGLETHREADED_RENDERING
 		gProfilerCPU().beginThread("Core");
+#endif
 	}
 
 	void CoreApplication::endCoreProfiling()
 	{
 		ProfilerGPU::instance()._update();
 
+#if !BS_FORCE_SINGLETHREADED_RENDERING
 		gProfilerCPU().endThread();
 		gProfiler()._updateCore();
+#endif
 	}
 
 	void* CoreApplication::loadPlugin(const String& pluginName, DynLib** library, void* passThrough)

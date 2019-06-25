@@ -258,7 +258,9 @@ namespace bs
 
 	AsyncOp CoreThread::queueReturnCommand(std::function<void(AsyncOp&)> commandCallback, CoreThreadQueueFlags flags)
 	{
+#if !BS_FORCE_SINGLETHREADED_RENDERING
 		assert(BS_THREAD_CURRENT_ID != getCoreThreadId() && "Cannot queue commands on the core thread for the core thread");
+#endif
 
 		if (!flags.isSet(CTQF_InternalQueue))
 			return getQueue()->queueReturn(commandCallback);
@@ -291,7 +293,9 @@ namespace bs
 
 	void CoreThread::queueCommand(std::function<void()> commandCallback, CoreThreadQueueFlags flags)
 	{
+#if !BS_FORCE_SINGLETHREADED_RENDERING
 		assert(BS_THREAD_CURRENT_ID != getCoreThreadId() && "Cannot queue commands on the core thread for the core thread");
+#endif
 
 		if (!flags.isSet(CTQF_InternalQueue))
 			getQueue()->queue(commandCallback);

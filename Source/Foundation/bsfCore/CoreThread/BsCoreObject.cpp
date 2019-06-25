@@ -41,7 +41,9 @@ namespace bs
 
 		if(requiresInitOnCoreThread())
 		{
+#if !BS_FORCE_SINGLETHREADED_RENDERING
 			assert(BS_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId() && "Cannot destroy sim thead object from core thread.");
+#endif
 
 			// This will only destroy the ct::CoreObject if this was the last reference
 			queueDestroyGpuCommand(mCoreSpecific);
@@ -61,7 +63,9 @@ namespace bs
 			{
 				mCoreSpecific->setScheduledToBeInitialized(true);
 
+#if !BS_FORCE_SINGLETHREADED_RENDERING
 				assert(BS_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId() && "Cannot initialize sim thread object from core thread.");
+#endif
 
 				queueInitializeGpuCommand(mCoreSpecific);
 			}
