@@ -181,7 +181,7 @@ namespace bs
 		if (subresourceIdx >= (UINT32)mCPUSubresourceData.size())
 		{
 			BS_LOG(Error, Texture, "Invalid subresource index: {0}. Supported range: 0 .. {1}",
-				subresourceIdx, mCPUSubresourceData.size());
+				subresourceIdx, (UINT32)mCPUSubresourceData.size());
 			return;
 		}
 
@@ -232,7 +232,7 @@ namespace bs
 		if (subresourceIdx >= (UINT32)mCPUSubresourceData.size())
 		{
 			BS_LOG(Error, Texture, "Invalid subresource index: {0}. Supported range: 0 .. {1}",
-				subresourceIdx, mCPUSubresourceData.size());
+				subresourceIdx, (UINT32)mCPUSubresourceData.size());
 			return;
 		}
 

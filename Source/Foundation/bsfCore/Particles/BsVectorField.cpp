@@ -29,7 +29,7 @@ namespace bs
 		if(count != (UINT32)values.size())
 		{
 			LOGWRN(StringUtil::format("Number of values provided to the vector field does not match the expected number. \
-				Expected: {0}. Got: {1}.", count, values.size()));
+				Expected: {0}. Got: {1}.", count, (UINT32)values.size()));
 		}
 
 		const UINT32 valuesToCopy = std::min(count, (UINT32)values.size());
