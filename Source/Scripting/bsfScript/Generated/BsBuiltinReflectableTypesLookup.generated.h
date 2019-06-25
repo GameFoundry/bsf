@@ -4,6 +4,8 @@
 
 #include "Serialization/BsBuiltinReflectableTypesLookup.h"
 #include "Reflection/BsRTTIType.h"
+#include "../../../Foundation/bsfCore/Animation/BsSkeleton.h"
+#include "BsScriptSkeleton.generated.h"
 #include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
 #include "BsScriptAmbientOcclusionSettings.generated.h"
 #include "../../../Foundation/bsfCore/Particles/BsParticleEvolver.h"
@@ -20,8 +22,6 @@
 #include "BsScriptBloomSettings.generated.h"
 #include "../../../Foundation/bsfCore/Animation/BsMorphShapes.h"
 #include "BsScriptMorphShapes.generated.h"
-#include "../../../Foundation/bsfCore/Animation/BsSkeleton.h"
-#include "BsScriptSkeleton.generated.h"
 #include "../../../Foundation/bsfCore/Text/BsFont.h"
 #include "BsScriptFontBitmap.generated.h"
 #include "../../../Foundation/bsfCore/Animation/BsMorphShapes.h"
@@ -140,6 +140,7 @@
 namespace bs
 {
 	LOOKUP_BEGIN(BuiltinReflectableTypes)
+		ADD_ENTRY(Skeleton, ScriptSkeleton)
 		ADD_ENTRY(AmbientOcclusionSettings, ScriptAmbientOcclusionSettings)
 		ADD_ENTRY(ParticleEvolver, ScriptParticleEvolver)
 		ADD_ENTRY(RenderTexture, ScriptRenderTexture)
@@ -149,7 +150,6 @@ namespace bs
 		ADD_ENTRY(ParticleEmitterStaticMeshShape, ScriptParticleEmitterStaticMeshShape)
 		ADD_ENTRY(BloomSettings, ScriptBloomSettings)
 		ADD_ENTRY(MorphShapes, ScriptMorphShapes)
-		ADD_ENTRY(Skeleton, ScriptSkeleton)
 		ADD_ENTRY(FontBitmap, ScriptFontBitmap)
 		ADD_ENTRY(MorphShape, ScriptMorphShape)
 		ADD_ENTRY(MorphChannel, ScriptMorphChannel)

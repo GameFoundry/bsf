@@ -44,21 +44,6 @@
 			<doc>Number of samples per second the animation clip curves were sampled at. This value is not used by the animation clip or curves directly since unevenly spaced keyframes are supported. But it can be of value when determining the original sample rate of an imported animation or similar.</doc>
 		</property>
 	</class>
-	<enum native="EulerAngleOrder" script="EulerAngleOrder">
-		<doc>Values that represent in which order are euler angles applied when used in transformations.</doc>
-		<enumentry native="XYZ" script="XYZ">
-		</enumentry>
-		<enumentry native="XZY" script="XZY">
-		</enumentry>
-		<enumentry native="YXZ" script="YXZ">
-		</enumentry>
-		<enumentry native="YZX" script="YZX">
-		</enumentry>
-		<enumentry native="ZXY" script="ZXY">
-		</enumentry>
-		<enumentry native="ZYX" script="ZYX">
-		</enumentry>
-	</enum>
 	<struct native="VECTOR_FIELD_DESC" script="VectorFieldOptions">
 		<doc>Descriptor structure used for initialization of a VectorField.</doc>
 		<ctor>
@@ -94,6 +79,105 @@
 			<doc>32-bit indices.</doc>
 		</enumentry>
 	</enum>
+	<enum native="EulerAngleOrder" script="EulerAngleOrder">
+		<doc>Values that represent in which order are euler angles applied when used in transformations.</doc>
+		<enumentry native="XYZ" script="XYZ">
+		</enumentry>
+		<enumentry native="XZY" script="XZY">
+		</enumentry>
+		<enumentry native="YXZ" script="YXZ">
+		</enumentry>
+		<enumentry native="YZX" script="YZX">
+		</enumentry>
+		<enumentry native="ZXY" script="ZXY">
+		</enumentry>
+		<enumentry native="ZYX" script="ZYX">
+		</enumentry>
+	</enum>
+	<struct native="BlendClipInfo" script="BlendClipInfo">
+		<doc>Represents an animation clip used in 1D blending. Each clip has a position on the number line.</doc>
+		<ctor>
+		</ctor>
+		<field name="clip" type="RRef&lt;AnimationClip&gt;">
+		</field>
+		<field name="position" type="float">
+		</field>
+	</struct>
+	<struct native="KeyframeRef" script="KeyframeRef">
+		<ctor>
+		</ctor>
+		<ctor>
+			<param name="curveIdx" type="int">
+			</param>
+			<param name="keyIdx" type="int">
+			</param>
+		</ctor>
+		<field name="curveIdx" type="int">
+		</field>
+		<field name="keyIdx" type="int">
+		</field>
+	</struct>
+	<struct native="Vector3I" script="Vector3I">
+		<doc>A three dimensional vector with integer coordinates.</doc>
+		<ctor>
+		</ctor>
+		<ctor>
+			<param name="x" type="int">
+			</param>
+			<param name="y" type="int">
+			</param>
+			<param name="z" type="int">
+			</param>
+		</ctor>
+		<field name="x" type="int">
+		</field>
+		<field name="y" type="int">
+		</field>
+		<field name="z" type="int">
+		</field>
+	</struct>
+	<enum native="LogVerbosity" script="LogVerbosity">
+		<doc>Represents verbosity level at which a specific log message will be displayed.</doc>
+		<enumentry native="Fatal" script="Fatal">
+			<doc>Fatal error happened that application cannot recover from and will crash.</doc>
+		</enumentry>
+		<enumentry native="Error" script="Error">
+			<doc>An error happened that will not result in an immediate crash but may cause serious problems.</doc>
+		</enumentry>
+		<enumentry native="Warning" script="Warning">
+			<doc>Something went wrong but the application will not crash, although invalid behaviour might be observed.</doc>
+		</enumentry>
+		<enumentry native="Info" script="Info">
+			<doc>An informational message will be logged, can be used for debugging and tracing.</doc>
+		</enumentry>
+		<enumentry native="Log" script="Log">
+			<doc>Same as Info, but the message will only be logged to the log file and not any console output.</doc>
+		</enumentry>
+		<enumentry native="Verbose" script="Verbose">
+			<doc>Messages that can provide additional information and warnings, but are too spammy to be displayed under normal  circumstances.</doc>
+		</enumentry>
+		<enumentry native="VeryVerbose" script="VeryVerbose">
+			<doc>Same as Verbose, but for even spammier messages.</doc>
+		</enumentry>
+		<enumentry native="Any" script="Any">
+			<doc>Meta-type encompassing all verbosity types. Should not be used for logging directly.</doc>
+		</enumentry>
+	</enum>
+	<class native="Skeleton" script="Skeleton">
+		<doc>Contains information about bones required for skeletal animation.</doc>
+		<method native="getBoneInfo" script="GetBoneInfo" static="false">
+			<doc>Returns information about a bone at the provided index.</doc>
+			<param name="boneIdx" type="int">
+				<doc>Index of the bone to retrieve information for.</doc>
+			</param>
+			<returns type="BoneInfo">
+				<doc>Information about the bone at the specified index.</doc>
+			</returns>
+		</method>
+		<property name="NumBones" type="int" getter="getNumBones" setter="" static="false">
+			<doc>Returns the total number of bones in the skeleton.</doc>
+		</property>
+	</class>
 	<struct native="START_UP_DESC" script="StartUpDesc">
 		<doc>Structure containing parameters for starting the application.</doc>
 		<ctor>
@@ -385,48 +469,6 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 			</returns>
 		</method>
 	</class>
-	<struct native="BlendClipInfo" script="BlendClipInfo">
-		<doc>Represents an animation clip used in 1D blending. Each clip has a position on the number line.</doc>
-		<ctor>
-		</ctor>
-		<field name="clip" type="RRef&lt;AnimationClip&gt;">
-		</field>
-		<field name="position" type="float">
-		</field>
-	</struct>
-	<struct native="KeyframeRef" script="KeyframeRef">
-		<ctor>
-		</ctor>
-		<ctor>
-			<param name="curveIdx" type="int">
-			</param>
-			<param name="keyIdx" type="int">
-			</param>
-		</ctor>
-		<field name="curveIdx" type="int">
-		</field>
-		<field name="keyIdx" type="int">
-		</field>
-	</struct>
-	<struct native="Vector3I" script="Vector3I">
-		<doc>A three dimensional vector with integer coordinates.</doc>
-		<ctor>
-		</ctor>
-		<ctor>
-			<param name="x" type="int">
-			</param>
-			<param name="y" type="int">
-			</param>
-			<param name="z" type="int">
-			</param>
-		</ctor>
-		<field name="x" type="int">
-		</field>
-		<field name="y" type="int">
-		</field>
-		<field name="z" type="int">
-		</field>
-	</struct>
 	<class native="CCamera" script="Camera">
 		<doc>Camera determines how is world geometry projected onto a 2D surface. You may position and orient it in space, set options like aspect ratio and field or view and it outputs view and projection matrices required for rendering.</doc>
 		<method native="worldToScreenPoint" script="WorldToScreenPoint" static="false">
@@ -1236,21 +1278,6 @@ Does not account for gravity, you must apply it manually.</doc>
 			<doc>Returns a list of all morph channels in the morph animation.</doc>
 		</property>
 	</class>
-	<class native="Skeleton" script="Skeleton">
-		<doc>Contains information about bones required for skeletal animation.</doc>
-		<method native="getBoneInfo" script="GetBoneInfo" static="false">
-			<doc>Returns information about a bone at the provided index.</doc>
-			<param name="boneIdx" type="int">
-				<doc>Index of the bone to retrieve information for.</doc>
-			</param>
-			<returns type="BoneInfo">
-				<doc>Information about the bone at the specified index.</doc>
-			</returns>
-		</method>
-		<property name="NumBones" type="int" getter="getNumBones" setter="" static="false">
-			<doc>Returns the total number of bones in the skeleton.</doc>
-		</property>
-	</class>
 	<struct native="AnimationClipState" script="AnimationClipState">
 		<doc>Contains information about a currently playing animation clip.</doc>
 		<ctor>
@@ -1295,40 +1322,6 @@ Does not account for gravity, you must apply it manually.</doc>
 		<field name="botLeftClip" type="RRef&lt;AnimationClip&gt;">
 		</field>
 		<field name="botRightClip" type="RRef&lt;AnimationClip&gt;">
-		</field>
-	</struct>
-	<struct native="BoneWeight" script="BoneWeight">
-		<doc>Contains per-vertex bone weights and indexes used for skinning, for up to four bones.</doc>
-		<field name="index0" type="int">
-		</field>
-		<field name="index1" type="int">
-		</field>
-		<field name="index2" type="int">
-		</field>
-		<field name="index3" type="int">
-		</field>
-		<field name="weight0" type="float">
-		</field>
-		<field name="weight1" type="float">
-		</field>
-		<field name="weight2" type="float">
-		</field>
-		<field name="weight3" type="float">
-		</field>
-	</struct>
-	<struct native="ContactPoint" script="ContactPoint">
-		<doc>Information about a single contact point during physics collision.</doc>
-		<field name="position" type="Vector3">
-			<doc>Contact point in world space.</doc>
-		</field>
-		<field name="normal" type="Vector3">
-			<doc>Normal pointing from the second shape to the first shape.</doc>
-		</field>
-		<field name="impulse" type="float">
-			<doc>Impulse applied to the objects to keep them from penetrating. Divide by simulation step to get the force.</doc>
-		</field>
-		<field name="separation" type="float">
-			<doc>Determines how far are the objects. Negative value denotes penetration.</doc>
 		</field>
 	</struct>
 	<class native="FontBitmap" script="FontBitmap">
@@ -2627,6 +2620,40 @@ Whether or not an audio source is spatial is controlled by the assigned AudioCli
 			<doc>Determines the name of the bone the component is referencing.</doc>
 		</property>
 	</class>
+	<struct native="BoneWeight" script="BoneWeight">
+		<doc>Contains per-vertex bone weights and indexes used for skinning, for up to four bones.</doc>
+		<field name="index0" type="int">
+		</field>
+		<field name="index1" type="int">
+		</field>
+		<field name="index2" type="int">
+		</field>
+		<field name="index3" type="int">
+		</field>
+		<field name="weight0" type="float">
+		</field>
+		<field name="weight1" type="float">
+		</field>
+		<field name="weight2" type="float">
+		</field>
+		<field name="weight3" type="float">
+		</field>
+	</struct>
+	<struct native="ContactPoint" script="ContactPoint">
+		<doc>Information about a single contact point during physics collision.</doc>
+		<field name="position" type="Vector3">
+			<doc>Contact point in world space.</doc>
+		</field>
+		<field name="normal" type="Vector3">
+			<doc>Normal pointing from the second shape to the first shape.</doc>
+		</field>
+		<field name="impulse" type="float">
+			<doc>Impulse applied to the objects to keep them from penetrating. Divide by simulation step to get the force.</doc>
+		</field>
+		<field name="separation" type="float">
+			<doc>Determines how far are the objects. Negative value denotes penetration.</doc>
+		</field>
+	</struct>
 	<class native="ParticleGravity" script="ParticleGravity">
 		<doc>Applies gravity to the particles.</doc>
 		<ctor>
@@ -3649,7 +3676,7 @@ Angular degrees of freedom are partitioned as twist (around X axis) and swing (a
 			<doc>Determines the material to use when rendering the decal.</doc>
 		</property>
 		<property name="Size" type="Vector2" getter="getSize" setter="setSize" static="false">
-			<doc>Size of the decal in world space units.</doc>
+			<doc>Width and height of the decal.</doc>
 		</property>
 		<property name="MaxDistance" type="float" getter="getMaxDistance" setter="setMaxDistance" static="false">
 			<doc>Determines the maximum distance (from its origin) at which the decal is displayed.</doc>

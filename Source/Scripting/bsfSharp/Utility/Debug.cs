@@ -16,14 +16,6 @@ namespace bs
      */
 
     /// <summary>
-    /// Possible types of debug messages.
-    /// </summary>
-    public enum DebugMessageType // Note: Must match C++ enum DebugChannel
-    {
-        Info, Warning, Error, CompilerWarning, CompilerError
-    }
-
-    /// <summary>
     /// Contains data for a single entry in a call stack associated with a log entry.
     /// </summary>
     public class CallStackEntry
@@ -49,8 +41,9 @@ namespace bs
     [StructLayout(LayoutKind.Sequential)]
     public struct LogEntry // Note: Must match C++ struct ScriptLogEntryData
     {
-        public DebugMessageType type;
         public string message;
+        public LogVerbosity verbosity;
+        public int category;
     }
 
     /// <summary>
@@ -61,7 +54,7 @@ namespace bs
         /// <summary>
         /// Triggered when a new message is added to the debug log.
         /// </summary>
-        public static Action<DebugMessageType, string> OnAdded;
+        public static Action<string, LogVerbosity, int> OnAdded;
 
         /// <summary>
         /// Returns a list of all messages in the debug log.
@@ -75,68 +68,66 @@ namespace bs
         /// Logs a new informative message to the global debug log.
         /// </summary>
         /// <param name="message">Message to log.</param>
-        public static void Log(object message)
+        /// <param name="category">Optional index of the category to group the message under.</param>
+        public static void Log(object message, int category = 0)
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(message.ToString());
             sb.Append(GetStackTrace(1));
 
-            Internal_Log(sb.ToString());
+            Internal_Log(sb.ToString(), category);
         }
 
         /// <summary>
         /// Logs a new warning message to the global debug log.
         /// </summary>
         /// <param name="message">Message to log.</param>
-        public static void LogWarning(object message)
+        /// <param name="category">Optional index of the category to group the message under.</param>
+        public static void LogWarning(object message, int category = 0)
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(message.ToString());
             sb.Append(GetStackTrace(1));
 
-            Internal_LogWarning(sb.ToString());
+            Internal_LogWarning(sb.ToString(), category);
         }
 
         /// <summary>
         /// Logs a new error message to the global debug log.
         /// </summary>
         /// <param name="message">Message to log.</param>
-        public static void LogError(object message)
+        /// <param name="category">Optional index of the category to group the message under.</param>
+        public static void LogError(object message, int category = 0)
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(message.ToString());
             sb.Append(GetStackTrace(1));
 
-            Internal_LogError(sb.ToString());
+            Internal_LogError(sb.ToString(), category);
         }
 
         /// <summary>
         /// Logs a new message to the global debug log using the provided type.
         /// </summary>
         /// <param name="message">Message to log.</param>
-        /// <param name="type">Type of the message to log.</param>
-        internal static void LogMessage(object message, DebugMessageType type)
+        /// <param name="verbosity">Verbosity level defining message importance.</param>
+        /// <param name="category">Optional index of the category to group the message under.</param>
+        internal static void LogMessage(object message, LogVerbosity verbosity, int category = 0)
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(message.ToString());
 
-            Internal_LogMessage(sb.ToString(), type);
+            Internal_LogMessage(sb.ToString(), verbosity, category);
         }
 
         /// <summary>
-        /// Clears all messages from the debug log.
+        /// Clears all messages of the specified verbosity and/or category from the debug log.
         /// </summary>
-        internal static void Clear()
+        /// <param name="verbosity">Verbosity of the messages that should be cleared.</param>
+        /// <param name="category">Optional category of the messages to clear. If -1 all categories will be cleared.</param>
+        internal static void Clear(LogVerbosity verbosity = LogVerbosity.Any, int category = -1)
         {
-            Internal_Clear();
-        }
-
-        /// <summary>
-        /// Clears all messages of the specified type from the debug log.
-        /// </summary>
-        internal static void Clear(DebugMessageType type)
-        {
-            Internal_ClearType(type);
+            Internal_Clear(verbosity, category);
         }
 
         /// <summary>
@@ -274,31 +265,28 @@ namespace bs
         /// <summary>
         /// Triggered by the runtime when a new message is added to the debug log.
         /// </summary>
-        /// <param name="type">Type of the message that was added.</param>
         /// <param name="message">Text of the message.</param>
-        private static void Internal_OnAdded(DebugMessageType type, string message)
+        /// <param name="verbosity">Verbosity level defining message importance.</param>
+        /// <param name="category">Category of the sub-system reporting the message.</param>
+        private static void Internal_OnAdded(string message, LogVerbosity verbosity, int category)
         {
-            if (OnAdded != null)
-                OnAdded(type, message);
+            OnAdded?.Invoke(message, verbosity, category);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Internal_Log(string message);
+        internal static extern void Internal_Log(string message, int category);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Internal_LogWarning(string message);
+        internal static extern void Internal_LogWarning(string message, int category);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Internal_LogError(string message);
+        internal static extern void Internal_LogError(string message, int category);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Internal_LogMessage(string message, DebugMessageType type);
+        internal static extern void Internal_LogMessage(string message, LogVerbosity verbosity, int category);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Internal_Clear();
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Internal_ClearType(DebugMessageType type);
+        internal static extern void Internal_Clear(LogVerbosity verbosity, int category);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern LogEntry[] Internal_GetMessages();

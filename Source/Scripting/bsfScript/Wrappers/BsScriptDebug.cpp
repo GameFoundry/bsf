@@ -16,8 +16,9 @@ namespace bs
 	/**	C++ version of the managed LogEntry structure. */
 	struct ScriptLogEntryData
 	{
-		UINT32 type;
 		MonoString* message;
+		LogVerbosity verbosity;
+		UINT32 category;
 	};
 
 	ScriptDebug::ScriptDebug(MonoObject* instance)
@@ -31,10 +32,9 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_LogError", (void*)&ScriptDebug::internal_logError);
 		metaData.scriptClass->addInternalCall("Internal_LogMessage", (void*)&ScriptDebug::internal_logMessage);
 		metaData.scriptClass->addInternalCall("Internal_Clear", (void*)&ScriptDebug::internal_clear);
-		metaData.scriptClass->addInternalCall("Internal_ClearType", (void*)&ScriptDebug::internal_clearType);
 		metaData.scriptClass->addInternalCall("Internal_GetMessages", (void*)&ScriptDebug::internal_getMessages);
 
-		onAddedThunk = (OnAddedThunkDef)metaData.scriptClass->getMethod("Internal_OnAdded", 2)->getThunk();
+		onAddedThunk = (OnAddedThunkDef)metaData.scriptClass->getMethod("Internal_OnAdded", 3)->getThunk();
 	}
 
 	void ScriptDebug::startUp()
@@ -51,37 +51,32 @@ namespace bs
 	{
 		MonoString* message = MonoUtil::stringToMono(entry.getMessage());
 
-		MonoUtil::invokeThunk(onAddedThunk, entry.getChannel(), message);
+		MonoUtil::invokeThunk(onAddedThunk, message, (INT32)entry.getVerbosity(), entry.getCategory());
 	}
 
-	void ScriptDebug::internal_log(MonoString* message)
+	void ScriptDebug::internal_log(MonoString* message, UINT32 category)
 	{
-		gDebug().logDebug(MonoUtil::monoToString(message));
+		gDebug().log(MonoUtil::monoToString(message), LogVerbosity::Info, category);
 	}
 
-	void ScriptDebug::internal_logWarning(MonoString* message)
+	void ScriptDebug::internal_logWarning(MonoString* message, UINT32 category)
 	{
-		gDebug().logWarning(MonoUtil::monoToString(message));
+		gDebug().log(MonoUtil::monoToString(message), LogVerbosity::Warning, category);
 	}
 
-	void ScriptDebug::internal_logError(MonoString* message)
+	void ScriptDebug::internal_logError(MonoString* message, UINT32 category)
 	{
-		gDebug().logError(MonoUtil::monoToString(message));
+		gDebug().log(MonoUtil::monoToString(message), LogVerbosity::Error, category);
 	}
 
-	void ScriptDebug::internal_logMessage(MonoString* message, UINT32 type)
+	void ScriptDebug::internal_logMessage(MonoString* message, LogVerbosity type, UINT32 category)
 	{
-		gDebug().log(MonoUtil::monoToString(message), type);
+		gDebug().log(MonoUtil::monoToString(message), type, category);
 	}
 
-	void ScriptDebug::internal_clear()
+	void ScriptDebug::internal_clear(LogVerbosity verbosity, UINT32 category)
 	{
-		gDebug().getLog().clear();
-	}
-
-	void ScriptDebug::internal_clearType(UINT32 type)
-	{
-		gDebug().getLog().clear(type);
+		gDebug().getLog().clear(verbosity, category);
 	}
 
 	MonoArray* ScriptDebug::internal_getMessages()
@@ -94,7 +89,7 @@ namespace bs
 		{
 			MonoString* message = MonoUtil::stringToMono(entries[i].getMessage());
 
-			ScriptLogEntryData scriptEntry = { entries[i].getChannel(), message };
+			ScriptLogEntryData scriptEntry = { message, entries[i].getVerbosity(), entries[i].getCategory() };
 			output.set(i, scriptEntry);
 		}
 

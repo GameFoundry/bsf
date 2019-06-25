@@ -26,7 +26,7 @@ namespace bs
 			set { Internal_setMaterial(mCachedPtr, value); }
 		}
 
-		/// <summary>Size of the decal in world space units.</summary>
+		/// <summary>Width and height of the decal.</summary>
 		[ShowInInspector]
 		[NativeWrapper]
 		public Vector2 Size
