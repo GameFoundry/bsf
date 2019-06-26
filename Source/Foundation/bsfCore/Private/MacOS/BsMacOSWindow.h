@@ -15,7 +15,7 @@
 @class BSWindowListener;
 @class BSView;
 @class BSWindow;
-@class CAMetalLayer;
+@class CALayer;
 #endif
 
 namespace bs
@@ -59,6 +59,7 @@ namespace bs
 			BSView* view = nil;
 			BSWindowListener* responder = nil;
 			BSWindowDelegate* delegate = nil;
+            CALayer* layer = nil;
 			UINT32 numDropTargets = 0;
 			bool isModal = false;
 			NSUInteger style = 0;

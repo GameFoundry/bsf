@@ -697,6 +697,7 @@ namespace bs
         m->delegate = nil;
         m->responder = nil;
         m->view = nil;
+        m->layer = nil;
 
         bs_delete(m);
 	}
@@ -914,11 +915,12 @@ namespace bs
 	{
 		[m->view setLayer:(__bridge CALayer*)layer];
 		[m->view setWantsLayer:TRUE];
+        
+        m->layer = (__bridge CALayer*)layer;
 	}
 
 	void* CocoaWindow::_getLayer() const
 	{
-		CALayer* layer = m->view.layer;
-		return (__bridge void *)layer;
+		return (__bridge void *)m->layer;
 	}
 }
