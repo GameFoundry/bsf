@@ -178,8 +178,15 @@ namespace bs
 
 	void GUIElement::resetDimensions()
 	{
+		bool isFixedBefore = (mDimensions.flags & GUIDF_FixedWidth) != 0 && (mDimensions.flags & GUIDF_FixedHeight) != 0;
+
 		mDimensions = GUIDimensions::create();
 		mDimensions.updateWithStyle(mStyle);
+
+		bool isFixedAfter = (mDimensions.flags & GUIDF_FixedWidth) != 0 && (mDimensions.flags & GUIDF_FixedHeight) != 0;
+
+		if (isFixedBefore != isFixedAfter)
+			refreshChildUpdateParents();
 
 		_markLayoutAsDirty();
 	}
@@ -260,9 +267,16 @@ namespace bs
 		if(newStyle != mStyle)
 		{
 			mStyle = newStyle;
-			mDimensions.updateWithStyle(mStyle);
-			styleUpdated();
 
+			bool isFixedBefore = (mDimensions.flags & GUIDF_FixedWidth) != 0 && (mDimensions.flags & GUIDF_FixedHeight) != 0;
+
+			mDimensions.updateWithStyle(mStyle);
+
+			bool isFixedAfter = (mDimensions.flags & GUIDF_FixedWidth) != 0 && (mDimensions.flags & GUIDF_FixedHeight) != 0;
+			if (isFixedBefore != isFixedAfter)
+				refreshChildUpdateParents();
+
+			styleUpdated();
 			_markLayoutAsDirty();
 		}
 	}
