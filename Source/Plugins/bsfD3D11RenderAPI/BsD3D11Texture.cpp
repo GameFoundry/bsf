@@ -176,15 +176,23 @@ namespace bs { namespace ct
 			UINT8* data = (UINT8*)mapstagingbuffer(flags, face, mipLevel, rowPitch, slicePitch);
 			lockedArea.setExternalBuffer(data);
 
-			if (PixelUtil::isCompressed(mProperties.getFormat()))
+			PixelFormat format = mProperties.getFormat();
+			if (PixelUtil::isCompressed(format))
 			{
-				// Doesn't make sense to provide pitch values in pixels in this case
-				lockedArea.setRowPitch(0);
-				lockedArea.setSlicePitch(0);
+				Vector2I blockDim = PixelUtil::getBlockDimensions(format);
+				UINT32 blockSize = PixelUtil::getBlockSize(format);
+				UINT32 rowPixelSize = blockSize / blockDim.x;
+				UINT32 slicePixelSize = blockSize / (blockDim.x * blockDim.y);
+
+				assert(rowPitch % rowPixelSize == 0);
+				assert(slicePitch % slicePixelSize == 0);
+				
+				lockedArea.setRowPitch(rowPitch / rowPixelSize);
+				lockedArea.setSlicePitch(slicePitch / slicePixelSize);
 			}
 			else
 			{
-				UINT32 bytesPerPixel = PixelUtil::getNumElemBytes(mProperties.getFormat());
+				UINT32 bytesPerPixel = PixelUtil::getNumElemBytes(format);
 
 				lockedArea.setRowPitch(rowPitch / bytesPerPixel);
 				lockedArea.setSlicePitch(slicePitch / bytesPerPixel);

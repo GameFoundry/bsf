@@ -4,6 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "Image/BsPixelData.h"
+#include "Math/BsVector2I.h"
 
 namespace bs
 {
@@ -91,6 +92,18 @@ namespace bs
 
 		/**	Returns the size of a single pixel of the provided pixel format, in bytes. */
 		static UINT32 getNumElemBytes(PixelFormat format);
+
+		/** 
+		 * Returns the size of a single compressed block, in bytes. Returns pixel size if the format is not block 
+		 * compressed. 
+		 */
+		static UINT32 getBlockSize(PixelFormat format);
+
+		/** 
+		 * Returns the dimensions of a single compressed block, in number of pixels. Returns 1x1 for non-block-compressed
+		 * formats.
+		 */
+		static Vector2I getBlockDimensions(PixelFormat format);
 
 		/**	Returns the size of a single pixel of the provided pixel format, in bits. */
 		static UINT32 getNumElemBits(PixelFormat format);
