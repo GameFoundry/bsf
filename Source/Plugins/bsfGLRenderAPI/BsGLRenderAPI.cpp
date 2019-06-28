@@ -83,7 +83,8 @@ namespace bs { namespace ct
 		// Get our GLSupport
 		mGLSupport = ct::getGLSupport();
 
-		mColorWrite[0] = mColorWrite[1] = mColorWrite[2] = mColorWrite[3] = true;
+		for(UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
+			mColorWrite[i][0] = mColorWrite[i][1] = mColorWrite[i][2] = mColorWrite[i][3] = true;
 
 		mCurrentContext = 0;
 		mMainContext = 0;
@@ -283,21 +284,31 @@ namespace bs { namespace ct
 				// Alpha to coverage
 				setAlphaToCoverage(stateProps.getAlphaToCoverageEnabled());
 
-				// Blend states
-				// OpenGL doesn't allow us to specify blend state per render target, so we just use the first one.
-				if (stateProps.getBlendEnabled(0))
+				for(UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 				{
-					setSceneBlending(stateProps.getSrcBlend(0), stateProps.getDstBlend(0), stateProps.getAlphaSrcBlend(0),
-						stateProps.getAlphaDstBlend(0), stateProps.getBlendOperation(0), stateProps.getAlphaBlendOperation(0));
-				}
-				else
-				{
-					setSceneBlending(BF_ONE, BF_ZERO, BO_ADD);
+					// Blending
+					if (stateProps.getBlendEnabled(i))
+					{
+						setSceneBlending(i, 
+							stateProps.getSrcBlend(i), 
+							stateProps.getDstBlend(i), 
+							stateProps.getAlphaSrcBlend(i),
+							stateProps.getAlphaDstBlend(i), 
+							stateProps.getBlendOperation(i), 
+							stateProps.getAlphaBlendOperation(i));
+					}
+					else
+						setSceneBlending(i, BF_ONE, BF_ZERO, BO_ADD);
+
+					// Color write mask
+					UINT8 writeMask = stateProps.getRenderTargetWriteMask(i);
+					setColorBufferWriteEnabled(i, 
+						(writeMask & 0x1) != 0, 
+						(writeMask & 0x2) != 0, 
+						(writeMask & 0x4) != 0, 
+						(writeMask & 0x8) != 0);
 				}
 
-				// Color write mask
-				UINT8 writeMask = stateProps.getRenderTargetWriteMask(0);
-				setColorBufferWriteEnabled((writeMask & 0x1) != 0, (writeMask & 0x2) != 0, (writeMask & 0x4) != 0, (writeMask & 0x8) != 0);
 			}
 
 			// Rasterizer state
@@ -1384,7 +1395,21 @@ namespace bs { namespace ct
 		if(mActiveRenderTarget == nullptr)
 			return;
 
-		bool colorMask = !mColorWrite[0] || !mColorWrite[1] || !mColorWrite[2] || !mColorWrite[3]; 
+		UINT32 numColorBuffers = 1;
+		bool colorMasks[BS_MAX_MULTIPLE_RENDER_TARGETS] = { 0 };
+		if(!mActiveRenderTarget->getProperties().isWindow)
+		{
+			RenderTexture* renderTexture = static_cast<RenderTexture*>(mActiveRenderTarget.get());
+
+			for(UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
+			{
+				SPtr<Texture> texture = renderTexture->getColorTexture(i);
+				if(texture)
+					colorMasks[i] = !mColorWrite[i][0] || !mColorWrite[i][1] || !mColorWrite[i][2] || !mColorWrite[i][3];
+			}
+		}
+		else
+			colorMasks[0] = !mColorWrite[0][0] || !mColorWrite[0][1] || !mColorWrite[0][2] || !mColorWrite[0][3];
 
 		// Disable scissor test as we want to clear the entire render surface
 		GLboolean scissorTestEnabled = glIsEnabled(GL_SCISSOR_TEST);
@@ -1413,10 +1438,13 @@ namespace bs { namespace ct
 		if (buffers & FBT_COLOR)
 		{
 			// Enable buffer for writing if it isn't
-			if (colorMask)
+			for(UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 			{
-				glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-				BS_CHECK_GL_ERROR();
+				if (colorMasks[i])
+				{
+					glColorMaski(i, GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+					BS_CHECK_GL_ERROR();
+				}
 			}
 		}
 		if (buffers & FBT_DEPTH)
@@ -1528,10 +1556,16 @@ namespace bs { namespace ct
 			BS_CHECK_GL_ERROR();
 		}
 
-		if (colorMask && (buffers & FBT_COLOR))
+		if ((buffers & FBT_COLOR))
 		{
-			glColorMask(mColorWrite[0], mColorWrite[1], mColorWrite[2], mColorWrite[3]);
-			BS_CHECK_GL_ERROR();
+			for(UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
+			{
+				if(colorMasks[i])
+				{
+					glColorMaski(i, mColorWrite[i][0], mColorWrite[i][1], mColorWrite[i][2], mColorWrite[i][3]);
+					BS_CHECK_GL_ERROR();
+				}
+			}
 		}
 
 		if (buffers & FBT_STENCIL)
@@ -1581,21 +1615,21 @@ namespace bs { namespace ct
 		BS_CHECK_GL_ERROR();
 	}
 
-	void GLRenderAPI::setSceneBlending(BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op)
+	void GLRenderAPI::setSceneBlending(UINT32 target, BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op)
 	{
 		GLint sourceBlend = getBlendMode(sourceFactor);
 		GLint destBlend = getBlendMode(destFactor);
 		if(sourceFactor == BF_ONE && destFactor == BF_ZERO)
 		{
-			glDisable(GL_BLEND);
+			glDisablei(GL_BLEND, target);
 			BS_CHECK_GL_ERROR();
 		}
 		else
 		{
-			glEnable(GL_BLEND);
+			glEnablei(GL_BLEND, target);
 			BS_CHECK_GL_ERROR();
 
-			glBlendFunc(sourceBlend, destBlend);
+			glBlendFunci(target, sourceBlend, destBlend);
 			BS_CHECK_GL_ERROR();
 		}
 
@@ -1619,11 +1653,11 @@ namespace bs { namespace ct
 			break;
 		}
 
-		glBlendEquation(func);
+		glBlendEquationi(target, func);
 		BS_CHECK_GL_ERROR();
 	}
 
-	void GLRenderAPI::setSceneBlending(BlendFactor sourceFactor, BlendFactor destFactor, 
+	void GLRenderAPI::setSceneBlending(UINT32 target, BlendFactor sourceFactor, BlendFactor destFactor, 
 		BlendFactor sourceFactorAlpha, BlendFactor destFactorAlpha, BlendOperation op, BlendOperation alphaOp)
 	{
 		GLint sourceBlend = getBlendMode(sourceFactor);
@@ -1633,15 +1667,15 @@ namespace bs { namespace ct
 
 		if(sourceFactor == BF_ONE && destFactor == BF_ZERO && sourceFactorAlpha == BF_ONE && destFactorAlpha == BF_ZERO)
 		{
-			glDisable(GL_BLEND);
+			glDisablei(GL_BLEND, target);
 			BS_CHECK_GL_ERROR();
 		}
 		else
 		{
-			glEnable(GL_BLEND);
+			glEnablei(GL_BLEND, target);
 			BS_CHECK_GL_ERROR();
 
-			glBlendFuncSeparate(sourceBlend, destBlend, sourceBlendAlpha, destBlendAlpha);
+			glBlendFuncSeparatei(target, sourceBlend, destBlend, sourceBlendAlpha, destBlendAlpha);
 			BS_CHECK_GL_ERROR();
 		}
 
@@ -1685,7 +1719,7 @@ namespace bs { namespace ct
 			break;
 		}
 
-		glBlendEquationSeparate(func, alphaFunc);
+		glBlendEquationSeparatei(target, func, alphaFunc);
 		BS_CHECK_GL_ERROR();
 	}
 
@@ -1879,15 +1913,18 @@ namespace bs { namespace ct
 		}
 	}
 
-	void GLRenderAPI::setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
+	void GLRenderAPI::setColorBufferWriteEnabled(UINT32 target, bool red, bool green, bool blue, bool alpha)
 	{
-		glColorMask(red, green, blue, alpha);
+		glColorMaski(target, red, green, blue, alpha);
 		BS_CHECK_GL_ERROR();
 
-		mColorWrite[0] = red;
-		mColorWrite[1] = blue;
-		mColorWrite[2] = green;
-		mColorWrite[3] = alpha;
+		if(target < BS_MAX_MULTIPLE_RENDER_TARGETS)
+		{
+			mColorWrite[target][0] = red;
+			mColorWrite[target][1] = blue;
+			mColorWrite[target][2] = green;
+			mColorWrite[target][3] = alpha;
+		}
 	}
 
 	void GLRenderAPI::setPolygonMode(PolygonMode level)
@@ -2398,7 +2435,8 @@ namespace bs { namespace ct
 		glDepthMask(mDepthWrite);
 		BS_CHECK_GL_ERROR();
 
-		glColorMask(mColorWrite[0], mColorWrite[1], mColorWrite[2], mColorWrite[3]);
+		for(UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
+			glColorMask(mColorWrite[i][0], mColorWrite[i][1], mColorWrite[i][2], mColorWrite[i][3]);
 		BS_CHECK_GL_ERROR();
 
 		glStencilMask(mStencilWriteMask);

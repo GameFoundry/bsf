@@ -221,7 +221,7 @@ namespace bs { namespace ct
 		 * Sets up blending mode that allows you to combine new pixels with pixels already in the render target.
 		 * Final pixel value = (renderTargetPixel * sourceFactor) op (pixel * destFactor).
 		 */
-		void setSceneBlending(BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op);
+		void setSceneBlending(UINT32 target, BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op);
 
 		/**
 		 * Sets up blending mode that allows you to combine new pixels with pixels already in the render target.
@@ -229,7 +229,7 @@ namespace bs { namespace ct
 		 *	
 		 * Final pixel value = (renderTargetPixel * sourceFactor) op (pixel * destFactor). (And the same for alpha)
 		 */
-		void setSceneBlending(BlendFactor sourceFactor, BlendFactor destFactor, BlendFactor sourceFactorAlpha, 
+		void setSceneBlending(UINT32 target, BlendFactor sourceFactor, BlendFactor destFactor, BlendFactor sourceFactorAlpha, 
 			BlendFactor destFactorAlpha, BlendOperation op, BlendOperation alphaOp);
 
 		/**
@@ -240,7 +240,7 @@ namespace bs { namespace ct
 		void setAlphaToCoverage(bool enabled);
 
 		/**	Enables or disables writing to certain color channels of the render target. */
-		void setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
+		void setColorBufferWriteEnabled(UINT32 target, bool red, bool green, bool blue, bool alpha);
 
 		/************************************************************************/
 		/* 								Rasterizer states                  		*/
@@ -386,7 +386,7 @@ namespace bs { namespace ct
 		UINT32 mNumTextureUnits = 0;
 		TextureInfo* mTextureInfos = nullptr;
 		bool mDepthWrite = true;
-		bool mColorWrite[4];
+		bool mColorWrite[BS_MAX_MULTIPLE_RENDER_TARGETS][4];
 
 		GLSupport* mGLSupport;
 		bool mGLInitialised;
