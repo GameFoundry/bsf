@@ -239,7 +239,7 @@ namespace bs { namespace ct
 			return VK_IMAGE_LAYOUT_GENERAL;
 		
 		if ((mUsage & TU_RENDERTARGET) != 0)
-			return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		else if ((mUsage & TU_DEPTHSTENCIL) != 0)
 			return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		else
