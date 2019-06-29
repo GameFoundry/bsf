@@ -342,7 +342,7 @@ namespace bs { namespace ct
 
 			if (data.getWidth() != rowPitchInPixels)
 			{
-				glPixelStorei(GL_PACK_ROW_LENGTH, rowPitchInPixels)
+				glPixelStorei(GL_PACK_ROW_LENGTH, rowPitchInPixels);
 				BS_CHECK_GL_ERROR();
 			}
 

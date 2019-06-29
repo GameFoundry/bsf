@@ -227,7 +227,7 @@ namespace bs
 		UINT32 outputIdx = videoMode.outputIdx;
 		if(outputIdx >= videoModeInfo.getNumOutputs())
 		{
-			LOGERR("Invalid output device index.")
+			BS_LOG(Error, Platform, "Invalid output device index.")
 			return;
 		}
 
@@ -255,7 +255,7 @@ namespace bs
 
 			if (foundMode == (UINT32)-1)
 			{
-				LOGERR("Unable to enter fullscreen, unsupported video mode requested.");
+				BS_LOG(Error, Platform, "Unable to enter fullscreen, unsupported video mode requested.");
 				return;
 			}
 
@@ -297,7 +297,7 @@ namespace bs
 		UINT32 outputIdx = 0; // 0 is always primary
 		if(outputIdx >= videoModeInfo.getNumOutputs())
 		{
-			LOGERR("Invalid output device index.")
+			BS_LOG(Error, Platform, "Invalid output device index.")
 			return;
 		}
 

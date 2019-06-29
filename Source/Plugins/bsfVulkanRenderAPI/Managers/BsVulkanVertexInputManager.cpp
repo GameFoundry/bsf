@@ -11,7 +11,9 @@ namespace bs { namespace ct
 		:mId(id), mCreateInfo(createInfo)
 	{ }
 
-	size_t VulkanVertexInputManager::HashFunc::operator()(const VertexDeclarationKey& key) const
+	const int VulkanVertexInputManager::NUM_ELEMENTS_TO_PRUNE;
+
+		size_t VulkanVertexInputManager::HashFunc::operator()(const VertexDeclarationKey& key) const
 	{
 		size_t hash = 0;
 		bs_hash_combine(hash, key.bufferDeclId);
