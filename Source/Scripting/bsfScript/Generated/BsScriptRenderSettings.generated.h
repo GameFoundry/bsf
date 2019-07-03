@@ -14,6 +14,7 @@
 #include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
 #include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
 #include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
+#include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
 
 namespace bs
 {
@@ -50,6 +51,8 @@ namespace bs
 		static void Internal_setscreenSpaceReflections(ScriptRenderSettings* thisPtr, MonoObject* value);
 		static MonoObject* Internal_getbloom(ScriptRenderSettings* thisPtr);
 		static void Internal_setbloom(ScriptRenderSettings* thisPtr, MonoObject* value);
+		static MonoObject* Internal_getscreenSpaceLensFlare(ScriptRenderSettings* thisPtr);
+		static void Internal_setscreenSpaceLensFlare(ScriptRenderSettings* thisPtr, MonoObject* value);
 		static bool Internal_getenableFXAA(ScriptRenderSettings* thisPtr);
 		static void Internal_setenableFXAA(ScriptRenderSettings* thisPtr, bool value);
 		static float Internal_getexposureScale(ScriptRenderSettings* thisPtr);

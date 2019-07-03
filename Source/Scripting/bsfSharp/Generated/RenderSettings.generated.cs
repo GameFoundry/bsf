@@ -144,6 +144,17 @@ namespace bs
 			set { Internal_setbloom(mCachedPtr, value); }
 		}
 
+		/// <summary>Parameters used for customizing the screen space lens flare effect.</summary>
+		[ShowInInspector]
+		[NotNull]
+		[PassByCopy]
+		[NativeWrapper]
+		public ScreenSpaceLensFlareSettings ScreenSpaceLensFlare
+		{
+			get { return Internal_getscreenSpaceLensFlare(mCachedPtr); }
+			set { Internal_setscreenSpaceLensFlare(mCachedPtr, value); }
+		}
+
 		/// <summary>Enables the fast approximate anti-aliasing effect.</summary>
 		[ShowInInspector]
 		[NativeWrapper]
@@ -313,6 +324,10 @@ namespace bs
 		private static extern BloomSettings Internal_getbloom(IntPtr thisPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern void Internal_setbloom(IntPtr thisPtr, BloomSettings value);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern ScreenSpaceLensFlareSettings Internal_getscreenSpaceLensFlare(IntPtr thisPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern void Internal_setscreenSpaceLensFlare(IntPtr thisPtr, ScreenSpaceLensFlareSettings value);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern bool Internal_getenableFXAA(IntPtr thisPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]

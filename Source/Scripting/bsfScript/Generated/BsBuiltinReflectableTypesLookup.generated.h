@@ -41,6 +41,8 @@
 #include "../../../Foundation/bsfCore/Particles/BsParticleEvolver.h"
 #include "BsScriptParticleGravity.generated.h"
 #include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
+#include "BsScriptScreenSpaceLensFlareSettings.generated.h"
+#include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
 #include "BsScriptAutoExposureSettings.generated.h"
 #include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
 #include "BsScriptTonemappingSettings.generated.h"
@@ -160,6 +162,7 @@ namespace bs
 		ADD_ENTRY(Viewport, ScriptViewport)
 		ADD_ENTRY(RenderTarget, ScriptRenderTarget)
 		ADD_ENTRY(ParticleGravity, ScriptParticleGravity)
+		ADD_ENTRY(ScreenSpaceLensFlareSettings, ScriptScreenSpaceLensFlareSettings)
 		ADD_ENTRY(AutoExposureSettings, ScriptAutoExposureSettings)
 		ADD_ENTRY(TonemappingSettings, ScriptTonemappingSettings)
 		ADD_ENTRY(WhiteBalanceSettings, ScriptWhiteBalanceSettings)

@@ -32,5 +32,7 @@ namespace bs
 		static void Internal_setintensity(ScriptBloomSettings* thisPtr, float value);
 		static void Internal_gettint(ScriptBloomSettings* thisPtr, Color* __output);
 		static void Internal_settint(ScriptBloomSettings* thisPtr, Color* value);
+		static float Internal_getfilterSize(ScriptBloomSettings* thisPtr);
+		static void Internal_setfilterSize(ScriptBloomSettings* thisPtr, float value);
 	};
 }

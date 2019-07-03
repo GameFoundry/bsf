@@ -5,7 +5,6 @@
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
 #include "BsScriptAutoExposureSettings.generated.h"
-#include "BsScriptShadowSettings.generated.h"
 #include "BsScriptTonemappingSettings.generated.h"
 #include "BsScriptScreenSpaceReflectionsSettings.generated.h"
 #include "BsScriptWhiteBalanceSettings.generated.h"
@@ -13,6 +12,8 @@
 #include "BsScriptDepthOfFieldSettings.generated.h"
 #include "BsScriptBloomSettings.generated.h"
 #include "BsScriptAmbientOcclusionSettings.generated.h"
+#include "BsScriptScreenSpaceLensFlareSettings.generated.h"
+#include "BsScriptShadowSettings.generated.h"
 
 namespace bs
 {
@@ -44,6 +45,8 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_setscreenSpaceReflections", (void*)&ScriptRenderSettings::Internal_setscreenSpaceReflections);
 		metaData.scriptClass->addInternalCall("Internal_getbloom", (void*)&ScriptRenderSettings::Internal_getbloom);
 		metaData.scriptClass->addInternalCall("Internal_setbloom", (void*)&ScriptRenderSettings::Internal_setbloom);
+		metaData.scriptClass->addInternalCall("Internal_getscreenSpaceLensFlare", (void*)&ScriptRenderSettings::Internal_getscreenSpaceLensFlare);
+		metaData.scriptClass->addInternalCall("Internal_setscreenSpaceLensFlare", (void*)&ScriptRenderSettings::Internal_setscreenSpaceLensFlare);
 		metaData.scriptClass->addInternalCall("Internal_getenableFXAA", (void*)&ScriptRenderSettings::Internal_getenableFXAA);
 		metaData.scriptClass->addInternalCall("Internal_setenableFXAA", (void*)&ScriptRenderSettings::Internal_setenableFXAA);
 		metaData.scriptClass->addInternalCall("Internal_getexposureScale", (void*)&ScriptRenderSettings::Internal_getexposureScale);
@@ -284,6 +287,27 @@ namespace bs
 		if(scriptvalue != nullptr)
 			tmpvalue = scriptvalue->getInternal();
 		thisPtr->getInternal()->bloom = *tmpvalue;
+	}
+
+	MonoObject* ScriptRenderSettings::Internal_getscreenSpaceLensFlare(ScriptRenderSettings* thisPtr)
+	{
+		SPtr<ScreenSpaceLensFlareSettings> tmp__output = bs_shared_ptr_new<ScreenSpaceLensFlareSettings>();
+		*tmp__output = thisPtr->getInternal()->screenSpaceLensFlare;
+
+		MonoObject* __output;
+		__output = ScriptScreenSpaceLensFlareSettings::create(tmp__output);
+
+		return __output;
+	}
+
+	void ScriptRenderSettings::Internal_setscreenSpaceLensFlare(ScriptRenderSettings* thisPtr, MonoObject* value)
+	{
+		SPtr<ScreenSpaceLensFlareSettings> tmpvalue;
+		ScriptScreenSpaceLensFlareSettings* scriptvalue;
+		scriptvalue = ScriptScreenSpaceLensFlareSettings::toNative(value);
+		if(scriptvalue != nullptr)
+			tmpvalue = scriptvalue->getInternal();
+		thisPtr->getInternal()->screenSpaceLensFlare = *tmpvalue;
 	}
 
 	bool ScriptRenderSettings::Internal_getenableFXAA(ScriptRenderSettings* thisPtr)

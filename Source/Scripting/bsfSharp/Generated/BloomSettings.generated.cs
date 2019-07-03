@@ -82,6 +82,19 @@ namespace bs
 			set { Internal_settint(mCachedPtr, ref value); }
 		}
 
+		/// <summary>
+		/// Determines the percent of the texture to account for when filtering for bloom. Larger values will include farther 
+		/// away pixels.
+		/// </summary>
+		[ShowInInspector]
+		[Range(0.01f, 1f, false)]
+		[NativeWrapper]
+		public float FilterSize
+		{
+			get { return Internal_getfilterSize(mCachedPtr); }
+			set { Internal_setfilterSize(mCachedPtr, value); }
+		}
+
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern void Internal_BloomSettings(BloomSettings managedInstance);
 		[MethodImpl(MethodImplOptions.InternalCall)]
@@ -104,6 +117,10 @@ namespace bs
 		private static extern void Internal_gettint(IntPtr thisPtr, out Color __output);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern void Internal_settint(IntPtr thisPtr, ref Color value);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern float Internal_getfilterSize(IntPtr thisPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern void Internal_setfilterSize(IntPtr thisPtr, float value);
 	}
 
 	/** @} */

@@ -1062,6 +1062,9 @@ Does not account for gravity, you must apply it manually.</doc>
 		<property name="Tint" type="Color" getter="gettint" setter="settint" static="false">
 			<doc>Tint color to apply to the bloom highlight. A pure white means the bloom inherits the underlying scene color.</doc>
 		</property>
+		<property name="FilterSize" type="float" getter="getfilterSize" setter="setfilterSize" static="false">
+			<doc>Determines the percent of the texture to account for when filtering for bloom. Larger values will include farther away pixels.</doc>
+		</property>
 	</class>
 	<enum native="VectorComponent" script="VectorComponent">
 		<doc>Names of individual components of a vector.</doc>
@@ -2686,6 +2689,53 @@ Whether or not an audio source is spatial is controlled by the assigned AudioCli
 			<doc>Information about all the contact points for the hit.</doc>
 		</field>
 	</struct>
+	<class native="ScreenSpaceLensFlareSettings" script="ScreenSpaceLensFlareSettings">
+		<doc>Settings that control the screen-space lens flare effect.</doc>
+		<ctor>
+		</ctor>
+		<property name="Enabled" type="bool" getter="getenabled" setter="setenabled" static="false">
+			<doc>Enables or disables the lens flare effect.</doc>
+		</property>
+		<property name="DownsampleCount" type="int" getter="getdownsampleCount" setter="setdownsampleCount" static="false">
+			<doc>Determines how many times to downsample the scene texture before using it for lens flare effect. Lower values  will use higher resolution texture for calculating lens flare, at the cost of lower performance.  Valid range is [1, 6], default is 4.</doc>
+		</property>
+		<property name="Threshold" type="float" getter="getthreshold" setter="setthreshold" static="false">
+			<doc>Determines the minimal threshold of pixel luminance to be included in the lens flare calculations. Any pixel  with luminance below this value will be ignored for the purposes of lens flare. Set to zero or negative to  disable the threshold and include all pixels in the calculations.</doc>
+		</property>
+		<property name="GhostCount" type="int" getter="getghostCount" setter="setghostCount" static="false">
+			<doc>Determines the number of ghost features to appear, shown as blurred blobs of bright areas of the scene.</doc>
+		</property>
+		<property name="GhostSpacing" type="float" getter="getghostSpacing" setter="setghostSpacing" static="false">
+			<doc>Determines the distance between ghost features. Value is in normalized screen space, in range [0,1] where 1 represents the full screen length.</doc>
+		</property>
+		<property name="Brightness" type="float" getter="getbrightness" setter="setbrightness" static="false">
+			<doc>Determines the brightness of the lens flare effect. Value of 1 means the lens flare will be displayed at the same intensity as the scene it was derived from. In range [0, 1], default being 0.05.</doc>
+		</property>
+		<property name="FilterSize" type="float" getter="getfilterSize" setter="setfilterSize" static="false">
+			<doc>Determines the size of the filter when blurring the lens flare features. Larger values yield a blurrier image and will require more performance.</doc>
+		</property>
+		<property name="Halo" type="bool" getter="gethalo" setter="sethalo" static="false">
+			<doc>Determines if a halo effect should be rendered as part of the lens flare.</doc>
+		</property>
+		<property name="HaloRadius" type="float" getter="gethaloRadius" setter="sethaloRadius" static="false">
+			<doc>Determines how far away from the screen center does the halo appear, in normalized screen space (range [0,1]) where 0.5 represents half screen length.</doc>
+		</property>
+		<property name="HaloThickness" type="float" getter="gethaloThickness" setter="sethaloThickness" static="false">
+			<doc>Determines the thickness of the halo ring. In normalized screen space (range [0.01,0.5]).</doc>
+		</property>
+		<property name="HaloThreshold" type="float" getter="gethaloThreshold" setter="sethaloThreshold" static="false">
+			<doc>Determines the minimal threshold of pixel luminance to be included for halo generation. Any pixel with luminance below this value will be ignored for the purposes of halo generation.</doc>
+		</property>
+		<property name="HaloAspectRatio" type="float" getter="gethaloAspectRatio" setter="sethaloAspectRatio" static="false">
+			<doc>Determines the shape of the halo. Set to value other than 1 to make the halo an oval rather than a circle.</doc>
+		</property>
+		<property name="ChromaticAberration" type="bool" getter="getchromaticAberration" setter="setchromaticAberration" static="false">
+			<doc>Enables or disables chromatic aberration of the lens flare and halo features. Chromatic aberration separates the values of red, green and blue channels according to a user provided offset.</doc>
+		</property>
+		<property name="ChromaticAberrationOffset" type="float" getter="getchromaticAberrationOffset" setter="setchromaticAberrationOffset" static="false">
+			<doc>Determines the distance between pixels within which to sample different channels. The value is in  UV coordinates, range [0, 1].</doc>
+		</property>
+	</class>
 	<enum native="CollisionReportMode" script="CollisionReportMode">
 		<doc>Determines which collision events will be reported by physics objects.</doc>
 		<enumentry native="None" script="None">
@@ -2993,6 +3043,9 @@ If this is disabled, then color grading and white balancing will not be enabled 
 		</property>
 		<property name="Bloom" type="BloomSettings" getter="getbloom" setter="setbloom" static="false">
 			<doc>Parameters used for customizing the bloom effect.</doc>
+		</property>
+		<property name="ScreenSpaceLensFlare" type="ScreenSpaceLensFlareSettings" getter="getscreenSpaceLensFlare" setter="setscreenSpaceLensFlare" static="false">
+			<doc>Parameters used for customizing the screen space lens flare effect.</doc>
 		</property>
 		<property name="EnableFXAA" type="bool" getter="getenableFXAA" setter="setenableFXAA" static="false">
 			<doc>Enables the fast approximate anti-aliasing effect.</doc>
