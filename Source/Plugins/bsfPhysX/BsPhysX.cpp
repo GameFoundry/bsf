@@ -540,7 +540,7 @@ namespace bs
 
 			UINT32 errorState;
 			if (!scene->mScene->fetchResults(true, &errorState))
-				BS_LOG(Warning, Physics, "Physics simulation failed. Error code: {0}" + errorState);
+				BS_LOG(Warning, Physics, "Physics simulation failed. Error code: {0}", errorState);
 		}
 
 		bs_frame_free_aligned(scratchBuffer);

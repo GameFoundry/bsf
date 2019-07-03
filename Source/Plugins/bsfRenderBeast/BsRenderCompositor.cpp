@@ -2141,6 +2141,8 @@ namespace bs { namespace ct
 		return { RCNodeSceneColor::getNodeId() };
 	}
 
+	constexpr UINT32 RCNodeSceneColorDownsamples::MAX_NUM_DOWNSAMPLES;
+
 	void RCNodeSceneColorDownsamples::render(const RenderCompositorNodeInputs& inputs)
 	{
 		GpuResourcePool& resPool = GpuResourcePool::instance();
