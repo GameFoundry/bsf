@@ -537,6 +537,10 @@
         {
             "Path": "Composite.bsl",
             "UUID": "9035d668-46c0-ba4a-75b0-46c0cf3c64e7"
+        },
+        {
+            "Path": "BicubicUpsample.bsl",
+            "UUID": "b690e22c-45a1-6cda-3cb1-45a1a944984e"
         }
     ],
     "Skin": [

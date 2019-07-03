@@ -86,6 +86,56 @@ namespace bs { namespace ct
 		GpuParamTexture mSourceTex;
 	};
 
+	BS_PARAM_BLOCK_BEGIN(BicubicUpsampleParamDef)
+		BS_PARAM_BLOCK_ENTRY(Color, gTint)
+		BS_PARAM_BLOCK_ENTRY(Vector2I, gTextureSize)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gInvPixel)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gInvTwoPixels)
+	BS_PARAM_BLOCK_END
+
+	extern BicubicUpsampleParamDef gBicubicUpsampleParamDef;
+
+	/** Samples the source texture using bicubic filtering and outputs the results to the provided render target. */
+	class BS_EXPORT BicubicUpsampleMat : public RendererMaterial<BicubicUpsampleMat>
+	{
+		RMAT_DEF("BicubicUpsample.bsl");
+
+		/** Helper method used for initializing variations of this material. */
+		template<bool HERMITE>
+		static const ShaderVariation& getVariation()
+		{
+			static ShaderVariation variation = ShaderVariation(
+			SmallVector<ShaderVariation::Param, 4>({
+				ShaderVariation::Param("HERMITE", HERMITE)
+			}));
+
+			return variation;
+		}
+	public:
+		BicubicUpsampleMat();
+
+		/** 
+		* Executes the post-process effect with the provided parameters and writes the results to the provided
+		* render target.
+		*
+		* @param[in]	source			Texture to filter.
+		* @param[in]	target			Render target to write the results to. Results will be additively blended
+		*								with the target.
+		* @param[in]	tint			Optional value to multiply all the values from @p source before blending.
+		*/
+		void execute(const SPtr<Texture>& source, const SPtr<RenderTarget>& target, const Color& tint = Color::White);
+
+		/** 
+		 * Returns the material variation matching the provided parameters.
+		 *
+		 * @param	hermite		If true, use Hermite cubic filtering, otherwise use Lagrange cubic filtering.
+		 */
+		static BicubicUpsampleMat* getVariation(bool hermite = false);
+	private:
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
+		GpuParamTexture mSourceTex;
+	};
+
 	BS_PARAM_BLOCK_BEGIN(ClearParamDef)
 		BS_PARAM_BLOCK_ENTRY(INT32, gClearValue)
 	BS_PARAM_BLOCK_END

@@ -2793,10 +2793,11 @@ namespace bs { namespace ct
 		filterMat->execute(featureTex->texture, lensFlareSettings.filterSize, downsampledTex->renderTexture, Color::White);
 
 		auto* sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[1]);
-		CompositeMat* compositeMat = CompositeMat::get();
-		compositeMat->execute(
-			downsampledTex->texture, 
-			sceneColorNode->renderTarget, 
+
+		BicubicUpsampleMat* upsampleMat = BicubicUpsampleMat::getVariation(false);
+		upsampleMat->execute(
+			downsampledTex->texture,
+			sceneColorNode->renderTarget,
 			Color::White * lensFlareSettings.brightness);
 	}
 

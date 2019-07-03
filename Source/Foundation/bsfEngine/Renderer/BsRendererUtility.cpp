@@ -484,4 +484,49 @@ namespace bs { namespace ct
 		bind();
 		gRendererUtility().drawScreenQuad();
 	}
+
+	BicubicUpsampleParamDef gBicubicUpsampleParamDef;
+
+	BicubicUpsampleMat::BicubicUpsampleMat()
+	{
+		mParamBuffer = gBicubicUpsampleParamDef.createBuffer();
+		mParams->setParamBlockBuffer("Input", mParamBuffer);
+
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSource", mSourceTex);
+	}
+
+	void BicubicUpsampleMat::execute(const SPtr<Texture>& source, const SPtr<RenderTarget>& target, const Color& tint)
+	{
+		BS_RENMAT_PROFILE_BLOCK
+
+		// Set parameters
+		mSourceTex.set(source);
+
+		const TextureProperties& sourceProps = source->getProperties();
+
+		Vector2I texSize(sourceProps.getWidth(), sourceProps.getHeight());
+		Vector2 invPixelSize(1.0f / texSize.x, 1.0f / texSize.y);
+		Vector2 invTwoPixelSize(2.0f / texSize.x, 2.0f / texSize.y);
+
+		gBicubicUpsampleParamDef.gTint.set(mParamBuffer, tint);
+		gBicubicUpsampleParamDef.gTextureSize.set(mParamBuffer, texSize);
+		gBicubicUpsampleParamDef.gInvPixel.set(mParamBuffer, invPixelSize);
+		gBicubicUpsampleParamDef.gInvTwoPixels.set(mParamBuffer, invTwoPixelSize);
+
+		// Render
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(target);
+
+		bind();
+		gRendererUtility().drawScreenQuad();
+	}
+
+	BicubicUpsampleMat* BicubicUpsampleMat::getVariation(bool hermite)
+	{
+		if (hermite)
+			return get(getVariation<true>());
+
+		return get(getVariation<false>());
+	}
+
 }}
