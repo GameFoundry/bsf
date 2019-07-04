@@ -13,6 +13,7 @@
 #include "RenderAPI/BsDepthStencilState.h"
 #include "RenderAPI/BsBlendState.h"
 #include "Profiling/BsRenderStats.h"
+#include "BsVulkanRenderPass.h"
 
 namespace bs { namespace ct
 {
@@ -318,7 +319,7 @@ namespace bs { namespace ct
 	}
 
 	VulkanPipeline* VulkanGraphicsPipelineState::getPipeline(
-		UINT32 deviceIdx, VulkanFramebuffer* framebuffer, UINT32 readOnlyFlags, DrawOperationType drawOp, 
+		UINT32 deviceIdx, VulkanRenderPass* renderPass, UINT32 readOnlyFlags, DrawOperationType drawOp, 
 			const SPtr<VulkanVertexInput>& vertexInput)
 	{
 		Lock lock(mMutex);
@@ -327,14 +328,14 @@ namespace bs { namespace ct
 			return nullptr;
 
 		readOnlyFlags &= ~FBT_COLOR; // Ignore the color
-		GpuPipelineKey key(framebuffer->getId(), vertexInput->getId(), readOnlyFlags, drawOp);
+		GpuPipelineKey key(renderPass->getId(), vertexInput->getId(), readOnlyFlags, drawOp);
 
 		PerDeviceData& perDeviceData = mPerDeviceData[deviceIdx];
 		auto iterFind = perDeviceData.pipelines.find(key);
 		if (iterFind != perDeviceData.pipelines.end())
 			return iterFind->second;
 
-		VulkanPipeline* newPipeline = createPipeline(deviceIdx, framebuffer, readOnlyFlags, drawOp, vertexInput);
+		VulkanPipeline* newPipeline = createPipeline(deviceIdx, renderPass, readOnlyFlags, drawOp, vertexInput);
 		perDeviceData.pipelines[key] = newPipeline;
 
 		return newPipeline;
@@ -369,13 +370,13 @@ namespace bs { namespace ct
 		}
 	}
 
-	VulkanPipeline* VulkanGraphicsPipelineState::createPipeline(UINT32 deviceIdx, VulkanFramebuffer* framebuffer,
+	VulkanPipeline* VulkanGraphicsPipelineState::createPipeline(UINT32 deviceIdx, VulkanRenderPass* renderPass,
 		UINT32 readOnlyFlags, DrawOperationType drawOp, const SPtr<VulkanVertexInput>& vertexInput)
 	{
 		mInputAssemblyInfo.topology = VulkanUtility::getDrawOp(drawOp);
 		mTesselationInfo.patchControlPoints = 3; // Not provided by our shaders for now
-		mMultiSampleInfo.rasterizationSamples = framebuffer->getSampleFlags();
-		mColorBlendStateInfo.attachmentCount = framebuffer->getNumColorAttachments();
+		mMultiSampleInfo.rasterizationSamples = renderPass->getSampleFlags();
+		mColorBlendStateInfo.attachmentCount = renderPass->getNumColorAttachments();
 
 		DepthStencilState* dsState = getDepthStencilState().get();
 		if (dsState == nullptr)
@@ -410,12 +411,12 @@ namespace bs { namespace ct
 		// Note: We can use the default render pass here (default clear/load/read flags), even though that might not be the
 		// exact one currently bound. This is because load/store operations and layout transitions are allowed to differ
 		// (as per spec 7.2., such render passes are considered compatible).
-		mPipelineInfo.renderPass = framebuffer->getRenderPass(RT_NONE, RT_NONE, CLEAR_NONE);
+		mPipelineInfo.renderPass = renderPass->getVkRenderPass(RT_NONE, RT_NONE, CLEAR_NONE);
 		mPipelineInfo.layout = mPerDeviceData[deviceIdx].pipelineLayout;
 		mPipelineInfo.pVertexInputState = vertexInput->getCreateInfo();
 
 		bool depthReadOnly;
-		if (framebuffer->hasDepthAttachment())
+		if (renderPass->hasDepthAttachment())
 		{
 			mPipelineInfo.pDepthStencilState = &mDepthStencilInfo;
 			depthReadOnly = (readOnlyFlags & FBT_DEPTH) != 0;
@@ -427,7 +428,7 @@ namespace bs { namespace ct
 		}
 
 		std::array<bool, BS_MAX_MULTIPLE_RENDER_TARGETS> colorReadOnly;
-		if (framebuffer->getNumColorAttachments() > 0)
+		if (renderPass->getNumColorAttachments() > 0)
 		{
 			mPipelineInfo.pColorBlendState = &mColorBlendStateInfo;
 

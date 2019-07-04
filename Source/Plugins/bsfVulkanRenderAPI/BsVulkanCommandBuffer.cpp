@@ -17,6 +17,7 @@
 #include "BsVulkanSwapChain.h"
 #include "BsVulkanTimerQuery.h"
 #include "BsVulkanOcclusionQuery.h"
+#include "BsVulkanRenderPass.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #include "Win32/BsWin32RenderWindow.h"
@@ -355,17 +356,18 @@ namespace bs { namespace ct
 		executeLayoutTransitions();
 
 		RenderSurfaceMask readMask = getFBReadMask();
+		VulkanRenderPass* renderPass = mFramebuffer->getRenderPass();
 
 		VkRenderPassBeginInfo renderPassBeginInfo;
 		renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		renderPassBeginInfo.pNext = nullptr;
-		renderPassBeginInfo.framebuffer = mFramebuffer->getFramebuffer(mRenderTargetLoadMask, readMask, mClearMask);
-		renderPassBeginInfo.renderPass = mFramebuffer->getRenderPass(mRenderTargetLoadMask, readMask, mClearMask);
+		renderPassBeginInfo.framebuffer = mFramebuffer->getVkFramebuffer(mRenderTargetLoadMask, readMask, mClearMask);
+		renderPassBeginInfo.renderPass = renderPass->getVkRenderPass(mRenderTargetLoadMask, readMask, mClearMask);
 		renderPassBeginInfo.renderArea.offset.x = 0;
 		renderPassBeginInfo.renderArea.offset.y = 0;
 		renderPassBeginInfo.renderArea.extent.width = mFramebuffer->getWidth();
 		renderPassBeginInfo.renderArea.extent.height = mFramebuffer->getHeight();
-		renderPassBeginInfo.clearValueCount = mFramebuffer->getNumClearEntries(mClearMask);
+		renderPassBeginInfo.clearValueCount = renderPass->getNumClearEntries(mClearMask);
 		renderPassBeginInfo.pClearValues = mClearValues.data();
 
 		vkCmdBeginRenderPass(mCmdBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
@@ -915,7 +917,8 @@ namespace bs { namespace ct
 		// Reset isFBAttachment flags for subresources from the old framebuffer
 		if(mFramebuffer != nullptr)
 		{
-			UINT32 numColorAttachments = mFramebuffer->getNumColorAttachments();
+			VulkanRenderPass* renderPass = mFramebuffer->getRenderPass();
+			UINT32 numColorAttachments = renderPass->getNumColorAttachments();
 			for(UINT32 i = 0; i < numColorAttachments; i++)
 			{
 				const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getColorAttachment(i);
@@ -932,7 +935,7 @@ namespace bs { namespace ct
 				}
 			}
 
-			if(mFramebuffer->hasDepthAttachment())
+			if(renderPass->hasDepthAttachment())
 			{
 				const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getDepthStencilAttachment();
 				UINT32 imageInfoIdx = mImages[fbAttachment.image];
@@ -982,6 +985,8 @@ namespace bs { namespace ct
 		if (buffers == 0 || mFramebuffer == nullptr)
 			return;
 
+		VulkanRenderPass* renderPass = mFramebuffer->getRenderPass();
+
 		// Add clear command if currently in render pass
 		if (isInRenderPass())
 		{
@@ -991,7 +996,7 @@ namespace bs { namespace ct
 			UINT32 attachmentIdx = 0;
 			if ((buffers & FBT_COLOR) != 0)
 			{
-				UINT32 numColorAttachments = mFramebuffer->getNumColorAttachments();
+				UINT32 numColorAttachments = renderPass->getNumColorAttachments();
 				for (UINT32 i = 0; i < numColorAttachments; i++)
 				{
 					const VulkanFramebufferAttachment& attachment = mFramebuffer->getColorAttachment(i);
@@ -1028,7 +1033,7 @@ namespace bs { namespace ct
 
 			if ((buffers & FBT_DEPTH) != 0 || (buffers & FBT_STENCIL) != 0)
 			{
-				if (mFramebuffer->hasDepthAttachment())
+				if (renderPass->hasDepthAttachment())
 				{
 					attachments[attachmentIdx].aspectMask = 0;
 
@@ -1084,7 +1089,7 @@ namespace bs { namespace ct
 			ClearMask clearMask;
 			std::array<VkClearValue, BS_MAX_MULTIPLE_RENDER_TARGETS + 1> clearValues = mClearValues;
 
-			UINT32 numColorAttachments = mFramebuffer->getNumColorAttachments();
+			UINT32 numColorAttachments = renderPass->getNumColorAttachments();
 			if ((buffers & FBT_COLOR) != 0)
 			{
 				for (UINT32 i = 0; i < numColorAttachments; i++)
@@ -1106,7 +1111,7 @@ namespace bs { namespace ct
 
 			if ((buffers & FBT_DEPTH) != 0 || (buffers & FBT_STENCIL) != 0)
 			{
-				if (mFramebuffer->hasDepthAttachment())
+				if (renderPass->hasDepthAttachment())
 				{
 					UINT32 depthAttachmentIdx = numColorAttachments;
 
@@ -1277,14 +1282,15 @@ namespace bs { namespace ct
 		SPtr<VertexDeclaration> inputDecl = mGraphicsPipeline->getInputDeclaration();
 		SPtr<VulkanVertexInput> vertexInput = VulkanVertexInputManager::instance().getVertexInfo(mVertexDecl, inputDecl);
 
-		VulkanPipeline* pipeline = mGraphicsPipeline->getPipeline(mDevice.getIndex(), mFramebuffer,
+		VulkanRenderPass* renderPass = mFramebuffer->getRenderPass();
+		VulkanPipeline* pipeline = mGraphicsPipeline->getPipeline(mDevice.getIndex(), renderPass,
 			mRenderTargetReadOnlyFlags, mDrawOp, vertexInput);
 
 		if (pipeline == nullptr)
 			return false;
 
 		// Check that pipeline matches the read-only state of any framebuffer attachments
-		UINT32 numColorAttachments = mFramebuffer->getNumColorAttachments();
+		UINT32 numColorAttachments = renderPass->getNumColorAttachments();
 		for (UINT32 i = 0; i < numColorAttachments; i++)
 		{
 			const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getColorAttachment(i);
@@ -1298,7 +1304,7 @@ namespace bs { namespace ct
 			}
 		}
 
-		if (mFramebuffer->hasDepthAttachment())
+		if (renderPass->hasDepthAttachment())
 		{
 			const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getDepthStencilAttachment();
 			ImageSubresourceInfo& subresourceInfo = findSubresourceInfo(fbAttachment.image, fbAttachment.surface.face,
@@ -1578,7 +1584,8 @@ namespace bs { namespace ct
 		if (mFramebuffer == nullptr)
 			return;
 
-		UINT32 numColorAttachments = mFramebuffer->getNumColorAttachments();
+		VulkanRenderPass* renderPass = mFramebuffer->getRenderPass();
+		UINT32 numColorAttachments = renderPass->getNumColorAttachments();
 		for (UINT32 i = 0; i < numColorAttachments; i++)
 		{
 			const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getColorAttachment(i);
@@ -1589,7 +1596,7 @@ namespace bs { namespace ct
 			subresourceInfo.requiredLayout = subresourceInfo.renderPassLayout;
 		}
 
-		if (mFramebuffer->hasDepthAttachment())
+		if (renderPass->hasDepthAttachment())
 		{
 			const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getDepthStencilAttachment();
 			ImageSubresourceInfo& subresourceInfo = findSubresourceInfo(fbAttachment.image, fbAttachment.surface.face,
@@ -1607,16 +1614,18 @@ namespace bs { namespace ct
 		executeWriteHazardBarrier();
 		executeLayoutTransitions();
 
+		VulkanRenderPass* renderPass = mFramebuffer->getRenderPass();
+
 		VkRenderPassBeginInfo renderPassBeginInfo;
 		renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		renderPassBeginInfo.pNext = nullptr;
-		renderPassBeginInfo.framebuffer = mFramebuffer->getFramebuffer(mRenderTargetLoadMask, RT_NONE, mClearMask);
-		renderPassBeginInfo.renderPass = mFramebuffer->getRenderPass(mRenderTargetLoadMask, RT_NONE, mClearMask);
+		renderPassBeginInfo.framebuffer = mFramebuffer->getVkFramebuffer(mRenderTargetLoadMask, RT_NONE, mClearMask);
+		renderPassBeginInfo.renderPass = renderPass->getVkRenderPass(mRenderTargetLoadMask, RT_NONE, mClearMask);
 		renderPassBeginInfo.renderArea.offset.x = mClearArea.x;
 		renderPassBeginInfo.renderArea.offset.y = mClearArea.y;
 		renderPassBeginInfo.renderArea.extent.width = mClearArea.width;
 		renderPassBeginInfo.renderArea.extent.height = mClearArea.height;
-		renderPassBeginInfo.clearValueCount = mFramebuffer->getNumClearEntries(mClearMask);
+		renderPassBeginInfo.clearValueCount = renderPass->getNumClearEntries(mClearMask);
 		renderPassBeginInfo.pClearValues = mClearValues.data();
 
 		vkCmdBeginRenderPass(mCmdBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
@@ -1857,6 +1866,10 @@ namespace bs { namespace ct
 		UINT32 imageInfoIdx = iterFind->second;
 		ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
 
+		VulkanRenderPass* renderPass = nullptr;
+		if(mFramebuffer)
+			renderPass = mFramebuffer->getRenderPass();
+
 		ImageSubresourceInfo* subresourceInfos = &mSubresourceInfoStorage[imageInfo.subresourceInfoIdx];
 		for(UINT32 i = 0; i < imageInfo.numSubresourceInfos; i++)
 		{
@@ -1870,7 +1883,7 @@ namespace bs { namespace ct
 					RenderSurfaceMask readMask = getFBReadMask();
 
 					// Is it a depth-stencil attachment?
-					if(mFramebuffer->hasDepthAttachment() && mFramebuffer->getDepthStencilAttachment().image == image)
+					if(renderPass->hasDepthAttachment() && mFramebuffer->getDepthStencilAttachment().image == image)
 					{
 						if (readMask.isSet(RT_DEPTH))
 						{
@@ -1890,7 +1903,7 @@ namespace bs { namespace ct
 					}
 					else // It is a color attachment
 					{
-						UINT32 numColorAttachments = mFramebuffer->getNumColorAttachments();
+						UINT32 numColorAttachments = renderPass->getNumColorAttachments();
 						for (UINT32 j = 0; j < numColorAttachments; j++)
 						{
 							const VulkanFramebufferAttachment& attachment = mFramebuffer->getColorAttachment(j);
@@ -2314,7 +2327,8 @@ namespace bs { namespace ct
 		}
 
 		// Register any sub-resources
-		UINT32 numColorAttachments = res->getNumColorAttachments();
+		VulkanRenderPass* renderPass = res->getRenderPass();
+		UINT32 numColorAttachments = renderPass->getNumColorAttachments();
 		for (UINT32 i = 0; i < numColorAttachments; i++)
 		{
 			const VulkanFramebufferAttachment& attachment = res->getColorAttachment(i);
@@ -2334,7 +2348,7 @@ namespace bs { namespace ct
 				VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 		}
 
-		if(res->hasDepthAttachment())
+		if(renderPass->hasDepthAttachment())
 		{
 			const VulkanFramebufferAttachment& attachment = res->getDepthStencilAttachment();
 
@@ -2621,9 +2635,10 @@ namespace bs { namespace ct
 	RenderSurfaceMask VulkanCmdBuffer::getFBReadMask()
 	{
 		// Check if any frame-buffer attachments are also used as shader inputs, in which case we make them read-only
+		VulkanRenderPass* renderPass = mFramebuffer->getRenderPass();
 		RenderSurfaceMask readMask = RT_NONE;
 
-		UINT32 numColorAttachments = mFramebuffer->getNumColorAttachments();
+		UINT32 numColorAttachments = renderPass->getNumColorAttachments();
 		for(UINT32 i = 0; i < numColorAttachments; i++)
 		{
 			const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getColorAttachment(i);
@@ -2636,7 +2651,7 @@ namespace bs { namespace ct
 				readMask.set((RenderSurfaceMaskBits)(1 << i));
 		}
 
-		if (mFramebuffer->hasDepthAttachment())
+		if (renderPass->hasDepthAttachment())
 		{
 			const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getDepthStencilAttachment();
 			ImageSubresourceInfo& subresourceInfo = findSubresourceInfo(fbAttachment.image, fbAttachment.surface.face,

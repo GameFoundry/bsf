@@ -8,6 +8,8 @@
 
 namespace bs { namespace ct
 {
+	class VulkanRenderPass;
+
 	/** @addtogroup Vulkan
 	 *  @{
 	 */
@@ -53,7 +55,7 @@ namespace bs { namespace ct
 		 * found.
 		 * 
 		 * @param[in]	deviceIdx			Index of the device to retrieve the pipeline for.
-		 * @param[in]	framebuffer			Framebuffer object that defines the surfaces this pipeline will render to.
+		 * @param[in]	renderPass			Render pass that the pipeline will be used with, or one compatible.
 		 * @param[in]	readOnlyFlags		Flags that control which portion of the framebuffer is read-only. Accepts
 		 *									combinations of FrameBufferType enum.
 		 * @param[in]	drawOp				Type of geometry that will be drawn using the pipeline.
@@ -62,7 +64,7 @@ namespace bs { namespace ct
 		 * 
 		 * @note	Thread safe.
 		 */
-		VulkanPipeline* getPipeline(UINT32 deviceIdx, VulkanFramebuffer* framebuffer, UINT32 readOnlyFlags, 
+		VulkanPipeline* getPipeline(UINT32 deviceIdx, VulkanRenderPass* renderPass, UINT32 readOnlyFlags, 
 			DrawOperationType drawOp, const SPtr<VulkanVertexInput>& vertexInput);
 
 		/** 
@@ -89,7 +91,7 @@ namespace bs { namespace ct
 		 * Create a new Vulkan graphics pipeline. 
 		 * 
 		 * @param[in]	deviceIdx			Index of the device to create the pipeline for.
-		 * @param[in]	framebuffer			Framebuffer object that defines the surfaces this pipeline will render to.
+		 * @param[in]	renderPass			Render pass that the pipeline will be used with, or one compatible.
 		 * @param[in]	readOnlyFlags		Flags that control which portion of the framebuffer is read-only. Accepts
 		 *									combinations of FrameBufferType enum.
 		 * @param[in]	drawOp				Type of geometry that will be drawn using the pipeline.
@@ -98,7 +100,7 @@ namespace bs { namespace ct
 		 * 
 		 * @note	Thread safe.
 		 */
-		VulkanPipeline* createPipeline(UINT32 deviceIdx, VulkanFramebuffer* framebuffer, UINT32 readOnlyFlags, 
+		VulkanPipeline* createPipeline(UINT32 deviceIdx, VulkanRenderPass* renderPass, UINT32 readOnlyFlags, 
 			DrawOperationType drawOp, const SPtr<VulkanVertexInput>& vertexInput);
 
 		/**	Key uniquely identifying GPU pipelines. */

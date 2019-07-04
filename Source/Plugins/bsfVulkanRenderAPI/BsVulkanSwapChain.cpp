@@ -5,6 +5,7 @@
 #include "BsVulkanRenderAPI.h"
 #include "BsVulkanDevice.h"
 #include "Managers/BsVulkanCommandBufferManager.h"
+#include "BsVulkanRenderPass.h"
 
 namespace bs { namespace ct
 {
@@ -176,6 +177,21 @@ namespace bs { namespace ct
 		else
 			mDepthStencilImage = nullptr;
 
+		// Create a render pass
+		VULKAN_RENDER_PASS_DESC rpDesc;
+		rpDesc.numSamples = 1;
+		rpDesc.offscreen = false;
+		rpDesc.color[0].format = colorFormat;
+		rpDesc.color[0].enabled = true;
+
+		if(mDepthStencilImage)
+		{
+			rpDesc.depth.format = depthFormat;
+			rpDesc.depth.enabled = true;
+		}
+
+		VulkanRenderPass* renderPass = VulkanRenderPasses::instance().get(mDevice, rpDesc);
+
 		// Create a framebuffer for each swap chain buffer
 		UINT32 numFramebuffers = (UINT32)mSurfaces.size();
 		for (UINT32 i = 0; i < numFramebuffers; i++)
@@ -184,18 +200,14 @@ namespace bs { namespace ct
 			desc.width = mWidth;
 			desc.height = mHeight;
 			desc.layers = 1;
-			desc.numSamples = 1;
-			desc.offscreen = false;
-			desc.color[0].format = colorFormat;
 			desc.color[0].image = mSurfaces[i].image;
 			desc.color[0].surface = TextureSurface::COMPLETE;
 			desc.color[0].baseLayer = 0;
-			desc.depth.format = depthFormat;
 			desc.depth.image = mDepthStencilImage;
 			desc.depth.surface = TextureSurface::COMPLETE;
 			desc.depth.baseLayer = 0;
 
-			mSurfaces[i].framebuffer = owner->create<VulkanFramebuffer>(desc);
+			mSurfaces[i].framebuffer = owner->create<VulkanFramebuffer>(renderPass, desc);
 		}
 	}
 

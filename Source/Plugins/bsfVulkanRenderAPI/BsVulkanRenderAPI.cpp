@@ -20,6 +20,7 @@
 
 #include <vulkan/vulkan.h>
 #include "BsVulkanUtility.h"
+#include "BsVulkanRenderPass.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 	#include "Win32/BsWin32VideoModeInfo.h"
@@ -291,6 +292,9 @@ namespace bs { namespace ct
 		bs::TextureManager::startUp<bs::VulkanTextureManager>();
 		TextureManager::startUp<VulkanTextureManager>();
 
+		// Create the render pass manager
+		VulkanRenderPasses::startUp();
+
 		// Create hardware buffer manager		
 		bs::HardwareBufferManager::startUp();
 		HardwareBufferManager::startUp<VulkanHardwareBufferManager>();
@@ -339,6 +343,7 @@ namespace bs { namespace ct
 		bs::RenderWindowManager::shutDown();
 		HardwareBufferManager::shutDown();
 		bs::HardwareBufferManager::shutDown();
+		VulkanRenderPasses::shutDown();
 		TextureManager::shutDown();
 		bs::TextureManager::shutDown();
 

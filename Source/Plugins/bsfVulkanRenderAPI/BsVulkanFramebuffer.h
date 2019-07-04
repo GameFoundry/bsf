@@ -7,6 +7,8 @@
 
 namespace bs { namespace ct
 {
+	class VulkanRenderPass;
+
 	/** @addtogroup Vulkan
 	 *  @{
 	 */
@@ -19,9 +21,6 @@ namespace bs { namespace ct
 
 		/** Surface representing the sub-resource of the image to use as an attachment. */
 		TextureSurface surface;
-
-		/** Format of the attached image. */
-		VkFormat format = VK_FORMAT_UNDEFINED;
 
 		/** Initial layer of the surface as pointed to by the provided image view. */
 		UINT32 baseLayer = 0;
@@ -44,12 +43,6 @@ namespace bs { namespace ct
 
 		/** Number of image layers to render to. This value is used for all provided surfaces. */
 		UINT32 layers = 0;
-
-		/** Number of samples in the attached images. All attachments must have the same number of samples. */
-		UINT32 numSamples = 0;
-
-		/** Set to true if framebuffer represents an offscreen surface that will not be presented. */
-		bool offscreen = false;
 	};
 
 	/** Information about a single framebuffer attachment. */
@@ -68,10 +61,14 @@ namespace bs { namespace ct
 	public:
 		/** Creates a new frame buffer with the specified image views attached. 
 		 *
-		 * @param[in]	owner	Resource manager that allocated this resource.
-		 * @param[in]	desc	Description of the frame buffer.
+		 * @param[in]	owner		Resource manager that allocated this resource.
+		 * @param[in]	renderPass	Render pass that will be used for rendering to the frame buffer. Note that the
+		 *							framebuffer will be usable with this specific render pass, but also with any compatible
+		 *							render pass. Render passes are compatible if they use the same attachments and their 
+		 *							formats and sample counts match.
+		 * @param[in]	desc		Description of the frame buffer.
 		 */
-		VulkanFramebuffer(VulkanResourceManager* owner, const VULKAN_FRAMEBUFFER_DESC& desc);
+		VulkanFramebuffer(VulkanResourceManager* owner, VulkanRenderPass* renderPass, const VULKAN_FRAMEBUFFER_DESC& desc);
 		~VulkanFramebuffer();
 
 		/** Returns a unique ID of this framebuffer. */
@@ -84,16 +81,6 @@ namespace bs { namespace ct
 		UINT32 getHeight() const { return mFramebufferCI.height; }
 
 		/**
-		 * Gets internal Vulkan render pass object. 
-		 * 
-		 * @param[in]	loadMask	Mask that control which render target surface contents should be preserved on load.
-		 * @param[in]	readMask	Mask that controls which render targets can be read by shaders while they're bound.
-		 * @param[in]	clearMask	Mask that controls which render targets should be cleared on render pass start. Target
-		 *							cannot have both load and clear bits set. If load bit is set, clear will be ignored.
-		 */
-		VkRenderPass getRenderPass(RenderSurfaceMask loadMask, RenderSurfaceMask readMask, ClearMask clearMask) const;
-
-		/**
 		 * Gets internal Vulkan framebuffer object.
 		 *
 		 * @param[in]	loadMask	Mask that control which render target surface contents should be preserved on load.
@@ -101,7 +88,10 @@ namespace bs { namespace ct
 		 * @param[in]	clearMask	Mask that controls which render targets should be cleared on render pass start. Target
 		 *							cannot have both load and clear bits set. If load bit is set, clear will be ignored.
 		 */
-		VkFramebuffer getFramebuffer(RenderSurfaceMask loadMask, RenderSurfaceMask readMask, ClearMask clearMask) const;
+		VkFramebuffer getVkFramebuffer(RenderSurfaceMask loadMask, RenderSurfaceMask readMask, ClearMask clearMask) const;
+
+		/** Returns the render pass that this framebuffer is tied to. */
+		VulkanRenderPass* getRenderPass() const { return mRenderPass; }
 
 		/** 
 		 * Gets the number of layers in each framebuffer surface. A layer is an element in a texture array, or a depth 
@@ -114,32 +104,7 @@ namespace bs { namespace ct
 
 		/** Returns information about a depth-stencil attachment. */
 		const VulkanFramebufferAttachment& getDepthStencilAttachment() const { return mDepthStencilAttachment; }
-
-		/** Gets the total number of frame-buffer attachments, including both color and depth. */
-		UINT32 getNumAttachments() const { return mNumAttachments; }
-
-		/** Gets the number of color frame-buffer attachments. */
-		UINT32 getNumColorAttachments() const { return mNumColorAttachments; }
-
-		/** Returns true if the framebuffer has a depth attachment. */
-		bool hasDepthAttachment() const { return mHasDepth; }
-
-		/** Returns sample flags that determine if the framebuffer supports multi-sampling, and for how many samples. */
-		VkSampleCountFlagBits getSampleFlags() const { return mSampleFlags; }
-
-		/** 
-		 * Returns the maximum required number of clear entries to provide in a render pass start structure. This depends on
-		 * the clear mask and the attachments on the framebuffer. 
-		 */
-		UINT32 getNumClearEntries(ClearMask clearMask) const;
 	private:
-		/** Information about a single frame-buffer variant. */
-		struct Variant
-		{
-			VkRenderPass renderPass;
-			VkFramebuffer framebuffer;
-		};
-
 		/** Key used for identifying different types of frame-buffer variants. */
 		struct VariantKey
 		{
@@ -163,28 +128,19 @@ namespace bs { namespace ct
 		};
 
 		/** Creates a new variant of the framebuffer. */
-		Variant createVariant(RenderSurfaceMask loadMask, RenderSurfaceMask readMask, ClearMask clearMask) const;
+		VkFramebuffer createVariant(RenderSurfaceMask loadMask, RenderSurfaceMask readMask, ClearMask clearMask) const;
 
 		UINT32 mId;
+		VulkanRenderPass* mRenderPass;
 
-		Variant mDefault;
-		mutable UnorderedMap<VariantKey, Variant, VariantKey::HashFunction, VariantKey::EqualFunction> mVariants;
+		VkFramebuffer mDefault;
+		mutable UnorderedMap<VariantKey, VkFramebuffer, VariantKey::HashFunction, VariantKey::EqualFunction> mVariants;
 
-		UINT32 mNumAttachments;
-		UINT32 mNumColorAttachments;
 		UINT32 mNumLayers;
-		VulkanFramebufferAttachment mColorAttachments[BS_MAX_MULTIPLE_RENDER_TARGETS];
+		VulkanFramebufferAttachment mColorAttachments[BS_MAX_MULTIPLE_RENDER_TARGETS] { };
 		VulkanFramebufferAttachment mDepthStencilAttachment;
-		bool mHasDepth;
-		VkSampleCountFlagBits mSampleFlags;
 
-		mutable VkAttachmentDescription mAttachments[BS_MAX_MULTIPLE_RENDER_TARGETS + 1];
 		mutable VkImageView mAttachmentViews[BS_MAX_MULTIPLE_RENDER_TARGETS + 1];
-		mutable VkAttachmentReference mColorReferences[BS_MAX_MULTIPLE_RENDER_TARGETS];
-		mutable VkAttachmentReference mDepthReference;
-		mutable VkSubpassDescription mSubpassDesc;
-		mutable VkSubpassDependency mDependencies[2];
-		mutable VkRenderPassCreateInfo mRenderPassCI;
 		mutable VkFramebufferCreateInfo mFramebufferCI;
 
 		static UINT32 sNextValidId;
