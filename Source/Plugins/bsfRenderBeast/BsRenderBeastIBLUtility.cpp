@@ -473,8 +473,7 @@ namespace bs { namespace ct
 		}
 		else
 		{
-			GpuResourcePool& resPool = GpuResourcePool::instance();
-			SPtr<PooledRenderTexture> finalCoeffs = resPool.get(IrradianceAccumulateCubeSHMat::getOutputDesc());
+			SPtr<PooledRenderTexture> finalCoeffs = gGpuResourcePool().get(IrradianceAccumulateCubeSHMat::getOutputDesc());
 
 			filterCubemapForIrradianceNonCompute(cubemap, 0, finalCoeffs->renderTexture);
 			coeffTexture = finalCoeffs->texture;
@@ -596,7 +595,7 @@ namespace bs { namespace ct
 	{
 		static const UINT32 NUM_COEFFS = 9;
 
-		GpuResourcePool& resPool = GpuResourcePool::instance();
+		GpuResourcePool& resPool = gGpuResourcePool();
 		IrradianceComputeSHFragMat* shCompute = IrradianceComputeSHFragMat::get();
 		IrradianceAccumulateSHMat* shAccum = IrradianceAccumulateSHMat::get();
 		IrradianceAccumulateCubeSHMat* shAccumCube = IrradianceAccumulateCubeSHMat::get();

@@ -7,56 +7,26 @@
 
 namespace bs { namespace ct
 {
-	PooledRenderTexture::PooledRenderTexture(GpuResourcePool* pool)
-		:mPool(pool)
-	{ }
-
-	PooledRenderTexture::~PooledRenderTexture()
-	{
-		if (mPool != nullptr)
-			mPool->_unregisterTexture(this);
-	}
-
-	PooledStorageBuffer::PooledStorageBuffer(GpuResourcePool* pool)
-		:mPool(pool)
-	{ }
-
-	PooledStorageBuffer::~PooledStorageBuffer()
-	{
-		if (mPool != nullptr)
-			mPool->_unregisterBuffer(this);
-	}
-
-	GpuResourcePool::~GpuResourcePool()
-	{
-		for (auto& texture : mTextures)
-			texture.second.lock()->mPool = nullptr;
-
-		for (auto& buffer : mBuffers)
-			buffer.second.lock()->mPool = nullptr;
-	}
-
 	SPtr<PooledRenderTexture> GpuResourcePool::get(const POOLED_RENDER_TEXTURE_DESC& desc)
 	{
-		for (auto& texturePair : mTextures)
+		for (auto& entry : mTextures)
 		{
-			SPtr<PooledRenderTexture> textureData = texturePair.second.lock();
-
-			if (!textureData->mIsFree)
+			bool isFree = entry.use_count() == 1;
+			if (!isFree)
 				continue;
 
-			if (textureData->texture == nullptr)
+			if (entry->texture == nullptr)
 				continue;
 
-			if (matches(textureData->texture, desc))
+			if (matches(entry->texture, desc))
 			{
-				textureData->mIsFree = false;
-				return textureData;
+				entry->mLastUsedFrame = mCurrentFrame;
+				return entry;
 			}
 		}
 
-		SPtr<PooledRenderTexture> newTextureData = bs_shared_ptr_new<PooledRenderTexture>(this);
-		_registerTexture(newTextureData);
+		SPtr<PooledRenderTexture> newTexture = bs_shared_ptr_new<PooledRenderTexture>(mCurrentFrame);
+		mTextures.add(newTexture);
 
 		TEXTURE_DESC texDesc;
 		texDesc.type = desc.type;
@@ -72,7 +42,7 @@ namespace bs { namespace ct
 		if (desc.type != TEX_TYPE_3D)
 			texDesc.numArraySlices = desc.arraySize;
 
-		newTextureData->texture = Texture::create(texDesc);
+		newTexture->texture = Texture::create(texDesc);
 		
 		if ((desc.flag & (TU_RENDERTARGET | TU_DEPTHSTENCIL)) != 0)
 		{
@@ -80,47 +50,54 @@ namespace bs { namespace ct
 
 			if ((desc.flag & TU_RENDERTARGET) != 0)
 			{
-				rtDesc.colorSurfaces[0].texture = newTextureData->texture;
+				rtDesc.colorSurfaces[0].texture = newTexture->texture;
 				rtDesc.colorSurfaces[0].face = 0;
-				rtDesc.colorSurfaces[0].numFaces = newTextureData->texture->getProperties().getNumFaces();
+				rtDesc.colorSurfaces[0].numFaces = newTexture->texture->getProperties().getNumFaces();
 				rtDesc.colorSurfaces[0].mipLevel = 0;
 			}
 
 			if ((desc.flag & TU_DEPTHSTENCIL) != 0)
 			{
-				rtDesc.depthStencilSurface.texture = newTextureData->texture;
+				rtDesc.depthStencilSurface.texture = newTexture->texture;
 				rtDesc.depthStencilSurface.face = 0;
-				rtDesc.depthStencilSurface.numFaces = newTextureData->texture->getProperties().getNumFaces();
+				rtDesc.depthStencilSurface.numFaces = newTexture->texture->getProperties().getNumFaces();
 				rtDesc.depthStencilSurface.mipLevel = 0;
 			}
 
-			newTextureData->renderTexture = RenderTexture::create(rtDesc);
+			newTexture->renderTexture = RenderTexture::create(rtDesc);
 		}
 
-		return newTextureData;
+		return newTexture;
+	}
+
+	void GpuResourcePool::get(SPtr<PooledRenderTexture>& texture, const POOLED_RENDER_TEXTURE_DESC& desc)
+	{
+		if(texture && matches(texture->texture, desc))
+			return;
+
+		texture = get(desc);
 	}
 
 	SPtr<PooledStorageBuffer> GpuResourcePool::get(const POOLED_STORAGE_BUFFER_DESC& desc)
 	{
-		for (auto& bufferPair : mBuffers)
+		for (auto& entry : mBuffers)
 		{
-			SPtr<PooledStorageBuffer> bufferData = bufferPair.second.lock();
-
-			if (!bufferData->mIsFree)
+			bool isFree = entry.use_count() == 1;
+			if (!isFree)
 				continue;
 
-			if (bufferData->buffer == nullptr)
+			if (entry->buffer == nullptr)
 				continue;
 
-			if (matches(bufferData->buffer, desc))
+			if (matches(entry->buffer, desc))
 			{
-				bufferData->mIsFree = false;
-				return bufferData;
+				entry->mLastUsedFrame = mCurrentFrame;
+				return entry;
 			}
 		}
 
-		SPtr<PooledStorageBuffer> newBufferData = bs_shared_ptr_new<PooledStorageBuffer>(this);
-		_registerBuffer(newBufferData);
+		SPtr<PooledStorageBuffer> newBuffer = bs_shared_ptr_new<PooledStorageBuffer>(mCurrentFrame);
+		mBuffers.add(newBuffer);
 
 		GPU_BUFFER_DESC bufferDesc;
 		bufferDesc.type = desc.type;
@@ -129,21 +106,65 @@ namespace bs { namespace ct
 		bufferDesc.format = desc.format;
 		bufferDesc.usage = desc.usage;
 
-		newBufferData->buffer = GpuBuffer::create(bufferDesc);
+		newBuffer->buffer = GpuBuffer::create(bufferDesc);
 
-		return newBufferData;
+		return newBuffer;
 	}
 
-	void GpuResourcePool::release(const SPtr<PooledRenderTexture>& texture)
+	void GpuResourcePool::get(SPtr<PooledStorageBuffer>& buffer, const POOLED_STORAGE_BUFFER_DESC& desc)
 	{
-		auto iterFind = mTextures.find(texture.get());
-		iterFind->second.lock()->mIsFree = true;
+		if(buffer && matches(buffer->buffer, desc))
+			return;
+
+		buffer = get(desc);
 	}
 
-	void GpuResourcePool::release(const SPtr<PooledStorageBuffer>& buffer)
+	void GpuResourcePool::update()
 	{
-		auto iterFind = mBuffers.find(buffer.get());
-		iterFind->second.lock()->mIsFree = true;
+		mCurrentFrame++;
+
+		// Note: Should also force pruning when over some memory limit (in which case I can probably increase the
+		// age pruning limit higher)
+		prune(3);
+	}
+
+	void GpuResourcePool::prune(UINT32 age)
+	{
+		for(auto iter = mTextures.begin(); iter != mTextures.end();)
+		{
+			auto& entry = *iter;
+
+			bool isFree = entry.use_count() == 1;
+			if(!isFree)
+			{
+				++iter;
+				continue;
+			}
+
+			UINT32 entryAge = mCurrentFrame - entry->mLastUsedFrame;
+			if(entryAge >= age)
+				mTextures.swapAndErase(iter);
+			else
+				++iter;
+		}
+
+		for(auto iter = mBuffers.begin(); iter != mBuffers.end();)
+		{
+			auto& entry = *iter;
+
+			bool isFree = entry.use_count() == 1;
+			if(!isFree)
+			{
+				++iter;
+				continue;
+			}
+
+			UINT32 entryAge = mCurrentFrame - entry->mLastUsedFrame;
+			if(entryAge >= age)
+				mBuffers.swapAndErase(iter);
+			else
+				++iter;
+		}
 	}
 
 	bool GpuResourcePool::matches(const SPtr<Texture>& texture, const POOLED_RENDER_TEXTURE_DESC& desc)
@@ -187,26 +208,6 @@ namespace bs { namespace ct
 		}
 
 		return match;
-	}
-
-	void GpuResourcePool::_registerTexture(const SPtr<PooledRenderTexture>& texture)
-	{
-		mTextures.insert(std::make_pair(texture.get(), texture));
-	}
-
-	void GpuResourcePool::_unregisterTexture(PooledRenderTexture* texture)
-	{
-		mTextures.erase(texture);
-	}
-
-	void GpuResourcePool::_registerBuffer(const SPtr<PooledStorageBuffer>& buffer)
-	{
-		mBuffers.insert(std::make_pair(buffer.get(), buffer));
-	}
-
-	void GpuResourcePool::_unregisterBuffer(PooledStorageBuffer* buffer)
-	{
-		mBuffers.erase(buffer);
 	}
 
 	POOLED_RENDER_TEXTURE_DESC POOLED_RENDER_TEXTURE_DESC::create2D(PixelFormat format, UINT32 width, UINT32 height,
@@ -288,4 +289,10 @@ namespace bs { namespace ct
 
 		return desc;
 	}
+
+	GpuResourcePool& gGpuResourcePool()
+	{
+		return GpuResourcePool::instance();
+	}
+
 }}

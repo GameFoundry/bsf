@@ -213,21 +213,19 @@ namespace bs { namespace ct
 
 	void RCNodeSceneDepth::render(const RenderCompositorNodeInputs& inputs)
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 
 		UINT32 width = viewProps.target.viewRect.width;
 		UINT32 height = viewProps.target.viewRect.height;
 		UINT32 numSamples = viewProps.target.numSamples;
 
-		depthTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_D32_S8X24, width, height, TU_DEPTHSTENCIL,
+		depthTex = gGpuResourcePool().get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_D32_S8X24, width, height, TU_DEPTHSTENCIL,
 			numSamples, false));
 	}
 
 	void RCNodeSceneDepth::clear()
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-		resPool.release(depthTex);
+		depthTex = nullptr;
 	}
 
 	SmallVector<StringID, 4> RCNodeSceneDepth::getDependencies(const RendererView& view)
@@ -238,7 +236,7 @@ namespace bs { namespace ct
 	void RCNodeBasePass::render(const RenderCompositorNodeInputs& inputs)
 	{
 		// Allocate necessary textures & targets
-		GpuResourcePool& resPool = GpuResourcePool::instance();
+		GpuResourcePool& resPool = gGpuResourcePool();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 
 		const UINT32 width = viewProps.target.viewRect.width;
@@ -469,12 +467,10 @@ namespace bs { namespace ct
 
 	void RCNodeBasePass::clear()
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-
-		resPool.release(albedoTex);
-		resPool.release(normalTex);
-		resPool.release(roughMetalTex);
-		resPool.release(idTex);
+		albedoTex = nullptr;
+		normalTex = nullptr;
+		roughMetalTex = nullptr;
+		idTex = nullptr;
 	}
 
 	SmallVector<StringID, 4> RCNodeBasePass::getDependencies(const RendererView& view)
@@ -486,7 +482,7 @@ namespace bs { namespace ct
 
 	void RCNodeSceneColor::render(const RenderCompositorNodeInputs& inputs)
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
+		GpuResourcePool& resPool = gGpuResourcePool();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 
 		UINT32 width = viewProps.target.viewRect.width;
@@ -542,11 +538,8 @@ namespace bs { namespace ct
 
 	void RCNodeSceneColor::clear()
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-		resPool.release(sceneColorTex);
-
-		if (sceneColorTexArray != nullptr)
-			resPool.release(sceneColorTexArray);
+		sceneColorTex = nullptr;
+		sceneColorTexArray = nullptr;
 	}
 
 	void RCNodeSceneColor::resolveMSAA()
@@ -576,22 +569,16 @@ namespace bs { namespace ct
 			return;
 		}
 
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-
 		UINT32 width = viewProps.target.viewRect.width;
 		UINT32 height = viewProps.target.viewRect.height;
 
 		// We just allocate the texture, while the base pass is responsible for filling it out
-		output = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, width, height, TU_RENDERTARGET));
+		output = gGpuResourcePool().get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, width, height, TU_RENDERTARGET));
 	}
 
 	void RCNodeMSAACoverage::clear()
 	{
-		if(output)
-		{
-			GpuResourcePool& resPool = GpuResourcePool::instance();
-			resPool.release(output);
-		}
+		output = nullptr;
 	}
 
 	SmallVector<StringID, 4> RCNodeMSAACoverage::getDependencies(const RendererView& view)
@@ -721,11 +708,10 @@ namespace bs { namespace ct
 			lightAccumulationTex = sceneColorNode->sceneColorTex;
 			renderTarget = sceneColorNode->renderTarget;
 
-			mOwnsTexture = false;
 			return;
 		}
 
-		GpuResourcePool& resPool = GpuResourcePool::instance();
+		GpuResourcePool& resPool = gGpuResourcePool();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 
 		RCNodeSceneDepth* depthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[0]);
@@ -737,8 +723,8 @@ namespace bs { namespace ct
 		UINT32 usage = TU_RENDERTARGET;
 		if (numSamples > 1)
 		{
-			lightAccumulationTexArray = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, 
-				TU_LOADSTORE, 1, false, numSamples));
+			resPool.get(lightAccumulationTexArray, 
+				POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, TU_LOADSTORE, 1, false, numSamples));
 
 			ClearLoadStoreMat* clearMat = ClearLoadStoreMat::getVariation(ClearLoadStoreType::TextureArray,
 					ClearLoadStoreDataType::Float, 4);
@@ -760,8 +746,8 @@ namespace bs { namespace ct
 			lightAccumulationTexArray = nullptr;
 		}
 
-		lightAccumulationTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width,
-			height, usage, numSamples, false));
+		resPool.get(lightAccumulationTex, 
+			POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, usage, numSamples, false));
 
 		bool rebuildRT;
 		if (renderTarget != nullptr)
@@ -787,8 +773,6 @@ namespace bs { namespace ct
 
 			renderTarget = RenderTexture::create(lightAccumulationRTDesc);
 		}
-
-		mOwnsTexture = true;
 	}
 
 	void RCNodeLightAccumulation::resolveMSAA()
@@ -802,17 +786,9 @@ namespace bs { namespace ct
 
 	void RCNodeLightAccumulation::clear()
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-		if(mOwnsTexture)
-			resPool.release(lightAccumulationTex);
-		else
-		{
-			lightAccumulationTex = nullptr;
-			renderTarget = nullptr;
-		}
-
-		if(lightAccumulationTexArray)
-			resPool.release(lightAccumulationTexArray);
+		renderTarget = nullptr;
+		lightAccumulationTex = nullptr;
+		lightAccumulationTexArray = nullptr;
 	}
 
 	SmallVector<StringID, 4> RCNodeLightAccumulation::getDependencies(const RendererView& view)
@@ -878,8 +854,6 @@ namespace bs { namespace ct
 		}
 
 		// Standard deferred used for shadowed lights, or when tiled deferred isn't supported
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-
 		UINT32 width = viewProps.target.viewRect.width;
 		UINT32 height = viewProps.target.viewRect.height;
 		UINT32 numSamples = viewProps.target.numSamples;
@@ -913,8 +887,8 @@ namespace bs { namespace ct
 		}
 
 		// Allocate light occlusion
-		SPtr<PooledRenderTexture> lightOcclusionTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, width,
-			height, TU_RENDERTARGET, numSamples, false));
+		SPtr<PooledRenderTexture> lightOcclusionTex = gGpuResourcePool().get(
+			POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, width, height, TU_RENDERTARGET, numSamples, false));
 
 		bool rebuildRT = false;
 		if (mLightOcclusionRT != nullptr)
@@ -976,8 +950,6 @@ namespace bs { namespace ct
 
 		// Makes sure light accumulation can be read by following passes
 		rapi.setRenderTarget(nullptr);
-
-		resPool.release(lightOcclusionTex);
 	}
 
 	void RCNodeDeferredDirectLighting::clear()
@@ -1007,7 +979,7 @@ namespace bs { namespace ct
 		RCNodeLightAccumulation* lightAccumNode = static_cast <RCNodeLightAccumulation*>(inputs.inputNodes[2]);
 		RCNodeSSAO* ssaoNode = static_cast<RCNodeSSAO*>(inputs.inputNodes[3]);
 
-		GpuResourcePool& resPool = GpuResourcePool::instance();
+		GpuResourcePool& resPool = gGpuResourcePool();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 
 		const LightProbes& lightProbes = inputs.scene.lightProbes;
@@ -1040,7 +1012,7 @@ namespace bs { namespace ct
 			renderTetrahedra->execute(inputs.view, sceneDepthNode->depthTex->texture, lpInfo.tetrahedraVolume, rt);
 
 			rt = nullptr;
-			resPool.release(depthTex);
+			depthTex = nullptr;
 
 			evaluateMat = IrradianceEvaluateMat::getVariation(viewProps.target.numSamples > 1, true, false);
 		}
@@ -1066,8 +1038,7 @@ namespace bs { namespace ct
 		evaluateMat->execute(inputs.view, gbuffer, volumeIndicesTex, lpInfo, skybox, ssaoNode->output,
 			lightAccumNode->renderTarget);
 
-		if(volumeIndices)
-			resPool.release(volumeIndices);
+		volumeIndices = nullptr;
 	}
 
 	void RCNodeIndirectDiffuseLighting::clear()
@@ -1138,8 +1109,6 @@ namespace bs { namespace ct
 		{
 			SPtr<RenderTexture>	outputRT = lightAccumNode->renderTarget;
 
-			GpuResourcePool& resPool = GpuResourcePool::instance();
-
 			UINT32 width = viewProps.target.viewRect.width;
 			UINT32 height = viewProps.target.viewRect.height;
 			UINT32 numSamples = viewProps.target.numSamples;
@@ -1148,8 +1117,8 @@ namespace bs { namespace ct
 
 			bool isMSAA = viewProps.target.numSamples > 1;
 
-			SPtr<PooledRenderTexture> iblRadianceTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width,
-				height, TU_RENDERTARGET, numSamples, false));
+			SPtr<PooledRenderTexture> iblRadianceTex = gGpuResourcePool().get(
+				POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, TU_RENDERTARGET, numSamples, false));
 
 			RENDER_TEXTURE_DESC rtDesc;
 			rtDesc.colorSurfaces[0].texture = iblRadianceTex->texture;
@@ -1680,30 +1649,22 @@ namespace bs { namespace ct
 		return deps;
 	}
 
-	RCNodePostProcess::RCNodePostProcess()
-		:mOutput(), mAllocated()
-	{ }
-
 	void RCNodePostProcess::getAndSwitch(const RendererView& view, SPtr<RenderTexture>& output, SPtr<Texture>& lastFrame) const
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-
 		const RendererViewProperties& viewProps = view.getProperties();
 		UINT32 width = viewProps.target.viewRect.width;
 		UINT32 height = viewProps.target.viewRect.height;
 
-		if(!mAllocated[mCurrentIdx])
+		if(!mOutput[mCurrentIdx])
 		{
-			mOutput[mCurrentIdx] = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA8, width, height,
-					TU_RENDERTARGET, 1, false));
-
-			mAllocated[mCurrentIdx] = true;
+			mOutput[mCurrentIdx] = gGpuResourcePool().get(
+				POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA8, width, height, TU_RENDERTARGET, 1, false));
 		}
 
 		output = mOutput[mCurrentIdx]->renderTexture;
 
 		UINT32 otherIdx = (mCurrentIdx + 1) % 2;
-		if (mAllocated[otherIdx])
+		if (mOutput[otherIdx])
 			lastFrame = mOutput[otherIdx]->texture;
 
 		mCurrentIdx = otherIdx;
@@ -1712,7 +1673,7 @@ namespace bs { namespace ct
 	SPtr<Texture> RCNodePostProcess::getLastOutput() const
 	{
 		UINT32 otherIdx = (mCurrentIdx + 1) % 2;
-		if (mAllocated[otherIdx])
+		if (mOutput[otherIdx])
 			return mOutput[otherIdx]->texture;
 		
 		return nullptr;
@@ -1725,16 +1686,8 @@ namespace bs { namespace ct
 
 	void RCNodePostProcess::clear()
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-
-		if (mAllocated[0])
-			resPool.release(mOutput[0]);
-
-		if (mAllocated[1])
-			resPool.release(mOutput[1]);
-
-		mAllocated[0] = false;
-		mAllocated[1] = false;
+		mOutput[0] = nullptr;
+		mOutput[1] = nullptr;
 		mCurrentIdx = 0;
 	}
 
@@ -1743,17 +1696,9 @@ namespace bs { namespace ct
 		return {};
 	}
 
-	RCNodeEyeAdaptation::~RCNodeEyeAdaptation()
-	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-
-		if (previous)
-			resPool.release(previous);
-	}
-
 	void RCNodeEyeAdaptation::render(const RenderCompositorNodeInputs& inputs)
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
+		GpuResourcePool& resPool = gGpuResourcePool();
 
 		const RenderSettings& settings = inputs.view.getRenderSettings();
 
@@ -1787,7 +1732,6 @@ namespace bs { namespace ct
 					prevFrameEyeAdaptation,
 					reducedHistogram->renderTexture);
 
-				resPool.release(eyeAdaptHistogram);
 				eyeAdaptHistogram = nullptr;
 
 				// Generate eye adaptation value
@@ -1799,8 +1743,6 @@ namespace bs { namespace ct
 					inputs.frameInfo.timeDelta,
 					settings.autoExposure,
 					settings.exposureScale);
-
-				resPool.release(reducedHistogram);
 			}
 			else
 			{
@@ -1849,9 +1791,6 @@ namespace bs { namespace ct
 		}
 		else
 		{
-			if(previous)
-				resPool.release(previous);
-
 			previous = nullptr;
 			output = nullptr;
 		}
@@ -1859,13 +1798,8 @@ namespace bs { namespace ct
 
 	void RCNodeEyeAdaptation::clear()
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-
-		// Save eye adaptation for next frame
-		if(previous)
-			resPool.release(previous);
-
 		std::swap(output, previous);
+		output = nullptr;
 	}
 	
 	bool RCNodeEyeAdaptation::useHistogramEyeAdapatation(const RenderCompositorNodeInputs& inputs)
@@ -1885,18 +1819,8 @@ namespace bs { namespace ct
 		return deps;
 	}
 
-	RCNodeTonemapping::~RCNodeTonemapping()
-	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-
-		if (mTonemapLUT)
-			resPool.release(mTonemapLUT);
-	}
-
 	void RCNodeTonemapping::render(const RenderCompositorNodeInputs& inputs)
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 		const RenderSettings& settings = inputs.view.getRenderSettings();
 
@@ -1922,7 +1846,7 @@ namespace bs { namespace ct
 				{
 					CreateTonemapLUTMat* createLUT = CreateTonemapLUTMat::getVariation(volumeLUT);
 					if(mTonemapLUT == nullptr)
-						mTonemapLUT = resPool.get(createLUT->getOutputDesc());
+						mTonemapLUT = gGpuResourcePool().get(createLUT->getOutputDesc());
 
 					if(volumeLUT)
 						createLUT->execute3D(mTonemapLUT->texture, settings);
@@ -1946,13 +1870,7 @@ namespace bs { namespace ct
 		}
 
 		if(gammaOnly)
-		{
-			if(mTonemapLUT)
-			{
-				resPool.release(mTonemapLUT);
-				mTonemapLUT = nullptr;
-			}
-		}
+			mTonemapLUT = nullptr;
 
 		TonemappingMat* tonemapping = TonemappingMat::getVariation(volumeLUT, gammaOnly, autoExposure, msaa);
 
@@ -2044,7 +1962,7 @@ namespace bs { namespace ct
 		const TextureProperties& texProps = nearTex ? nearTex->texture->getProperties() : farTex->texture->getProperties();
 		POOLED_RENDER_TEXTURE_DESC tempTexDesc = POOLED_RENDER_TEXTURE_DESC::create2D(texProps.getFormat(), 
 			texProps.getWidth(), texProps.getHeight(), TU_RENDERTARGET);
-		SPtr<PooledRenderTexture> tempTexture = GpuResourcePool::instance().get(tempTexDesc);
+		SPtr<PooledRenderTexture> tempTexture = gGpuResourcePool().get(tempTexDesc);
 
 		SPtr<Texture> blurredNearTex;
 		if(nearTex)
@@ -2073,7 +1991,6 @@ namespace bs { namespace ct
 			sceneDepthNode->depthTex->texture, ppOutput, inputs.view, settings);
 
 		separateMat->release();
-		GpuResourcePool::instance().release(tempTexture);
 	}
 
 	void RCNodeGaussianDOF::clear()
@@ -2124,16 +2041,14 @@ namespace bs { namespace ct
 		const bool msaa = viewProps.target.numSamples > 1;
 		DownsampleMat* downsampleMat = DownsampleMat::getVariation(1, msaa);
 
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-		output = resPool.get(DownsampleMat::getOutputDesc(input));
+		output = gGpuResourcePool().get(DownsampleMat::getOutputDesc(input));
 
 		downsampleMat->execute(input, output->renderTexture);
 	}
 
 	void RCNodeHalfSceneColor::clear()
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-		resPool.release(output);
+		output = nullptr;
 	}
 
 	SmallVector<StringID, 4> RCNodeHalfSceneColor::getDependencies(const RendererView& view)
@@ -2145,7 +2060,7 @@ namespace bs { namespace ct
 
 	void RCNodeSceneColorDownsamples::render(const RenderCompositorNodeInputs& inputs)
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
+		GpuResourcePool& resPool = gGpuResourcePool();
 
 		auto* halfSceneColorNode = static_cast<RCNodeHalfSceneColor*>(inputs.inputNodes[0]);
 		const TextureProperties& halfSceneProps = halfSceneColorNode->output->texture->getProperties();
@@ -2173,12 +2088,8 @@ namespace bs { namespace ct
 
 	void RCNodeSceneColorDownsamples::clear()
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-
-		for(UINT32 i = 1; i < MAX_NUM_DOWNSAMPLES; i++)
-			resPool.release(output[i]);
-
-		output[0] = nullptr;
+		for(UINT32 i = 0; i < MAX_NUM_DOWNSAMPLES; i++)
+			output[i] = nullptr;
 	}
 
 	SmallVector<StringID, 4> RCNodeSceneColorDownsamples::getDependencies(const RendererView& view)
@@ -2188,7 +2099,6 @@ namespace bs { namespace ct
 
 	void RCNodeResolvedSceneDepth::render(const RenderCompositorNodeInputs& inputs)
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[0]);
 
@@ -2197,33 +2107,21 @@ namespace bs { namespace ct
 			UINT32 width = viewProps.target.viewRect.width;
 			UINT32 height = viewProps.target.viewRect.height;
 
-			output = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_D32_S8X24, width, height, 
-				TU_DEPTHSTENCIL, 1, false)); 
+			output = gGpuResourcePool().get(
+				POOLED_RENDER_TEXTURE_DESC::create2D(PF_D32_S8X24, width, height, TU_DEPTHSTENCIL, 1, false)); 
 
 			RenderAPI& rapi = RenderAPI::instance();
 			rapi.setRenderTarget(output->renderTexture);
 			rapi.clearRenderTarget(FBT_STENCIL);
 			gRendererUtility().blit(sceneDepthNode->depthTex->texture, Rect2I::EMPTY, false, true);
-
-			mPassThrough = false;
 		}
 		else
-		{
 			output = sceneDepthNode->depthTex;
-			mPassThrough = true;
-		}
 	}
 
 	void RCNodeResolvedSceneDepth::clear()
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-
-		if (!mPassThrough)
-			resPool.release(output);
-		else
-			output = nullptr;
-
-		mPassThrough = false;
+		output = nullptr;
 	}
 
 	SmallVector<StringID, 4> RCNodeResolvedSceneDepth::getDependencies(const RendererView& view)
@@ -2234,7 +2132,6 @@ namespace bs { namespace ct
 
 	void RCNodeHiZ::render(const RenderCompositorNodeInputs& inputs)
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 
 		RCNodeResolvedSceneDepth* resolvedSceneDepth = static_cast<RCNodeResolvedSceneDepth*>(inputs.inputNodes[0]);
@@ -2249,8 +2146,8 @@ namespace bs { namespace ct
 		// Note: Use the 32-bit buffer here as 16-bit causes too much banding (most of the scene gets assigned 4-5 different
 		// depth values). 
 		//  - When I add UNORM 16-bit format I should be able to switch to that
-		output = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_R32F, size, size, TU_RENDERTARGET, 1, false, 1, 
-			numMips));
+		output = gGpuResourcePool().get(
+			POOLED_RENDER_TEXTURE_DESC::create2D(PF_R32F, size, size, TU_RENDERTARGET, 1, false, 1, numMips));
 
 		Rect2 srcRect = viewProps.target.nrmViewRect;
 
@@ -2312,8 +2209,7 @@ namespace bs { namespace ct
 
 	void RCNodeHiZ::clear()
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-		resPool.release(output);
+		output = nullptr;
 	}
 
 	SmallVector<StringID, 4> RCNodeHiZ::getDependencies(const RendererView& view)
@@ -2337,7 +2233,7 @@ namespace bs { namespace ct
 			return;
 		}
 
-		GpuResourcePool& resPool = GpuResourcePool::instance();
+		GpuResourcePool& resPool = gGpuResourcePool();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 
 		RCNodeResolvedSceneDepth* resolvedDepthNode = static_cast<RCNodeResolvedSceneDepth*>(inputs.inputNodes[0]);
@@ -2383,7 +2279,7 @@ namespace bs { namespace ct
 
 			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, downsampledSize.x, 
 				downsampledSize.y, TU_RENDERTARGET);
-			setupTex0 = GpuResourcePool::instance().get(desc);
+			setupTex0 = resPool.get(desc);
 
 			downsample->execute(inputs.view, sceneDepth, sceneNormals, setupTex0->renderTexture, DEPTH_RANGE);
 		}
@@ -2398,7 +2294,7 @@ namespace bs { namespace ct
 
 			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, downsampledSize.x, 
 				downsampledSize.y, TU_RENDERTARGET);
-			setupTex1 = GpuResourcePool::instance().get(desc);
+			setupTex1 = resPool.get(desc);
 
 			downsample->execute(inputs.view, sceneDepth, sceneNormals, setupTex1->renderTexture, DEPTH_RANGE);
 		}
@@ -2420,12 +2316,11 @@ namespace bs { namespace ct
 
 			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, downsampledSize.x, 
 				downsampledSize.y, TU_RENDERTARGET);
-			downAOTex1 = GpuResourcePool::instance().get(desc);
+			downAOTex1 = resPool.get(desc);
 
 			SSAOMat* ssaoMat = SSAOMat::getVariation(false, false, quality);
 			ssaoMat->execute(inputs.view, textures, downAOTex1->renderTexture, settings);
 
-			GpuResourcePool::instance().release(setupTex1);
 			setupTex1 = nullptr;
 		}
 
@@ -2444,17 +2339,14 @@ namespace bs { namespace ct
 
 			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, downsampledSize.x, 
 				downsampledSize.y, TU_RENDERTARGET);
-			downAOTex0 = GpuResourcePool::instance().get(desc);
+			downAOTex0 = resPool.get(desc);
 
 			bool upsample = numDownsampleLevels > 1;
 			SSAOMat* ssaoMat = SSAOMat::getVariation(upsample, false, quality);
 			ssaoMat->execute(inputs.view, textures, downAOTex0->renderTexture, settings);
 
 			if(upsample)
-			{
-				GpuResourcePool::instance().release(downAOTex1);
 				downAOTex1 = nullptr;
-			}
 		}
 
 		UINT32 width = viewProps.target.viewRect.width;
@@ -2473,16 +2365,12 @@ namespace bs { namespace ct
 			ssaoMat->execute(inputs.view, textures, mPooledOutput->renderTexture, settings);
 		}
 
-		if(resolvedNormals)
-		{
-			GpuResourcePool::instance().release(resolvedNormals);
-			resolvedNormals = nullptr;
-		}
+		resolvedNormals = nullptr;
 
 		if(numDownsampleLevels > 0)
 		{
-			GpuResourcePool::instance().release(setupTex0);
-			GpuResourcePool::instance().release(downAOTex0);
+			setupTex0 = nullptr;
+			downAOTex0 = nullptr;
 		}
 
 		// Blur the output
@@ -2494,15 +2382,13 @@ namespace bs { namespace ct
 
 			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, rtProps.width, 
 				rtProps.height, TU_RENDERTARGET);
-			SPtr<PooledRenderTexture> blurIntermediateTex = GpuResourcePool::instance().get(desc);
+			SPtr<PooledRenderTexture> blurIntermediateTex = resPool.get(desc);
 
 			SSAOBlurMat* blurHorz = SSAOBlurMat::getVariation(true);
 			SSAOBlurMat* blurVert = SSAOBlurMat::getVariation(false);
 
 			blurHorz->execute(inputs.view, mPooledOutput->texture, sceneDepth, blurIntermediateTex->renderTexture, DEPTH_RANGE);
 			blurVert->execute(inputs.view, blurIntermediateTex->texture, sceneDepth, mPooledOutput->renderTexture, DEPTH_RANGE);
-
-			GpuResourcePool::instance().release(blurIntermediateTex);
 		}
 
 		RenderAPI::instance().setRenderTarget(nullptr);
@@ -2511,12 +2397,7 @@ namespace bs { namespace ct
 
 	void RCNodeSSAO::clear()
 	{
-		if(mPooledOutput)
-		{
-			GpuResourcePool& resPool = GpuResourcePool::instance();
-			resPool.release(mPooledOutput);
-		}
-
+		mPooledOutput = nullptr;
 		output = nullptr;
 	}
 
@@ -2550,7 +2431,7 @@ namespace bs { namespace ct
 		RCNodeHiZ* hiZNode = static_cast<RCNodeHiZ*>(inputs.inputNodes[3]);
 		RCNodeResolvedSceneDepth* resolvedSceneDepthNode = static_cast<RCNodeResolvedSceneDepth*>(inputs.inputNodes[4]);
 
-		GpuResourcePool& resPool = GpuResourcePool::instance();
+		GpuResourcePool& resPool = gGpuResourcePool();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 
 		UINT32 width = viewProps.target.viewRect.width;
@@ -2601,11 +2482,7 @@ namespace bs { namespace ct
 		SSRTraceMat* traceMat = SSRTraceMat::getVariation(settings.quality, viewProps.target.numSamples > 1, true);
 		traceMat->execute(inputs.view, gbuffer, sceneColor, hiZ, settings, traceRt);
 
-		if (resolvedSceneColor)
-		{
-			resPool.release(resolvedSceneColor);
-			resolvedSceneColor = nullptr;
-		}
+		resolvedSceneColor = nullptr;
 
 		if (mPrevFrame)
 		{
@@ -2618,7 +2495,7 @@ namespace bs { namespace ct
 			resolveMat->execute(inputs.view, mPrevFrame->texture, traceOutput->texture, sceneDepthNode->depthTex->texture,
 				mPooledOutput->renderTexture);
 
-			resPool.release(traceOutput);
+			traceOutput = nullptr;
 		}
 		else
 			mPooledOutput = traceOutput;
@@ -2629,11 +2506,6 @@ namespace bs { namespace ct
 
 	void RCNodeSSR::clear()
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-
-		if(mPrevFrame)
-			resPool.release(mPrevFrame);
-
 		mPrevFrame = mPooledOutput;
 		mPooledOutput = nullptr;
 		output = nullptr;
@@ -2641,14 +2513,7 @@ namespace bs { namespace ct
 
 	void RCNodeSSR::deallocOutputs()
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-		
-		if(mPrevFrame)
-		{
-			resPool.release(mPrevFrame);
-			mPrevFrame = nullptr;
-		}
-
+		mPrevFrame = nullptr;
 		output = nullptr;
 	}
 
@@ -2670,7 +2535,6 @@ namespace bs { namespace ct
 
 	void RCNodeBloom::render(const RenderCompositorNodeInputs& inputs)
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
 		const RenderSettings& settings = inputs.view.getRenderSettings();
 
 		// Grab downsampled scene color to use as input
@@ -2708,7 +2572,7 @@ namespace bs { namespace ct
 
 			const TextureProperties& inputProps = downsampledTex->texture->getProperties();
 
-			SPtr<PooledRenderTexture> filterOutput = resPool.get(
+			SPtr<PooledRenderTexture> filterOutput = gGpuResourcePool().get(
 				POOLED_RENDER_TEXTURE_DESC::create2D(
 					inputProps.getFormat(), 
 					inputProps.getWidth(), 
@@ -2743,9 +2607,7 @@ namespace bs { namespace ct
 
 	void RCNodeBloom::clear()
 	{
-		GpuResourcePool& resPool = GpuResourcePool::instance();
-		resPool.release(mPooledOutput);
-
+		mPooledOutput = nullptr;
 		output = nullptr;
 	}
 

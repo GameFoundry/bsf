@@ -6,6 +6,7 @@
 #include "Utility/BsModule.h"
 #include "Image/BsPixelUtil.h"
 #include "Image/BsTexture.h"
+#include "Utility/BsDynArray.h"
 
 namespace bs { namespace ct
 {
@@ -20,8 +21,9 @@ namespace bs { namespace ct
 	/**	Contains data about a single render texture in the GPU resource pool. */
 	struct BS_CORE_EXPORT PooledRenderTexture
 	{
-		PooledRenderTexture(GpuResourcePool* pool);
-		~PooledRenderTexture();
+		PooledRenderTexture(UINT32 lastUsedFrame)
+			:mLastUsedFrame(lastUsedFrame)
+		{ }
 
 		SPtr<Texture> texture;
 		SPtr<RenderTexture> renderTexture;
@@ -29,23 +31,22 @@ namespace bs { namespace ct
 	private:
 		friend class GpuResourcePool;
 
-		GpuResourcePool* mPool;
-		bool mIsFree = false;
+		UINT32 mLastUsedFrame = 0;
 	};
 
 	/**	Contains data about a single storage buffer in the GPU resource pool. */
 	struct BS_CORE_EXPORT PooledStorageBuffer
 	{
-		PooledStorageBuffer(GpuResourcePool* pool);
-		~PooledStorageBuffer();
+		PooledStorageBuffer(UINT32 lastUsedFrame)
+			:mLastUsedFrame(lastUsedFrame)
+		{ }
 
 		SPtr<GpuBuffer> buffer;
 
 	private:
 		friend class GpuResourcePool;
 
-		GpuResourcePool* mPool;
-		bool mIsFree = false;
+		UINT32 mLastUsedFrame = 0;
 	};
 
 	/** 
@@ -55,60 +56,57 @@ namespace bs { namespace ct
 	class BS_CORE_EXPORT GpuResourcePool : public Module<GpuResourcePool>
 	{
 	public:
-		~GpuResourcePool();
-
 		/**
 		 * Attempts to find the unused render texture with the specified parameters in the pool, or creates a new texture
-		 * otherwise. When done with the texture make sure to call release(const POOLED_RENDER_TEXTURE_DESC&).
+		 * otherwise. 
 		 *
 		 * @param[in]	desc		Descriptor structure that describes what kind of texture to retrieve.
 		 */
 		SPtr<PooledRenderTexture> get(const POOLED_RENDER_TEXTURE_DESC& desc);
 
 		/**
+		 * Attempts to find the unused render texture with the specified parameters in the pool, or creates a new texture
+		 * otherwise. Use this variant of the method if you are already holding a reference to a pooled texture which
+		 * you want to reuse - this is more efficient than releasing the old texture and calling the other get() variant.
+		 *
+		 * @param[in, out]	texture		Existing reference to a pooled texture that you would prefer to reuse. If it
+		 *								matches the provided descriptor the system will return the unchanged texture,
+		 *								otherwise it will try to find another unused texture, or allocate a new one. New
+		 *								value will be output through this parameter.
+		 * @param[in]		desc		Descriptor structure that describes what kind of texture to retrieve.
+		 */
+		void get(SPtr<PooledRenderTexture>& texture, const POOLED_RENDER_TEXTURE_DESC& desc);
+
+		/**
 		 * Attempts to find the unused storage buffer with the specified parameters in the pool, or creates a new buffer
-		 * otherwise. When done with the buffer make sure to call release(const POOLED_STORAGE_BUFFER_DESC&).
+		 * otherwise.
 		 *
 		 * @param[in]	desc		Descriptor structure that describes what kind of buffer to retrieve.
 		 */
 		SPtr<PooledStorageBuffer> get(const POOLED_STORAGE_BUFFER_DESC& desc);
 
 		/**
-		 * Releases a texture previously allocated with get(const POOLED_RENDER_TEXTURE_DESC&). The texture is returned to
-		 * the pool so that it may be reused later.
-		 *			
-		 * @note	
-		 * The texture will be removed from the pool if the last reference to it is deleted. Normally you would call 
-		 * release(const POOLED_RENDER_TEXTURE_DESC&) but keep a reference if you plan on using it later on.
+		 * Attempts to find the unused storage buffer with the specified parameters in the pool, or creates a new buffer
+		 * otherwise. Use this variant of the method if you are already holding a reference to a pooled buffer which
+		 * you want to reuse - this is more efficient than releasing the old buffer and calling the other get() variant.
+		 *
+		 * @param[in, out]	buffer		Existing reference to a pooled buffer that you would prefer to reuse. If it
+		 *								matches the provided descriptor the system will return the unchanged buffer,
+		 *								otherwise it will try to find another unused buffer, or allocate a new one. New
+		 *								value will be output through this parameter.
+		 * @param[in]	desc			Descriptor structure that describes what kind of buffer to retrieve.
 		 */
-		void release(const SPtr<PooledRenderTexture>& texture);
+		void get(SPtr<PooledStorageBuffer>& buffer, const POOLED_STORAGE_BUFFER_DESC& desc);
 
-		/**
-		 * Releases a buffer previously allocated with get(const POOLED_STORAGE_BUFFER_DESC&). The buffer is returned to the
-		 * pool so that it may be reused later.
-		 *			
-		 * @note	
-		 * The buffer will be removed from the pool if the last reference to it is deleted. Normally you would call 
-		 * release(const POOLED_STORAGE_BUFFER_DESC&) but keep a reference if you plan on using it later on.
+		/** Lets the pool know that another frame has passed. */
+		void update();
+
+		/** 
+		 * Destroys all unreferenced resources with that were last used @p age frames ago. Specify 0 to destroy all
+		 * unreferenced resources.
 		 */
-		void release(const SPtr<PooledStorageBuffer>& buffer);
-
+		void prune(UINT32 age);
 	private:
-		friend struct PooledRenderTexture;
-		friend struct PooledStorageBuffer;
-
-		/**	Registers a newly created render texture in the pool. */
-		void _registerTexture(const SPtr<PooledRenderTexture>& texture);
-
-		/**	Unregisters a created render texture in the pool. */
-		void _unregisterTexture(PooledRenderTexture* texture);
-
-		/**	Registers a newly created storage buffer in the pool. */
-		void _registerBuffer(const SPtr<PooledStorageBuffer>& buffer);
-
-		/**	Unregisters a created storage buffer in the pool. */
-		void _unregisterBuffer(PooledStorageBuffer* buffer);
-
 		/**
 		 * Checks does the provided texture match the parameters.
 		 * 
@@ -125,8 +123,10 @@ namespace bs { namespace ct
 		 */
 		static bool matches(const SPtr<GpuBuffer>& buffer, const POOLED_STORAGE_BUFFER_DESC& desc);
 
-		Map<PooledRenderTexture*, std::weak_ptr<PooledRenderTexture>> mTextures;
-		Map<PooledStorageBuffer*, std::weak_ptr<PooledStorageBuffer>> mBuffers;
+		DynArray<SPtr<PooledRenderTexture>> mTextures;
+		DynArray<SPtr<PooledStorageBuffer>> mBuffers;
+
+		UINT32 mCurrentFrame = 0;
 	};
 
 	/** Structure used for creating a new pooled render texture. */
@@ -227,6 +227,9 @@ namespace bs { namespace ct
 		UINT32 numElements;
 		UINT32 elementSize;
 	};
+
+	/**	Provides easy access to the GpuResourcePool. */
+	BS_CORE_EXPORT GpuResourcePool& gGpuResourcePool();
 
 	/** @} */
 }}

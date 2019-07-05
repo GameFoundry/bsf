@@ -432,6 +432,9 @@ namespace bs { namespace ct
 				PROFILE_CALL(RenderAPI::instance().swapBuffers(rtInfo.target), "Swap buffers");
 		}
 
+		// Tick pool frame
+		GpuResourcePool::instance().update();
+
 		gProfilerGPU().endFrame();
 		gProfilerCPU().endSample("Render");
 	}

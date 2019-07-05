@@ -764,7 +764,7 @@ namespace bs { namespace ct
 
 		POOLED_RENDER_TEXTURE_DESC tempTextureDesc = POOLED_RENDER_TEXTURE_DESC::create2D(srcProps.getFormat(), 
 			dstProps.width, dstProps.height, TU_RENDERTARGET);
-		SPtr<PooledRenderTexture> tempTexture = GpuResourcePool::instance().get(tempTextureDesc);
+		SPtr<PooledRenderTexture> tempTexture = gGpuResourcePool().get(tempTextureDesc);
 
 		// Horizontal pass
 		{
@@ -800,8 +800,6 @@ namespace bs { namespace ct
 			bind();
 			gRendererUtility().drawScreenQuad();
 		}
-
-		GpuResourcePool::instance().release(tempTexture);
 	}
 
 	UINT32 GaussianBlurMat::calcStdDistribution(float filterRadius, std::array<float, MAX_BLUR_SAMPLES>& weights, 
@@ -980,7 +978,7 @@ namespace bs { namespace ct
 
 		POOLED_RENDER_TEXTURE_DESC outputTexDesc = POOLED_RENDER_TEXTURE_DESC::create2D(srcProps.getFormat(), 
 			outputWidth, outputHeight, TU_RENDERTARGET);
-		mOutput0 = GpuResourcePool::instance().get(outputTexDesc);
+		mOutput0 = gGpuResourcePool().get(outputTexDesc);
 
 		bool near = mVariation.getBool("NEAR");
 		bool far = mVariation.getBool("FAR");
@@ -988,7 +986,7 @@ namespace bs { namespace ct
 		SPtr<RenderTexture> rt;
 		if (near && far)
 		{
-			mOutput1 = GpuResourcePool::instance().get(outputTexDesc);
+			mOutput1 = gGpuResourcePool().get(outputTexDesc);
 
 			RENDER_TEXTURE_DESC rtDesc;
 			rtDesc.colorSurfaces[0].texture = mOutput0->texture;
@@ -1032,11 +1030,8 @@ namespace bs { namespace ct
 
 	void GaussianDOFSeparateMat::release()
 	{
-		if (mOutput0 != nullptr)
-			GpuResourcePool::instance().release(mOutput0);
-
-		if (mOutput1 != nullptr)
-			GpuResourcePool::instance().release(mOutput1);
+		mOutput0 = nullptr;
+		mOutput1 = nullptr;
 	}
 
 	GaussianDOFSeparateMat* GaussianDOFSeparateMat::getVariation(bool near, bool far)

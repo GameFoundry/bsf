@@ -344,8 +344,6 @@ namespace ct
 
 		/** @copydoc RenderCompositorNode::clear */
 		void clear() override;
-
-		bool mOwnsTexture = false;
 	};
 
 	/** 
@@ -471,8 +469,6 @@ namespace ct
 	class RCNodePostProcess : public RenderCompositorNode
 	{
 	public:
-		RCNodePostProcess();
-
 		/** 
 		 * Returns a texture that can be used for rendering a post-process effect, and the result of the previous 
 		 * output. Switches these textures so the next call they are returned in the opposite parameters. 
@@ -492,7 +488,6 @@ namespace ct
 		void clear() override;
 
 		mutable SPtr<PooledRenderTexture> mOutput[2];
-		mutable bool mAllocated[2];
 		mutable UINT32 mCurrentIdx = 0;
 	};
 
@@ -501,8 +496,6 @@ namespace ct
 	{
 	public:
 		SPtr<PooledRenderTexture> output;
-
-		~RCNodeEyeAdaptation();
 
 		static StringID getNodeId() { return "EyeAdaptation"; }
 		static SmallVector<StringID, 4> getDependencies(const RendererView& view);
@@ -529,8 +522,6 @@ namespace ct
 	class RCNodeTonemapping : public RenderCompositorNode
 	{
 	public:
-		~RCNodeTonemapping();
-
 		static StringID getNodeId() { return "Tonemapping"; }
 		static SmallVector<StringID, 4> getDependencies(const RendererView& view);
 	protected:
@@ -628,8 +619,6 @@ namespace ct
 
 		/** @copydoc RenderCompositorNode::clear */
 		void clear() override;
-
-		bool mPassThrough = false;
 	};
 
 	/** Builds the hierarchical Z buffer. */
