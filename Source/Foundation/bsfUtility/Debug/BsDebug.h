@@ -12,7 +12,14 @@ namespace bs
 	/** @addtogroup Debug
 	 *  @{
 	 */
-
+	
+	/** Type of the log that will be saved. */
+	enum class SavedLogType
+	{
+		HTML = 0,
+		Textual = 1
+	};
+	
 	/**
 	 * Utility class providing various debug functionality.
 	 *
@@ -43,9 +50,24 @@ namespace bs
 		 * Saves a log about the current state of the application to the specified location.
 		 * 
 		 * @param	path	Absolute path to the log filename.
+		 * @param   type    Format of the saved log.
 		 */
-		void saveLog(const Path& path) const;
-
+		void saveLog(const Path& path, SavedLogType type = SavedLogType::HTML) const;
+		
+		/**
+		 * Saves a log about the current state of the application to the specified location as a HTML file.
+		 * 
+		 * @param	path	Absolute path to the log filename.
+		 */
+		void saveHtmlLog(const Path& path) const;
+		
+		/**
+		 * Saves a log about the current state of the application to the specified location as a text file.
+		 * 
+		 * @param	path	Absolute path to the log filename.
+		 */
+		void saveTextLog(const Path& path) const;
+		
 		/**
 		 * Triggered when a new entry in the log is added.
 		 * 			
@@ -89,6 +111,9 @@ namespace bs
 
 /** Defines a new log category to use with BS_LOG. Each category must have a unique ID. */
 #define BS_LOG_CATEGORY(name, id) struct LogCategory##name { enum { _id = id }; };
+
+/** Get the ID of the log category based on its name. */
+#define BS_LOG_GET_CATEGORY_ID(category) LogCategory##category::_id
 
 #define BS_LOG(verbosity, category, message, ...)	{																		\
 	if((INT32)LogVerbosity::verbosity <= (INT32)BS_LOG_VERBOSITY) {															\

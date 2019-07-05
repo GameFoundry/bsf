@@ -10,6 +10,7 @@
 #include "Math/BsVector4.h"
 #include "Math/BsVector2I.h"
 #include "Error/BsException.h"
+#include "Debug/BsLog.h"
 
 namespace bs 
 {
@@ -583,6 +584,26 @@ namespace bs
 			stream << *i; 
 		}
 		return stream.str();
+	}
+
+	String toString(const LogVerbosity& val)
+	{
+		switch(val)
+		{
+		case LogVerbosity::Fatal: 
+			return "Fatal";
+		case LogVerbosity::Error:
+			return "Error";
+		case LogVerbosity::Warning: 
+			return "Warning";
+		default:
+		case LogVerbosity::Info:
+			return "Info";
+		case LogVerbosity::Verbose: 
+			return "Verbose";
+		case LogVerbosity::VeryVerbose: 
+			return "Very verbose";
+		}
 	}
 
 	float parseFloat(const String& val, float defaultValue)

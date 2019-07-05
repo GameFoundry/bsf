@@ -108,35 +108,51 @@ namespace bs
 	String Time::getCurrentDateTimeString(bool isUTC)
 	{
 		std::time_t t = std::time(nullptr);
-		char out[100];
-		if (isUTC)
-			std::strftime(out, sizeof(out), "%A, %B %d, %Y %T", std::gmtime(&t));
-		else
-			std::strftime(out, sizeof(out), "%A, %B %d, %Y %T", std::localtime(&t));
-		return String(out);
+		return bs_convert_timet_to_string(isUTC, false, TimeToStringConversionType::Full, t);
 	}
 
 	String Time::getCurrentTimeString(bool isUTC)
 	{
 		std::time_t t = std::time(nullptr);
-		char out[15];
-		if (isUTC)
-			std::strftime(out, sizeof(out), "%T", std::gmtime(&t));
-		else
-			std::strftime(out, sizeof(out), "%T", std::localtime(&t));
-		return String(out);
+		return bs_convert_timet_to_string(isUTC, false, TimeToStringConversionType::Time, t);
 	}
 
 	String Time::getAppStartUpDateString(bool isUTC)
 	{
+		return bs_convert_timet_to_string(isUTC, false, TimeToStringConversionType::Full, mAppStartUpDate);
+	}
+	
+	String bs_convert_timet_to_string(bool isUTC, bool useISO8601, TimeToStringConversionType type, const std::time_t time)
+	{
 		char out[100];
-		if (isUTC)
-			std::strftime(out, sizeof(out), "%A, %B %d, %Y %T", std::gmtime(&mAppStartUpDate));
+		String formatInput;
+		if (useISO8601)
+		{
+			if (type == TimeToStringConversionType::Date)
+				formatInput = "%F";
+			else if (type == TimeToStringConversionType::Time)
+				formatInput = "%T";
+			else
+				formatInput = "%FT%TZ";
+		}
 		else
-			std::strftime(out, sizeof(out), "%A, %B %d, %Y %T", std::localtime(&mAppStartUpDate));
+		{
+			if (type == TimeToStringConversionType::Date)
+				formatInput = "%A, %B %d, %Y";
+			else if (type == TimeToStringConversionType::Time)
+				formatInput = "%T";
+			else
+				formatInput = "%A, %B %d, %Y %T";
+		}
+		
+		if (isUTC)
+			std::strftime(out, sizeof(out), formatInput.c_str(), std::gmtime(&time));
+		else
+			std::strftime(out, sizeof(out), formatInput.c_str(), std::localtime(&time));
+		
 		return String(out);
 	}
-
+	
 	Time& gTime()
 	{
 		return Time::instance();
