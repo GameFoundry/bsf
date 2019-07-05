@@ -53,7 +53,7 @@ namespace bs
 		/** Text of the message. */
 		const String& getMessage() const { return mMsg; }
 
-		/** Local time of message being registered as a text */
+		/** Local time of message */
 		const std::time_t& getLocalTime() const { return mLocalTime; }
 
 	private:

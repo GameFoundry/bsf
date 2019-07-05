@@ -9,6 +9,7 @@
 
 namespace bs
 {
+	enum class LogVerbosity;
 	struct UUID;
 
 	/** @addtogroup String
@@ -290,6 +291,9 @@ namespace bs
 
 	/** Converts a path to a string. */
 	BS_UTILITY_EXPORT String toString(const Path& val);
+
+	/** Converts a log verbosity to a string. */
+	BS_UTILITY_EXPORT String toString(const LogVerbosity& val);
 
 	/**
 	 * Converts a vector of strings into a single string where the substrings are delimited by spaces.

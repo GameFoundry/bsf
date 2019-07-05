@@ -56,6 +56,6 @@ namespace bs
 
 	void CrashHandler::saveCrashLog() const
 	{
-		gDebug().saveLog(getCrashFolder() + sCrashLogName);
+		gDebug().saveLog(getCrashFolder() + sCrashLogName, SavedLogType::HTML);
 	}
 }

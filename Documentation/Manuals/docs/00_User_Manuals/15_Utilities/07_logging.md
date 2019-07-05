@@ -1,26 +1,42 @@
 ---
 title: Logging	messages
 ---
-Logging can be a useful way to debug issues during development, or notify the user that an error occurred. In bs::f it is handled though the @bs::Debug class. Use @bs::gDebug for an easy way to access the **Debug** instance.
+Logging can be a useful way to debug issues during development, or notify the user that an error occurred. In bs::f it is handled though the @bs::Debug class, which can recognize what severity the message is and from what component or module it came. Use @bs::gDebug for an easy way to access the **Debug** instance.
 
-Use any of these methods to log a new message:
- - @bs::Debug::logDebug - Logs an informative message.
- - @bs::Debug::logWarning - Log a message that an issue happened, but it's non critical.
- - @bs::Debug::logError - Log a message that an issue happened, and it's critical.
+To log a new message, you can use two of the following methods:
+ - Use the @bs::BS_LOG macro.
+ - Use the @bs::Debug::log function, which is similar to the macro but requires the use of @bs::BS_LOG_GET_CATEGORY_ID macro when providing the log category if the user doesn't know the ID of the category.
  
 ~~~~~~~~~~~~~{.cpp}
 UINT32 x = 5;
 
-gDebug().logDebug("Value of x is: " + toString(x));
+gDebug().log("Value of x is: " + toString(x), LogVerbosity::Info, BS_LOG_GET_CATEGORY_ID(Uncategorized));
 
 if(x != 5)
-	gDebug().logError("X must equal 5!");
+	BS_LOG(Error, Uncategorized, "X must equal 5!");
 ~~~~~~~~~~~~~
 
 All logged messages will be output to the standard console output, as well as the attached debugger output (if any).
 
-Messages are also saved internally, and can be output to a .html file by calling @bs::Debug::saveLog.
+Messages are also saved internally, and can be output to a either .html file or to a text file by calling @bs::Debug::saveLog.
 
 ~~~~~~~~~~~~~{.cpp}
-gDebug().saveLog("C:\myLog.html");
+gDebug().saveLog("C:\myLog.html", SavedLogType::HTML);
+gDebug().saveLog("C:\myLog.txt", SavedLogType::Textual);
 ~~~~~~~~~~~~~
+
+Sometimes you want to register your own log categories than the what bs::f provides. For that you can use @bs::BS_LOG_CATEGORY macro that will create the Log category to use based on the given ID number.
+
+~~~~~~~~~~~~~{.cpp}
+BS_LOG_CATEGORY(UserApp, 100)
+BS_LOG_CATEGORY(UserModule, 120)
+~~~~~~~~~~~~~
+
+Finally, the category should be registered to the @bs::LogCategoryName class that is responsible for storing the names of the categories based on their ID, so that the outputted log would contain the name of the category. This can be done by using the @bs::BS_LOG_REGISTER_CATEGORY_NAME macro or the @bs::LogCategoryName::registerCategory function. The instance can also be accessed by calling @bs::gLogCategoryName.
+
+~~~~~~~~~~~~~{.cpp}
+BS_LOG_REGISTER_CATEGORY_NAME(UserApp)
+gLogCategoryName.registerCategory("UserModule", BS_LOG_GET_CATEGORY_ID(UserModule));
+~~~~~~~~~~~~~
+
+**NOTE:** It is recommended to give the user log categories sufficiently high ID number, since they may collide with the bs::f's log categories.
