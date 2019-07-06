@@ -45,7 +45,6 @@
 #include "Renderer/BsParamBlocks.h"
 #include "Particles/BsParticleManager.h"
 #include "Particles/BsVectorField.h"
-#include "Debug/BsLogCategoryName.h"
 
 namespace bs
 {

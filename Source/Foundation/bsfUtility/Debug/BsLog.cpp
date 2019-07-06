@@ -92,7 +92,53 @@ namespace bs
 
 		return mEntries;
 	}
-
+	
+	bool Log::registerCategory(UINT32 id, String name)
+	{
+		RecursiveLock lock(mMutex);
+		
+		if (!categoryExist (id))
+		{
+			mIdStringPairs.emplace(id, name);
+			mNumCategories++;
+			return true;
+		}
+		return false;
+	}
+	
+	void Log::unregisterCategory(UINT32 id)
+	{
+		RecursiveLock lock(mMutex);
+		
+		if (categoryExist (id))
+		{
+			mIdStringPairs.erase(id);
+			mNumCategories--;
+		}
+	}
+	
+	bool Log::categoryExist(UINT32 id) const
+	{
+		return mIdStringPairs.find(id) != mIdStringPairs.end();
+	}
+	
+	bool Log::getCategoryName(UINT32 id, String& name) const
+	{
+		RecursiveLock lock(mMutex);
+		
+		if (categoryExist(id))
+		{
+			auto search = mIdStringPairs.find(id);
+			name = search->second;
+			return true;
+		}
+		else
+		{
+			name = "Unknown";
+			return false;
+		}
+	}
+	
 	Vector<LogEntry> Log::getAllEntries() const
 	{
 		Vector<LogEntry> entries;

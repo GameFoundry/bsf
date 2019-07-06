@@ -7,7 +7,6 @@
 #include "FileSystem/BsFileSystem.h"
 #include "FileSystem/BsDataStream.h"
 #include "Utility/BsTime.h"
-#include "Debug/BsLogCategoryName.h"
 
 #if BS_IS_BANSHEE3D
 #include "BsEngineConfig.h"
@@ -332,7 +331,7 @@ table td
 			       << "</td>" << std::endl;
 
 			String categoryName;
-			gLogCategoryName().getCategoryName(entry.getCategory(), categoryName);
+			mLog.getCategoryName(entry.getCategory(), categoryName);
 			stream << R"(			<td>)" << categoryName << "</td>" << std::endl;
 
 			String parsedMessage = StringUtil::replaceAll(entry.getMessage(), "\n", "<br>\n");
@@ -438,7 +437,7 @@ table td
 			}
 			
 			String categoryName;
-			gLogCategoryName().getCategoryName(entry.getCategory(), categoryName);
+			mLog.getCategoryName(entry.getCategory(), categoryName);
 			builtMsg.append(" <" + categoryName + ">");
 
 			builtMsg.append(" | ");
