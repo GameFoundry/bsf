@@ -323,8 +323,10 @@ namespace bs
 	 *			- Date: [DayOfWeek], [Month] [NumericalDate], [NumericalYear]
 	 *			- Time: [HH]::[MM]::[SS]
 	 *			- Full: [DayOfWeek], [Month] [NumericalDate], [NumericalYear] [HH]::[MM]::[SS]
+	 *  By default will output the local hour in custom format.
 	 */
-	BS_UTILITY_EXPORT String toString(const std::time_t time, bool isUTC, bool useISO8601, TimeToStringConversionType type);
+	BS_UTILITY_EXPORT String toString(const std::time_t time, bool isUTC = false, bool useISO8601 = false,
+		TimeToStringConversionType type = TimeToStringConversionType::Time);
 
 	/**
 	 * Converts a vector of strings into a single string where the substrings are delimited by spaces.
