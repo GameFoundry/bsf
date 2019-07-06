@@ -57,7 +57,6 @@ set(BS_UTILITY_INC_DEBUG
 	"bsfUtility/Debug/BsBitmapWriter.h"
 	"bsfUtility/Debug/BsDebug.h"
 	"bsfUtility/Debug/BsLog.h"
-	"bsfUtility/Debug/BsLogCategoryName.h"
 )
 
 set(BS_UTILITY_INC_FILESYSTEM
@@ -125,7 +124,6 @@ set(BS_UTILITY_SRC_DEBUG
 	"bsfUtility/Debug/BsBitmapWriter.cpp"
 	"bsfUtility/Debug/BsLog.cpp"
 	"bsfUtility/Debug/BsDebug.cpp"
-	"bsfUtility/Debug/BsLogCategoryName.cpp"
 )
 
 set(BS_UTILITY_INC_RTTI

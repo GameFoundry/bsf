@@ -32,11 +32,11 @@ BS_LOG_CATEGORY(UserApp, 100)
 BS_LOG_CATEGORY(UserModule, 120)
 ~~~~~~~~~~~~~
 
-Finally, the category should be registered to the @bs::LogCategoryName class that is responsible for storing the names of the categories based on their ID, so that the outputted log would contain the name of the category. This can be done by using the @bs::BS_LOG_REGISTER_CATEGORY_NAME macro or the @bs::LogCategoryName::registerCategory function. The instance can also be accessed by calling @bs::gLogCategoryName.
+Finally, the category should be registered to the @bs::Log class that is responsible for storing log entries and the names of the categories based on their ID, so that the outputted log would contain the name of the category. This can be done by using the @bs::BS_LOG_REGISTER_CATEGORY_NAME macro or the @bs::Log::registerCategory function. The instance of @bs::Log can be accessed by calling @bs::gDebug::getLog.
 
 ~~~~~~~~~~~~~{.cpp}
 BS_LOG_REGISTER_CATEGORY_NAME(UserApp)
-gLogCategoryName.registerCategory("UserModule", BS_LOG_GET_CATEGORY_ID(UserModule));
+gDebug().getLog().registerCategory("UserModule", BS_LOG_GET_CATEGORY_ID(UserModule));
 ~~~~~~~~~~~~~
 
 **NOTE:** It is recommended to give the user log categories sufficiently high ID number, since they may collide with the bs::f's log categories.
