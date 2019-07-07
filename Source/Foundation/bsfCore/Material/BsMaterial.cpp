@@ -766,6 +766,11 @@ namespace bs
 		// Ready to initialize as soon as shader loads
 		if (resource->getRTTI()->getRTTIId() == TID_Shader)
 			initializeIfLoaded();
+		else
+		{
+			// Otherwise just sync changes (most likely just a texture got loaded)
+			_markCoreDirty(MaterialDirtyFlags::ParamResource);
+		}
 	}
 
 	void Material::notifyResourceChanged(const HResource& resource)
