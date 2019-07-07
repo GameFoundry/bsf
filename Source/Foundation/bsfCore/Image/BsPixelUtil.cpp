@@ -1947,12 +1947,6 @@ namespace bs
 				UINT32 blockSize = getBlockSize(format);
 				pixelSize = blockSize / blockDim.x;
 
-				if(src.getWidth() % blockDim.x != 0 || src.getHeight() % blockDim.y != 0)
-				{
-					BS_LOG(Error, PixelUtility, 
-						"Area width/height must be a multiple of block size for compressed formats.");
-				}
-
 				if(src.getLeft() % blockDim.x != 0 || src.getTop() % blockDim.y != 0)
 				{
 					BS_LOG(Error, PixelUtility, 
