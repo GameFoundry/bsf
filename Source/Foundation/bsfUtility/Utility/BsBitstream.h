@@ -9,8 +9,17 @@
 #include "Math/BsVector3.h"
 #include "Utility/BsBitwise.h"
 
+
 namespace bs 
 {
+	using QuantType = uint8_t;
+	// see https://stackoverflow.com/questions/52355223/why-cant-a-static-constexpr-member-variable-be-passed-to-a-function
+	// static constexpr variables before c++17 can't be defined within the class.
+	static constexpr uint32_t BYTES_PER_QUANT = sizeof(QuantType);
+	static constexpr uint32_t BITS_PER_QUANT = BYTES_PER_QUANT * 8;
+	static constexpr uint32_t BITS_PER_QUANT_LOG2 = Bitwise::bitsLog2(BITS_PER_QUANT);
+
+
 	/** @addtogroup General
 	 *  @{
 	 */
@@ -28,7 +37,6 @@ namespace bs
 	 */
 	class Bitstream
 	{
-		using QuantType = uint8_t;
 	public:
 		/** 
 		 * Initializes an empty bitstream. As data is written the stream will grow its internal memory storage 
@@ -327,10 +335,6 @@ namespace bs
 		QuantType* data() const { return mData; }
 
 	private:
-		static constexpr uint32_t BYTES_PER_QUANT = sizeof(QuantType);
-		static constexpr uint32_t BITS_PER_QUANT = BYTES_PER_QUANT * 8;
-		static constexpr uint32_t BITS_PER_QUANT_LOG2 = Bitwise::bitsLog2(BITS_PER_QUANT);
-
 		/** Checks if the internal memory buffer needs to grow in order to accomodate @p numBits bits. */
 		void reallocIfNeeded(uint32_t numBits);
 

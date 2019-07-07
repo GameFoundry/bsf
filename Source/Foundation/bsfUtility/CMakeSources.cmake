@@ -180,18 +180,6 @@ set(BS_UTILITY_SRC_MATH
 	"bsfUtility/Math/BsLine2.cpp"
 )
 
-set(BS_UTILITY_INC_TESTING
-	"bsfUtility/Testing/BsTestSuite.h"
-	"bsfUtility/Testing/BsTestOutput.h"
-	"bsfUtility/Testing/BsConsoleTestOutput.h"
-)
-
-set(BS_UTILITY_SRC_TESTING
-	"bsfUtility/Testing/BsTestSuite.cpp"
-	"bsfUtility/Testing/BsTestOutput.cpp"
-	"bsfUtility/Testing/BsConsoleTestOutput.cpp"
-)
-
 set(BS_UTILITY_SRC_SERIALIZATION
 	"bsfUtility/Serialization/BsMemorySerializer.cpp"
 	"bsfUtility/Serialization/BsFileSerializer.cpp"
@@ -302,7 +290,6 @@ source_group("RTTI" FILES ${BS_UTILITY_INC_RTTI})
 source_group("Allocators" FILES ${BS_UTILITY_INC_ALLOCATORS} ${BS_UTILITY_SRC_ALLOCATORS})
 source_group("ThirdParty" FILES ${BS_UTILITY_INC_THIRDPARTY} ${BS_UTILITY_SRC_THIRDPARTY})
 source_group("Error" FILES ${BS_UTILITY_INC_ERROR} ${BS_UTILITY_SRC_ERROR})
-source_group("Testing" FILES ${BS_UTILITY_INC_TESTING} ${BS_UTILITY_SRC_TESTING})
 source_group("Math" FILES ${BS_UTILITY_INC_MATH} ${BS_UTILITY_SRC_MATH})
 source_group("Serialization" FILES ${BS_UTILITY_INC_SERIALIZATION} ${BS_UTILITY_SRC_SERIALIZATION})
 source_group("Reflection" FILES ${BS_UTILITY_INC_REFLECTION} ${BS_UTILITY_SRC_REFLECTION})
@@ -329,8 +316,6 @@ set(BS_UTILITY_SRC
 	${BS_UTILITY_INC_THIRDPARTY}
 	${BS_UTILITY_INC_ERROR}
 	${BS_UTILITY_SRC_MATH}
-	${BS_UTILITY_INC_TESTING}
-	${BS_UTILITY_SRC_TESTING}
 	${BS_UTILITY_SRC_SERIALIZATION}
 	${BS_UTILITY_INC_MATH}
 	${BS_UTILITY_SRC_ERROR}

@@ -208,28 +208,7 @@ add_subdirectory(Plugins/bsfSL)
 
 ## Tests
 if(BUILD_TESTS)
-	enable_testing()
-
-	add_executable(UtilityTest 
-		Foundation/bsfUtility/Private/UnitTests/BsUtilityTest.cpp 
-		Foundation/bsfUtility/Private/UnitTests/BsUtilityTestSuite.cpp
-		Foundation/bsfUtility/Private/UnitTests/BsFileSystemTestSuite.cpp)
-		
-	target_link_libraries(UtilityTest bsf)
-	target_include_directories(UtilityTest PRIVATE 
-		"Foundation/bsfUtility"
-		"Foundation/bsfUtility/ThirdParty")
-
-	add_executable(CoreTest 
-		Foundation/bsfCore/Private/UnitTests/BsCoreTest.cpp)
-		
-	target_link_libraries(CoreTest bsf)
-	
-	set_property(TARGET UtilityTest PROPERTY FOLDER Tests)
-	set_property(TARGET CoreTest PROPERTY FOLDER Tests)	
-	
-	add_test(NAME UtilityTests COMMAND $<TARGET_FILE:UtilityTest>)
-	add_test(NAME CoreTests COMMAND $<TARGET_FILE:UtilityTest>)
+	include(CMake/UnitTests.cmake)
 endif()
 
 ## Builtin resource preprocessing
