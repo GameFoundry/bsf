@@ -2,7 +2,11 @@ include(FetchContent)
 FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG        release-1.8.0
+  # GIT_TAG        release-1.8.1
+  
+  # instead of 1.8.1 which was 2018, we'll use a recent stable commit of 2019
+  # so that it's up to date with recent api changes.
+  GIT_TAG 			437e1008c97b6bf595fec85da42c6925babd96b2
 )
 
 FetchContent_MakeAvailable(googletest)

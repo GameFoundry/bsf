@@ -28,7 +28,6 @@ public:
 	static void SetUpTestSuite() {
 		// call parent test suite setup first.
 		Test::SetUpTestSuite();
-
 		auto mTestDirectory = getTestDirectory();
 		if (FileSystem::exists(mTestDirectory)) {
 			BS_EXCEPT(
