@@ -122,6 +122,7 @@ namespace bs
 				}
 
 				devices[i]->Release();
+				devices[i] = nullptr;
 			}
 		}
 
@@ -136,7 +137,10 @@ namespace bs
 			SysFreeString(className);
 
 		for (DWORD i = 0; i < 20; i++)
-			devices[i]->Release();
+		{
+			if(devices[i])
+				devices[i]->Release();
+		}
 
 		enumDevices->Release();
 		IWbemLocator->Release();
