@@ -15,7 +15,7 @@ FetchContent_Declare(
 )
 
 FetchContent_GetProperties(imgui)
-if(NOT googletest_POPULATED)
+if(NOT imgui_POPULATED)
 	FetchContent_Populate(imgui)
 
 	add_subdirectory(${imgui_SOURCE_DIR} ${imgui_BINARY_DIR})
