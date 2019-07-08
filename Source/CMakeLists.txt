@@ -208,6 +208,7 @@ add_subdirectory(Plugins/bsfSL)
 
 ## Tests
 if(BUILD_TESTS)
+	# Enable test
 	include(CMake/UnitTests.cmake)
 endif()
 

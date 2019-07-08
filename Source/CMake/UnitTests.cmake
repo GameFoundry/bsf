@@ -1,4 +1,5 @@
 include(FetchContent)
+
 FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
@@ -10,6 +11,14 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(googletest)
+# make sure the googletest is marked as advacned so its variables aren't
+# showing up in our gui cache options. kinda annoying this is necessary...
+mark_as_advanced(
+	FETCHCONTENT_BASE_DIR
+	FETCHCONTENT_FULLY_DISCONNECTED
+	FETCHCONTENT_SOURCE_DIR_GOOGLETEST
+	FETCHCONTENT_UPDATES_DISCONNECTED_GOOGLETEST
+)
 
 include(GoogleTest)
 # Now simply link against gtest or gtest_main as needed. Eg
@@ -21,20 +30,21 @@ target_compile_options(unit_tests PUBLIC -msse4.1)
 
 target_link_libraries(unit_tests gtest_main bsf)
 
-# if(RENDERER_MODULE MATCHES "RenderBeast")
-# 	set(RENDERER_MODULE_LIB bsfRenderBeast)
-# 	# render beast as unit-tests.
-# 	target_link_libraries(unit_tests bsfRenderBeast)
-# 	# manually include bsfRenderBeast
-# 	target_include_directories(unit_tests PRIVATE
-# 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Plugins/bsfRenderBeast>
-# 	)
-# endif()
+if(RENDERER_MODULE MATCHES "RenderBeast")
+	file(GLOB_RECURSE RENDER_BEAST_SRCS Plugins/bsfRenderBeast/*_test.cpp)
+	target_sources(unit_tests PUBLIC ${RENDER_BEAST_SRCS})
+	set(RENDERER_MODULE_LIB bsfRenderBeast)
+	# render beast as unit-tests.
+	target_link_libraries(unit_tests bsfRenderBeast)
+	# manually include bsfRenderBeast
+	target_include_directories(unit_tests PRIVATE
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Plugins/bsfRenderBeast>
+	)
+endif()
 
-# this isn't working.
-gtest_discover_tests(unit_tests)
 
-# make test command.
-add_custom_target(check ${CMAKE_COMMAND} -E env CTEST_OUTPUT_ON_FAILURE=1
-									${CMAKE_CTEST_COMMAND} -C $<CONFIG> --verbose
-									WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+# This only works if enable_testing() is at the root cmakeLists
+# however I've decided to disable it because ctest doesn't play well with google-test 
+# in terms of - it wants to run tests as separate threads which can be annoying if we want to 
+# to use the same application thread for all the unit-tests (so that window doesn't keep popping up for every test)
+# gtest_discover_tests(unit_tests)

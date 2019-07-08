@@ -21,7 +21,6 @@ class CoreTestSuite : public bs::Test {};
 TEST(CoreTestSuite, testAnimCurveIntegration)
 {
 	static constexpr float EPSILON = 0.001f;
-
 	// Construct some curves
 	TAnimationCurve<float> curveConstant(
 		{

@@ -10,7 +10,6 @@
 namespace bs
 {
 
-void setupInputConfig();
 
 START_UP_DESC testStartupDesc()
 {
@@ -41,26 +40,13 @@ void AppEnvironment::SetUp() {
 	auto desc = testStartupDesc();
 	bs::Application::startUp(desc);
 
-	setupInputConfig();
 }
 
 void AppEnvironment::TearDown() {
 	bs::Application::shutDown();
 }
 
-HSceneObject Test::addFlyableCamera()
-{
-	HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
-	HCamera sceneCamera = sceneCameraSO->addComponent<CCamera>();
-	sceneCameraSO->addComponent<CameraFlyer>();
-	sceneCamera->setMain(true);
-	sceneCameraSO->setPosition(Vector3(10.0f, 10.0f, 10.0f));
-	sceneCameraSO->lookAt(Vector3(0, 0, 0));
-
-	return sceneCameraSO;
-}
-
-void setupInputConfig()
+void setupCameraInputConfig()
 {
 	// Register input configuration bsf allows you to use VirtualInput system
 	// which will map input device buttons and axes to arbitrary names, which
@@ -85,10 +71,23 @@ void setupInputConfig()
 
 	// Camera controls for axes (analog input, e.g. mouse or gamepad thumbstick)
 	// These return values in [-1.0, 1.0] range.
-        inputConfig->registerAxis("Horizontal",
-                                  VIRTUAL_AXIS_DESC((UINT32)InputAxis::MouseX));
-        inputConfig->registerAxis("Vertical",
-                                  VIRTUAL_AXIS_DESC((UINT32)InputAxis::MouseY));
+    inputConfig->registerAxis("Horizontal",
+                              VIRTUAL_AXIS_DESC((UINT32)InputAxis::MouseX));
+    inputConfig->registerAxis("Vertical",
+                              VIRTUAL_AXIS_DESC((UINT32)InputAxis::MouseY));
 }
+
+HSceneObject Test::addFlyableCamera()
+{
+	HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
+	HCamera sceneCamera = sceneCameraSO->addComponent<CCamera>();
+	sceneCameraSO->addComponent<CameraFlyer>();
+	sceneCamera->setMain(true);
+	sceneCameraSO->setPosition(Vector3(10.0f, 10.0f, 10.0f));
+	sceneCameraSO->lookAt(Vector3(0, 0, 0));
+	setupCameraInputConfig();
+	return sceneCameraSO;
+}
+
 
 } // namespace bs
