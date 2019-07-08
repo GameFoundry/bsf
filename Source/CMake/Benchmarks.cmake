@@ -7,8 +7,14 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/google/benchmark.git
   GIT_TAG 		 v1.5.0
 )
-
-FetchContent_MakeAvailable(googlebench)
+# if > cmake 3.14 
+# FetchContent_MakeAvailable(googlebench)
+# else
+FetchContent_GetProperties(googlebench)
+if(NOT googlebench_POPULATED)
+  FetchContent_Populate(googlebench)
+  add_subdirectory(${googlebench_SOURCE_DIR} ${googlebench_BINARY_DIR})
+endif()
 # make sure the googletest is marked as advacned so its variables aren't
 # showing up in our gui cache options. kinda annoying this is necessary...
 mark_as_advanced(

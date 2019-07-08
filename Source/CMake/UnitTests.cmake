@@ -10,7 +10,14 @@ FetchContent_Declare(
   GIT_TAG 			437e1008c97b6bf595fec85da42c6925babd96b2
 )
 
-FetchContent_MakeAvailable(googletest)
+# if > cmake 3.14 
+# FetchContent_MakeAvailable(googletest)
+# else
+FetchContent_GetProperties(googletest)
+if(NOT googletest_POPULATED)
+  FetchContent_Populate(googletest)
+  add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
+endif()
 # make sure the googletest is marked as advacned so its variables aren't
 # showing up in our gui cache options. kinda annoying this is necessary...
 mark_as_advanced(
