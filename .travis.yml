@@ -11,7 +11,6 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - xvfb
             - libgl1-mesa-dev
             - libglu1-mesa-dev
             - mesa-common-dev
@@ -88,16 +87,12 @@ script:
   - mkdir Build && cd Build
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      CC=gcc CXX=g++ cmake -D CMAKE_C_COMPILER=gcc -D CMAKE_CXX_COMPILER=g++ -DCMAKE_INSTALL_PREFIX:STRING=${INSTALL_DIR} -DBUILD_TESTS=ON .. 
+      CC=gcc CXX=g++ cmake -D CMAKE_C_COMPILER=gcc -D CMAKE_CXX_COMPILER=g++ -DCMAKE_INSTALL_PREFIX:STRING=${INSTALL_DIR} .. 
     else
-      cmake -DCMAKE_INSTALL_PREFIX:STRING=${INSTALL_DIR} -DBUILD_TESTS=ON ..
+      cmake -DCMAKE_INSTALL_PREFIX:STRING=${INSTALL_DIR} ..
     fi
   - make
   - make install
-  - export PATH=$PATH:${INSTALL_DIR}/bin
-  - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${INSTALL_DIR}/lib
-  - bsfUnitTests
-  - bsfBenchmarks
   
 after_success:
   - cd ..
