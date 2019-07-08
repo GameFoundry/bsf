@@ -11,6 +11,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
+            - xvfb
             - libgl1-mesa-dev
             - libglu1-mesa-dev
             - mesa-common-dev
@@ -75,6 +76,11 @@ install:
     fi	
 
   - cd ${TRAVIS_BUILD_DIR}
+
+before_script:
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start; fi
+  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then ( sudo Xvfb :99 -ac -screen 0 1024x768x8; echo ok ) & fi
+  - sleep 3
 
 script:
   - INSTALL_DIR="${TRAVIS_BUILD_DIR}/Install"
