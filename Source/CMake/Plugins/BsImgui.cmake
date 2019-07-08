@@ -14,7 +14,14 @@ FetchContent_Declare(
   GIT_PROGRESS TRUE
 )
 
-FetchContent_MakeAvailable(imgui)
+# if > cmake 3.14 
+# FetchContent_MakeAvailable(imgui)
+# else
+FetchContent_GetProperties(imgui)
+if(NOT imgui_POPULATED)
+  FetchContent_Populate(imgui)
+  add_subdirectory(${imgui_SOURCE_DIR} ${imgui_BINARY_DIR})
+endif()
 
 
 # mark as advanced so that FetchContent variables aren't being shown in the
