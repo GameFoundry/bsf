@@ -24,24 +24,27 @@ include(GoogleTest)
 # Now simply link against gtest or gtest_main as needed. Eg
 file(GLOB_RECURSE TEST_SRCS Foundation/*_test.cpp)
 
-add_executable(unit_tests ${TEST_SRCS})
+add_executable(bsfUnitTests ${TEST_SRCS})
 
-target_compile_options(unit_tests PUBLIC -msse4.1)
+target_compile_options(bsfUnitTests PUBLIC -msse4.1)
 
-target_link_libraries(unit_tests gtest_main bsf)
+target_link_libraries(bsfUnitTests gtest_main bsf)
 
 if(RENDERER_MODULE MATCHES "RenderBeast")
 	file(GLOB_RECURSE RENDER_BEAST_SRCS Plugins/bsfRenderBeast/*_test.cpp)
-	target_sources(unit_tests PUBLIC ${RENDER_BEAST_SRCS})
+	target_sources(bsfUnitTests PUBLIC ${RENDER_BEAST_SRCS})
 	set(RENDERER_MODULE_LIB bsfRenderBeast)
 	# render beast as unit-tests.
-	target_link_libraries(unit_tests bsfRenderBeast)
+	target_link_libraries(bsfUnitTests bsfRenderBeast)
 	# manually include bsfRenderBeast
-	target_include_directories(unit_tests PRIVATE
+	target_include_directories(bsfUnitTests PRIVATE
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Plugins/bsfRenderBeast>
 	)
 endif()
 
+if(NOT BS_IS_BANSHEE3D)
+	install(TARGETS bsfUnitTests RUNTIME DESTINATION bin)	
+endif()
 
 # This only works if enable_testing() is at the root cmakeLists
 # however I've decided to disable it because ctest doesn't play well with google-test 
