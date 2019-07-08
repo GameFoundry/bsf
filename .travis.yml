@@ -89,7 +89,7 @@ script:
   - make
   - make install
   - export PATH=$PATH:${INSTALL_DIR}/bin
-  - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}/lib
+  - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${INSTALL_DIR}/lib
   - bsfUnitTests
   - bsfBenchmarks
   

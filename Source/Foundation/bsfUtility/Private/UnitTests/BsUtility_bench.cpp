@@ -2,14 +2,8 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 
 #include <benchmark/benchmark.h>
-#include "Utility/BsOctree.h"
-#include "Utility/BsBitfield.h"
-// #include "Utility/BsDynArray.h"
-#include "Math/BsComplex.h"
-#include "Utility/BsMinHeap.h"
-#include "Utility/BsQuadtree.h"
-#include "Utility/BsBitstream.h"
-#include "Utility/BsUSPtr.h"
+#include "BsCorePrerequisites.h"
+#include "Utility/BsSmallVector.h"
 
 namespace bs {
 
