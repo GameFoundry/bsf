@@ -88,8 +88,8 @@ script:
     fi
   - make
   - make install
-  - PATH=$PATH:${INSTALL_DIR}/bin
-  - LD_LIBRARY_PATH=${LD_LIBRARY_PATH}/lib
+  - export PATH=$PATH:${INSTALL_DIR}/bin
+  - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}/lib
   - bsfUnitTests
   - bsfBenchmarks
   
