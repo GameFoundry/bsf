@@ -20,7 +20,6 @@ mark_as_advanced(
 	FETCHCONTENT_UPDATES_DISCONNECTED_GOOGLETEST
 )
 
-include(GoogleTest)
 # Now simply link against gtest or gtest_main as needed. Eg
 file(GLOB_RECURSE TEST_SRCS Foundation/*_test.cpp)
 

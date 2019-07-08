@@ -210,6 +210,7 @@ add_subdirectory(Plugins/bsfSL)
 if(BUILD_TESTS)
 	# Enable test
 	include(CMake/UnitTests.cmake)
+	include(CMake/Benchmarks.cmake)
 endif()
 
 ## Builtin resource preprocessing
