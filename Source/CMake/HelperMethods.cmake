@@ -192,6 +192,35 @@ MACRO(end_find_package FOLDER_NAME MAIN_LIB_NAME)
 	set(${FOLDER_NAME}_INCLUDE_DIRS ${${FOLDER_NAME}_INCLUDE_DIR})
 ENDMACRO()
 
+MACRO(bs_add_test)
+    cmake_parse_arguments(
+        PARSED_ARGS # prefix of output variables
+        "" # list of names of the boolean arguments (only defined ones will be true)
+        "NAME" # list of names of mono-valued arguments
+        "" # multivalue args
+        ${ARGN} # arguments of the function to parse, here we take the all original ones
+    )
+
+	add_test(${ARGV})
+
+    if(NOT PARSED_ARGS_NAME)
+        message(FATAL_ERROR "You must provide a name for bs_add_test (bs_add_test(NAME name)")
+    endif(NOT PARSED_ARGS_NAME)
+
+	IF(CMAKE_BUILD_TYPE MATCHES Debug)
+		# windows
+		set_tests_properties( ${PARSED_ARGS_NAME} PROPERTIES ENVIRONMENT "PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG};$ENV{PATH}" )
+		# linux
+		set_tests_properties( ${PARSED_ARGS_NAME} PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG};" )
+	elseif (CMAKE_BUILD_TYPE MATCHES Release)
+		# windows
+		set_tests_properties( ${PARSED_ARGS_NAME} PROPERTIES ENVIRONMENT "PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE};$ENV{PATH}" )
+		# linux
+		set_tests_properties( ${PARSED_ARGS_NAME} PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE};" )
+	endif()
+
+ENDMACRO()
+
 function(install_dependency_binary FILE_PATH CONFIG)
 	if(NOT EXISTS ${FILE_PATH})
 		return()

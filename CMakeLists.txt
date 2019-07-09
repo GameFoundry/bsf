@@ -16,6 +16,16 @@ include(Source/CMake/Properties.cmake)
 include(Source/CMake/FindPackageOrBuild.cmake)
 include(Source/CMake/HelperMethods.cmake)
 
+
+set(BUILD_TESTS OFF CACHE BOOL "If true, build targets for running unit tests will be included in the output.")
+if (BUILD_TESTS) 
+	# Enables testing for this directory and below. See also the add_test
+	# command. Note that ctest expects to find a test file in the build
+	# directory root. Therefore, this command should be in the source
+	# directory root.
+	enable_testing()
+endif()
+
 add_subdirectory(Source)
 
 # Options

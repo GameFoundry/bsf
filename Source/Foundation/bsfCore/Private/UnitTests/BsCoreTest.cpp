@@ -35,7 +35,7 @@ namespace bs
 
 	void CoreTestSuite::testAnimCurveIntegration()
 	{
-		static constexpr float EPSILON = 0.0001f;
+		static constexpr float EPSILON = 0.001f;
 
 		// Construct some curves
 		TAnimationCurve<float> curveConstant(
@@ -113,7 +113,7 @@ namespace bs
 
 	void CoreTestSuite::testLookupTable()
 	{
-		static constexpr float EPSILON = 0.0001f;
+		static constexpr float EPSILON = 0.001f;
 
 		TAnimationCurve<Vector3> curve
 		({
