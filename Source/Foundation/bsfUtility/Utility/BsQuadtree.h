@@ -372,16 +372,16 @@ namespace bs
 		public:
 			/** Initializes the iterator, starting with the root quadtree node. */
 			NodeIterator(const Quadtree& tree)
-				:mCurrentNode(HNode(&tree.mRoot, tree.mRootBounds)), mStackAlloc(), mNodeStack(&mStackAlloc)
+				:mCurrentNode(HNode(&tree.mRoot, tree.mRootBounds))
 			{
-				mNodeStack.push_back(mCurrentNode);
+				mNodeStack.add(mCurrentNode);
 			}
 
 			/** Initializes the iterator using a specific node and its bounds. */
 			NodeIterator(const Node* node, const NodeBounds& bounds)
-				:mCurrentNode(HNode(node, bounds)), mStackAlloc(), mNodeStack(&mStackAlloc)
+				:mCurrentNode(HNode(node, bounds))
 			{
-				mNodeStack.push_back(mCurrentNode);
+				mNodeStack.add(mCurrentNode);
 			}
 
 			/**
@@ -415,13 +415,12 @@ namespace bs
 				Node* childNode = mCurrentNode.getNode()->getChild(child);
 				NodeBounds childBounds = mCurrentNode.getBounds().getChild(child);
 
-				mNodeStack.emplace_back(childNode, childBounds);
+				mNodeStack.add({childNode, childBounds});
 			}
 
 		private:
 			HNode mCurrentNode;
-			StaticAlloc<Options::MaxDepth * 4 * sizeof(HNode), FreeAlloc> mStackAlloc;
-			StaticVector<HNode, Options::MaxDepth * 4> mNodeStack;
+			SmallVector<HNode, Options::MaxDepth * 4> mNodeStack;
 		};
 
 		/** Iterator that iterates over all elements in a single node. */
