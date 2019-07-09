@@ -169,6 +169,15 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:Events,pr:setter)
 		void setEvents(const Vector<AnimationEvent>& events) { mEvents = events; }
 
+
+		/** @copydoc setName() */
+		BS_SCRIPT_EXPORT(n:Name,pr:getter)
+		const String getName() const { return mName; }
+
+		/** The optional name of the animation clip. */
+		BS_SCRIPT_EXPORT(n:Name,pr:setter)
+		void setName(const String name) { mName = name; }
+
 		/** 
 		 * Returns a set of curves containing motion of the root bone. This allows the user to evaluate the root bone
 		 * animation curves manually, instead of through the normal animation process. This property is only available
@@ -310,6 +319,7 @@ namespace bs
 		UnorderedMap<String, std::array<UINT32, (int)CurveType::Count>> mNameMapping;
 
 		Vector<AnimationEvent> mEvents;
+		String mName;
 		bool mIsAdditive;
 		float mLength;
 		UINT32 mSampleRate;
