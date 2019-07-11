@@ -48,7 +48,7 @@ shader SpriteLine
 			float4 tfrmdPos = mul(gWorldTransform, float4(input.position, 0, 1));
 			
 			float tfrmdX = -1.0f + (tfrmdPos.x * gInvViewportWidth);
-			float tfrmdY = 1.0f - (tfrmdPos.y * gInvViewportHeight);
+			float tfrmdY = (1.0f - (tfrmdPos.y * gInvViewportHeight)) * gViewportYFlip;
 
 			VStoFS output;
 			output.position = float4(tfrmdX, tfrmdY, 0, 1);
