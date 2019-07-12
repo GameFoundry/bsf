@@ -282,6 +282,12 @@ install(
 	DIRECTORY ../Data
 	DESTINATION ${DATA_DST_DIR}
 	PATTERN "../Data/Raw" EXCLUDE
+	PATTERN "../Data/Shaders/Includes" EXCLUDE
 	PATTERN ".version" EXCLUDE
 	PATTERN ".reqversion" EXCLUDE
+)
+
+install(
+    DIRECTORY ../Data/Raw/Shaders/Includes
+	DESTINATION ${DATA_DST_DIR}/Data/Shaders
 )
