@@ -25,4 +25,15 @@ if(RENDERER_MODULE MATCHES "RenderBeast")
 	install_bsf_target(bsfRenderBeast)
 endif()
 
+if (BUILD_TESTS)
+
+	add_executable(bsfRenderBeastTest 
+		BsRenderBeastTest.cpp)
+	target_include_directories(bsfRenderBeastTest PRIVATE "./")
+	target_link_libraries(bsfRenderBeastTest bsf bsfRenderBeast)
+
+	set_property(TARGET bsfRenderBeastTest PROPERTY FOLDER Tests)
+	bs_add_test(NAME RenderBeastTests COMMAND $<TARGET_FILE:bsfRenderBeastTest>)
+endif()
+
 conditional_cotire(bsfRenderBeast)

@@ -18,7 +18,7 @@ namespace bs
 		for (auto& testEntry : mTests)
 		{
 			mActiveTestName = testEntry.name;
-			
+			std::cout << mActiveTestName << std::endl;
 			(this->*(testEntry.test))();
 		}
 

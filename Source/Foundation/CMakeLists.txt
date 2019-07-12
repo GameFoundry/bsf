@@ -82,6 +82,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "A
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	target_compile_options(bsf PUBLIC
 		-fno-exceptions
+		-msse4.1
 		$<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
 else()
 # TODO_OTHER_COMPILERS_GO_HERE

@@ -57,7 +57,7 @@ namespace bs
 		FileSystem::remove(mTestDirectory, true);
 		if (FileSystem::exists(mTestDirectory))
 		{
-			LOGERR("FileSystemTestSuite failed to delete '" + mTestDirectory.toString()
+			BS_LOG(Error, FileSystem, "FileSystemTestSuite failed to delete '" + mTestDirectory.toString()
 				   + "', you should remove it manually.");
 		}
 	}

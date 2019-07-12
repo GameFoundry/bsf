@@ -41,6 +41,7 @@ set(BS_UTILITY_SRC_IMAGE
 )
 
 set(BS_UTILITY_SRC_UTILITY
+	"bsfUtility/Utility/BsBitStream.cpp"
 	"bsfUtility/Utility/BsDynLib.cpp"
 	"bsfUtility/Utility/BsDynLibManager.cpp"
 	"bsfUtility/Utility/BsMessageHandler.cpp"

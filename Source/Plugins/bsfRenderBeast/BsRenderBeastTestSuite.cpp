@@ -2,18 +2,10 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "Testing/BsTestSuite.h"
 #include "Utility/BsTextureRowAllocator.h"
+#include "BsRenderBeastTestSuite.h"
 
 namespace bs
 {
-	/** Runs unit tests for systems specific to the RenderBeast plugin. */
-	class RenderBeastTestSuite : public TestSuite
-	{
-	public:
-		RenderBeastTestSuite();
-
-	private:
-		void testTextureRowAllocator();
-	};
 
 	RenderBeastTestSuite::RenderBeastTestSuite()
 	{

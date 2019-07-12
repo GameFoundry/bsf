@@ -1,7 +1,7 @@
 //************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "Testing/BsConsoleTestOutput.h"
-#include "Private/UnitTests/BsUtilityTestSuite.h"
+#include "BsRenderBeastTestSuite.h"
 
 #include "BsApplication.h"
 #include "BsEngineConfig.h"
@@ -39,7 +39,7 @@ int main()
 	auto desc = testStartupDesc();
 	bs::Application::startUp(desc);
 
-	SPtr<TestSuite> tests = UtilityTestSuite::create<UtilityTestSuite>();
+	SPtr<TestSuite> tests = RenderBeastTestSuite::create<RenderBeastTestSuite>();
 
 	ConsoleTestOutput testOutput;
 	tests->run(testOutput);

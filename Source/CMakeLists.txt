@@ -31,8 +31,6 @@ set_property(CACHE RENDERER_MODULE PROPERTY STRINGS RenderBeast Null)
 
 set(INCLUDE_ALL_IN_WORKFLOW OFF CACHE BOOL "If true, all libraries (even those not selected) will be included in the generated workflow (e.g. Visual Studio solution). This is useful when working on engine internals with a need for easy access to all parts of it. Only relevant for workflow generators like Visual Studio or XCode.")
 
-set(BUILD_TESTS OFF CACHE BOOL "If true, build targets for running unit tests will be included in the output.")
-
 set(BUILD_BSL OFF CACHE BOOL "If true, build lexer & parser for BSL. Requires flex & bison dependencies.")
 
 set(BUILD_ALL_RENDER_API OFF CACHE BOOL "If true, all supported render backends will be built, regardless of choice in RENDER_API_MODULE. Choice in RENDER_API_MODULE will still be used as the default.")
@@ -208,8 +206,6 @@ add_subdirectory(Plugins/bsfSL)
 
 ## Tests
 if(BUILD_TESTS)
-	enable_testing()
-
 	add_executable(UtilityTest 
 		Foundation/bsfUtility/Private/UnitTests/BsUtilityTest.cpp 
 		Foundation/bsfUtility/Private/UnitTests/BsUtilityTestSuite.cpp
@@ -228,8 +224,8 @@ if(BUILD_TESTS)
 	set_property(TARGET UtilityTest PROPERTY FOLDER Tests)
 	set_property(TARGET CoreTest PROPERTY FOLDER Tests)	
 	
-	add_test(NAME UtilityTests COMMAND $<TARGET_FILE:UtilityTest>)
-	add_test(NAME CoreTests COMMAND $<TARGET_FILE:UtilityTest>)
+	bs_add_test(NAME UtilityTests COMMAND $<TARGET_FILE:UtilityTest>)
+	bs_add_test(NAME CoreTests COMMAND $<TARGET_FILE:UtilityTest>)
 endif()
 
 ## Builtin resource preprocessing
