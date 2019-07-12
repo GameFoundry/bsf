@@ -192,6 +192,9 @@ MACRO(end_find_package FOLDER_NAME MAIN_LIB_NAME)
 	set(${FOLDER_NAME}_INCLUDE_DIRS ${${FOLDER_NAME}_INCLUDE_DIR})
 ENDMACRO()
 
+# the purpose of bs_add_test is to allow for the local library path to be found by the tester. 
+# It's necessary to pass the environment variables because ctest will usually run with a clean environment.
+# It was implemented to work for linux, as of July 2019 not tested on windows.
 MACRO(bs_add_test)
     cmake_parse_arguments(
         PARSED_ARGS # prefix of output variables
