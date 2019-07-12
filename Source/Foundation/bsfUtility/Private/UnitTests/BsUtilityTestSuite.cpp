@@ -466,85 +466,90 @@ namespace bs
 		BS_TEST_ASSERT(v3[3].a == 10);
 		BS_TEST_ASSERT(v3[3].b == 0);
 	}
+
+	bool approxNear(float a, float b, float EPS = 0.001f) {
+		bool result = std::abs(a - b) < EPS;
+		return result;
+	}
 	
 	void UtilityTestSuite::testComplex()
 	{
 		Complex<float> c(10.0, 4.0);
-		BS_TEST_ASSERT(c.real() == 10.0);
-		BS_TEST_ASSERT(c.imag() == 4.0);
+		BS_TEST_ASSERT(approxNear(c.real(), 10.0));
+		BS_TEST_ASSERT(approxNear(c.imag(), 4.0));
 
 		Complex<float> c2(15.0, 5.0);
-		BS_TEST_ASSERT(c2.real() == 15.0);
-		BS_TEST_ASSERT(c2.imag() == 5.0);
+		BS_TEST_ASSERT(approxNear(c2.real(),  15.0));
+		BS_TEST_ASSERT(approxNear(c2.imag(),  5.0));
 
 		Complex<float> c3 = c + c2;
-		BS_TEST_ASSERT(c3.real() == 25.0);
-		BS_TEST_ASSERT(c3.imag() == 9.0);
+		BS_TEST_ASSERT(approxNear(c3.real(), 25.0));
+		BS_TEST_ASSERT(approxNear(c3.imag(), 9.0));
 
 		Complex<float> c4 = c - c2;
-		BS_TEST_ASSERT(c4.real() == -5.0);
-		BS_TEST_ASSERT(c4.imag() == -1.0);
+		BS_TEST_ASSERT(approxNear(c4.real(), -5.0));
+		BS_TEST_ASSERT(approxNear(c4.imag(), -1.0));
 
 		Complex<float> c5 = c * c2;
-		BS_TEST_ASSERT(c5.real() == 130.0);
-		BS_TEST_ASSERT(c5.imag() == 110.0);
+		BS_TEST_ASSERT(approxNear(c5.real(), 130.0));
+		BS_TEST_ASSERT(approxNear(c5.imag(), 110.0));
 
 		Complex<float> c6 = c / c2;
-		BS_TEST_ASSERT(c6.real() == 0.680000007f);
-		BS_TEST_ASSERT(c6.imag() == 0.0399999991f);
+		BS_TEST_ASSERT(approxNear(c6.real(), 0.680000007f));
+		BS_TEST_ASSERT(approxNear(c6.imag(), 0.0399999991f));
 
-		BS_TEST_ASSERT(Complex<float>::abs(c) == 10.7703295f);
-		BS_TEST_ASSERT(Complex<float>::arg(c) == 0.380506366f);
-		BS_TEST_ASSERT(Complex<float>::norm(c) == 116);
+		BS_TEST_ASSERT(approxNear(Complex<float>::abs(c), 10.7703295f));
+		BS_TEST_ASSERT(approxNear(Complex<float>::arg(c), 0.380506366f));
+		BS_TEST_ASSERT(approxNear(Complex<float>::norm(c), 116));
 
 		Complex<float> c7 = Complex<float>::conj(c);
-		BS_TEST_ASSERT(c7.real() == 10);
-		BS_TEST_ASSERT(c7.imag() == -4);
+		BS_TEST_ASSERT(approxNear(c7.real(), 10));
+		BS_TEST_ASSERT(approxNear(c7.imag(), -4));
 		c7 = 0;
 
 		c7 = Complex<float>::polar(2.0, 0.5);
-		BS_TEST_ASSERT(c7.real() == 1.75516510f);
-		BS_TEST_ASSERT(c7.imag() == 0.958851099f);
+		BS_TEST_ASSERT(approxNear(c7.real(), 1.75516510f));
+		BS_TEST_ASSERT(approxNear(c7.imag(), 0.958851099f));
 		c7 = 0;
 
 		c7 = Complex<float>::cos(c);
-		BS_TEST_ASSERT(c7.real() == -22.9135609f);
-		BS_TEST_ASSERT(c7.imag() == 14.8462915f);
+		BS_TEST_ASSERT(approxNear(c7.real(), -22.9135609f));
+		BS_TEST_ASSERT(approxNear(c7.imag(), 14.8462915f));
 		c7 = 0;
 
 		c7 = Complex<float>::cosh(c);
-		BS_TEST_ASSERT(c7.real() == -7198.72949f);
-		BS_TEST_ASSERT(c7.imag() == -8334.84180f);
+		BS_TEST_ASSERT(approxNear(c7.real(), -7198.72949f));
+		BS_TEST_ASSERT(approxNear(c7.imag(), -8334.84180f));
 		c7 = 0;
 
 		c7 = Complex<float>::exp(c);
-		BS_TEST_ASSERT(c7.real() == -14397.4580f);
-		BS_TEST_ASSERT(c7.imag() == -16669.6836f);
+		BS_TEST_ASSERT(approxNear(c7.real(),  -14397.4580f));
+		BS_TEST_ASSERT(approxNear(c7.imag(),  -16669.6836f));
 		c7 = 0;
 
 		c7 = Complex<float>::log(c);
-		BS_TEST_ASSERT(c7.real() == 2.37679505f);
-		BS_TEST_ASSERT(c7.imag() == 0.380506366f);
+		BS_TEST_ASSERT(approxNear(c7.real(), 2.37679505f));
+		BS_TEST_ASSERT(approxNear(c7.imag(),  0.380506366f));
 		c7 = 0;
 
 		c7 = Complex<float>::pow(c, 2.0);
-		BS_TEST_ASSERT(c7.real() == 84.0000000f);
-		BS_TEST_ASSERT(c7.imag() == 79.9999924f);
+		BS_TEST_ASSERT(approxNear(c7.real(),  84.0000000f));
+		BS_TEST_ASSERT(approxNear(c7.imag(),  79.9999924f));
 		c7 = 0;
 
 		c7 = Complex<float>::sin(c);
-		BS_TEST_ASSERT(c7.real() == -14.8562555f);
-		BS_TEST_ASSERT(c7.imag() == -22.8981915f);
+		BS_TEST_ASSERT(approxNear(c7.real(),  -14.8562555f));
+		BS_TEST_ASSERT(approxNear(c7.imag(),  -22.8981915f));
 		c7 = 0;
 
 		c7 = Complex<float>::sinh(c);
-		BS_TEST_ASSERT(c7.real() == -7198.72900f);
-		BS_TEST_ASSERT(c7.imag() == -8334.84277f);
+		BS_TEST_ASSERT(approxNear(c7.real(), -7198.72900f));
+		BS_TEST_ASSERT(approxNear(c7.imag(), -8334.84277f));
 		c7 = 0;
 
 		c7 = Complex<float>::sqrt(c);
-		BS_TEST_ASSERT(c7.real() == 3.22260213f);
-		BS_TEST_ASSERT(c7.imag() == 0.620616496f);
+		BS_TEST_ASSERT(approxNear(c7.real(), 3.22260213f));
+		BS_TEST_ASSERT(approxNear(c7.imag(), 0.620616496f));
 		c7 = 0;
 	}
 	

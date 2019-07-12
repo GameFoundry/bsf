@@ -327,9 +327,9 @@ namespace bs
 		QuantType* data() const { return mData; }
 
 	private:
-		static constexpr uint32_t BYTES_PER_QUANT = sizeof(QuantType);
-		static constexpr uint32_t BITS_PER_QUANT = BYTES_PER_QUANT * 8;
-		static constexpr uint32_t BITS_PER_QUANT_LOG2 = Bitwise::bitsLog2(BITS_PER_QUANT);
+		static uint32_t BYTES_PER_QUANT;
+		static uint32_t BITS_PER_QUANT;
+		static uint32_t BITS_PER_QUANT_LOG2;
 
 		/** Checks if the internal memory buffer needs to grow in order to accomodate @p numBits bits. */
 		void reallocIfNeeded(uint32_t numBits);
