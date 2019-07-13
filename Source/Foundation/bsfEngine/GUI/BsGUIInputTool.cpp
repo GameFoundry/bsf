@@ -115,7 +115,7 @@ namespace bs
 			return charRect;
 		}
 
-		BS_LOG(Error, GUI, "Invalid character index: {0}", charIdx)
+		BS_LOG(Error, GUI, "Invalid character index: {0}", charIdx);
 		return Rect2I();
 	}
 

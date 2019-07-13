@@ -488,7 +488,7 @@ namespace bs
 		}
 
 		if (loadedData == nullptr)
-			BS_LOG(Error, Resources, "Unable to load resource at path \"{0}\"", filePath)
+			BS_LOG(Error, Resources, "Unable to load resource at path \"{0}\"", filePath);
 		else
 		{
 			if (!loadedData->isDerivedFrom(Resource::getRTTIStatic()))

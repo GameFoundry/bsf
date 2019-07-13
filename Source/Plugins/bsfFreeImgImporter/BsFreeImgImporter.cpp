@@ -26,9 +26,9 @@ namespace bs
 		// Callback method as required by FreeImage to report problems
 		const char* typeName = FreeImage_GetFormatFromFIF(fif);
 		if (typeName)
-			BS_LOG(Error, FreeImageImporter, "FreeImage error: '{0}' when loading format {1}", message, typeName)
+			BS_LOG(Error, FreeImageImporter, "FreeImage error: '{0}' when loading format {1}", message, typeName);
 		else
-			BS_LOG(Error, FreeImageImporter, "FreeImage error: '{0}'", message)
+			BS_LOG(Error, FreeImageImporter, "FreeImage error: '{0}'", message);
 	}
 
 	FreeImgImporter::FreeImgImporter()
