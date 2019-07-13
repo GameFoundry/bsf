@@ -245,7 +245,7 @@ namespace bs
 		UINT32 outputIdx = mode.outputIdx;
 		if(outputIdx >= videoModeInfo.getNumOutputs())
 		{
-			BS_LOG(Error, Platform, "Invalid output device index.")
+			BS_LOG(Error, Platform, "Invalid output device index.");
 			return;
 		}
 
@@ -385,7 +385,7 @@ namespace bs
 		UINT32 outputIdx = 0; // 0 is always primary
 		if(outputIdx >= videoModeInfo.getNumOutputs())
 		{
-			BS_LOG(Error, Platform, "Invalid output device index.")
+			BS_LOG(Error, Platform, "Invalid output device index.");
 			return;
 		}
 
