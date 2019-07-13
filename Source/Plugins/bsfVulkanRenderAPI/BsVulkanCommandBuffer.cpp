@@ -2337,7 +2337,7 @@ namespace bs { namespace ct
 			// these values because that's what VulkanFramebuffer expects as initialLayout.
 			VkImageLayout layout;
 			if (loadMask.isSet((RenderSurfaceMaskBits)(1 << i)))
-				layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			else
 				layout = VK_IMAGE_LAYOUT_UNDEFINED;
 

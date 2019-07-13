@@ -161,7 +161,7 @@ namespace bs { namespace ct
 			if (loadMask.isSet((RenderSurfaceMaskBits)(1 << index)))
 			{
 				attachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
-				attachmentDesc.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				attachmentDesc.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			}
 			else if (clearMask.isSet((ClearMaskBits)(1 << index)))
 			{
