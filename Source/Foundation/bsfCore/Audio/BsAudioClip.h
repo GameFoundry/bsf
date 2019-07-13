@@ -117,6 +117,10 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:Is3D,pr:getter)
 		bool is3D() const { return mDesc.is3D; }
 
+		/** Determines whether the clip is endless or has a definite length. */
+		BS_SCRIPT_EXPORT(n:IsEndless,pr:getter)
+		bool isEndless() const { return mEndless; }
+
 		/**
 		 * Creates a new AudioClip and populates it with provided samples.
 		 *
@@ -133,6 +137,19 @@ namespace bs
 		static HAudioClip create(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples,
 			const AUDIO_CLIP_DESC& desc);
 
+		/**
+		 * Creates a new AudioClip from a streaming source of sample data.
+		 * 
+		 * @param[in]	samples		Data streams containing the samples to load. Data will be read starting from the current
+		 * 							position in the stream. The samples should be in audio format as specified in the
+		 * 							@p desc parameter. Ownership of the data stream is taken by the audio clip and the
+		 * 							caller must not close it manually.
+		 * @param desc 				Descriptor containing meta-data for the provided samples.
+		 * 
+		 * @note	If the provided sampels are in PCM format, they should be signed integers of provided bit depth.
+		 */
+		static HAudioClip create(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc);
+
 	public: // ***** INTERNAL ******
 		/** @name Internal
 		 *  @{
@@ -141,10 +158,12 @@ namespace bs
 		/** Creates a new AudioClip without initializing it. Use create() for normal use. */
 		static SPtr<AudioClip> _createPtr(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples, 
 			const AUDIO_CLIP_DESC& desc);
+		static SPtr<AudioClip> _createPtr(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc);
 
 		/** @} */
 	protected:
 		AudioClip(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples, const AUDIO_CLIP_DESC& desc);
+		AudioClip(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc);
 
 		/** @copydoc Resource::initialize */
 		void initialize() override;
@@ -162,6 +181,7 @@ namespace bs
 		UINT32 mStreamOffset = 0;
 		float mLength = 0.0f;
 		SPtr<DataStream> mStreamData;
+		bool mEndless = false;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

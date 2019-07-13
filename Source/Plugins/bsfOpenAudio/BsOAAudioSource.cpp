@@ -260,35 +260,40 @@ namespace bs
 			return;
 
 		AudioSourceState state = getState();
+
 		stop();
 
-		bool needsStreaming = requiresStreaming();
-		float clipTime;
+		if(!mAudioClip->isEndless())
 		{
-			Lock lock(mMutex);
 
-			if (!needsStreaming)
-				clipTime = time;
-			else
+			bool needsStreaming = requiresStreaming();
+			float clipTime;
 			{
-				if (mAudioClip.isLoaded())
-					mStreamProcessedPosition = (UINT32)(time * mAudioClip->getFrequency() * mAudioClip->getNumChannels());
+				Lock lock(mMutex);
+
+				if (!needsStreaming)
+					clipTime = time;
 				else
-					mStreamProcessedPosition = 0;
+				{
+					if (mAudioClip.isLoaded())
+						mStreamProcessedPosition = (UINT32)(time * mAudioClip->getFrequency() * mAudioClip->getNumChannels());
+					else
+						mStreamProcessedPosition = 0;
 
-				mStreamQueuedPosition = mStreamProcessedPosition;
-				clipTime = 0.0f;
+					mStreamQueuedPosition = mStreamProcessedPosition;
+					clipTime = 0.0f;
+				}
 			}
-		}
 
-		auto& contexts = gOAAudio()._getContexts();
-		UINT32 numContexts = (UINT32)contexts.size();
-		for (UINT32 i = 0; i < numContexts; i++)
-		{
-			if (contexts.size() > 1)
-				alcMakeContextCurrent(contexts[i]);
+			auto& contexts = gOAAudio()._getContexts();
+			UINT32 numContexts = (UINT32)contexts.size();
+			for (UINT32 i = 0; i < numContexts; i++)
+			{
+				if (contexts.size() > 1)
+					alcMakeContextCurrent(contexts[i]);
 
-			alSourcef(mSourceIDs[i], AL_SEC_OFFSET, clipTime);
+				alSourcef(mSourceIDs[i], AL_SEC_OFFSET, clipTime);
+			}
 		}
 
 		if (state != AudioSourceState::Stopped)
@@ -492,7 +497,12 @@ namespace bs
 		info.sampleRate = mAudioClip->getFrequency();
 		info.numSamples = 0;
 
-		UINT32 totalNumSamples = mAudioClip->getNumSamples();
+		UINT32 totalNumSamples;
+
+		if(mAudioClip->isEndless())
+			totalNumSamples = 1024;
+		else
+			totalNumSamples = mAudioClip->getNumSamples();
 
 		// Note: It is safe to access contexts here only because it is guaranteed by the OAAudio manager that it will always
 		// stop all streaming before changing contexts. Otherwise a mutex lock would be needed for every context access.
@@ -569,7 +579,10 @@ namespace bs
 			if (fillBuffer(mStreamBuffers[i], info, totalNumSamples))
 			{
 				for (auto& source : mSourceIDs)
+				{
 					alSourceQueueBuffers(source, 1, &mStreamBuffers[i]);
+					alSourcePlay(source);
+				}
 
 				mBusyBuffers[i] |= 1 << i;
 			}
@@ -580,7 +593,17 @@ namespace bs
 
 	bool OAAudioSource::fillBuffer(UINT32 buffer, AudioDataInfo& info, UINT32 maxNumSamples)
 	{
-		UINT32 numRemainingSamples = maxNumSamples - mStreamQueuedPosition;
+		UINT32 numRemainingSamples;
+
+		if(mAudioClip->isEndless())
+		{
+			numRemainingSamples = maxNumSamples;
+		}
+		else
+		{
+			numRemainingSamples = maxNumSamples - mStreamQueuedPosition;
+		}
+		
 		if (numRemainingSamples == 0) // Reached the end
 		{
 			if (mLoop)
@@ -600,15 +623,20 @@ namespace bs
 
 		OAAudioClip* audioClip = static_cast<OAAudioClip*>(mAudioClip.get());
 
-		audioClip->getSamples(samples, mStreamQueuedPosition, numSamples);
+		UINT32 samplesRead = audioClip->getSamples(samples, mStreamQueuedPosition, numSamples);
+
+		// Only fill the buffer with zeros if it wasn't completely filled before.
+		std::fill(samples + samplesRead, samples + sampleBufferSize, 0);
+
 		mStreamQueuedPosition += numSamples;
 
-		info.numSamples = numSamples;
+		info.numSamples = samplesRead;
 		gOAAudio()._writeToOpenALBuffer(buffer, samples, info);
 
 		bs_stack_free(samples);
 
-		return true;
+		// If the number of read samples is less the the amount we requested, we've reached the end of the stream.
+		return samplesRead == sampleBufferSize;
 	}
 
 	void OAAudioSource::applyClip()
@@ -675,7 +703,8 @@ namespace bs
 
 		AudioReadMode readMode = mAudioClip->getReadMode();
 		bool isCompressed = readMode == AudioReadMode::LoadCompressed && mAudioClip->getFormat() != AudioFormat::PCM;
+		bool isEndless = mAudioClip->isEndless();
 
-		return (readMode == AudioReadMode::Stream) || isCompressed;
+		return (readMode == AudioReadMode::Stream) || isCompressed || isEndless;
 	}
 }

@@ -136,6 +136,11 @@ namespace bs
 		return bs_core_ptr_new<FMODAudioClip>(samples, streamSize, numSamples, desc);
 	}
 
+	SPtr<AudioClip> FMODAudio::createClip(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc)
+	{
+		return bs_core_ptr_new<FMODAudioClip>(samples, desc);
+	}
+
 	SPtr<AudioListener> FMODAudio::createListener()
 	{
 		return bs_shared_ptr_new<FMODAudioListener>();

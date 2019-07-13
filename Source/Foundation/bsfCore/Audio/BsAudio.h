@@ -91,6 +91,15 @@ namespace bs
 		virtual SPtr<AudioClip> createClip(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples,
 			const AUDIO_CLIP_DESC& desc) = 0;
 
+		/** 
+		 * Creates a new audio clip, for use with endless data streams.
+		 *
+		 * @param[in]	samples		Stream containing audio samples in format specified in @p desc.
+		 * @param[in]	desc		Descriptor describing the type of the audio stream (format, sample rate, etc.).
+		 * @return					Newly created AudioClip. Must be manually initialized.
+		 */
+		virtual SPtr<AudioClip> createClip(const SPtr<DataStream>& samples, const AUDIO_CLIP_DESC& desc) = 0;
+
 		/** Creates a new AudioListener. */
 		virtual SPtr<AudioListener> createListener() = 0;
 
