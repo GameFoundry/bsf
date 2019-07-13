@@ -26,7 +26,7 @@ namespace bs { namespace ct
 
 			if(streamOut)
 			{
-				BS_LOG(Warning, RenderBackend, "useSystemMem and streamOut cannot be used together.")
+				BS_LOG(Warning, RenderBackend, "useSystemMem and streamOut cannot be used together.");
 				streamOut = false;
 			}
 		}

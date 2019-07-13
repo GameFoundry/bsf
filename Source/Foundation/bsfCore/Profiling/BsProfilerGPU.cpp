@@ -117,7 +117,7 @@ namespace bs
 
 		if (mReportCount == 0)
 		{
-			BS_LOG(Error, Profiler, "No reports are available.")
+			BS_LOG(Error, Profiler, "No reports are available.");
 			return GPUProfilerReport();
 		}
 

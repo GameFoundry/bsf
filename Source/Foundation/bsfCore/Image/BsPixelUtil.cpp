@@ -2515,13 +2515,13 @@ namespace bs
 	{
 		if (!isCompressed(options.format))
 		{
-			BS_LOG(Error, PixelUtility, "Compression failed. Destination format is not a valid compressed format.")
+			BS_LOG(Error, PixelUtility, "Compression failed. Destination format is not a valid compressed format.");
 			return;
 		}
 
 		if (src.getDepth() != 1)
 		{
-			BS_LOG(Error, PixelUtility, "Compression failed. 3D texture compression not supported.")
+			BS_LOG(Error, PixelUtility, "Compression failed. 3D texture compression not supported.");
 			return;
 		}
 
@@ -2579,13 +2579,13 @@ namespace bs
 
 		if (src.getDepth() != 1)
 		{
-			BS_LOG(Error, PixelUtility, "Mipmap generation failed. 3D texture formats not supported.")
+			BS_LOG(Error, PixelUtility, "Mipmap generation failed. 3D texture formats not supported.");
 			return outputMipBuffers;
 		}
 
 		if (isCompressed(src.getFormat()))
 		{
-			BS_LOG(Error, PixelUtility, "Mipmap generation failed. Source data cannot be compressed.")
+			BS_LOG(Error, PixelUtility, "Mipmap generation failed. Source data cannot be compressed.");
 			return outputMipBuffers;
 		}
 
