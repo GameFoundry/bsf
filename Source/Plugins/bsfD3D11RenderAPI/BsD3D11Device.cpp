@@ -127,7 +127,7 @@ namespace bs { namespace ct
 		case D3D11ERR_CORRUPTION:
 			severityList.push_back(D3D11_MESSAGE_SEVERITY_CORRUPTION);
 		case D3D11ERR_NO_EXCEPTION:
-		default: 
+		default:
 			break;
 		}
 

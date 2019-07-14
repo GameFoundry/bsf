@@ -15,11 +15,11 @@ namespace bs
 	 *  @{
 	 */
 
-	/** 
+	/**
 	 * Collider represents physics geometry that can be in multiple states:
 	 *  - Default: Static geometry that physics objects can collide with.
 	 *  - Trigger: Static geometry that can't be collided with but will report touch events.
-	 *  - Dynamic: Dynamic geometry that is a part of a Rigidbody. A set of colliders defines the shape of the parent 
+	 *  - Dynamic: Dynamic geometry that is a part of a Rigidbody. A set of colliders defines the shape of the parent
 	 *		       rigidbody.
 	 */
 	class BS_CORE_EXPORT Collider
@@ -91,8 +91,8 @@ namespace bs
 		/** @copydoc FCollider::getCollisionReportMode */
 		CollisionReportMode getCollisionReportMode() const;
 
-		/** 
-		 * Checks does the ray hit this collider. 
+		/**
+		 * Checks does the ray hit this collider.
 		 *
 		 * @param[in]	ray		Ray to check.
 		 * @param[out]	hit		Information about the hit. Valid only if the method returns true.
@@ -101,8 +101,8 @@ namespace bs
 		 */
 		bool rayCast(const Ray& ray, PhysicsQueryHit& hit, float maxDist = FLT_MAX) const;
 
-		/** 
-		 * Checks does the ray hit this collider. 
+		/**
+		 * Checks does the ray hit this collider.
 		 *
 		 * @param[in]	origin	Origin of the ray to check.
 		 * @param[in]	unitDir	Unit direction of the ray to check.
@@ -113,19 +113,19 @@ namespace bs
 		bool rayCast(const Vector3& origin, const Vector3& unitDir, PhysicsQueryHit& hit,
 			float maxDist = FLT_MAX) const;
 
-		/** 
+		/**
 		 * Triggered when some object starts interacting with the collider. Only triggered if proper collision report mode
-		 * is turned on. 
+		 * is turned on.
 		 */
 		Event<void(const CollisionDataRaw&)> onCollisionBegin;
-		/** 
+		/**
 		 * Triggered for every frame that an object remains interacting with a collider. Only triggered if proper collision
-		 * report mode is turned on. 
+		 * report mode is turned on.
 		 */
 		Event<void(const CollisionDataRaw&)> onCollisionStay;
 		/**
 		 * Triggered when some object stops interacting with the collider. Only triggered if proper collision report mode
-		 * is turned on. 
+		 * is turned on.
 		 */
 		Event<void(const CollisionDataRaw&)> onCollisionEnd;
 
@@ -136,13 +136,13 @@ namespace bs
 		/** Returns the object containing common collider code. */
 		FCollider* _getInternal() const { return mInternal; }
 
-		/** 
+		/**
 		 * Sets the object that owns this physics object, if any. Used for high level systems so they can easily map their
 		 * high level physics objects from the low level ones returned by various queries and events.
 		 */
 		void _setOwner(PhysicsOwnerType type, void* owner) { mOwner.type = type; mOwner.ownerData = owner; }
 
-		/** 
+		/**
 		 * Gets the object that owns this physics object, if any. Used for high level systems so they can easily map their
 		 * high level physics objects from the low level ones returned by various queries and events.
 		 */

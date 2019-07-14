@@ -24,7 +24,7 @@ else()
 endif()
 
 mark_as_advanced(
-	BansheeSBGen_INSTALL_DIRS 
+	BansheeSBGen_INSTALL_DIRS
 	BansheeSBGen_EXECUTABLE)
 
 set(BansheeSBGen_EXECUTABLE_PATH ${BansheeSBGen_EXECUTABLE})

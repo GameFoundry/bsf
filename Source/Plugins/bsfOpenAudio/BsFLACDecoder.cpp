@@ -144,7 +144,7 @@ namespace bs
 		FLACDecoderData data;
 		data.stream = stream;
 		mData.streamOffset = offset;
-		FLAC__stream_decoder_init_stream(decoder, &streamRead, &streamSeek, &streamTell, &streamLength, &streamEof, 
+		FLAC__stream_decoder_init_stream(decoder, &streamRead, &streamSeek, &streamTell, &streamLength, &streamEof,
 			&streamWrite, nullptr, &streamError, &data);
 
 		bool valid = FLAC__stream_decoder_process_until_end_of_metadata(decoder) != 0;

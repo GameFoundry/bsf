@@ -40,7 +40,7 @@ namespace bs
 		// would be more efficient to do it once outside of this method. I'm keeping it this way for simplicity for now.
 
 		// Rename instance objects so they share the same IDs as the prefab objects (if they link IDs match). This allows
-		// game object handle diff to work properly, because otherwise handles that point to same objects would be 
+		// game object handle diff to work properly, because otherwise handles that point to same objects would be
 		// marked as different because the instance IDs of the two objects don't match (since one is in prefab and one
 		// in instance).
 		Vector<RenamedGameObject> renamedObjects;
@@ -68,7 +68,7 @@ namespace bs
 		serzContext.goState->resolve();
 	}
 
-	void PrefabDiff::applyDiff(const SPtr<PrefabObjectDiff>& diff, const HSceneObject& object, 
+	void PrefabDiff::applyDiff(const SPtr<PrefabObjectDiff>& diff, const HSceneObject& object,
 		SerializationContext* context)
 	{
 		if ((diff->soFlags & (UINT32)SceneObjectDiffFlags::Name) != 0)
@@ -87,7 +87,7 @@ namespace bs
 			object->setActive(diff->isActive);
 
 		// Note: It is important to remove objects and components first, before adding them.
-		//		 Some systems rely on the fact that applyDiff added components/objects are 
+		//		 Some systems rely on the fact that applyDiff added components/objects are
 		//       always at the end.
 		const Vector<HComponent>& components = object->getComponents();
 		for (auto& removedId : diff->removedComponents)

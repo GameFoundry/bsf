@@ -13,7 +13,7 @@ namespace bs
 	 */
 
 	/**
-	 * This object takes as input a string, a font and optionally some constraints (like word wrap) and outputs a set of 
+	 * This object takes as input a string, a font and optionally some constraints (like word wrap) and outputs a set of
 	 * character data you may use for rendering or metrics.
 	 */
 	class TextDataBase
@@ -136,7 +136,7 @@ namespace bs
 			 * @param[out]	vertices	Pre-allocated array where character vertices will be written.
 			 * @param[out]	uvs			Pre-allocated array where character uv coordinates will be written.
 			 * @param[out]	indexes 	Pre-allocated array where character indices will be written.
-			 * @param[in]	offset		Offsets the location at which the method writes to the buffers. Counted as number 
+			 * @param[in]	offset		Offsets the location at which the method writes to the buffers. Counted as number
 			 *							of quads.
 			 * @param[in]	size		Total number of quads that can fit into the specified buffers.
 			 * @return					Number of quads that were written.
@@ -211,8 +211,8 @@ namespace bs
 	public:
 		/**
 		 * Initializes a new text data using the specified string and font. Text will attempt to fit into the provided area.
-		 * If enabled it will wrap words to new line when they don't fit. Individual words will be broken into multiple 
-		 * pieces if they don't fit on a single line when word break is enabled, otherwise they will be clipped. If the 
+		 * If enabled it will wrap words to new line when they don't fit. Individual words will be broken into multiple
+		 * pieces if they don't fit on a single line when word break is enabled, otherwise they will be clipped. If the
 		 * specified area is zero size then the text will not be clipped or word wrapped in any way.
 		 *
 		 * After this object is constructed you may call various getter methods to get needed information.
@@ -252,13 +252,13 @@ namespace bs
 		 * @param[in]	text			Text originally used for creating the internal temporary buffer data.
 		 * @param[in]	buffer			Memory location to copy the data to. If null then no data will be copied and the
 		 *								parameter @p size will contain the required buffer size.
-		 * @param[in]	size			Size of the provided memory buffer, or if the buffer is null, this will contain the 
+		 * @param[in]	size			Size of the provided memory buffer, or if the buffer is null, this will contain the
 		 *								required buffer size after method exists.
 		 * @param[in]	freeTemporary	If true the internal temporary data will be freed after copying.
 		 *
 		 * @note	Must be called after text data has been constructed and is in the temporary buffers.
 		 */
-		BS_CORE_EXPORT void generatePersistentData(const U32String& text, UINT8* buffer, UINT32& size, 
+		BS_CORE_EXPORT void generatePersistentData(const U32String& text, UINT8* buffer, UINT32& size,
 			bool freeTemporary = true);
 	private:
 		friend class TextLine;
@@ -303,7 +303,7 @@ namespace bs
 			/**
 			 * Allocates a new word and adds it to the buffer. Returns index of the word in the word buffer.
 			 *
-			 * @param[in]	spacer	Specify true if the word is only to contain spaces. (Spaces are considered a special 
+			 * @param[in]	spacer	Specify true if the word is only to contain spaces. (Spaces are considered a special
 			 *						type of word).
 			 */
 			UINT32 allocWord(bool spacer);

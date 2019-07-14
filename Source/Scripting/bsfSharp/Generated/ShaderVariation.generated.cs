@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Contains information about a single variation of a Shader. Each variation can have a separate set of #defines that 
+	/// Contains information about a single variation of a Shader. Each variation can have a separate set of #defines that
 	/// control shader compilation.
 	/// </summary>
 	[ShowInInspector]
@@ -64,7 +64,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name  will be 
+		/// Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name  will be
 		/// overwritten.
 		/// </summary>
 		public void SetInt(string name, int value)
@@ -73,7 +73,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name  will be 
+		/// Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name  will be
 		/// overwritten.
 		/// </summary>
 		public void SetUInt(string name, int value)
@@ -82,7 +82,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name  will be 
+		/// Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name  will be
 		/// overwritten.
 		/// </summary>
 		public void SetFloat(string name, float value)
@@ -91,7 +91,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name  will be 
+		/// Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name  will be
 		/// overwritten.
 		/// </summary>
 		public void SetBool(string name, bool value)

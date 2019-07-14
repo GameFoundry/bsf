@@ -44,8 +44,8 @@ namespace bs
 		/** Maximum distance (from its origin) at which the decal is displayed, scaled by decal's transform. */
 		float getWorldMaxDistance() const { return mMaxDistance * mTransform.getScale().z; }
 
-		/** 
-		 * Bitfield that allows you to mask on which objects will the decal be projected onto. Only objects with the 
+		/**
+		 * Bitfield that allows you to mask on which objects will the decal be projected onto. Only objects with the
 		 * matching layers will be projected onto. Note that decal layer mask only supports 32-bits and objects with
 		 * layers in bits >= 32 will always be projected onto.
 		 */
@@ -55,7 +55,7 @@ namespace bs
 		UINT32 getLayerMask() const { return mLayerMask; }
 
 		/**
-		 * Determines the layer that controls whether a system is considered visible in a specific camera. Layer must match 
+		 * Determines the layer that controls whether a system is considered visible in a specific camera. Layer must match
 		 * camera layer bitfield in order for the camera to render the decal.
 		 */
 		void setLayer(UINT64 layer);
@@ -70,7 +70,7 @@ namespace bs
 		Matrix4 getMatrix() const { return mTfrmMatrix; }
 
 		/**
-		 * Returns the transform matrix that is applied to the object when its being rendered. This transform matrix does 
+		 * Returns the transform matrix that is applied to the object when its being rendered. This transform matrix does
 		 * not include scale values.
 		 */
 		Matrix4 getMatrixNoScale() const { return mTfrmMatrixNoScale; }
@@ -125,7 +125,7 @@ namespace bs
 
 	namespace ct { class Decal; }
 
-	/** 
+	/**
 	 * Specifies a decal that will be projected onto scene geometry. User can set the material to use when rendering
 	 * the decal, as well as control decal orientation and size.
 	 */

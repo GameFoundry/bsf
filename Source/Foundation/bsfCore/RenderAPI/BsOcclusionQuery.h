@@ -29,7 +29,7 @@ namespace bs { namespace ct
 		virtual void begin(const SPtr<CommandBuffer>& cb = nullptr) = 0;
 
 		/**
-		 * Stops the query. 
+		 * Stops the query.
 		 *
 		 * @note	Be aware that queries are executed on the GPU and the results will not be immediately available.
 		 */
@@ -51,13 +51,13 @@ namespace bs { namespace ct
 		Event<void(UINT32)> onComplete;
 
 		/**
-		 * Creates a new occlusion query. 
+		 * Creates a new occlusion query.
 		 *
 		 * @param[in] binary		If query is binary it will not give you an exact count of samples rendered, but will
-		 *							instead just return 0 (no samples were rendered) or 1 (one or more samples were 
+		 *							instead just return 0 (no samples were rendered) or 1 (one or more samples were
 		 *							rendered). Binary queries can return sooner as they potentially do not need to wait
 		 *							until all of the geometry is rendered.
-		 * @param[in]	deviceIdx	Index of the GPU device to create the query on. 
+		 * @param[in]	deviceIdx	Index of the GPU device to create the query on.
 		 */
 		static SPtr<OcclusionQuery> create(bool binary, UINT32 deviceIdx = 0);
 

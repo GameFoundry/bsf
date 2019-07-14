@@ -38,7 +38,7 @@ namespace bs { namespace ct
 	};
 
 	/** @copydoc DepthStencilState */
-	class NullDepthStencilState : public DepthStencilState 
+	class NullDepthStencilState : public DepthStencilState
 	{
 	public:
 		NullDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id)
@@ -47,7 +47,7 @@ namespace bs { namespace ct
 	};
 
 	/** @copydoc RasterizerState */
-	class NullRasterizerState : public RasterizerState 
+	class NullRasterizerState : public RasterizerState
 	{
 	public:
 		NullRasterizerState(const RASTERIZER_STATE_DESC& desc, UINT32 id)
@@ -56,7 +56,7 @@ namespace bs { namespace ct
 	};
 
 	/** @copydoc SamplerState */
-	class NullSamplerState : public SamplerState 
+	class NullSamplerState : public SamplerState
 	{
 	public:
 		NullSamplerState(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask)

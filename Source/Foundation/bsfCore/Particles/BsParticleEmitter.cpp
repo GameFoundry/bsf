@@ -158,7 +158,7 @@ namespace bs
 	}
 
 	template <class T>
-	UINT32 spawnMultipleLoop(T* spawner, float length, float speed, float interval, ParticleSet& particles, 
+	UINT32 spawnMultipleLoop(T* spawner, float length, float speed, float interval, ParticleSet& particles,
 		UINT32 count, const ParticleSystemState& state)
 	{
 		const UINT32 index = particles.allocParticles(count);
@@ -182,7 +182,7 @@ namespace bs
 	}
 
 	template <class T>
-	UINT32 spawnMultiplePingPong(T* spawner, float length, float speed, float interval, ParticleSet& particles, 
+	UINT32 spawnMultiplePingPong(T* spawner, float length, float speed, float interval, ParticleSet& particles,
 		UINT32 count, const ParticleSystemState& state)
 	{
 		const UINT32 index = particles.allocParticles(count);
@@ -211,7 +211,7 @@ namespace bs
 	}
 
 	template <class T>
-	UINT32 spawnMultipleMode(T* spawner, ParticleEmissionModeType type, float length, float speed, float interval, 
+	UINT32 spawnMultipleMode(T* spawner, ParticleEmissionModeType type, float length, float speed, float interval,
 		const Random& random, ParticleSet& particles, UINT32 count, const ParticleSystemState& state)
 	{
 		if(count > 0)
@@ -243,7 +243,7 @@ namespace bs
 	UINT32 ParticleEmitterConeShape::_spawn(const Random& random, ParticleSet& particles, UINT32 count,
 		const ParticleSystemState& state) const
 	{
-		return spawnMultipleMode(this, mInfo.mode.type, mInfo.arc.valueRadians(), mInfo.mode.speed * Math::DEG2RAD, 
+		return spawnMultipleMode(this, mInfo.mode.type, mInfo.arc.valueRadians(), mInfo.mode.speed * Math::DEG2RAD,
 			mInfo.mode.interval * Math::DEG2RAD, random, particles, count, state);
 	}
 
@@ -265,7 +265,7 @@ namespace bs
 		getPointInCone(pos2D, 0.0f, position, normal);
 	}
 
-	void ParticleEmitterConeShape::getPointInCone(const Vector2& pos2D, float distance, Vector3& position, 
+	void ParticleEmitterConeShape::getPointInCone(const Vector2& pos2D, float distance, Vector3& position,
 		Vector3& normal) const
 	{
 		const float angleSin = Math::sin(mInfo.angle);
@@ -422,7 +422,7 @@ namespace bs
 	{
 		switch(mInfo.type)
 		{
-		case ParticleEmitterBoxType::Surface: 
+		case ParticleEmitterBoxType::Surface:
 		{
 			float totalSurfaceArea = 0.0f;
 			for(UINT32 i = 0; i < 3; i++)
@@ -442,7 +442,7 @@ namespace bs
 			}
 		}
 			break;
-		case ParticleEmitterBoxType::Edge: 
+		case ParticleEmitterBoxType::Edge:
 		{
 			float totalEdgeLength = 0.0f;
 			for(UINT32 i = 0; i < 3; i++)
@@ -478,7 +478,7 @@ namespace bs
 		switch(mInfo.type)
 		{
 		default:
-		case ParticleEmitterBoxType::Volume: 
+		case ParticleEmitterBoxType::Volume:
 			position.x = mInfo.extents.x * random.getSNorm();
 			position.y = mInfo.extents.y * random.getSNorm();
 			position.z = mInfo.extents.z * random.getSNorm();
@@ -598,7 +598,7 @@ namespace bs
 	UINT32 ParticleEmitterLineShape::_spawn(const Random& random, ParticleSet& particles, UINT32 count,
 		const ParticleSystemState& state) const
 	{
-		return spawnMultipleMode(this, mInfo.mode.type, mInfo.length, mInfo.mode.speed, 
+		return spawnMultipleMode(this, mInfo.mode.type, mInfo.length, mInfo.mode.speed,
 			mInfo.mode.interval, random, particles, count, state);
 	}
 
@@ -650,7 +650,7 @@ namespace bs
 	UINT32 ParticleEmitterCircleShape::_spawn(const Random& random, ParticleSet& particles, UINT32 count,
 		const ParticleSystemState& state) const
 	{
-		return spawnMultipleMode(this, mInfo.mode.type, mInfo.arc.valueRadians(), mInfo.mode.speed * Math::DEG2RAD, 
+		return spawnMultipleMode(this, mInfo.mode.type, mInfo.arc.valueRadians(), mInfo.mode.speed * Math::DEG2RAD,
 			mInfo.mode.interval * Math::DEG2RAD, random, particles, count, state);
 	}
 
@@ -760,7 +760,7 @@ namespace bs
 
 			if(!mMeshData)
 			{
-				BS_LOG(Verbose, Particles, 
+				BS_LOG(Verbose, Particles,
 					"Particle emitter mesh not created with CPU caching, performing an expensive GPU read.");
 
 				mMeshData = mesh->allocBuffer();
@@ -780,14 +780,14 @@ namespace bs
 		const VertexElement* positionElement = vertexDesc->getElement(VES_POSITION);
 		if(positionElement == nullptr)
 		{
-			BS_LOG(Error, Particles, 
+			BS_LOG(Error, Particles,
 				"Mesh particle emitter requires position vertex data to be present in the provided mesh data.");
 			return false;
 		}
 
 		if(positionElement->getType() != VET_FLOAT3)
 		{
-			BS_LOG(Error, Particles, 
+			BS_LOG(Error, Particles,
 				"Mesh particle emitter requires position vertex data to use 3D vectors for individual elements.");
 			return false;
 		}
@@ -806,7 +806,7 @@ namespace bs
 
 			if (blendIdxElement == nullptr || blendWeightElement == nullptr)
 			{
-				BS_LOG(Error, Particles, 
+				BS_LOG(Error, Particles,
 					"Skinned mesh particle emitter requires blend indices and blend weight data to be present in the "
 					"provided mesh data.");
 				return false;
@@ -814,14 +814,14 @@ namespace bs
 
 			if (blendIdxElement->getType() != VET_UBYTE4)
 			{
-				BS_LOG(Error, Particles, 
+				BS_LOG(Error, Particles,
 					"Skinned mesh particle emitter requires blend indices to be a 4-byte encoded format.");
 				return false;
 			}
 
 			if (blendWeightElement->getType() != VET_FLOAT4)
 			{
-				BS_LOG(Error, Particles, 
+				BS_LOG(Error, Particles,
 					"Skinned mesh particle emitter requires blend weights to be a 4D vector format.");
 				return false;
 			}
@@ -879,7 +879,7 @@ namespace bs
 		mNextSequentialIdx = (mNextSequentialIdx + 1) % mNumVertices;
 	}
 
-	void MeshEmissionHelper::getRandomVertex(const Random& random, Vector3& position, Vector3& normal, 
+	void MeshEmissionHelper::getRandomVertex(const Random& random, Vector3& position, Vector3& normal,
 		UINT32& idx) const
 	{
 		idx = random.get() % mNumVertices;
@@ -896,7 +896,7 @@ namespace bs
 			normal = Vector3::UNIT_Z;
 	}
 
-	void MeshEmissionHelper::getRandomEdge(const Random& random, std::array<Vector3, 2>& position, 
+	void MeshEmissionHelper::getRandomEdge(const Random& random, std::array<Vector3, 2>& position,
 		std::array<Vector3, 2>& normal, std::array<UINT32, 2>& idx) const
 	{
 		std::array<UINT32, 3> triIndices;
@@ -945,7 +945,7 @@ namespace bs
 		}
 	}
 
-	void MeshEmissionHelper::getRandomTriangle(const Random& random, std::array<Vector3, 3>& position, 
+	void MeshEmissionHelper::getRandomTriangle(const Random& random, std::array<Vector3, 3>& position,
 		std::array<Vector3, 3>& normal, std::array<UINT32, 3>& idx) const
 	{
 		mWeightedTriangles.getTriangle(random, idx);
@@ -1008,7 +1008,7 @@ namespace bs
 
 		switch(mInfo.type)
 		{
-		case ParticleEmitterMeshType::Vertex: 
+		case ParticleEmitterMeshType::Vertex:
 			if(mInfo.sequential)
 			{
 				return spawnMultiple(particles, count, [this](UINT32 idx, Vector3& position, Vector3& normal)
@@ -1143,7 +1143,7 @@ namespace bs
 
 		switch(mInfo.type)
 		{
-		case ParticleEmitterMeshType::Vertex: 
+		case ParticleEmitterMeshType::Vertex:
 			if(mInfo.sequential)
 			{
 				return spawnMultiple(particles, count, [this, bones]
@@ -1268,7 +1268,7 @@ namespace bs
 	RTTITypeBase* ParticleEmitterSkinnedMeshShape::getRTTI() const
 	{
 		return getRTTIStatic();
-	} 
+	}
 
 	void ParticleEmitter::setEmissionBursts(Vector<ParticleBurst> bursts)
 	{
@@ -1351,7 +1351,7 @@ namespace bs
 		spawn(numBurst, random, state, set, false);
 	}	
 	
-	UINT32 ParticleEmitter::spawn(UINT32 count, Random& random, const ParticleSystemState& state, ParticleSet& set, 
+	UINT32 ParticleEmitter::spawn(UINT32 count, Random& random, const ParticleSystemState& state, ParticleSet& set,
 		bool spacing) const
 	{
 		const float subFrameSpacing = count > 0 ? 1.0f / count : 1.0f;

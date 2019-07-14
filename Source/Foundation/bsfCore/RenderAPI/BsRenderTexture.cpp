@@ -70,7 +70,7 @@ namespace bs
 			if(texture != nullptr)
 			{
 				const TextureProperties& texProps = texture->getProperties();
-				construct(&texProps, desc.depthStencilSurface.numFaces, desc.depthStencilSurface.mipLevel, 
+				construct(&texProps, desc.depthStencilSurface.numFaces, desc.depthStencilSurface.mipLevel,
 						  requiresFlipping, false);
 			}
 		}
@@ -79,17 +79,17 @@ namespace bs
 			SPtr<ct::Texture> texture = desc.colorSurfaces[firstIdx].texture;
 
 			const TextureProperties& texProps = texture->getProperties();
-			construct(&texProps, desc.colorSurfaces[firstIdx].numFaces, desc.colorSurfaces[firstIdx].mipLevel, 
+			construct(&texProps, desc.colorSurfaces[firstIdx].numFaces, desc.colorSurfaces[firstIdx].mipLevel,
 					  requiresFlipping, requiresHwGamma);
 		}
 	}
 
-	void RenderTextureProperties::construct(const TextureProperties* textureProps, UINT32 numSlices, 
+	void RenderTextureProperties::construct(const TextureProperties* textureProps, UINT32 numSlices,
 											UINT32 mipLevel, bool requiresFlipping, bool hwGamma)
 	{
 		if (textureProps != nullptr)
 		{
-			PixelUtil::getSizeForMipLevel(textureProps->getWidth(), textureProps->getHeight(), textureProps->getDepth(), 
+			PixelUtil::getSizeForMipLevel(textureProps->getWidth(), textureProps->getHeight(), textureProps->getDepth(),
 										  mipLevel, width, height, numSlices);
 
 			numSlices *= numSlices;
@@ -101,7 +101,7 @@ namespace bs
 		this->hwGamma = hwGamma;
 	}
 
-	SPtr<RenderTexture> RenderTexture::create(const TEXTURE_DESC& desc, 
+	SPtr<RenderTexture> RenderTexture::create(const TEXTURE_DESC& desc,
 		bool createDepth, PixelFormat depthStencilFormat)
 	{
 		return TextureManager::instance().createRenderTexture(desc, createDepth, depthStencilFormat);
@@ -113,7 +113,7 @@ namespace bs
 	}
 
 	SPtr<ct::RenderTexture> RenderTexture::getCore() const
-	{ 
+	{
 		return std::static_pointer_cast<ct::RenderTexture>(mCoreSpecific);
 	}
 

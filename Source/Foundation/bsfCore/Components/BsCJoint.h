@@ -6,7 +6,7 @@
 #include "Physics/BsJoint.h"
 #include "Scene/BsComponent.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Components-Core
 	 *  @{

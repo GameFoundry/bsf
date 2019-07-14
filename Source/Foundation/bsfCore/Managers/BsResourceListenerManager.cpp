@@ -19,7 +19,7 @@ namespace bs
 
 #define THROW_IF_NOT_SIM_THREAD throwIfNotSimThread();
 #else
-#define THROW_IF_NOT_SIM_THREAD 
+#define THROW_IF_NOT_SIM_THREAD
 #endif
 
 	ResourceListenerManager::ResourceListenerManager()

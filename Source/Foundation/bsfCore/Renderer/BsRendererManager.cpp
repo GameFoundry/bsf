@@ -32,7 +32,7 @@ namespace bs
 
 		if(mActiveRenderer == nullptr)
 		{
-			BS_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException,
 				"Cannot initialize renderer. Renderer with the name '" + name + "' cannot be found.")
 		}
 	}

@@ -5,7 +5,7 @@
 
 namespace bs { namespace ct
 {
-	VulkanDescriptorLayout::VulkanDescriptorLayout(VulkanDevice& device, VkDescriptorSetLayoutBinding* bindings, 
+	VulkanDescriptorLayout::VulkanDescriptorLayout(VulkanDevice& device, VkDescriptorSetLayoutBinding* bindings,
 		UINT32 numBindings)
 		:mDevice(device)
 	{

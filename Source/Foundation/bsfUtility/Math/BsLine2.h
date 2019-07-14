@@ -5,7 +5,7 @@
 #include "Prerequisites/BsPrerequisitesUtil.h"
 #include "Math/BsVector2.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Math
 	 *  @{
@@ -18,24 +18,24 @@ namespace bs
 		Line2() = default;
 
 		Line2(const Vector2& origin, const Vector2& direction)
-			:mOrigin(origin), mDirection(direction) 
+			:mOrigin(origin), mDirection(direction)
 		{ }
 
-		void setOrigin(const Vector2& origin) { mOrigin = origin; } 
-		const Vector2& getOrigin(void) const { return mOrigin; } 
+		void setOrigin(const Vector2& origin) { mOrigin = origin; }
+		const Vector2& getOrigin(void) const { return mOrigin; }
 
-		void setDirection(const Vector2& dir) { mDirection = dir; } 
-		const Vector2& getDirection(void) const {return mDirection;} 
+		void setDirection(const Vector2& dir) { mDirection = dir; }
+		const Vector2& getDirection(void) const {return mDirection;}
 
 		/** Gets the position of a point t units along the line. */
-		Vector2 getPoint(float t) const 
-		{ 
+		Vector2 getPoint(float t) const
+		{
 			return Vector2(mOrigin + (mDirection * t));
 		}
 		
 		/** Gets the position of a point t units along the line. */
-		Vector2 operator*(float t) const 
-		{ 
+		Vector2 operator*(float t) const
+		{
 			return getPoint(t);
 		}
 

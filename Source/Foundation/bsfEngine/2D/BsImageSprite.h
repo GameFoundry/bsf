@@ -27,14 +27,14 @@ namespace bs
 
 		HSpriteTexture texture; /**< Texture to overlay on the sprite. */
 		Color color; /**< Color tint to apply to the sprite. */
-		/** 
+		/**
 		 * Time (since application start) at which the sprite texture's 0th frame is played. Used if the sprite texture
 		 * has sprite sheet animation defined.
 		 */
 		float animationStartTime = 0.0f;
 
-		/** 
-		 * Borders (in texels) that allow you to control how is the texture scaled. If borders are 0 the texture will be 
+		/**
+		 * Borders (in texels) that allow you to control how is the texture scaled. If borders are 0 the texture will be
 		 * scaled uniformly. If they are not null only the area inside the borders will be scaled and the outside are will
 		 * remain the original size as in the texture. This allows you to implement "Scale9Grid" functionality.
 		 */
@@ -55,13 +55,13 @@ namespace bs
 		 * Recreates internal sprite data according the specified description structure.
 		 *
 		 * @param[in]	desc	Describes the geometry and material of the sprite.
-		 * @param[in]	groupId	Group identifier that forces different materials to be used for different groups (for 
+		 * @param[in]	groupId	Group identifier that forces different materials to be used for different groups (for
 		 *						example you don't want the sprites to share the same material if they use different world
 		 *						transform matrices).
 		 */
 		void update(const IMAGE_SPRITE_DESC& desc, UINT64 groupId);
 
-		/** 
+		/**
 		 * Calculates the required UV scale in order for a texture of size @p sourceSize to be placed on the surface
 		 * of @p destSize size, while respecting the chosen scale mode.
 		 */

@@ -8,7 +8,7 @@
 
 #ifndef _STR
 #define _STR(m_x) #m_x
-/** 
+/**
  * This macro converts the preprocessor defined macro into textual form.
  * @note Currently used internally for binary information in Win32 resource files
  */

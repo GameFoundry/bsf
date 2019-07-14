@@ -29,7 +29,7 @@ namespace bs
 
 	GpuBuffer::GpuBuffer(const GPU_BUFFER_DESC& desc)
 		:mProperties(desc)
-	{  
+	{
 	}
 
 	SPtr<ct::GpuBuffer> GpuBuffer::getCore() const
@@ -164,7 +164,7 @@ namespace bs
 		mBuffer->readData(offset, length, dest, deviceIdx, queueIdx);
 	}
 
-	void GpuBuffer::writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags, 
+	void GpuBuffer::writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags,
 		UINT32 queueIdx)
 	{
 		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_GpuBuffer);
@@ -172,7 +172,7 @@ namespace bs
 		mBuffer->writeData(offset, length, source, writeFlags, queueIdx);
 	}
 
-	void GpuBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
+	void GpuBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length,
 		bool discardWholeBuffer, const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto& srcGpuBuffer = static_cast<GpuBuffer&>(srcBuffer);
@@ -184,7 +184,7 @@ namespace bs
 		const UINT32 elemSize = type == GBT_STANDARD ? bs::GpuBuffer::getFormatSize(format) : elementSize;
 		if((mBuffer->getSize() % elemSize) != 0)
 		{
-			BS_LOG(Error, RenderBackend, 
+			BS_LOG(Error, RenderBackend,
 				"Size of the buffer isn't divisible by individual element size provided for the buffer view.");
 			return nullptr;
 		}

@@ -5,7 +5,7 @@
 #include "BsD3D11Prerequisites.h"
 #include "RenderAPI/BsRenderWindow.h"
 
-namespace bs { 
+namespace bs {
 	/** @addtogroup D3D11
 	 *  @{
 	 */
@@ -101,8 +101,8 @@ namespace bs {
 		/** @copydoc RenderWindow::setVSync */
 		void setVSync(bool enabled, UINT32 interval = 1) override;
 
-		/** 
-		 * Copies the contents of a frame buffer into the pre-allocated buffer. 
+		/**
+		 * Copies the contents of a frame buffer into the pre-allocated buffer.
 		 *
 		 * @param[out]	dst		Previously allocated buffer to read the contents into. Must be of valid size.
 		 * @param[in]	buffer	Frame buffer to read the contents from.
@@ -137,7 +137,7 @@ namespace bs {
 		void destroySizeDependedD3DResources();
 
 		/**	Queries the current DXGI device. Make sure to release the returned object when done with it. */
-		IDXGIDevice* queryDxgiDevice(); 
+		IDXGIDevice* queryDxgiDevice();
 
 		/**	Creates a swap chain for the window. */
 		void createSwapChain();

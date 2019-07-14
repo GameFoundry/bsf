@@ -12,7 +12,7 @@ namespace bs
 	 */
 
 	/**
-	 * Represents a torus at the world center. Outer radius represents the distance from the center, and inner radius 
+	 * Represents a torus at the world center. Outer radius represents the distance from the center, and inner radius
 	 * represents the radius of the tube. Inner radius must be less or equal than the outer radius.
 	 */
 	class BS_UTILITY_EXPORT Torus

@@ -15,7 +15,7 @@
 
 using namespace std::placeholders;
 
-namespace bs 
+namespace bs
 {
 	void RenderAPI::setGpuParams(const SPtr<GpuParams>& gpuParams)
 	{
@@ -91,14 +91,14 @@ namespace bs
 			ct::RenderAPI::instancePtr(), target->getCore(), readOnlyFlags, loadMask, nullptr));
 	}
 
-	void RenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, 
+	void RenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth,
 		UINT16 stencil, UINT8 targetMask)
 	{
 		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::clearRenderTarget, ct::RenderAPI::instancePtr(), buffers, color,
 			depth, stencil, targetMask, nullptr));
 	}
 
-	void RenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil, 
+	void RenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil,
 		UINT8 targetMask)
 	{
 		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::clearViewport, ct::RenderAPI::instancePtr(), buffers, color, depth,
@@ -116,7 +116,7 @@ namespace bs
 			vertexCount, instanceCount, nullptr));
 	}
 
-	void RenderAPI::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, 
+	void RenderAPI::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset,
 		UINT32 vertexCount, UINT32 instanceCount)
 	{
 		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::drawIndexed, ct::RenderAPI::instancePtr(), startIndex, indexCount,
@@ -156,7 +156,7 @@ namespace bs
 
 	SPtr<bs::RenderWindow> RenderAPI::initialize(const RENDER_WINDOW_DESC& primaryWindowDesc)
 	{
-		gCoreThread().queueCommand(std::bind((void(RenderAPI::*)())&RenderAPI::initialize, this), 
+		gCoreThread().queueCommand(std::bind((void(RenderAPI::*)())&RenderAPI::initialize, this),
 			CTQF_InternalQueue | CTQF_BlockUntilComplete);
 
 		RENDER_WINDOW_DESC windowDesc = primaryWindowDesc;
@@ -165,7 +165,7 @@ namespace bs
 		// Make sure render window initialization is submitted to the internal queue
 		gCoreThread().submitAll();
 
-		gCoreThread().queueCommand(std::bind(&RenderAPI::initializeWithWindow, this, renderWindow->getCore()), 
+		gCoreThread().queueCommand(std::bind(&RenderAPI::initializeWithWindow, this, renderWindow->getCore()),
 			CTQF_InternalQueue | CTQF_BlockUntilComplete);
 
 		return renderWindow;
@@ -196,7 +196,7 @@ namespace bs
 	{
 		if(deviceIdx >= mNumDevices)
 		{
-			BS_LOG(Warning, RenderBackend, "Invalid device index provided: {0}. Valid range is: [0, {1}).", 
+			BS_LOG(Warning, RenderBackend, "Invalid device index provided: {0}. Valid range is: [0, {1}).",
 				deviceIdx, mNumDevices);
 			return mCurrentCapabilities[0];
 		}

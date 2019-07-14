@@ -239,7 +239,7 @@ namespace bs { namespace ct
 	SPtr<Texture> generateLensFlareGradientTint()
 	{
 		Vector<ColorGradientKey> keys =
-			{ 
+			{
 				ColorGradientKey(Color(1.0f, 1.0f, 1.0f), 0.0f),
 				ColorGradientKey(Color(0.631f, 1.0f, 0.792f), 0.066f),
 				ColorGradientKey(Color(0.203f, 0.913f, 0.266f), 0.2f),

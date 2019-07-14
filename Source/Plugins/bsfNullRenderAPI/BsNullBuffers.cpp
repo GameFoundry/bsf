@@ -4,7 +4,7 @@
 
 namespace bs { namespace ct
 {
-	SPtr<VertexBuffer> NullHardwareBufferManager::createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc, 
+	SPtr<VertexBuffer> NullHardwareBufferManager::createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc,
 		GpuDeviceFlags deviceMask)
 	{
 		SPtr<NullVertexBuffer> ret = bs_shared_ptr_new<NullVertexBuffer>(desc, deviceMask);
@@ -13,7 +13,7 @@ namespace bs { namespace ct
 		return ret;
 	}
 
-	SPtr<IndexBuffer> NullHardwareBufferManager::createIndexBufferInternal(const INDEX_BUFFER_DESC& desc, 
+	SPtr<IndexBuffer> NullHardwareBufferManager::createIndexBufferInternal(const INDEX_BUFFER_DESC& desc,
 		GpuDeviceFlags deviceMask)
 	{
 		SPtr<NullIndexBuffer> ret = bs_shared_ptr_new<NullIndexBuffer>(desc, deviceMask);
@@ -22,7 +22,7 @@ namespace bs { namespace ct
 		return ret;
 	}
 
-	SPtr<GpuParamBlockBuffer> NullHardwareBufferManager::createGpuParamBlockBufferInternal(UINT32 size, 
+	SPtr<GpuParamBlockBuffer> NullHardwareBufferManager::createGpuParamBlockBufferInternal(UINT32 size,
 		GpuBufferUsage usage, GpuDeviceFlags deviceMask)
 	{
 		SPtr<GpuParamBlockBuffer> paramBlockBufferPtr = bs_shared_ptr_new<NullGpuParamBlockBuffer>(size, usage, deviceMask);

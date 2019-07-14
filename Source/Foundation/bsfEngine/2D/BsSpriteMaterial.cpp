@@ -11,7 +11,7 @@
 
 namespace bs
 {
-	SpriteMaterial::SpriteMaterial(UINT32 id, const HMaterial& material, const ShaderVariation& variation, 
+	SpriteMaterial::SpriteMaterial(UINT32 id, const HMaterial& material, const ShaderVariation& variation,
 		bool allowBatching)
 		:mId(id), mAllowBatching(allowBatching), mMaterialStored(false), mParamBufferIdx(-1)
 	{

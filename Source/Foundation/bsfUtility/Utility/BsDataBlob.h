@@ -30,7 +30,7 @@ namespace bs
 		enum { id = TID_DataBlob }; enum { hasDynamicSize = 1 };
 
 		static void toMemory(const DataBlob& data, char* memory)
-		{ 
+		{
 			UINT32 size = getDynamicSize(data);
 
 			memcpy(memory, &size, sizeof(UINT32));
@@ -40,9 +40,9 @@ namespace bs
 		}
 
 		static UINT32 fromMemory(DataBlob& data, char* memory)
-		{ 
+		{
 			UINT32 size;
-			memcpy(&size, memory, sizeof(UINT32)); 
+			memcpy(&size, memory, sizeof(UINT32));
 			memory += sizeof(UINT32);
 
 			if(data.data != nullptr)
@@ -56,7 +56,7 @@ namespace bs
 		}
 
 		static UINT32 getDynamicSize(const DataBlob& data)
-		{ 
+		{
 			UINT64 dataSize = data.size + sizeof(UINT32);
 				
 #if BS_DEBUG_MODE
@@ -68,7 +68,7 @@ namespace bs
 
 			return (UINT32)dataSize;
 		}	
-	}; 
+	};
 
 	/** @} */
 	/** @endcond */

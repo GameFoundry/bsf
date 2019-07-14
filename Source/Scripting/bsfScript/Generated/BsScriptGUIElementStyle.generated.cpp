@@ -81,7 +81,7 @@ namespace bs
 
 	MonoObject* ScriptGUIElementStyle::create(const SPtr<GUIElementStyle>& value)
 	{
-		if(value == nullptr) return nullptr; 
+		if(value == nullptr) return nullptr;
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };

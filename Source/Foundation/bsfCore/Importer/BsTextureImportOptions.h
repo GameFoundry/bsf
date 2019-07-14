@@ -36,21 +36,21 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		bool cpuCached = false;
 
-		/** 
-		 * Determines whether the texture data should be treated as if its in sRGB (gamma) space. Such texture will be 
+		/**
+		 * Determines whether the texture data should be treated as if its in sRGB (gamma) space. Such texture will be
 		 * converted by hardware to linear space before use on the GPU.
 		 */
 		BS_SCRIPT_EXPORT()
 		bool sRGB = false;
 
-		/** 
+		/**
 		 * Determines should the texture be imported as a cubemap. See setCubemapSource to choose how will the source
 		 * texture be converted to a cubemap.
 		 */
 		BS_SCRIPT_EXPORT()
 		bool cubemap = false;
 
-		/** 
+		/**
 		 * Determines how should the source texture be interpreted when generating a cubemap. Only relevant when @p cubemap
 		 * is set to true.
 		 */

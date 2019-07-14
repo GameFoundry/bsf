@@ -6,7 +6,7 @@
 #include "Physics/BsCollider.h"
 #include "Scene/BsComponent.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Components-Core
 	 *  @{
@@ -144,14 +144,14 @@ namespace bs
 		/** Destroys the internal collider representation. */
 		void destroyInternal();
 
-		/** 
-		 * Checks is the provided rigidbody a valid parent for this collider. 
+		/**
+		 * Checks is the provided rigidbody a valid parent for this collider.
 		 *
 		 * @note This is required because certain colliders are limited in how they can be used. */
 		virtual bool isValidParent(const HRigidbody& parent) const { return true; }
 
 		/**
-		 * Changes the rigidbody parent of the collider. Meant to be called from the Rigidbody itself. 
+		 * Changes the rigidbody parent of the collider. Meant to be called from the Rigidbody itself.
 		 *
 		 * @param[in] rigidbody		New rigidbody to assign as the parent to the collider.
 		 * @param[in] internal		If true the rigidbody will just be changed internally, but parent rigidbody will not be
@@ -159,7 +159,7 @@ namespace bs
 		 */
 		void setRigidbody(const HRigidbody& rigidbody, bool internal = false);
 
-		/** 
+		/**
 		 * Updates the transform of the internal Collider representation from the transform of the component's scene object.
 		 */
 		void updateTransform();

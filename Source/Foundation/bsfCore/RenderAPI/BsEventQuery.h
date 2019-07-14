@@ -14,7 +14,7 @@ namespace bs { namespace ct
 	 * Represents a GPU query that gets triggered when GPU starts processing the query.
 	 * 			
 	 * @note	
-	 * Normally GPU will have many commands in its command buffer. When begin() is called it is placed in that command 
+	 * Normally GPU will have many commands in its command buffer. When begin() is called it is placed in that command
 	 * buffer. Once the buffer empties and GPU reaches the EventQuery command, the query callback is triggered.
 	 * @note			
 	 * Core thread only.
@@ -26,14 +26,14 @@ namespace bs { namespace ct
 		virtual ~EventQuery() = default;
 
 		/**
-		 * Starts the query. 
-		 * 
+		 * Starts the query.
+		 *
 		 * @param[in]	cb		Optional command buffer to queue the operation on. If not provided operation
-		 *						is executed on the main command buffer. Otherwise it is executed when 
+		 *						is executed on the main command buffer. Otherwise it is executed when
 		 *						RenderAPI::executeCommands() is called. Buffer must support graphics or compute operations.
-		 * 
+		 *
 		 * @note	
-		 * Once the query is started you may poll isReady() method to check when query has finished, or you may hook up 
+		 * Once the query is started you may poll isReady() method to check when query has finished, or you may hook up
 		 * an #onTriggered callback and be notified that way.
 		 */
 		virtual void begin(const SPtr<CommandBuffer>& cb = nullptr) = 0;
@@ -45,9 +45,9 @@ namespace bs { namespace ct
 		Event<void()> onTriggered;
 
 		/**	
-		 * Creates a new query, but does not schedule it on GPU. 
-		 * 
-		 * @param[in]	deviceIdx	Index of the GPU device to create the query on. 
+		 * Creates a new query, but does not schedule it on GPU.
+		 *
+		 * @param[in]	deviceIdx	Index of the GPU device to create the query on.
 		 */
 		static SPtr<EventQuery> create(UINT32 deviceIdx = 0);
 

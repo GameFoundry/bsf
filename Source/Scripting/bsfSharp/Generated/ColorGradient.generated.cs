@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Represents a range of color values over some parameters, similar to a curve. Internally represented as a set of keys 
+	/// Represents a range of color values over some parameters, similar to a curve. Internally represented as a set of keys
 	/// that get interpolated between.
 	/// </summary>
 	[ShowInInspector]

@@ -198,9 +198,9 @@ namespace bs
 
         public static Quaternion operator* (Quaternion lhs, Quaternion rhs)
         {
-            return new Quaternion((lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y), 
-                (lhs.w * rhs.y + lhs.y * rhs.w + lhs.z * rhs.x - lhs.x * rhs.z), 
-                (lhs.w * rhs.z + lhs.z * rhs.w + lhs.x * rhs.y - lhs.y * rhs.x), 
+            return new Quaternion((lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y),
+                (lhs.w * rhs.y + lhs.y * rhs.w + lhs.z * rhs.x - lhs.x * rhs.z),
+                (lhs.w * rhs.z + lhs.z * rhs.w + lhs.x * rhs.y - lhs.y * rhs.x),
                 (lhs.w * rhs.w - lhs.x * rhs.x - lhs.y * rhs.y - lhs.z * rhs.z));
         }
 
@@ -398,7 +398,7 @@ namespace bs
         /// <paramref name="from"/> and <paramref name="to"/>.</param>
         /// <param name="shortestPath">Should the interpolation be performed between the shortest or longest path between
         ///                            the two quaternions.</param>
-        /// <returns>Interpolated quaternion representing a rotation between <paramref name="from"/> and 
+        /// <returns>Interpolated quaternion representing a rotation between <paramref name="from"/> and
         /// <paramref name="to"/>.</returns>
         public static Quaternion Slerp(Quaternion from, Quaternion to, float t, bool shortestPath = true)
         {
@@ -557,7 +557,7 @@ namespace bs
         /// </summary>
         /// <param name="fromDirection">Rotation to start at.</param>
         /// <param name="toDirection">Rotation to end at.</param>
-        /// <returns>Quaternion that rotates an object from <paramref name="fromDirection"/> to 
+        /// <returns>Quaternion that rotates an object from <paramref name="fromDirection"/> to
         /// <paramref name="toDirection"/></returns>
         public static Quaternion FromToRotation(Vector3 fromDirection, Vector3 toDirection)
         {
@@ -573,7 +573,7 @@ namespace bs
         /// <param name="toDirection">Rotation to end at.</param>
         /// <param name="fallbackAxis">Fallback axis to use if the from/to vectors are almost completely opposite.
         ///                            Fallback axis should be perpendicular to both vectors.</param>
-        /// <returns>Quaternion that rotates an object from <paramref name="fromDirection"/> to 
+        /// <returns>Quaternion that rotates an object from <paramref name="fromDirection"/> to
         /// <paramref name="toDirection"/></returns>
         public static Quaternion FromToRotation(Vector3 fromDirection, Vector3 toDirection, Vector3 fallbackAxis)
         {
@@ -703,7 +703,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Initializes the quaternion from orthonormal set of axes. 
+        /// Initializes the quaternion from orthonormal set of axes.
         /// </summary>
         /// <param name="xAxis">Normalized x axis.</param>
         /// <param name="yAxis">Normalized y axis.</param>
@@ -737,7 +737,7 @@ namespace bs
         /// <param name="order">The order in which rotations will be applied. Different rotations can be created depending
         ///                     on the order.</param>
         /// <returns>Quaternion that can rotate an object to the specified angles.</returns>
-        public static Quaternion FromEuler(Degree xAngle, Degree yAngle, Degree zAngle, 
+        public static Quaternion FromEuler(Degree xAngle, Degree yAngle, Degree zAngle,
             EulerAngleOrder order = EulerAngleOrder.YXZ)
         {
             EulerAngleOrderData l = EA_LOOKUP[(int)order];

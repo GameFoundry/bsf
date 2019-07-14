@@ -10,7 +10,7 @@ namespace bs
      */
 
     /// <summary>
-    /// Prefab is a saveable hierarchy of scene objects. In general it can serve as any grouping of scene objects 
+    /// Prefab is a saveable hierarchy of scene objects. In general it can serve as any grouping of scene objects
     /// (for example a level) or be used as a form of a template instantiated and reused throughout the scene.
     /// </summary>
     public class Prefab : Resource
@@ -22,7 +22,7 @@ namespace bs
         { }
 
         /// <summary>
-        /// Creates a new prefab from the provided scene object. If the scene object has an existing prefab link it will 
+        /// Creates a new prefab from the provided scene object. If the scene object has an existing prefab link it will
         /// be broken. After the prefab is created the scene object will be automatically linked to it.
         /// </summary>
         /// <param name="so">Scene object to generate the prefab for.</param>
@@ -35,7 +35,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Instantiates a prefab by creating an instance of the prefab's scene object hierarchy. The returned hierarchy 
+        /// Instantiates a prefab by creating an instance of the prefab's scene object hierarchy. The returned hierarchy
         /// will be parented to world root by default.
         /// </summary>
         /// <returns>New scene object instance containing a copy of the prefab's hierarchy.</returns>
@@ -46,7 +46,7 @@ namespace bs
 
         /// <summary>
         /// Determines if the prefab represents a scene or just a generic group of objects. The only difference between the
-        /// two is the way root object is handled: scenes are assumed to be saved with the scene root object (which is 
+        /// two is the way root object is handled: scenes are assumed to be saved with the scene root object (which is
         /// hidden), while object group root is a normal scene object (not hidden). This is relevant when when prefabs are
         /// loaded, so the systems knows to append the root object to non-scene prefabs.
         /// </summary>

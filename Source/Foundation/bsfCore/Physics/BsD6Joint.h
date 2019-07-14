@@ -42,25 +42,25 @@ namespace bs
 		Y, /**< Linear movement on the Y axis using the linear drive model. */
 		Z, /**< Linear movement on the Z axis using the linear drive model. */
 		/**
-		 * Rotation around the Y axis using the twist/swing angular drive model. Should not be used together with 
-		 * SLERP mode. 
+		 * Rotation around the Y axis using the twist/swing angular drive model. Should not be used together with
+		 * SLERP mode.
 		 */
-		Swing, 
-		/** 
-		 * Rotation around the Z axis using the twist/swing angular drive model. Should not be used together with 
-		 * SLERP mode. 
+		Swing,
+		/**
+		 * Rotation around the Z axis using the twist/swing angular drive model. Should not be used together with
+		 * SLERP mode.
 		 */
 		Twist,
-		/** 
+		/**
 		 * Rotation using spherical linear interpolation. Uses the SLERP angular drive mode which performs rotation
 		 * by interpolating the quaternion values directly over the shortest path (applies to all three axes, which
 		 * they all must be unlocked).
 		 */
-		SLERP, 
+		SLERP,
 		Count
 	};
 
-	/** 
+	/**
 	 * Specifies parameters for a drive that will attempt to move the joint bodies to the specified drive position and
 	 * velocity.
 	 */
@@ -81,16 +81,16 @@ namespace bs
 		/** Maximum force the drive can apply. */
 		float forceLimit = FLT_MAX;
 
-		/** 
+		/**
 		 * If true the drive will generate acceleration instead of forces. Acceleration drives are easier to tune as
 		 * they account for the masses of the actors to which the joint is attached.
 		 */
 		bool acceleration = false;
 	};
 
-	/** 
-	 * Represents the most customizable type of joint. This joint type can be used to create all other built-in joint 
-	 * types, and to design your own custom ones, but is less intuitive to use. Allows a specification of a linear 
+	/**
+	 * Represents the most customizable type of joint. This joint type can be used to create all other built-in joint
+	 * types, and to design your own custom ones, but is less intuitive to use. Allows a specification of a linear
 	 * constraint (for example for slider), twist constraint (rotating around X) and swing constraint (rotating around Y and
 	 * Z). It also allows you to constrain limits to only specific axes or completely lock specific axes.
 	 */
@@ -100,14 +100,14 @@ namespace bs
 		D6Joint(const D6_JOINT_DESC& desc) { }
 		virtual ~D6Joint() { }
 
-		/** 
-		 * Returns motion constraint for the specified axis. 
+		/**
+		 * Returns motion constraint for the specified axis.
 		 *
 		 * @see	setMotion
 		 */
 		virtual D6JointMotion getMotion(D6JointAxis axis) const = 0;
 
-		/** 
+		/**
 		 * Allows you to constrain motion of the specified axis. Be aware that when setting drives for a specific axis
 		 * you must also take care not to constrain its motion in a conflicting way (for example you cannot add a drive that
 		 * moves the joint on X axis, and then lock the X axis).
@@ -116,10 +116,10 @@ namespace bs
 		 * (for example unlocking just one translational axis is the equivalent of a slider joint.)
 		 *
 		 * Angular degrees of freedom are partitioned as twist (around X axis) and swing (around Y and Z axes). Different
-		 * effects can be achieves by unlocking their various combinations: 
+		 * effects can be achieves by unlocking their various combinations:
 		 *  - If a single degree of angular freedom is unlocked it should be the twist degree as it has extra options for
 		 *    that case (for example for a hinge joint).
-		 *  - If both swing degrees are unlocked but twist is locked the result is a zero-twist joint. 
+		 *  - If both swing degrees are unlocked but twist is locked the result is a zero-twist joint.
 		 *  - If one swing and one twist degree of freedom are unlocked the result is a zero-swing joint (for example an arm
 		 *    attached at the elbow)
 		 *  - If all angular degrees of freedom are unlocked the result is the same as the spherical joint.
@@ -158,7 +158,7 @@ namespace bs
 
 		/**
 		 * Determines a drive that will attempt to move the specified degree(s) of freedom to the wanted position and
-		 * velocity. 
+		 * velocity.
 		 */
 		virtual void setDrive(D6JointDriveType type, const D6JointDrive& drive) = 0;
 
@@ -180,9 +180,9 @@ namespace bs
 		/** Sets the drive's target linear and angular velocities. */
 		virtual void setDriveVelocity(const Vector3& linear, const Vector3& angular) = 0;
 
-		/** 
-		 * Creates a new D6 joint. 
-		 * 
+		/**
+		 * Creates a new D6 joint.
+		 *
 		 * @param[in]	scene		Scene to which to add the joint.
 		 * @param[in]	desc		Settings describing the joint.
 		 */

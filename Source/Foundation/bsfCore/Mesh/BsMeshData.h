@@ -99,7 +99,7 @@ namespace bs
 	{
 	public:
 		/**
-		 * Constructs a new object that can hold number of vertices described by the provided vertex data description. As 
+		 * Constructs a new object that can hold number of vertices described by the provided vertex data description. As
 		 * well as a number of indices of the provided type.
 		 */
 		MeshData(UINT32 numVertices, UINT32 numIndexes, const SPtr<VertexDataDesc>& vertexData, IndexType indexType = IT_32BIT);
@@ -110,11 +110,11 @@ namespace bs
 		 *
 		 * @param[in]	semantic   		Semantic that allows the engine to connect the data to a shader input slot.
 		 * @param[in]	data			Vertex data, containing at least @p size bytes.
-		 * @param[in]	size			The size of the data. Must be the size of the vertex element type * number of 
+		 * @param[in]	size			The size of the data. Must be the size of the vertex element type * number of
 		 *								vertices.
 		 * @param[in]	semanticIdx 	(optional) If there are multiple semantics with the same name, use different index
 		 *								to differentiate between them.
-		 * @param[in]	streamIdx   	(optional) Zero-based index of the stream. Each stream will internally be 
+		 * @param[in]	streamIdx   	(optional) Zero-based index of the stream. Each stream will internally be
 		 *								represented as a single vertex buffer.
 		 */
 		void setVertexData(VertexElementSemantic semantic, void* data, UINT32 size, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
@@ -124,18 +124,18 @@ namespace bs
 		 *
 		 * @param[in]	semantic   		Semantic that allows the engine to connect the data to a shader input slot.
 		 * @param[in]	data			Buffer that will receive vertex data, of at least @p size bytes.
-		 * @param[in]	size			The size of the data. Must be the size of the vertex element type * number of 
+		 * @param[in]	size			The size of the data. Must be the size of the vertex element type * number of
 		 *								vertices.
 		 * @param[in]	semanticIdx 	(optional) If there are multiple semantics with the same name, use different index
 		 *								to differentiate between them.
-		 * @param[in]	streamIdx   	(optional) Zero-based index of the stream. Each stream will internally be 
+		 * @param[in]	streamIdx   	(optional) Zero-based index of the stream. Each stream will internally be
 		 *								represented as a single vertex buffer.
 		 */
 		void getVertexData(VertexElementSemantic semantic, void* data, UINT32 size, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
 
 		/**
 		 * Returns an iterator you can use for easily retrieving or setting Vector2 vertex elements. This is the preferred
-		 * method of assigning or reading vertex data. 
+		 * method of assigning or reading vertex data.
 		 * 			
 		 * @note	If vertex data of this type/semantic/index/stream doesn't exist and exception will be thrown.
 		 */
@@ -143,7 +143,7 @@ namespace bs
 
 		/**
 		 * Returns an iterator you can use for easily retrieving or setting Vector3 vertex elements. This is the preferred
-		 * method of assigning or reading vertex data. 
+		 * method of assigning or reading vertex data.
 		 * 			
 		 * @note	If vertex data of this type/semantic/index/stream doesn't exist and exception will be thrown.
 		 */
@@ -151,7 +151,7 @@ namespace bs
 
 		/**
 		 * Returns an iterator you can use for easily retrieving or setting Vector4 vertex elements. This is the preferred
-		 * method of assigning or reading vertex data. 
+		 * method of assigning or reading vertex data.
 		 * 			
 		 * @note	If vertex data of this type/semantic/index/stream doesn't exist and exception will be thrown.
 		 */
@@ -159,7 +159,7 @@ namespace bs
 
 		/**
 		 * Returns an iterator you can use for easily retrieving or setting DWORD vertex elements. This is the preferred
-		 * method of assigning or reading vertex data. 
+		 * method of assigning or reading vertex data.
 		 * 			
 		 * @note	If vertex data of this type/semantic/index/stream doesn't exist and exception will be thrown.
 		 */
@@ -184,26 +184,26 @@ namespace bs
 		IndexType getIndexType() const { return mIndexType; }
 
 		/**
-		 * Returns the pointer to the first element of the specified type. If you want to iterate over all elements you 
+		 * Returns the pointer to the first element of the specified type. If you want to iterate over all elements you
 		 * need to call getVertexStride() to get the number	of bytes you need to advance between each element.
 		 *
 		 * @param[in]	semantic   		Semantic that allows the engine to connect the data to a shader input slot.
-		 * @param[in]	semanticIdx 	(optional) If there are multiple semantics with the same name, use different index 
+		 * @param[in]	semanticIdx 	(optional) If there are multiple semantics with the same name, use different index
 		 *								to differentiate between them.
-		 * @param[in]	streamIdx   	(optional) Zero-based index of the stream. Each stream will internally be 
+		 * @param[in]	streamIdx   	(optional) Zero-based index of the stream. Each stream will internally be
 		 *								represented as a single vertex buffer.
 		 * @return						null if it fails, else the element data.
 		 */
 		UINT8* getElementData(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
 
 		/**
-		 * Returns an offset into the internal buffer where this element with the provided semantic starts. Offset is 
+		 * Returns an offset into the internal buffer where this element with the provided semantic starts. Offset is
 		 * provided in number of bytes.
-		 * 
+		 *
 		 * @param[in]	semantic   		Semantic that allows the engine to connect the data to a shader input slot.
-		 * @param[in]	semanticIdx 	(optional) If there are multiple semantics with the same name, use different index 
+		 * @param[in]	semanticIdx 	(optional) If there are multiple semantics with the same name, use different index
 		 *								to differentiate between them.
-		 * @param[in]	streamIdx   	(optional) Zero-based index of the stream. Each stream will internally be 
+		 * @param[in]	streamIdx   	(optional) Zero-based index of the stream. Each stream will internally be
 		 *								represented as a single vertex buffer.
 		 */
 		UINT32 getElementOffset(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
@@ -234,21 +234,21 @@ namespace bs
 		 *
 		 * @param[in]	elements		Data containing vertices and indices referenced by the submeshes. Number of elements
 		 *								must be the same as number of submeshes.
-		 * @param[in]	allSubMeshes	Submeshes representing vertex and index range to take from mesh data and combine. 
+		 * @param[in]	allSubMeshes	Submeshes representing vertex and index range to take from mesh data and combine.
 		 *								Number of submeshes must match the number of provided MeshData elements.
 		 * @param[out]	subMeshes		Outputs all combined sub-meshes with their new index and vertex offsets referencing
 		 *								the newly created MeshData.
-		 * @return						Combined mesh data containing all vertices and indexes references by the provided 
+		 * @return						Combined mesh data containing all vertices and indexes references by the provided
 		 *								sub-meshes.
 		 */
 		static SPtr<MeshData> combine(const Vector<SPtr<MeshData>>& elements, const Vector<Vector<SubMesh>>& allSubMeshes,
 			Vector<SubMesh>& subMeshes);
 
 		/**
-		 * Constructs a new object that can hold number of vertices described by the provided vertex data description. As 
+		 * Constructs a new object that can hold number of vertices described by the provided vertex data description. As
 		 * well as a number of indices of the provided type.
 		 */
-		static SPtr<MeshData> create(UINT32 numVertices, UINT32 numIndexes, const SPtr<VertexDataDesc>& vertexData, 
+		static SPtr<MeshData> create(UINT32 numVertices, UINT32 numIndexes, const SPtr<VertexDataDesc>& vertexData,
 			IndexType indexType = IT_32BIT)
 		{
 			return bs_shared_ptr_new<MeshData>(numVertices, numIndexes, vertexData, indexType);
@@ -272,7 +272,7 @@ namespace bs
 		 * Returns the data needed for iterating over the requested vertex element.
 		 *
 		 * @param[in]	semantic   		Semantic of the element we are looking for.
-		 * @param[in]	semanticIdx 	If there are multiple semantics with the same name, use different index to 
+		 * @param[in]	semanticIdx 	If there are multiple semantics with the same name, use different index to
 		 *								differentiate between them.
 		 * @param[in]	streamIdx   	Zero-based index of the stream the element resides in.
 		 * @param[out] data				Pointer to the start of this elements data.

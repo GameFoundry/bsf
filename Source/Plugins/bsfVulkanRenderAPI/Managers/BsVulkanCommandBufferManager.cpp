@@ -45,13 +45,13 @@ namespace bs { namespace ct
 		mCB->memoryBarrier(buffer, srcAccessFlags, dstAccessFlags, srcStage, dstStage);
 	}
 
-	void VulkanTransferBuffer::setLayout(VkImage image, VkAccessFlags srcAccessFlags, VkAccessFlags dstAccessFlags, 
+	void VulkanTransferBuffer::setLayout(VkImage image, VkAccessFlags srcAccessFlags, VkAccessFlags dstAccessFlags,
 		VkImageLayout oldLayout, VkImageLayout newLayout, const VkImageSubresourceRange& range)
 	{
 		mCB->setLayout(image, srcAccessFlags, dstAccessFlags, oldLayout, newLayout, range);
 	}
 
-	void VulkanTransferBuffer::setLayout(VulkanImage* image, const VkImageSubresourceRange& range, 
+	void VulkanTransferBuffer::setLayout(VulkanImage* image, const VkImageSubresourceRange& range,
 										 VkAccessFlags newAccessMask, VkImageLayout newLayout)
 	{
 		image->getBarriers(range, mBarriersTemp);
@@ -150,7 +150,7 @@ namespace bs { namespace ct
 
 		SPtr<VulkanDevice> device = mRapi._getDevice(deviceIdx);
 
-		CommandBuffer* buffer = 
+		CommandBuffer* buffer =
 			new (bs_alloc<VulkanCommandBuffer>()) VulkanCommandBuffer(*device, type, deviceIdx, queueIdx, secondary);
 
 		return bs_shared_ptr(buffer);

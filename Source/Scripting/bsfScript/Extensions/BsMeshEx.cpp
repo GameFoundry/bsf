@@ -5,7 +5,7 @@
 
 namespace bs
 {
-	HMesh MeshEx::create(int numVertices, int numIndices, DrawOperationType topology, MeshUsage usage, 
+	HMesh MeshEx::create(int numVertices, int numIndices, DrawOperationType topology, MeshUsage usage,
 		VertexLayout vertex, IndexType index)
 	{
 		MESH_DESC desc;

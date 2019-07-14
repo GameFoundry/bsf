@@ -71,11 +71,11 @@ namespace bs
 		 *
 		 * @param[in]	name		The name to identify the cursor.
 		 * @param[in]	pixelData	Cursor image data.
-		 * @param[in]	hotSpot		Offset on the cursor image to where the actual input happens (for example tip of the 
+		 * @param[in]	hotSpot		Offset on the cursor image to where the actual input happens (for example tip of the
 		 *							Arrow cursor).
 		 * 						
 		 * @note	
-		 * Stores an internal copy of the pixel data. Clear it by calling removeCursorIcon(). If a custom icon with the 
+		 * Stores an internal copy of the pixel data. Clear it by calling removeCursorIcon(). If a custom icon with the
 		 * same name already exists it will be replaced.
 		 */
 		void setCursorIcon(const String& name, const PixelData& pixelData, const Vector2I& hotSpot);
@@ -85,7 +85,7 @@ namespace bs
 		 *
 		 * @param[in]	type		One of the built-in cursor types.
 		 * @param[in] 	pixelData	Cursor image data.
-		 * @param[in]	hotSpot		Offset on the cursor image to where the actual input happens (for example tip of the 
+		 * @param[in]	hotSpot		Offset on the cursor image to where the actual input happens (for example tip of the
 		 *							Arrow cursor).
 		 * 						
 		 * @note	

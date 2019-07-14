@@ -24,7 +24,7 @@ namespace bs
 		StringUtil::toLowerCase(lowerCaseExt);
 
 		return lowerCaseExt == u8"wav" || lowerCaseExt == u8"flac" || lowerCaseExt == u8"ogg" || lowerCaseExt == u8"mp3" ||
-			lowerCaseExt == u8"wma" || lowerCaseExt == u8"asf" || lowerCaseExt == u8"wmv" || lowerCaseExt == u8"midi" || 
+			lowerCaseExt == u8"wma" || lowerCaseExt == u8"asf" || lowerCaseExt == u8"wmv" || lowerCaseExt == u8"midi" ||
 			lowerCaseExt == u8"fsb" || lowerCaseExt == u8"aif" || lowerCaseExt == u8"aiff";
 	}
 
@@ -61,7 +61,7 @@ namespace bs
 
 		sound->getFormat(nullptr, &format, &numChannels, &numBits);
 
-		if(format != FMOD_SOUND_FORMAT_PCM8 && format != FMOD_SOUND_FORMAT_PCM16 && format != FMOD_SOUND_FORMAT_PCM24 
+		if(format != FMOD_SOUND_FORMAT_PCM8 && format != FMOD_SOUND_FORMAT_PCM16 && format != FMOD_SOUND_FORMAT_PCM24
 			&& format != FMOD_SOUND_FORMAT_PCM32 && format != FMOD_SOUND_FORMAT_PCMFLOAT)
 		{
 			BS_LOG(Error, Audio, "Failed importing audio file, invalid imported format: ", filePath);

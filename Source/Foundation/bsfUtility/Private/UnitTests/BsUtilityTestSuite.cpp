@@ -548,9 +548,9 @@ namespace bs
 		c7 = 0;
 	}
 	
-	void UtilityTestSuite::testMinHeap() 
+	void UtilityTestSuite::testMinHeap()
 	{
-		struct SomeElem 
+		struct SomeElem
 		{
 			int a;
 			int b;
@@ -589,7 +589,7 @@ namespace bs
 		BS_TEST_ASSERT(m.size() == 1);
 	}
 
-	void UtilityTestSuite::testQuadtree() 
+	void UtilityTestSuite::testQuadtree()
 	{
 		DebugQuadtreeData quadtreeData;
 		DebugQuadtree quadtree(Vector2(0, 0), 800.0f, &quadtreeData);

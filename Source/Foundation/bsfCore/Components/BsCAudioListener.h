@@ -6,7 +6,7 @@
 #include "Audio/BsAudioListener.h"
 #include "Scene/BsComponent.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Components-Core
 	 *  @{
@@ -64,7 +64,7 @@ namespace bs
 		/** Destroys the internal AudioListener representation. */
 		void destroyInternal();
 
-		/** 
+		/**
 		 * Updates the transform of the internal AudioListener representation from the transform of the component's scene
 		 * object.
 		 */

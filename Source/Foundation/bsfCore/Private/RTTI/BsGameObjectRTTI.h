@@ -32,8 +32,8 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 		UINT64& getInstanceID(GameObject* obj) { return obj->mInstanceData->mInstanceId; }
-		void setInstanceID(GameObject* obj, UINT64& instanceId) 
-		{  
+		void setInstanceID(GameObject* obj, UINT64& instanceId)
+		{
 			// We record the ID for later use. Any child RTTI of GameObject must call GameObjectManager::registerObject
 			// with this ID, so we know how to map deserialized GO handles to live objects, otherwise the handle
 			// references will get broken.

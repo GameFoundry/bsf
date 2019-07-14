@@ -100,7 +100,7 @@ namespace bs
 	{ }
 
 	Win32RenderWindow::~Win32RenderWindow()
-	{ 
+	{
 		RenderWindowProperties& props = mProperties;
 
 		if (mWindow != nullptr)
@@ -556,18 +556,18 @@ namespace bs
 
 	void Win32RenderWindow::getCustomAttribute(const String& name, void* pData) const
 	{
-		if(name == "GLCONTEXT") 
+		if(name == "GLCONTEXT")
 		{
 			SPtr<GLContext>* contextPtr = static_cast<SPtr<GLContext>*>(pData);
 			*contextPtr = mContext;
 			return;
-		} 
+		}
 		else if(name == "WINDOW")
 		{
 			UINT64 *pHwnd = (UINT64*)pData;
 			*pHwnd = (UINT64)_getHWnd();
 			return;
-		} 
+		}
 	}
 
 	void Win32RenderWindow::setActive(bool state)

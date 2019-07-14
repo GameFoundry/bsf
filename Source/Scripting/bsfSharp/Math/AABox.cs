@@ -43,7 +43,7 @@ namespace bs
         /// </summary>
         public Vector3 Center
         {
-            get 
+            get
             { 		
                 return new Vector3((maximum.x + minimum.x) * 0.5f,
                         (maximum.y + minimum.y) * 0.5f,
@@ -83,8 +83,8 @@ namespace bs
 
         /// <summary>
         /// Transforms the bounding box by the given matrix.
-        /// 
-        /// As the resulting box will no longer be axis aligned, an axis align box is instead created by encompassing the 
+        ///
+        /// As the resulting box will no longer be axis aligned, an axis align box is instead created by encompassing the
         /// transformed oriented bounding box. Retrieving the value as an actual OBB would provide a tighter fit.
         /// </summary>
         /// <param name="tfrm">Affine matrix to transform the box with.</param>

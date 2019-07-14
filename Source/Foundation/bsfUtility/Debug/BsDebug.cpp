@@ -53,30 +53,30 @@ namespace bs
 		{
 			switch(verbosity)
 			{
-			case LogVerbosity::Fatal: 
+			case LogVerbosity::Fatal:
 				logToIDEConsole(message, "FATAL");
 				break;
 			case LogVerbosity::Error:
 				logToIDEConsole(message, "ERROR");
 				break;
-			case LogVerbosity::Warning: 
+			case LogVerbosity::Warning:
 				logToIDEConsole(message, "WARNING");
 				break;
 			default:
 			case LogVerbosity::Info:
 				logToIDEConsole(message, "INFO");
 				break;
-			case LogVerbosity::Verbose: 
+			case LogVerbosity::Verbose:
 				logToIDEConsole(message, "VERBOSE");
 				break;
-			case LogVerbosity::VeryVerbose: 
+			case LogVerbosity::VeryVerbose:
 				logToIDEConsole(message, "VERY_VERBOSE");
 				break;
 			}
 		}
 	}
 
-	void Debug::writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const Path& filePath, 
+	void Debug::writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const Path& filePath,
 		bool overwrite) const
 	{
 		if(FileSystem::isFile(filePath))
@@ -135,7 +135,7 @@ namespace bs
 		static const char* style =
 			R"(html {
   font-family: sans-serif;
-} 
+}
 			
 table
 {
@@ -147,7 +147,7 @@ table
 	table-layout:fixed;
 }
 
-table caption 
+table caption
 {
 	color: #000;
 	font: italic 85%/1 arial, sans-serif;
@@ -156,7 +156,7 @@ table caption
 }
 
 table td,
-table th 
+table th
 {
 	border-left: 1px solid #cbcbcb;/*  inner column border */
 	border-width: 0 0 0 1px;
@@ -167,12 +167,12 @@ table th
 }
 
 table td:first-child,
-table th:first-child 
+table th:first-child
 {
 	border-left-width: 0;
 }
 
-table thead 
+table thead
 {
 	background-color: #e0e0e0;
 	color: #000;
@@ -180,7 +180,7 @@ table thead
 	vertical-align: bottom;
 }
 
-table td 
+table td
 {
 	background-color: transparent;
 	word-wrap:break-word;

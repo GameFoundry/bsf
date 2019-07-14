@@ -13,7 +13,7 @@ namespace bs
 		assert(mRenderSystem != nullptr);
 	}
 
-	SPtr<RenderWindow> D3D11RenderWindowManager::createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, 
+	SPtr<RenderWindow> D3D11RenderWindowManager::createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId,
 		const SPtr<RenderWindow>& parentWindow)
 	{
 		ct::RenderAPI* rs = ct::RenderAPI::instancePtr();

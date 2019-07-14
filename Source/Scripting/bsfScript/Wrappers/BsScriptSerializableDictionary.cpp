@@ -26,7 +26,7 @@ namespace bs
 
 	MonoObject* ScriptSerializableDictionary::create(const ScriptSerializableProperty* native, MonoObject* managed)
 	{
-		SPtr<ManagedSerializableTypeInfoDictionary> dictTypeInfo = 
+		SPtr<ManagedSerializableTypeInfoDictionary> dictTypeInfo =
 			std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(native->getTypeInfo());
 
 		MonoReflectionType* internalKeyType = MonoUtil::getType(dictTypeInfo->mKeyType->getMonoClass());

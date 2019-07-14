@@ -20,7 +20,7 @@ namespace bs
 	{
 	private:
 		SAMPLER_STATE_DESC& getData(SamplerState* obj) { return obj->mProperties.mData; }
-		void setData(SamplerState* obj, SAMPLER_STATE_DESC& val) { obj->mProperties.mData = val; } 
+		void setData(SamplerState* obj, SAMPLER_STATE_DESC& val) { obj->mProperties.mData = val; }
 
 	public:
 		SamplerStateRTTI()

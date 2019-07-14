@@ -24,7 +24,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Repeat interval for held virtual buttons. Buttons will be continously triggered in interval increments as long 
+        /// Repeat interval for held virtual buttons. Buttons will be continously triggered in interval increments as long
         /// as they button is being held.
         /// </summary>
         public UInt64 RepeatInternal
@@ -47,9 +47,9 @@ namespace bs
         /// <param name="buttonCode">Physical button the virtual button is triggered by.</param>
         /// <param name="modifiers">Modifiers required to be pressed with the physical button to trigger the virtual button.
         ///                         </param>
-        /// <param name="repeatable">If true, the virtual button events will be sent continually while the physical button 
+        /// <param name="repeatable">If true, the virtual button events will be sent continually while the physical button
         ///                          is being held.</param>
-        public void RegisterButton(String name, ButtonCode buttonCode, 
+        public void RegisterButton(String name, ButtonCode buttonCode,
             ButtonModifier modifiers = ButtonModifier.None, bool repeatable = false)
         {
             Internal_RegisterButton(mCachedPtr, name, buttonCode, modifiers, repeatable);
@@ -72,14 +72,14 @@ namespace bs
         /// <param name="deadZone">Value below which to ignore axis value and consider it 0.</param>
         /// <param name="sensitivity">Higher sensitivity means the axis will more easily reach its maximum values.</param>
         /// <param name="invert">Should axis values be inverted.</param>
-        public void RegisterAxis(String name, InputAxis type, float deadZone = 0.0001f, 
+        public void RegisterAxis(String name, InputAxis type, float deadZone = 0.0001f,
             float sensitivity = 1.0f, bool invert = false)
         {
             Internal_RegisterAxis(mCachedPtr, name, type, deadZone, sensitivity, invert);
         }
 
         /// <summary>
-        /// Unregisters a virtual axis with the specified name. You will no longer be able to retrieve valid values for 
+        /// Unregisters a virtual axis with the specified name. You will no longer be able to retrieve valid values for
         /// that axis.
         /// </summary>
         /// <param name="name">Unique name used to access the virtual axis.</param>
@@ -179,7 +179,7 @@ namespace bs
     }
 
     /// <summary>
-    /// Handle for a virtual axis. Virtual axes allow you to map custom axes without needing to know the actual physical 
+    /// Handle for a virtual axis. Virtual axes allow you to map custom axes without needing to know the actual physical
     /// device handling those axes.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]

@@ -95,8 +95,8 @@ namespace bs { namespace ct
 
 	void GLPixelBuffer::blitFromTexture(GLTextureBuffer* src)
 	{
-		blitFromTexture(src, 
-			PixelVolume(0, 0, 0, src->getWidth(), src->getHeight(), src->getDepth()), 
+		blitFromTexture(src,
+			PixelVolume(0, 0, 0, src->getWidth(), src->getHeight(), src->getDepth()),
 			PixelVolume(0, 0, 0, mWidth, mHeight, mDepth)
 			);
 	}
@@ -111,7 +111,7 @@ namespace bs { namespace ct
 		BS_EXCEPT(RenderingAPIException, "Framebuffer bind not possible for this pixel buffer type");
 	}
 
-	GLTextureBuffer::GLTextureBuffer(GLenum target, GLuint id, GLint face, GLint level, PixelFormat format, 
+	GLTextureBuffer::GLTextureBuffer(GLenum target, GLuint id, GLint face, GLint level, PixelFormat format,
 		GpuBufferUsage usage, bool hwGamma, UINT32 multisampleCount)
 		: GLPixelBuffer(0, 0, 0, format, usage), mTarget(target), mTextureID(id), mFace(face)
 		, mLevel(level), mMultisampleCount(multisampleCount), mHwGamma(hwGamma)
@@ -190,7 +190,7 @@ namespace bs { namespace ct
 			}
 
 			GLenum format = GLPixelUtil::getGLInternalFormat(mFormat, mHwGamma);
-			switch(mTarget) 
+			switch(mTarget)
 			{
 				case GL_TEXTURE_1D:
 					glCompressedTexSubImage1D(GL_TEXTURE_1D, mLevel,
@@ -221,7 +221,7 @@ namespace bs { namespace ct
 					break;
 			}
 		
-		} 
+		}
 		else
 		{
 			UINT32 pixelSize = PixelUtil::getNumElemBytes(data.getFormat());
@@ -243,7 +243,7 @@ namespace bs { namespace ct
 			if (data.getLeft() > 0 || data.getTop() > 0 || data.getFront() > 0)
 			{
 				glPixelStorei(
-					GL_UNPACK_SKIP_PIXELS, 
+					GL_UNPACK_SKIP_PIXELS,
 					data.getLeft() + rowPitchInPixels * data.getTop() + slicePitchInPixels * data.getFront());
 				BS_CHECK_GL_ERROR();
 			}
@@ -256,7 +256,7 @@ namespace bs { namespace ct
 
 			switch(mTarget) {
 				case GL_TEXTURE_1D:
-					glTexSubImage1D(GL_TEXTURE_1D, mLevel, 
+					glTexSubImage1D(GL_TEXTURE_1D, mLevel,
 						dest.left,
 						dest.getWidth(),
 						GLPixelUtil::getGLOriginFormat(data.getFormat()), GLPixelUtil::getGLOriginDataType(data.getFormat()),
@@ -265,8 +265,8 @@ namespace bs { namespace ct
 					break;
 				case GL_TEXTURE_2D:
 				case GL_TEXTURE_CUBE_MAP:
-					glTexSubImage2D(mFaceTarget, mLevel, 
-						dest.left, dest.top, 
+					glTexSubImage2D(mFaceTarget, mLevel,
+						dest.left, dest.top,
 						dest.getWidth(), dest.getHeight(),
 						GLPixelUtil::getGLOriginFormat(data.getFormat()), GLPixelUtil::getGLOriginDataType(data.getFormat()),
 						data.getData());
@@ -333,7 +333,7 @@ namespace bs { namespace ct
 			// for compressed formate
 			glGetCompressedTexImage(mFaceTarget, mLevel, data.getData());
 			BS_CHECK_GL_ERROR();
-		} 
+		}
 		else
 		{
 			UINT32 pixelSize = PixelUtil::getNumElemBytes(data.getFormat());
@@ -355,7 +355,7 @@ namespace bs { namespace ct
 			if (data.getLeft() > 0 || data.getTop() > 0 || data.getFront() > 0)
 			{
 				glPixelStorei(
-					GL_PACK_SKIP_PIXELS, 
+					GL_PACK_SKIP_PIXELS,
 					data.getLeft() + rowPitchInPixels * data.getTop() + slicePitchInPixels * data.getFront());
 				BS_CHECK_GL_ERROR();
 			}
@@ -367,7 +367,7 @@ namespace bs { namespace ct
 			}
 
 			// We can only get the entire texture
-			glGetTexImage(mFaceTarget, mLevel, GLPixelUtil::getGLOriginFormat(data.getFormat()), 
+			glGetTexImage(mFaceTarget, mLevel, GLPixelUtil::getGLOriginFormat(data.getFormat()),
 				GLPixelUtil::getGLOriginDataType(data.getFormat()), data.getData());
 			BS_CHECK_GL_ERROR();
 
@@ -509,7 +509,7 @@ namespace bs { namespace ct
 			glDrawBuffer(GL_COLOR_ATTACHMENT0);
 			BS_CHECK_GL_ERROR();
 
-			glBlitFramebuffer(srcBox.left, srcBox.top, srcBox.right, srcBox.bottom, 
+			glBlitFramebuffer(srcBox.left, srcBox.top, srcBox.right, srcBox.bottom,
 				dstBox.left, dstBox.top, dstBox.right, dstBox.bottom, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 			BS_CHECK_GL_ERROR();
 

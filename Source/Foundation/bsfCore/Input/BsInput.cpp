@@ -516,7 +516,7 @@ namespace bs
 		if (deviceIdx >= (UINT32)mDevices.size())
 			return false;
 
-		return mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::On || 
+		return mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::On ||
 			mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOn ||
 			mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOnOff;
 	}
@@ -572,7 +572,7 @@ namespace bs
 	{
 		switch(type)
 		{
-		case InputDevice::Keyboard: 
+		case InputDevice::Keyboard:
 			if (mKeyboard != nullptr && idx == 0)
 				return mKeyboard->getName();
 
@@ -582,7 +582,7 @@ namespace bs
 				return mMouse->getName();
 
 			return StringUtil::BLANK;
-		case InputDevice::Gamepad: 
+		case InputDevice::Gamepad:
 			if (idx < (UINT32)mGamepads.size())
 				return mGamepads[idx]->getName();
 			

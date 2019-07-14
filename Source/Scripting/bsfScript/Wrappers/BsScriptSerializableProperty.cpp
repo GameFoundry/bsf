@@ -59,7 +59,7 @@ namespace bs
 		SPtr<ManagedSerializableTypeInfo> typeInfo = ScriptAssemblyManager::instance().getTypeInfo(engineClass);
 		if (typeInfo == nullptr)
 		{
-			BS_LOG(Warning, Script, "Cannot create an instance of type \"{0}\", it is not marked as serializable.", 
+			BS_LOG(Warning, Script, "Cannot create an instance of type \"{0}\", it is not marked as serializable.",
 				engineClass->getFullName());
 			return;
 		}
@@ -67,7 +67,7 @@ namespace bs
 		new (bs_alloc<ScriptSerializableProperty>()) ScriptSerializableProperty(instance, typeInfo);
 	}
 
-	MonoObject* ScriptSerializableProperty::internal_createObject(ScriptSerializableProperty* nativeInstance, 
+	MonoObject* ScriptSerializableProperty::internal_createObject(ScriptSerializableProperty* nativeInstance,
 		MonoObject* managedInstance, MonoReflectionType* reflType)
 	{
 		return ScriptSerializableObject::create(nativeInstance, managedInstance, reflType);

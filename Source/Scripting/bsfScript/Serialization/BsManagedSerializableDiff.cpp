@@ -152,7 +152,7 @@ namespace bs
 	{
 	}
 
-	SPtr<ManagedSerializableDiff> ManagedSerializableDiff::create(const SPtr<ManagedSerializableObject>& oldObj, 
+	SPtr<ManagedSerializableDiff> ManagedSerializableDiff::create(const SPtr<ManagedSerializableObject>& oldObj,
 		const SPtr<ManagedSerializableObject>& newObj)
 	{
 		assert(oldObj != nullptr && newObj != nullptr);
@@ -408,7 +408,7 @@ namespace bs
 						{
 							UINT32 dictElemTypeId = newDictData->value->getTypeInfo()->mValueType->getTypeId();
 
-							dictElemMod = generateDiff(oldDictData->value->getFieldData(key), 
+							dictElemMod = generateDiff(oldDictData->value->getFieldData(key),
 								newEnumerator.getValue(), dictElemTypeId);
 						}
 						else

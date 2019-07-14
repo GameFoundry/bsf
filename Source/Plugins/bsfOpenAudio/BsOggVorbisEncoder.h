@@ -18,8 +18,8 @@ namespace bs
 		OggVorbisEncoder() = default;
 		~OggVorbisEncoder();
 
-		/** 
-		 * Sets up the writer. Should be called before calling write(). 
+		/**
+		 * Sets up the writer. Should be called before calling write().
 		 *
 		 * @param[in]	writeCallback	Callback that will be triggered when the writer is ready to output some data.
 		 *								The callback should copy the provided data into its own buffer.
@@ -30,8 +30,8 @@ namespace bs
 		 */
 		bool open(std::function<void(UINT8*, UINT32)> writeCallback, UINT32 sampleRate, UINT32 bitDepth, UINT32 numChannels);
 
-		/** 
-		 * Writes a new set of samples and converts them to Ogg Vorbis. 
+		/**
+		 * Writes a new set of samples and converts them to Ogg Vorbis.
 		 *
 		 * @param[in]	samples		Samples in PCM format. 8-bit samples should be unsigned, but higher bit depths signed.
 		 *							Each sample is assumed to be the bit depth that was provided to the open() method.
@@ -39,21 +39,21 @@ namespace bs
 		 */
 		void write(UINT8* samples, UINT32 numSamples);
 
-		/** 
+		/**
 		 * Flushes the last of the data into the write buffer (triggers the write callback). This is called automatically
 		 * when the writer is closed or goes out of scope.
 		 */
 		void flush();
 
-		/** 
+		/**
 		 * Closes the encoder and flushes the last of the data into the write buffer (triggers the write callback). This is
 		 * called automatically when the writer goes out of scope.
 		 */
 		void close();
 
-		/** 
-		 * Helper method that allows you to quickly convert PCM to Ogg Vorbis data. 
-		 * 
+		/**
+		 * Helper method that allows you to quickly convert PCM to Ogg Vorbis data.
+		 *
 		 * @param[in]	samples		Buffer containing samples in PCM format. All samples should be in signed integer format.
 		 * @param[in]	info		Meta-data describing the provided samples.
 		 * @param[out]	size		Number of bytes written to the output buffer.

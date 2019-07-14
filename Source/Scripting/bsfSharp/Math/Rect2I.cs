@@ -10,7 +10,7 @@ namespace bs
      */
 
     /// <summary>
-    /// Represents a 2D rectangle using integer values. Rectangle is represented with an origin in top left and 
+    /// Represents a 2D rectangle using integer values. Rectangle is represented with an origin in top left and
     /// width/height.
     /// </summary>
     [StructLayout(LayoutKind.Sequential), SerializeObject]
@@ -60,7 +60,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Returns true if the rectangle overlaps the provided rectangle. Also returns true if the rectangles are 
+        /// Returns true if the rectangle overlaps the provided rectangle. Also returns true if the rectangles are
         // contained within each other completely (no intersecting edges).
         /// </summary>
         /// <param name="other">Other rectangle to compare with.</param>

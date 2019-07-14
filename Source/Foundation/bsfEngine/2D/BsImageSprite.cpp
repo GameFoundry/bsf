@@ -24,7 +24,7 @@ namespace bs
 		if(mCachedRenderElements.size() < 1)
 			mCachedRenderElements.resize(1);
 
-		bool useScale9Grid = desc.borderLeft > 0 || desc.borderRight > 0 || 
+		bool useScale9Grid = desc.borderLeft > 0 || desc.borderRight > 0 ||
 			desc.borderTop > 0 || desc.borderBottom > 0;
 
 		UINT32 numQuads = 1;

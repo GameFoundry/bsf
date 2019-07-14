@@ -15,7 +15,7 @@ namespace bs { namespace ct
 	class GLTextureBuffer;
 
 	/**
-	 * Represents a hardware buffer that stores a single pixel surface. This may be a 1D, 2D or 3D surface, but unlike a 
+	 * Represents a hardware buffer that stores a single pixel surface. This may be a 1D, 2D or 3D surface, but unlike a
 	 * texture it consists only of a single surface (no mip maps, cube map faces or similar).
 	 */
 	class GLPixelBuffer
@@ -60,7 +60,7 @@ namespace bs { namespace ct
 		 *
 		 * @param[in]	offset	Offset in bytes from which to lock the buffer.
 		 * @param[in]	length	Length of the area you want to lock, in bytes.
-		 * @param[in]	options	Signifies what you want to do with the returned pointer. Caller must ensure not to do 
+		 * @param[in]	options	Signifies what you want to do with the returned pointer. Caller must ensure not to do
 		 *						anything he hasn't requested (for example don't try to read from the buffer unless you
 		 *						requested it here).
 		 */
@@ -69,7 +69,7 @@ namespace bs { namespace ct
 		/**
 		 * Locks the entire buffer and returns pointer to the locked area. You must call unlock() when done.
 		 *
-		 * @param[in]	options	Signifies what you want to do with the returned pointer. Caller must ensure not to do 
+		 * @param[in]	options	Signifies what you want to do with the returned pointer. Caller must ensure not to do
 		 *						anything he hasn't requested (for example don't try to read from the buffer unless you
 		 *						requested it here).
 		 */
@@ -116,7 +116,7 @@ namespace bs { namespace ct
 		 */
 		virtual void blitFromTexture(GLTextureBuffer* src, const PixelVolume& srcBox, const PixelVolume& dstBox);
 
-	protected:  
+	protected:
 		/**	Allocates an internal buffer on the CPU, the size of the hardware buffer. */
 		void allocateBuffer();
 
@@ -154,7 +154,7 @@ namespace bs { namespace ct
 		 * @param[in]	hwGamma				True if buffer colors are assumed to be in sRGB space.
 		 * @param[in]	multisampleCount	Number of samples the parent texture was created with.
 		 */
-		GLTextureBuffer(GLenum target, GLuint id, GLint face, 
+		GLTextureBuffer(GLenum target, GLuint id, GLint face,
 			GLint level, PixelFormat format, GpuBufferUsage usage, bool hwGamma, UINT32 multisampleCount);
 		~GLTextureBuffer() = default;
 		
@@ -169,7 +169,7 @@ namespace bs { namespace ct
 
 		/** @copydoc GLPixelBuffer::blitFromTexture */
 		void blitFromTexture(GLTextureBuffer *src) override;
-  
+
 		/** @copydoc GLPixelBuffer::blitFromTexture */
 		void blitFromTexture(GLTextureBuffer *src, const PixelVolume &srcBox, const PixelVolume &dstBox) override;
 

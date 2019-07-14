@@ -18,9 +18,9 @@ namespace bs { namespace ct
 		VulkanGpuParamBlockBuffer(UINT32 size, GpuBufferUsage usage, GpuDeviceFlags deviceMask);
 		~VulkanGpuParamBlockBuffer();
 
-		/** 
+		/**
 		 * Gets the resource wrapping the buffer object, on the specified device. If GPU param block buffer's device mask
-		 * doesn't include the provided device, null is returned. 
+		 * doesn't include the provided device, null is returned.
 		 */
 		VulkanBuffer* getResource(UINT32 deviceIdx) const;
 	protected:

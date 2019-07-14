@@ -45,7 +45,7 @@ namespace bs
 		}
 
 		/**
-		 * Creates a new managed AsyncOp<T> from a native TAsyncOp and a managed class representing the return type. 
+		 * Creates a new managed AsyncOp<T> from a native TAsyncOp and a managed class representing the return type.
 		 * To be used when return type T does not implement IReflectable.
 		 */
 		template<class T>

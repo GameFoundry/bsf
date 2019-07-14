@@ -15,9 +15,9 @@ namespace bs
     public sealed class GUIFixedSpace : GUIElement
     {
         /// <summary>
-        /// Creates a new fixed space. 
+        /// Creates a new fixed space.
         /// </summary>
-        /// <param name="size">Size of the space in pixels. This will represent either width or height depending whether the 
+        /// <param name="size">Size of the space in pixels. This will represent either width or height depending whether the
         ///                    layout is vertical or horizontal.</param>
         public GUIFixedSpace(int size)
         {
@@ -28,7 +28,7 @@ namespace bs
         /// <summary>
         /// Changes the size of the space.
         /// </summary>
-        /// <param name="size">Size of the space in pixels. This will represent either width or height depending whether the 
+        /// <param name="size">Size of the space in pixels. This will represent either width or height depending whether the
         /// layout is vertical or horizontal.</param>
         public void SetSize(int size)
         {
@@ -44,7 +44,7 @@ namespace bs
     }
 
     /// <summary>
-    /// GUI element that may be inserted into layouts to make a space of a flexible size. The space will expand only if there 
+    /// GUI element that may be inserted into layouts to make a space of a flexible size. The space will expand only if there
     /// is room. If multiple flexible spaces are in a layout, their sizes will be shared equally.
     /// </summary>
     public sealed class GUIFlexibleSpace : GUIElement

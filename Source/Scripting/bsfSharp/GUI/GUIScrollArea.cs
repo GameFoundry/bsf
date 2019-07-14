@@ -35,7 +35,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Position of the horizontal scroll bar, ranging [0, 1]. When bar is fully to the left (no scroll) the value is 
+        /// Position of the horizontal scroll bar, ranging [0, 1]. When bar is fully to the left (no scroll) the value is
         /// zero, and when the bar is fully to the right (full scroll) the value is one.
         /// </summary>
         public float HorizontalScroll
@@ -45,7 +45,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Position of the vertical scroll bar, ranging [0, 1]. When bar is fully to the top (no scroll) the value is 
+        /// Position of the vertical scroll bar, ranging [0, 1]. When bar is fully to the top (no scroll) the value is
         /// zero, and when the bar is fully to the bottom (full scroll) the value is one.
         /// </summary>
         public float VerticalScroll
@@ -55,7 +55,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Returns the bounds of the scroll area not including the scroll bars (only the portion that contains the 
+        /// Returns the bounds of the scroll area not including the scroll bars (only the portion that contains the
         /// contents).
         /// </summary>
         public Rect2I ContentBounds
@@ -69,7 +69,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Number of pixels the scroll bar will occupy when active. This is width for vertical scrollbar, and height for 
+        /// Number of pixels the scroll bar will occupy when active. This is width for vertical scrollbar, and height for
         /// horizontal scrollbar.
         /// </summary>
         public int ScrollBarWidth
@@ -82,12 +82,12 @@ namespace bs
         /// </summary>
         /// <param name="vertBarType">Type of the vertical scroll bar.</param>
         /// <param name="horzBarType">Type of the horizontal scroll bar.</param>
-        /// <param name="scrollBarStyle">Optional style that controls the look of the scroll bars. Style will be retrieved 
-        ///                              from the active GUISkin. If not specified default element style is used.</param>        
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="scrollBarStyle">Optional style that controls the look of the scroll bars. Style will be retrieved
+        ///                              from the active GUISkin. If not specified default element style is used.</param>
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
-        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, string scrollBarStyle,
             string style, params GUIOption[] options)
@@ -101,10 +101,10 @@ namespace bs
         /// </summary>
         /// <param name="vertBarType">Type of the vertical scroll bar.</param>
         /// <param name="horzBarType">Type of the horizontal scroll bar.</param>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
-        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, string style, params GUIOption[] options)
         {
@@ -117,7 +117,7 @@ namespace bs
         /// </summary>
         /// <param name="vertBarType">Type of the vertical scroll bar.</param>
         /// <param name="horzBarType">Type of the horizontal scroll bar.</param>
-        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, params GUIOption[] options)
         {
@@ -128,10 +128,10 @@ namespace bs
         /// <summary>
         /// Creates a new scroll area.
         /// </summary>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
-        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUIScrollArea(string style, params GUIOption[] options)
         {
@@ -142,7 +142,7 @@ namespace bs
         /// <summary>
         /// Creates a new scroll area.
         /// </summary>
-        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUIScrollArea(params GUIOption[] options)
         {
@@ -153,11 +153,11 @@ namespace bs
         /// <summary>
         /// Creates a new scroll area.
         /// </summary>
-        /// <param name="scrollBarStyle">Optional style that controls the look of the scroll bars. Style will be retrieved 
-        ///                              from the active GUISkin. If not specified default element style is used.</param> 
-        /// <param name="scrollAreaStyle">Optional style that controls the look of the scroll area. Style will be retrieved 
-        ///                              from the active GUISkin. If not specified default element style is used.</param>      
-        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
+        /// <param name="scrollBarStyle">Optional style that controls the look of the scroll bars. Style will be retrieved
+        ///                              from the active GUISkin. If not specified default element style is used.</param>
+        /// <param name="scrollAreaStyle">Optional style that controls the look of the scroll area. Style will be retrieved
+        ///                              from the active GUISkin. If not specified default element style is used.</param>
+        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUIScrollArea(string scrollBarStyle, string scrollAreaStyle, params GUIOption[] options)
         {

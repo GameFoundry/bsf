@@ -13,11 +13,11 @@ namespace bs
 	 */
 
 	/**
-	 * Mesh heap allows you to quickly allocate and deallocate a large amounts of temporary meshes without the large 
+	 * Mesh heap allows you to quickly allocate and deallocate a large amounts of temporary meshes without the large
 	 * overhead of normal Mesh creation. Only requirement is that meshes share the same vertex description and index type.
 	 * 			
 	 * @note	
-	 * This class should be considered as a replacement for a normal Mesh if you are constantly updating the mesh (for 
+	 * This class should be considered as a replacement for a normal Mesh if you are constantly updating the mesh (for
 	 * example every frame) and you are not able to discard entire mesh contents on each update. Not using discard flag on
 	 * normal meshes may introduce GPU-CPU sync points which may severely limit performance. Primary purpose of this class
 	 * is to avoid those sync points by not forcing you to discard contents.
@@ -29,7 +29,7 @@ namespace bs
 	{
 	public:
 		/**
-		 * Allocates a new mesh in the heap, expanding the heap if needed. Mesh will be initialized with the provided 
+		 * Allocates a new mesh in the heap, expanding the heap if needed. Mesh will be initialized with the provided
 		 * @p meshData. You may use the returned transient mesh for drawing.
 		 *
 		 * @note	
@@ -38,7 +38,7 @@ namespace bs
 		SPtr<TransientMesh> alloc(const SPtr<MeshData>& meshData, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/**
-		 * Deallocates the provided mesh and makes that room on the heap re-usable as soon as the GPU is also done with the 
+		 * Deallocates the provided mesh and makes that room on the heap re-usable as soon as the GPU is also done with the
 		 * mesh.
 		 */
 		void dealloc(const SPtr<TransientMesh>& mesh);
@@ -54,12 +54,12 @@ namespace bs
 		 * @param[in]	vertexDesc	Description of the stored vertices.
 		 * @param[in]	indexType	Type of the stored indices.
 		 */
-		static SPtr<MeshHeap> create(UINT32 numVertices, UINT32 numIndices, 
+		static SPtr<MeshHeap> create(UINT32 numVertices, UINT32 numIndices,
 			const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType = IT_32BIT);
 
 	private:
 		/** @copydoc create */
-		MeshHeap(UINT32 numVertices, UINT32 numIndices, 
+		MeshHeap(UINT32 numVertices, UINT32 numIndices,
 			const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType = IT_32BIT);
 
 		/** @copydoc CoreObject::createCore */
@@ -132,14 +132,14 @@ namespace bs
 		friend class bs::TransientMesh;
 		friend class TransientMesh;
 
-		MeshHeap(UINT32 numVertices, UINT32 numIndices, 
+		MeshHeap(UINT32 numVertices, UINT32 numIndices,
 			const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType, GpuDeviceFlags deviceMask);
 
 		/** @copydoc CoreObject::initialize() */
 		void initialize() override;
 
 		/**
-		 * Allocates a new mesh in the heap, expanding the heap if needed. 
+		 * Allocates a new mesh in the heap, expanding the heap if needed.
 		 *
 		 * @param[in]	mesh		Mesh for which we are allocating the data.
 		 * @param[in]	meshData	Data to initialize the new mesh with.
@@ -156,7 +156,7 @@ namespace bs
 		void growIndexBuffer(UINT32 numIndices);
 
 		/**
-		 * Creates a new event query or returns an existing one from the pool if available. Returned value is an index 
+		 * Creates a new event query or returns an existing one from the pool if available. Returned value is an index
 		 * into event query array.
 		 */
 		UINT32 createEventQuery();
@@ -187,7 +187,7 @@ namespace bs
 		void notifyUsedOnGPU(UINT32 meshId);
 
 		/**
-		 * Called by an GPU event query when GPU processes the query. Normally signals the heap that the GPU is done with 
+		 * Called by an GPU event query when GPU processes the query. Normally signals the heap that the GPU is done with
 		 * the mesh.
 		 */
 		static void queryTriggered(SPtr<MeshHeap> thisPtr, UINT32 meshId, UINT32 queryId);
@@ -225,7 +225,7 @@ namespace bs
 		List<UINT32> mFreeVertChunks;
 		List<UINT32> mFreeIdxChunks;
 
-		Vector<QueryData> mEventQueries; 
+		Vector<QueryData> mEventQueries;
 		Stack<UINT32> mFreeEventQueries;
 
 		UINT32 mNextQueryId;

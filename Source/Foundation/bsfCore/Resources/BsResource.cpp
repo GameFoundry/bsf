@@ -8,18 +8,18 @@ namespace bs
 {
 	Resource::Resource(bool initializeOnRenderThread)
 		:CoreObject(initializeOnRenderThread), mSize(0), mKeepSourceData(true)
-	{ 
+	{
 		mMetaData = bs_shared_ptr_new<ResourceMetaData>();
 	}
 
-	const String& Resource::getName() const 
-	{ 
-		return mMetaData->displayName; 
+	const String& Resource::getName() const
+	{
+		return mMetaData->displayName;
 	}
 
-	void Resource::setName(const String& name) 
-	{ 
-		mMetaData->displayName = name; 
+	void Resource::setName(const String& name)
+	{
+		mMetaData->displayName = name;
 	}
 
 	void Resource::getResourceDependencies(FrameVector<HResource>& dependencies) const
@@ -66,7 +66,7 @@ namespace bs
 	void Resource::removeResourceDependency(const HResource& resource)
 	{
 		Lock lock(mDependenciesMutex);
-		mDependencies.erase(std::remove(mDependencies.begin(), mDependencies.end(), resource.getWeak()), 
+		mDependencies.erase(std::remove(mDependencies.begin(), mDependencies.end(), resource.getWeak()),
 			mDependencies.end());
 	}
 

@@ -7,14 +7,14 @@
 #include "Error/BsException.h"
 #include "RenderAPI/BsGpuProgram.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
 
 	/**
-	 * Manager responsible for creating GPU programs. It will automatically try to find the appropriate handler for a 
+	 * Manager responsible for creating GPU programs. It will automatically try to find the appropriate handler for a
 	 * specific GPU program language and create the program if possible.
 	 *
 	 * @note	Sim thread only.
@@ -26,7 +26,7 @@ namespace bs
 		SPtr<GpuProgram> create(const GPU_PROGRAM_DESC& desc);
 
 		/**
-		 * Creates a completely empty and uninitialized GpuProgram. Should only be used for specific purposes, like 
+		 * Creates a completely empty and uninitialized GpuProgram. Should only be used for specific purposes, like
 		 * deserialization, as it requires additional manual initialization that is not required normally.
 		 */
 		SPtr<GpuProgram> createEmpty(const String& language, GpuProgramType type);
@@ -52,7 +52,7 @@ namespace bs
 	};
 
 	/**
-	 * Manager responsible for creating GPU programs. It will automatically	try to find the appropriate handler for a 
+	 * Manager responsible for creating GPU programs. It will automatically	try to find the appropriate handler for a
 	 * specific GPU program language and create the program if possible.
 	 *
 	 * @note	Core thread only unless otherwise specified.
@@ -70,7 +70,7 @@ namespace bs
 		void addFactory(const String& language, GpuProgramFactory* factory);
 
 		/**
-		 * Unregisters a GPU program factory, essentially making it not possible to create GPU programs using the language 
+		 * Unregisters a GPU program factory, essentially making it not possible to create GPU programs using the language
 		 * the factory supported.
 		 */
 		void removeFactory(const String& language);

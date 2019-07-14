@@ -4,6 +4,8 @@ root = true
 indent_style = tab
 indent_size = 4
 max_line_length=125
+insert_final_newline=true
+trim_trailing_whitespace=true
 
 [*.cs]
 indent_style = space

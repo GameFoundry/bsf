@@ -47,7 +47,7 @@ namespace bs
 		void setTint(const Color& color) override;
 
 		/**
-		 * Triggered whenever the scrollbar handle is moved or resized. Values provided are the handle position and size 
+		 * Triggered whenever the scrollbar handle is moved or resized. Values provided are the handle position and size
 		 * in percent (ranging [0, 1]).
 		 */
 		Event<void(float posPct, float sizePct)> onScrollOrResize;
@@ -132,7 +132,7 @@ namespace bs
 		}
 	private:
 		/**
-		 * Triggered whenever the scroll handle moves. Provided value represents the new position and size of the handle 
+		 * Triggered whenever the scroll handle moves. Provided value represents the new position and size of the handle
 		 * in percent (ranging [0, 1]).
 		 */
 		void handleMoved(float handlePct, float sizePct);

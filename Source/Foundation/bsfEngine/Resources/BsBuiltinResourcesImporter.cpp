@@ -33,7 +33,7 @@ namespace bs
 	void processAssets(bool, bool, time_t);
 }
 
-int main(int argc, char * argv[]) 
+int main(int argc, char * argv[])
 {
 	using namespace bs;
 

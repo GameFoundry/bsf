@@ -42,13 +42,13 @@ namespace bs
 	}
 
 	/**
-	 * Evaluates a 3D vector distribution and transforms the output into the same space as the particle system. 
+	 * Evaluates a 3D vector distribution and transforms the output into the same space as the particle system.
 	 * @p inWorldSpace parameter controls whether the values in the distribution are assumed to be in world or local space.
-	 * 
+	 *
 	 * @tparam	dir		If true the evaluated vector is assumed to be a direction, otherwise a point.
 	 */
 	template<bool dir = false>
-	Vector3 evaluateTransformed(const Vector3Distribution& distribution, const ParticleSystemState& state, float t, 
+	Vector3 evaluateTransformed(const Vector3Distribution& distribution, const ParticleSystemState& state, float t,
 		const Random& factor, bool inWorldSpace)
 	{
 		const Vector3 output = distribution.evaluate(t, factor);
@@ -66,7 +66,7 @@ namespace bs
 		:mDesc(desc)
 	{ }
 
-	void ParticleTextureAnimation::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, 
+	void ParticleTextureAnimation::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set,
 		UINT32 startIdx, UINT32 count, bool spacing, float spacingOffset) const
 	{
 		const UINT32 endIdx = startIdx + count;
@@ -159,7 +159,7 @@ namespace bs
 		:mDesc(desc)
 	{ }
 
-	void ParticleOrbit::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, 
+	void ParticleOrbit::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set,
 		UINT32 startIdx, UINT32 count, bool spacing, float spacingOffset) const
 	{
 		const UINT32 endIdx = startIdx + count;
@@ -181,7 +181,7 @@ namespace bs
 			}
 
 			const UINT32 velocitySeed = particles.seed[i] + PARTICLE_ORBIT_VELOCITY;
-			Vector3 orbitVelocity = evaluateTransformed<true>(mDesc.velocity, state, particleT, Random(velocitySeed), 
+			Vector3 orbitVelocity = evaluateTransformed<true>(mDesc.velocity, state, particleT, Random(velocitySeed),
 				mDesc.worldSpace);
 			orbitVelocity *= Math::TWO_PI;
 
@@ -228,7 +228,7 @@ namespace bs
 		:mDesc(desc)
 	{ }
 
-	void ParticleVelocity::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, 
+	void ParticleVelocity::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set,
 		UINT32 startIdx, UINT32 count, bool spacing, float spacingOffset) const
 	{
 		const UINT32 endIdx = startIdx + count;
@@ -248,7 +248,7 @@ namespace bs
 			}
 
 			const UINT32 velocitySeed = particles.seed[i] + PARTICLE_LINEAR_VELOCITY;
-			const Vector3 velocity = evaluateTransformed<true>(mDesc.velocity, state, particleT, Random(velocitySeed), 
+			const Vector3 velocity = evaluateTransformed<true>(mDesc.velocity, state, particleT, Random(velocitySeed),
 				mDesc.worldSpace) * timeStep;
 
 			particles.position[i] += velocity;
@@ -279,7 +279,7 @@ namespace bs
 		:mDesc(desc)
 	{ }
 
-	void ParticleForce::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, 
+	void ParticleForce::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set,
 		UINT32 startIdx, UINT32 count, bool spacing, float spacingOffset) const
 	{
 		const UINT32 endIdx = startIdx + count;
@@ -299,7 +299,7 @@ namespace bs
 			}
 
 			const UINT32 forceSeed = particles.seed[i] + PARTICLE_FORCE;
-			const Vector3 force = evaluateTransformed<true>(mDesc.force, state, particleT, Random(forceSeed), 
+			const Vector3 force = evaluateTransformed<true>(mDesc.force, state, particleT, Random(forceSeed),
 				mDesc.worldSpace) * timeStep;
 
 			particles.velocity[i] += force * timeStep;
@@ -330,7 +330,7 @@ namespace bs
 		:mDesc(desc)
 	{ }
 
-	void ParticleGravity::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, 
+	void ParticleGravity::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set,
 		UINT32 startIdx, UINT32 count, bool spacing, float spacingOffset) const
 	{
 		Vector3 gravity = state.scene->getPhysicsScene()->getGravity() * mDesc.scale;
@@ -380,7 +380,7 @@ namespace bs
 		:mDesc(desc)
 	{ }
 
-	void ParticleColor::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, 
+	void ParticleColor::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set,
 		UINT32 startIdx, UINT32 count, bool spacing, float spacingOffset) const
 	{
 		const UINT32 endIdx = startIdx + count;
@@ -419,7 +419,7 @@ namespace bs
 		:mDesc(desc)
 	{ }
 
-	void ParticleSize::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, 
+	void ParticleSize::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set,
 		UINT32 startIdx, UINT32 count, bool spacing, float spacingOffset) const
 	{
 		const UINT32 endIdx = startIdx + count;
@@ -472,7 +472,7 @@ namespace bs
 		:mDesc(desc)
 	{ }
 
-	void ParticleRotation::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, 
+	void ParticleRotation::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set,
 		UINT32 startIdx, UINT32 count, bool spacing, float spacingOffset) const
 	{
 		const UINT32 endIdx = startIdx + count;
@@ -530,7 +530,7 @@ namespace bs
 	};
 
 	/** Calculates the new position and velocity after a particle was detected to be colliding. */
-	void calcCollisionResponse(Vector3& position, Vector3& velocity, const ParticleHitInfo& hitInfo, 
+	void calcCollisionResponse(Vector3& position, Vector3& velocity, const ParticleHitInfo& hitInfo,
 		const PARTICLE_COLLISIONS_DESC& desc)
 	{
 		Vector3 diff = position - hitInfo.position;
@@ -551,7 +551,7 @@ namespace bs
 		velocity = reflectedVel;
 	}
 
-	UINT32 groupRaycast(const PhysicsScene& physicsScene, LineSegment3* segments, ParticleHitInfo* hits, UINT32 numRays, 
+	UINT32 groupRaycast(const PhysicsScene& physicsScene, LineSegment3* segments, ParticleHitInfo* hits, UINT32 numRays,
 		UINT64 layer)
 	{
 		if(numRays == 0)
@@ -617,7 +617,7 @@ namespace bs
 		mDesc.radius = std::max(mDesc.radius, 0.0f);
 	}
 
-	void ParticleCollisions::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set, 
+	void ParticleCollisions::evolve(Random& random, const ParticleSystemState& state, ParticleSet& set,
 		UINT32 startIdx, UINT32 count, bool spacing, float spacingOffset) const
 	{
 		const UINT32 endIdx = startIdx + count;

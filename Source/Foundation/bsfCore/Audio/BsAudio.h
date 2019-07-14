@@ -24,7 +24,7 @@ namespace bs
 	public:
 		virtual ~Audio() = default;
 
-		/** 
+		/**
 		 * Starts playback of the provided audio clip. This can be used for a quicker way of creating audio sources if you
 		 * don't need the full control provided by creating AudioSource manually.
 		 *
@@ -79,7 +79,7 @@ namespace bs
 		friend class AudioListener;
 		friend class AudioSource;
 
-		/** 
+		/**
 		 * Creates a new audio clip.
 		 *
 		 * @param[in]	samples		Stream containing audio samples in format specified in @p desc.

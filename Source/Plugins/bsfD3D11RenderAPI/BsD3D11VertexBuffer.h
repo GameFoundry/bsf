@@ -21,7 +21,7 @@ namespace bs { namespace ct
 		/**	Get the D3D-specific index buffer */
 		ID3D11Buffer* getD3DVertexBuffer() const { return static_cast<D3D11HardwareBuffer*>(mBuffer)->getD3DBuffer(); }		
 
-	protected: 
+	protected:
 		/** @copydoc VertexBuffer::initialize */
 		void initialize() override;
 

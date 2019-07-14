@@ -44,10 +44,10 @@ namespace bs
         /// <summary>
         /// Creates a new horizontal slider.
         /// </summary>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
-        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUISliderH(string style, params GUIOption[] options)
         {
@@ -57,8 +57,8 @@ namespace bs
         /// <summary>
         /// Creates a new vertical slider.
         /// </summary>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
         public GUISliderH(string style = "")
         {
@@ -191,10 +191,10 @@ namespace bs
         /// <summary>
         /// Creates a new vertical slider.
         /// </summary>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
-        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUISliderV(string style, params GUIOption[] options)
         {
@@ -204,8 +204,8 @@ namespace bs
         /// <summary>
         /// Creates a new vertical slider.
         /// </summary>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
         public GUISliderV(string style = "")
         {

@@ -85,7 +85,7 @@ namespace bs { namespace ct
 		return done == GL_TRUE;
 	}
 
-	float GLTimerQuery::getTimeMs() 
+	float GLTimerQuery::getTimeMs()
 	{
 		if(!mFinalized && isReady())
 		{

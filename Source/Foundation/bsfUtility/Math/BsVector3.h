@@ -419,21 +419,21 @@ namespace bs
 	/** @cond SPECIALIZATIONS */
 	BS_ALLOW_MEMCPY_SERIALIZATION(Vector3);
 	/** @endcond */
-} 
+}
 
 /** @cond SPECIALIZATIONS */
-namespace std 
+namespace std
 {
-	template<> class numeric_limits<bs::Vector3> 
+	template<> class numeric_limits<bs::Vector3>
 	{
 	public:
-		constexpr static bs::Vector3 infinity() 
+		constexpr static bs::Vector3 infinity()
 		{
 			return bs::Vector3(
-				std::numeric_limits<float>::infinity(), 
-				std::numeric_limits<float>::infinity(), 
+				std::numeric_limits<float>::infinity(),
+				std::numeric_limits<float>::infinity(),
 				std::numeric_limits<float>::infinity());
 		}
 	};
-} 
+}
 /** @endcond */

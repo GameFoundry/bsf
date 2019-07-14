@@ -23,29 +23,29 @@ namespace bs { namespace ct
 		QueryManager() = default;
 		~QueryManager();
 
-		/** 
-		 * Creates a new event query that allows you to get notified when GPU starts executing the query.  
+		/**
+		 * Creates a new event query that allows you to get notified when GPU starts executing the query.
 		 *
-		 * @param[in]	deviceIdx	Index of the GPU device to create the query on. 
+		 * @param[in]	deviceIdx	Index of the GPU device to create the query on.
 		 */
 		virtual SPtr<EventQuery> createEventQuery(UINT32 deviceIdx = 0) const = 0;
 
 		/**
 		 * Creates a new timer query that allows you to get notified of how much time has passed between query start and end.
-		 * 
-		 * @param[in]	deviceIdx	Index of the GPU device to create the query on. 
+		 *
+		 * @param[in]	deviceIdx	Index of the GPU device to create the query on.
 		 */
 		virtual SPtr<TimerQuery> createTimerQuery(UINT32 deviceIdx = 0) const = 0;
 
 		/**
-		 * Creates a new occlusion query that allows you to know how many fragments were rendered between query start and 
+		 * Creates a new occlusion query that allows you to know how many fragments were rendered between query start and
 		 * end.
 		 *
-		 * @param[in]	binary		If query is binary it will not give you an exact count of fragments rendered, but will 
-		 *							instead just return 0 (no fragments were rendered) or 1 (one or more fragments were 
+		 * @param[in]	binary		If query is binary it will not give you an exact count of fragments rendered, but will
+		 *							instead just return 0 (no fragments were rendered) or 1 (one or more fragments were
 		 *							rendered). Binary queries can return sooner as they potentially do not need to wait
 		 *							until all of the geometry is rendered.
-		 * @param[in]	deviceIdx	Index of the GPU device to create the query on. 
+		 * @param[in]	deviceIdx	Index of the GPU device to create the query on.
 		 */
 		virtual SPtr<OcclusionQuery> createOcclusionQuery(bool binary, UINT32 deviceIdx = 0) const = 0;
 
@@ -58,19 +58,19 @@ namespace bs { namespace ct
 		friend class OcclusionQuery;
 
 		/**
-		 * Deletes an Event query. Always use this method and don't delete them manually. Actual deletion will be delayed 
+		 * Deletes an Event query. Always use this method and don't delete them manually. Actual deletion will be delayed
 		 * until next update.
 		 */
 		static void deleteEventQuery(EventQuery* query);
 
 		/**
-		 * Deletes a Timer query. Always use this method and don't delete them manually. Actual deletion will be delayed 
+		 * Deletes a Timer query. Always use this method and don't delete them manually. Actual deletion will be delayed
 		 * until next update.
 		 */
 		static void deleteTimerQuery(TimerQuery* query);
 
 		/**
-		 * Deletes an Occlusion query. Always use this method and don't delete them manually. Actual deletion will be 
+		 * Deletes an Occlusion query. Always use this method and don't delete them manually. Actual deletion will be
 		 * delayed until next update.
 		 */
 		static void deleteOcclusionQuery(OcclusionQuery* query);

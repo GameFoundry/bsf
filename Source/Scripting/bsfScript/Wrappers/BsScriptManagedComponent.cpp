@@ -65,7 +65,7 @@ namespace bs
 
 		if (!found)
 		{
-			BS_LOG(Warning, Script, "Method invoke failed. Cannot find method \"{0}\" on component of type \"{1}\".", 
+			BS_LOG(Warning, Script, "Method invoke failed. Cannot find method \"{0}\" on component of type \"{1}\".",
 				methodName, compClass->getTypeName());
 		}
 	}

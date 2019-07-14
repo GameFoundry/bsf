@@ -70,8 +70,8 @@ namespace bs
 
 		static UINT32 getDynamicSize(const ColorGradient& data)
 		{
-			const UINT64 dataSize = 
-				rttiGetElemSize(data.mColors[0]) * ColorGradient::MAX_KEYS + 
+			const UINT64 dataSize =
+				rttiGetElemSize(data.mColors[0]) * ColorGradient::MAX_KEYS +
 				rttiGetElemSize(data.mTimes[0]) * ColorGradient::MAX_KEYS +
 				rttiGetElemSize(data.mNumKeys) + rttiGetElemSize(data.mDuration) + sizeof(UINT32) * 2;
 

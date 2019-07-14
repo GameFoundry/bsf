@@ -93,7 +93,7 @@ namespace bs
 		mDrawHelper->wireDisc(position, normal, radius);
 	}
 
-	void DebugDraw::drawWireArc(const Vector3& position, const Vector3& normal, float radius, 
+	void DebugDraw::drawWireArc(const Vector3& position, const Vector3& normal, float radius,
 		Degree startAngle, Degree amountAngle)
 	{
 		mDrawHelper->wireArc(position, normal, radius, startAngle, amountAngle);

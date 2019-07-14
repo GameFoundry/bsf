@@ -18,7 +18,7 @@ namespace bs
 		Mobility	= 1 << 1,
 		Active		= 1 << 2,
 		Everything	= 1 << 3,
-		Dependency	= DIRTY_DEPENDENCY_MASK 
+		Dependency	= DIRTY_DEPENDENCY_MASK
 	};
 
 	typedef Flags<ActorDirtyFlag> ActorDirtyFlags;
@@ -26,8 +26,8 @@ namespace bs
 
 	/**
 	 * A base class for objects that can be placed in the scene. It has a transform object that allows it to be positioned,
-	 * scaled and rotated, as well a properties that control its mobility (movable vs. immovable) and active status. 
-	 * 
+	 * scaled and rotated, as well a properties that control its mobility (movable vs. immovable) and active status.
+	 *
 	 * In a way scene actors are similar to SceneObject%s, the main difference being that their implementations perform
 	 * some functionality directly, rather than relying on attached Components. Scene actors can be considered as a
 	 * lower-level alternative to SceneObject/Component model. In fact many Components internally just wrap scene actors.
@@ -47,7 +47,7 @@ namespace bs
 		/** Shorthand for getTransform(). */
 		const Transform& tfrm() const { return mTransform; }
 
-		/** 
+		/**
 		 * Determines if the actor is currently active. Deactivated actors act as if they have been destroyed, without
 		 * actually being destroyed.
 		 */
@@ -66,16 +66,16 @@ namespace bs
 		/** @copydoc setMobility */
 		ObjectMobility getMobility() const { return mMobility; }
 
-		/** 
+		/**
 		 * @name Internal
 		 * @{
 		 */
 		
-		/** 
+		/**
 		 * Updates the internal actor state by transfering the relevant state from the scene object. The system tracks
 		 * the last state and only performs the update if the scene object was modified since the last call. You can force
-		 * an update by setting the @p force parameter to true. 
-		 * 
+		 * an update by setting the @p force parameter to true.
+		 *
 		 * This method is used by the scene manager to update actors that have been bound to a scene object. Never call this
 		 * method for multiple different scene objects, as actor can only ever be bound to one during its lifetime.
 		 */
@@ -97,9 +97,9 @@ namespace bs
 
 		/** @} */
 	protected:
-		/** 
-		 * Marks the simulation thread object as dirty and notifies the system its data should be synced with its core 
-		 * thread counterpart. 
+		/**
+		 * Marks the simulation thread object as dirty and notifies the system its data should be synced with its core
+		 * thread counterpart.
 		 */
 		virtual void _markCoreDirty(ActorDirtyFlag flag = ActorDirtyFlag::Everything) { }
 

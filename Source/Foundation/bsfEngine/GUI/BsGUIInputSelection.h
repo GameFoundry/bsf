@@ -26,10 +26,10 @@ namespace bs
 		Vector2I getSelectionSpriteOffset(UINT32 spriteIdx) const;
 
 		/**
-		 * Returns clip rectangle relative to parent GUI element for the sprite with the specified index. 
+		 * Returns clip rectangle relative to parent GUI element for the sprite with the specified index.
 		 *
 		 * @param[in]	spriteIdx		Index of the sprite to retrieve the clip rectangle for.
-		 * @param[in]	parentClipRect	Clip rectangle of the parent GUI element. Selection clip rectangle will 
+		 * @param[in]	parentClipRect	Clip rectangle of the parent GUI element. Selection clip rectangle will
 		 *								additionally be clipped by this area. Relative to parent element.
 		 */
 		Rect2I getSelectionSpriteClipRect(UINT32 spriteIdx, const Rect2I& parentClipRect) const;
@@ -41,7 +41,7 @@ namespace bs
 		 * Shows the selection using the specified anchor. By default this will select 0 characters so you must manually
 		 * move the selection using moveSelectionToCaret() before anything is considered selected.
 		 *
-		 * @param[in]	anchorCaretPos	Anchor position which to initially select. Anchor position determines selection 
+		 * @param[in]	anchorCaretPos	Anchor position which to initially select. Anchor position determines selection
 		 *								area behavior when the input caret moves (determines whether left or right side of
 		 *								the selection will move with the caret).
 		 */

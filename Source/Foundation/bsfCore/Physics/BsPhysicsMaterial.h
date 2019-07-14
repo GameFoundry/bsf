@@ -20,8 +20,8 @@ namespace bs
 	public:
 		virtual ~PhysicsMaterial() = default;
 
-		/** 
-		  * Controls friction when two in-contact objects are not moving lateral to each other (for example how difficult 
+		/**
+		  * Controls friction when two in-contact objects are not moving lateral to each other (for example how difficult
 		  * it is to get an object moving from a static state while it is in contact with other object(s)).
 		  */
 		BS_SCRIPT_EXPORT(n:StaticFriction,pr:setter)
@@ -42,8 +42,8 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:DynamicFriction,pr:getter)
 		virtual float getDynamicFriction() const = 0;
 
-		/** 
-		 * Controls "bounciness" of an object during a collision. Value of 1 means the collision is elastic, and value of 0 
+		/**
+		 * Controls "bounciness" of an object during a collision. Value of 1 means the collision is elastic, and value of 0
 		 * means the value is inelastic. Must be in [0, 1] range.
 		 */
 		BS_SCRIPT_EXPORT(n:Restitution,pr:setter)
@@ -53,8 +53,8 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:Restitution,pr:getter)
 		virtual float getRestitutionCoefficient() const = 0;
 
-		/** 
-		 * Creates a new physics material. 
+		/**
+		 * Creates a new physics material.
 		 *
 		 * @param[in]	staticFriction	Controls friction when two in-contact objects are not moving lateral to each other
 		 *								(for example how difficult is to get an object moving from a static state while it
@@ -73,12 +73,12 @@ namespace bs
 		 *  @{
 		 */
 
-		/** 
+		/**
 		 * @copydoc create()
 		 *
 		 * For internal use. Requires manual initialization after creation.
 		 */
-		static SPtr<PhysicsMaterial> _createPtr(float staticFriction = 0.0f, float dynamicFriction = 0.0f, 
+		static SPtr<PhysicsMaterial> _createPtr(float staticFriction = 0.0f, float dynamicFriction = 0.0f,
 			float restitution = 0.0f);
 
 		/** @} */

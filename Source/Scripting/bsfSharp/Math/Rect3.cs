@@ -9,8 +9,8 @@ namespace bs
      */
 
     /// <summary>
-    /// Represents a rectangle in three dimensional space. It is represented by two axes that extend from the specified 
-    /// origin. Axes should be perpendicular to each other and they extend in both positive and negative directions from 
+    /// Represents a rectangle in three dimensional space. It is represented by two axes that extend from the specified
+    /// origin. Axes should be perpendicular to each other and they extend in both positive and negative directions from
     /// the origin by the amount specified by extents.
     /// </summary>
     [StructLayout(LayoutKind.Sequential), SerializeObject]
@@ -20,7 +20,7 @@ namespace bs
         /// Creates a new rectangle.
         /// </summary>
         /// <param name="center">Origin of the rectangle. </param>
-        /// <param name="axes">Two axes that define orientation of the rectangle. Axes extend from the origin. Axes should 
+        /// <param name="axes">Two axes that define orientation of the rectangle. Axes extend from the origin. Axes should
         ///                    be normalized.</param>
         /// <param name="extents">Two extents that define the size of the rectangle. Extends should be half the width/height
         ///                       as they are applied in both directions.</param>

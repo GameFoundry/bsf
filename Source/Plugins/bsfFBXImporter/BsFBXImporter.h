@@ -52,11 +52,11 @@ namespace bs
 		/**	Shuts down FBX SDK. Must be called after any other operations. */
 		void shutDownSdk();
 
-		/** 
+		/**
 		 * Reads the FBX file and outputs mesh data from the read file. Sub-mesh information will be output in @p subMeshes.
 		 */
-		SPtr<RendererMeshData> importMeshData(const Path& filePath, SPtr<const ImportOptions> importOptions, 
-			Vector<SubMesh>& subMeshes, Vector<FBXAnimationClipData>& animationClips, SPtr<Skeleton>& skeleton, 
+		SPtr<RendererMeshData> importMeshData(const Path& filePath, SPtr<const ImportOptions> importOptions,
+			Vector<SubMesh>& subMeshes, Vector<FBXAnimationClipData>& animationClips, SPtr<Skeleton>& skeleton,
 			SPtr<MorphShapes>& morphShapes);
 
 		/**
@@ -99,7 +99,7 @@ namespace bs
 		 * Imports all animations for the specified animation layer and outputs them in the provided clip. Child nodes will
 		 * be iterated recursively.
 		 */
-		void importAnimations(FbxAnimLayer* layer, FbxNode* node, FBXImportOptions& importOptions, 
+		void importAnimations(FbxAnimLayer* layer, FbxNode* node, FBXImportOptions& importOptions,
 			FBXAnimationClip& clip, FBXImportScene& importScene);
 
 		/** Bakes all FBX node transforms into standard translation-rotation-scale transform components. */
@@ -107,14 +107,14 @@ namespace bs
 
 		/**	Converts a single FBX animation curve into an engine curve format, resampling it if necessary. */
 		template<class T, int C>
-		TAnimationCurve<T> importCurve(FbxAnimCurve*(&fbxCurve)[C], float(&defaultValues)[C], 
+		TAnimationCurve<T> importCurve(FbxAnimCurve*(&fbxCurve)[C], float(&defaultValues)[C],
 			FBXImportOptions& importOptions, float clipStart, float clipEnd);
 
 		/** Converts FBX animation clips into engine-ready animation curve format. */
-		void convertAnimations(const Vector<FBXAnimationClip>& clips, const Vector<AnimationSplitInfo>& splits, 
+		void convertAnimations(const Vector<FBXAnimationClip>& clips, const Vector<AnimationSplitInfo>& splits,
 			const SPtr<Skeleton>& skeleton, bool importRootMotion, Vector<FBXAnimationClipData>& output);
 
-		/** 
+		/**
 		 * Removes identical sequential keyframes for the provided set of curves. The keyframe must be identical over all
 		 * the curves in order for it to be removed.
 		 */
@@ -137,11 +137,11 @@ namespace bs
 		void generateMissingTangentSpace(FBXImportScene& scene, const FBXImportOptions& options);
 
 		/** Converts the mesh data from the imported FBX scene into mesh data that can be used for initializing a mesh. */
-		SPtr<RendererMeshData> generateMeshData(const FBXImportScene& scene, const FBXImportOptions& options, 
+		SPtr<RendererMeshData> generateMeshData(const FBXImportScene& scene, const FBXImportOptions& options,
 			Vector<SubMesh>& outputSubMeshes);
 
-		/** 
-		 * Parses the scene and outputs a skeleton for the imported meshes using the imported raw data. 
+		/**
+		 * Parses the scene and outputs a skeleton for the imported meshes using the imported raw data.
 		 *
 		 * @param[in]	scene		Scene whose meshes to parse.
 		 * @param[in]	sharedRoot	Determines should a shared root bone be created. Set this to true if the scene contains

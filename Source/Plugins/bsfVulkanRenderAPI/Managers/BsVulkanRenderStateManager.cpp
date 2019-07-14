@@ -21,7 +21,7 @@ namespace bs { namespace ct
 		const PIPELINE_STATE_DESC& desc, GpuDeviceFlags deviceMask) const
 	{
 		SPtr<VulkanGraphicsPipelineState> pipelineState =
-			bs_shared_ptr<VulkanGraphicsPipelineState>(new (bs_alloc<VulkanGraphicsPipelineState>()) 
+			bs_shared_ptr<VulkanGraphicsPipelineState>(new (bs_alloc<VulkanGraphicsPipelineState>())
 			VulkanGraphicsPipelineState(desc, deviceMask));
 		pipelineState->_setThisPtr(pipelineState);
 

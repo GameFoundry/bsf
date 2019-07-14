@@ -21,7 +21,7 @@ namespace bs
 		/**
 		 * Creates a new mesh with enough space to hold the a number of primitives using the specified layout. All indices
 		 * will be part of a single sub-mesh.
-		 * 
+		 *
 		 * @param[in]	numVertices		Number of vertices in the mesh.
 		 * @param[in]	numIndices		Number of indices in the mesh. Must be a multiple of primitive size as specified
 		 *								by provided topology.
@@ -39,7 +39,7 @@ namespace bs
 		/**
 		 * Creates a new mesh with enough space to hold the a number of primitives using the specified layout. Indices can
 		 * be referenced by multiple sub-meshes.
-		 * 
+		 *
 		 * @param[in]	numVertices		Number of vertices in the mesh.
 		 * @param[in]	numIndices		Number of indices in the mesh. Must be a multiple of primitive size as specified
 		 *								by provided topology.
@@ -51,33 +51,33 @@ namespace bs
 		 *								go over the number of vertices limited by the data type size.
 		 */
 		BS_SCRIPT_EXPORT(ec:Mesh)
-		static HMesh create(int numVertices, int numIndices, const Vector<SubMesh>& subMeshes, 
+		static HMesh create(int numVertices, int numIndices, const Vector<SubMesh>& subMeshes,
 			MeshUsage usage = MU_STATIC, VertexLayout vertex = VertexLayout::Position, IndexType index = IT_32BIT);
 
 		/**
 		 * Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described
 		 * by the mesh data exactly. Mesh will have no sub-meshes.
-		 * 
+		 *
 		 * @param[in]	data			Vertex and index data to initialize the mesh with.
 		 * @param[in]	topology		Determines how should the provided indices be interpreted by the pipeline. Default
 		 *								option is a triangle list, where three indices represent a single triangle.
 		 * @param[in]	usage			Optimizes performance depending on planned usage of the mesh.
 		 */
 		BS_SCRIPT_EXPORT(ec:Mesh)
-		static HMesh create(const SPtr<RendererMeshData>& data, DrawOperationType topology = DOT_TRIANGLE_LIST, 
+		static HMesh create(const SPtr<RendererMeshData>& data, DrawOperationType topology = DOT_TRIANGLE_LIST,
 			MeshUsage usage = MU_STATIC);
 
 		/**
 		 * Creates a new mesh with enough space to hold the a number of primitives using the specified layout. Indices can
 		 * be referenced by multiple sub-meshes.
-		 * 
+		 *
 		 * @param[in]	data			Vertex and index data to initialize the mesh with.
 		 * @param[in]	subMeshes		Defines how are indices separated into sub-meshes, and how are those sub-meshes
 		 *								rendered. Sub-meshes may be rendered independently, each with a different material.
 		 * @param[in]	usage			Optimizes performance depending on planned usage of the mesh.
 		 */
 		BS_SCRIPT_EXPORT(ec:Mesh)
-		static HMesh create(const SPtr<RendererMeshData>& data, const Vector<SubMesh>& subMeshes, 
+		static HMesh create(const SPtr<RendererMeshData>& data, const Vector<SubMesh>& subMeshes,
 			MeshUsage usage = MU_STATIC);
 
 		/** Returns all sub-meshes contained in the mesh. */

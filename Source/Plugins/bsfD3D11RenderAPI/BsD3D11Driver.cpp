@@ -6,7 +6,7 @@
 
 namespace bs { namespace ct
 {
-	D3D11Driver::D3D11Driver(const D3D11Driver &ob) 
+	D3D11Driver::D3D11Driver(const D3D11Driver &ob)
 	{
 		mAdapterNumber = ob.mAdapterNumber;
 		mAdapterIdentifier = ob.mAdapterIdentifier;

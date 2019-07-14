@@ -59,14 +59,14 @@ namespace bs
 
 		/** Helper method for implementing Math::gcd. */
 		template <typename A, typename B>
-		std::common_type_t<A, B> gcd(const A& a, const B& b) 
+		std::common_type_t<A, B> gcd(const A& a, const B& b)
 		{
 			return (b == 0) ? a : gcd(b, a % b);
 		}
 
 		/** Helper method for implementing Math::lcm. */
 		template <typename A, typename B>
-		std::common_type_t<A, B> lcm(const A& a, const B& b) 
+		std::common_type_t<A, B> lcm(const A& a, const B& b)
 		{
 			return (a * b) / gcd(a, b);
 		}
@@ -173,7 +173,7 @@ namespace bs
 		{
 			assert(val >= std::numeric_limits<int32_t>::min() && val <= std::numeric_limits<int32_t>::max());
 
-			// Positive values need offset in order to truncate towards positive infinity (cast truncates towards zero) 
+			// Positive values need offset in order to truncate towards positive infinity (cast truncates towards zero)
 			return val >= 0.0f ? (int32_t)(val + BIGGEST_FLOAT_SMALLER_THAN_ONE) : (int32_t)val;
 		}
 
@@ -194,20 +194,20 @@ namespace bs
 		/** Returns the integer nearest to the provided value. */
 		static float fastRound(float val) { return (val >= 0) ? (float)(val + 0.5f) : (float)(val - 0.5f); }
 
-		/** 
+		/**
 		 * Returns the integer nearest to the provided value. If you are sure the input is positive use roundToPosInt()
 		 * for a slightly faster operation.
 		 */
 		static int32_t roundToInt(float val) { return floorToInt(val + 0.5f); }
 
-		/** 
+		/**
 		 * Returns the integer nearest to the provided value. Value must be non-negative. Slightly faster than roundToInt().
 		 */
 		static uint32_t roundToPosInt(float val) { return floorToPosInt(val + 0.5f); }
 
-		/** 
+		/**
 		 * Divides an integer by another integer and returns the result, rounded up. Only works if both integers are
-		 * positive. 
+		 * positive.
 		 */
 		template<class T>
 		static constexpr T divideAndRoundUp(T n, T d) { return (n + d - 1) / d; }
@@ -218,7 +218,7 @@ namespace bs
 		/** Returns the nearest integer equal or lower of the provided value. */
 		static float fastFloor(float val) { return (val >= 0) ? (float)val : (float)val - 1.0f; }
 
-		/** 
+		/**
 		 * Returns the nearest integer equal or lower of the provided value. If you are sure the input is positive
 		 * use floorToPosInt() for a slightly faster operation.
 		 */
@@ -226,13 +226,13 @@ namespace bs
 		{
 			assert(val >= std::numeric_limits<int32_t>::min() && val <= std::numeric_limits<int32_t>::max());
 
-			// Negative values need offset in order to truncate towards negative infinity (cast truncates towards zero) 
+			// Negative values need offset in order to truncate towards negative infinity (cast truncates towards zero)
 			return val >= 0.0f ? (int32_t)val : (int32_t)(val - BIGGEST_FLOAT_SMALLER_THAN_ONE);
 		}
 
-		/** 
+		/**
 		 * Returns the nearest integer equal or lower of the provided value. Value must be non-negative. Slightly faster
-		 * than floorToInt(). 
+		 * than floorToInt().
 		 */
 		static uint32_t floorToPosInt(float val)
 		{
@@ -274,7 +274,7 @@ namespace bs
 			return val - floor(val / length) * length;
 		}
 
-		/** 
+		/**
 		 * Wraps the value in range [0, length) and reverses the direction every @p length increment. This results in
 		 * @p val incrementing until @p length, then decrementing back to 0, and so on.
 		 */
@@ -291,26 +291,26 @@ namespace bs
 		}
 
 		/** Check if the value is a prime number. */
-		static bool isPrime(int n) 
+		static bool isPrime(int n)
 		{
 			if (n < 2)
 				return false;
 
-			if (n % 2 == 0) 
+			if (n % 2 == 0)
 				return n == 2;
 
-			if (n % 3 == 0) 
+			if (n % 3 == 0)
 				return n == 3;
 
 			int d = 5;
-			while (d * d <= n) 
+			while (d * d <= n)
 			{
-				if (n % d == 0) 
+				if (n % d == 0)
 					return false;
 
 				d += 2;
 
-				if (n % d == 0) 
+				if (n % d == 0)
 					return false;
 				d += 4;
 			}
@@ -319,63 +319,63 @@ namespace bs
 		}
 
 		/** Performs smooth Hermite interpolation between values. */
-		static float smoothStep(float val1, float val2, float t) 
+		static float smoothStep(float val1, float val2, float t)
 		{
 			t = clamp((t - val1) / (val2 - val1), 0.0f, 1.0f);
 			return t * t * (3.0f - 2.0f * t);
 		}
 
-		/** 
-		 * Performs quintic interpolation where @p val is the value to map onto a quintic S-curve. @p val should be in 
+		/**
+		 * Performs quintic interpolation where @p val is the value to map onto a quintic S-curve. @p val should be in
 		 * [0, 1] range.
 		 */
-		static float quintic(float val) 
+		static float quintic(float val)
 		{
 			return val * val * val * (val * (val * 6.0f - 15.0f) + 10.0f);
 		}
 
-		/** 
-		 * Performs cubic interpolation between two values bound between two other values where @p f is the alpha value. 
+		/**
+		 * Performs cubic interpolation between two values bound between two other values where @p f is the alpha value.
 		 * It should range from 0.0f to 1.0f. If it is 0.0f the method returns @p val2. If it is 1.0f it returns @p val3.
 		 */
-		static float cubic(float val1, float val2, float val3, float val4, float f) 
+		static float cubic(float val1, float val2, float val3, float val4, float f)
 		{
 			float t = (val4 - val3) - (val1 - val2);
 			return f * f * f * t + f * f * ((val1 - val2) - t) + f * (val3 - val1) + val2;
 		}
 
 		/** Compare two floats, using tolerance for inaccuracies. */
-		static bool approxEquals(float a, float b, 
+		static bool approxEquals(float a, float b,
 			float tolerance = std::numeric_limits<float>::epsilon())
 		{
 			return fabs(b - a) <= tolerance;
 		}
 
 		/** Compare two doubles, using tolerance for inaccuracies. */
-		static bool approxEquals(double a, double b, 
+		static bool approxEquals(double a, double b,
 			double tolerance = std::numeric_limits<double>::epsilon())
 		{
 			return fabs(b - a) <= tolerance;
 		}
 
 		/** Compare two 2D vectors, using tolerance for inaccuracies. */
-		static bool approxEquals(const Vector2& a, const Vector2& b, 
+		static bool approxEquals(const Vector2& a, const Vector2& b,
 			float tolerance = std::numeric_limits<float>::epsilon());
 
 		/** Compare two 3D vectors, using tolerance for inaccuracies. */
-		static bool approxEquals(const Vector3& a, const Vector3& b, 
+		static bool approxEquals(const Vector3& a, const Vector3& b,
 			float tolerance = std::numeric_limits<float>::epsilon());
 
 		/** Compare two 4D vectors, using tolerance for inaccuracies. */
-		static bool approxEquals(const Vector4& a, const Vector4& b, 
+		static bool approxEquals(const Vector4& a, const Vector4& b,
 			float tolerance = std::numeric_limits<float>::epsilon());
 
 		/** Compare two quaternions, using tolerance for inaccuracies. */
-		static bool approxEquals(const Quaternion& a, const Quaternion& b, 
+		static bool approxEquals(const Quaternion& a, const Quaternion& b,
 			float tolerance = std::numeric_limits<float>::epsilon());
 
 		/** Calculates the tangent space vector for a given set of positions / texture coords. */
-		static Vector3 calculateTriTangent(const Vector3& position1, const Vector3& position2, 
+		static Vector3 calculateTriTangent(const Vector3& position1, const Vector3& position2,
 			const Vector3& position3, float u1, float v1, float u2, float v2, float u3, float v3);
 
 		/************************************************************************/
@@ -631,7 +631,7 @@ namespace bs
 
 		/** Returns the minimum value of the two provided. */
 		template <typename A, typename B>
-		static std::common_type_t<A, B> min(const A& a, const B& b) 
+		static std::common_type_t<A, B> min(const A& a, const B& b)
 		{
 			return impl::min(a, b);
 		}
@@ -659,14 +659,14 @@ namespace bs
 
 		/** Return the greater common divisor between two values. */
 		template <typename A, typename B>
-		static std::common_type_t<A, B> gcd(const A& a, const B& b) 
+		static std::common_type_t<A, B> gcd(const A& a, const B& b)
 		{
 			return impl::gcd(a, b);
 		}
 
 		/** Return the least common multiple between two values. */
 		template <typename A, typename B>
-		static std::common_type_t<A, B> lcm(const A& a, const B& b) 
+		static std::common_type_t<A, B> lcm(const A& a, const B& b)
 		{
 			return impl::lcm(a, b);
 		}
@@ -740,7 +740,7 @@ namespace bs
 		}
 
 		/**
-		 * Solves the cubic equation with the parameters A, B, C, D. Returns number of roots found and the roots themselves 
+		 * Solves the cubic equation with the parameters A, B, C, D. Returns number of roots found and the roots themselves
 		 * will be output in the @p roots array.
 		 *
 		 * @param[in]	A		First variable.
@@ -820,7 +820,7 @@ namespace bs
 		}
 
 		/**
-		 * Solves the quartic equation with the parameters A, B, C, D, E. Returns number of roots found and the roots 
+		 * Solves the quartic equation with the parameters A, B, C, D, E. Returns number of roots found and the roots
 		 * themselves will be output in the @p roots array.
 		 *
 		 * @param[in]	A		First variable.
@@ -958,7 +958,7 @@ namespace bs
 		 * @param[out]	coefficients	Four coefficients for the cubic curve, in order [t^3, t^2, t, 1].
 		 */
 		template<class T>
-		static void cubicHermiteCoefficients(const T& pointA, const T& pointB, const T& tangentA, const T& tangentB, 
+		static void cubicHermiteCoefficients(const T& pointA, const T& pointB, const T& tangentA, const T& tangentB,
 			T (&coefficients)[4])
 		{
 			T diff = pointA - pointB;
@@ -970,7 +970,7 @@ namespace bs
 		}
 
 		/**
-		 * Calculates coefficients needed for evaluating a cubic curve in Hermite form. Assumes @p t is in range 
+		 * Calculates coefficients needed for evaluating a cubic curve in Hermite form. Assumes @p t is in range
 		 * [0, @p length]. Tangents must not be scaled by @p length.
 		 *
 		 * @param[in]	pointA			Starting point (at t=0).
@@ -981,7 +981,7 @@ namespace bs
 		 * @param[out]	coefficients	Four coefficients for the cubic curve, in order [t^3, t^2, t, 1].
 		 */
 		template<class T>
-		static void cubicHermiteCoefficients(const T& pointA, const T& pointB, const T& tangentA, const T& tangentB, 
+		static void cubicHermiteCoefficients(const T& pointA, const T& pointB, const T& tangentA, const T& tangentB,
 			float length, T (&coefficients)[4])
 		{
 			float length2 = length * length;
@@ -1009,9 +1009,9 @@ namespace bs
 		* @return					Integrated function.
 		*/
 		template <typename T>
-		static T rombergIntegration(T a, T b, int order, const std::function<T(T)> integrand) 
+		static T rombergIntegration(T a, T b, int order, const std::function<T(T)> integrand)
 		{
-			T h[order + 1]; 
+			T h[order + 1];
 			T r[order + 1][order + 1];
 
 			for (int i = 1; i < order + 1; ++i)
@@ -1019,7 +1019,7 @@ namespace bs
 
 			r[1][1] = h[1] / 2 * (integrand(a) + integrand(b));
 
-			for (int i = 2; i < order + 1; ++i) 
+			for (int i = 2; i < order + 1; ++i)
 			{
 				T coeff = 0;
 				for (int k = 1; k <= Math::pow(2, i - 2); ++k)
@@ -1028,7 +1028,7 @@ namespace bs
 				r[i][1] = 0.5 * (r[i - 1][1] + h[i - 1] * coeff);
 			}
 
-			for (int i = 2; i < order + 1; ++i) 
+			for (int i = 2; i < order + 1; ++i)
 			{
 				for (int j = 2; j <= i; ++j)
 					r[i][j] = r[i][j - 1] + (r[i][j - 1] - r[i - 1][j - 1]) / (Math::pow(4, j - 1) - 1);

@@ -32,7 +32,7 @@ namespace bs
             public float sign;
         };
 
-        private static EulerAngleOrderData[] EA_LOOKUP = 
+        private static EulerAngleOrderData[] EA_LOOKUP =
         { new EulerAngleOrderData(0, 1, 2, 1.0f), new EulerAngleOrderData(0, 2, 1, -1.0f), new EulerAngleOrderData(1, 0, 2, -1.0f),
           new EulerAngleOrderData(1, 2, 0, 1.0f), new EulerAngleOrderData(2, 0, 1,  1.0f), new EulerAngleOrderData(2, 1, 0, -1.0f) };
 
@@ -92,7 +92,7 @@ namespace bs
 
         /// <summary>
         /// Value of the specified element in the matrix using a linear index.
-        /// Linear index can be calculated using the following formula: idx = row * 3 + column. 
+        /// Linear index can be calculated using the following formula: idx = row * 3 + column.
         /// </summary>
         /// <param name="index">Linear index to get the value of.</param>
         /// <returns>Value of the element.</returns>
@@ -180,7 +180,7 @@ namespace bs
 
         public static bool operator== (Matrix3 lhs, Matrix3 rhs)
         {
-            if (lhs.m00 == rhs.m00 && lhs.m01 == rhs.m01 && lhs.m02 == rhs.m02 && 
+            if (lhs.m00 == rhs.m00 && lhs.m01 == rhs.m01 && lhs.m02 == rhs.m02 &&
                 lhs.m10 == rhs.m10 && lhs.m11 == rhs.m11 && lhs.m12 == rhs.m12 &&
                 lhs.m20 == rhs.m20 && lhs.m21 == rhs.m21 && lhs.m22 == rhs.m22)
                 return true;
@@ -301,7 +301,7 @@ namespace bs
         /// <summary>
         /// Decomposes the matrix into a set of values.
         /// </summary>
-        /// <param name="matQ">Columns form orthonormal bases. If your matrix is affine and doesn't use non-uniform scaling 
+        /// <param name="matQ">Columns form orthonormal bases. If your matrix is affine and doesn't use non-uniform scaling
         /// this matrix will be the rotation part of the matrix.
         /// </param>
         /// <param name="vecD">If the matrix is affine these will be scaling factors of the matrix.</param>
@@ -535,7 +535,7 @@ namespace bs
         /// Creates a rotation matrix from the provided euler angle (pitch/yaw/roll) rotation.
         /// </summary>
         /// <param name="euler">Euler angles in degrees.</param>
-        /// <param name="order">The order in which rotations will be applied. Different rotations can be created depending 
+        /// <param name="order">The order in which rotations will be applied. Different rotations can be created depending
         /// on the order.</param>
         /// <returns>Rotation matrix that can rotate an object to the specified angles.</returns>
         public static Matrix3 FromEuler(Vector3 euler, EulerAngleOrder order)
@@ -578,12 +578,12 @@ namespace bs
                 cz, -sz, 0.0f,
                 sz, cz, 0.0f,
                 0.0f, 0.0f, 1.0f);
-    
+
             return mats[l.a]*(mats[l.b]*mats[l.c]);
         }
 
         /// <summary>
-        /// Creates a rotation matrix from the provided euler angle (pitch/yaw/roll) rotation. Angles are applied in YXZ 
+        /// Creates a rotation matrix from the provided euler angle (pitch/yaw/roll) rotation. Angles are applied in YXZ
         /// order.
         /// </summary>
         /// <param name="euler">Euler angles in degrees.</param>
@@ -594,7 +594,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Creates a rotation matrix from the provided euler angle (pitch/yaw/roll) rotation. Angles are applied in YXZ 
+        /// Creates a rotation matrix from the provided euler angle (pitch/yaw/roll) rotation. Angles are applied in YXZ
         /// order.
         /// </summary>
         /// <param name="xAngle">Pitch angle of rotation.</param>

@@ -32,7 +32,7 @@ namespace bs
         /// </summary>
         /// <param name="element">Elements to calculate the bounds for.</param>
         /// <param name="relativeTo">GUI layout the bounds will be relative to. If this is null or the provided layout is
-        ///                          not a parent of the provided GUI element, the returned bounds will be relative to the 
+        ///                          not a parent of the provided GUI element, the returned bounds will be relative to the
         ///                          first GUI panel parent instead.</param>
         /// <returns>Bounds of a GUI element relative to the provided GUI layout.</returns>
         public static Rect2I CalculateBounds(GUIElement element, GUILayout relativeTo = null)

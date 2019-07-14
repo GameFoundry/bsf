@@ -85,7 +85,7 @@ namespace bs
 		void _reportJointBreakEvent(const JointBreakEvent& event);
 
 		/** @copydoc Physics::_rayCast */
-		bool _rayCast(const Vector3& origin, const Vector3& unitDir, const Collider& collider, PhysicsQueryHit& hit, 
+		bool _rayCast(const Vector3& origin, const Vector3& unitDir, const Collider& collider, PhysicsQueryHit& hit,
 			float maxDist = FLT_MAX) const override;
 
 		/** Notifies the system that at physics scene is about to be destroyed. */
@@ -148,7 +148,7 @@ namespace bs
 		SPtr<PlaneCollider> createPlaneCollider(const Vector3& position, const Quaternion& rotation) override;
 
 		/** @copydoc PhysicsScene::createCapsuleCollider */
-		SPtr<CapsuleCollider> createCapsuleCollider(float radius, float halfHeight, const Vector3& position, 
+		SPtr<CapsuleCollider> createCapsuleCollider(float radius, float halfHeight, const Vector3& position,
 			const Quaternion& rotation) override;
 
 		/** @copydoc PhysicsScene::createMeshCollider */
@@ -213,7 +213,7 @@ namespace bs
 
 		/** @copydoc PhysicsScene::convexCastAll */
 		Vector<PhysicsQueryHit> convexCastAll(const HPhysicsMesh& mesh, const Vector3& position,
-			const Quaternion& rotation, const Vector3& unitDir, UINT64 layer = BS_ALL_LAYERS, 
+			const Quaternion& rotation, const Vector3& unitDir, UINT64 layer = BS_ALL_LAYERS,
 			float max = FLT_MAX) const override;
 
 		/** @copydoc PhysicsScene::rayCastAny(const Vector3&, const Vector3&, UINT64, float) const */
@@ -301,7 +301,7 @@ namespace bs
 		 * Helper method that performs a sweep query by checking if the provided geometry hits any physics objects
 		 * when moved along the specified direction. Returns information about all hit.
 		 */
-		inline Vector<PhysicsQueryHit> sweepAll(const physx::PxGeometry& geometry, const physx::PxTransform& tfrm, 
+		inline Vector<PhysicsQueryHit> sweepAll(const physx::PxGeometry& geometry, const physx::PxTransform& tfrm,
 			const Vector3& unitDir, UINT64 layer, float maxDist) const;
 
 		/**
@@ -313,7 +313,7 @@ namespace bs
 			UINT64 layer, float maxDist) const;
 
 		/** Helper method that returns all colliders that are overlapping the provided geometry. */
-		inline Vector<Collider*> overlap(const physx::PxGeometry& geometry, const physx::PxTransform& tfrm, 
+		inline Vector<Collider*> overlap(const physx::PxGeometry& geometry, const physx::PxTransform& tfrm,
 			UINT64 layer) const;
 
 		/** Helper method that checks if the provided geometry overlaps any physics object. */

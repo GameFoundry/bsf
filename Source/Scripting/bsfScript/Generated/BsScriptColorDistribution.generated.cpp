@@ -36,7 +36,7 @@ namespace bs
 
 	MonoObject* ScriptColorDistribution::create(const SPtr<ColorDistribution>& value)
 	{
-		if(value == nullptr) return nullptr; 
+		if(value == nullptr) return nullptr;
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };

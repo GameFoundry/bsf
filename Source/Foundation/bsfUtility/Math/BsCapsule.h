@@ -27,7 +27,7 @@ namespace bs
 		std::pair<bool, float> intersects(const Ray& ray) const;
 
 		/**
-		 * Returns the line segment along which the capsule lies. All capsule points are at equal distance from this 
+		 * Returns the line segment along which the capsule lies. All capsule points are at equal distance from this
 		 * segment.
 		 */
 		const LineSegment3& getSegment() const { return mSegment; }
@@ -35,7 +35,7 @@ namespace bs
 		/** Returns the radius of the capsule. It defines the distance of the capsule from its line segment. */
 		float getRadius() const { return mRadius; }
 
-		/** 
+		/**
 		 * Returns the height of the capsule. The height is the distance between centers of the hemispheres that form the
 		 * capsule's ends.
 		 */

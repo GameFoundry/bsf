@@ -12,7 +12,7 @@
 
 namespace bs { namespace ct
 {
-	VULKAN_IMAGE_DESC createDesc(VkImage image, VmaAllocation allocation, VkImageLayout layout, VkFormat actualFormat, 
+	VULKAN_IMAGE_DESC createDesc(VkImage image, VmaAllocation allocation, VkImageLayout layout, VkFormat actualFormat,
 		const TextureProperties& props)
 	{
 		VULKAN_IMAGE_DESC desc;
@@ -608,7 +608,7 @@ namespace bs { namespace ct
 	}
 
 	VulkanTexture::~VulkanTexture()
-	{ 
+	{
 		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
 		{
 			if (mImages[i] == nullptr)
@@ -680,7 +680,7 @@ namespace bs { namespace ct
 			// Only support 2D textures, with one sample and one mip level, only used for shader reads
 			// (Optionally check vkGetPhysicalDeviceFormatProperties & vkGetPhysicalDeviceImageFormatProperties for
 			// additional supported configs, but right now there doesn't seem to be any additional support)
-			if(texType == TEX_TYPE_2D && props.getNumSamples() <= 1 && props.getNumMipmaps() == 0 && 
+			if(texType == TEX_TYPE_2D && props.getNumSamples() <= 1 && props.getNumMipmaps() == 0 &&
 				props.getNumFaces() == 1 && (mImageCI.usage & VK_IMAGE_USAGE_SAMPLED_BIT) != 0)
 			{
 				// Also, only support normal textures, not render targets or storage textures
@@ -802,7 +802,7 @@ namespace bs { namespace ct
 			rowPitchInPixels, slicePitchInPixels);
 	}
 
-	void VulkanTexture::copyImage(VulkanTransferBuffer* cb, VulkanImage* srcImage, VulkanImage* dstImage, 
+	void VulkanTexture::copyImage(VulkanTransferBuffer* cb, VulkanImage* srcImage, VulkanImage* dstImage,
 									  VkImageLayout srcFinalLayout, VkImageLayout dstFinalLayout)
 	{
 		UINT32 numFaces = mProperties.getNumFaces();
@@ -876,7 +876,7 @@ namespace bs { namespace ct
 		bs_stack_free(imageRegions);
 	}
 
-	void VulkanTexture::copyImpl(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc, 
+	void VulkanTexture::copyImpl(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc,
 			const SPtr<CommandBuffer>& commandBuffer)
 	{
 		VulkanTexture* other = static_cast<VulkanTexture*>(target.get());
@@ -909,8 +909,8 @@ namespace bs { namespace ct
 
 		UINT32 mipWidth, mipHeight, mipDepth;
 
-		bool copyEntireSurface = desc.srcVolume.getWidth() == 0 || 
-			desc.srcVolume.getHeight() == 0 || 
+		bool copyEntireSurface = desc.srcVolume.getWidth() == 0 ||
+			desc.srcVolume.getHeight() == 0 ||
 			desc.srcVolume.getDepth() == 0;
 
 		if(copyEntireSurface)
@@ -1007,12 +1007,12 @@ namespace bs { namespace ct
 
 		if (srcHasMultisample && !destHasMultisample) // Resolving from MS to non-MS texture
 		{
-			vkCmdResolveImage(vkCmdBuf, srcImage->getHandle(), transferSrcLayout, dstImage->getHandle(), transferDstLayout, 
+			vkCmdResolveImage(vkCmdBuf, srcImage->getHandle(), transferSrcLayout, dstImage->getHandle(), transferDstLayout,
 				1, &resolveRegion);
 		}
 		else // Just a normal copy
 		{
-			vkCmdCopyImage(vkCmdBuf, srcImage->getHandle(), transferSrcLayout, dstImage->getHandle(), transferDstLayout, 
+			vkCmdCopyImage(vkCmdBuf, srcImage->getHandle(), transferSrcLayout, dstImage->getHandle(), transferDstLayout,
 				1, &imageRegion);
 		}
 
@@ -1076,7 +1076,7 @@ namespace bs { namespace ct
 		{
 			// Initially the texture will be in preinitialized layout, and it will transition to general layout on first
 			// use in shader. No further transitions are allowed for directly mappable textures.
-			assert(subresource->getLayout() == VK_IMAGE_LAYOUT_PREINITIALIZED || 
+			assert(subresource->getLayout() == VK_IMAGE_LAYOUT_PREINITIALIZED ||
 				   subresource->getLayout() == VK_IMAGE_LAYOUT_GENERAL);
 
 			// GPU should never be allowed to write to a directly mappable texture, since only linear tiling is supported
@@ -1090,7 +1090,7 @@ namespace bs { namespace ct
 			// We're safe to map directly since GPU isn't using the subresource
 			if (!isUsedOnGPU)
 			{
-				// If some CB has an operation queued that will be using the current contents of the image, create a new 
+				// If some CB has an operation queued that will be using the current contents of the image, create a new
 				// image so we don't modify the previous use of the image
 				if (subresource->isBound())
 				{
@@ -1159,7 +1159,7 @@ namespace bs { namespace ct
 				// Submit the command buffer and wait until it finishes
 				transferCB->flush(true);
 
-				// If writing and some CB has an operation queued that will be using the current contents of the image, 
+				// If writing and some CB has an operation queued that will be using the current contents of the image,
 				// create a new image so we don't modify the previous use of the image
 				if (options == GBL_READ_WRITE && subresource->isBound())
 				{
@@ -1281,7 +1281,7 @@ namespace bs { namespace ct
 		if (!mIsMapped)
 			return;
 
-		// Note: If we did any writes they need to be made visible to the GPU. However there is no need to execute 
+		// Note: If we did any writes they need to be made visible to the GPU. However there is no need to execute
 		// a pipeline barrier because (as per spec) host writes are implicitly visible to the device.
 
 		if (mStagingBuffer == nullptr)
@@ -1467,7 +1467,7 @@ namespace bs { namespace ct
 			if (mImages[i] == nullptr)
 				continue;
 
-			PixelData myData = lock(discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY_DISCARD_RANGE, 
+			PixelData myData = lock(discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY_DISCARD_RANGE,
 				mipLevel, face, i, queueIdx);
 			PixelUtil::bulkPixelConversion(src, myData);
 			unlock();

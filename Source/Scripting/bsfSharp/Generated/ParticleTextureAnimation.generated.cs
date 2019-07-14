@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Provides functionality for particle texture animation. Uses the sprite texture assigned to the particle&apos;s 
+	/// Provides functionality for particle texture animation. Uses the sprite texture assigned to the particle&apos;s
 	/// material to determine animation properties.
 	/// </summary>
 	[ShowInInspector]

@@ -109,7 +109,7 @@ namespace bs
 		MonoObject* screenPos = ScriptVector2I::box(ev.screenPos);
 		MonoObject* delta = ScriptVector2I::box(ev.delta);
 
-		MonoUtil::invokeThunk(OnPointerMovedThunk, screenPos, delta, 
+		MonoUtil::invokeThunk(OnPointerMovedThunk, screenPos, delta,
 			ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount, ev.isUsed());
 	}
 
@@ -121,7 +121,7 @@ namespace bs
 		MonoObject* screenPos = ScriptVector2I::box(ev.screenPos);
 		MonoObject* delta = ScriptVector2I::box(ev.delta);
 
-		MonoUtil::invokeThunk(OnPointerPressedThunk, screenPos, delta, 
+		MonoUtil::invokeThunk(OnPointerPressedThunk, screenPos, delta,
 			ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount, ev.isUsed());
 	}
 
@@ -133,7 +133,7 @@ namespace bs
 		MonoObject* screenPos = ScriptVector2I::box(ev.screenPos);
 		MonoObject* delta = ScriptVector2I::box(ev.delta);
 
-		MonoUtil::invokeThunk(OnPointerReleasedThunk, screenPos, delta, 
+		MonoUtil::invokeThunk(OnPointerReleasedThunk, screenPos, delta,
 			ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount, ev.isUsed());
 	}
 
@@ -145,7 +145,7 @@ namespace bs
 		MonoObject* screenPos = ScriptVector2I::box(ev.screenPos);
 		MonoObject* delta = ScriptVector2I::box(ev.delta);
 
-		MonoUtil::invokeThunk(OnPointerDoubleClickThunk, screenPos, delta, 
+		MonoUtil::invokeThunk(OnPointerDoubleClickThunk, screenPos, delta,
 			ev.button, ev.shift, ev.control, ev.alt, ev.mouseWheelScrollAmount, ev.isUsed());
 	}
 

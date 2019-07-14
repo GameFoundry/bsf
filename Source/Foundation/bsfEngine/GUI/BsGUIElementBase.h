@@ -60,7 +60,7 @@ namespace bs
 		void setWidth(UINT32 width);
 
 		/**
-		 * Sets element width in pixels. Element will be resized according to its contents and parent layout but will 
+		 * Sets element width in pixels. Element will be resized according to its contents and parent layout but will
 		 * always stay within the provided range. If maximum width is zero, the element is allowed to expand as much as
 		 * it needs.
 		 */
@@ -73,7 +73,7 @@ namespace bs
 		void setSize(UINT32 width, UINT32 height);
 
 		/**
-		 * Sets element height in pixels. Element will be resized according to its contents and parent layout but will 
+		 * Sets element height in pixels. Element will be resized according to its contents and parent layout but will
 		 * always stay within the provided range. If maximum height is zero, the element is allowed to expand as much as
 		 * it needs.
 		 */
@@ -89,7 +89,7 @@ namespace bs
 		void setVisible(bool visible);
 
 		/**
-		 * Activates or deactives this element and recursively applies the same state to all the child elements. This has 
+		 * Activates or deactives this element and recursively applies the same state to all the child elements. This has
 		 * the same effect as setVisible(), but when disabled it will also remove the element from the layout, essentially
 		 * having the same effect is if you destroyed the element.
 		 */
@@ -101,8 +101,8 @@ namespace bs
 		/**
 		 * Returns non-clipped bounds of the GUI element. Relative to a parent GUI panel.
 		 *
-		 * @param[in]	relativeTo	Parent panel of the provided element relative to which to return the bounds. If null 
-		 *							the bounds relative to the first parent panel are returned. Behavior is undefined if 
+		 * @param[in]	relativeTo	Parent panel of the provided element relative to which to return the bounds. If null
+		 *							the bounds relative to the first parent panel are returned. Behavior is undefined if
 		 *							provided panel is not a parent of the element.
 		 *
 		 * @note	This call can be potentially expensive if the GUI state is dirty.
@@ -110,7 +110,7 @@ namespace bs
 		Rect2I getBounds(GUIPanel* relativeTo = nullptr);
 
 		/**
-		 * Sets the bounds of the GUI element. Relative to a parent GUI panel. Equivalent to calling setPosition(), 
+		 * Sets the bounds of the GUI element. Relative to a parent GUI panel. Equivalent to calling setPosition(),
 		 * setWidth() and setHeight().
 		 */
 		void setBounds(const Rect2I& bounds);
@@ -122,15 +122,15 @@ namespace bs
 		 */
 		Rect2I getGlobalBounds();
 
-		/** 
-		 * Returns non-clipped bounds of the GUI element in screenspace. 
+		/**
+		 * Returns non-clipped bounds of the GUI element in screenspace.
 		 *
 		 * @note	This call can be potentially expensive if the GUI state is dirty.
 		 */
 		Rect2I getScreenBounds() const;
 
 		/**
-		 * Returns non-clipped visible bounds of the GUI element (bounds exclude the margins). Relative to the parent GUI 
+		 * Returns non-clipped visible bounds of the GUI element (bounds exclude the margins). Relative to the parent GUI
 		 * panel.
 		 *
 		 * @note	This call can be potentially expensive as the bounds need to be calculated based on current GUI state.
@@ -144,9 +144,9 @@ namespace bs
 
 		/**
 		 * Updates child elements positions, sizes, clip rectangles and depths so they fit into the provided bounds, while
-		 * respecting their layout options. 
+		 * respecting their layout options.
 		 *
-		 * @param[in]	data	Layout data containing the necessary bounds and restrictions to use for calculating the 
+		 * @param[in]	data	Layout data containing the necessary bounds and restrictions to use for calculating the
 		 *						child element layout data.
 		 */
 		virtual void _updateLayout(const GUILayoutData& data);
@@ -158,13 +158,13 @@ namespace bs
 		virtual void _updateLayoutInternal(const GUILayoutData& data);
 
 		/**
-		 * Calculates positions & sizes of all elements in the layout. This method expects a pre-allocated array to store 
+		 * Calculates positions & sizes of all elements in the layout. This method expects a pre-allocated array to store
 		 * the data in.
 		 *
 		 * @param[in]	layoutArea		Parent layout area to position the child elements in.
 		 * @param[out]	elementAreas	Array to hold output areas. Must be the same size as the number of child elements.
 		 * @param[in]	numElements		Size of the element areas array.
-		 * @param[in]	sizeRanges		Ranges of possible sizes used for the child elements. Array must be same size as 
+		 * @param[in]	sizeRanges		Ranges of possible sizes used for the child elements. Array must be same size as
 		 *								elements array.
 		 * @param[in]	mySizeRange		Size range of this element.
 		 */
@@ -197,7 +197,7 @@ namespace bs
 
 		/**
 		 * Returns element size range constrained by its layout options. This is different from _calculateLayoutSizeRange()
-		 * because this method may return cached size range. 
+		 * because this method may return cached size range.
 		 */
 		virtual LayoutSizeRange _getLayoutSizeRange() const;
 
@@ -231,7 +231,7 @@ namespace bs
 
 		/**
 		 * Checks if element is active or inactive. Inactive elements are not visible, don't take up space
-		 * in their parent layouts, and can't be interacted with. 
+		 * in their parent layouts, and can't be interacted with.
 		 */
 		bool _isActive() const { return (mFlags & GUIElem_Inactive) == 0; }
 
@@ -247,7 +247,7 @@ namespace bs
 		/**
 		 * Internal version of setActive() that doesn't modify local state, instead it is only meant to be called
 		 * on child elements of the element whose state was modified.
-		 *  
+		 *
 		 * @copydoc setActive
 		 */
 		void _setActive(bool active);
@@ -255,7 +255,7 @@ namespace bs
 		/**
 		 * Internal version of setDisabled() that doesn't modify local state, instead it is only meant to be called
 		 * on child elements of the element whose state was modified.
-		 *  
+		 *
 		 * @copydoc setDisabled
 		 */
 		void _setDisabled(bool disabled);
@@ -283,7 +283,7 @@ namespace bs
 		void _markContentAsDirty();
 
 		/**
-		 * Mark only the elements that operate directly on the sprite mesh without requiring the mesh to be recreated as 
+		 * Mark only the elements that operate directly on the sprite mesh without requiring the mesh to be recreated as
 		 * dirty. This includes position, depth and clip rectangle. This will cause the parent widget mesh to be rebuilt
 		 * from its child element's meshes.
 		 */
@@ -308,7 +308,7 @@ namespace bs
 		 * Finds the first parent element whose size doesn't depend on child sizes.
 		 *			
 		 * @note	
-		 * This allows us to optimize layout updates and trigger them only on such parents when their child elements 
+		 * This allows us to optimize layout updates and trigger them only on such parents when their child elements
 		 * contents change, compared to doing them on the entire GUI hierarchy.
 		 */
 		GUIElementBase* findUpdateParent();

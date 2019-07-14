@@ -66,7 +66,7 @@ namespace bs
 			Vector<MessageHandlerData>& handlerData = iterFind->second;
 
 			handlerData.erase(
-				std::remove_if(handlerData.begin(), handlerData.end(), 
+				std::remove_if(handlerData.begin(), handlerData.end(),
 				[&](MessageHandlerData& x)
 				{
 					return x.id == handleId;

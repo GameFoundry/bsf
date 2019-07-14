@@ -11,9 +11,9 @@
 
 namespace bs
 {
-	ScriptCRigidbody::onCollisionBeginThunkDef ScriptCRigidbody::onCollisionBeginThunk; 
-	ScriptCRigidbody::onCollisionStayThunkDef ScriptCRigidbody::onCollisionStayThunk; 
-	ScriptCRigidbody::onCollisionEndThunkDef ScriptCRigidbody::onCollisionEndThunk; 
+	ScriptCRigidbody::onCollisionBeginThunkDef ScriptCRigidbody::onCollisionBeginThunk;
+	ScriptCRigidbody::onCollisionStayThunkDef ScriptCRigidbody::onCollisionStayThunk;
+	ScriptCRigidbody::onCollisionEndThunkDef ScriptCRigidbody::onCollisionEndThunk;
 
 	ScriptCRigidbody::ScriptCRigidbody(MonoObject* managedInstance, const GameObjectHandle<CRigidbody>& value)
 		:TScriptComponent(managedInstance, value)

@@ -19,7 +19,7 @@ namespace bs
 		 * icons can be inserted. Icons must be square.
 		 *
 		 * @param[in]	filePath	Path to the executable.
-		 * @param[in]	icons   	Pixels of images to replace. Each entry maps an icon width (and height, since they're 
+		 * @param[in]	icons   	Pixels of images to replace. Each entry maps an icon width (and height, since they're
 		 *							square) to its pixels.
 		 */
 		static void updateIconExe(const Path& filePath, const Map<UINT32, SPtr<PixelData>>& icons);

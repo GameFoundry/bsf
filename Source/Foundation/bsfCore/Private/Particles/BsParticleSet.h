@@ -11,7 +11,7 @@
 
 namespace bs
 {
-	/** @addtogroup Particles-Internal 
+	/** @addtogroup Particles-Internal
 	 *  @{
 	 */
 
@@ -25,9 +25,9 @@ namespace bs
 			allocate();
 		}
 
-		/** 
+		/**
 		 * Creates a new set, allocates enough space for @p capacity particles and initializes the particles by copying
-		 * them from the @p other set. 
+		 * them from the @p other set.
 		 */
 		ParticleSetData(UINT32 capacity, const ParticleSetData& other)
 			:capacity(capacity)
@@ -74,7 +74,7 @@ namespace bs
 		UINT32* indices = nullptr;
 
 	private:
-		/** 
+		/**
 		 * Allocates a new set of buffers with enough space to store number of particles equal to the current capacity. *
 		 * Called must ensure any previously allocated buffer is freed by calling free().
 		 */
@@ -172,15 +172,15 @@ namespace bs
 		static constexpr float CAPACITY_SCALE = 1.2f; // 20%
 
 	public:
-		/** 
-		 * Constructs a new particle set with enough space to hold @p capacity particles. The set will automatically 
-		 * grow to larger capacity if the limit is reached. 
+		/**
+		 * Constructs a new particle set with enough space to hold @p capacity particles. The set will automatically
+		 * grow to larger capacity if the limit is reached.
 		 */
 		ParticleSet(UINT32 capacity)
 			:mParticles(capacity)
 		{ }
 
-		/** 
+		/**
 		 * Allocates a number of new particles and returns the index to the particle. Note that the returned index is not
 		 * persistent and can become invalid after a call to freeParticle(). Returns the index to the first allocated
 		 * particle.
@@ -252,7 +252,7 @@ namespace bs
 		/** Returns the number of particles that are currently active. */
 		UINT32 getParticleCount() const { return mCount; }
 
-		/** 
+		/**
 		 * Calculates the size of a texture required for storing the data of this particle set. The texture is assumed
 		 * to be square.
 		 */

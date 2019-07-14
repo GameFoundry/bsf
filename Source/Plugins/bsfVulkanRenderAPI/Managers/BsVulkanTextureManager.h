@@ -35,18 +35,18 @@ namespace bs
 		/** Returns a dummy (empty) texture that can be bound in a shader slot of the requested type. */
 		VulkanTexture* getDummyTexture(GpuParamObjectType type) const;
 
-		/** 
+		/**
 		 * Determines Vulkan format required for binding a dummy texture (as returned by getDummyTexture()) to the shader
 		 * expecting a format of type @p format.
 		 */
 		static VkFormat getDummyViewFormat(GpuBufferFormat format);
 	protected:
 		/** @copydoc TextureManager::createTextureInternal */
-		SPtr<Texture> createTextureInternal(const TEXTURE_DESC& desc, 
+		SPtr<Texture> createTextureInternal(const TEXTURE_DESC& desc,
 			const SPtr<PixelData>& initialData = nullptr, GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
 
 		/** @copydoc TextureManager::createRenderTextureInternal */
-		SPtr<RenderTexture> createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc, 
+		SPtr<RenderTexture> createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc,
 			UINT32 deviceIdx = 0) override;
 
 		SPtr<VulkanTexture> mDummyReadTextures[7];

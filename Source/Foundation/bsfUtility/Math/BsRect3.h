@@ -12,7 +12,7 @@ namespace bs
 	 */
 
 	/**
-	 * Represents a rectangle in three dimensional space. It is represented by two axes that extend from the specified 
+	 * Represents a rectangle in three dimensional space. It is represented by two axes that extend from the specified
 	 * origin. Axes should be perpendicular to each other and they extend in both positive and negative directions from the
 	 * origin by the amount specified by extents.
 	 */
@@ -30,9 +30,9 @@ namespace bs
 		/**
 		 * Find the nearest points of the provided ray and the rectangle.
 		 *
-		 * @return	A set of nearest points and nearest distance. First value in the set corresponds to nearest point on 
-		 *			the ray, and the second to the nearest point on the rectangle. They are same in the case of intersection. 
-		 *			When ray is parallel to the rectangle there are two sets of nearest points but only one the set nearest 
+		 * @return	A set of nearest points and nearest distance. First value in the set corresponds to nearest point on
+		 *			the ray, and the second to the nearest point on the rectangle. They are same in the case of intersection.
+		 *			When ray is parallel to the rectangle there are two sets of nearest points but only one the set nearest
 		 *			to the ray origin is returned.
 		 */
 		std::pair<std::array<Vector3, 2>, float> getNearestPoint(const Ray& ray) const;

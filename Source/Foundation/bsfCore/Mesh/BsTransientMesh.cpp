@@ -40,7 +40,7 @@ namespace bs
 
 	namespace ct
 	{
-	TransientMesh::TransientMesh(const SPtr<MeshHeap>& parentHeap, UINT32 id, 
+	TransientMesh::TransientMesh(const SPtr<MeshHeap>& parentHeap, UINT32 id,
 		UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes)
 		:MeshBase(numVertices, numIndices, subMeshes), mParentHeap(parentHeap), mId(id)
 	{

@@ -19,7 +19,7 @@ namespace bs { namespace ct
 		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTexture);
 	}
 
-	void ReflectionCubeDownsampleMat::execute(const SPtr<Texture>& source, UINT32 face, UINT32 mip, 
+	void ReflectionCubeDownsampleMat::execute(const SPtr<Texture>& source, UINT32 face, UINT32 mip,
 		const SPtr<RenderTarget>& target)
 	{
 		BS_RENMAT_PROFILE_BLOCK
@@ -61,7 +61,7 @@ namespace bs { namespace ct
 		defines.set("NUM_SAMPLES", NUM_SAMPLES);
 	}
 
-	void ReflectionCubeImportanceSampleMat::execute(const SPtr<Texture>& source, UINT32 face, UINT32 mip, 
+	void ReflectionCubeImportanceSampleMat::execute(const SPtr<Texture>& source, UINT32 face, UINT32 mip,
 		const SPtr<RenderTarget>& target)
 	{
 		BS_RENMAT_PROFILE_BLOCK
@@ -180,7 +180,7 @@ namespace bs { namespace ct
 		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTexture);
 	}
 
-	void IrradianceComputeSHFragMat::execute(const SPtr<Texture>& source, UINT32 face, UINT32 coefficientIdx, 
+	void IrradianceComputeSHFragMat::execute(const SPtr<Texture>& source, UINT32 face, UINT32 coefficientIdx,
 		const SPtr<RenderTarget>& output)
 	{
 		BS_RENMAT_PROFILE_BLOCK
@@ -219,7 +219,7 @@ namespace bs { namespace ct
 		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTexture);
 	}
 
-	void IrradianceAccumulateSHMat::execute(const SPtr<Texture>& source, UINT32 face, UINT32 sourceMip, 
+	void IrradianceAccumulateSHMat::execute(const SPtr<Texture>& source, UINT32 face, UINT32 sourceMip,
 		const SPtr<RenderTarget>& output)
 	{
 		BS_RENMAT_PROFILE_BLOCK
@@ -315,7 +315,7 @@ namespace bs { namespace ct
 		mParams->getLoadStoreTextureParam(GPT_COMPUTE_PROGRAM, "gOutput", mOutputTexture);
 	}
 
-	void IrradianceReduceSHMat::execute(const SPtr<GpuBuffer>& source, UINT32 numCoeffSets, 
+	void IrradianceReduceSHMat::execute(const SPtr<GpuBuffer>& source, UINT32 numCoeffSets,
 		const SPtr<Texture>& output, UINT32 outputIdx)
 	{
 		BS_RENMAT_PROFILE_BLOCK
@@ -405,9 +405,9 @@ namespace bs { namespace ct
 
 		// Before importance sampling the cubemaps we first create box filtered versions for each mip level. This helps fix
 		// the aliasing artifacts that would otherwise be noticeable on importance sampled cubemaps. The aliasing happens
-		// because: 
+		// because:
 		//  1. We use the same random samples for all pixels, which appears to duplicate reflections instead of creating
-		//     noise, which is usually more acceptable 
+		//     noise, which is usually more acceptable
 		//  2. Even if we were to use fully random samples we would need a lot to avoid noticeable noise, which isn't
 		//     practical
 
@@ -493,7 +493,7 @@ namespace bs { namespace ct
 		}
 	}
 	
-	void RenderBeastIBLUtility::filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output, 
+	void RenderBeastIBLUtility::filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output,
 		UINT32 outputIdx) const
 	{
 		if(supportsComputeSH())
@@ -518,7 +518,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void RenderBeastIBLUtility::scaleCubemap(const SPtr<Texture>& src, UINT32 srcMip, const SPtr<Texture>& dst, 
+	void RenderBeastIBLUtility::scaleCubemap(const SPtr<Texture>& src, UINT32 srcMip, const SPtr<Texture>& dst,
 		UINT32 dstMip) const
 	{
 		auto& srcProps = src->getProperties();
@@ -572,7 +572,7 @@ namespace bs { namespace ct
 			downsampleCubemap(scratchTex, srcMip, dst, dstMip);
 	}
 
-	void RenderBeastIBLUtility::downsampleCubemap(const SPtr<Texture>& src, UINT32 srcMip, const SPtr<Texture>& dst, 
+	void RenderBeastIBLUtility::downsampleCubemap(const SPtr<Texture>& src, UINT32 srcMip, const SPtr<Texture>& dst,
 		UINT32 dstMip)
 	{
 		for (UINT32 face = 0; face < 6; face++)
@@ -619,7 +619,7 @@ namespace bs { namespace ct
 
 			// Downsample, summing up coefficients and weights all the way down to 1x1
 			auto& sourceProps = cubemap->getProperties();
-			UINT32 numMips = PixelUtil::getMaxMipmaps(sourceProps.getWidth(), sourceProps.getHeight(), 1, 
+			UINT32 numMips = PixelUtil::getMaxMipmaps(sourceProps.getWidth(), sourceProps.getHeight(), 1,
 				sourceProps.getFormat());
 
 			SPtr<PooledRenderTexture> downsampleInput = coeffsTex;

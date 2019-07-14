@@ -82,7 +82,7 @@ namespace bs
 		_markContentAsDirty();
 	}
 
-	void GUICanvas::drawTexture(const HSpriteTexture& texture, const Rect2I& area, TextureScaleMode scaleMode, 
+	void GUICanvas::drawTexture(const HSpriteTexture& texture, const Rect2I& area, TextureScaleMode scaleMode,
 		const Color& color, UINT8 depth)
 	{
 		mElements.push_back(CanvasElement());
@@ -179,7 +179,7 @@ namespace bs
 		_markContentAsDirty();
 	}
 
-	void GUICanvas::drawText(const String& text, const Vector2I& position, const HFont& font, UINT32 size, 
+	void GUICanvas::drawText(const String& text, const Vector2I& position, const HFont& font, UINT32 size,
 		const Color& color, UINT8 depth)
 	{
 		mElements.push_back(CanvasElement());
@@ -518,7 +518,7 @@ namespace bs
 			element.clippedVertexStart = (UINT32)mClippedVertices.size();
 			element.clippedNumVertices = 0;
 
-			ImageSprite::clipTrianglesToRect(verticesToClip, nullptr, trianglesToClip, sizeof(Vector2), clipRect, 
+			ImageSprite::clipTrianglesToRect(verticesToClip, nullptr, trianglesToClip, sizeof(Vector2), clipRect,
 				writeCallback);
 		}
 		else

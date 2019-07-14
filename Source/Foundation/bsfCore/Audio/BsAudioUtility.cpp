@@ -154,7 +154,7 @@ namespace bs
 		else
 			srcBuffer = (INT32*)input;
 
-		// Note: I convert to a temporary 32-bit buffer and then use that to convert to actual requested bit depth. 
+		// Note: I convert to a temporary 32-bit buffer and then use that to convert to actual requested bit depth.
 		//       It would be more efficient to convert directly from source to requested depth without a temporary buffer,
 		//       at the cost of additional complexity. If this method ever becomes a performance issue consider that.
 		switch (inBitDepth)

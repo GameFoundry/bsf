@@ -36,8 +36,8 @@ namespace bs { namespace ct
 		defines.set("TILE_SIZE", TILE_SIZE);
 	}
 
-	void TiledDeferredLightingMat::execute(const RendererView& view, const VisibleLightData& lightData, 
-		const GBufferTextures& gbuffer, const SPtr<Texture>& inputTexture, const SPtr<Texture>& lightAccumTex, 
+	void TiledDeferredLightingMat::execute(const RendererView& view, const VisibleLightData& lightData,
+		const GBufferTextures& gbuffer, const SPtr<Texture>& inputTexture, const SPtr<Texture>& lightAccumTex,
 		const SPtr<Texture>& lightAccumTexArray, const SPtr<Texture>& msaaCoverage)
 	{
 		BS_RENMAT_PROFILE_BLOCK
@@ -292,7 +292,7 @@ namespace bs { namespace ct
 	// Note: Tile size was reduced from 32 to 16 because of macOS limitations. Ideally we should try keeping the larger
 	// size on non-macOS platforms, but currently where don't have a platform-specific way of setting this.
 	//
-	// The theory is that using larger tiles will amortize the cost of computing tile AABB's (which this shader uses, 
+	// The theory is that using larger tiles will amortize the cost of computing tile AABB's (which this shader uses,
 	// compared to the cheaper-to-compute frustums).
 	const UINT32 TiledDeferredImageBasedLightingMat::TILE_SIZE = 16;
 
@@ -324,7 +324,7 @@ namespace bs { namespace ct
 		defines.set("TILE_SIZE", TILE_SIZE);
 	}
 
-	void TiledDeferredImageBasedLightingMat::execute(const RendererView& view, const SceneInfo& sceneInfo, 
+	void TiledDeferredImageBasedLightingMat::execute(const RendererView& view, const SceneInfo& sceneInfo,
 		const VisibleReflProbeData& probeData, const Inputs& inputs)
 	{
 		BS_RENMAT_PROFILE_BLOCK
@@ -338,11 +338,11 @@ namespace bs { namespace ct
 		framebufferSize[1] = height;
 		gTiledImageBasedLightingParamDef.gFramebufferSize.set(mParamBuffer, framebufferSize);
 
-		Skybox* skybox = nullptr; 
+		Skybox* skybox = nullptr;
 		if(view.getRenderSettings().enableSkybox)
 			skybox = sceneInfo.skybox;
 
-		mReflProbeParamBuffer.populate(skybox, probeData.getNumProbes(), sceneInfo.reflProbeCubemapsTex, 
+		mReflProbeParamBuffer.populate(skybox, probeData.getNumProbes(), sceneInfo.reflProbeCubemapsTex,
 			viewProps.capturingReflections);
 
 		mParamBuffer->flushToGPU();

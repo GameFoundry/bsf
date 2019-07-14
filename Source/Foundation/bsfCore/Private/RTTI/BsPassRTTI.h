@@ -99,7 +99,7 @@ namespace bs
 			obj->mData.vertexProgramDesc = val;
 		}
 
-		SerializedGpuProgramData& getFragmentProgramDesc(Pass* obj) 
+		SerializedGpuProgramData& getFragmentProgramDesc(Pass* obj)
 		{
 			return mFragmentProgramDesc;
 		}

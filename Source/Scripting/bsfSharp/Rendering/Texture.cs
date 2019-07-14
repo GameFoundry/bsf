@@ -24,8 +24,8 @@ namespace bs
         /// <param name="gammaCorrection">If true the texture data is assumed to have be gamma corrected and will be
         ///                               converted back to linear space when sampled on GPU, and converted to gamma space
         ///                               before being written by the GPU.</param>
-        public static Texture Create2D(int width, int height, PixelFormat format = PixelFormat.RGBA8, 
-            TextureUsage usage = TextureUsage.Default, int numSamples = 1, bool hasMipmaps = false, 
+        public static Texture Create2D(int width, int height, PixelFormat format = PixelFormat.RGBA8,
+            TextureUsage usage = TextureUsage.Default, int numSamples = 1, bool hasMipmaps = false,
             bool gammaCorrection = false)
         {
             Texture texture = new Texture(true);

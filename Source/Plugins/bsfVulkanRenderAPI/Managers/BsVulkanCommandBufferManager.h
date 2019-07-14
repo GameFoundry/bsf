@@ -20,7 +20,7 @@ namespace bs { namespace ct
 		VulkanTransferBuffer(VulkanDevice* device, GpuQueueType type, UINT32 queueIdx);
 		~VulkanTransferBuffer();
 
-		/** 
+		/**
 		 * OR's the provided sync mask with the internal sync mask. The sync mask determines on which queues should
 		 * the buffer wait on before executing. Sync mask is reset after a flush. See CommandSyncMask on how to generate
 		 * a sync mask.
@@ -30,31 +30,31 @@ namespace bs { namespace ct
 		/** Resets the sync mask. */
 		void clearMask() { mSyncMask = 0; }
 
-		/** 
+		/**
 		 * Issues a pipeline barrier on the provided buffer. See vkCmdPipelineBarrier in Vulkan spec. for usage
 		 * information.
 		 */
 		void memoryBarrier(VkBuffer buffer, VkAccessFlags srcAccessFlags, VkAccessFlags dstAccessFlags,
 						   VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage);
 
-		/** 
-		 * Issues a pipeline barrier on the provided image, changing its layout. See vkCmdPipelineBarrier in Vulkan spec. 
+		/**
+		 * Issues a pipeline barrier on the provided image, changing its layout. See vkCmdPipelineBarrier in Vulkan spec.
 		 * for usage information.
 		 */
-		void setLayout(VkImage image, VkAccessFlags srcAccessFlags, VkAccessFlags dstAccessFlags, 
+		void setLayout(VkImage image, VkAccessFlags srcAccessFlags, VkAccessFlags dstAccessFlags,
 			VkImageLayout oldLayout, VkImageLayout newLayout, const VkImageSubresourceRange& range);
 
 		/**
-		 * Issues one or multiple pipeline barrier on the provided image, changing the layout of its subresources. 
+		 * Issues one or multiple pipeline barrier on the provided image, changing the layout of its subresources.
 		 * Automatically determines original layout for individual sub-resources, groups the pipeline barriers and issues
 		 * them.
 		 */
-		void setLayout(VulkanImage* image, const VkImageSubresourceRange& range, VkAccessFlags newAccessMask, 
+		void setLayout(VulkanImage* image, const VkImageSubresourceRange& range, VkAccessFlags newAccessMask,
 					   VkImageLayout newLayout);
 
-		/** 
-		 * Submits the command buffer on the queue. 
-		 * 
+		/**
+		 * Submits the command buffer on the queue.
+		 *
 		 *	@param[in]	wait	If true, the caller thread will wait until all device operations on the command buffer's
 		 *						queue complete.	
 		 */
@@ -80,8 +80,8 @@ namespace bs { namespace ct
 		Vector<VkImageMemoryBarrier> mBarriersTemp;
 	};
 
-	/** 
-	 * Handles creation of Vulkan command buffers. See CommandBuffer. 
+	/**
+	 * Handles creation of Vulkan command buffers. See CommandBuffer.
 	 *
 	 * @note Core thread only.
 	 */
@@ -95,8 +95,8 @@ namespace bs { namespace ct
 		SPtr<CommandBuffer> createInternal(GpuQueueType type, UINT32 deviceIdx = 0, UINT32 queueIdx = 0,
 			bool secondary = false) override;
 
-		/** 
-		 * Returns a set of command buffer semaphores depending on the provided sync mask. 
+		/**
+		 * Returns a set of command buffer semaphores depending on the provided sync mask.
 		 *
 		 * @param[in]	deviceIdx	Index of the device to get the semaphores for.
 		 * @param[in]	syncMask	Mask that has a bit enabled for each command buffer to retrieve the semaphore for.
@@ -107,8 +107,8 @@ namespace bs { namespace ct
 		 */
 		void getSyncSemaphores(UINT32 deviceIdx, UINT32 syncMask, VulkanSemaphore** semaphores, UINT32& count);
 
-		/** 
-		 * Returns an command buffer that can be used for executing transfer operations on the specified queue. 
+		/**
+		 * Returns an command buffer that can be used for executing transfer operations on the specified queue.
 		 * Transfer buffers are automatically flushed (submitted) whenever a new (normal) command buffer is about to
 		 * execute.
 		 */

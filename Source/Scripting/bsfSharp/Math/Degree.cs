@@ -9,7 +9,7 @@ namespace bs
      */
 
     /// <summary>
-    ///	Wrapper class which indicates a given angle value is in degrees. Degree values are interchangeable with radian 
+    ///	Wrapper class which indicates a given angle value is in degrees. Degree values are interchangeable with radian
     /// values, and conversions will be done automatically between them.
     /// </summary>
     [StructLayout(LayoutKind.Sequential), SerializeObject]
@@ -100,9 +100,9 @@ namespace bs
             return new Degree(a.value + b.value);
         }
 
-        public static Degree operator+(Degree a, Radian r) 
-        { 
-            return new Degree (a.value + r.Degrees); 
+        public static Degree operator+(Degree a, Radian r)
+        {
+            return new Degree (a.value + r.Degrees);
         }
 
         public static Degree operator-(Degree a)
@@ -115,9 +115,9 @@ namespace bs
             return new Degree(a.value - b.value);
         }
 
-        public static Degree operator-(Degree a, Radian r) 
-        { 
-            return new Degree (a.value - r.Degrees); 
+        public static Degree operator-(Degree a, Radian r)
+        {
+            return new Degree (a.value - r.Degrees);
         }
 
         public static Degree operator*(Degree a, float s)

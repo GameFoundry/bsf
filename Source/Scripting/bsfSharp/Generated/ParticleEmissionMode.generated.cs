@@ -32,7 +32,7 @@ namespace bs
 		/// </summary>
 		public float speed;
 		/// <summary>
-		/// Determines the minimum interval allowed between the generated particles. 0 specifies the particles can be  generated 
+		/// Determines the minimum interval allowed between the generated particles. 0 specifies the particles can be  generated
 		/// anywhere on the shape.
 		/// </summary>
 		public float interval;

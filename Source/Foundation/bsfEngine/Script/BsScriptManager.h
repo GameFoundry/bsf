@@ -5,7 +5,7 @@
 #include "BsPrerequisites.h"
 #include "Utility/BsModule.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Script-Internal
 	 *  @{
@@ -46,7 +46,7 @@ namespace bs
 		 */
 		void reload();
 
-		/** 
+		/**
 		 * Sets the active script library that controls what kind and which scripts are loaded. Must be called before
 		 * the module is started up.
 		 */

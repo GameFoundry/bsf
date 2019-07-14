@@ -16,7 +16,7 @@ namespace bs
     public struct Plane // Note: Must match C++ class Plane
     {
         /// <summary>
-        /// The "positive side" of the plane is the half space to which the plane normal points. The "negative side" is the 
+        /// The "positive side" of the plane is the half space to which the plane normal points. The "negative side" is the
         /// other half space. The flag "no side" indicates the plane itself.
         /// </summary>
         public enum Side

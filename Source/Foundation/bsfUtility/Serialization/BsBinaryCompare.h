@@ -40,7 +40,7 @@ namespace bs
 		bool run(IReflectable& a, IReflectable& b) override;
 
 	protected:
-		/** 
+		/**
 		 * Checks if two IReflectable objects are equal. Inserts the results into an object map so multiple references
 		 * to the same object don't need to be checked twice.
 		 */

@@ -16,7 +16,7 @@ namespace bs
 		const Vector<SHADER_PARAM_ATTRIBUTE> attributes = thisPtr->getParamAttributes();
 
 		Vector<ShaderParameter> paramInfos;
-		auto parseParam = [&paramInfos, &attributes](const String& identifier, ShaderParameterType type, bool isInternal, 
+		auto parseParam = [&paramInfos, &attributes](const String& identifier, ShaderParameterType type, bool isInternal,
 			UINT32 attribIdx)
 		{
 			ShaderParameter output;
@@ -48,7 +48,7 @@ namespace bs
 			ShaderParameterType type;
 			bool isValidType = false;
 			bool isInternal = !param.second.rendererSemantic.empty();
-			switch (param.second.type) 
+			switch (param.second.type)
 			{
 			case GPDT_FLOAT1:
 				type = ShaderParameterType::Float;

@@ -251,7 +251,7 @@ namespace bs
 		}
 	};
 
-	class BS_CORE_EXPORT ScreenSpaceLensFlareSettingsRTTI : 
+	class BS_CORE_EXPORT ScreenSpaceLensFlareSettingsRTTI :
 	public RTTIType <ScreenSpaceLensFlareSettings, IReflectable, ScreenSpaceLensFlareSettingsRTTI>
 	{
 	private:

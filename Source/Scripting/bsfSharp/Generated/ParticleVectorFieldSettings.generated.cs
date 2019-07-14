@@ -36,8 +36,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines how closely does the particle velocity follow the vectors in the field. If set to 1 particles will be 
-		/// snapped to the exact velocity of the value in the field, and if set to 0 the field will not influence particle 
+		/// Determines how closely does the particle velocity follow the vectors in the field. If set to 1 particles will be
+		/// snapped to the exact velocity of the value in the field, and if set to 0 the field will not influence particle
 		/// velocities directly.
 		/// </summary>
 		[ShowInInspector]
@@ -65,7 +65,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Amount of to move the vector field by relative to the parent particle system. This is added to the bounds provided in 
+		/// Amount of to move the vector field by relative to the parent particle system. This is added to the bounds provided in
 		/// the vector field resource.
 		/// </summary>
 		[ShowInInspector]
@@ -96,7 +96,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the amount to rotate the vector field every second, in degrees, around XYZ axis respectively.  Evaluated 
+		/// Determines the amount to rotate the vector field every second, in degrees, around XYZ axis respectively.  Evaluated
 		/// over the particle system lifetime.
 		/// </summary>
 		[ShowInInspector]
@@ -110,7 +110,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines should the field influence particles outside of the field bounds. If true the field will be tiled 
+		/// Determines should the field influence particles outside of the field bounds. If true the field will be tiled
 		/// infinitely in the X direction.
 		/// </summary>
 		[ShowInInspector]
@@ -122,7 +122,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines should the field influence particles outside of the field bounds. If true the field will be tiled 
+		/// Determines should the field influence particles outside of the field bounds. If true the field will be tiled
 		/// infinitely in the Y direction.
 		/// </summary>
 		[ShowInInspector]
@@ -134,7 +134,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines should the field influence particles outside of the field bounds. If true the field will be tiled 
+		/// Determines should the field influence particles outside of the field bounds. If true the field will be tiled
 		/// infinitely in the Z direction.
 		/// </summary>
 		[ShowInInspector]

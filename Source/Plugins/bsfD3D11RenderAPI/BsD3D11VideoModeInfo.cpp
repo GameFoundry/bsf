@@ -101,7 +101,7 @@ namespace bs { namespace ct
 		output->FindClosestMatchingMode(&currentMode, &nearestMode, nullptr);
 
 		float refreshRate = nearestMode.RefreshRate.Numerator / (float)nearestMode.RefreshRate.Denominator;
-		mDesktopVideoMode = bs_new<D3D11VideoMode>(nearestMode.Width, nearestMode.Height, refreshRate, 
+		mDesktopVideoMode = bs_new<D3D11VideoMode>(nearestMode.Width, nearestMode.Height, refreshRate,
 			outputIdx, nearestMode.RefreshRate.Numerator, nearestMode.RefreshRate.Denominator, nearestMode);
 	}
 
@@ -110,7 +110,7 @@ namespace bs { namespace ct
 		SAFE_RELEASE(mDXGIOutput);
 	}
 
-	D3D11VideoMode::D3D11VideoMode(UINT32 width, UINT32 height, float refreshRate, UINT32 outputIdx, 
+	D3D11VideoMode::D3D11VideoMode(UINT32 width, UINT32 height, float refreshRate, UINT32 outputIdx,
 		UINT32 refreshRateNumerator, UINT32 refreshRateDenominator, DXGI_MODE_DESC mode)
 		:VideoMode(width, height, refreshRate, outputIdx), mRefreshRateNumerator(refreshRateNumerator),
 		mRefreshRateDenominator(refreshRateDenominator), mD3D11Mode(mode)

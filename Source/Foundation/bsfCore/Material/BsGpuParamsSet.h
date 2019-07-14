@@ -105,16 +105,16 @@ namespace bs
 			const SPtr<MaterialParamsType>& params);
 		~TGpuParamsSet();
 
-		/** 
-		 * Returns a set of GPU parameters for the specified pass. 
+		/**
+		 * Returns a set of GPU parameters for the specified pass.
 		 *
 		 * @param[in]	passIdx		Pass in which to look the GPU program for in.
-		 * @return					GPU parameters object that can be used for setting parameters of all GPU programs 
+		 * @return					GPU parameters object that can be used for setting parameters of all GPU programs
 		 *							in a pass. Returns null if pass doesn't exist.
 		 */
 		SPtr<GpuParamsType> getGpuParams(UINT32 passIdx = 0);
 
-		/** 
+		/**
 		 * Searches for a parameter block buffer with the specified name, and returns an index you can use for accessing it.
 		 * Returns -1 if buffer was not found.
 		 */
@@ -185,7 +185,7 @@ namespace bs
 	{
 	public:
 		GpuParamsSet() = default;
-		GpuParamsSet(const SPtr<Technique>& technique, const HShader& shader, 
+		GpuParamsSet(const SPtr<Technique>& technique, const HShader& shader,
 			const SPtr<MaterialParams>& params)
 			:TGpuParamsSet(technique, shader, params)
 		{ }

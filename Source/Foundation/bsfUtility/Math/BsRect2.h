@@ -34,7 +34,7 @@ namespace bs
 		bool contains(const Vector2& point) const;
 
 		/**
-		 * Returns true if the rectangle overlaps the provided rectangle. Also returns true if the rectangles are contained 
+		 * Returns true if the rectangle overlaps the provided rectangle. Also returns true if the rectangles are contained
 		 * within each other completely (no intersecting edges).
 		 */
 		bool overlaps(const Rect2& other) const;
@@ -46,7 +46,7 @@ namespace bs
 		void clip(const Rect2& clipRect);
 
 		/**
-		 * Transforms the bounds by the given matrix. Resulting value is an axis aligned rectangle encompassing the 
+		 * Transforms the bounds by the given matrix. Resulting value is an axis aligned rectangle encompassing the
 		 * transformed points.
 		 * 			
 		 * @note	Since the resulting value is an AA rectangle of the original transformed rectangle, the bounds

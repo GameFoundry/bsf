@@ -20,13 +20,13 @@ namespace bs
 		~FileEncoder();
 
 		/**
-		 * Parses the provided object, serializes all of its data as specified by its RTTIType and saves the serialized 
+		 * Parses the provided object, serializes all of its data as specified by its RTTIType and saves the serialized
 		 * data to the provided file location.
 		 *
 		 * @param[in]	object		Object to encode.
 		 * @param[in]	context		Optional object that will be passed along to all serialized objects through
-		 *							their serialization callbacks. Can be used for controlling serialization, 
-		 *							maintaining state or sharing information between objects during 
+		 *							their serialization callbacks. Can be used for controlling serialization,
+		 *							maintaining state or sharing information between objects during
 		 *							serialization.
 		 */
 		void encode(IReflectable* object, SerializationContext* context = nullptr);
@@ -48,11 +48,11 @@ namespace bs
 		FileDecoder(const Path& fileLocation);
 
 		/**	
-		 * Deserializes an IReflectable object by reading the binary data at the provided file location. 
+		 * Deserializes an IReflectable object by reading the binary data at the provided file location.
 		 *
 		 * @param[in]	context		Optional object that will be passed along to all deserialized objects through
-		 *							their deserialization callbacks. Can be used for controlling deserialization, 
-		 *							maintaining state or sharing information between objects during 
+		 *							their deserialization callbacks. Can be used for controlling deserialization,
+		 *							maintaining state or sharing information between objects during
 		 *							deserialization.
 		 */
 		SPtr<IReflectable> decode(SerializationContext* context = nullptr);

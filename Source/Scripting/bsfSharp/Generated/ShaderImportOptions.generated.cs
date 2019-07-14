@@ -19,7 +19,7 @@ namespace bs
 		protected ShaderImportOptions() { }
 
 		/// <summary>
-		/// Flags that control which shading languages should the BSL shader be converted into. This ultimately controls on  
+		/// Flags that control which shading languages should the BSL shader be converted into. This ultimately controls on
 		/// which render backends it will be able to run on.
 		/// </summary>
 		[ShowInInspector]

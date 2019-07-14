@@ -47,7 +47,7 @@ namespace bs
 		using PassType = CoreVariantType<Pass, Core>;
 		
 		TTechnique();
-		TTechnique(const String& language, const Vector<StringID>& tags, const ShaderVariation& variation, 
+		TTechnique(const String& language, const Vector<StringID>& tags, const ShaderVariation& variation,
 			const Vector<SPtr<PassType>>& passes);
 		virtual ~TTechnique() = default;
 
@@ -76,21 +76,21 @@ namespace bs
 	 * technique is available).
 	 *
 	 * @note	
-	 * Normally you want to have a separate technique for every render system and renderer your application supports. 
-	 * For example, if you are supporting DirectX11 and OpenGL you will want to have two techniques, one using HLSL based 
+	 * Normally you want to have a separate technique for every render system and renderer your application supports.
+	 * For example, if you are supporting DirectX11 and OpenGL you will want to have two techniques, one using HLSL based
 	 * GPU programs, other using GLSL. Those techniques should try to mirror each other's end results.
 	 */
 	class BS_CORE_EXPORT Technique : public IReflectable, public CoreObject, public TTechnique<false>
 	{
 	public:
-		Technique(const String& language, const Vector<StringID>& tags, const ShaderVariation& variation, 
+		Technique(const String& language, const Vector<StringID>& tags, const ShaderVariation& variation,
 			const Vector<SPtr<Pass>>& passes);
 
 		/** Retrieves an implementation of a technique usable only from the core thread. */
 		SPtr<ct::Technique> getCore() const;
 
-		/** 
-		 * Creates a new technique. 
+		/**
+		 * Creates a new technique.
 		 *
 		 * @param[in]	language	Shading language used by the technique. The engine will not use this technique unless
 		 *							this language is supported by the render API.
@@ -99,12 +99,12 @@ namespace bs
 		 */
 		static SPtr<Technique> create(const String& language, const Vector<SPtr<Pass>>& passes);
 
-		/** 
-		 * Creates a new technique. 
+		/**
+		 * Creates a new technique.
 		 *
 		 * @param[in]	language	Shading language used by the technique. The engine will not use this technique unless
 		 *							this language is supported by the render API.
-		 * @param[in]	tags		An optional set of tags that can be used for further identifying under which 
+		 * @param[in]	tags		An optional set of tags that can be used for further identifying under which
 		 *							circumstances should a technique be used.
 		 * @param[in]	variation	A set of preprocessor directives that were used for compiling this particular technique.
 		 *							Used for shaders that have multiple variations.
@@ -156,8 +156,8 @@ namespace bs
 		/** @copydoc bs::Technique::create(const String&, const Vector<SPtr<Pass>>&) */
 		static SPtr<Technique> create(const String& language, const Vector<SPtr<Pass>>& passes);
 
-		/** 
-		 * @copydoc bs::Technique::create(const String&, const Vector<StringID>&, const ShaderVariation&, const Vector<SPtr<Pass>>&) 
+		/**
+		 * @copydoc bs::Technique::create(const String&, const Vector<StringID>&, const ShaderVariation&, const Vector<SPtr<Pass>>&)
 		 */
 		static SPtr<Technique> create(const String& language, const Vector<StringID>& tags,
 			const ShaderVariation& variation, const Vector<SPtr<Pass>>& passes);

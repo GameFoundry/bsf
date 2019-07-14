@@ -43,10 +43,10 @@ namespace bs
         /// Creates a new button with the specified label.
         /// </summary>
         /// <param name="content">Content to display on the button.</param>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
-        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUIButton(GUIContent content, string style, params GUIOption[] options)
         {
@@ -57,8 +57,8 @@ namespace bs
         /// Creates a new button with the specified label.
         /// </summary>
         /// <param name="content">Content to display on the button.</param>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
         public GUIButton(GUIContent content, string style)
         {
@@ -69,7 +69,7 @@ namespace bs
         /// Creates a new button with the specified label.
         /// </summary>
         /// <param name="content">Content to display on the button.</param>
-        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUIButton(GUIContent content, params GUIOption[] options)
         {
@@ -131,7 +131,7 @@ namespace bs
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUIButton instance, ref GUIContent content, string style, 
+        private static extern void Internal_CreateInstance(GUIButton instance, ref GUIContent content, string style,
             GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]

@@ -76,12 +76,12 @@ namespace bs
 		void setMaterials(const Vector<MaterialType>& materials);
 
 		/**
-		 * Determines the layer bitfield that controls whether a renderable is considered visible in a specific camera. 
+		 * Determines the layer bitfield that controls whether a renderable is considered visible in a specific camera.
 		 * Renderable layer must match camera layer in order for the camera to render the component.
 		 */
 		void setLayer(UINT64 layer);
 
-		/** 
+		/**
 		 * Sets bounds that will be used when determining if object is visible. Only relevant if setUseOverrideBounds() is
 		 * set to true.
 		 *
@@ -114,7 +114,7 @@ namespace bs
 		Matrix4 getMatrix() const { return mTfrmMatrix; }
 
 		/**
-		 * Returns the transform matrix that is applied to the object when its being rendered. This transform matrix does 
+		 * Returns the transform matrix that is applied to the object when its being rendered. This transform matrix does
 		 * not include scale values.
 		 */
 		Matrix4 getMatrixNoScale() const { return mTfrmMatrixNoScale; }
@@ -122,7 +122,7 @@ namespace bs
 	protected:
 		/**
 		 * Notifies the core object manager that this object is dependant on some other CoreObject(s), and the dependencies
-		 * changed since the last call to this method. This will trigger a call to getCoreDependencies() to collect the 
+		 * changed since the last call to this method. This will trigger a call to getCoreDependencies() to collect the
 		 * new dependencies.
 		 */
 		virtual void _markDependenciesDirty() { }
@@ -258,7 +258,7 @@ namespace bs
 		/** Returns the identifier of the animation, if this object is animated using skeleton or blend shape animation. */
 		UINT64 getAnimationId() const { return mAnimationId; }
 
-		/** 
+		/**
 		 * Updates internal animation buffers from the contents of the provided animation data object. Does nothing if
 		 * renderable is not affected by animation.
 		 */

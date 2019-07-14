@@ -1,7 +1,7 @@
 # Version
 set (BS_FRAMEWORK_VERSION_MAJOR 1)
 set (BS_FRAMEWORK_VERSION_MINOR 1)
-set (BS_FRAMEWORK_VERSION_PATCH 0) 
+set (BS_FRAMEWORK_VERSION_PATCH 0)
 set (BS_FRAMEWORK_CURRENT_RELEASE_YEAR 2019)
 
 set (BS_FRAMEWORK_PREBUILT_DEPENDENCIES_VERSION 11)
@@ -64,12 +64,12 @@ if(WIN32)
 		file (STRINGS ${SOURCE_DEP_BUILD_VERSION_FILE} CURRENT_SOURCE_DEP_VERSION)
 		if(${BS_FRAMEWORK_SRC_DEPENDENCIES_VERSION} GREATER ${CURRENT_SOURCE_DEP_VERSION})
 			message(STATUS "Built dependencies are out of date, forcing recompile.")
-			execute_process(COMMAND "${CMAKE_COMMAND}" 
+			execute_process(COMMAND "${CMAKE_COMMAND}"
 				-E remove_directory "${SOURCE_DEP_BUILD_DIR}")	
 		endif()
 	else()
 		message(STATUS "Built dependencies are out of date, forcing recompile.")
-		execute_process(COMMAND "${CMAKE_COMMAND}" 
+		execute_process(COMMAND "${CMAKE_COMMAND}"
 			-E remove_directory "${SOURCE_DEP_BUILD_DIR}")	
 	endif()
 endif()
@@ -210,17 +210,17 @@ add_subdirectory(Plugins/bsfSL)
 if(BUILD_TESTS)
 	enable_testing()
 
-	add_executable(UtilityTest 
-		Foundation/bsfUtility/Private/UnitTests/BsUtilityTest.cpp 
+	add_executable(UtilityTest
+		Foundation/bsfUtility/Private/UnitTests/BsUtilityTest.cpp
 		Foundation/bsfUtility/Private/UnitTests/BsUtilityTestSuite.cpp
 		Foundation/bsfUtility/Private/UnitTests/BsFileSystemTestSuite.cpp)
 		
 	target_link_libraries(UtilityTest bsf)
-	target_include_directories(UtilityTest PRIVATE 
+	target_include_directories(UtilityTest PRIVATE
 		"Foundation/bsfUtility"
 		"Foundation/bsfUtility/ThirdParty")
 
-	add_executable(CoreTest 
+	add_executable(CoreTest
 		Foundation/bsfCore/Private/UnitTests/BsCoreTest.cpp)
 		
 	target_link_libraries(CoreTest bsf)

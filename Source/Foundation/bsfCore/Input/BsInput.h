@@ -19,7 +19,7 @@ namespace bs
 	 */
 
 	/**
-	 * Primary module used for dealing with input. Allows you to receieve and query raw or OS input for 
+	 * Primary module used for dealing with input. Allows you to receieve and query raw or OS input for
 	 * mouse/keyboard/gamepad.
 	 */
 	class BS_CORE_EXPORT Input : public Module<Input>
@@ -65,7 +65,7 @@ namespace bs
 		~Input();
 
 		/**
-		 * Returns value of the specified input axis. Normally in range [-1.0, 1.0] but can be outside the range for 
+		 * Returns value of the specified input axis. Normally in range [-1.0, 1.0] but can be outside the range for
 		 * devices with unbound axes (for example mouse).
 		 *
 		 * @param[in]	type		Type of axis to query. Usually a type from InputAxis but can be a custom value.
@@ -167,7 +167,7 @@ namespace bs
 		 */
 
 		/**
-		 * Called every frame. Detects button state changes and prepares callback events to trigger via a call to 
+		 * Called every frame. Detects button state changes and prepares callback events to trigger via a call to
 		 * _triggerCallbacks().
 		 */
 		void _update();
@@ -251,7 +251,7 @@ namespace bs
 
 		/**
 		 * Called from the message loop to notify user has double-clicked a mouse button.
-		 * 
+		 *
 		 * @see		onDoubleClick
 		 */
 		void cursorDoubleClick(const Vector2I& cursorPos, const OSPointerButtonStates& btnStates);

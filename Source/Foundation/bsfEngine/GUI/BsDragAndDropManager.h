@@ -33,7 +33,7 @@ namespace bs
 		~DragAndDropManager();
 
 		/**
-		 * Starts a drag operation of the specified type. This means GUI elements will start receiving drag and drop 
+		 * Starts a drag operation of the specified type. This means GUI elements will start receiving drag and drop
 		 * related events and they may choose to handle them.
 		 *
 		 * @param[in]	typeId					Type of the drag and drop operation that other objects may query and decide
@@ -41,12 +41,12 @@ namespace bs
 		 * @param[in] 	data					Some operation specific data that is just passed through to however needs it.
 		 * @param[in]	dropCallback			The drop callback that gets triggered whenever mouse button is released and
 		 *										drag operation ends. You should perform any cleanup here.
-		 * @param[in]	needsValidDropTarget	(optional) Determines whether the drop operation may happen anywhere or 
-		 *										does the GUI element need to specifically accept the drag of this type. 
-		 *										If false all GUI elements we mouse over will receive drag/drop events, 
-		 *										otherwise only those that specifically subscribe to the specified drag 
+		 * @param[in]	needsValidDropTarget	(optional) Determines whether the drop operation may happen anywhere or
+		 *										does the GUI element need to specifically accept the drag of this type.
+		 *										If false all GUI elements we mouse over will receive drag/drop events,
+		 *										otherwise only those that specifically subscribe to the specified drag
 		 *										operation of this typeId will.
-		 * 										Additionally this will determine the cursor displayed (whether or not it 
+		 * 										Additionally this will determine the cursor displayed (whether or not it
 		 *										can have a "denied" state).
 		 */
 		void startDrag(UINT32 typeId, void* data, std::function<void(bool)> dropCallback, bool needsValidDropTarget = false);
@@ -62,7 +62,7 @@ namespace bs
 
 		/**
 		 * Determines whether the drop operation may happen anywhere or does the GUI element need to specifically accept the
-		 * drag of this type. If false all GUI elements we mouse over will receive drag/drop events, otherwise only those 
+		 * drag of this type. If false all GUI elements we mouse over will receive drag/drop events, otherwise only those
 		 * that specifically subscribe to the specified drag operation of this typeId will.
 		 * 									
 		 * Additionally this will determine the cursor displayed (whether or not it can have a "denied" state).
@@ -70,7 +70,7 @@ namespace bs
 		bool needsValidDropTarget() const { return mNeedsValidDropTarget; }
 
 		/**
-		 * Registers a new callback that will be triggered when dragged item is dropped. Provided parameter specifies if 
+		 * Registers a new callback that will be triggered when dragged item is dropped. Provided parameter specifies if
 		 * the drop operation was handled by anyone or not.
 		 */
 		void addDropCallback(std::function<void(bool)> dropCallback);
@@ -80,7 +80,7 @@ namespace bs
 
 		/**
 		 * Triggers a callback when user releases the pointer and the drag operation ends. Provided parameters inform the
-		 * subscriber where the pointer was released, and allows the subscriber to note whether the drag operation was 
+		 * subscriber where the pointer was released, and allows the subscriber to note whether the drag operation was
 		 * processed or not.
 		 *
 		 * @note	Internal event. You should use addDropCallback for normal use.
@@ -92,7 +92,7 @@ namespace bs
 		void endDrag(bool processed);
 
 		/**
-		 * Called by the core thread whenever mouse capture state changes. This can happen when window loses focus 
+		 * Called by the core thread whenever mouse capture state changes. This can happen when window loses focus
 		 * (for example alt+tab). In that case we want to end the drag even if the user is still holding the dragged item.
 		 *
 		 * @note	Core thread.

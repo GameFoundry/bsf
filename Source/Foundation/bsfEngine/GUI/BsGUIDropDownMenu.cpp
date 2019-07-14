@@ -180,8 +180,8 @@ namespace bs
 		mFrontHitBox->setBounds(bounds);
 	}
 
-	GUIDropDownMenu::DropDownSubMenu::DropDownSubMenu(GUIDropDownMenu* owner, DropDownSubMenu* parent, 
-		const DropDownAreaPlacement& placement, const Rect2I& availableBounds, const GUIDropDownData& dropDownData, 
+	GUIDropDownMenu::DropDownSubMenu::DropDownSubMenu(GUIDropDownMenu* owner, DropDownSubMenu* parent,
+		const DropDownAreaPlacement& placement, const Rect2I& availableBounds, const GUIDropDownData& dropDownData,
 		GUIDropDownType type, UINT32 depthOffset)
 		: mOwner(owner), mType(type), mData(dropDownData), mPage(0), x(0), y(0), width(0), height(0)
 		, mDepthOffset(depthOffset), mOpenedUpward(false), mContent(nullptr), mBackgroundFrame(nullptr)
@@ -215,7 +215,7 @@ namespace bs
 		backgroundLayout->addElement(mBackgroundFrame);
 
 		mContentLayout = mContentPanel->addNewElement<GUILayoutY>();
-		mContentLayout->addElement(mContent); // Note: It's important this is added to the layout before we 
+		mContentLayout->addElement(mContent); // Note: It's important this is added to the layout before we
 		// use it for size calculations, in order for its skin to be assigned
 
 		UINT32 dropDownBoxWidth = DROP_DOWN_BOX_WIDTH + sideBarStyle->width;

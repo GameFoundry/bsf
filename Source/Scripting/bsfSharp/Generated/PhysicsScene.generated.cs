@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Physical representation of a scene, allowing creation of new physical objects in the scene and queries against those 
+	/// Physical representation of a scene, allowing creation of new physical objects in the scene and queries against those
 	/// objects. Objects created in different scenes cannot physically interact with eachother.
 	/// </summary>
 	[ShowInInspector]
@@ -203,7 +203,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Casts a ray into the scene and checks if it has hit anything. This can be significantly more efficient than other 
+		/// Casts a ray into the scene and checks if it has hit anything. This can be significantly more efficient than other
 		/// types of cast* calls.
 		/// </summary>
 		/// <param name="ray">Ray to cast into the scene.</param>
@@ -218,7 +218,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Casts a ray into the scene and checks if it has hit anything. This can be significantly more efficient than other 
+		/// Casts a ray into the scene and checks if it has hit anything. This can be significantly more efficient than other
 		/// types of cast* calls.
 		/// </summary>
 		/// <param name="origin">Origin of the ray to cast into the scene.</param>
@@ -234,7 +234,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Performs a sweep into the scene using a box and checks if it has hit anything. This can be significantly more 
+		/// Performs a sweep into the scene using a box and checks if it has hit anything. This can be significantly more
 		/// efficient than other types of cast* calls.
 		/// </summary>
 		/// <param name="box">Box to sweep through the scene.</param>
@@ -251,7 +251,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Performs a sweep into the scene using a sphere and checks if it has hit anything. This can be significantly more 
+		/// Performs a sweep into the scene using a sphere and checks if it has hit anything. This can be significantly more
 		/// efficient than other types of cast* calls.
 		/// </summary>
 		/// <param name="sphere">Sphere to sweep through the scene.</param>
@@ -267,7 +267,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Performs a sweep into the scene using a capsule and checks if it has hit anything. This can be significantly more 
+		/// Performs a sweep into the scene using a capsule and checks if it has hit anything. This can be significantly more
 		/// efficient than other types of cast* calls.
 		/// </summary>
 		/// <param name="capsule">Capsule to sweep through the scene.</param>
@@ -284,7 +284,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Performs a sweep into the scene using a convex mesh and checks if it has hit anything. This can be significantly more 
+		/// Performs a sweep into the scene using a convex mesh and checks if it has hit anything. This can be significantly more
 		/// efficient than other types of cast* calls.
 		/// </summary>
 		/// <param name="mesh">Mesh to sweep through the scene. Must be convex.</param>
@@ -382,8 +382,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Adds a new physics region. Certain physics options require you to set up regions in which physics objects are allowed 
-		/// to be in, and objects outside of these regions will not be handled by physics. You do not need to set up these 
+		/// Adds a new physics region. Certain physics options require you to set up regions in which physics objects are allowed
+		/// to be in, and objects outside of these regions will not be handled by physics. You do not need to set up these
 		/// regions by default.
 		/// </summary>
 		public int AddPhysicsRegion(AABox region)

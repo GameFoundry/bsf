@@ -36,7 +36,7 @@ namespace bs
 		UnorderedMap<String, String> mDefines;
 	};
 
-	/** 
+	/**
 	 * Contains information about a single variation of a Shader. Each variation can have a separate set of
 	 * \#defines that control shader compilation.
 	 */
@@ -92,14 +92,14 @@ namespace bs
 		/** Creates a new shader variation with the specified parameters. */
 		ShaderVariation(const SmallVector<Param, 4>& params);
 
-		/** 
-		 * Returns the value of a signed integer parameter with the specified name. Returns 0 if the parameter cannot be 
+		/**
+		 * Returns the value of a signed integer parameter with the specified name. Returns 0 if the parameter cannot be
 		 * found.
 		 */
 		BS_SCRIPT_EXPORT()
 		INT32 getInt(const StringID& name);
 
-		/** 
+		/**
 		 * Returns the value of a unsigned integer parameter with the specified name. Returns 0 if the parameter cannot be
 		 * found.
 		 */
@@ -110,37 +110,37 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		float getFloat(const StringID& name);
 
-		/** 
-		 * Returns the value of a boolean parameter with the specified name. Returns false if the parameter cannot be 
+		/**
+		 * Returns the value of a boolean parameter with the specified name. Returns false if the parameter cannot be
 		 * found.
 		 */
 		BS_SCRIPT_EXPORT()
 		bool getBool(const StringID& name);
 
-		/** 
-		 * Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name 
-		 * will be overwritten. 
+		/**
+		 * Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name
+		 * will be overwritten.
 		 */
 		BS_SCRIPT_EXPORT()
 		void setInt(const StringID& name, INT32 value);
 
-		/** 
-		 * Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name 
-		 * will be overwritten. 
+		/**
+		 * Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name
+		 * will be overwritten.
 		 */
 		BS_SCRIPT_EXPORT()
 		void setUInt(const StringID& name, UINT32 value);
 
-		/** 
-		 * Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name 
-		 * will be overwritten. 
+		/**
+		 * Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name
+		 * will be overwritten.
 		 */
 		BS_SCRIPT_EXPORT()
 		void setFloat(const StringID& name, float value);
 
-		/** 
-		 * Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name 
-		 * will be overwritten. 
+		/**
+		 * Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name
+		 * will be overwritten.
 		 */
 		BS_SCRIPT_EXPORT()
 		void setBool(const StringID& name, bool value);
@@ -160,13 +160,13 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:ParamNames,pr:getter)
 		Vector<String> getParamNames() const;
 
-		/** 
-		 * Checks if this variation matches some other variation. 
-		 * 
+		/**
+		 * Checks if this variation matches some other variation.
+		 *
 		 * @param[in]		other		Other variation to compare it to.
 		 * @param[in]		exact		When true both variations need to have the exact number of parameters with identical
-		 *								contents, equivalent to the equals operator. When false, only the subset of 
-		 *								parameters present in @p other is used for comparison, while any extra parameters 
+		 *								contents, equivalent to the equals operator. When false, only the subset of
+		 *								parameters present in @p other is used for comparison, while any extra parameters
 		 *								present in this object are ignored.
 		 */
 		bool matches(const ShaderVariation& other, bool exact = true) const;
@@ -187,7 +187,7 @@ namespace bs
 		/** Converts all the variation parameters in a ShaderDefines object, that may be consumed by the shader compiler. */
 		ShaderDefines getDefines() const;
 
-		/** 
+		/**
 		 * Returns a unique index of this variation, relative to all other variations registered in ShaderVariations object.
 		 */
 		UINT32 getIdx() const { return mIdx;  }
@@ -229,7 +229,7 @@ namespace bs
 		/** Returns a variation at the specified index. Variations are indexed sequentially as they are added. */
 		const ShaderVariation& get(UINT32 idx) { return mVariations[idx]; }
 
-		/** 
+		/**
 		 * Scans a list of stored variations and returns an index of a variation that has the same parameters as the
 		 * provided one, or -1 if one is not found.
 		 */

@@ -12,7 +12,7 @@
 #include "Error/BsException.h"
 #include "Debug/BsLog.h"
 
-namespace bs 
+namespace bs
 {
 	const String StringUtil::BLANK;
 	const WString StringUtil::WBLANK;
@@ -75,12 +75,12 @@ namespace bs
 		std::transform(str.begin(), str.end(), str.begin(), tolower);
 	}
 
-	void StringUtil::toUpperCase(String& str) 
+	void StringUtil::toUpperCase(String& str)
 	{
 		std::transform(str.begin(), str.end(), str.begin(), toupper);
 	}
 
-	void StringUtil::toUpperCase(WString& str) 
+	void StringUtil::toUpperCase(WString& str)
 	{
 		std::transform(str.begin(), str.end(), str.begin(), toupper);
 	}
@@ -139,7 +139,7 @@ namespace bs
 		return toWString(String(source));
 	}
 
-	WString toWString(float val, unsigned short precision, 
+	WString toWString(float val, unsigned short precision,
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		WStringStream stream;
@@ -152,7 +152,7 @@ namespace bs
 		return stream.str();
 	}
 
-	WString toWString(double val, unsigned short precision, 
+	WString toWString(double val, unsigned short precision,
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		WStringStream stream;
@@ -165,19 +165,19 @@ namespace bs
 		return stream.str();
 	}
 
-	WString toWString(Radian val, unsigned short precision, 
+	WString toWString(Radian val, unsigned short precision,
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		return toWString(val.valueRadians(), precision, width, fill, flags);
 	}
 
-	WString toWString(Degree val, unsigned short precision, 
+	WString toWString(Degree val, unsigned short precision,
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		return toWString(val.valueDegrees(), precision, width, fill, flags);
 	}
 
-	WString toWString(int val, 
+	WString toWString(int val,
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		WStringStream stream;
@@ -275,14 +275,14 @@ namespace bs
 	WString toWString(const Matrix3& val)
 	{
 		WStringStream stream;
-		stream << val[0][0] << L" " 
-			<< val[0][1] << L" "             
-			<< val[0][2] << L" "             
-			<< val[1][0] << L" "             
-			<< val[1][1] << L" "             
-			<< val[1][2] << L" "             
-			<< val[2][0] << L" "             
-			<< val[2][1] << L" "             
+		stream << val[0][0] << L" "
+			<< val[0][1] << L" "
+			<< val[0][2] << L" "
+			<< val[1][0] << L" "
+			<< val[1][1] << L" "
+			<< val[1][2] << L" "
+			<< val[2][0] << L" "
+			<< val[2][1] << L" "
 			<< val[2][2];
 		return stream.str();
 	}
@@ -314,21 +314,21 @@ namespace bs
 	WString toWString(const Matrix4& val)
 	{
 		WStringStream stream;
-		stream << val[0][0] << L" " 
-			<< val[0][1] << L" "             
-			<< val[0][2] << L" "             
-			<< val[0][3] << L" "             
-			<< val[1][0] << L" "             
-			<< val[1][1] << L" "             
-			<< val[1][2] << L" "             
-			<< val[1][3] << L" "             
-			<< val[2][0] << L" "             
-			<< val[2][1] << L" "             
-			<< val[2][2] << L" "             
-			<< val[2][3] << L" "             
-			<< val[3][0] << L" "             
-			<< val[3][1] << L" "             
-			<< val[3][2] << L" "             
+		stream << val[0][0] << L" "
+			<< val[0][1] << L" "
+			<< val[0][2] << L" "
+			<< val[0][3] << L" "
+			<< val[1][0] << L" "
+			<< val[1][1] << L" "
+			<< val[1][2] << L" "
+			<< val[1][3] << L" "
+			<< val[2][0] << L" "
+			<< val[2][1] << L" "
+			<< val[2][2] << L" "
+			<< val[2][3] << L" "
+			<< val[3][0] << L" "
+			<< val[3][1] << L" "
+			<< val[3][2] << L" "
 			<< val[3][3];
 		return stream.str();
 	}
@@ -358,7 +358,7 @@ namespace bs
 			if (i != ibegin)
 				stream << L" ";
 
-			stream << *i; 
+			stream << *i;
 		}
 		return stream.str();
 	}
@@ -373,7 +373,7 @@ namespace bs
 		return toString(WString(source));
 	}
 
-	String toString(float val, unsigned short precision, 
+	String toString(float val, unsigned short precision,
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		StringStream stream;
@@ -386,7 +386,7 @@ namespace bs
 		return stream.str();
 	}
 
-	String toString(double val, unsigned short precision, 
+	String toString(double val, unsigned short precision,
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		StringStream stream;
@@ -399,19 +399,19 @@ namespace bs
 		return stream.str();
 	}
 
-	String toString(Radian val, unsigned short precision, 
+	String toString(Radian val, unsigned short precision,
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		return toString(val.valueRadians(), precision, width, fill, flags);
 	}
 
-	String toString(Degree val, unsigned short precision, 
+	String toString(Degree val, unsigned short precision,
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		return toString(val.valueDegrees(), precision, width, fill, flags);
 	}
 
-	String toString(int val, 
+	String toString(int val,
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		StringStream stream;
@@ -434,7 +434,7 @@ namespace bs
 		return stream.str();
 	}
 
-	String toString(INT64 val, 
+	String toString(INT64 val,
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		StringStream stream;
@@ -488,14 +488,14 @@ namespace bs
 	String toString(const Matrix3& val)
 	{
 		StringStream stream;
-		stream << val[0][0] << " " 
-			<< val[0][1] << " "             
-			<< val[0][2] << " "             
-			<< val[1][0] << " "             
-			<< val[1][1] << " "             
-			<< val[1][2] << " "             
-			<< val[2][0] << " "             
-			<< val[2][1] << " "             
+		stream << val[0][0] << " "
+			<< val[0][1] << " "
+			<< val[0][2] << " "
+			<< val[1][0] << " "
+			<< val[1][1] << " "
+			<< val[1][2] << " "
+			<< val[2][0] << " "
+			<< val[2][1] << " "
 			<< val[2][2];
 		return stream.str();
 	}
@@ -527,21 +527,21 @@ namespace bs
 	String toString(const Matrix4& val)
 	{
 		StringStream stream;
-		stream << val[0][0] << " " 
-			<< val[0][1] << " "             
-			<< val[0][2] << " "             
-			<< val[0][3] << " "             
-			<< val[1][0] << " "             
-			<< val[1][1] << " "             
-			<< val[1][2] << " "             
-			<< val[1][3] << " "             
-			<< val[2][0] << " "             
-			<< val[2][1] << " "             
-			<< val[2][2] << " "             
-			<< val[2][3] << " "             
-			<< val[3][0] << " "             
-			<< val[3][1] << " "             
-			<< val[3][2] << " "             
+		stream << val[0][0] << " "
+			<< val[0][1] << " "
+			<< val[0][2] << " "
+			<< val[0][3] << " "
+			<< val[1][0] << " "
+			<< val[1][1] << " "
+			<< val[1][2] << " "
+			<< val[1][3] << " "
+			<< val[2][0] << " "
+			<< val[2][1] << " "
+			<< val[2][2] << " "
+			<< val[2][3] << " "
+			<< val[3][0] << " "
+			<< val[3][1] << " "
+			<< val[3][2] << " "
 			<< val[3][3];
 		return stream.str();
 	}
@@ -581,7 +581,7 @@ namespace bs
 			if (i != ibegin)
 				stream << " ";
 
-			stream << *i; 
+			stream << *i;
 		}
 		return stream.str();
 	}
@@ -590,18 +590,18 @@ namespace bs
 	{
 		switch(val)
 		{
-		case LogVerbosity::Fatal: 
+		case LogVerbosity::Fatal:
 			return "Fatal";
 		case LogVerbosity::Error:
 			return "Error";
-		case LogVerbosity::Warning: 
+		case LogVerbosity::Warning:
 			return "Warning";
 		default:
 		case LogVerbosity::Info:
 			return "Info";
-		case LogVerbosity::Verbose: 
+		case LogVerbosity::Verbose:
 			return "Verbose";
-		case LogVerbosity::VeryVerbose: 
+		case LogVerbosity::VeryVerbose:
 			return "Very verbose";
 		}
 	}

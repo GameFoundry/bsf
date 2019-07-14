@@ -112,13 +112,13 @@ namespace bs
 			void beginSample();
 
 			/**
-			 * Records current sample state and creates a new sample based on start and end state. Adds the sample to the 
+			 * Records current sample state and creates a new sample based on start and end state. Adds the sample to the
 			 * sample list.
 			 */
 			void endSample();
 
 			/**
-			 * Removes the last added sample from the sample list and makes it active again. You must call endSample() 
+			 * Removes the last added sample from the sample list and makes it active again. You must call endSample()
 			 * when done as if you called beginSample().
 			 */
 			void resumeLastSample();
@@ -139,13 +139,13 @@ namespace bs
 			void beginSample();
 
 			/**
-			 * Records current sample state and creates a new sample based on start and end state. Adds the sample to the 
+			 * Records current sample state and creates a new sample based on start and end state. Adds the sample to the
 			 * sample list.
 			 */
 			void endSample();
 
 			/**
-			 * Removes the last added sample from the sample list and makes it active again. You must call endSample() 
+			 * Removes the last added sample from the sample list and makes it active again. You must call endSample()
 			 * when done as if you called beginSample.
 			 */
 			void resumeLastSample();
@@ -158,7 +158,7 @@ namespace bs
 		};
 
 		/**
-		 * Contains all sampling information about a single named profiling block. Each block has its own sampling 
+		 * Contains all sampling information about a single named profiling block. Each block has its own sampling
 		 * information and optionally child blocks.
 		 */
 		struct ProfiledBlock
@@ -210,13 +210,13 @@ namespace bs
 			void begin(const char* _name);
 
 			/**
-			 * Ends profiling on the thread. You should end all samples before calling this, but if you don't they will be 
+			 * Ends profiling on the thread. You should end all samples before calling this, but if you don't they will be
 			 * terminated automatically.
 			 */
 			void end();
 
 			/**
-			 * 	Deletes all internal profiling data and makes the object ready for another iteration. Should be called 
+			 * 	Deletes all internal profiling data and makes the object ready for another iteration. Should be called
 			 * after end in order to delete any existing data.
 			 */
 			void reset();
@@ -242,7 +242,7 @@ namespace bs
 		~ProfilerCPU();
 
 		/**
-		 * Registers a new thread we will be doing sampling in. This needs to be called before any beginSample* \ endSample* 
+		 * Registers a new thread we will be doing sampling in. This needs to be called before any beginSample* \ endSample*
 		 * calls are made in that thread.
 		 *
 		 * @param[in]	name	Name that will allow you to more easily identify the thread.
@@ -253,7 +253,7 @@ namespace bs
 		void endThread();
 
 		/**
-		 * Begins sample measurement. Must be followed by endSample(). 
+		 * Begins sample measurement. Must be followed by endSample().
 		 *
 		 * @param[in]	name	Unique name for the sample you can later use to find the sampling data.
 		 */
@@ -262,22 +262,22 @@ namespace bs
 		/**
 		 * Ends sample measurement.
 		 *
-		 * @param[in]	name	Unique name for the sample. 
+		 * @param[in]	name	Unique name for the sample.
 		 * 					
 		 * @note	
-		 * Unique name is primarily needed to more easily identify mismatched begin/end sample pairs. Otherwise the name in 
+		 * Unique name is primarily needed to more easily identify mismatched begin/end sample pairs. Otherwise the name in
 		 * beginSample() would be enough.
 		 */
 		void endSample(const char* name);
 
 		/**
-		 * Begins precise sample measurement. Must be followed by endSamplePrecise(). 
+		 * Begins precise sample measurement. Must be followed by endSamplePrecise().
 		 *
 		 * @param[in]	name	Unique name for the sample you can later use to find the sampling data.
 		 * 					
 		 * @note	
-		 * This method uses very precise CPU counters to determine variety of data not provided by standard beginSample(). 
-		 * However due to the way these counters work you should not use this method for larger parts of code. It does not 
+		 * This method uses very precise CPU counters to determine variety of data not provided by standard beginSample().
+		 * However due to the way these counters work you should not use this method for larger parts of code. It does not
 		 * consider context switches so if the OS decides to switch context between measurements you will get invalid data.
 		 */
 		void beginSamplePrecise(const char* name);
@@ -285,10 +285,10 @@ namespace bs
 		/**
 		 * Ends precise sample measurement.
 		 *
-		 * @param[in]	name	Unique name for the sample. 
+		 * @param[in]	name	Unique name for the sample.
 		 * 					
 		 * @note	
-		 * Unique name is primarily needed to more easily identify mismatched begin/end sample pairs. Otherwise the name 
+		 * Unique name is primarily needed to more easily identify mismatched begin/end sample pairs. Otherwise the name
 		 * in beginSamplePrecise() would be enough.
 		 */
 		void endSamplePrecise(const char* name);
@@ -306,7 +306,7 @@ namespace bs
 
 	private:
 		/**
-		 * Calculates overhead that the timing and sampling methods themselves introduce so we might get more accurate 
+		 * Calculates overhead that the timing and sampling methods themselves introduce so we might get more accurate
 		 * measurements when creating reports.
 		 */
 		void estimateTimerOverhead();
@@ -354,7 +354,7 @@ namespace bs
 	};
 
 	/**
-	 * Profiling entry containing information about a single CPU profiling block containing CPU cycle count based 
+	 * Profiling entry containing information about a single CPU profiling block containing CPU cycle count based
 	 * information.
 	 */
 	struct BS_CORE_EXPORT CPUProfilerPreciseSamplingEntry
@@ -392,13 +392,13 @@ namespace bs
 		CPUProfilerReport() = default;
 
 		/**
-		 * Returns root entry for the basic (time based) sampling data. Root entry always contains the profiling block 
+		 * Returns root entry for the basic (time based) sampling data. Root entry always contains the profiling block
 		 * associated with the entire thread.
 		 */
 		const CPUProfilerBasicSamplingEntry& getBasicSamplingData() const { return mBasicSamplingRootEntry; }
 
 		/**
-		 * Returns root entry for the precise (CPU cycle based) sampling data. Root entry always contains the profiling 
+		 * Returns root entry for the precise (CPU cycle based) sampling data. Root entry always contains the profiling
 		 * block associated with the entire thread.
 		 */
 		const CPUProfilerPreciseSamplingEntry& getPreciseSamplingData() const { return mPreciseSamplingRootEntry; }

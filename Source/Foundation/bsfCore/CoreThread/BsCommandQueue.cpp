@@ -115,7 +115,7 @@ namespace bs
 
 				if(!command.asyncOp.hasCompleted())
 				{
-					BS_LOG(Warning, CoreThread, 
+					BS_LOG(Warning, CoreThread,
 						"Async operation return value wasn't resolved properly. Resolving automatically to nullptr. " \
 						"Make sure to complete the operation before returning from the command callback method.");
 					command.asyncOp._completeOperation(nullptr);
@@ -172,7 +172,7 @@ namespace bs
 
 	UINT32 CommandQueueBase::MaxCommandQueueIdx = 0;
 
-	UnorderedSet<CommandQueueBase::QueueBreakpoint, CommandQueueBase::QueueBreakpoint::HashFunction, 
+	UnorderedSet<CommandQueueBase::QueueBreakpoint, CommandQueueBase::QueueBreakpoint::HashFunction,
 		CommandQueueBase::QueueBreakpoint::EqualFunction> CommandQueueBase::SetBreakpoints;
 
 	inline size_t CommandQueueBase::QueueBreakpoint::HashFunction::operator()(const QueueBreakpoint& v) const

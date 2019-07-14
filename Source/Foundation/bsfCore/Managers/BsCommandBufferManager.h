@@ -5,14 +5,14 @@
 #include "BsCorePrerequisites.h"
 #include "Utility/BsModule.h"
 
-namespace bs { namespace ct 
+namespace bs { namespace ct
 {
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
 
-	/** 
-	 * Handles creation of command buffers. See CommandBuffer. 
+	/**
+	 * Handles creation of command buffers. See CommandBuffer.
 	 *
 	 * @note Core thread only.
 	 */

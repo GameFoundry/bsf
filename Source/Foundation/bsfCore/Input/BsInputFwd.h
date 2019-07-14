@@ -18,12 +18,12 @@ namespace bs
 	 * Contains all possible input buttons, including keyboard scan codes, mouse buttons and gamepad buttons.
 	 *
 	 * @note
-	 * These codes are only keyboard scan codes. This means that exact scan code identifier might not correspond to that 
-	 * exact character on user's keyboard, depending on user's input locale. Only for US locale will these scan code names 
+	 * These codes are only keyboard scan codes. This means that exact scan code identifier might not correspond to that
+	 * exact character on user's keyboard, depending on user's input locale. Only for US locale will these scan code names
 	 * match the actual keyboard input. Think of the US key code names as only a convenience for more easily identifying
 	 * which location on the keyboard a scan code represents.
 	 * @note
-	 * When storing these sequentially make sure to only reference the low order 2 bytes. Two high order bytes are used for 
+	 * When storing these sequentially make sure to only reference the low order 2 bytes. Two high order bytes are used for
 	 * various flags.
 	 */
 	enum ButtonCode : UINT32
@@ -271,7 +271,7 @@ namespace bs
 		bool isGamepad() const { return (buttonCode & 0x40000000) != 0; }
 
 		/**
-		 * Check if the event has been marked as used. Internally this means nothing but caller might choose to ignore an 
+		 * Check if the event has been marked as used. Internally this means nothing but caller might choose to ignore an
 		 * used event.
 		 */
 		bool isUsed() const { return mIsUsed; }
@@ -318,7 +318,7 @@ namespace bs
 		Vector2I screenPos; /**< Screen position where the input event occurred. */
 		Vector2I delta; /**< Change in movement since last sent event. */
 		/** States of the pointer buttons (for example mouse buttons). */
-		bool buttonStates[(UINT32)PointerEventButton::Count]; 
+		bool buttonStates[(UINT32)PointerEventButton::Count];
 		/**
 		 * Button that triggered the pointer event. Might be irrelevant depending on event type. (for example move events
 		 * don't correspond to a button.
@@ -331,10 +331,10 @@ namespace bs
 		bool alt; /**< Is alt button on the keyboard being held down. */
 
 		/** If mouse wheel is being scrolled, what is the amount. Only relevant for move events. */
-		float mouseWheelScrollAmount; 
+		float mouseWheelScrollAmount;
 
 		/**
-		 * Check if the event has been marked as used. Internally this means nothing but caller might choose to ignore an 
+		 * Check if the event has been marked as used. Internally this means nothing but caller might choose to ignore an
 		 * used event.
 		 */
 		bool isUsed() const { return mIsUsed; }
@@ -349,14 +349,14 @@ namespace bs
 	/**	Types of special input commands. */
 	enum class InputCommandType
 	{
-		CursorMoveLeft, CursorMoveRight, CursorMoveUp, CursorMoveDown, 
+		CursorMoveLeft, CursorMoveRight, CursorMoveUp, CursorMoveDown,
 		SelectLeft, SelectRight, SelectUp, SelectDown,
 		Escape, Delete, Backspace, Return, Confirm, Tab
 	};
 
 	/**
-	 * Event that gets sent out when user inputs some text. These events may be preceeded by normal button events if user 
-	 * is typing on a keyboard. 
+	 * Event that gets sent out when user inputs some text. These events may be preceeded by normal button events if user
+	 * is typing on a keyboard.
 	 */
 	struct TextInputEvent
 	{

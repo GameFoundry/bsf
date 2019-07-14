@@ -19,11 +19,11 @@ namespace bs
 
 	const Path& CrashHandler::getCrashFolder()
 	{
-		static const Path path = FileSystem::getWorkingDirectoryPath() + sCrashReportFolder + 
+		static const Path path = FileSystem::getWorkingDirectoryPath() + sCrashReportFolder +
 			getCrashTimestamp();
 		
 		static bool first = true;
-		if (first) 
+		if (first)
 		{
 			FileSystem::createDir(path);
 			first = false;

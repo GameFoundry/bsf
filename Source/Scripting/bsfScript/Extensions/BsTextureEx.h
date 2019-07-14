@@ -19,7 +19,7 @@ namespace bs
 	{
 	public:
 		BS_SCRIPT_EXPORT(ec:Texture,v:private)
-		static HTexture create(PixelFormat format, UINT32 width, UINT32 height, UINT32 depth, TextureType texType, 
+		static HTexture create(PixelFormat format, UINT32 width, UINT32 height, UINT32 depth, TextureType texType,
 			TextureUsage usage, UINT32 numSamples, bool hasMipmaps, bool gammaCorrection);
 
 		/** @copydoc TextureProperties::getFormat */
@@ -62,7 +62,7 @@ namespace bs
 		 * Returns pixels for the specified mip level & face. Pixels will be read from system memory, which means the
 		 * texture has to be created with TextureUsage.CPUCached. If the texture was updated from the GPU the
 		 * pixels retrieved from this method will not reflect that, and you should use GetGPUPixels instead.
-		 * 
+		 *
 		 * @param mipLevel	Mip level to retrieve pixels for. Top level (0) is the highest quality.
 		 * @param face		Face to read the pixels from. Cubemap textures have six faces whose face indices are as
 		 *					specified in the CubeFace enum. Array textures can have an arbitrary number of faces (if it's a

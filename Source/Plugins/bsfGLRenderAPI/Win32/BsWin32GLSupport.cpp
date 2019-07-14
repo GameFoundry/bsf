@@ -24,7 +24,7 @@ namespace bs { namespace ct
 	Win32GLSupport::Win32GLSupport()
 	{
 		initialiseWGL();
-	} 
+	}
 
 	SPtr<bs::RenderWindow> Win32GLSupport::newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, SPtr<bs::RenderWindow> parentWindow)
 	{		
@@ -133,7 +133,7 @@ namespace bs { namespace ct
 
 	void Win32GLSupport::initialiseWGL()
 	{
-		// We need to create a dummy context in order to get functions that allow us to create a more advanced context. 
+		// We need to create a dummy context in order to get functions that allow us to create a more advanced context.
 		// It seems hacky but that's the only way to do it.
 		
 		LPCSTR dummyText = "Dummy";
@@ -152,22 +152,22 @@ namespace bs { namespace ct
 		RegisterClass(&dummyClass);
 
 		HWND hwnd = CreateWindow(
-			dummyText, 
-			dummyText, 
+			dummyText,
+			dummyText,
 			WS_POPUP | WS_CLIPCHILDREN,
-			0, 
-			0, 
-			32, 
-			32, 
-			0, 
-			0, 
-			hinst, 
+			0,
+			0,
+			32,
+			32,
+			0,
+			0,
+			hinst,
 			0);
 
 		if (hwnd == nullptr)
 			BS_EXCEPT(RenderingAPIException, "CreateWindow() failed");
 
-		HDC hdc = GetDC(hwnd); 
+		HDC hdc = GetDC(hwnd);
 
 		PIXELFORMATDESCRIPTOR pfd;
 		memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
@@ -232,7 +232,7 @@ namespace bs { namespace ct
 				int formats[256];
 				unsigned int count;
 				WGLEW_GET_FUN(__wglewChoosePixelFormatARB) = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
-				PFNWGLGETPIXELFORMATATTRIBIVARBPROC _wglGetPixelFormatAttribivARB = 
+				PFNWGLGETPIXELFORMATATTRIBIVARBPROC _wglGetPixelFormatAttribivARB =
 					(PFNWGLGETPIXELFORMATATTRIBIVARBPROC)wglGetProcAddress("wglGetPixelFormatAttribivARB");
 				if (WGLEW_GET_FUN(__wglewChoosePixelFormatARB)(hdc, iattr, 0, 256, formats, &count))
 				{
@@ -337,11 +337,11 @@ namespace bs { namespace ct
 
 		FormatMessage(
 			FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-			NULL, 
-			winError, 
+			NULL,
+			winError,
 			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-			(LPTSTR) errDesc, 
-			255, 
+			(LPTSTR) errDesc,
+			255,
 			NULL);
 
 		return String(errDesc);

@@ -13,16 +13,16 @@
 
 namespace bs
 {
-	MeshHeap::MeshHeap(UINT32 numVertices, UINT32 numIndices, 
+	MeshHeap::MeshHeap(UINT32 numVertices, UINT32 numIndices,
 		const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType)
 		:mNumVertices(numVertices), mNumIndices(numIndices), mVertexDesc(vertexDesc), mIndexType(indexType), mNextFreeId(0)
 	{
 	}
 
-	SPtr<MeshHeap> MeshHeap::create(UINT32 numVertices, UINT32 numIndices, const SPtr<VertexDataDesc>& vertexDesc, 
+	SPtr<MeshHeap> MeshHeap::create(UINT32 numVertices, UINT32 numIndices, const SPtr<VertexDataDesc>& vertexDesc,
 		IndexType indexType)
 	{
-		MeshHeap* meshHeap = new (bs_alloc<MeshHeap>()) MeshHeap(numVertices, numIndices, vertexDesc, indexType); 
+		MeshHeap* meshHeap = new (bs_alloc<MeshHeap>()) MeshHeap(numVertices, numIndices, vertexDesc, indexType);
 		SPtr<MeshHeap> meshHeapPtr = bs_core_ptr<MeshHeap>(meshHeap);
 
 		meshHeapPtr->_setThisPtr(meshHeapPtr);
@@ -36,8 +36,8 @@ namespace bs
 		UINT32 meshIdx = mNextFreeId++;
 
 		SPtr<MeshHeap> thisPtr = std::static_pointer_cast<MeshHeap>(getThisPtr());
-		TransientMesh* transientMesh = new (bs_alloc<TransientMesh>()) TransientMesh(thisPtr, meshIdx, 
-			meshData->getNumVertices(), meshData->getNumIndices(), drawOp); 
+		TransientMesh* transientMesh = new (bs_alloc<TransientMesh>()) TransientMesh(thisPtr, meshIdx,
+			meshData->getNumVertices(), meshData->getNumIndices(), drawOp);
 		SPtr<TransientMesh> transientMeshPtr = bs_core_ptr<TransientMesh>(transientMesh);
 
 		transientMeshPtr->_setThisPtr(transientMeshPtr);
@@ -645,7 +645,7 @@ namespace bs
 
 			if (merged)
 			{
-				// We can't remove the chunk since that would break the indexing scheme, so 
+				// We can't remove the chunk since that would break the indexing scheme, so
 				// mark it as empty and set size to 0. It will be reused when needed.
 				curChunk.start = 0;
 				curChunk.size = 0;
@@ -681,7 +681,7 @@ namespace bs
 
 			if (merged)
 			{
-				// We can't remove the chunk since that would break the indexing scheme, so 
+				// We can't remove the chunk since that would break the indexing scheme, so
 				// mark it as empty and set size to 0. It will be reused when needed.
 				curChunk.start = 0;
 				curChunk.size = 0;

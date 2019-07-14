@@ -19,7 +19,7 @@ namespace bs
 		OAAudioClip(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples, const AUDIO_CLIP_DESC& desc);
 		virtual ~OAAudioClip();
 
-		/** 
+		/**
 		 * Returns audio samples in PCM format, channel data interleaved. Only available if the audio data has been created
 		 * with AudioReadMode::Stream, AudioReadMode::LoadCompressed (and the format is compressed), or if @p keepSourceData
 		 * was enabled on creation.

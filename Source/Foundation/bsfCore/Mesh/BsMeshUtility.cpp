@@ -125,7 +125,7 @@ namespace bs
 		};
 
 	protected:
-		/** 
+		/**
 		 * Register all edges and faces, using the mesh vertices as a basis. Assumes vertices are not indexed and that
 		 * every three vertices form a face
 		 */
@@ -143,9 +143,9 @@ namespace bs
 		/** Clips the faces (polygons) of the current mesh. processEdges() must be called beforehand. */
 		void processFaces();
 
-		/** 
+		/**
 		 * Returns a set of non-culled vertex indices for every visible face in the mesh. This should be called after
-		 * clipping operation is complete to retrieve valid vertices.		 
+		 * clipping operation is complete to retrieve valid vertices.		
 		 */
 		void getOrderedFaces(FrameVector<FrameVector<UINT32>>& sortedFaces);
 
@@ -155,7 +155,7 @@ namespace bs
 		/** Calculates the normal for vertices related to the provided vertex indices. */
 		Vector3 getNormal(UINT32* sortedVertices, UINT32 numVertices);
 
-		/** 
+		/**
 		 * Checks is the polygon shape of the provided face open or closed. If open, returns true and outputs endpoints of
 		 * the polyline.
 		 */

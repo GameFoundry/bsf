@@ -47,7 +47,7 @@ namespace bs
 		 * fit the output format as needed.
 		 *			
 		 * @param[in]	buffer	Pre-allocated buffer to output the position data to.
-		 * @param[in]	size	Size of the pre-allocated buffer. Must be big enough to fit all contents (numVertices * 
+		 * @param[in]	size	Size of the pre-allocated buffer. Must be big enough to fit all contents (numVertices *
 		 *						sizeof(Vector3)).
 		 */
 		void getPositions(Vector3* buffer, UINT32 size);
@@ -62,17 +62,17 @@ namespace bs
 		void setPositions(Vector3* buffer, UINT32 size);
 
 		/**
-		 * Reads the vertex normals into the provided output buffer. Data will be copied and potentially uncompressed to 
+		 * Reads the vertex normals into the provided output buffer. Data will be copied and potentially uncompressed to
 		 * fit the output format as needed.
 		 *			
 		 * @param[in]	buffer	Pre-allocated buffer to output the normal data to.
-		 * @param[in]	size	Size of the pre-allocated buffer. Must be big enough to fit all contents (numVertices * 
+		 * @param[in]	size	Size of the pre-allocated buffer. Must be big enough to fit all contents (numVertices *
 		 *						sizeof(Vector3)).
 		 */
 		void getNormals(Vector3* buffer, UINT32 size);
 
 		/**
-		 * Writes the vertex normals from the provided output buffer. Data will be copied and potentially compressed to 
+		 * Writes the vertex normals from the provided output buffer. Data will be copied and potentially compressed to
 		 * fit the internal mesh data format as needed.
 		 *			
 		 * @param[in]	buffer	Pre-allocated buffer to read the normal data from.
@@ -81,17 +81,17 @@ namespace bs
 		void setNormals(Vector3* buffer, UINT32 size);
 
 		/**
-		 * Reads the vertex tangents into the provided output buffer. Data will be copied and potentially uncompressed to 
+		 * Reads the vertex tangents into the provided output buffer. Data will be copied and potentially uncompressed to
 		 * fit the output format as needed.
 		 *			
 		 * @param[in]	buffer	Pre-allocated buffer to output the tangent data to.
-		 * @param[in]	size	Size of the pre-allocated buffer. Must be big enough to fit all contents (numVertices * 
+		 * @param[in]	size	Size of the pre-allocated buffer. Must be big enough to fit all contents (numVertices *
 		 *						sizeof(Vector4)).
 		 */
 		void getTangents(Vector4* buffer, UINT32 size);
 
 		/**
-		 * Writes the vertex tangents from the provided output buffer. Data will be copied and potentially compressed to 
+		 * Writes the vertex tangents from the provided output buffer. Data will be copied and potentially compressed to
 		 * fit the internal mesh data format as needed.
 		 *			
 		 * @param[in]	buffer	Pre-allocated buffer to read the tangent data from.
@@ -100,17 +100,17 @@ namespace bs
 		void setTangents(Vector4* buffer, UINT32 size);
 
 		/**
-		 * Reads the vertex colors into the provided output buffer. Data will be copied and potentially uncompressed to 
+		 * Reads the vertex colors into the provided output buffer. Data will be copied and potentially uncompressed to
 		 * fit the output format as needed.
 		 *			
 		 * @param[in]	buffer	Pre-allocated buffer to output the color data to.
-		 * @param[in]	size	Size of the pre-allocated buffer. Must be big enough to fit all contents (numVertices * 
+		 * @param[in]	size	Size of the pre-allocated buffer. Must be big enough to fit all contents (numVertices *
 		 *						sizeof(Color)).
 		 */
 		void getColors(Color* buffer, UINT32 size);
 
 		/**
-		 * Writes the vertex colors from the provided output buffer. Data will be copied and potentially compressed to 
+		 * Writes the vertex colors from the provided output buffer. Data will be copied and potentially compressed to
 		 * fit the internal mesh data format as needed.
 		 *			
 		 * @param[in]	buffer	Pre-allocated buffer to read the color data from.
@@ -119,7 +119,7 @@ namespace bs
 		void setColors(Color* buffer, UINT32 size);
 
 		/**
-		 * Writes the vertex colors from the provided output buffer. Data will be copied and potentially compressed to 
+		 * Writes the vertex colors from the provided output buffer. Data will be copied and potentially compressed to
 		 * fit the internal mesh data format as needed.
 		 *			
 		 * @param[in]	buffer	Pre-allocated buffer to read the color data from. Colors should be in RGBA format.
@@ -128,17 +128,17 @@ namespace bs
 		void setColors(UINT32* buffer, UINT32 size);
 
 		/**
-		 * Reads the first UV channel coordinates into the provided output buffer. Data will be copied and potentially 
+		 * Reads the first UV channel coordinates into the provided output buffer. Data will be copied and potentially
 		 * uncompressed to fit the output format as needed.
 		 *			
 		 * @param[in]	buffer	Pre-allocated buffer to output the coordinate data to.
-		 * @param[in]	size	Size of the pre-allocated buffer. Must be big enough to fit all contents (numVertices * 
+		 * @param[in]	size	Size of the pre-allocated buffer. Must be big enough to fit all contents (numVertices *
 		 *						sizeof(Vector2)).
 		 */
 		void getUV0(Vector2* buffer, UINT32 size);
 
 		/**
-		 * Writes the first UV channel coordinates from the provided output buffer. Data will be copied and potentially 
+		 * Writes the first UV channel coordinates from the provided output buffer. Data will be copied and potentially
 		 * compressed to fit the internal mesh data format as needed.
 		 *			
 		 * @param[in]	buffer	Pre-allocated buffer to read the coordinate data from.
@@ -147,17 +147,17 @@ namespace bs
 		void setUV0(Vector2* buffer, UINT32 size);
 
 		/**
-		 * Reads the second UV channel coordinates into the provided output buffer. Data will be copied and potentially 
+		 * Reads the second UV channel coordinates into the provided output buffer. Data will be copied and potentially
 		 * uncompressed to fit the output format as needed.
 		 *			
 		 * @param[in]	buffer	Pre-allocated buffer to output the coordinate data to.
-		 * @param[in]	size	Size of the pre-allocated buffer. Must be big enough to fit all contents (numVertices * 
+		 * @param[in]	size	Size of the pre-allocated buffer. Must be big enough to fit all contents (numVertices *
 		 *						sizeof(Vector2)).
 		 */
 		void getUV1(Vector2* buffer, UINT32 size);
 
 		/**
-		 * Writes the second UV channel coordinates from the provided output buffer. Data will be copied and potentially 
+		 * Writes the second UV channel coordinates from the provided output buffer. Data will be copied and potentially
 		 * compressed to fit the internal mesh data format as needed.
 		 *			
 		 * @param[in]	buffer	Pre-allocated buffer to read the coordinate data from.
@@ -166,17 +166,17 @@ namespace bs
 		void setUV1(Vector2* buffer, UINT32 size);
 
 		/**
-		 * Reads the bone weights and indices into the provided output buffer. Data will be copied and potentially 
+		 * Reads the bone weights and indices into the provided output buffer. Data will be copied and potentially
 		 * uncompressed to fit the output format as needed.
 		 *			
 		 * @param[in]	buffer	Pre-allocated buffer to output the bone weight data to.
-		 * @param[in]	size	Size of the pre-allocated buffer. Must be big enough to fit all contents (numVertices * 
+		 * @param[in]	size	Size of the pre-allocated buffer. Must be big enough to fit all contents (numVertices *
 		 *						sizeof(BoneWeight)).
 		 */
 		void getBoneWeights(BoneWeight* buffer, UINT32 size);
 
 		/**
-		 * Writes the bone weights and indices from the provided output buffer. Data will be copied and potentially 
+		 * Writes the bone weights and indices from the provided output buffer. Data will be copied and potentially
 		 * compressed to fit the internal mesh data format as needed.
 		 *			
 		 * @param[in]	buffer	Pre-allocated buffer to read the bone weight data from.
@@ -185,17 +185,17 @@ namespace bs
 		void setBoneWeights(BoneWeight* buffer, UINT32 size);
 
 		/**
-		 * Reads the indices into the provided output buffer. Data will be copied and potentially uncompressed to fit the 
+		 * Reads the indices into the provided output buffer. Data will be copied and potentially uncompressed to fit the
 		 * output format as needed.
 		 *			
 		 * @param[in]	buffer	Pre-allocated buffer to output the index data to.
-		 * @param[in]	size	Size of the pre-allocated buffer. Must be big enough to fit all contents (numVertices * 
+		 * @param[in]	size	Size of the pre-allocated buffer. Must be big enough to fit all contents (numVertices *
 		 *						sizeof(INT32)).
 		 */
 		void getIndices(UINT32* buffer, UINT32 size);
 
 		/**
-		 * Writes the indices from the provided output buffer. Data will be copied and potentially compressed to fit the 
+		 * Writes the indices from the provided output buffer. Data will be copied and potentially compressed to fit the
 		 * internal mesh data format as needed.
 		 *			
 		 * @param[in]	buffer	Pre-allocated buffer to read the index data from.

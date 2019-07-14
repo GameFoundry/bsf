@@ -358,7 +358,7 @@ namespace bs
 
 		auto objTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoObject>(typeInfo);
 
-		return objTypeInfo->mTypeNamespace == mTypeNamespace && objTypeInfo->mTypeName == mTypeName && 
+		return objTypeInfo->mTypeNamespace == mTypeNamespace && objTypeInfo->mTypeName == mTypeName &&
 			objTypeInfo->mValueType == mValueType && objTypeInfo->mRTIITypeId == mRTIITypeId;
 	}
 
@@ -479,7 +479,7 @@ namespace bs
 		if(keyClass == nullptr || valueClass == nullptr)
 			return nullptr;
 
-		MonoClass* genericDictionaryClass = 
+		MonoClass* genericDictionaryClass =
 			ScriptAssemblyManager::instance().getBuiltinClasses().systemGenericDictionaryClass;
 
 		::MonoClass* params[2] = { keyClass, valueClass };

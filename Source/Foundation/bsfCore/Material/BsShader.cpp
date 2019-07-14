@@ -219,7 +219,7 @@ namespace bs
 	}
 
 	template<bool Core>
-	void TSHADER_DESC<Core>::setParamBlockAttribs(const String& name, bool shared, GpuBufferUsage usage, 
+	void TSHADER_DESC<Core>::setParamBlockAttribs(const String& name, bool shared, GpuBufferUsage usage,
 		StringID rendererSemantic)
 	{
 		SHADER_PARAM_BLOCK_DESC desc;
@@ -245,7 +245,7 @@ namespace bs
 	{ }
 
 	template<bool Core>
-	TShader<Core>::~TShader() 
+	TShader<Core>::~TShader()
 	{ }
 
 	template<bool Core>

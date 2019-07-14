@@ -73,7 +73,7 @@ namespace bs
 		cycles = 0;
 	}
 
-	inline UINT64 ProfilerCPU::TimerPrecise::getNumCycles() 
+	inline UINT64 ProfilerCPU::TimerPrecise::getNumCycles()
 	{
 #if BS_COMPILER == BS_COMPILER_GNUC || BS_COMPILER == BS_COMPILER_CLANG
 		unsigned int a = 0;
@@ -385,7 +385,7 @@ namespace bs
 
 	void ProfilerCPU::beginSamplePrecise(const char* name)
 	{
-		// Note: There is a (small) possibility a context switch will happen during this measurement in which case result will be skewed. 
+		// Note: There is a (small) possibility a context switch will happen during this measurement in which case result will be skewed.
 		// Increasing thread priority might help. This is generally only a problem with code that executes a long time (10-15+ ms - depending on OS quant length)
 		
 		ThreadInfo* thread = ThreadInfo::activeThread;
@@ -765,10 +765,10 @@ namespace bs
 
 		mBasicTimerOverhead = 1000000.0;
 		mPreciseTimerOverhead = 1000000;
-		for (UINT32 tries = 0; tries < 20; tries++) 
+		for (UINT32 tries = 0; tries < 20; tries++)
 		{
 			Timer timer;
-			for (UINT32 i = 0; i < reps; i++) 
+			for (UINT32 i = 0; i < reps; i++)
 			{
 				timer.start();
 				timer.stop();
@@ -779,7 +779,7 @@ namespace bs
 				mBasicTimerOverhead = avgTime;
 
 			TimerPrecise timerPrecise;
-			for (UINT32 i = 0; i < reps; i++) 
+			for (UINT32 i = 0; i < reps; i++)
 			{
 				timerPrecise.start();
 				timerPrecise.stop();
@@ -794,7 +794,7 @@ namespace bs
 		mPreciseSamplingOverheadMs = 1000000.0;
 		mBasicSamplingOverheadCycles = 1000000;
 		mPreciseSamplingOverheadCycles = 1000000;
-		for (UINT32 tries = 0; tries < 3; tries++) 
+		for (UINT32 tries = 0; tries < 3; tries++)
 		{
 			/************************************************************************/
 			/* 				AVERAGE TIME IN MS FOR BASIC SAMPLING                   */
@@ -807,7 +807,7 @@ namespace bs
 
 			// Two different cases that can effect performance, one where
 			// sample already exists and other where new one needs to be created
-			for (UINT32 i = 0; i < sampleReps; i++) 
+			for (UINT32 i = 0; i < sampleReps; i++)
 			{
 				beginSample("TestAvg1");
 				endSample("TestAvg1");
@@ -831,7 +831,7 @@ namespace bs
 				endSample("TestAvg10");
 			}
 
-			for (UINT32 i = 0; i < sampleReps * 5; i++) 
+			for (UINT32 i = 0; i < sampleReps * 5; i++)
 			{
 				beginSample(("TestAvg#" + toString(i)).c_str());
 				endSample(("TestAvg#" + toString(i)).c_str());
@@ -858,7 +858,7 @@ namespace bs
 
 			// Two different cases that can effect performance, one where
 			// sample already exists and other where new one needs to be created
-			for (UINT32 i = 0; i < sampleReps; i++) 
+			for (UINT32 i = 0; i < sampleReps; i++)
 			{
 				beginSample("TestAvg1");
 				endSample("TestAvg1");
@@ -882,7 +882,7 @@ namespace bs
 				endSample("TestAvg10");
 			}
 
-			for (UINT32 i = 0; i < sampleReps * 5; i++) 
+			for (UINT32 i = 0; i < sampleReps * 5; i++)
 			{
 				beginSample(("TestAvg#" + toString(i)).c_str());
 				endSample(("TestAvg#" + toString(i)).c_str());
@@ -907,7 +907,7 @@ namespace bs
 
 			// Two different cases that can effect performance, one where
 			// sample already exists and other where new one needs to be created
-			for (UINT32 i = 0; i < sampleReps; i++) 
+			for (UINT32 i = 0; i < sampleReps; i++)
 			{
 				beginSamplePrecise("TestAvg1");
 				endSamplePrecise("TestAvg1");
@@ -931,7 +931,7 @@ namespace bs
 				endSamplePrecise("TestAvg10");
 			}
 
-			for (UINT32 i = 0; i < sampleReps * 5; i++) 
+			for (UINT32 i = 0; i < sampleReps * 5; i++)
 			{
 				beginSamplePrecise(("TestAvg#" + toString(i)).c_str());
 				endSamplePrecise(("TestAvg#" + toString(i)).c_str());
@@ -956,7 +956,7 @@ namespace bs
 
 			// Two different cases that can effect performance, one where
 			// sample already exists and other where new one needs to be created
-			for (UINT32 i = 0; i < sampleReps; i++) 
+			for (UINT32 i = 0; i < sampleReps; i++)
 			{
 				beginSamplePrecise("TestAvg1");
 				endSamplePrecise("TestAvg1");
@@ -980,7 +980,7 @@ namespace bs
 				endSamplePrecise("TestAvg10");
 			}
 
-			for (UINT32 i = 0; i < sampleReps * 5; i++) 
+			for (UINT32 i = 0; i < sampleReps * 5; i++)
 			{
 				beginSamplePrecise(("TestAvg#" + toString(i)).c_str());
 				endSamplePrecise(("TestAvg#" + toString(i)).c_str());

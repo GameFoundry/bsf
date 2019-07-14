@@ -36,7 +36,7 @@ namespace bs
 				mResourceCreatedCondition.wait(lock);
 			}
 
-			// Send out ResourceListener events right away, as whatever called this method probably also expects the 
+			// Send out ResourceListener events right away, as whatever called this method probably also expects the
 			// listener events to trigger immediately as well
 			if(BS_THREAD_CURRENT_ID == gCoreApplication().getSimThreadId())
 				ResourceListenerManager::instance().notifyListeners(mData->mUUID);

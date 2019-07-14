@@ -4,8 +4,8 @@
 
 #include "BsRenderBeastPrerequisites.h"
 
-namespace bs 
-{ 
+namespace bs
+{
 	class RendererExtension;
 
 namespace ct
@@ -23,7 +23,7 @@ namespace ct
 	/** Inputs provided to each node in the render compositor hierarchy */
 	struct RenderCompositorNodeInputs
 	{
-		RenderCompositorNodeInputs(const RendererViewGroup& viewGroup, const RendererView& view, const SceneInfo& scene, 
+		RenderCompositorNodeInputs(const RendererViewGroup& viewGroup, const RendererView& view, const SceneInfo& scene,
 			const RenderBeastOptions& options, const FrameInfo& frameInfo, RenderBeastFeatureSet featureSet)
 			: viewGroup(viewGroup), view(view), scene(scene), options(options), frameInfo(frameInfo), featureSet(featureSet)
 		{ }
@@ -45,10 +45,10 @@ namespace ct
 		SmallVector<RenderCompositorNode*, 4> inputNodes;
 	};
 
-	/** 
+	/**
 	 * Node in the render compositor hierarchy. Nodes can be implemented to perform specific rendering tasks. Each node
 	 * can depend on other nodes in the hierarchy.
-	 * 
+	 *
 	 * @note	Implementations must provide a getNodeId() and getDependencies() static method, which are expected to
 	 *			return a unique name for the implemented node, as well as a set of nodes it depends on.
 	 */
@@ -63,7 +63,7 @@ namespace ct
 		/** Executes the task implemented in the node. */
 		virtual void render(const RenderCompositorNodeInputs& inputs) = 0;
 
-		/** 
+		/**
 		 * Cleans up any temporary resources allocated in a render() call. Any resources lasting longer than one frame
 		 * should be kept alive and released in some other manner.
 		 */
@@ -94,9 +94,9 @@ namespace ct
 		~RenderCompositor();
 
 		/**
-		 * Rebuilds the render node hierarchy. Call this whenever some setting that may influence the render node 
+		 * Rebuilds the render node hierarchy. Call this whenever some setting that may influence the render node
 		 * dependencies changes.
-		 * 
+		 *
 		 * @param[in]	view		Parent view to which this compositor belongs to.
 		 * @param[in]	finalNode	Identifier of the final node in the node hierarchy. This node is expected to write
 		 *							to the views render target. All other nodes will be deduced from this node's
@@ -151,7 +151,7 @@ namespace ct
 			}
 		};
 
-		/** 
+		/**
 		 * Registers a new type of node with the system. Each node type must first be registered before it can be used
 		 * in the node hierarchy.
 		 */
@@ -199,7 +199,7 @@ namespace ct
 		void clear() override;
 	};
 
-	/** 
+	/**
 	 * Initializes the GBuffer textures and renders the base pass into the GBuffer. The base pass includes all the opaque
 	 * objects visible to the view.
 	 */
@@ -230,8 +230,8 @@ namespace ct
 	{
 	public:
 		// Outputs
-		/** 
-		 * Contains scene color. If MSAA is used this texture will be null until the texture array data is first resolved 
+		/**
+		 * Contains scene color. If MSAA is used this texture will be null until the texture array data is first resolved
 		 * into this texture.
 		 */
 		SPtr<PooledRenderTexture> sceneColorTex;
@@ -319,7 +319,7 @@ namespace ct
 	{
 	public:
 		// Outputs
-		/** 
+		/**
 		 * Contains lighting information accumulated from multiple lights. If MSAA is used this texture will be null until
 		 * the texture array data is first resolved into this texture.
 		 */
@@ -346,7 +346,7 @@ namespace ct
 		void clear() override;
 	};
 
-	/** 
+	/**
 	 * Handles lighting of surfaces illuminated directly, for both diffuse and specular components. Uses either tiled
 	 * deferred or standard deferred rendering approach. Lighting information is output in the light accumulation buffer.
 	 */
@@ -389,8 +389,8 @@ namespace ct
 		void clear() override;
 	};
 
-	/** 
-	 * Evaluates indirect lighting from the light probe volume, if available, or the sky irradiance otherwise. 
+	/**
+	 * Evaluates indirect lighting from the light probe volume, if available, or the sky irradiance otherwise.
 	 * Results are written to the light accumulation buffer.
 	 */
 	class RCNodeIndirectDiffuseLighting : public RenderCompositorNode
@@ -408,9 +408,9 @@ namespace ct
 		void clear() override;
 	};
 
-	/** 
+	/**
 	 * Renders transparent objects using clustered forward rendering. Handles direct diffuse and specular, as well as
-	 * indirect specular. 
+	 * indirect specular.
 	 */
 	class RCNodeClusteredForward : public RenderCompositorNode
 	{
@@ -462,16 +462,16 @@ namespace ct
 	/* 							POST PROCESS NODES                			*/
 	/************************************************************************/
 
-	/** 
+	/**
 	 * Helper node used for post-processing. Takes care of allocating and switching between textures used for post process
-	 * effects. 
+	 * effects.
 	 */
 	class RCNodePostProcess : public RenderCompositorNode
 	{
 	public:
-		/** 
-		 * Returns a texture that can be used for rendering a post-process effect, and the result of the previous 
-		 * output. Switches these textures so the next call they are returned in the opposite parameters. 
+		/**
+		 * Returns a texture that can be used for rendering a post-process effect, and the result of the previous
+		 * output. Switches these textures so the next call they are returned in the opposite parameters.
 		 */
 		void getAndSwitch(const RendererView& view, SPtr<RenderTexture>& output, SPtr<Texture>& lastFrame) const;
 
@@ -506,9 +506,9 @@ namespace ct
 		/** @copydoc RenderCompositorNode::clear */
 		void clear() override;
 
-		/** 
+		/**
 		 * Returns true if the more advanced (and more expensive) compute shader based method of computing eye adaptation
-		 * should be used. 
+		 * should be used.
 		 */
 		bool useHistogramEyeAdapatation(const RenderCompositorNodeInputs& inputs);
 
@@ -583,7 +583,7 @@ namespace ct
 		void clear() override;
 	};
 
-	/** 
+	/**
 	 * Generates a number of downsamples of the scene color texture. If MSAA only the first sample is used for
 	 * for generating the downsampled versions.
 	 */

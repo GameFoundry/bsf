@@ -254,14 +254,14 @@ namespace bs
 
 		/** @copydoc RTTIPlainType::toMemory */
 		static void toMemory(const Flags<Enum, Storage>& data, char* memory)
-		{ 
+		{
 			Storage storageData = (Storage)data;
 			RTTIPlainType<Storage>::toMemory(storageData, memory);
 		}
 
 		/** @copydoc RTTIPlainType::fromMemory */
 		static UINT32 fromMemory(Flags<Enum, Storage>& data, char* memory)
-		{ 
+		{
 			Storage storageData;
 			RTTIPlainType<Storage>::fromMemory(storageData, memory);
 
@@ -271,11 +271,11 @@ namespace bs
 
 		/** @copydoc RTTIPlainType::getDynamicSize */
 		static UINT32 getDynamicSize(const Flags<Enum, Storage>& data)
-		{ 
+		{
 			assert(false);
 			return sizeof(Flags<Enum, Storage>);
 		}	
-	}; 
+	};
 
 	/** @endcond */
 	/** @} */

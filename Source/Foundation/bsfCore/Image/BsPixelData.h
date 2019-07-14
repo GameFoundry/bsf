@@ -44,9 +44,9 @@ namespace bs
 		PF_BC5					BS_SCRIPT_EXPORT(n:BC5) = 18,
 		/** Format storing RGB in half (16-bit) floating point format usable for HDR. 8 bits per pixel. */
 		PF_BC6H					BS_SCRIPT_EXPORT(n:BC6H) = 19,
-		/** 
-		 * Format storing RGB with optional alpha channel. Similar to BC1/BC2/BC3 formats but with higher quality and 
-		 * higher decompress overhead. 8 bits per pixel. 
+		/**
+		 * Format storing RGB with optional alpha channel. Similar to BC1/BC2/BC3 formats but with higher quality and
+		 * higher decompress overhead. 8 bits per pixel.
 		 */
 		PF_BC7					BS_SCRIPT_EXPORT(n:BC7) = 20,
 		/** 16-bit 1-channel pixel format, signed float. */
@@ -73,7 +73,7 @@ namespace bs
 		PF_D16					BS_SCRIPT_EXPORT(n:D16) = 32,
 		/** Packed unsigned float format, 11 bits for red, 11 bits for green, 10 bits for blue. */
 		PF_RG11B10F				BS_SCRIPT_EXPORT(ex:true) = 33,
-		/** 
+		/**
 		 * Packed unsigned normalized format, 10 bits for red, 10 bits for green, 10 bits for blue, and two bits for alpha.
 		 */
 		PF_RGB10A2				BS_SCRIPT_EXPORT(ex:true) = 34,
@@ -196,7 +196,7 @@ namespace bs
 	};
 
 	/**
-	 * A buffer describing a volume (3D), image (2D) or line (1D) of pixels in memory. Pixels are stored as a succession 
+	 * A buffer describing a volume (3D), image (2D) or line (1D) of pixels in memory. Pixels are stored as a succession
 	 * of "depth" slices, each containing "height" rows of "width" pixels.
 	 *
 	 * @note
@@ -211,13 +211,13 @@ namespace bs
 		PixelData() = default;
 
 		/**
-		 * Constructs a new object with an internal buffer capable of holding "extents" volume of pixels, where each pixel 
+		 * Constructs a new object with an internal buffer capable of holding "extents" volume of pixels, where each pixel
 		 * is of the specified pixel format. Extent offsets are also stored, but are not used internally.
 		 */
 		PixelData(const PixelVolume& extents, PixelFormat pixelFormat);
 
 		/**
-		 * Constructs a new object with an internal buffer capable of holding volume of pixels described by	provided width, 
+		 * Constructs a new object with an internal buffer capable of holding volume of pixels described by	provided width,
 		 * height and depth, where each pixel is of the specified pixel format.
 		 */
 		PixelData(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat);
@@ -226,7 +226,7 @@ namespace bs
 		PixelData& operator=(const PixelData& rhs);
 
 		/**
-		 * Returns the number of bytes that offsets one row from another. This can be exact number of bytes required 
+		 * Returns the number of bytes that offsets one row from another. This can be exact number of bytes required
 		 * to hold "width" pixel, but doesn't have to be as some buffers require padding.
 		 */
 		BS_SCRIPT_EXPORT(n:RawRowPitch,pr:getter)
@@ -246,19 +246,19 @@ namespace bs
 		void setRowPitch(UINT32 rowPitch) { mRowPitch = rowPitch; }
 
 		/**
-		 * Sets the pitch (in bytes) that determines offset between depth slices of the pixel buffer. Call this before 
+		 * Sets the pitch (in bytes) that determines offset between depth slices of the pixel buffer. Call this before
 		 * allocating the buffer.
 		 */
 		void setSlicePitch(UINT32 slicePitch) { mSlicePitch = slicePitch; }
 
 		/**
-		 * Returns the number of extra bytes in a row (non-zero only if rows are not consecutive (row pitch is larger 
+		 * Returns the number of extra bytes in a row (non-zero only if rows are not consecutive (row pitch is larger
 		 * than the number of bytes required to hold "width" pixels)).
 		 */
 		UINT32 getRowSkip() const;
 
 		/**
-		 * Returns the number of extra bytes in a depth slice (non-zero only if slices aren't consecutive (slice pitch is 
+		 * Returns the number of extra bytes in a depth slice (non-zero only if slices aren't consecutive (slice pitch is
 		 * larger than the number of bytes required to hold "width * height").
 		 */
 		UINT32 getSliceSkip() const;
@@ -277,37 +277,37 @@ namespace bs
 		UINT32 getDepth() const { return mExtents.getDepth(); }
 
 		/**
-		 * Returns left-most start of the pixel volume. This value is not used internally in any way. It is just passed 
+		 * Returns left-most start of the pixel volume. This value is not used internally in any way. It is just passed
 		 * through from the constructor.
 		 */
 		UINT32 getLeft() const { return mExtents.left; }
 
 		/**
-		 * Returns right-most end of the pixel volume. This value is not used internally in any way. It is just passed 
+		 * Returns right-most end of the pixel volume. This value is not used internally in any way. It is just passed
 		 * through from the constructor.
 		 */
 		UINT32 getRight() const { return mExtents.right; }
 
 		/**
-		 * Returns top-most start of the pixel volume. This value is not used internally in any way. It is just passed 
+		 * Returns top-most start of the pixel volume. This value is not used internally in any way. It is just passed
 		 * through from the constructor.
 		 */
 		UINT32 getTop() const { return mExtents.top; }
 
 		/**
-		 * Returns bottom-most end of the pixel volume. This value is not used internally in any way. It is just passed 
+		 * Returns bottom-most end of the pixel volume. This value is not used internally in any way. It is just passed
 		 * through from the constructor.
 		 */
 		UINT32 getBottom() const { return mExtents.bottom; }
 
 		/**
-		 * Returns front-most start of the pixel volume. This value is not used internally in any way. It is just passed 
+		 * Returns front-most start of the pixel volume. This value is not used internally in any way. It is just passed
 		 * through from the constructor.
 		 */
 		UINT32 getFront() const { return mExtents.front; }
 
 		/**
-		 * Returns back-most end of the pixel volume. This value is not used internally in any way. It is just passed 
+		 * Returns back-most end of the pixel volume. This value is not used internally in any way. It is just passed
 		 * through from the constructor.
 		 */
 		UINT32 getBack() const { return mExtents.back; }
@@ -316,8 +316,8 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:Extents,pr:getter)
 		PixelVolume getExtents() const { return mExtents; }
 
-		/** 
-		 * Return whether this buffer is laid out consecutive in memory (meaning the pitches are equal to the dimensions). 
+		/**
+		 * Return whether this buffer is laid out consecutive in memory (meaning the pitches are equal to the dimensions).
 		 */
 		BS_SCRIPT_EXPORT(n:RawIsConsecutive,pr:getter)
 		bool isConsecutive() const
@@ -338,9 +338,9 @@ namespace bs
 		 */
 		PixelData getSubVolume(const PixelVolume& volume) const;
 
-		/** 
+		/**
 		 * Samples a color at the specified coordinates using a specific filter.
-		 * 
+		 *
 		 * @param[in]	coords	Coordinates to sample the color at. They start at top left corner (0, 0), and are in range
 		 *						[0, 1].
 		 * @param[in]	filter	Filtering mode to use when sampling the color.
@@ -355,19 +355,19 @@ namespace bs
 		void setColorAt(const Color& color, UINT32 x, UINT32 y, UINT32 z = 0);
 
 		/**
-		 * Converts all the internal data into an array of colors. Array is mapped as such: 
+		 * Converts all the internal data into an array of colors. Array is mapped as such:
 		 * arrayIdx = x + y * width + z * width * height.
 		 */
 		Vector<Color> getColors() const;
 
 		/**
-		 * Initializes the internal buffer with the provided set of colors. The array should be of width * height * depth 
+		 * Initializes the internal buffer with the provided set of colors. The array should be of width * height * depth
 		 * size and mapped as such: arrayIdx = x + y * width + z * width * height.
 		 */
 		void setColors(const Vector<Color>& colors);
 
 		/**
-		 * Initializes the internal buffer with the provided set of colors. The array should be of 
+		 * Initializes the internal buffer with the provided set of colors. The array should be of
 		 * width * height * depth size and mapped as such: arrayIdx = x + y * width + z * width * height.
 		 */
 		void setColors(Color* colors, UINT32 numElements);
@@ -375,14 +375,14 @@ namespace bs
 		/** Initializes all the pixels with a single color. */
 		void setColors(const Color& color);
 
-		/** 
+		/**
 		 * Interprets pixel data as depth information as retrieved from the GPU's depth buffer. Converts the device specific
 		 * depth value to range [0, 1] and returns it.
 		 */
 		float getDepthAt(UINT32 x, UINT32 y, UINT32 z = 0) const;
 
 		/**
-		 * Converts all the internal data into an array of floats as if each individual pixel is retrieved with 
+		 * Converts all the internal data into an array of floats as if each individual pixel is retrieved with
 		 * getDepthAt(). Array is mapped as such: arrayIdx = x + y * width + z * width * height.
 		 */
 		Vector<float> getDepths() const;
@@ -401,7 +401,7 @@ namespace bs
 
 	private:
 		/**
-		 * Initializes the internal buffer with the provided set of colors. The array should be of width * height * depth 
+		 * Initializes the internal buffer with the provided set of colors. The array should be of width * height * depth
 		 * size and mapped as such: arrayIdx = x + y * width + z * width * height.
 		 *
 		 * @note	A generic method that is reused in other more specific setColors() calls.

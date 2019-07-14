@@ -18,7 +18,7 @@ namespace bs
 	{
 	public:
 		BS_SCRIPT_EXPORT(ec:RendererMeshData)
-		static SPtr<RendererMeshData> create(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, 
+		static SPtr<RendererMeshData> create(UINT32 numVertices, UINT32 numIndices, VertexLayout layout,
 			IndexType indexType = IT_32BIT);
 
 		/** An array of all vertex positions. Only valid if the vertex layout contains vertex positions. */
@@ -45,7 +45,7 @@ namespace bs
 		BS_SCRIPT_EXPORT(e:RendererMeshData,pr:setter,n:Colors)
 		static void setColors(const SPtr<RendererMeshData>& thisPtr, const Vector<Color>& value);
 
-		/** 
+		/**
 		 * An array of all vertex texture coordinates in the UV0 channel. Only valid if the vertex layout contains UV0
 		 * coordinates.
 		 */
@@ -54,7 +54,7 @@ namespace bs
 		BS_SCRIPT_EXPORT(e:RendererMeshData,pr:setter,n:UV0)
 		static void setUV0(const SPtr<RendererMeshData>& thisPtr, const Vector<Vector2>& value);
 
-		/** 
+		/**
 		 * An array of all vertex texture coordinates in the UV1 channel. Only valid if the vertex layout contains UV1
 		 * coordinates.
 		 */

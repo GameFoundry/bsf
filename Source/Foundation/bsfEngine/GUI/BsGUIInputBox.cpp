@@ -399,7 +399,7 @@ namespace bs
 		Vector2I offset = renderElemToOffset(renderElementIdx);
 		Rect2I clipRect = renderElemToClipRect(renderElementIdx);
 
-		sprite->fillBuffer(vertices, uvs, indices, vertexOffset, indexOffset, maxNumVerts, maxNumIndices, vertexStride, 
+		sprite->fillBuffer(vertices, uvs, indices, vertexOffset, indexOffset, maxNumVerts, maxNumIndices, vertexStride,
 			indexStride, localRenderElementIdx, offset, clipRect);
 	}
 
@@ -1004,7 +1004,7 @@ namespace bs
 		INT32 left = textOffset.x - mTextOffset.x;
 		// Include caret width here because we don't want to scroll if just the caret is outside the bounds
 		// (Possible if the text width is exactly the maximum width)
-		INT32 right = left + (INT32)textDesc.width + caretWidth; 
+		INT32 right = left + (INT32)textDesc.width + caretWidth;
 		INT32 top = textOffset.y - mTextOffset.y;
 		INT32 bottom = top + (INT32)textDesc.height;
 

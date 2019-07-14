@@ -24,7 +24,7 @@ namespace bs
 		/**	Creates a new text file resource with the specified string. */
 		static HPlainText create(const WString& data);
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 

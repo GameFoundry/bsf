@@ -40,7 +40,7 @@ namespace bs
 		 */
 
 		/**
-		 * Change the button "on" state. This state determines whether the button uses normal or "on" fields specified in 
+		 * Change the button "on" state. This state determines whether the button uses normal or "on" fields specified in
 		 * the GUI style.
 		 */
 		void _setOn(bool on);

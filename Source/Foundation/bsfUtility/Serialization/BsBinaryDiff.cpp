@@ -116,7 +116,7 @@ namespace bs
 		return modification;
 	}
 
-	void IDiff::applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff, 
+	void IDiff::applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff,
 		SerializationContext* context)
 	{
 		FrameAlloc& alloc = gFrameAlloc();
@@ -275,14 +275,14 @@ namespace bs
 		alloc.clear();
 	}
 
-	void IDiff::applyDiff(RTTITypeBase* rtti, const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff, 
+	void IDiff::applyDiff(RTTITypeBase* rtti, const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff,
 		FrameAlloc& alloc, DiffObjectMap& objectMap, FrameVector<DiffCommand>& diffCommands, SerializationContext* context)
 	{
 		IDiff& diffHandler = rtti->getDiffHandler();
 		diffHandler.applyDiff(object, diff, alloc, objectMap, diffCommands, context);
 	}
 
-	bool BinaryDiff::generateDiff(const RTTIField* field, RTTITypeBase* rtti, const SPtr<SerializedInstance>& oldData, 
+	bool BinaryDiff::generateDiff(const RTTIField* field, RTTITypeBase* rtti, const SPtr<SerializedInstance>& oldData,
 		const SPtr<SerializedInstance>& newData, ObjectMap& objectMap,
 		SPtr<SerializedInstance>& modification)
 	{
@@ -316,7 +316,7 @@ namespace bs
 		return false;
 	}
 
-	SPtr<SerializedObject> BinaryDiff::generateDiff(const SPtr<SerializedObject>& orgObj, 
+	SPtr<SerializedObject> BinaryDiff::generateDiff(const SPtr<SerializedObject>& orgObj,
 		const SPtr<SerializedObject>& newObj, ObjectMap& objectMap)
 	{
 		SPtr<SerializedObject> output;
@@ -522,7 +522,7 @@ namespace bs
 									SPtr<IReflectable> childObj = field->getArrayValue(rttiInstance, object.get(), arrayElem.first);
 									if (childObj != nullptr)
 									{
-										IDiff::applyDiff(childObj->getRTTI(), childObj, arrayElemData, alloc, objectMap, 
+										IDiff::applyDiff(childObj->getRTTI(), childObj, arrayElemData, alloc, objectMap,
 											commands, context);
 										command.object = childObj;
 									}
@@ -542,7 +542,7 @@ namespace bs
 											findObj = objectMap.insert(std::make_pair(arrayElemData, newObject)).first;
 										}
 
-										IDiff::applyDiff(childRtti, findObj->second, arrayElemData, alloc, objectMap, 
+										IDiff::applyDiff(childRtti, findObj->second, arrayElemData, alloc, objectMap,
 											commands, context);
 										command.object = findObj->second;
 										commands.push_back(command);
@@ -578,7 +578,7 @@ namespace bs
 							if (arrayElem.first < orgArraySize)
 							{
 								SPtr<IReflectable> childObj = newArrayElements[arrayElem.first];
-								IDiff::applyDiff(childObj->getRTTI(), childObj, arrayElemData, alloc, objectMap, 
+								IDiff::applyDiff(childObj->getRTTI(), childObj, arrayElemData, alloc, objectMap,
 									commands, context);
 							}
 							else
@@ -587,7 +587,7 @@ namespace bs
 								if (childRtti != nullptr)
 								{
 									SPtr<IReflectable> newObject = childRtti->newRTTIObject();
-									IDiff::applyDiff(childRtti, newObject, arrayElemData, alloc, objectMap, commands, 
+									IDiff::applyDiff(childRtti, newObject, arrayElemData, alloc, objectMap, commands,
 										context);
 
 									newArrayElements[arrayElem.first] = newObject;
@@ -660,7 +660,7 @@ namespace bs
 										findObj = objectMap.insert(std::make_pair(fieldObjectData, newObject)).first;
 									}
 
-									IDiff::applyDiff(childRtti, findObj->second, fieldObjectData, alloc, objectMap, 
+									IDiff::applyDiff(childRtti, findObj->second, fieldObjectData, alloc, objectMap,
 										commands, context);
 									command.object = findObj->second;
 								}
@@ -671,7 +671,7 @@ namespace bs
 							}
 							else
 							{
-								IDiff::applyDiff(childObj->getRTTI(), childObj, fieldObjectData, alloc, objectMap, 
+								IDiff::applyDiff(childObj->getRTTI(), childObj, fieldObjectData, alloc, objectMap,
 									commands, context);
 								command.object = childObj;
 							}
@@ -688,7 +688,7 @@ namespace bs
 						IReflectable& childObj = field->getValue(rttiInstance, object.get());
 						SPtr<IReflectable> clonedObj = BinaryCloner::clone(&childObj, true);
 
-						IDiff::applyDiff(clonedObj->getRTTI(), clonedObj, fieldObjectData, alloc, objectMap, commands, 
+						IDiff::applyDiff(clonedObj->getRTTI(), clonedObj, fieldObjectData, alloc, objectMap, commands,
 							context);
 
 						DiffCommand command;

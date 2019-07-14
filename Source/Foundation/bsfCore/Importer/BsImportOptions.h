@@ -11,8 +11,8 @@ namespace bs
 	 *  @{
 	 */
 
-	/** 
-	 * Base class for creating import options from. Import options are specific for each importer and control how is data 
+	/**
+	 * Base class for creating import options from. Import options are specific for each importer and control how is data
 	 * imported.
 	 */
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Importer,api:bsf,api:bed) ImportOptions : public IReflectable

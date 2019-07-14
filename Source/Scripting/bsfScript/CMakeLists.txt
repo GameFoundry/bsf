@@ -7,16 +7,16 @@ file(GLOB BS_GENERATED_SCRIPT_CPP_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Generated/*.
 source_group("Generated" FILES ${BS_GENERATED_SCRIPT_H_FILES} ${BS_GENERATED_SCRIPT_CPP_FILES})
 
 # Target
-add_library(bsfScript OBJECT 
+add_library(bsfScript OBJECT
 	${BS_SCRIPT_SRC}
-	${BS_GENERATED_SCRIPT_H_FILES} 
+	${BS_GENERATED_SCRIPT_H_FILES}
 	${BS_GENERATED_SCRIPT_CPP_FILES})
 
 # Common flags
 add_common_flags(bsfScript)
 	
 # Includes
-set(bsfScript_INC 
+set(bsfScript_INC
 	"./"
 	"./Generated/")
 

@@ -91,7 +91,7 @@ namespace bs
 				mState = MonitorState::Inactive;
 			}
 
-			BS_EXCEPT(InternalErrorException, "Failed to start folder monitor on folder \"" + 
+			BS_EXCEPT(InternalErrorException, "Failed to start folder monitor on folder \"" +
 				mFolderToMonitor.toString() + "\" because ReadDirectoryChangesW failed.");
 		}
 	}
@@ -159,7 +159,7 @@ namespace bs
 	}
 
 	DWORD FolderMonitor::FileNotifyInfo::getAction() const
-	{ 
+	{
 		assert(mCurrentRecord != nullptr);
 
 		if(mCurrentRecord)
@@ -174,7 +174,7 @@ namespace bs
 		{
 			wchar_t fileNameBuffer[32768 + 1] = {0};
 
-			memcpy(fileNameBuffer, mCurrentRecord->FileName, 
+			memcpy(fileNameBuffer, mCurrentRecord->FileName,
 					std::min(DWORD(32768 * sizeof(wchar_t)), mCurrentRecord->FileNameLength));
 		
 			return WString(fileNameBuffer);
@@ -266,7 +266,7 @@ namespace bs
 			String utf8Oldfilename = UTF8::fromWide(oldFilename);
 			String utf8Newfilename = UTF8::fromWide(newFileName);
 
-			UINT8* bytes = (UINT8*)bs_alloc((UINT32)(sizeof(FileAction) + 
+			UINT8* bytes = (UINT8*)bs_alloc((UINT32)(sizeof(FileAction) +
 				(utf8Oldfilename.size() + utf8Newfilename.size() + 2) * sizeof(String::value_type)));
 
 			FileAction* action = (FileAction*)bytes;
@@ -404,7 +404,7 @@ namespace bs
 
 	void FolderMonitor::stopMonitor(const Path& folderPath)
 	{
-		auto findIter = std::find_if(m->mFoldersToWatch.begin(), m->mFoldersToWatch.end(), 
+		auto findIter = std::find_if(m->mFoldersToWatch.begin(), m->mFoldersToWatch.end(),
 			[&](const FolderWatchInfo* x) { return x->mFolderToMonitor == folderPath; });
 
 		if(findIter != m->mFoldersToWatch.end())
@@ -459,7 +459,7 @@ namespace bs
 	{
 		FolderWatchInfo* watchInfo = nullptr;
 
-		do 
+		do
 		{
 			DWORD numBytes;
 			LPOVERLAPPED overlapped;

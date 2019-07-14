@@ -410,7 +410,7 @@ namespace bs
 	{
 		if (nativeInstance->mSceneObject.isDestroyed())
 		{
-			BS_LOG(Warning, Scene, "Trying to access a destroyed SceneObject with instance ID: {0}", + 
+			BS_LOG(Warning, Scene, "Trying to access a destroyed SceneObject with instance ID: {0}", +
 				nativeInstance->mSceneObject.getInstanceId());
 			return true;
 		}

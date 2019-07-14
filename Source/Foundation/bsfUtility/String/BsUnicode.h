@@ -16,7 +16,7 @@ namespace bs
 	public:
 		/**
 		 * Converts from an ANSI encoding in the specified locale into UTF-8.
-		 * 
+		 *
 		 * @param[in]	input	Narrow string encoded as ANSI characters. Characters are expected to be in the code page
 		 *						specified by @p locale.
 		 * @param[in]	locale	Locale that determines how are the ANSI characters interpreted.
@@ -26,7 +26,7 @@ namespace bs
 
 		/**
 		 * Converts from an UTF-8 encoding into ANSI encoding in the specified locale.
-		 * 
+		 *
 		 * @param[in]	input			Narrow string encoded as UTF-8 characters.
 		 * @param[in]	locale			Locale that determines from which code page to generate the ANSI characters.
 		 * @param[in]	invalidChar		Character that will be used when an Unicode character cannot be represented using
@@ -37,8 +37,8 @@ namespace bs
 
 		/**
 		 * Converts from a system-specific wide character encoding into UTF-8.
-		 * 
-		 * @param[in]	input	Wide string to convert. Actual encoding is system specific be can be assumed to be UTF-16 on 
+		 *
+		 * @param[in]	input	Wide string to convert. Actual encoding is system specific be can be assumed to be UTF-16 on
 		 *						Windows and UTF-32 on Unix.
 		 * @return				UTF-8 encoded string.
 		 */
@@ -46,16 +46,16 @@ namespace bs
 
 		/**
 		 * Converts from an UTF-8 encoding into system-specific wide character encoding.
-		 * 
+		 *
 		 * @param[in]	input	Narrow string encoded as UTF-8 characters.
-		 * @return				Wide string encoded in a system-specific manner. Actual encoding can be assumed to be UTF-16 
+		 * @return				Wide string encoded in a system-specific manner. Actual encoding can be assumed to be UTF-16
 		 *						on Windows and UTF-32 and Unix.
 		 */
 		static WString toWide(const String& input);
 
 		/**
 		 * Converts from an UTF-16 encoding into UTF-8.
-		 * 
+		 *
 		 * @param[in]	input	String encoded as UTF-16.
 		 * @return				UTF-8 encoded string.
 		 */
@@ -63,7 +63,7 @@ namespace bs
 
 		/**
 		 * Converts from an UTF-8 encoding into UTF-16.
-		 * 
+		 *
 		 * @param[in]	input	String encoded as UTF-8.
 		 * @return				UTF-16 encoded string.
 		 */
@@ -71,7 +71,7 @@ namespace bs
 
 		/**
 		 * Converts from an UTF-32 encoding into UTF-8.
-		 * 
+		 *
 		 * @param[in]	input	String encoded as UTF-32.
 		 * @return				UTF-8 encoded string.
 		 */
@@ -79,7 +79,7 @@ namespace bs
 
 		/**
 		 * Converts from an UTF-8 encoding into UTF-32.
-		 * 
+		 *
 		 * @param[in]	input	String encoded as UTF-8.
 		 * @return				UTF-32 encoded string.
 		 */
@@ -94,7 +94,7 @@ namespace bs
 		/** Converts the provided UTF8 encoded string to uppercase. */
 		static String toUpper(const String& input);
 
-		/** 
+		/**
 		 * Returns the byte at which the character with the specified index starts. The string is expected to be in UTF-8
 		 * encoding. If @p charIdx is out of range the method returns the index past the last byte in the string (same
 		 * as the string length in bytes).

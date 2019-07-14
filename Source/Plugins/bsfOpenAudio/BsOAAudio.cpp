@@ -378,7 +378,7 @@ namespace bs
 				}
 				else
 				{
-					BS_LOG(Warning, RenderBackend, 
+					BS_LOG(Warning, RenderBackend,
 						"OpenAL doesn't support bit depth larger than 16. Your audio data will be truncated.");
 
 					UINT32 bufferSize = info.numSamples * 2;
@@ -392,7 +392,7 @@ namespace bs
 					bs_stack_free(sampleBuffer16);
 				}
 			}
-			else if(info.bitDepth == 8) 
+			else if(info.bitDepth == 8)
 			{
 				// OpenAL expects unsigned 8-bit data, but engine stores it as signed, so convert
 				UINT32 bufferSize = info.numSamples * (info.bitDepth / 8);

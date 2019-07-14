@@ -42,7 +42,7 @@ namespace bs
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_createInstance(MonoObject* instance, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+		static void internal_createInstance(MonoObject* instance, ScrollBarType vertBarType, ScrollBarType horzBarType,
 			MonoString* scrollBarStyle, MonoString* scrollAreaStyle, MonoArray* guiOptions);
 		static void internal_getContentBounds(ScriptGUIScrollArea* nativeInstance, Rect2I* bounds);
 		static float internal_getHorzScroll(ScriptGUIScrollArea* nativeInstance);

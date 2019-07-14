@@ -38,8 +38,8 @@ namespace bs
 		/// <summary>Length of the cone. Irrelevant if emission type is Base.</summary>
 		public float length;
 		/// <summary>
-		/// Proportion of the volume that can emit particles. Thickness of 0 results in particles being emitted only from the 
-		/// edge of the cone, while thickness of 1 results in particles being emitted from the entire volume. In-between values 
+		/// Proportion of the volume that can emit particles. Thickness of 0 results in particles being emitted only from the
+		/// edge of the cone, while thickness of 1 results in particles being emitted from the entire volume. In-between values
 		/// will use a part of the volume.
 		/// </summary>
 		public float thickness;

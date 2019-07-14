@@ -147,7 +147,7 @@ namespace bs
 
 		/**
 		 * Sets a new element value at the specified array index. Operates on the provided managed instance.
-		 * 
+		 *
 		 * @param[in]	obj			Managed instance in which to set the data in.
 		 * @param[in]	arrayIdx	Index at which to set the value.
 		 * @param[in]	val			Wrapper around the value to store in the array. Must be of the array element type.

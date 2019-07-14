@@ -9,7 +9,7 @@ using namespace physx;
 
 namespace bs
 {
-	PhysXPlaneCollider::PhysXPlaneCollider(PxPhysics* physx, PxScene* scene, const Vector3& position, 
+	PhysXPlaneCollider::PhysXPlaneCollider(PxPhysics* physx, PxScene* scene, const Vector3& position,
 		const Quaternion& rotation)
 	{
 		PxPlaneGeometry geometry;

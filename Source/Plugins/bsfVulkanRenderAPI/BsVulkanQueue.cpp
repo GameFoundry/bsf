@@ -32,7 +32,7 @@ namespace bs { namespace ct
 		prepareSemaphores(waitSemaphores, mSemaphoresTemp.data(), semaphoresCount);
 		
 		VkSubmitInfo submitInfo;
-		getSubmitInfo(&vkCmdBuffer, signalSemaphores, BS_MAX_VULKAN_CB_DEPENDENCIES + 1, 
+		getSubmitInfo(&vkCmdBuffer, signalSemaphores, BS_MAX_VULKAN_CB_DEPENDENCIES + 1,
 					  mSemaphoresTemp.data(), semaphoresCount, submitInfo);
 
 		VkResult result = vkQueueSubmit(mQueue, 1, &submitInfo, cmdBuffer->getFence());
@@ -63,7 +63,7 @@ namespace bs { namespace ct
 		UINT32 totalNumWaitSemaphores = (UINT32)mQueuedSemaphores.size() + numCBs;
 		UINT32 signalSemaphoresPerCB = (BS_MAX_VULKAN_CB_DEPENDENCIES + 1);
 
-		UINT8* data = (UINT8*)bs_stack_alloc((sizeof(VkSubmitInfo) + sizeof(VkCommandBuffer)) * 
+		UINT8* data = (UINT8*)bs_stack_alloc((sizeof(VkSubmitInfo) + sizeof(VkCommandBuffer)) *
 			numCBs + sizeof(VkSemaphore) * signalSemaphoresPerCB * numCBs + sizeof(VkSemaphore) * totalNumWaitSemaphores);
 		UINT8* dataPtr = data;
 
@@ -92,7 +92,7 @@ namespace bs { namespace ct
 			UINT32 semaphoresCount = entry.numSemaphores;
 			prepareSemaphores(mQueuedSemaphores.data() + readSemaphoreIdx, &waitSemaphores[writeSemaphoreIdx], semaphoresCount);
 
-			getSubmitInfo(&commandBuffers[i], &signalSemaphores[signalSemaphoreIdx], signalSemaphoresPerCB, 
+			getSubmitInfo(&commandBuffers[i], &signalSemaphores[signalSemaphoreIdx], signalSemaphoresPerCB,
 						  &waitSemaphores[writeSemaphoreIdx], semaphoresCount, submitInfos[i]);
 
 			entry.cmdBuffer->setIsSubmitted();

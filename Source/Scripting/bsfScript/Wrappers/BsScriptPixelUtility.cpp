@@ -66,7 +66,7 @@ namespace bs
 			return nullptr;
 
 		SPtr<PixelData> sourcePixelData = sourceScriptPixelData->getInternal();
-		SPtr<PixelData> outputData = bs_shared_ptr_new<PixelData>(sourcePixelData->getWidth(), sourcePixelData->getHeight(), 
+		SPtr<PixelData> outputData = bs_shared_ptr_new<PixelData>(sourcePixelData->getWidth(), sourcePixelData->getHeight(),
 			sourcePixelData->getDepth(), newFormat);
 		outputData->allocateInternalBuffer();
 
@@ -82,7 +82,7 @@ namespace bs
 			return nullptr;
 
 		SPtr<PixelData> sourcePixelData = sourceScriptPixelData->getInternal();
-		SPtr<PixelData> outputData = bs_shared_ptr_new<PixelData>(sourcePixelData->getWidth(), sourcePixelData->getHeight(), 
+		SPtr<PixelData> outputData = bs_shared_ptr_new<PixelData>(sourcePixelData->getWidth(), sourcePixelData->getHeight(),
 			sourcePixelData->getDepth(), options->format);
 		outputData->allocateInternalBuffer();
 

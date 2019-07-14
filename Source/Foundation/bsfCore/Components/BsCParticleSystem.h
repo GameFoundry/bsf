@@ -6,7 +6,7 @@
 #include "Particles/BsParticleSystem.h"
 #include "Scene/BsComponent.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Components-Core
 	 *  @{
@@ -67,8 +67,8 @@ namespace bs
 		 *  @{
 		 */
 
-		/** 
-		 * Enables or disabled preview mode. Preview mode allows the particle system to play while the game is not running, 
+		/**
+		 * Enables or disabled preview mode. Preview mode allows the particle system to play while the game is not running,
 		 * primarily for preview purposes in the editor. Returns true if the preview mode was enabled, false if it was
 		 * disabled or enabling preview failed.
 		 */

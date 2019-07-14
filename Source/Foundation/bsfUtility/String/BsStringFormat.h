@@ -42,8 +42,8 @@ namespace bs
 
 	public:
 		/**
-		 * Formats the provided string by replacing the identifiers with the provided parameters. The identifiers are 
-		 * represented like "{0}, {1}" in the source string, where the number represents the position of the parameter 
+		 * Formats the provided string by replacing the identifiers with the provided parameters. The identifiers are
+		 * represented like "{0}, {1}" in the source string, where the number represents the position of the parameter
 		 * that will be used for replacing the identifier.
 		 *			
 		 * @note	
@@ -167,13 +167,13 @@ namespace bs
 
 	private:
 		/**
-		 * Set of methods that can be specialized so we have a generalized way for retrieving length of strings of 
+		 * Set of methods that can be specialized so we have a generalized way for retrieving length of strings of
 		 * different types.
 		 */
 		static UINT32 getLength(const char* source) { return (UINT32)strlen(source); }
 
 		/**
-		 * Set of methods that can be specialized so we have a generalized way for retrieving length of strings of 
+		 * Set of methods that can be specialized so we have a generalized way for retrieving length of strings of
 		 * different types.
 		 */
 		static UINT32 getLength(const wchar_t* source) { return (UINT32)wcslen(source); }

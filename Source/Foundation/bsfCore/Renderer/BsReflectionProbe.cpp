@@ -106,7 +106,7 @@ namespace bs
 		{
 			auto renderReflProbe = [coreTexture, coreProbe]()
 			{
-				float radius = coreProbe->mType == ReflectionProbeType::Sphere ? coreProbe->mRadius : 
+				float radius = coreProbe->mType == ReflectionProbeType::Sphere ? coreProbe->mRadius :
 					coreProbe->mExtents.length();
 
 				ct::CaptureSettings settings;
@@ -186,7 +186,7 @@ namespace bs
 		if (mFilteredTexture != nullptr)
 			filteredTexture = mFilteredTexture->getCore();
 
-		ct::ReflectionProbe* probe = new (bs_alloc<ct::ReflectionProbe>()) ct::ReflectionProbe(mType, mRadius, mExtents, 
+		ct::ReflectionProbe* probe = new (bs_alloc<ct::ReflectionProbe>()) ct::ReflectionProbe(mType, mRadius, mExtents,
 			filteredTexture);
 		SPtr<ct::ReflectionProbe> probePtr = bs_shared_ptr<ct::ReflectionProbe>(probe);
 		probePtr->_setThisPtr(probePtr);
@@ -231,7 +231,7 @@ namespace bs
 
 	namespace ct
 	{
-	ReflectionProbe::ReflectionProbe(ReflectionProbeType type, float radius, const Vector3& extents, 
+	ReflectionProbe::ReflectionProbe(ReflectionProbeType type, float radius, const Vector3& extents,
 		const SPtr<Texture>& filteredTexture)
 		: TReflectionProbe(type, radius, extents), mRendererId(0)
 	{

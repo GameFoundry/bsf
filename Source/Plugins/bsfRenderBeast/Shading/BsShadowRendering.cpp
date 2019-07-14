@@ -127,7 +127,7 @@ namespace bs { namespace ct
 	ShadowDepthCubeMat::ShadowDepthCubeMat()
 	{ }
 
-	void ShadowDepthCubeMat::bind(const SPtr<GpuParamBlockBuffer>& shadowParams, 
+	void ShadowDepthCubeMat::bind(const SPtr<GpuParamBlockBuffer>& shadowParams,
 		const SPtr<GpuParamBlockBuffer>& shadowCubeMatrices)
 	{
 		mParams->setParamBlockBuffer("ShadowParams", shadowParams);
@@ -413,7 +413,7 @@ namespace bs { namespace ct
 	ShadowCascadedMap::ShadowCascadedMap(UINT32 size, UINT32 numCascades)
 		:ShadowMapBase(size), mNumCascades(numCascades), mTargets(numCascades), mShadowInfos(numCascades)
 	{
-		mShadowMap = GpuResourcePool::instance().get(POOLED_RENDER_TEXTURE_DESC::create2D(SHADOW_MAP_FORMAT, size, size, 
+		mShadowMap = GpuResourcePool::instance().get(POOLED_RENDER_TEXTURE_DESC::create2D(SHADOW_MAP_FORMAT, size, size,
 			TU_DEPTHSTENCIL, 0, false, numCascades));
 
 		RENDER_TEXTURE_DESC rtDesc;
@@ -432,8 +432,8 @@ namespace bs { namespace ct
 		return mTargets[cascadeIdx];
 	}
 
-	/** 
-	 * Provides a common way for all types of shadow depth rendering to render the relevant objects into the depth map. 
+	/**
+	 * Provides a common way for all types of shadow depth rendering to render the relevant objects into the depth map.
 	 * Iterates over all relevant objects in the scene, binds the relevant materials and renders the objects into the depth
 	 * map.
 	 */
@@ -541,9 +541,9 @@ namespace bs { namespace ct
 	struct ShadowRenderQueueCubeOptions
 	{
 		ShadowRenderQueueCubeOptions(
-			const ConvexVolume (&frustums)[6], 
-			const ConvexVolume& boundingVolume, 
-			const SPtr<GpuParamBlockBuffer>& shadowParamsBuffer, 
+			const ConvexVolume (&frustums)[6],
+			const ConvexVolume& boundingVolume,
+			const SPtr<GpuParamBlockBuffer>& shadowParamsBuffer,
 			const SPtr<GpuParamBlockBuffer>& shadowCubeMatricesBuffer,
 			const SPtr<GpuParamBlockBuffer>& shadowCubeMasksBuffer)
 			: frustums(frustums), boundingVolume(boundingVolume), shadowParamsBuffer(shadowParamsBuffer)
@@ -627,7 +627,7 @@ namespace bs { namespace ct
 	struct ShadowRenderQueueSpotOptions
 	{
 		ShadowRenderQueueSpotOptions(
-			const ConvexVolume& boundingVolume, 
+			const ConvexVolume& boundingVolume,
 			const SPtr<GpuParamBlockBuffer>& shadowParamsBuffer)
 			: boundingVolume(boundingVolume), shadowParamsBuffer(shadowParamsBuffer)
 		{ }
@@ -664,7 +664,7 @@ namespace bs { namespace ct
 	struct ShadowRenderQueueDirOptions
 	{
 		ShadowRenderQueueDirOptions(
-			const ConvexVolume& boundingVolume, 
+			const ConvexVolume& boundingVolume,
 			const SPtr<GpuParamBlockBuffer>& shadowParamsBuffer)
 			: boundingVolume(boundingVolume), shadowParamsBuffer(shadowParamsBuffer)
 		{ }
@@ -771,7 +771,7 @@ namespace bs { namespace ct
 		mShadowMapSize = size;
 	}
 
-	void ShadowRendering::renderShadowMaps(RendererScene& scene, const RendererViewGroup& viewGroup, 
+	void ShadowRendering::renderShadowMaps(RendererScene& scene, const RendererViewGroup& viewGroup,
 		const FrameInfo& frameInfo)
 	{
 		// Note: Currently all shadows are dynamic and are rebuilt every frame. I should later added support for static
@@ -922,7 +922,7 @@ namespace bs { namespace ct
 
 	/**
 	 * Generates a frustum from the provided view-projection matrix.
-	 * 
+	 *
 	 * @param[in]	invVP			Inverse of the view-projection matrix to use for generating the frustum.
 	 * @param[out]	worldFrustum	Generated frustum planes, in world space.
 	 * @return						Individual vertices of the frustum corners, in world space. Ordered using the
@@ -1001,7 +1001,7 @@ namespace bs { namespace ct
 		return shadowMapTfrm * mixedToShadow;
 	}
 
-	void ShadowRendering::renderShadowOcclusion(const RendererView& view, const RendererLight& rendererLight, 
+	void ShadowRendering::renderShadowOcclusion(const RendererView& view, const RendererLight& rendererLight,
 		GBufferTextures gbuffer) const
 	{
 		UINT32 shadowQuality = view.getRenderSettings().shadowSettings.shadowFilteringQuality;
@@ -1061,7 +1061,7 @@ namespace bs { namespace ct
 				SPtr<Texture> shadowMap = mShadowCubemaps[shadowInfo.textureIdx].getTexture();
 				ShadowProjectParams shadowParams(*light, shadowMap, shadowOmniParamBuffer, perViewBuffer, gbuffer);
 
-				ShadowProjectOmniMat* mat = ShadowProjectOmniMat::getVariation(effectiveShadowQuality, viewerInsideVolume, 
+				ShadowProjectOmniMat* mat = ShadowProjectOmniMat::getVariation(effectiveShadowQuality, viewerInsideVolume,
 					viewProps.target.numSamples > 1);
 				mat->bind(shadowParams);
 
@@ -1129,13 +1129,13 @@ namespace bs { namespace ct
 					shadowMapFace = shadowInfo->cascadeIdx;
 				}
 
-				Matrix4 mixedToShadowUV = createMixedToShadowUVMatrix(viewP, viewInvVP, shadowInfo->normArea, 
+				Matrix4 mixedToShadowUV = createMixedToShadowUVMatrix(viewP, viewInvVP, shadowInfo->normArea,
 					depthScale, depthOffset, shadowInfo->shadowVPTransform);
 
 				auto shadowMapProps = shadowMap->getProperties();
 
 				Vector2 shadowMapSize((float)shadowMapProps.getWidth(), (float)shadowMapProps.getHeight());
-				float transitionScale = getFadeTransition(*light, shadowInfo->subjectBounds.getRadius(), 
+				float transitionScale = getFadeTransition(*light, shadowInfo->subjectBounds.getRadius(),
 					shadowInfo->depthRange, shadowInfo->area.width);
 
 				gShadowProjectParamsDef.gFadePlaneDepth.set(shadowParamBuffer, shadowInfo->depthFade);
@@ -1191,7 +1191,7 @@ namespace bs { namespace ct
 				gShadowProjectParamsDef.gFace.set(shadowParamBuffer, (float)shadowMapFace);
 				ShadowProjectParams shadowParams(*light, shadowMap, shadowParamBuffer, perViewBuffer, gbuffer);
 
-				ShadowProjectMat* mat = ShadowProjectMat::getVariation(effectiveShadowQuality, isCSM, 
+				ShadowProjectMat* mat = ShadowProjectMat::getVariation(effectiveShadowQuality, isCSM,
 					viewProps.target.numSamples > 1);
 				mat->bind(shadowParams);
 
@@ -1203,7 +1203,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void ShadowRendering::renderCascadedShadowMaps(const RendererView& view, UINT32 lightIdx, RendererScene& scene, 
+	void ShadowRendering::renderCascadedShadowMaps(const RendererView& view, UINT32 lightIdx, RendererScene& scene,
 		const FrameInfo& frameInfo)
 	{
 		UINT32 viewIdx = view.getViewIdx();
@@ -1299,7 +1299,7 @@ namespace bs { namespace ct
 			Vector3 offsetLightPos = casterOrigin - lightDir * frustumBounds.getRadius();
 			Matrix4 offsetViewMat = Matrix4::view(offsetLightPos, lightRotation);
 
-			Matrix4 proj = Matrix4::projectionOrthographic(-orthoSize, orthoSize, orthoSize, -orthoSize, 0.0f, 
+			Matrix4 proj = Matrix4::projectionOrthographic(-orthoSize, orthoSize, orthoSize, -orthoSize, 0.0f,
 				shadowInfo.depthRange);
 
 			RenderAPI::instance().convertProjectionMatrix(proj, proj);
@@ -1445,7 +1445,7 @@ namespace bs { namespace ct
 		lightShadows.numShadows++;
 	}
 
-	void ShadowRendering::renderRadialShadowMap(const RendererLight& rendererLight, 
+	void ShadowRendering::renderRadialShadowMap(const RendererLight& rendererLight,
 		const ShadowMapOptions& options, RendererScene& scene, const FrameInfo& frameInfo)
 	{
 		Light* light = rendererLight.internal;
@@ -1647,7 +1647,7 @@ namespace bs { namespace ct
 		lightShadows.numShadows++;
 	}
 
-	void ShadowRendering::calcShadowMapProperties(const RendererLight& light, const RendererViewGroup& viewGroup, 
+	void ShadowRendering::calcShadowMapProperties(const RendererLight& light, const RendererViewGroup& viewGroup,
 		UINT32 border, UINT32& size, SmallVector<float, 6>& fadePercents, float& maxFadePercent) const
 	{
 		const static float SHADOW_TEXELS_PER_PIXEL = 1.0f;
@@ -1665,7 +1665,7 @@ namespace bs { namespace ct
 				fadePercents.add(0.0f);
 			else
 			{
-				// Approximation for screen space sphere radius: screenSize * 0.5 * cot(fov) * radius / Z, where FOV is the 
+				// Approximation for screen space sphere radius: screenSize * 0.5 * cot(fov) * radius / Z, where FOV is the
 				// largest one
 				//// First get sphere depth
 				const Matrix4& viewVP = viewProps.viewProjTransform;
@@ -1769,7 +1769,7 @@ namespace bs { namespace ct
 		return requestedQuality;
 	}
 
-	ConvexVolume ShadowRendering::getCSMSplitFrustum(const RendererView& view, const Vector3& lightDir, UINT32 cascade, 
+	ConvexVolume ShadowRendering::getCSMSplitFrustum(const RendererView& view, const Vector3& lightDir, UINT32 cascade,
 		UINT32 numCascades, Sphere& outBounds)
 	{
 		// Determine split range
@@ -1969,16 +1969,16 @@ namespace bs { namespace ct
 		float defaultBias = 1.0f;
 		switch(light.getType())
 		{
-		case LightType::Directional: 
+		case LightType::Directional:
 			defaultBias = DIR_DEPTH_BIAS * deviceDepthRange;
 
 			// Use larger bias for further away cascades
 			defaultBias *= depthRange * 0.01f;
 			break;
-		case LightType::Radial: 
+		case LightType::Radial:
 			defaultBias = RADIAL_LIGHT_BIAS;
 			break;
-		case LightType::Spot: 
+		case LightType::Spot:
 			defaultBias = SPOT_DEPTH_BIAS;
 			break;
 		default:

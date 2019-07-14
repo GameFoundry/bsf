@@ -171,7 +171,7 @@ namespace bs
 			if (elem.getType() == VET_COLOR)
 				type = VertexElement::getBestColorVertexElementType();
 
-			mElementList.push_back(VertexElement(elem.getStreamIdx(), elem.getOffset(), type, elem.getSemantic(), 
+			mElementList.push_back(VertexElement(elem.getStreamIdx(), elem.getOffset(), type, elem.getSemantic(),
 				elem.getSemanticIdx(), elem.getInstanceStepRate()));
 		}
 	}

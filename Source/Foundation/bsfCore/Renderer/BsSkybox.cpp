@@ -98,7 +98,7 @@ namespace bs
 
 	void Skybox::setTexture(const HTexture& texture)
 	{
-		mTexture = texture; 
+		mTexture = texture;
 
 		mFilteredRadiance = nullptr;
 		mIrradiance = nullptr;

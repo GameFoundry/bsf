@@ -12,7 +12,7 @@ namespace bs
 	 */
 
 	/**
-	 * Represents a single mesh entry in the MeshHeap. This can be used as a normal mesh but due to the nature of the 
+	 * Represents a single mesh entry in the MeshHeap. This can be used as a normal mesh but due to the nature of the
 	 * mesh heap it is not the type of mesh you should use for storing static data.
 	 *
 	 * Transient meshes don't keep internal index/vertex buffers but instead use the ones provided by their parent mesh heap.

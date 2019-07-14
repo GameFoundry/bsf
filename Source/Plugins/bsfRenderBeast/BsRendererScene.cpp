@@ -23,7 +23,7 @@ namespace bs {	namespace ct
 {
 	PerFrameParamDef gPerFrameParamDef;
 
-	static const ShaderVariation* DECAL_VAR_LOOKUP[2][3] = 
+	static const ShaderVariation* DECAL_VAR_LOOKUP[2][3] =
 	{
 		{
 			&getDecalShaderVariation<false, MSAAMode::None>(),
@@ -76,8 +76,8 @@ namespace bs {	namespace ct
 		UINT32 cameraId = camera->getRendererId();
 		RendererView* view = mInfo.views[cameraId];
 
-		UINT32 updateEverythingFlag = (UINT32)ActorDirtyFlag::Everything 
-			| (UINT32)ActorDirtyFlag::Active 
+		UINT32 updateEverythingFlag = (UINT32)ActorDirtyFlag::Everything
+			| (UINT32)ActorDirtyFlag::Active
 			| (UINT32)CameraDirtyFlag::Viewport;
 
 		if((updateFlag & updateEverythingFlag) != 0)
@@ -401,7 +401,7 @@ namespace bs {	namespace ct
 
 			SPtr<GpuParams> gpuParams = element.params->getGpuParams();
 
-			// Note: Perhaps perform buffer validation to ensure expected buffer has the same size and layout as the 
+			// Note: Perhaps perform buffer validation to ensure expected buffer has the same size and layout as the
 			// provided buffer, and show a warning otherwise. But this is perhaps better handled on a higher level.
 			gpuParams->setParamBlockBuffer("PerFrame", mPerFrameParamBuffer);
 			gpuParams->setParamBlockBuffer("PerObject", rendererRenderable->perObjectParamBuffer);
@@ -709,8 +709,8 @@ namespace bs {	namespace ct
 		ParticleForwardLightingType forwardLightingType;
 		if(requiresForwardLighting)
 		{
-			forwardLightingType = supportsClusteredForward 
-				? ParticleForwardLightingType::Clustered 
+			forwardLightingType = supportsClusteredForward
+				? ParticleForwardLightingType::Clustered
 				: ParticleForwardLightingType::Standard;
 		}
 		else
@@ -786,7 +786,7 @@ namespace bs {	namespace ct
 			rendererParticles.gpuParticlesParamBuffer = nullptr;
 		}
 
-		// Note: Perhaps perform buffer validation to ensure expected buffer has the same size and layout as the 
+		// Note: Perhaps perform buffer validation to ensure expected buffer has the same size and layout as the
 		// provided buffer, and show a warning otherwise. But this is perhaps better handled on a higher level.
 		gpuParams->setParamBlockBuffer("ParticleParams", rendererParticles.particlesParamBuffer);
 		gpuParams->setParamBlockBuffer("PerObject", rendererParticles.perObjectParamBuffer);
@@ -985,7 +985,7 @@ namespace bs {	namespace ct
 		// Prepare all parameter bindings
 		SPtr<GpuParams> gpuParams = renElement.params->getGpuParams();
 
-		// Note: Perhaps perform buffer validation to ensure expected buffer has the same size and layout as the 
+		// Note: Perhaps perform buffer validation to ensure expected buffer has the same size and layout as the
 		// provided buffer, and show a warning otherwise. But this is perhaps better handled on a higher level.
 		gpuParams->setParamBlockBuffer("PerFrame", mPerFrameParamBuffer);
 		gpuParams->setParamBlockBuffer("DecalParams", rendererDecal.decalParamBuffer);

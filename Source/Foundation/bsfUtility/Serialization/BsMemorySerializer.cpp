@@ -11,7 +11,7 @@ using namespace std::placeholders;
 
 namespace bs
 {
-	UINT8* MemorySerializer::encode(IReflectable* object, UINT32& bytesWritten, 
+	UINT8* MemorySerializer::encode(IReflectable* object, UINT32& bytesWritten,
 		std::function<void*(UINT32)> allocator, bool shallow, SerializationContext* context)
 	{
 		using namespace std::placeholders;
@@ -24,7 +24,7 @@ namespace bs
 
 		mBufferPieces.push_back(piece);
 
-		bs.encode(object, piece.buffer, WRITE_BUFFER_SIZE, &bytesWritten, 
+		bs.encode(object, piece.buffer, WRITE_BUFFER_SIZE, &bytesWritten,
 			std::bind(&MemorySerializer::flushBuffer, this, _1, _2, _3), shallow, context);
 
 		UINT8* resultBuffer;

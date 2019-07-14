@@ -30,8 +30,8 @@ namespace bs { namespace ct
 		class InitOnStart
 		{
 		public:
-			InitOnStart() 
-			{ 
+			InitOnStart()
+			{
 				static SPtr<RenderAPIFactory> newFactory;
 				if(newFactory == nullptr)
 				{

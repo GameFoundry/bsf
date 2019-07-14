@@ -13,7 +13,7 @@ namespace bs
 	PixelData::PixelData(const PixelVolume& extents, PixelFormat pixelFormat)
 		:mExtents(extents), mFormat(pixelFormat)
 	{
-		PixelUtil::getPitch(extents.getWidth(), extents.getHeight(), extents.getDepth(), pixelFormat, mRowPitch, 
+		PixelUtil::getPitch(extents.getWidth(), extents.getHeight(), extents.getDepth(), pixelFormat, mRowPitch,
 			mSlicePitch);
 	}
 
@@ -47,7 +47,7 @@ namespace bs
 	UINT32 PixelData::getRowSkip() const
 	{
 		UINT32 optimalRowPitch, optimalSlicePitch;
-		PixelUtil::getPitch(getWidth(), getHeight(), getDepth(), mFormat, optimalRowPitch, 
+		PixelUtil::getPitch(getWidth(), getHeight(), getDepth(), mFormat, optimalRowPitch,
 			optimalSlicePitch);
 
 		return mRowPitch - optimalRowPitch;
@@ -56,7 +56,7 @@ namespace bs
 	UINT32 PixelData::getSliceSkip() const
 	{
 		UINT32 optimalRowPitch, optimalSlicePitch;
-		PixelUtil::getPitch(getWidth(), getHeight(), getDepth(), mFormat, optimalRowPitch, 
+		PixelUtil::getPitch(getWidth(), getHeight(), getDepth(), mFormat, optimalRowPitch,
 			optimalSlicePitch);
 
 		return mSlicePitch - optimalSlicePitch;

@@ -6,7 +6,7 @@
 
 namespace bs { namespace ct
 {
-	D3D11DriverList::D3D11DriverList(IDXGIFactory1* dxgiFactory) 
+	D3D11DriverList::D3D11DriverList(IDXGIFactory1* dxgiFactory)
 	{
 		enumerate(dxgiFactory);
 	}
@@ -42,7 +42,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	UINT32 D3D11DriverList::count() const 
+	UINT32 D3D11DriverList::count() const
 	{
 		return (UINT32)mDriverList.size();
 	}

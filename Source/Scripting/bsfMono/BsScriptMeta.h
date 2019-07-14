@@ -20,7 +20,7 @@ namespace bs
 		String name; /**< Type name of the script class. */
 		String assembly; /**< Name of the assembly the script class is located in. */
 		/**
-		 * Callback that will be triggered when assembly containing the class is loaded or refreshed. Used for one time 
+		 * Callback that will be triggered when assembly containing the class is loaded or refreshed. Used for one time
 		 * initialization.
 		 */
 		std::function<void()> initCallback;

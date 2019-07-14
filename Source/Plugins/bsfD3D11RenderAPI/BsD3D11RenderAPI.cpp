@@ -81,7 +81,7 @@ namespace bs { namespace ct
 #endif
 
 		ID3D11Device* device;
-		hr = D3D11CreateDevice(selectedAdapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, deviceFlags, 
+		hr = D3D11CreateDevice(selectedAdapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, deviceFlags,
 			requestedLevels, numRequestedLevels, D3D11_SDK_VERSION, &device, &mFeatureLevel, nullptr);
 
 		// This will fail on Win 7 due to lack of 11.1, so re-try again without it
@@ -91,7 +91,7 @@ namespace bs { namespace ct
 				&requestedLevels[1], numRequestedLevels - 1, D3D11_SDK_VERSION, &device, &mFeatureLevel, nullptr);
 		}
 
-		if(FAILED(hr))         
+		if(FAILED(hr))
 			BS_EXCEPT(RenderingAPIException, "Failed to create Direct3D11 object. D3D11CreateDeviceN returned this error code: " + toString(hr));
 
 		mDevice = bs_new<D3D11Device>(device);
@@ -347,7 +347,7 @@ namespace bs { namespace ct
 				if(mPSUAVsBound)
 				{
 					context->OMSetRenderTargetsAndUnorderedAccessViews(
-						D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 0, 
+						D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 0,
 						D3D11_PS_CS_UAV_REGISTER_COUNT, emptyUAVs, nullptr);
 
 					mPSUAVsBound = false;
@@ -391,7 +391,7 @@ namespace bs { namespace ct
 
 						if (texture != nullptr)
 						{
-							SPtr<TextureView> texView = texture->requestView(surface.mipLevel, surface.numMipLevels, 
+							SPtr<TextureView> texView = texture->requestView(surface.mipLevel, surface.numMipLevels,
 															surface.face, surface.numFaces, GVU_DEFAULT);
 
 							D3D11TextureView* d3d11texView = static_cast<D3D11TextureView*>(texView.get());
@@ -466,7 +466,7 @@ namespace bs { namespace ct
 						if (samplerState == nullptr)
 							samplerState = SamplerState::getDefault();
 
-						D3D11SamplerState* d3d11SamplerState = 
+						D3D11SamplerState* d3d11SamplerState =
 							static_cast<D3D11SamplerState*>(const_cast<SamplerState*>(samplerState.get()));
 						samplers[slot] = d3d11SamplerState->getInternal();
 					}
@@ -635,7 +635,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void D3D11RenderAPI::setVertexBuffers(UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers, 
+	void D3D11RenderAPI::setVertexBuffers(UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [&](UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers)
@@ -712,7 +712,7 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT(NumIndexBufferBinds);
 	}
 
-	void D3D11RenderAPI::setVertexDeclaration(const SPtr<VertexDeclaration>& vertexDeclaration, 
+	void D3D11RenderAPI::setVertexDeclaration(const SPtr<VertexDeclaration>& vertexDeclaration,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [&](const SPtr<VertexDeclaration>& vertexDeclaration)
@@ -756,7 +756,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void D3D11RenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount, 
+	void D3D11RenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [&](UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount)
@@ -797,7 +797,7 @@ namespace bs { namespace ct
 		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
-	void D3D11RenderAPI::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount, 
+	void D3D11RenderAPI::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount,
 		UINT32 instanceCount, const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [&](UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount,
@@ -839,7 +839,7 @@ namespace bs { namespace ct
 		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
-	void D3D11RenderAPI::dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY, UINT32 numGroupsZ, 
+	void D3D11RenderAPI::dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY, UINT32 numGroupsZ,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [&](UINT32 numGroupsX, UINT32 numGroupsY, UINT32 numGroupsZ)
@@ -867,7 +867,7 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT(NumComputeCalls);
 	}
 
-	void D3D11RenderAPI::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom, 
+	void D3D11RenderAPI::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [&](UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
@@ -918,7 +918,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void D3D11RenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask, 
+	void D3D11RenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [&](UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask)
@@ -933,7 +933,7 @@ namespace bs { namespace ct
 			Rect2I clearArea((int)mViewport.TopLeftX, (int)mViewport.TopLeftY, (int)mViewport.Width, (int)mViewport.Height);
 
 			bool clearEntireTarget = clearArea.width == 0 || clearArea.height == 0;
-			clearEntireTarget |= (clearArea.x == 0 && clearArea.y == 0 && clearArea.width == rtProps.width && 
+			clearEntireTarget |= (clearArea.x == 0 && clearArea.y == 0 && clearArea.width == rtProps.width &&
 				clearArea.height == rtProps.height);
 
 			if (!clearEntireTarget)
@@ -957,7 +957,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void D3D11RenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil, 
+	void D3D11RenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil,
 		UINT8 targetMask, const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [&](UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask)
@@ -1030,7 +1030,7 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT(NumClears);
 	}
 
-	void D3D11RenderAPI::setRenderTarget(const SPtr<RenderTarget>& target, UINT32 readOnlyFlags, 
+	void D3D11RenderAPI::setRenderTarget(const SPtr<RenderTarget>& target, UINT32 readOnlyFlags,
 		RenderSurfaceMask loadMask, const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [&](const SPtr<RenderTarget>& target, UINT32 readOnlyFlags)
@@ -1177,18 +1177,18 @@ namespace bs { namespace ct
 			caps.numTextureUnitsPerStage[GPT_VERTEX_PROGRAM] = D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT;
 			caps.numTextureUnitsPerStage[GPT_GEOMETRY_PROGRAM]= D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT;
 
-			caps.numCombinedTextureUnits 
+			caps.numCombinedTextureUnits
 				= caps.numTextureUnitsPerStage[GPT_FRAGMENT_PROGRAM]
-				+ caps.numTextureUnitsPerStage[GPT_VERTEX_PROGRAM] 
+				+ caps.numTextureUnitsPerStage[GPT_VERTEX_PROGRAM]
 				+ caps.numTextureUnitsPerStage[GPT_GEOMETRY_PROGRAM];
 
 			caps.numGpuParamBlockBuffersPerStage[GPT_FRAGMENT_PROGRAM] = D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT;
 			caps.numGpuParamBlockBuffersPerStage[GPT_VERTEX_PROGRAM] = D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT;
 			caps.numGpuParamBlockBuffersPerStage[GPT_GEOMETRY_PROGRAM] = D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT;
 
-			caps.numCombinedParamBlockBuffers 
+			caps.numCombinedParamBlockBuffers
 				= caps.numGpuParamBlockBuffersPerStage[GPT_FRAGMENT_PROGRAM]
-				+ caps.numGpuParamBlockBuffersPerStage[GPT_VERTEX_PROGRAM] 
+				+ caps.numGpuParamBlockBuffersPerStage[GPT_VERTEX_PROGRAM]
 				+ caps.numGpuParamBlockBuffersPerStage[GPT_GEOMETRY_PROGRAM];
 		}
 
@@ -1202,11 +1202,11 @@ namespace bs { namespace ct
 			caps.numTextureUnitsPerStage[GPT_DOMAIN_PROGRAM] = D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT;
 			caps.numTextureUnitsPerStage[GPT_COMPUTE_PROGRAM] = D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT;
 
-			caps.numCombinedTextureUnits 
+			caps.numCombinedTextureUnits
 				= caps.numTextureUnitsPerStage[GPT_FRAGMENT_PROGRAM]
-				+ caps.numTextureUnitsPerStage[GPT_VERTEX_PROGRAM] 
+				+ caps.numTextureUnitsPerStage[GPT_VERTEX_PROGRAM]
 				+ caps.numTextureUnitsPerStage[GPT_GEOMETRY_PROGRAM]
-				+ caps.numTextureUnitsPerStage[GPT_HULL_PROGRAM] 
+				+ caps.numTextureUnitsPerStage[GPT_HULL_PROGRAM]
 				+ caps.numTextureUnitsPerStage[GPT_DOMAIN_PROGRAM]
 				+ caps.numTextureUnitsPerStage[GPT_COMPUTE_PROGRAM];
 
@@ -1214,18 +1214,18 @@ namespace bs { namespace ct
 			caps.numGpuParamBlockBuffersPerStage[GPT_DOMAIN_PROGRAM] = D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT;
 			caps.numGpuParamBlockBuffersPerStage[GPT_COMPUTE_PROGRAM] = D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT;
 
-			caps.numCombinedParamBlockBuffers 
+			caps.numCombinedParamBlockBuffers
 				= caps.numGpuParamBlockBuffersPerStage[GPT_FRAGMENT_PROGRAM]
-				+ caps.numGpuParamBlockBuffersPerStage[GPT_VERTEX_PROGRAM] 
+				+ caps.numGpuParamBlockBuffersPerStage[GPT_VERTEX_PROGRAM]
 				+ caps.numGpuParamBlockBuffersPerStage[GPT_GEOMETRY_PROGRAM]
-				+ caps.numGpuParamBlockBuffersPerStage[GPT_HULL_PROGRAM] 
+				+ caps.numGpuParamBlockBuffersPerStage[GPT_HULL_PROGRAM]
 				+ caps.numGpuParamBlockBuffersPerStage[GPT_DOMAIN_PROGRAM]
 				+ caps.numGpuParamBlockBuffersPerStage[GPT_COMPUTE_PROGRAM];
 
 			caps.numLoadStoreTextureUnitsPerStage[GPT_FRAGMENT_PROGRAM] = D3D11_PS_CS_UAV_REGISTER_COUNT;
 			caps.numLoadStoreTextureUnitsPerStage[GPT_COMPUTE_PROGRAM] = D3D11_PS_CS_UAV_REGISTER_COUNT;
 
-			caps.numCombinedLoadStoreTextureUnits 
+			caps.numCombinedLoadStoreTextureUnits
 				= caps.numLoadStoreTextureUnitsPerStage[GPT_FRAGMENT_PROGRAM]
 				+ caps.numLoadStoreTextureUnitsPerStage[GPT_COMPUTE_PROGRAM];
 		}
@@ -1332,7 +1332,7 @@ namespace bs { namespace ct
 					}
 					else
 					{
-						// Drop CSAA entirely 
+						// Drop CSAA entirely
 						tryCSAA = false;
 					}
 
@@ -1352,7 +1352,7 @@ namespace bs { namespace ct
 					}
 				}
 			}
-		} 
+		}
 	}
 
 	void D3D11RenderAPI::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)

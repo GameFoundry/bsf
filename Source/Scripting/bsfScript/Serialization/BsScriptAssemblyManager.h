@@ -69,7 +69,7 @@ namespace bs
 		 * currently loaded. Once the data has been loaded you will be able to call getSerializableObjectInfo() and
 		 * hasSerializableObjectInfo() to retrieve information about those objects. If an assembly already had data loaded
 		 * it will be rebuilt.
-		 * 
+		 *
 		 * @param[in]	assemblyName		Name of the assembly to load the information about.
 		 * @param[in]	typeMappings		Contains information about managed objects that wrap native objects.
 		 */
@@ -87,51 +87,51 @@ namespace bs
 		 *							otherwise.
 		 * @return					True if the type was found, false otherwise.
 		 */
-		bool getSerializableObjectInfo(const String& ns, const String& typeName, 
+		bool getSerializableObjectInfo(const String& ns, const String& typeName,
 			SPtr<ManagedSerializableObjectInfo>& outInfo);
 
 		/**	Generates or retrieves a type info object for the specified managed class, if the class is serializable. */
 		SPtr<ManagedSerializableTypeInfo> getTypeInfo(MonoClass* monoClass);
 
-		/** 
+		/**
 		 * Maps a mono type to information about a wrapped built-in component. Returns null if type doesn't correspond to
-		 * a builtin component. 
+		 * a builtin component.
 		 */
 		BuiltinComponentInfo* getBuiltinComponentInfo(::MonoReflectionType* type);
 
-		/** 
+		/**
 		 * Maps a type id to information about a wrapped built-in component. Returns null if type id doesn't correspond to
-		 * a builtin component. 
+		 * a builtin component.
 		 */
 		BuiltinComponentInfo* getBuiltinComponentInfo(UINT32 rttiTypeId);
 
-		/** 
+		/**
 		 * Maps a mono type to information about a wrapped built-in resource. Returns null if type doesn't correspond to
 		 * a builtin resource.
 		 */
 		BuiltinResourceInfo* getBuiltinResourceInfo(::MonoReflectionType* type);
 
-		/** 
+		/**
 		 * Maps a type id to information about a wrapped built-in resource. Returns null if type id doesn't correspond to
-		 * a builtin resource. 
+		 * a builtin resource.
 		 */
 		BuiltinResourceInfo* getBuiltinResourceInfo(UINT32 rttiTypeId);
 
-		/** 
+		/**
 		 * Maps a resource type to information about a wrapped built-in resource. Returns null if type id doesn't correspond to
-		 * a builtin resource. 
+		 * a builtin resource.
 		 */
 		BuiltinResourceInfo* getBuiltinResourceInfo(ScriptResourceType type);
 
-		/** 
+		/**
 		 * Maps a mono type to information about a wrapped reflectable object. Returns null if type doesn't correspond to
-		 * a reflectable object. 
+		 * a reflectable object.
 		 */
 		ReflectableTypeInfo* getReflectableTypeInfo(::MonoReflectionType* type);
 
-		/** 
+		/**
 		 * Maps a type id to information about a wrapped reflectable object. Returns null if type id doesn't correspond to
-		 * a reflectable object. 
+		 * a reflectable object.
 		 */
 		ReflectableTypeInfo* getReflectableTypeInfo(UINT32 rttiTypeId);
 
@@ -169,9 +169,9 @@ namespace bs
 		 */
 		void initializeBaseTypes();
 
-		/** 
-		 * Adds mappings between managed objects and their native wrappers to their respective lookup tables and 
-		 * initializes any assembly specific data. 
+		/**
+		 * Adds mappings between managed objects and their native wrappers to their respective lookup tables and
+		 * initializes any assembly specific data.
 		 */
 		void loadTypeMappings(MonoAssembly& assembly, const BuiltinTypeMappings& mapping);
 

@@ -5,7 +5,7 @@
 #include "Prerequisites/BsPrerequisitesUtil.h"
 #include "Math/BsVector3.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Math
 	 *  @{
@@ -16,7 +16,7 @@ namespace bs
 	{
 	public:
 		/**
-		 * The "positive side" of the plane is the half space to which the plane normal points. The "negative side" is the 
+		 * The "positive side" of the plane is the half space to which the plane normal points. The "negative side" is the
 		 * other half space. The flag "no side" indicates the plane itself.
 		 */
 		enum Side
@@ -56,8 +56,8 @@ namespace bs
 		/**
 		 * Returns a distance from point to plane.
 		 *
-		 * @note	The sign of the return value is positive if the point is on the 
-		 * 			positive side of the plane, negative if the point is on the negative 
+		 * @note	The sign of the return value is positive if the point is on the
+		 * 			positive side of the plane, negative if the point is on the negative
 		 * 			side, and zero if the point is on the plane.
 		 */
 		float getDistance(const Vector3& point) const;

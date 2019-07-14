@@ -86,7 +86,7 @@ namespace bs
 		return loadInternal(uuid, filePath, !async, loadFlags).resource;
 	}
 
-	Resources::LoadInfo Resources::loadInternal(const UUID& uuid, const Path& filePath, bool synchronous, 
+	Resources::LoadInfo Resources::loadInternal(const UUID& uuid, const Path& filePath, bool synchronous,
 		ResourceLoadFlags loadFlags)
 	{
 		LoadInfo output;
@@ -158,7 +158,7 @@ namespace bs
 			}
 
 			// If we have nowhere to load from, warn and complete load if a file path was provided, otherwise pass through
-			// as we might just want to complete a previously queued load 
+			// as we might just want to complete a previously queued load
 			if (filePath.isEmpty())
 			{
 				if (!alreadyLoading)
@@ -181,7 +181,7 @@ namespace bs
 				if (!filePath.isEmpty())
 				{
 					// Note: Ideally this data gets cached eventually (e.g. as part of the manifest). When loading objects
-					// with a lot of dependencies (e.g. scenes) this will get called for every dependency, synchronously, 
+					// with a lot of dependencies (e.g. scenes) this will get called for every dependency, synchronously,
 					// which might take a while. It would be nice to just read it from a single location. Another option is
 					// to make this whole block asynchronous so every dependency does it on its own thread.
 					FileDecoder fs(filePath);
@@ -353,7 +353,7 @@ namespace bs
 			}
 		}
 
-		// Check if resource load already started on another thread (in case it was already being loaded), in which case 
+		// Check if resource load already started on another thread (in case it was already being loaded), in which case
 		// we want to wait
 		bool waitOnLoadInProgress = false;
 		SPtr<Task> loadTask;
@@ -396,7 +396,7 @@ namespace bs
 				String taskName = "Resource load: " + fileName;
 
 				bool keepSourceData = loadFlags.isSet(ResourceLoadFlag::KeepSourceData);
-				SPtr<Task> task = Task::create(taskName, 
+				SPtr<Task> task = Task::create(taskName,
 					std::bind(&Resources::loadCallback, this, filePath, output.resource, keepSourceData));
 
 				// Register the task
@@ -424,7 +424,7 @@ namespace bs
 		return output;
 	}
 
-	SPtr<Resource> Resources::loadFromDiskAndDeserialize(const Path& filePath, bool loadWithSaveData, 
+	SPtr<Resource> Resources::loadFromDiskAndDeserialize(const Path& filePath, bool loadWithSaveData,
 		std::atomic<float>& progress)
 	{
 		Lock fileLock = FileScheduler::getLock(filePath);
@@ -688,7 +688,7 @@ namespace bs
 	{
 		if (!resource->mKeepSourceData)
 		{
-			BS_LOG(Warning, Resources, "Saving a resource that was created/loaded without KeepSourceData flag." 
+			BS_LOG(Warning, Resources, "Saving a resource that was created/loaded without KeepSourceData flag."
 				"Some data might not be available for saving. File path: {0}", filePath);
 		}
 
@@ -698,7 +698,7 @@ namespace bs
 			dependencyUUIDs[i] = dependencyList[i].resource.getUUID();
 
 		UINT32 compressionMethod = (compress && resource->isCompressible()) ? 1 : 0;
-		SPtr<SavedResourceData> resourceData = bs_shared_ptr_new<SavedResourceData>(dependencyUUIDs, 
+		SPtr<SavedResourceData> resourceData = bs_shared_ptr_new<SavedResourceData>(dependencyUUIDs,
 			resource->allowAsyncLoading(), compressionMethod);
 
 		Path parentDir = filePath.getDirectory();
@@ -722,7 +722,7 @@ namespace bs
 			{
 				if(safetyCounter > 10)
 				{
-					BS_LOG(Error, Resources, 
+					BS_LOG(Error, Resources,
 						"Internal error. Unable to save resource due to not being able to find a unique filename.");
 					return;
 				}
@@ -837,7 +837,7 @@ namespace bs
 
 	SPtr<ResourceManifest> Resources::getResourceManifest(const String& name) const
 	{
-		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
+		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter)
 		{
 			if(name == (*iter)->getName())
 				return (*iter);
@@ -960,8 +960,8 @@ namespace bs
 	bool Resources::getFilePathFromUUID(const UUID& uuid, Path& filePath) const
 	{
 		// Default manifest is at 0th index but all other take priority since Default manifest could
-		// contain obsolete data. 
-		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
+		// contain obsolete data.
+		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter)
 		{
 			if((*iter)->uuidToFilePath(uuid, filePath))
 				return true;
@@ -976,7 +976,7 @@ namespace bs
 		if (!manifestPath.isAbsolute())
 			manifestPath.makeAbsolute(FileSystem::getWorkingDirectoryPath());
 
-		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
+		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter)
 		{
 			if ((*iter)->filePathToUUID(manifestPath, uuid))
 				return true;

@@ -31,7 +31,7 @@ namespace bs
 		StringTableRTTI()
 		{
 			addPlainField("mActiveLanguage", 0, &StringTableRTTI::getActiveLanguage, &StringTableRTTI::setActiveLanguage);
-			addPlainArrayField("mLanguageData", 1, &StringTableRTTI::getLanguageData, &StringTableRTTI::getNumLanguages, 
+			addPlainArrayField("mLanguageData", 1, &StringTableRTTI::getLanguageData, &StringTableRTTI::getNumLanguages,
 				&StringTableRTTI::setLanguageData, &StringTableRTTI::setNumLanguages);
 			addPlainField("mIdentifiers", 2, &StringTableRTTI::getIdentifiers, &StringTableRTTI::setIdentifiers);
 		}
@@ -71,7 +71,7 @@ namespace bs
 
 		/** @copydoc RTTIPlainType::toMemory */
 		static void toMemory(const LanguageData& data, char* memory)
-		{ 
+		{
 			UINT32 size = sizeof(UINT32);
 			char* memoryStart = memory;
 			memory += sizeof(UINT32);
@@ -90,7 +90,7 @@ namespace bs
 
 		/** @copydoc RTTIPlainType::fromMemory */
 		static UINT32 fromMemory(LanguageData& data, char* memory)
-		{ 
+		{
 			UINT32 size = 0;
 			memory = rttiReadElem(size, memory);
 
@@ -114,7 +114,7 @@ namespace bs
 
 		/** @copydoc RTTIPlainType::getDynamicSize */
 		static UINT32 getDynamicSize(const LanguageData& data)
-		{ 
+		{
 			UINT64 dataSize = sizeof(UINT32) * 2;
 
 			for (auto& entry : data.strings)
@@ -127,7 +127,7 @@ namespace bs
 
 			return (UINT32)dataSize;
 		}	
-	}; 
+	};
 
 	/**
 	 * RTTIPlainType for LocalizedStringData.
@@ -141,7 +141,7 @@ namespace bs
 
 		/** @copydoc RTTIPlainType::toMemory */
 		static void toMemory(const LocalizedStringData& data, char* memory)
-		{ 
+		{
 			UINT32 size = sizeof(UINT32);
 			char* memoryStart = memory;
 			memory += sizeof(UINT32);
@@ -157,7 +157,7 @@ namespace bs
 
 		/** @copydoc RTTIPlainType::fromMemory */
 		static UINT32 fromMemory(LocalizedStringData& data, char* memory)
-		{ 
+		{
 			if (data.parameterOffsets != nullptr)
 				bs_deleteN(data.parameterOffsets, data.numParameters);
 
@@ -176,7 +176,7 @@ namespace bs
 
 		/** @copydoc RTTIPlainType::getDynamicSize */
 		static UINT32 getDynamicSize(const LocalizedStringData& data)
-		{ 
+		{
 			UINT64 dataSize = sizeof(UINT32);
 
 			dataSize += rttiGetElemSize(data.string);
@@ -189,7 +189,7 @@ namespace bs
 
 			return (UINT32)dataSize;
 		}	
-	}; 
+	};
 
 	BS_ALLOW_MEMCPY_SERIALIZATION(LocalizedStringData::ParamOffset);
 

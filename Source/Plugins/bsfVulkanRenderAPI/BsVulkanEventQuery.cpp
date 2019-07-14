@@ -80,7 +80,7 @@ namespace bs { namespace ct
 		else
 			vulkanCB = static_cast<VulkanCommandBuffer*>(gVulkanRenderAPI()._getMainCommandBuffer());
 
-		VulkanCmdBuffer* internalCB = vulkanCB->getInternal(); 
+		VulkanCmdBuffer* internalCB = vulkanCB->getInternal();
 		internalCB->registerResource(mEvent, VulkanAccessFlag::Read);
 
 		internalCB->setEvent(mEvent);

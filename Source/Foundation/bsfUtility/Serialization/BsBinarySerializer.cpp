@@ -80,7 +80,7 @@ mTotalBytesRead -= size;												\
 		:mAlloc(&gFrameAlloc())
 	{ }
 
-	void BinarySerializer::encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, UINT32* bytesWritten, 
+	void BinarySerializer::encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, UINT32* bytesWritten,
 		std::function<UINT8*(UINT8*, UINT32, UINT32&)> flushBufferCallback, bool shallow, SerializationContext* context)
 	{
 		mObjectsToEncode.clear();
@@ -99,7 +99,7 @@ mTotalBytesRead -= size;												\
 		buffer = encodeEntry(object, objectId, buffer, bufferLength, bytesWritten, flushBufferCallback, shallow);
 		if(buffer == nullptr)
 		{
-			BS_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException,
 				"Destination buffer is null or not large enough.");
 		}
 
@@ -120,18 +120,18 @@ mTotalBytesRead -= size;												\
 				serializedObjects.insert(curObjectid);
 				mObjectsToEncode.erase(iter);
 
-				buffer = encodeEntry(curObject.get(), curObjectid, buffer, 
+				buffer = encodeEntry(curObject.get(), curObjectid, buffer,
 					bufferLength, bytesWritten, flushBufferCallback, shallow);
 				if(buffer == nullptr)
 				{
-					BS_EXCEPT(InternalErrorException, 
+					BS_EXCEPT(InternalErrorException,
 						"Destination buffer is null or not large enough.");
 				}
 
 				foundObjectToProcess = true;
 
 				// Ensure we keep a reference to the object so it isn't released.
-				// The system assigns unique IDs to IReflectable objects based on pointer 
+				// The system assigns unique IDs to IReflectable objects based on pointer
 				// addresses but if objects get released then same address could be assigned twice.
 				// Note: To get around this I could assign unique IDs to IReflectable objects
 				encodedObjects.push_back(curObject);
@@ -159,7 +159,7 @@ mTotalBytesRead -= size;												\
 		mAlloc->clear();
 	}
 
-	SPtr<IReflectable> BinarySerializer::decode(const SPtr<DataStream>& data, UINT32 dataLength, 
+	SPtr<IReflectable> BinarySerializer::decode(const SPtr<DataStream>& data, UINT32 dataLength,
 		SerializationContext* context, std::function<void(float)> progress)
 	{
 		mContext = context;
@@ -182,7 +182,7 @@ mTotalBytesRead -= size;												\
 		// Note: Ideally we can avoid iterating twice over the stream data
 		// Create empty instances of all ptr objects
 		SPtr<IReflectable> rootObject = nullptr;
-		do 
+		do
 		{
 			ObjectMetaData objectMetaData;
 			objectMetaData.objectMeta = 0;
@@ -247,7 +247,7 @@ mTotalBytesRead -= size;												\
 		return rootObject;
 	}
 
-	UINT8* BinarySerializer::encodeEntry(IReflectable* object, UINT32 objectId, UINT8* buffer, UINT32& bufferLength, 
+	UINT8* BinarySerializer::encodeEntry(IReflectable* object, UINT32 objectId, UINT8* buffer, UINT32& bufferLength,
 		UINT32* bytesWritten, std::function<UINT8*(UINT8*, UINT32, UINT32&)> flushBufferCallback, bool shallow)
 	{
 		RTTITypeBase* rtti = object->getRTTI();
@@ -285,7 +285,7 @@ mTotalBytesRead -= size;												\
 				RTTIField* curGenericField = rtti->getField(i);
 
 				// Copy field ID & other meta-data like field size and type
-				int metaData = encodeFieldMetaData(curGenericField->mUniqueId, curGenericField->getTypeSize(), 
+				int metaData = encodeFieldMetaData(curGenericField->mUniqueId, curGenericField->getTypeSize(),
 					curGenericField->mIsVectorType, curGenericField->mType, curGenericField->hasDynamicSize(), false);
 				COPY_TO_BUFFER(&metaData, META_SIZE)
 
@@ -323,7 +323,7 @@ mTotalBytesRead -= size;												\
 							{
 								IReflectable& childObject = curField->getArrayValue(rttiInstance, object, arrIdx);
 
-								buffer = complexTypeToBuffer(&childObject, buffer, bufferLength, 
+								buffer = complexTypeToBuffer(&childObject, buffer, bufferLength,
 									bytesWritten, flushBufferCallback, shallow);
 								if(buffer == nullptr)
 								{
@@ -371,8 +371,8 @@ mTotalBytesRead -= size;												\
 							break;
 						}
 					default:
-						BS_EXCEPT(InternalErrorException, 
-							"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) + 
+						BS_EXCEPT(InternalErrorException,
+							"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) +
 							", Is array: " + toString(curGenericField->mIsVectorType));
 					}
 				}
@@ -398,7 +398,7 @@ mTotalBytesRead -= size;												\
 							RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
 							IReflectable& childObject = curField->getValue(rttiInstance, object);
 
-							buffer = complexTypeToBuffer(&childObject, buffer, bufferLength, 
+							buffer = complexTypeToBuffer(&childObject, buffer, bufferLength,
 								bytesWritten, flushBufferCallback, shallow);
 							if(buffer == nullptr)
 							{
@@ -467,8 +467,8 @@ mTotalBytesRead -= size;												\
 							break;
 						}
 					default:
-						BS_EXCEPT(InternalErrorException, 
-							"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) + 
+						BS_EXCEPT(InternalErrorException,
+							"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) +
 							", Is array: " + toString(curGenericField->mIsVectorType));
 					}
 				}
@@ -602,7 +602,7 @@ mTotalBytesRead -= size;												\
 			if (terminator)
 			{
 				// We've processed the last field in this object, so return. Although we return false we don't actually know
-				// if there is an object following this one. However it doesn't matter since terminator fields are only used 
+				// if there is an object following this one. However it doesn't matter since terminator fields are only used
 				// for embedded objects that are all processed within this method so we can compensate.
 				finalizeObject(output.get());
 				return false;
@@ -911,7 +911,7 @@ mTotalBytesRead -= size;												\
 		return false;
 	}
 
-	UINT8* BinarySerializer::complexTypeToBuffer(IReflectable* object, UINT8* buffer, UINT32& bufferLength, 
+	UINT8* BinarySerializer::complexTypeToBuffer(IReflectable* object, UINT8* buffer, UINT32& bufferLength,
 		UINT32* bytesWritten, std::function<UINT8*(UINT8*, UINT32, UINT32&)> flushBufferCallback, bool shallow)
 	{
 		if (object != nullptr)
@@ -928,7 +928,7 @@ mTotalBytesRead -= size;												\
 		return buffer;
 	}
 
-	UINT32 BinarySerializer::encodeFieldMetaData(UINT16 id, UINT8 size, bool array, SerializableFieldType type, 
+	UINT32 BinarySerializer::encodeFieldMetaData(UINT16 id, UINT8 size, bool array, SerializableFieldType type,
 		bool hasDynamicSize, bool terminator)
 	{
 		// If O == 0 - Meta contains field information (Encoded using this method)
@@ -943,21 +943,21 @@ mTotalBytesRead -= size;												\
 		//// Y - Plain field has dynamic size
 		//// T - Terminator (last field in an object)
 
-		return (id << 16 | size << 8 | 
-			(array ? 0x02 : 0) | 
-			((type == SerializableFT_DataBlock) ? 0x04 : 0) | 
-			((type == SerializableFT_Reflectable) ? 0x08 : 0) | 
-			((type == SerializableFT_ReflectablePtr) ? 0x10 : 0) | 
+		return (id << 16 | size << 8 |
+			(array ? 0x02 : 0) |
+			((type == SerializableFT_DataBlock) ? 0x04 : 0) |
+			((type == SerializableFT_Reflectable) ? 0x08 : 0) |
+			((type == SerializableFT_ReflectablePtr) ? 0x10 : 0) |
 			(hasDynamicSize ? 0x20 : 0) |
 			(terminator ? 0x40 : 0)); // TODO - Low priority. Technically I could encode this much more tightly, and use var-ints for ID
 	}
 
-	void BinarySerializer::decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size, 
+	void BinarySerializer::decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size,
 		bool& array, SerializableFieldType& type, bool& hasDynamicSize, bool& terminator)
 	{
 		if(isObjectMetaData(encodedData))
 		{
-			BS_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException,
 				"Meta data represents an object description but is trying to be decoded as a field descriptor.");
 		}
 
@@ -1001,7 +1001,7 @@ mTotalBytesRead -= size;												\
 	{
 		if(!isObjectMetaData(encodedData.objectMeta))
 		{
-			BS_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException,
 				"Meta data represents a field description but is trying to be decoded as an object descriptor.");
 		}
 

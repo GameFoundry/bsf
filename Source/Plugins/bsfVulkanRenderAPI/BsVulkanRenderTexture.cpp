@@ -12,7 +12,7 @@ namespace bs
 {
 	VulkanRenderTexture::VulkanRenderTexture(const RENDER_TEXTURE_DESC& desc)
 		:RenderTexture(desc), mProperties(desc, false)
-	{ 
+	{
 
 	}
 

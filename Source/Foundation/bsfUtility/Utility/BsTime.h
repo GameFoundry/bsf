@@ -62,13 +62,13 @@ namespace bs
 		UINT64 getFrameIdx() const { return mCurrentFrame.load(); }
 
 		/**
-		 * Returns the precise time since application start, in microseconds. Unlike other time methods this is not only 
+		 * Returns the precise time since application start, in microseconds. Unlike other time methods this is not only
 		 * updated every frame, but will return exact time at the moment it is called.
 		 * 		
 		 * @return	Time in microseconds.
 		 *
 		 * @note	
-		 * You will generally only want to use this for performance measurements and similar. Use non-precise methods in 
+		 * You will generally only want to use this for performance measurements and similar. Use non-precise methods in
 		 * majority of code as it is useful to keep the time value equal in all methods during a single frame.
 		 */
 		UINT64 getTimePrecise() const;
@@ -82,11 +82,11 @@ namespace bs
 
 		/**
 		 * Gets the current date and time in textual form.
-		 * 
+		 *
 		 * @param[in]	isUTC Outputs the date and time in Coordinated Universal Time, otherwise in local time.
-		 * 
+		 *
 		 * @return	A String containing the current date and time.
-		 * 
+		 *
 		 * @note
 		 * Thread safe.
 		 * The output format is [DayOfWeek], [Month] [NumericalDate], [NumericalYear] [HH]::[MM]::[SS].
@@ -95,11 +95,11 @@ namespace bs
 
 		/**
 		 * Gets the current time in textual form
-		 * 
+		 *
 		 * @param[in]	isUTC Outputs the time in Coordinated Universal Time, otherwise in local time.
-		 * 
+		 *
 		 * @return	A String containing the current time.
-		 * 
+		 *
 		 * @note
 		 * Thread safe.
 		 * The output format is [HH]::[MM]::[SS].
@@ -110,38 +110,38 @@ namespace bs
 		 * Gets the date and time where the application has been started in textual form.
 		 *
 		 * @param[in]	isUTC Outputs the date and time in Coordinated Universal Time, otherwise in local time.
-		 * 
+		 *
 		 * @return	A String containing the application startup date and time.
-		 * 
+		 *
 		 * @note
 		 * Thread safe.
 		 * The output format is [DayOfWeek], [Month] [NumericalDate], [NumericalYear] [HH]::[MM]::[SS].
 		 */
 		String getAppStartUpDateString(bool isUTC);
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 
 		/** Called every frame. Should only be called by Application. */
 		void _update();
 
-		/** 
+		/**
 		 * Calculates the number of fixed update iterations required and their step size. Values depend on the current
 		 * time and previous calls to _advanceFixedUpdate().;
-		 * 
+		 *
 		 * @param[out]		step	Duration of the fixed step in microseconds. In most cases this is the same duration as
 		 *							the	fixed time delta, but in the cases where frame is taking a very long time the step
 		 *							might be increased to avoid a large number of fixed updates per frame.
 		 * @return					Returns the number of fixed frame updates to execute (each of @p step duration). In most
 		 *							cases this will be either 1 or 0, or a larger amount of frames are taking a long time
-		 *							to execute (longer than a multiple of fixed frame step). 
+		 *							to execute (longer than a multiple of fixed frame step).
 		 */
 		UINT32 _getFixedUpdateStep(UINT64& step);
 
-		/** 
+		/**
 		 * Advances the fixed update timers by @p step microseconds. Should be called once for each iteration as returned
-		 * by _getFixedUpdateStep(), per frame. 
+		 * by _getFixedUpdateStep(), per frame.
 		 */
 		void _advanceFixedUpdate(UINT64 step);
 

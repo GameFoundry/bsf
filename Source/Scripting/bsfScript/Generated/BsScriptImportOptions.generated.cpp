@@ -29,7 +29,7 @@ namespace bs
 
 	MonoObject* ScriptImportOptions::create(const SPtr<ImportOptions>& value)
 	{
-		if(value == nullptr) return nullptr; 
+		if(value == nullptr) return nullptr;
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };

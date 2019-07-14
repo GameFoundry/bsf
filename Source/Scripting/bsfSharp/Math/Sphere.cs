@@ -19,7 +19,7 @@ namespace bs
 
         [SerializeField]
         private Vector3 _center;
-        
+
         /// <summary>
         /// Center point of the sphere.
         /// </summary>

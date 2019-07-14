@@ -26,7 +26,7 @@ namespace bs
 		bs_delete(mInternal);
 	}
 
-	NullPhysicsCapsuleCollider::NullPhysicsCapsuleCollider(const Vector3& position, const Quaternion& rotation, 
+	NullPhysicsCapsuleCollider::NullPhysicsCapsuleCollider(const Vector3& position, const Quaternion& rotation,
 		float radius, float halfHeight)
 		:mRadius(radius), mHalfHeight(halfHeight)
 	{

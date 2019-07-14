@@ -79,7 +79,7 @@ namespace bs
 			if (FileSystem::exists(editorDataPath))
 				path = FileSystem::getWorkingDirectoryPath() + editorDataPath;
 #else
-			// Otherwise, look for the folder in the direct descendant of the working directory 
+			// Otherwise, look for the folder in the direct descendant of the working directory
 			if (FileSystem::exists(EDITOR_DATA_PATH))
 				path = FileSystem::getWorkingDirectoryPath() + EDITOR_DATA_PATH;
 #endif
@@ -115,7 +115,7 @@ namespace bs
 	{
 		// Note: These paths should be searched for during start-up and cached
 
-		// First, look for the direct descendant of the working directory 
+		// First, look for the direct descendant of the working directory
 		Path output = path;
 		if (FileSystem::exists(path))
 		{

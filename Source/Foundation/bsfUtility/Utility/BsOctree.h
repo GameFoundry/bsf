@@ -32,8 +32,8 @@ namespace bs
 		UINT32 elementIdx = 0u;
 	};
 
-	/** 
-	 * Spatial partitioning tree for 3D space. 
+	/**
+	 * Spatial partitioning tree for 3D space.
 	 *
 	 * @tparam	ElemType	Type of elements to be stored in the tree.
 	 * @tparam	Options		Class that controls various options of the tree. It must provide the following enums:
@@ -51,15 +51,15 @@ namespace bs
 	 *							- MaxDepth: Maximum depth of nodes in the tree. Nodes at this depth will not be subdivided
 	 *										even if they element counts go past MaxElementsPerNode.
 	 *						It must also provide the following methods:
-	 *							- "static simd::AABox getBounds(const ElemType&, void*)" 
+	 *							- "static simd::AABox getBounds(const ElemType&, void*)"
 	 *								- Returns the bounds for the provided element
-	 *							- "static void setElementId(const Octree::ElementId&, void*)" 
+	 *							- "static void setElementId(const Octree::ElementId&, void*)"
 	 *								- Gets called when element's ID is first assigned or subsequentily modified
 	 */
 	template<class ElemType, class Options>
 	class Octree
 	{
-		/** 
+		/**
 		 * A sequential group of elements within a node. If number of elements exceeds the limit of the group multiple
 		 * groups will be linked together in a linked list fashion.
 		 */
@@ -69,7 +69,7 @@ namespace bs
 			ElementGroup* next = nullptr;
 		};
 
-		/** 
+		/**
 		 * A sequential group of element bounds within a node. If number of elements exceeds the limit of the group multiple
 		 * groups will be linked together in a linked list fashion.
 		 */
@@ -214,9 +214,9 @@ namespace bs
 			UINT32 mIsLeaf : 1;
 		};
 
-		/** 
+		/**
 		 * Contains bounds for a specific node. This is necessary since the nodes themselves do not store bounds
-		 * information. Instead we construct it on-the-fly as we traverse the tree, using this class. 
+		 * information. Instead we construct it on-the-fly as we traverse the tree, using this class.
 		 */
 		class NodeBounds
 		{
@@ -370,9 +370,9 @@ namespace bs
 			NodeBounds mBounds;
 		};
 
-		/** 
+		/**
 		 * Iterator that iterates over octree nodes. By default only the first inserted node will be iterated over and it
-		 * is up the the user to add new ones using pushChild(). The iterator takes care of updating the node bounds 
+		 * is up the the user to add new ones using pushChild(). The iterator takes care of updating the node bounds
 		 * accordingly.
 		 */
 		class NodeIterator
@@ -392,13 +392,13 @@ namespace bs
 				mNodeStack.push_back(mCurrentNode);
 			}
 
-			/** 
-			 * Returns a reference to the current node. moveNext() must be called at least once and it must return true 
+			/**
+			 * Returns a reference to the current node. moveNext() must be called at least once and it must return true
 			 * prior to attempting to access this data.
 			 */
 			const HNode& getCurrent() const { return mCurrentNode; }
 
-			/** 
+			/**
 			 * Moves to the next entry in the iterator. Iterator starts at a position before the first element, therefore
 			 * this method must be called at least once before attempting to access the current node. If the method returns
 			 * false it means the iterator end has been reached and attempting to access data will result in an error.
@@ -448,7 +448,7 @@ namespace bs
 				mElemsInGroup = node->mElements.count - (numGroups - 1) * Options::MaxElementsPerNode;
 			}
 
-			/** 
+			/**
 			 * Moves to the next element in the node. Iterator starts at a position before the first element, therefore
 			 * this method must be called at least once before attempting to access the current element data. If the method
 			 * returns false it means iterator end has been reached and attempting to access data will result in an error.
@@ -474,13 +474,13 @@ namespace bs
 				return true;
 			}
 
-			/** 
+			/**
 			 * Returns the bounds of the current element. moveNext() must be called at least once and it must return true
 			 * prior to attempting to access this data.
 			 */
 			const simd::AABox& getCurrentBounds() const { return mCurrentBoundGroup->v[mCurrentIdx]; }
 
-			/** 
+			/**
 			 * Returns the contents of the current element. moveNext() must be called at least once and it must return true
 			 * prior to attempting to access this data.
 			 */
@@ -497,15 +497,15 @@ namespace bs
 		class BoxIntersectIterator
 		{
 		public:
-			/** 
-			 * Constructs an iterator that iterates over all elements in the specified tree that intersect the specified 
-			 * bounds. 
+			/**
+			 * Constructs an iterator that iterates over all elements in the specified tree that intersect the specified
+			 * bounds.
 			 */
 			BoxIntersectIterator(const Octree& tree, const AABox& bounds)
 				:mNodeIter(tree), mBounds(simd::AABox(bounds))
 			{ }
 
-			/** 
+			/**
 			 * Returns the contents of the current element. moveNext() must be called at least once and it must return true
 			 * prior to attempting to access this data.
 			 */
@@ -514,7 +514,7 @@ namespace bs
 				return mElemIter.getCurrentElem();
 			}
 
-			/** 
+			/**
 			 * Moves to the next intersecting element. Iterator starts at a position before the first element, therefore
 			 * this method must be called at least once before attempting to access the current element data. If the method
 			 * returns false it means iterator end has been reached and attempting to access data will result in an error.
@@ -556,9 +556,9 @@ namespace bs
 			simd::AABox mBounds;
 		};
 
-		/** 
-		 * Constructs an octree with the specified bounds. 
-		 * 
+		/**
+		 * Constructs an octree with the specified bounds.
+		 *
 		 * @param[in]	center		Origin of the root node.
 		 * @param[in]	extent		Extent (half-size) of the root node in all directions;
 		 * @param[in]	context		Optional user context that will be passed along to getBounds() and setElementId()

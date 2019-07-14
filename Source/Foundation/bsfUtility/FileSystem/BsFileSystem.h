@@ -140,14 +140,14 @@ namespace bs
 		static void moveFile(const Path& oldPath, const Path& newPath);
 	};
 
-	/** 
+	/**
 	 * Locks access to files on the same drive, allowing only one file to be read at a time, per drive. This prevents
 	 * multiple threads accessing multiple files on the same drive at once, ruining performance on mechanical drives.
 	 */
 	class BS_UTILITY_EXPORT FileScheduler final
 	{
 	public:
-		/** 
+		/**
 		 * Locks access and doesn't allow other threads to get past this point until access is unlocked. Any scheduled
 		 * file access should happen past this point.
 		 */
@@ -159,7 +159,7 @@ namespace bs
 			mMutex.lock();
 		}
 
-		/** 
+		/**
 		 * Unlocks access and allows another thread to lock file access. Must be provided with the same file path as
 		 * lock().
 		 */

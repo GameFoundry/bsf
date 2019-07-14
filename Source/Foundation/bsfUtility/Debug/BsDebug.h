@@ -31,7 +31,7 @@ namespace bs
 		Debug() = default;
 
 		/**
-		 * Logs a new message. 
+		 * Logs a new message.
 		 *
 		 * @param[in]	message		The message describing the log entry.
 		 * @param[in]	verbosity	Verbosity of the message, determining its importance.
@@ -43,12 +43,12 @@ namespace bs
 		Log& getLog() { return mLog; }
 
 		/** Converts raw pixels into a BMP image and saves it as a file */
-		void writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const Path& filePath, 
+		void writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const Path& filePath,
 			bool overwrite = true) const;
 
 		/**
 		 * Saves a log about the current state of the application to the specified location.
-		 * 
+		 *
 		 * @param	path	Absolute path to the log filename.
 		 * @param   type    Format of the saved log.
 		 */
@@ -56,14 +56,14 @@ namespace bs
 		
 		/**
 		 * Saves a log about the current state of the application to the specified location as a HTML file.
-		 * 
+		 *
 		 * @param	path	Absolute path to the log filename.
 		 */
 		void saveHtmlLog(const Path& path) const;
 		
 		/**
 		 * Saves a log about the current state of the application to the specified location as a text file.
-		 * 
+		 *
 		 * @param	path	Absolute path to the log filename.
 		 */
 		void saveTextLog(const Path& path) const;
@@ -109,7 +109,7 @@ namespace bs
 	#define BS_LOG_VERBOSITY LogVerbosity::Warning
 #endif
 
-/** 
+/**
  * Defines a new log category to use with BS_LOG. Each category must have a unique ID. A matching call to
  * BS_LOG_CATEGORY_IMPL must be done in the source file.
  */

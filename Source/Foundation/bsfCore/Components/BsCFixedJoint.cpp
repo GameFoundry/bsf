@@ -8,7 +8,7 @@
 
 namespace bs
 {
-	CFixedJoint::CFixedJoint() 
+	CFixedJoint::CFixedJoint()
 		:CJoint(mDesc)
 	{
 		setName("FixedJoint");

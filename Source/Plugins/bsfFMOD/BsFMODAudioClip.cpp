@@ -336,7 +336,7 @@ namespace bs
 
 	bool FMODAudioClip::requiresStreaming() const
 	{
-		return mDesc.readMode == AudioReadMode::Stream || 
+		return mDesc.readMode == AudioReadMode::Stream ||
 			(mDesc.readMode == AudioReadMode::LoadCompressed && mDesc.format == AudioFormat::VORBIS);
 	}
 }

@@ -8,7 +8,7 @@
 #include "Math/BsAABox.h"
 #include "Importer/BsSpecificImporter.h"
 
-namespace bs 
+namespace bs
 {
 	namespace ct { class VectorField; }
 
@@ -71,7 +71,7 @@ namespace bs
 	 *  @{
 	 */
 
-	/** 
+	/**
 	 * Represents a three dimensional field of vectors. It is represented by spatial bounds which are split into a grid
 	 * of values with user-defined density, where each grid cell is assigned a vector.
 	 */
@@ -89,13 +89,13 @@ namespace bs
 		 * Creates a new vector field.
 		 *
 		 * @param[in]	desc  	Description of the vector field to create.
-		 * @param[in]	values	Values to assign to the vector field. Number of entries must match 
+		 * @param[in]	values	Values to assign to the vector field. Number of entries must match
 		 *						countX * countY * countZ.
 		 */
 		BS_SCRIPT_EXPORT(ec:T)
 		static HVectorField create(const VECTOR_FIELD_DESC& desc, const Vector<Vector3>& values);
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 

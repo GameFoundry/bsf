@@ -31,7 +31,7 @@ namespace bs
 
 		/**	
 		 * Updates the play state of the game, making the game stop or start running. Note the actual state change
-		 * will be delayed until the next update() call. Use the onPlay/onStopped/onPaused/onUnpaused event to get notified 
+		 * will be delayed until the next update() call. Use the onPlay/onStopped/onPaused/onUnpaused event to get notified
 		 * when the change actually happens.
 		 */
 		BS_SCRIPT_EXPORT(in:true)

@@ -14,7 +14,7 @@
 #include "Particles/BsParticleEvolver.h"
 #include "Particles/BsParticleEmitter.h"
 
-namespace bs 
+namespace bs
 {
 	struct EvaluatedAnimationData;
 	class SkeletonMask;
@@ -51,13 +51,13 @@ namespace bs
 	/** Space in which to spawn/transform particles. */
 	enum class BS_SCRIPT_EXPORT(m:Particles) ParticleSimulationSpace
 	{
-		/** 
+		/**
 		 * Particles will always remain local to their transform parent. This means if the transform parent moves so will
 		 * all the particles.
 		 */
 		Local,
 
-		/** 
+		/**
 		 * Particles will be placed in world space. This means they will spawn at the location of the transform parent,
 		 * but are no longer affected by its transform after spawn (e.g. smoke rising from a moving train).
 		 */
@@ -100,9 +100,9 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		bool enabled = false;
 
-		/** 
+		/**
 		 * Determines the elasticity (bounciness) of the particle collision. Lower values make the collision less bouncy
-		 * and higher values more. 
+		 * and higher values more.
 		 */
 		BS_SCRIPT_EXPORT()
 		float restitution = 1.0f;
@@ -147,7 +147,7 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		ParticleOrientation orientation = ParticleOrientation::ViewPlane;
 
-		/** 
+		/**
 		 * Determines the time period during which the system runs, in seconds. This effects evaluation of distributions
 		 * with curves using particle system time for evaluation.
 		 */
@@ -158,7 +158,7 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		bool isLooping = true;
 
-		/** 
+		/**
 		 * Determines the maximum number of particles that can ever be active in this system. This number is ignored
 		 * if GPU simulation is enabled, and instead particle count is instead only limited by the size of the internal
 		 * buffers (shared between all particle systems).
@@ -166,10 +166,10 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		UINT32 maxParticles = 2000;
 
-		/** 
+		/**
 		 * If true the particle system will be simulated on the GPU. This allows much higher particle counts at lower
 		 * performance cost. GPU simulation ignores any provided evolvers and instead uses ParticleGpuSimulationSettings
-		 * to customize the GPU simulation. 
+		 * to customize the GPU simulation.
 		 */
 		BS_SCRIPT_EXPORT(category:Advanced,order:1)
 		bool gpuSimulation = false;
@@ -179,35 +179,35 @@ namespace bs
 		BS_SCRIPT_EXPORT(order:2)
 		ParticleRenderMode renderMode = ParticleRenderMode::Billboard;
 
-		/** 
+		/**
 		 * Determines should the particles only be allowed to orient themselves around the Y axis, or freely. Ignored if
 		 * using the Plane orientation mode.
 		 */
 		BS_SCRIPT_EXPORT(order:2)
 		bool orientationLockY = false;
 
-		/** 
-		 * Determines a normal of the plane to orient particles towards. Only used if particle orientation mode is set to 
-		 * ParticleOrientation::Plane. 
+		/**
+		 * Determines a normal of the plane to orient particles towards. Only used if particle orientation mode is set to
+		 * ParticleOrientation::Plane.
 		 */
 		BS_SCRIPT_EXPORT(order:2)
 		Vector3 orientationPlaneNormal = Vector3::UNIT_Z;
 
-		/** 
-		 * Determines how (and if) are particles sorted. Sorting controls in what order are particles rendered. 
+		/**
+		 * Determines how (and if) are particles sorted. Sorting controls in what order are particles rendered.
 		 * If GPU simulation is enabled only distance based sorting is supported.
 		 */
 		BS_SCRIPT_EXPORT(order:2)
 		ParticleSortMode sortMode = ParticleSortMode::None;
 
-		/** 
+		/**
 		 * Determines should an automatic seed be used for the internal random number generator. This ensures the particle
 		 * system yields different results each time it is ran.
 		 */
 		BS_SCRIPT_EXPORT(order:2)
 		bool useAutomaticSeed = true;
 
-		/** 
+		/**
 		 * Determines the seed to use for the internal random number generator. Allows you to guarantee identical behaviour
 		 * between different runs. Only relevant if automatic seed is disabled.
 		 */
@@ -222,7 +222,7 @@ namespace bs
 		BS_SCRIPT_EXPORT(order:2)
 		bool useAutomaticBounds = true;
 
-		/** 
+		/**
 		 * Custom bounds to use them @p useAutomaticBounds is disabled. The bounds are in the simulation space of the
 		 * particle system.
 		 */
@@ -257,10 +257,10 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		float intensity = 1.0f;
 
-		/** 
+		/**
 		 * Determines how closely does the particle velocity follow the vectors in the field. If set to 1 particles
 		 * will be snapped to the exact velocity of the value in the field, and if set to 0 the field will not influence
-		 * particle velocities directly. 
+		 * particle velocities directly.
 		 */
 		BS_SCRIPT_EXPORT()
 		float tightness = 0.0f;
@@ -269,7 +269,7 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		Vector3 scale = Vector3::ONE;
 
-		/** 
+		/**
 		 * Amount of to move the vector field by relative to the parent particle system. This is added to the bounds
 		 * provided in the vector field resource.
 		 */
@@ -280,28 +280,28 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		Quaternion rotation = Quaternion::IDENTITY;
 
-		/** 
-		 * Determines the amount to rotate the vector field every second, in degrees, around XYZ axis respectively. 
-		 * Evaluated over the particle system lifetime. 
+		/**
+		 * Determines the amount to rotate the vector field every second, in degrees, around XYZ axis respectively.
+		 * Evaluated over the particle system lifetime.
 		 */
 		BS_SCRIPT_EXPORT()
 		Vector3Distribution rotationRate = Vector3(0.0f, 90.0f, 0.0f);
 
-		/** 
+		/**
 		 * Determines should the field influence particles outside of the field bounds. If true the field will be tiled
 		 * infinitely in the X direction.
 		 */
 		BS_SCRIPT_EXPORT()
 		bool tilingX = false;
 
-		/** 
+		/**
 		 * Determines should the field influence particles outside of the field bounds. If true the field will be tiled
 		 * infinitely in the Y direction.
 		 */
 		BS_SCRIPT_EXPORT()
 		bool tilingY = false;
 
-		/** 
+		/**
 		 * Determines should the field influence particles outside of the field bounds. If true the field will be tiled
 		 * infinitely in the Z direction.
 		 */
@@ -328,7 +328,7 @@ namespace bs
 	 */
 
 	/** Settings used for controlling a vector field in a GPU simulated particle system. */
-	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) 
+	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles)
 	ParticleVectorFieldSettings : TParticleVectorFieldSettings<false>, IReflectable
 	{
 		/************************************************************************/
@@ -397,7 +397,7 @@ namespace bs
 	 */
 
 	/** Generic settings used for controlling a ParticleSystem. */
-	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) 
+	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles)
 	ParticleSystemSettings : TParticleSystemSettings<false>, IReflectable
 	{
 		/************************************************************************/
@@ -410,7 +410,7 @@ namespace bs
 	};
 
 	/** Settings used for controlling particle system GPU simulation. */
-	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) 
+	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles)
 	ParticleGpuSimulationSettings : TParticleGpuSimulationSettings<false>, IReflectable
 	{
 		/************************************************************************/
@@ -425,7 +425,7 @@ namespace bs
 
 	/** @} */
 
-	/** @addtogroup Particles-Internal 
+	/** @addtogroup Particles-Internal
 	 *  @{
 	 */
 
@@ -446,15 +446,15 @@ namespace bs
 	 *  @{
 	 */
 
-	/** 
+	/**
 	 * Controls spawning, evolution and rendering of particles. Particles can be 2D or 3D, with a variety of rendering
 	 * options. Particle system should be used for rendering objects that cannot properly be represented using static or
 	 * animated meshes, like liquids, smoke or flames.
-	 * 
+	 *
 	 * The particle system requires you to specify at least one ParticleEmitter, which controls how are new particles
 	 * generated. You will also want to specify one or more ParticleEvolver%s, which change particle properties over time.
 	 */
-	class BS_CORE_EXPORT ParticleSystem final : public IReflectable, public CoreObject, public SceneActor, public INonCopyable 
+	class BS_CORE_EXPORT ParticleSystem final : public IReflectable, public CoreObject, public SceneActor, public INonCopyable
 	{
 	public:
 		~ParticleSystem() final;
@@ -471,7 +471,7 @@ namespace bs
 		/** @copydoc setGpuSimulationSettings */
 		const ParticleGpuSimulationSettings& getGpuSimulationSettings() const { return mGpuSimulationSettings; }
 
-		/** 
+		/**
 		 * Set of objects that determine initial position, normal and other properties of newly spawned particles. Each
 		 * particle system must have at least one emitter.
 		 */
@@ -480,7 +480,7 @@ namespace bs
 		/** @copydoc setEmitters */
 		const Vector<SPtr<ParticleEmitter>>& getEmitters() const { return mEmitters; }
 
-		/** 
+		/**
 		 * Set of objects that determine how particle properties change during their lifetime. Evolvers only affect
 		 * CPU simulated particles.
 		 */
@@ -490,7 +490,7 @@ namespace bs
 		const Vector<SPtr<ParticleEvolver>>& getEvolvers() const { return mEvolvers; }
 
 		/**
-		 * Determines the layer bitfield that controls whether a system is considered visible in a specific camera. 
+		 * Determines the layer bitfield that controls whether a system is considered visible in a specific camera.
 		 * Layer must match camera layer in order for the camera to render the component.
 		 */
 		void setLayer(UINT64 layer);
@@ -513,25 +513,25 @@ namespace bs
 		/** Creates a new empty ParticleSystem object. */
 		static SPtr<ParticleSystem> create();
 
-		/** 
+		/**
 		 * @name Internal
 		 */
 
-		/** 
+		/**
 		 * Updates the particle simulation by advancing it by @p timeDelta. New state will be updated in the internal
 		 * ParticleSet.
 		 */
 		void _simulate(float timeDelta, const EvaluatedAnimationData* animData);
 
-		/** 
+		/**
 		 * Calculates the bounds of all the particles in the system. Should be called after a call to _simulate() to get
 		 * up-to-date bounds. The bounds are in the simulation space of the particle system.
 		 */
 		AABox _calculateBounds() const;
 
-		/** 
-		 * Advances the particle system time according to the current time, time delta and the provided settings. 
-		 * 
+		/**
+		 * Advances the particle system time according to the current time, time delta and the provided settings.
+		 *
 		 * @param[in]		time		Current time to use as a base.
 		 * @param[in]		timeDelta	Amount of time to advance the time by.
 		 * @param[in]		duration	Maximum time allowed by the particle system.
@@ -567,7 +567,7 @@ namespace bs
 		 * @param[in]	startIdx		Index of the first particle to update.
 		 * @param[in]	count			Number of particles to update, starting from @p startIdx.
 		 * @param[in]	spacing			When false all particles will use the same time-step. If true the time-step will
-		 *								be divided by @p count so particles are uniformly distributed over the 
+		 *								be divided by @p count so particles are uniformly distributed over the
 		 *								time-step.
 		 * @param[in]	spacingOffset	Extra offset that controls the starting position of the first particle when
 		 *								calculating spacing. Should be in range [0, 1). 0 = beginning of the current
@@ -575,14 +575,14 @@ namespace bs
 		 */
 		void preSimulate(const ParticleSystemState& state, UINT32 startIdx, UINT32 count, bool spacing, float spacingOffset);
 
-		/** 
-		 * Integrates particle properties, advancing the simulation. 
-		 * 
+		/**
+		 * Integrates particle properties, advancing the simulation.
+		 *
 		 * @param[in]	state			State describing the current state of the simulation.
 		 * @param[in]	startIdx		Index of the first particle to update.
 		 * @param[in]	count			Number of particles to update, starting from @p startIdx.
 		 * @param[in]	spacing			When false all particles will use the same time-step. If true the time-step will
-		 *								be divided by @p count so particles are uniformly distributed over the 
+		 *								be divided by @p count so particles are uniformly distributed over the
 		 *								time-step.
 		 * @param[in]	spacingOffset	Extra offset that controls the starting position of the first particle when
 		 *								calculating spacing. Should be in range [0, 1). 0 = beginning of the current
@@ -590,14 +590,14 @@ namespace bs
 		 */
 		void simulate(const ParticleSystemState& state, UINT32 startIdx, UINT32 count, bool spacing, float spacingOffset);
 
-		/** 
-		 * Executes evolvers that need to run after the simulation. 
-		 * 
+		/**
+		 * Executes evolvers that need to run after the simulation.
+		 *
 		 * @param[in]	state			State describing the current state of the simulation.
 		 * @param[in]	startIdx		Index of the first particle to update.
 		 * @param[in]	count			Number of particles to update, starting from @p startIdx.
 		 * @param[in]	spacing			When false all particles will use the same time-step. If true the time-step will
-		 *								be divided by @p count so particles are uniformly distributed over the 
+		 *								be divided by @p count so particles are uniformly distributed over the
 		 *								time-step.
 		 * @param[in]	spacingOffset	Extra offset that controls the starting position of the first particle when
 		 *								calculating spacing. Should be in range [0, 1). 0 = beginning of the current
@@ -655,7 +655,7 @@ namespace bs
 	namespace ct
 	{
 		/** Core thread counterpart of bs::ParticleSystem. */
-		class BS_CORE_EXPORT ParticleSystem final : public CoreObject, public SceneActor, public INonCopyable 
+		class BS_CORE_EXPORT ParticleSystem final : public CoreObject, public SceneActor, public INonCopyable
 		{
 		public:
 			~ParticleSystem();
@@ -681,9 +681,9 @@ namespace bs
 			/**	Retrieves an ID that can be used for uniquely identifying this object by the renderer. */
 			UINT32 getRendererId() const { return mRendererId; }
 
-			/** 
-			 * Returns an ID that uniquely identifies the particle system. Can be used for locating evaluated particle 
-			 * system render data in the structure output by the ParticlesManager. 
+			/**
+			 * Returns an ID that uniquely identifies the particle system. Can be used for locating evaluated particle
+			 * system render data in the structure output by the ParticlesManager.
 			 */
 			UINT32 getId() const { return mId; }
 

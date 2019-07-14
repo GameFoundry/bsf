@@ -35,16 +35,16 @@ namespace bs
         /// Allows the caller to play an animation clip during edit mode. This form of animation playback is limited as
         /// you have no control over clip properties, and features like blending, cross fade or animation events are not
         /// supported.
-        /// 
+        ///
         /// Caller will need to manually call <see cref="UpdateFloatProperties"/> in order to apply evaluated animation data
         /// to relevant float properties (if required).
-        /// 
-        /// Caller will also need to manually call <see cref="RefreshClipMappings"/> whenever the curves internal to the 
+        ///
+        /// Caller will also need to manually call <see cref="RefreshClipMappings"/> whenever the curves internal to the
         /// animation clip change. This should be called before the call to <see cref="UpdateFloatProperties"/>.
         /// </summary>
         /// <param name="clip">Animation clip to play.</param>
         /// <param name="startTime">Time to start playing at, in seconds.</param>
-        /// <param name="freeze">If true, only the frame at the specified time will be shown, without advancing the 
+        /// <param name="freeze">If true, only the frame at the specified time will be shown, without advancing the
         ///                      animation.</param>
         internal void EditorPlay(RRef<AnimationClip> clip, float startTime, bool freeze = false)
         {
@@ -90,7 +90,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Updates generic float properties on relevant objects, based on the most recently evaluated animation curve 
+        /// Updates generic float properties on relevant objects, based on the most recently evaluated animation curve
         /// values.
         /// </summary>
         internal void UpdateFloatProperties()
@@ -102,26 +102,26 @@ namespace bs
         /// Searches the scene object hierarchy to find a property at the given path.
         /// </summary>
         /// <param name="root">Root scene object to which the path is relative to.</param>
-        /// <param name="path">Path to the property, where each element of the path is separated with "/". 
-        /// 
-        ///                    Path elements prefixed with "!" signify names of child scene objects (first one relative to 
-        ///                    <paramref name="root"/>. Name of the root element should not be included in the path. 
-        /// 
+        /// <param name="path">Path to the property, where each element of the path is separated with "/".
+        ///
+        ///                    Path elements prefixed with "!" signify names of child scene objects (first one relative to
+        ///                    <paramref name="root"/>. Name of the root element should not be included in the path.
+        ///
         ///                    Path element prefixed with ":" signify names of components. If a path doesn't have a
-        ///                    component element, it is assumed the field is relative to the scene object itself (only 
+        ///                    component element, it is assumed the field is relative to the scene object itself (only
         ///                    "Position", "Rotation" and "Scale" fields are supported in such case). Only one component
         ///                    path element per path is allowed.
-        /// 
+        ///
         ///                    Path entries with no prefix are considered regular script object fields. Each path must have
-        ///                    at least one such entry. 
-        /// 
+        ///                    at least one such entry.
+        ///
         ///                    A field path can be followed by an indexer [n] where n is a zero-based index. Such paths
         ///                    are assumed to be referencing an index within an array or a list.
-        /// 
+        ///
         ///                    A field path can also be followed by a suffix (after the indexer, if any) separated from the
-        ///                    path name with ".". This suffix is not parsed internally, but will be returned as 
+        ///                    path name with ".". This suffix is not parsed internally, but will be returned as
         ///                    <paramref name="suffix"/>.
-        /// 
+        ///
         ///                    Path examples:
         ///                     :MyComponent/myInt (path to myInt variable on a component attached to the root object)
         ///                     :MyComponent/myArray[0] (path to first element of myArray on the same component as above)
@@ -130,7 +130,7 @@ namespace bs
         ///                     :MyComponent/myVector.z (path to the z component of myVector on the root object)
         /// </param>
         /// <param name="suffix">Suffix of the last field entry, if it has any. Contains the suffix separator ".".</param>
-        /// <returns>If found, property object you can use for setting and getting the value from the property, otherwise 
+        /// <returns>If found, property object you can use for setting and getting the value from the property, otherwise
         ///          null.</returns>
         internal static SerializableProperty FindProperty(SceneObject root, string path, out string suffix)
         {

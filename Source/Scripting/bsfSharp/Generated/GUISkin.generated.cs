@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Holds a set of styles that control how are GUI element types positioned and displayed in the GUI. Each element type 
+	/// Holds a set of styles that control how are GUI element types positioned and displayed in the GUI. Each element type
 	/// can be assigned a specific style.
 	/// </summary>
 	[ShowInInspector]

@@ -21,9 +21,9 @@ namespace bs
 	public:
 		CapsuleCollider() = default;
 
-		/** 
-		 * Determines the half height of the capsule, from the origin to one of the hemispherical centers, along the normal 
-		 * vector. 
+		/**
+		 * Determines the half height of the capsule, from the origin to one of the hemispherical centers, along the normal
+		 * vector.
 		 */
 		virtual void setHalfHeight(float halfHeight) = 0;
 
@@ -36,8 +36,8 @@ namespace bs
 		/** @copydoc setRadius() */
 		virtual float getRadius() const = 0;
 
-		/** 
-		 * Creates a new capsule collider. 
+		/**
+		 * Creates a new capsule collider.
 		 *
 		 * @param[in]	scene		Scene into which to add the collider to.
 		 * @param[in]	radius		Radius of the capsule.
@@ -46,7 +46,7 @@ namespace bs
 		 * @param[in]	position	Center of the box.
 		 * @param[in]	rotation	Rotation of the box.
 		 */
-		static SPtr<CapsuleCollider> create(PhysicsScene& scene, float radius = 0.0f, float halfHeight = 0.0f, 
+		static SPtr<CapsuleCollider> create(PhysicsScene& scene, float radius = 0.0f, float halfHeight = 0.0f,
 			const Vector3& position = Vector3::ZERO, const Quaternion& rotation = Quaternion::IDENTITY);
 	};
 

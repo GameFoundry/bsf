@@ -16,8 +16,8 @@ namespace bs
 	GUILayout::GUILayout()
 	{ }
 
-	GUILayout::~GUILayout() 
-	{ 
+	GUILayout::~GUILayout()
+	{
 		if (mParentElement != nullptr)
 			mParentElement->_unregisterChildElement(this);
 	}

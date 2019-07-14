@@ -33,7 +33,7 @@ namespace bs
 		struct ConstructPrivately {};
 
 	public:
-		ManagedSerializableList(const ConstructPrivately& dummy, const SPtr<ManagedSerializableTypeInfoList>& typeInfo, 
+		ManagedSerializableList(const ConstructPrivately& dummy, const SPtr<ManagedSerializableTypeInfoList>& typeInfo,
 			MonoObject* managedInstance);
 		ManagedSerializableList(const ConstructPrivately& dummy);
 		~ManagedSerializableList();
@@ -91,7 +91,7 @@ namespace bs
 		 *								the provided type info.
 		 * @param[in]	typeInfo		Type information for the list and its elements.
 		 */
-		static SPtr<ManagedSerializableList> createFromExisting(MonoObject* managedInstance, 
+		static SPtr<ManagedSerializableList> createFromExisting(MonoObject* managedInstance,
 			const SPtr<ManagedSerializableTypeInfoList>& typeInfo);
 
 		/**
@@ -122,7 +122,7 @@ namespace bs
 
 		/**
 		 * Sets a new element value at the specified array index. Operates on the provided managed instance.
-		 * 
+		 *
 		 * @param[in]	obj			Managed instance in which to set the data in.
 		 * @param[in]	arrayIdx	Index at which to set the value.
 		 * @param[in]	val			Wrapper around the value to store in the array. Must be of the array element type.

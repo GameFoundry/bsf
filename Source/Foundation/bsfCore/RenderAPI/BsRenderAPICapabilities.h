@@ -13,7 +13,7 @@
 
 #define BS_MAX_BOUND_VERTEX_BUFFERS 16
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
@@ -31,7 +31,7 @@ namespace bs
 
 	/** Enum describing the different hardware capabilities we can check for. */
 	enum Capabilities : UINT64
-	{ 
+	{
 		/** Supports compressed textures in the BC formats. */
 		RSC_TEXTURE_COMPRESSION_BC		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 0),
 		/** Supports compressed textures in the ETC2 and EAC format. */
@@ -43,22 +43,22 @@ namespace bs
 		/** Supports GPU tessellation programs. */
 		RSC_TESSELLATION_PROGRAM		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 4),
 		/** Supports GPU compute programs. */
-		RSC_COMPUTE_PROGRAM				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 5), 
+		RSC_COMPUTE_PROGRAM				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 5),
 		/** Supports load-store (unordered access) writes to textures/buffers in GPU programs. */
-		RSC_LOAD_STORE					= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 6), 
+		RSC_LOAD_STORE					= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 6),
 		/** Supports load-store (unordered access) writes to textures with multiple samples. */
-		RSC_LOAD_STORE_MSAA				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 7), 
-		/** 
-		 * Supports views that allow a sub-set of a texture to be bound to a GPU program. (i.e. specific mip level or mip 
+		RSC_LOAD_STORE_MSAA				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 7),
+		/**
+		 * Supports views that allow a sub-set of a texture to be bound to a GPU program. (i.e. specific mip level or mip
 		 * range, and/or specific array slice or array slice range)
 		 */
-		RSC_TEXTURE_VIEWS				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 8), 
+		RSC_TEXTURE_VIEWS				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 8),
 		/** GPU programs are allowed to cache their bytecode for faster compilation. */
-		RSC_BYTECODE_CACHING			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 9), 
+		RSC_BYTECODE_CACHING			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 9),
 		/** Supports rendering to multiple layers of a render texture at once. */
-		RSC_RENDER_TARGET_LAYERS		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 10), 
+		RSC_RENDER_TARGET_LAYERS		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 10),
 		/** Has native support for command buffers that can be populated from secondary threads. */
-		RSC_MULTI_THREADED_CB			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 11), 
+		RSC_MULTI_THREADED_CB			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 11),
 	};
 
 	/** Conventions used for a specific render backend. */
@@ -85,12 +85,12 @@ namespace bs
 	};
 
 	/** Holds data about render system driver version. */
-	struct BS_CORE_EXPORT DriverVersion 
+	struct BS_CORE_EXPORT DriverVersion
 	{
 		DriverVersion() = default;
 
 		/**	Returns the driver version as a single string. */
-		String toString() const 
+		String toString() const
 		{
 			StringStream str;
 			str << major << "." << minor << "." << release << "." << build;
@@ -125,7 +125,7 @@ namespace bs
 	{
 		GPU_UNKNOWN = 0,
 		GPU_NVIDIA = 1,
-		GPU_AMD = 2, 
+		GPU_AMD = 2,
 		GPU_INTEL = 3,
 		GPU_VENDOR_COUNT = 4
 	};
@@ -192,15 +192,15 @@ namespace bs
 		VertexElementType vertexColorType = VET_COLOR_ABGR;
 
 		/**	Sets a capability flag indicating this capability is supported. */
-		void setCapability(const Capabilities c) 
-		{ 
+		void setCapability(const Capabilities c)
+		{
 			UINT64 index = (CAPS_CATEGORY_MASK & c) >> BS_CAPS_BITSHIFT;
 			mCapabilities[index] |= (c & ~CAPS_CATEGORY_MASK);
 		}
 
 		/**	Remove a capability flag indicating this capability is not supported (default). */
-		void unsetCapability(const Capabilities c) 
-		{ 
+		void unsetCapability(const Capabilities c)
+		{
 			UINT64 index = (CAPS_CATEGORY_MASK & c) >> BS_CAPS_BITSHIFT;
 			mCapabilities[index] &= (~c | CAPS_CATEGORY_MASK);
 		}

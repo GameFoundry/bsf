@@ -34,7 +34,7 @@ function(update_data_file_package _NAME _FOLDER _FILES)
 
 	execute_process(
 		COMMAND
-			${CMAKE_COMMAND} -E tar 
+			${CMAKE_COMMAND} -E tar
 			"cf" "${ARCHIVE_PATH}" --format=zip
 		    --files-from=${_FOLDER}/${_FILES}
 		WORKING_DIRECTORY "${_FOLDER}/.."

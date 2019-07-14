@@ -18,10 +18,10 @@ namespace bs
         /// <summary>
         /// Creates a new canvas element.
         /// </summary>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
-        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUICanvas(string style, params GUIOption[] options)
         {
@@ -31,8 +31,8 @@ namespace bs
         /// <summary>
         /// Creates a new canvas element.
         /// </summary>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
         public GUICanvas(string style = "")
         {
@@ -42,7 +42,7 @@ namespace bs
         /// <summary>
         /// Creates a new canvas element.
         /// </summary>
-        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUICanvas(params GUIOption[] options)
         {
@@ -81,7 +81,7 @@ namespace bs
         /// Draws multiple lines following the path by the provided vertices. First vertex connects to the second vertex,
         /// and every following vertex connects to the previous vertex.
         /// </summary>
-        /// <param name="vertices">Points to use for drawing the line. Must have at least two elements. All points are 
+        /// <param name="vertices">Points to use for drawing the line. Must have at least two elements. All points are
         ///                        relative to the canvas origin(top-left).</param>
         /// <param name="depth">Depth at which to draw the element. Elements with higher depth will be drawn before others.
         ///                     Additionally elements of the same type (triangle or line) will be drawn in order they are
@@ -96,7 +96,7 @@ namespace bs
         /// Draws multiple lines following the path by the provided vertices. First vertex connects to the second vertex,
         /// and every following vertex connects to the previous vertex.
         /// </summary>
-        /// <param name="vertices">Points to use for drawing the line. Must have at least two elements. All points are 
+        /// <param name="vertices">Points to use for drawing the line. Must have at least two elements. All points are
         ///                        relative to the canvas origin(top-left).</param>
         /// <param name="color">Color of the line.</param>
         /// <param name="depth">Depth at which to draw the element. Elements with higher depth will be drawn before others.
@@ -111,9 +111,9 @@ namespace bs
         /// Draws a quad with a the provided texture displayed.
         /// </summary>
         /// <param name="texture">Texture to draw.</param>
-        /// <param name="area">Position and size of the texture to draw. Position is relative to the canvas origin 
+        /// <param name="area">Position and size of the texture to draw. Position is relative to the canvas origin
         ///                    (top-left). If size is zero, the default texture size will be used.</param>
-        /// <param name="scaleMode">Scale mode to use when sizing the texture. Only relevant if the provided quad size 
+        /// <param name="scaleMode">Scale mode to use when sizing the texture. Only relevant if the provided quad size
         ///                         doesn't match the texture size.</param>
         /// <param name="depth">Depth at which to draw the element. Elements with higher depth will be drawn before others.
         ///                     Additionally elements of the same type (triangle or line) will be drawn in order they are
@@ -133,10 +133,10 @@ namespace bs
         /// Draws a quad with a the provided texture displayed.
         /// </summary>
         /// <param name="texture">Texture to draw.</param>
-        /// <param name="area">Position and size of the texture to draw. Position is relative to the canvas origin 
+        /// <param name="area">Position and size of the texture to draw. Position is relative to the canvas origin
         ///                    (top-left). If size is zero, the default texture size will be used.</param>
         /// <param name="color">Color to tint the drawn texture with.</param>
-        /// <param name="scaleMode">Scale mode to use when sizing the texture. Only relevant if the provided quad size 
+        /// <param name="scaleMode">Scale mode to use when sizing the texture. Only relevant if the provided quad size
         ///                         doesn't match the texture size.</param>
         /// <param name="depth">Depth at which to draw the element. Elements with higher depth will be drawn before others.
         ///                     Additionally elements of the same type (triangle or line) will be drawn in order they are
@@ -277,11 +277,11 @@ namespace bs
             GUITextureScaleMode scaleMode, ref Color color, byte depth);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawTriangleStrip(IntPtr nativeInstance, Vector2I[] vertices, ref Color color, 
+        private static extern void Internal_DrawTriangleStrip(IntPtr nativeInstance, Vector2I[] vertices, ref Color color,
             byte depth);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawTriangleList(IntPtr nativeInstance, Vector2I[] vertices, ref Color color, 
+        private static extern void Internal_DrawTriangleList(IntPtr nativeInstance, Vector2I[] vertices, ref Color color,
             byte depth);
 
         [MethodImpl(MethodImplOptions.InternalCall)]

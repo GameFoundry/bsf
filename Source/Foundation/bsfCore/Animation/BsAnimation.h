@@ -13,7 +13,7 @@
 
 namespace bs
 {
-	/** @addtogroup Animation 
+	/** @addtogroup Animation
 	 *  @{
 	 */
 
@@ -30,14 +30,14 @@ namespace bs
 		AnimationClipState() = default;
 
 		/** Layer the clip is playing on. Multiple clips can be played simulatenously on different layers. */
-		UINT32 layer = 0; 
+		UINT32 layer = 0;
 		float time = 0.0f; /**< Current time the animation is playing from. */
 		float speed = 1.0f; /**< Speed at which the animation is playing. */
 		float weight = 1.0f; /**< Determines how much of an influence does the clip have on the final pose. */
 		/** Determines what happens to other animation clips when a new clip starts playing. */
 		AnimWrapMode wrapMode = AnimWrapMode::Loop;
-		/** 
-		 * Determines should the time be advanced automatically. Certain type of animation clips don't involve playback 
+		/**
+		 * Determines should the time be advanced automatically. Certain type of animation clips don't involve playback
 		 * (e.g. for blending where animation weight controls the animation).
 		 */
 		bool stopped = false;
@@ -101,11 +101,11 @@ namespace bs
 		float fadeTime = 0.0f;
 		float fadeLength = 0.0f;
 
-		/** 
+		/**
 		 * Version of the animation curves used by the AnimationProxy. Used to detecting the internal animation curves
-		 * changed. 
+		 * changed.
 		 */
-		UINT64 curveVersion = 0; 
+		UINT64 curveVersion = 0;
 		UINT32 layerIdx = (UINT32)-1; /**< Layer index this clip belongs to in AnimationProxy structure. */
 		UINT32 stateIdx = (UINT32)-1; /**< State index this clip belongs to in AnimationProxy structure. */
 	};
@@ -180,61 +180,61 @@ namespace bs
 
 		AnimationProxy& operator=(const AnimationProxy&) = delete;
 
-		/** 
+		/**
 		 * Rebuilds the internal proxy data according to the newly assigned skeleton and clips. This should be called
 		 * whenever the animation skeleton changes.
 		 *
 		 * @param[in]		skeleton		New skeleton to assign to the proxy.
 		 * @param[in]		mask			Mask that filters which skeleton bones are enabled or disabled.
 		 * @param[in, out]	clipInfos		Potentially new clip infos that will be used for rebuilding the proxy. Once the
-		 *									method completes clip info layout and state indices will be populated for 
+		 *									method completes clip info layout and state indices will be populated for
 		 *									further use in the update*() methods.
 		 * @param[in]		sceneObjects	A list of scene objects that are influenced by specific animation curves.
 		 * @param[in]		morphShapes		Morph shapes used for per-vertex animation.
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
-		void rebuild(const SPtr<Skeleton>& skeleton, const SkeletonMask& mask, Vector<AnimationClipInfo>& clipInfos, 
+		void rebuild(const SPtr<Skeleton>& skeleton, const SkeletonMask& mask, Vector<AnimationClipInfo>& clipInfos,
 			const Vector<AnimatedSceneObject>& sceneObjects, const SPtr<MorphShapes>& morphShapes);
 
-		/** 
+		/**
 		 * Rebuilds the internal proxy data according to the newly clips. This should be called whenever clips are added
 		 * or removed, or clip layout indices change.
 		 *
-		 * @param[in, out]	clipInfos		New clip infos that will be used for rebuilding the proxy. Once the method 
-		 *									completes clip info layout and state indices will be populated for further use 
+		 * @param[in, out]	clipInfos		New clip infos that will be used for rebuilding the proxy. Once the method
+		 *									completes clip info layout and state indices will be populated for further use
 		 *									in the update*() methods.
 		 * @param[in]		sceneObjects	A list of scene objects that are influenced by specific animation curves.
 		 * * @param[in]		morphShapes		Morph shapes used for per-vertex animation.
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
-		void rebuild(Vector<AnimationClipInfo>& clipInfos, const Vector<AnimatedSceneObject>& sceneObjects, 
+		void rebuild(Vector<AnimationClipInfo>& clipInfos, const Vector<AnimatedSceneObject>& sceneObjects,
 			const SPtr<MorphShapes>& morphShapes);
 
-		/** 
-		 * Updates the proxy data with new information about the clips. Caller must guarantee that clip layout didn't 
+		/**
+		 * Updates the proxy data with new information about the clips. Caller must guarantee that clip layout didn't
 		 * change since the last call to rebuild().
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
 		void updateClipInfos(const Vector<AnimationClipInfo>& clipInfos);
 
-		/** 
+		/**
 		 * Updates the proxy data with new weights used for morph shapes. Caller must ensure the weights are ordered so
 		 * they match with the morph shapes provided to the last rebuild() call.
 		 */
 		void updateMorphChannelWeights(const Vector<float>& weights);
 
 		/**
-		 * Updates the proxy data with new scene object transforms. Caller must guarantee that clip layout didn't 
+		 * Updates the proxy data with new scene object transforms. Caller must guarantee that clip layout didn't
 		 * change since the last call to rebuild().
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
 		void updateTransforms(const Vector<AnimatedSceneObject>& sceneObjects);
 
-		/** 
+		/**
 		 * Updates the proxy data with new clip times. Caller must guarantee that clip layout didn't change since the last
 		 * call to rebuild().
 		 *
@@ -290,15 +290,15 @@ namespace bs
 	public:
 		~Animation();
 
-		/** 
+		/**
 		 * Changes the skeleton which will the translation/rotation/scale animation values manipulate. If no skeleton is set
 		 * the animation will only evaluate the generic curves, and the root translation/rotation/scale curves.
 		 */
 		void setSkeleton(const SPtr<Skeleton>& skeleton);
 
-		/** 
-		 * Sets morph shapes that can be used for per-vertex blending animation. After they're set call 
-		 * setMorphShapeWeight() to apply morph shapes. 
+		/**
+		 * Sets morph shapes that can be used for per-vertex blending animation. After they're set call
+		 * setMorphShapeWeight() to apply morph shapes.
 		 */
 		void setMorphShapes(const SPtr<MorphShapes>& morphShapes);
 
@@ -311,15 +311,15 @@ namespace bs
 		 */
 		void setMorphChannelWeight(UINT32 idx, float weight);
 
-		/** 
+		/**
 		 * Sets a mask that allows certain bones from the skeleton to be disabled. Caller must ensure that the mask matches
 		 * the skeleton assigned to the animation.
 		 */
 		void setMask(const SkeletonMask& mask);
 
-		/** 
-		 * Determines the wrap mode for all active animations. Wrap mode determines what happens when animation reaches the 
-		 * first or last frame. 
+		/**
+		 * Determines the wrap mode for all active animations. Wrap mode determines what happens when animation reaches the
+		 * first or last frame.
 		 */
 		void setWrapMode(AnimWrapMode wrapMode);
 
@@ -332,7 +332,7 @@ namespace bs
 		/** @copydoc setBounds */
 		const AABox& getBounds() const { return mBounds; }
 
-		/** 
+		/**
 		 * When enabled, animation that is not in a view of any camera will not be evaluated. View determination is done by
 		 * checking the bounds provided in setBounds().
 		 */
@@ -341,8 +341,8 @@ namespace bs
 		/** @copydoc setCulling */
 		bool getCulling() const { return mCull; }
 
-		/** 
-		 * Plays the specified animation clip. 
+		/**
+		 * Plays the specified animation clip.
 		 *
 		 * @param[in]	clip		Clip to play.
 		 */
@@ -404,9 +404,9 @@ namespace bs
 		 */
 		void sample(const HAnimationClip& clip, float time);
 
-		/** 
-		 * Stops playing all animations on the provided layer. Specify -1 to stop animation on the main layer 
-		 * (non-additive animations). 
+		/**
+		 * Stops playing all animations on the provided layer. Specify -1 to stop animation on the main layer
+		 * (non-additive animations).
 		 */
 		void stop(UINT32 layer);
 
@@ -419,16 +419,16 @@ namespace bs
 		/** Returns the total number of animation clips influencing this animation. */
 		UINT32 getNumClips() const;
 
-		/** 
-		 * Returns one of the animation clips influencing this animation. 
+		/**
+		 * Returns one of the animation clips influencing this animation.
 		 *
 		 * @param[in]	idx		Sequential index of the animation clip to retrieve. In range [0, getNumClips()].
 		 * @return				Animation clip at the specified index, or null if the index is out of range.
 		 */
 		HAnimationClip getClip(UINT32 idx) const;
 
-		/** 
-		 * Retrieves detailed information about a currently playing animation clip. 
+		/**
+		 * Retrieves detailed information about a currently playing animation clip.
 		 *
 		 * @param[in]	clip	Clip to retrieve the information for.
 		 * @param[out]	state	Animation clip state containing the requested information. Only valid if the method returns
@@ -446,7 +446,7 @@ namespace bs
 		 */
 		void setState(const HAnimationClip& clip, AnimationClipState state);
 
-		/** 
+		/**
 		 * Ensures that any position/rotation/scale animation of a specific animation curve is transfered to the
 		 * the provided scene object. Also allow the opposite operation which can allow scene object transform changes
 		 * to manipulate object bones.
@@ -460,10 +460,10 @@ namespace bs
 		/** Removes the curve <-> scene object mapping that was set via mapCurveToSceneObject(). */
 		void unmapSceneObject(const HSceneObject& so);
 
-		/** 
-		 * Retrieves an evaluated value for a generic curve with the specified index. 
+		/**
+		 * Retrieves an evaluated value for a generic curve with the specified index.
 		 *
-		 * @param[in]	curveIdx	The curve index referencing a set of curves from the first playing animation clip. 
+		 * @param[in]	curveIdx	The curve index referencing a set of curves from the first playing animation clip.
 		 *							Generic curves from all other clips are ignored.
 		 * @param[out]	value		Value of the generic curve. Only valid if the method return true.
 		 * @return					True if the value was retrieved successfully. The method might fail if animation update
@@ -479,7 +479,7 @@ namespace bs
 		/** Triggered whenever an animation event is reached. */
 		Event<void(const HAnimationClip&, const String&)> onEventTriggered;
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 
@@ -495,15 +495,15 @@ namespace bs
 
 		Animation();
 
-		/** 
-		 * Triggers any events between the last frame and current one. 
+		/**
+		 * Triggers any events between the last frame and current one.
 		 *
 		 * @param[in]	delta			Time elapsed since the last call to this method.
 		 */
 		void triggerEvents(float delta);
 
-		/** 
-		 * Updates the animation proxy object based on the currently set skeleton, playing clips and dirty flags. 
+		/**
+		 * Updates the animation proxy object based on the currently set skeleton, playing clips and dirty flags.
 		 *
 		 * @param[in]	timeDelta	Seconds passed since the last call to this method.
 		 */
@@ -516,7 +516,7 @@ namespace bs
 		 */
 		void updateFromProxy();
 
-		/** 
+		/**
 		 * Registers a new animation in the specified layer, or returns an existing animation clip info if the animation is
 		 * already registered. If @p stopExisting is true any existing animations in the layer will be stopped. Layout
 		 * will be marked as dirty if any changes were made.

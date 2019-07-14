@@ -17,7 +17,7 @@ namespace bs
 		/** Indices of vertices that form the tetrahedron pointing to an external point array. */
 		INT32 vertices[4];
 
-		/** 
+		/**
 		 * Indices pointing to neighbor tetrahedrons. Each neighbor index maps to the @p vertices array, so neighbor/vertex
 		 * pair at the same location will be the only neighbor not containing that vertex (i.e. neighbor opposite to
 		 * the vertex). If a tetrahedron is on the volume edge, it has only three neighbors and its last neighbor will be
@@ -44,8 +44,8 @@ namespace bs
 	class BS_UTILITY_EXPORT Triangulation
 	{
 	public:
-		/** 
-		 * Converts a set of input points into a set of tetrahedrons generated using Delaunay tetrahedralization 
+		/**
+		 * Converts a set of input points into a set of tetrahedrons generated using Delaunay tetrahedralization
 		 * algorithm. Minimum of 4 points must be provided in order for the process to work.
 		 */
 		static TetrahedronVolume tetrahedralize(const Vector<Vector3>& points);

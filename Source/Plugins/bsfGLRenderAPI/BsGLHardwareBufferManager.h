@@ -23,23 +23,23 @@ namespace bs { namespace ct
 
 	protected:
 		/** @copydoc HardwareBufferManager::createVertexBufferInternal */
-		SPtr<VertexBuffer> createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc, 
+		SPtr<VertexBuffer> createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
 
 		/** @copydoc HardwareBufferManager::createIndexBufferInternal */
-		SPtr<IndexBuffer> createIndexBufferInternal(const INDEX_BUFFER_DESC& desc, 
+		SPtr<IndexBuffer> createIndexBufferInternal(const INDEX_BUFFER_DESC& desc,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
 
 		/** @copydoc HardwareBufferManager::createGpuParamBlockBufferInternal */
-		SPtr<GpuParamBlockBuffer> createGpuParamBlockBufferInternal(UINT32 size, 
+		SPtr<GpuParamBlockBuffer> createGpuParamBlockBufferInternal(UINT32 size,
 			GpuBufferUsage usage = GBU_DYNAMIC, GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
 
 		/** @copydoc HardwareBufferManager::createGpuBufferInternal(const GPU_BUFFER_DESC&, GpuDeviceFlags) */
-		SPtr<GpuBuffer> createGpuBufferInternal(const GPU_BUFFER_DESC& desc, 
+		SPtr<GpuBuffer> createGpuBufferInternal(const GPU_BUFFER_DESC& desc,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
 
 		/** @copydoc HardwareBufferManager::createGpuBufferInternal(const GPU_BUFFER_DESC&, SPtr<HardwareBuffer>) */
-		SPtr<GpuBuffer> createGpuBufferInternal(const GPU_BUFFER_DESC& desc, 
+		SPtr<GpuBuffer> createGpuBufferInternal(const GPU_BUFFER_DESC& desc,
 			SPtr<HardwareBuffer> underlyingBuffer) override;
 	};
 

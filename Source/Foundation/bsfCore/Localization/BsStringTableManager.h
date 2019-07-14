@@ -13,7 +13,7 @@ namespace bs
 	 */
 
 	/**
-	 * Manages string tables used for localizing text. Allows you to add and remove different tables and change the active 
+	 * Manages string tables used for localizing text. Allows you to add and remove different tables and change the active
 	 * language.
 	 */
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(n:StringTables,m:Localization) StringTableManager : public Module<StringTableManager>
@@ -29,7 +29,7 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:ActiveLanguage,pr:getter)
 		Language getActiveLanguage() const { return mActiveLanguage; }
 
-		/** 
+		/**
 		 * Returns the string table with the specified id. If the table doesn't exist new one is created.
 		 *
 		 * @param[in]	id		Identifier of the string table.
@@ -38,7 +38,7 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		HStringTable getTable(UINT32 id);
 
-		/** 
+		/**
 		 * Removes the string table with the specified id.
 		 *
 		 * @param[in]	id		Identifier of the string table.
@@ -46,7 +46,7 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		void removeTable(UINT32 id);
 
-		/** 
+		/**
 		 * Registers a new string table or replaces an old one at the specified id.
 		 *
 		 * @param[in]	id		Identifier of the string table.

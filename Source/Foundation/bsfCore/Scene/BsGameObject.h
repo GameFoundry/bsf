@@ -26,7 +26,7 @@ namespace bs
 	 */
 
 	/**
-	 * Type of object that can be referenced by a GameObject handle. Each object has an unique ID and is registered with 
+	 * Type of object that can be referenced by a GameObject handle. Each object has an unique ID and is registered with
 	 * the GameObjectManager.
 	 */
 	class BS_CORE_EXPORT GameObject : public IReflectable
@@ -59,7 +59,7 @@ namespace bs
 		 */
 
 		/**
-		 * Marks the object as destroyed. Generally this means the object has been queued for destruction but it hasn't 
+		 * Marks the object as destroyed. Generally this means the object has been queued for destruction but it hasn't
 		 * occurred yet.
 		 */
 		void _setIsDestroyed() { mIsDestroyed = true; }
@@ -74,7 +74,7 @@ namespace bs
 		void _setUUID(const UUID& uuid) { mUUID = uuid; }
 
 		/**
-		 * Replaces the instance data with another objects instance data. This object will basically become the original 
+		 * Replaces the instance data with another objects instance data. This object will basically become the original
 		 * owner of the provided instance data as far as all game object handles referencing it are concerned.
 		 *
 		 * @note
@@ -100,7 +100,7 @@ namespace bs
 		 * Destroys this object.
 		 *
 		 * @param[in]	handle		Game object handle to this object.
-		 * @param[in]	immediate	If true, the object will be deallocated and become unusable right away. Otherwise the 
+		 * @param[in]	immediate	If true, the object will be deallocated and become unusable right away. Otherwise the
 		 *							deallocation will be delayed to the end of frame (preferred method).
 		 */
 		virtual void destroyInternal(GameObjectHandleBase& handle, bool immediate = false) = 0;

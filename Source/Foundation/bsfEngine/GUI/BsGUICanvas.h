@@ -36,12 +36,12 @@ namespace bs
 		/**
 		 * Creates a new GUI canvas element.
 		 *
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the 
+		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUICanvas* create(const String& styleName = StringUtil::BLANK);
 		
-		/** 
+		/**
 		 * Draws a line going from @p a to @p b.
 		 *
 		 * @param[in]	a		Starting point of the line, relative to the canvas origin (top-left).
@@ -53,36 +53,36 @@ namespace bs
 		 */
 		void drawLine(const Vector2I& a, const Vector2I& b, const Color& color = Color::White, UINT8 depth = 128);
 
-		/** 
+		/**
 		 * Draws multiple lines following the path by the provided vertices. First vertex connects to the second vertex,
 		 * and every following vertex connects to the previous vertex.
 		 *
-		 * @param[in]	vertices	Points to use for drawing the line. Must have at least two elements. All points are 
+		 * @param[in]	vertices	Points to use for drawing the line. Must have at least two elements. All points are
 		 *							relative to the canvas origin (top-left).
 		 * @param[in]	color		Color of the line.
-		 * @param[in]	depth		Depth at which to draw the element. Elements with higher depth will be drawn before 
+		 * @param[in]	depth		Depth at which to draw the element. Elements with higher depth will be drawn before
 		 *							others. Additionally elements of the same type (triangle or line) will be drawn in order
 		 *							they are submitted if they share the same depth.
 		 */
 		void drawPolyLine(const Vector<Vector2I>& vertices, const Color& color = Color::White, UINT8 depth = 128);
 
-		/** 
+		/**
 		 * Draws a quad with a the provided texture displayed.
 		 *
 		 * @param[in]	texture		Texture to draw.
-		 * @param[in]	area		Position and size of the texture to draw. Position is relative to the canvas origin 
+		 * @param[in]	area		Position and size of the texture to draw. Position is relative to the canvas origin
 		 *							(top-left). If size is zero, the default texture size will be used.
 		 * @param[in]	scaleMode	Scale mode to use when sizing the texture. Only relevant if the provided quad size
 		 *							doesn't match the texture size.
 		 * @param[in]	color		Color to tint the drawn texture with.
-		 * @param[in]	depth		Depth at which to draw the element. Elements with higher depth will be drawn before 
+		 * @param[in]	depth		Depth at which to draw the element. Elements with higher depth will be drawn before
 		 *							others. Additionally elements of the same type (triangle or line) will be drawn in order
 		 *							they are submitted if they share the same depth.
 		 */
-		void drawTexture(const HSpriteTexture& texture, const Rect2I& area, 
+		void drawTexture(const HSpriteTexture& texture, const Rect2I& area,
 			TextureScaleMode scaleMode = TextureScaleMode::StretchToFit, const Color& color = Color::White, UINT8 depth = 128);
 
-		/** 
+		/**
 		 * Draws a triangle strip. First three vertices are used to form the initial triangle, and every next vertex will
 		 * form a triangle with the previous two.
 		 *
@@ -95,7 +95,7 @@ namespace bs
 		 */
 		void drawTriangleStrip(const Vector<Vector2I>& vertices, const Color& color = Color::White, UINT8 depth = 128);
 
-		/** 
+		/**
 		 * Draws a triangle list. Every three vertices in the list represent a unique triangle.
 		 *
 		 * @param[in]	vertices	A set of points defining the triangles. Must have at least three elements, and its size
@@ -121,7 +121,7 @@ namespace bs
 		 *							others. Additionally elements of the same type (triangle or line) will be drawn in order
 		 *							they are submitted if they share the same depth.
 		 */
-		void drawText(const String& text, const Vector2I& position, const HFont& font, UINT32 size = 10, 
+		void drawText(const String& text, const Vector2I& position, const HFont& font, UINT32 size = 10,
 			const Color& color = Color::White, UINT8 depth = 128);
 
 		/** Clears the canvas, removing any previously drawn elements. */
@@ -235,9 +235,9 @@ namespace bs
 		/** Build a set of clipped triangles from the source triangles provided by the canvas element. */
 		void buildTriangleElement(const CanvasElement& element, const Vector2& offset, const Rect2I& clipRect) const;
 
-		/** 
+		/**
 		 * Rebuilds all triangle elements on the canvas, by constructing a set of clipped and offset triangles from the
-		 * triangles provided by the canvas elements. 
+		 * triangles provided by the canvas elements.
 		 */
 		void buildAllTriangleElementsIfDirty(const Vector2& offset, const Rect2I& clipRect) const;
 

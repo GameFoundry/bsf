@@ -5,7 +5,7 @@
 #include "Prerequisites/BsPrerequisitesUtil.h"
 #include "Math/BsVector3.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Math
 	 *  @{
@@ -18,24 +18,24 @@ namespace bs
 		Ray() = default;
 
 		Ray(const Vector3& origin, const Vector3& direction)
-			:mOrigin(origin), mDirection(direction) 
+			:mOrigin(origin), mDirection(direction)
 		{ }
 
-		void setOrigin(const Vector3& origin) { mOrigin = origin; } 
-		const Vector3& getOrigin() const { return mOrigin; } 
+		void setOrigin(const Vector3& origin) { mOrigin = origin; }
+		const Vector3& getOrigin() const { return mOrigin; }
 
-		void setDirection(const Vector3& dir) { mDirection = dir; } 
-		const Vector3& getDirection() const {return mDirection;} 
+		void setDirection(const Vector3& dir) { mDirection = dir; }
+		const Vector3& getDirection() const {return mDirection;}
 
 		/** Gets the position of a point t units along the ray. */
-		Vector3 getPoint(float t) const 
-		{ 
+		Vector3 getPoint(float t) const
+		{
 			return Vector3(mOrigin + (mDirection * t));
 		}
 		
 		/** Gets the position of a point t units along the ray. */
-		Vector3 operator*(float t) const 
-		{ 
+		Vector3 operator*(float t) const
+		{
 			return getPoint(t);
 		}
 
@@ -69,7 +69,7 @@ namespace bs
 		 * @param[in]	negativeSide	(optional) Should intersections with the negative side (opposite of normal facing) count.
 		 * @return						Boolean result if intersection happened and distance to intersection point.
 		 */
-		std::pair<bool, float> intersects(const Vector3& a, const Vector3& b, const Vector3& c, 
+		std::pair<bool, float> intersects(const Vector3& a, const Vector3& b, const Vector3& c,
 			const Vector3& normal, bool positiveSide = true, bool negativeSide = true) const;
 
 	protected:

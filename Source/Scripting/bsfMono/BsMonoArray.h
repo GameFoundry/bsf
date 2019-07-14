@@ -32,14 +32,14 @@ namespace bs
 		template<class T>
 		void set(UINT32 idx, const T& value);
 
-		/** 
+		/**
 		 * Assigns some data represented as raw memory to the array at the specified index. User must provide the size of
 		 * the data, and it must match the element size expected by the array. Multiple array elements can be provided
 		 * sequentially by setting the @p count parameter.
 		 */
 		void setRaw(UINT32 idx, const UINT8* value, UINT32 size, UINT32 count = 1);
 
-		/** 
+		/**
 		 * Returns the raw memory of the data at the specified array index. Returned value should not be used for writing
 		 * to the array and set() or setRaw() methods should be used instead.
 		 */
@@ -50,7 +50,7 @@ namespace bs
 #endif
 			return _getArrayAddr(mInternal, size, idx);
 		}
-		/** 
+		/**
 		 * Returns the raw memory of the data at the specified array index. Returned value should not be used for writing
 		 * to the array and set() or setRaw() methods should be used instead.
 		 */
@@ -63,8 +63,8 @@ namespace bs
 			return (T*)_getArrayAddr(mInternal, sizeof(T), idx);
 		}
 
-		/** 
-		 * Creates a new array of managed objects. 
+		/**
+		 * Creates a new array of managed objects.
 		 *
 		 * @tparam	T	ScriptObject wrapper for the specified managed type.
 		 */
@@ -94,17 +94,17 @@ namespace bs
 		 * @{
 		 */
 
-		/** 
-		 * Returns the address of an array item at the specified index. 
+		/**
+		 * Returns the address of an array item at the specified index.
 		 *
 		 * @param[in]	array	Array from which to retrieve the item.
 		 * @param[in]	size	Size of a single item in the array.
 		 * @param[in]	idx		Index of the item to retrieve.
-		 * @return				Address of the array item at the requested index. 
+		 * @return				Address of the array item at the requested index.
 		 */
 		static UINT8* _getArrayAddr(MonoArray* array, UINT32 size, UINT32 idx);
 
-		/** 
+		/**
 		 * Sets one or multiple entries from the array at the specified index, from raw memory. User must provide the size
 		 * of the element, and it must match the element size expected by the array.
 		 */

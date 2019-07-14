@@ -13,7 +13,7 @@ namespace bs
 	 */
 
 	/**
-	 * Specialized allocator for profiler so we can avoid tracking internal profiler memory allocations which would skew 
+	 * Specialized allocator for profiler so we can avoid tracking internal profiler memory allocations which would skew
 	 * profiler results.
 	 */
 	class ProfilerAlloc

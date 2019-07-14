@@ -110,7 +110,7 @@ namespace bs
 		};
 
 	public:
-		ManagedSerializableDictionary(const ConstructPrivately& dummy, 
+		ManagedSerializableDictionary(const ConstructPrivately& dummy,
 			const SPtr<ManagedSerializableTypeInfoDictionary>& typeInfo, MonoObject* managedInstance);
 		ManagedSerializableDictionary(const ConstructPrivately& dummy);
 		~ManagedSerializableDictionary();
@@ -184,7 +184,7 @@ namespace bs
 		 *									correspond with the provided type info.
 		 * @param[in]	typeInfo			Type information for the dictionary and its key/value pair.
 		 */
-		static SPtr<ManagedSerializableDictionary> createFromExisting(MonoObject* managedInstance, 
+		static SPtr<ManagedSerializableDictionary> createFromExisting(MonoObject* managedInstance,
 			const SPtr<ManagedSerializableTypeInfoDictionary>& typeInfo);
 
 		/**
@@ -215,7 +215,7 @@ namespace bs
 		 * @param[in]	key		Wrapper around the key data at which to set the value.
 		 * @param[in]	val		Wrapper around the value to set at the specified key.
 		 */
-		void setFieldData(MonoObject* obj, const SPtr<ManagedSerializableFieldData>& key, 
+		void setFieldData(MonoObject* obj, const SPtr<ManagedSerializableFieldData>& key,
 			const SPtr<ManagedSerializableFieldData>& val);
 
 		uint32_t mGCHandle = 0;

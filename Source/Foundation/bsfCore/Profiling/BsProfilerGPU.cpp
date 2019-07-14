@@ -95,7 +95,7 @@ namespace bs
 		ProfiledSample* lastSample = mActiveSamples.top();
 		if (lastSample->name != name)
 		{
-			BS_LOG(Error, Profiler, "Attempting to end a sample that doesn't match. Got: {0}. Expected: {1}", 
+			BS_LOG(Error, Profiler, "Attempting to end a sample that doesn't match. Got: {0}. Expected: {1}",
 				name.c_str(), lastSample->name.c_str());
 			return;
 		}

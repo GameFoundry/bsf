@@ -18,7 +18,7 @@ namespace bs
 	struct BS_EXPORT GUILayoutData
 	{
 		GUILayoutData()
-		{ 
+		{
 			setPanelDepth(0);
 		}
 

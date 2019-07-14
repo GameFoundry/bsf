@@ -1,19 +1,19 @@
 /* A Bison parser, made by GNU Bison 2.7.  */
 
 /* Skeleton implementation for Bison GLR parsers in C
-   
+
       Copyright (C) 2002-2012 Free Software Foundation, Inc.
-   
+
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
@@ -26,7 +26,7 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-   
+
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
@@ -1300,8 +1300,8 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 8:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Options); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Options);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 		}
     break;
@@ -1343,23 +1343,23 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 17:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Shader); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Shader);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 			
 			NodeOption entry; entry.type = OT_Identifier; entry.value.strValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue);
-			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &entry); 
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &entry);
 		}
     break;
 
   case 18:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Mixin); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Mixin);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 			
 			NodeOption entry; entry.type = OT_Identifier; entry.value.strValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue);
-			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &entry); 
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &entry);
 		}
     break;
 
@@ -1405,50 +1405,50 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 30:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Tags); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Tags);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 		}
     break;
 
   case 32:
 
-    { 
+    {
 			NodeOption entry; entry.type = OT_TagValue; entry.value.strValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.strValue);
-			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &entry); 
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &entry);
 		}
     break;
 
   case 33:
 
-    { 
+    {
 			NodeOption entry; entry.type = OT_TagValue; entry.value.strValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.strValue);
-			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &entry); 
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &entry);
 		}
     break;
 
   case 34:
 
-    { 
+    {
 		NodeOption index;
-		index.type = OT_Index; 
+		index.type = OT_Index;
 		index.value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((5) - (8))].yystate.yysemantics.yysval.intValue);
 
 		nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &index);	
 	
-		nodePop(parse_state); 
-		((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (8))].yystate.yysemantics.yysval.nodePtr); 
+		nodePop(parse_state);
+		((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (8))].yystate.yysemantics.yysval.nodePtr);
 	}
     break;
 
   case 35:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_SubShader); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_SubShader);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 			
 			NodeOption entry; entry.type = OT_Identifier; entry.value.strValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue);
-			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &entry); 
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &entry);
 		}
     break;
 
@@ -1459,8 +1459,8 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 37:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Pass); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Pass);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 		}
     break;
@@ -1502,8 +1502,8 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 47:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Variations); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Variations);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 		}
     break;
@@ -1525,7 +1525,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 52:
 
-    { 
+    {
 			NodeOption attrEntry; attrEntry.type = OT_Attributes; attrEntry.value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodePtr);
 			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &attrEntry);
 
@@ -1535,8 +1535,8 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 53:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Variation); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Variation);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 			
 			NodeOption entry; entry.type = OT_Identifier; entry.value.strValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.strValue);
@@ -1546,23 +1546,23 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 55:
 
-    { 
-			NodeOption entry; entry.type = OT_VariationOption; entry.value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr); 
+    {
+			NodeOption entry; entry.type = OT_VariationOption; entry.value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr);
 			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &entry);
 		}
     break;
 
   case 56:
 
-    { 
-			NodeOption entry; entry.type = OT_VariationOption; entry.value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.nodePtr); 
+    {
+			NodeOption entry; entry.type = OT_VariationOption; entry.value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.nodePtr);
 			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &entry);
 		}
     break;
 
   case 57:
 
-    { 
+    {
 			((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr);
 			nodePop(parse_state);
 		}
@@ -1570,22 +1570,22 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 58:
 
-    { 
+    {
 			NodeOption attrEntry; attrEntry.type = OT_Attributes; attrEntry.value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodePtr);
 			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &attrEntry);
 		
 			((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.nodePtr);
-			nodePop(parse_state); 
+			nodePop(parse_state);
 		}
     break;
 
   case 59:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_VariationOption); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_VariationOption);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 			
-			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodeOption)); 	 
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodeOption)); 	
 		}
     break;
 
@@ -1606,8 +1606,8 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 63:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Raster); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Raster);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 		}
     break;
@@ -1664,8 +1664,8 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 75:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Depth); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Depth);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 		}
     break;
@@ -1697,8 +1697,8 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 82:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Stencil); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Stencil);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 		}
     break;
@@ -1755,8 +1755,8 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 94:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Blend); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Blend);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 		}
     break;
@@ -1785,36 +1785,36 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
     {
 		NodeOption index;
-		index.type = OT_Index; 
+		index.type = OT_Index;
 		index.value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((5) - (8))].yystate.yysemantics.yysval.intValue);
 
 		nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &index);
 
-		nodePop(parse_state); 
+		nodePop(parse_state);
 		((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (8))].yystate.yysemantics.yysval.nodePtr);
 	}
     break;
 
   case 101:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Code); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Code);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 		}
     break;
 
   case 102:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_StencilOp); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_StencilOp);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 		}
     break;
 
   case 103:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_StencilOp); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_StencilOp);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 		}
     break;
@@ -1866,8 +1866,8 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 112:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Target); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Target);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 		}
     break;
@@ -1914,16 +1914,16 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 122:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_BlendDef); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_BlendDef);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 		}
     break;
 
   case 123:
 
-    { 
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_BlendDef); 
+    {
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_BlendDef);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 		}
     break;
@@ -1969,7 +1969,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 131:
 
     {
-			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Attributes); 
+			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Attributes);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
 		}
     break;
@@ -2018,7 +2018,7 @@ yyuserMerge (int yyn, YYSTYPE* yy0, YYSTYPE* yy1)
 
   switch (yyn)
     {
-      
+
       default: break;
     }
 }
@@ -3724,8 +3724,8 @@ yypdumpstack (yyGLRStack* yystackp)
 
 
 
-void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const char *msg) 
-{ 
+void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const char *msg)
+{
 	parse_state->hasError = 1;
 	parse_state->errorLine = locp->first_line;
 	parse_state->errorColumn = locp->first_column;

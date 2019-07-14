@@ -52,7 +52,7 @@ namespace bs
 		 * Returns clipped bounds of the sprite.
 		 *
 		 * @param[in]	offset		Offset that will be added to the returned bounds.
-		 * @param[in]	clipRect	Local clip rect that is used for clipping the sprite bounds. (Clipping is done before 
+		 * @param[in]	clipRect	Local clip rect that is used for clipping the sprite bounds. (Clipping is done before
 		 *							the offset is applied). If clip rect width or height is zero, no clipping is done.
 		 *
 		 * @return				Clipped sprite bounds.
@@ -60,7 +60,7 @@ namespace bs
 		Rect2I getBounds(const Vector2I& offset, const Rect2I& clipRect) const;
 
 		/**
-		 * Returns the number of separate render elements in the sprite. Normally this is 1, but some sprites may consist 
+		 * Returns the number of separate render elements in the sprite. Normally this is 1, but some sprites may consist
 		 * of multiple materials, in which case each will require its own mesh (render element)
 		 * 			
 		 * @return	The number render elements.
@@ -85,7 +85,7 @@ namespace bs
 		 * Returns the number of quads that the specified render element will use. You will need this value when creating
 		 * the buffers before calling fillBuffer().
 		 * 			
-		 * @return	Number of quads for the specified render element. 
+		 * @return	Number of quads for the specified render element.
 		 *	
 		 * @note	Number of vertices = Number of quads * 4
 		 *			Number of indices = Number of quads * 6
@@ -103,7 +103,7 @@ namespace bs
 		 * @param[out]	indices				Previously allocated buffer where to store the indices.
 		 * @param[in]	vertexOffset		At which vertex should the method start filling the buffer.
 		 * @param[in]	indexOffset			At which index should the method start filling the buffer.
-		 * @param[in]	maxNumVerts			Total number of vertices the buffers were allocated for. Used only for memory 
+		 * @param[in]	maxNumVerts			Total number of vertices the buffers were allocated for. Used only for memory
 		 *									safety.
 		 * @param[in]	maxNumIndices		Total number of indices the buffers were allocated for. Used only for memory
 		 *									safety.
@@ -111,14 +111,14 @@ namespace bs
 		 * @param[in]	indexStride			Number of bytes between two indexes in the provided index data.
 		 * @param[in]	renderElementIdx	Zero-based index of the render element.
 		 * @param[in]	offset				Position offset to apply to all vertices, after clipping.
-		 * @param[in]	clipRect			Rectangle to clip the vertices to. 
+		 * @param[in]	clipRect			Rectangle to clip the vertices to.
 		 * @param[in]	clip				Should the vertices be clipped to the provided @p clipRect.
 		 *
 		 * @see		getNumRenderElements()
 		 * @see		getNumQuads()
 		 */
 		UINT32 fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 vertexOffset, UINT32 indexOffset,
-			UINT32 maxNumVerts, UINT32 maxNumIndices, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, 
+			UINT32 maxNumVerts, UINT32 maxNumIndices, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx,
 			const Vector2I& offset, const Rect2I& clipRect, bool clip = true) const;
 
 		/**
@@ -128,7 +128,7 @@ namespace bs
 		 * @param[in, out]	uv			Pointer to the start of the buffer containing UV coordinates.
 		 * @param[in]		numQuads	Number of quads in the provided buffer pointers.
 		 * @param[in]		vertStride	Number of bytes to skip when going to the next vertex. This assumes both position
-		 *								and uv coordinates have the same stride (as they are likely pointing to the same 
+		 *								and uv coordinates have the same stride (as they are likely pointing to the same
 		 *								buffer).
 		 * @param[in]		clipRect	Rectangle to clip the geometry to.
 		 */
@@ -149,7 +149,7 @@ namespace bs
 		 *								generated and need to be stored. Vertices are always generate in tuples of three,
 		 *								forming a single triangle.
 		 */
-		static void clipTrianglesToRect(UINT8* vertices, UINT8* uv, UINT32 numTris, UINT32 vertStride, 
+		static void clipTrianglesToRect(UINT8* vertices, UINT8* uv, UINT32 numTris, UINT32 vertStride,
 			const Rect2I& clipRect, const std::function<void(Vector2*, Vector2*, UINT32)>& writeCallback);
 	protected:
 		/**	Returns the offset needed to move the sprite in order for it to respect the provided anchor. */

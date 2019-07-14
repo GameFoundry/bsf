@@ -6,7 +6,7 @@
 #include "Physics/BsHingeJoint.h"
 #include "Components/BsCJoint.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Components-Core
 	 *  @{

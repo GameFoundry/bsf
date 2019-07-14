@@ -18,9 +18,9 @@ namespace bs
 	 *  @{
 	 */
 	
-	/** 
+	/**
 	 * Contains data resulting from a single frame of CPU particle simulation of a single particle system, used by all
-	 * rendering modes. 
+	 * rendering modes.
 	 */
 	struct BS_CORE_EXPORT ParticleRenderData
 	{
@@ -34,7 +34,7 @@ namespace bs
 		AABox bounds;
 	};
 
-	/** 
+	/**
 	 * Contains data used for rendering particles as billboards. Per-particle data is stored in a 2D square layout so it
 	 * can be used for quickly initializing a texture.
 	 */
@@ -50,7 +50,7 @@ namespace bs
 		PixelData sizeAndFrameIdx;
 	};
 
-	/** 
+	/**
 	 * Contains data used for rendering particles as meshes. Per-particle data is stored in a 2D square layout so it
 	 * can be used for quickly initializing a texture.
 	 */
@@ -68,7 +68,7 @@ namespace bs
 		/** Contains particle rotation in radians in .xyz with .w unused. */
 		PixelData rotation;
 	};
-	/** 
+	/**
 	 * Contains information about a single particle about to be inserted into the GPU simulation. Matches the structure
 	 * of the vertex buffer element used for injecting shader data into the simulation.
 	 */
@@ -126,7 +126,7 @@ namespace bs
 		ParticleManager();
 		~ParticleManager();
 
-		/** 
+		/**
 		 * Advances the simulation for all particle systems using the current frame time delta. Outputs a set of data
 		 * that can be used for rendering & updating every active particle system.
 		 */
@@ -141,7 +141,7 @@ namespace bs
 		/** Must be called by a ParticleSystem before destruction. */
 		void unregisterParticleSystem(ParticleSystem* system);
 
-		/** 
+		/**
 		 * Sorts the particles in the provided @p using the @p sortMode. Sorted particle indices are placed in the
 		 * @p indices array which is expected to be pre-allocated with enough space to hold an index for each particle
 		 * in a set. @p viewPoint is used as a reference point when using the Distance sort mode.

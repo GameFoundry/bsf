@@ -94,7 +94,7 @@ namespace bs
 			MonoUtil::freeGCHandle(mValuesArrayHandle);
 	}
 
-	ManagedSerializableDictionary::Enumerator& 
+	ManagedSerializableDictionary::Enumerator&
 		ManagedSerializableDictionary::Enumerator::operator=(const Enumerator& other)
 	{
 		mNumEntries = other.mNumEntries;
@@ -242,7 +242,7 @@ namespace bs
 		}
 	}
 
-	SPtr<ManagedSerializableDictionary> ManagedSerializableDictionary::createFromExisting(MonoObject* managedInstance, 
+	SPtr<ManagedSerializableDictionary> ManagedSerializableDictionary::createFromExisting(MonoObject* managedInstance,
 		const SPtr<ManagedSerializableTypeInfoDictionary>& typeInfo)
 	{
 		if(managedInstance == nullptr)

@@ -48,9 +48,9 @@ namespace bs { namespace ct
 		VulkanCmdBufferPool(VulkanDevice& device);
 		~VulkanCmdBufferPool();
 
-		/** 
+		/**
 		 * Attempts to find a free command buffer, or creates a new one if not found. Caller must guarantee the provided
-		 * queue family is valid. 
+		 * queue family is valid.
 		 */
 		VulkanCmdBuffer* getBuffer(UINT32 queueFamily, bool secondary);
 
@@ -106,7 +106,7 @@ namespace bs { namespace ct
 	typedef Flags<BufferUseFlagBits> BufferUseFlags;
 	BS_FLAGS_OPERATORS(BufferUseFlagBits)
 
-	/** 
+	/**
 	 * Represents a direct wrapper over an internal Vulkan command buffer. This is unlike VulkanCommandBuffer which is a
 	 * higher level class, and it allows for re-use by internally using multiple low-level command buffers.
 	 */
@@ -152,9 +152,9 @@ namespace bs { namespace ct
 		/** Ends render pass recording (as started with beginRenderPass(). */
 		void endRenderPass();
 
-		/** 
-		 * Submits the command buffer for execution. 
-		 * 
+		/**
+		 * Submits the command buffer for execution.
+		 *
 		 * @param[in]	queue		Queue to submit the command buffer on.
 		 * @param[in]	queueIdx	Index of the queue the command buffer was submitted on. Note that this may be different
 		 *							from the actual VulkanQueue index since multiple command buffer queue indices can map
@@ -170,13 +170,13 @@ namespace bs { namespace ct
 		/** Returns a fence that can be used for tracking when the command buffer is done executing. */
 		VkFence getFence() const { return mFence; }
 
-		/** 
+		/**
 		 * Returns a semaphore that may be used for synchronizing execution between command buffers executing on the same
 		 * queue.
 		 */
 		VulkanSemaphore* getIntraQueueSemaphore() const { return mIntraQueueSemaphore; }
 
-		/** 
+		/**
 		 * Returns a semaphore that may be used for synchronizing execution between command buffers executing on different
 		 * queues. Note that these semaphores get used each time they are requested, and there is only a fixed number
 		 * available. If all are used up, null will be returned. New semaphores are generated when allocateSemaphores()
@@ -184,11 +184,11 @@ namespace bs { namespace ct
 		 */
 		VulkanSemaphore* requestInterQueueSemaphore() const;
 
-		/** 
+		/**
 		 * Allocates a new set of semaphores that may be used for synchronizing execution between different command buffers.
-		 * Releases the previously allocated semaphores, if they exist. Use getIntraQueueSemaphore() & 
+		 * Releases the previously allocated semaphores, if they exist. Use getIntraQueueSemaphore() &
 		 * requestInterQueueSemaphore() to retrieve latest allocated semaphores.
-		 * 
+		 *
 		 * @param[out]	semaphores	Output array to place all allocated semaphores in. The array must be of size
 		 *							(BS_MAX_VULKAN_CB_DEPENDENCIES + 1).
 		 */
@@ -206,62 +206,62 @@ namespace bs { namespace ct
 		/** Returns true if the command buffer is currently recording a render pass. */
 		bool isInRenderPass() const { return mState == State::RecordingRenderPass; }
 
-		/** 
-		 * Checks the internal fence if done executing. 
-		 * 
+		/**
+		 * Checks the internal fence if done executing.
+		 *
 		 * @param[in]	block	If true, the system will block until the fence is signaled.
 		 */
 		bool checkFenceStatus(bool block) const;
 
-		/** 
-		 * Resets the command buffer back in Ready state. Should be called when command buffer is done executing on a 
-		 * queue. 
+		/**
+		 * Resets the command buffer back in Ready state. Should be called when command buffer is done executing on a
+		 * queue.
 		 */
 		void reset();
 
-		/** 
+		/**
 		 * Lets the command buffer know that the provided resource has been queued on it, and will be used by the
 		 * device when the command buffer is submitted. If a resource is an image or a buffer use the more specific
 		 * registerResource() overload.
 		 */
 		void registerResource(VulkanResource* res, VulkanAccessFlags flags);
 
-		/** 
+		/**
 		 * Lets the command buffer know that the provided image will be used for shader reads or writes in a subsequent draw
 		 * or dispatch call. Transfers the image to the provided layout and issues any necessary execution and memory
 		 * barriers.
 		 */
-		void registerImageShader(VulkanImage* image, const VkImageSubresourceRange& range, VkImageLayout layout, 
-			VulkanAccessFlags access, VkPipelineStageFlags stages); 
+		void registerImageShader(VulkanImage* image, const VkImageSubresourceRange& range, VkImageLayout layout,
+			VulkanAccessFlags access, VkPipelineStageFlags stages);
 
-		/** 
-		 * Lets the command buffer know that the provided image will be used as a framebuffer attachment in a subsequent 
+		/**
+		 * Lets the command buffer know that the provided image will be used as a framebuffer attachment in a subsequent
 		 * draw call. Transfers the image to the provided layout and issues any necessary execution and memory barriers.
 		 */
-		void registerImageFramebuffer(VulkanImage* image, const VkImageSubresourceRange& range, VkImageLayout layout, 
-			VkImageLayout finalLayout, VulkanAccessFlags access, VkPipelineStageFlags stages); 
+		void registerImageFramebuffer(VulkanImage* image, const VkImageSubresourceRange& range, VkImageLayout layout,
+			VkImageLayout finalLayout, VulkanAccessFlags access, VkPipelineStageFlags stages);
 
-		/** 
+		/**
 		 * Lets the command buffer know that the provided image will be used for a transfer operation. Transfers the image
 		 * to the provided layout and issues any necessary execution and memory barriers.
 		 */
-		void registerImageTransfer(VulkanImage* image, const VkImageSubresourceRange& range, VkImageLayout layout, 
+		void registerImageTransfer(VulkanImage* image, const VkImageSubresourceRange& range, VkImageLayout layout,
 			VulkanAccessFlags access);
-		/** 
+		/**
 		 * Lets the command buffer know that the provided image resource has been queued on it, and will be used by the
 		 * device when the command buffer is submitted. @p stages can be left empty for all uses except for generic and
 		 * parameter buffer types.
 		 */
-		void registerBuffer(VulkanBuffer* res, BufferUseFlagBits useFlags, VulkanAccessFlags access, 
+		void registerBuffer(VulkanBuffer* res, BufferUseFlagBits useFlags, VulkanAccessFlags access,
 			VkPipelineStageFlags stages = 0);
 
-		/** 
+		/**
 		 * Lets the command buffer know that the provided framebuffer resource has been queued on it, and will be used by
 		 * the device when the command buffer is submitted.
 		 */
 		void registerResource(VulkanFramebuffer* res, RenderSurfaceMask loadMask, UINT32 readMask);
 
-		/** 
+		/**
 		 * Lets the command buffer know that the provided swap chain resource has been queued on it, and will be used by
 		 * the device when the command buffer is submitted.
 		 */
@@ -277,7 +277,7 @@ namespace bs { namespace ct
 		/* 								COMMANDS	                     		*/
 		/************************************************************************/
 
-		/** 
+		/**
 		 * Assigns a render target the the command buffer. This render target's framebuffer and render pass will be used
 		 * when beginRenderPass() is called. Command buffer must not be currently recording a render pass.
 		 */
@@ -301,7 +301,7 @@ namespace bs { namespace ct
 		/** Sets the current viewport which determine to which portion of the render target to render to. */
 		void setViewport(const Rect2& area);
 
-		/** 
+		/**
 		 * Sets the scissor rectangle area which determines in which area if the viewport are the fragments allowed to be
 		 * generated. Only relevant if enabled on the pipeline state.
 		 */
@@ -331,30 +331,30 @@ namespace bs { namespace ct
 		/** Executes a dispatch command using the currently bound compute pipeline. */
 		void dispatch(UINT32 numGroupsX, UINT32 numGroupsY, UINT32 numGroupsZ);
 
-		/** 
+		/**
 		 * Registers a command that signals the event when executed. Will be delayed until the end of the current
 		 * render pass, if any.
 		 */
 		void setEvent(VulkanEvent* event);
 
-		/** 
+		/**
 		 * Registers a command that resets the query. The command will be delayed until the next submit() if a render
 		 * pass is currently in progress, but is guaranteed to execute before this command buffer is submitted.
 		 */
 		void resetQuery(VulkanQuery* query);
 
-		/** 
+		/**
 		 * Issues a pipeline barrier on the provided buffer. See vkCmdPipelineBarrier in Vulkan spec. for usage
 		 * information.
 		 */
 		void memoryBarrier(VkBuffer buffer, VkAccessFlags srcAccessFlags, VkAccessFlags dstAccessFlags,
 						   VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage);
 
-		/** 
-		 * Issues a pipeline barrier on the provided image, changing its layout. See vkCmdPipelineBarrier in Vulkan spec. 
+		/**
+		 * Issues a pipeline barrier on the provided image, changing its layout. See vkCmdPipelineBarrier in Vulkan spec.
 		 * for usage information.
 		 */
-		void setLayout(VkImage image, VkAccessFlags srcAccessFlags, VkAccessFlags dstAccessFlags, 
+		void setLayout(VkImage image, VkAccessFlags srcAccessFlags, VkAccessFlags dstAccessFlags,
 			VkImageLayout oldLayout, VkImageLayout newLayout, const VkImageSubresourceRange& range);
 
 		/**
@@ -386,7 +386,7 @@ namespace bs { namespace ct
 		/** Describes where and how is a resource being accessed and by which stages. */
 		struct ResourcePipelineUse
 		{
-			/** Specifies how will the subresource be accessed during the current render pass or dispatch call. */ 
+			/** Specifies how will the subresource be accessed during the current render pass or dispatch call. */
 			VulkanAccessFlags access;
 
 			/** Stages the image is being used in during the current render pass or dispatch call. */
@@ -400,10 +400,10 @@ namespace bs { namespace ct
 
 			BufferUseFlags useFlags;
 
-			/** 
-			 * Use flags when buffer is bound for any kind of operation that will require an execution or memory 
+			/**
+			 * Use flags when buffer is bound for any kind of operation that will require an execution or memory
 			 * barrier due to a write hazard. Currently used for issuing execution/memory barriers after shader writes
-			 * (not counting transfer operations which handle the barriers explicitly). Reset after a memory barrier is 
+			 * (not counting transfer operations which handle the barriers explicitly). Reset after a memory barrier is
 			 * issued.
 			 */
 			ResourcePipelineUse writeHazardUse;
@@ -435,17 +435,17 @@ namespace bs { namespace ct
 			/** Use flags when subresource is bound for a transfer operation. Currently unused. */
 			ResourcePipelineUse transferUse;
 
-			/** 
-			 * Use flags when subresource is bound for any kind of operation that will require an execution or memory 
+			/**
+			 * Use flags when subresource is bound for any kind of operation that will require an execution or memory
 			 * barrier due to a write hazard. Currently used for issuing execution/memory barriers after shader writes
 			 * (not counting render pass writes, which handles barriers through subpass dependencies, or transfer operations
 			 * which handle the barriers explicitly). Reset after a memory barrier is issued.
 			 */
 			ResourcePipelineUse writeHazardUse;
 
-			/** 
-			 * Specifies how will the subresource be used during the current render pass or dispatch call. Reset 
-			 * after use. 
+			/**
+			 * Specifies how will the subresource be used during the current render pass or dispatch call. Reset
+			 * after use.
 			 */
 			ImageUseFlags useFlags;
 
@@ -453,7 +453,7 @@ namespace bs { namespace ct
 			bool initialReadOnly = false;
 
 			// Only relevant for layout transitions
-			/** 
+			/**
 			 * Layout transition performed during the submit() call. Doesn't require ending the render pass since it
 			 * will be delayed until submit().
 			 */
@@ -471,7 +471,7 @@ namespace bs { namespace ct
 			 */
 			VkImageLayout requiredLayout;
 
-			/** 
+			/**
 			 * Layout the image will have after the render pass executes, taking account automatic transitions render pass
 			 * does on its attachments. Only relevant for FB attachments. Ignored if render pass doesn't execute.
 			 */
@@ -487,8 +487,8 @@ namespace bs { namespace ct
 		/** Binds the current graphics pipeline to the command buffer. Returns true if bind was successful. */
 		bool bindGraphicsPipeline();
 
-		/** 
-		 * Binds any dynamic states to the pipeline, as required. 
+		/**
+		 * Binds any dynamic states to the pipeline, as required.
 		 *
 		 * @param[in]	forceAll	If true all states will be bound. If false only states marked as dirty will be bound.
 		 */
@@ -501,7 +501,7 @@ namespace bs { namespace ct
 		void bindGpuParams();
 
 		/** Clears the specified area of the currently bound render target. */
-		void clearViewport(const Rect2I& area, UINT32 buffers, const Color& color, float depth, UINT16 stencil, 
+		void clearViewport(const Rect2I& area, UINT32 buffers, const Color& color, float depth, UINT16 stencil,
 			UINT8 targetMask);
 
 		/** Starts and ends a render pass, intended only for a clear operation. */
@@ -513,14 +513,14 @@ namespace bs { namespace ct
 		/** Executes any queued memory barriers. */
 		void executeWriteHazardBarrier();
 
-		/** 
+		/**
 		 * Updates final layouts for images used by the current framebuffer, reflecting layout changes performed by render
-		 * pass' automatic layout transitions. 
+		 * pass' automatic layout transitions.
 		 */
 		void updateFinalLayouts();
 
-		/** 
-		 * Lets the command buffer know that the provided image subresource will be used in subsequent draw or dispatch 
+		/**
+		 * Lets the command buffer know that the provided image subresource will be used in subsequent draw or dispatch
 		 * calls. Transitions the image to @p layout (if needed).
 		 *
 		 * @param[in]	image					Image to register with the command buffer.
@@ -536,25 +536,25 @@ namespace bs { namespace ct
 		void registerResource(VulkanImage* image, const VkImageSubresourceRange& range, ImageUseFlagBits use,
 			VkImageLayout layout, VkImageLayout finalLayout, VulkanAccessFlags access, VkPipelineStageFlags stages);
 
-		/** 
+		/**
 		 * Updates an existing image sub-resource with new layout, access and stage flags for the purposes of shader
 		 * read or write. Sets up any necessary execution and memory barriers, as well as layout transitions.
 		 */
-		void updateShaderSubresource(VulkanImage* image, UINT32 imageInfoIdx, ImageSubresourceInfo& subresourceInfo, 
+		void updateShaderSubresource(VulkanImage* image, UINT32 imageInfoIdx, ImageSubresourceInfo& subresourceInfo,
 			VkImageLayout layout, VulkanAccessFlags access, VkPipelineStageFlags stages);
 
-		/** 
+		/**
 		 * Updates an existing image sub-resource with new layout, access and stage flags for the purposes of being bound
 		 * as a framebuffer attachment. Sets up any necessary execution and memory barriers, as well as layout transitions.
 		 */
-		void updateFramebufferSubresource(VulkanImage* image, UINT32 imageInfoIdx, ImageSubresourceInfo& subresourceInfo, 
+		void updateFramebufferSubresource(VulkanImage* image, UINT32 imageInfoIdx, ImageSubresourceInfo& subresourceInfo,
 			VkImageLayout layout, VkImageLayout finalLayout, VulkanAccessFlags access, VkPipelineStageFlags stages);
 
-		/** 
+		/**
 		 * Updates an existing image sub-resource with new access and stage flags for the purposes of being used for a
 		 * transfer operation. Sets up any necessary execution and memory barriers, as well as layout transitions.
 		 */
-		void updateTransferSubresource(VulkanImage* image, UINT32 imageInfoIdx, ImageSubresourceInfo& subresourceInfo, 
+		void updateTransferSubresource(VulkanImage* image, UINT32 imageInfoIdx, ImageSubresourceInfo& subresourceInfo,
 			VkImageLayout layout, VulkanAccessFlags access, VkPipelineStageFlags stages);
 
 		/** Finds a subresource info structure containing the specified face and mip level of the provided image. */
@@ -640,17 +640,17 @@ namespace bs { namespace ct
 	class VulkanCommandBuffer : public CommandBuffer
 	{
 	public:
-		/** 
-		 * Submits the command buffer for execution. 
-		 * 
+		/**
+		 * Submits the command buffer for execution.
+		 *
 		 * @param[in]	syncMask	Mask that controls which other command buffers does this command buffer depend upon
 		 *							(if any). See description of @p syncMask parameter in RenderAPI::executeCommands().
 		 */
 		void submit(UINT32 syncMask);
 
-		/** 
-		 * Returns the internal command buffer. 
-		 * 
+		/**
+		 * Returns the internal command buffer.
+		 *
 		 * @note	This buffer will change after a submit() call.
 		 */
 		VulkanCmdBuffer* getInternal() const { return mBuffer; }
@@ -663,7 +663,7 @@ namespace bs { namespace ct
 
 		~VulkanCommandBuffer();
 
-		/** 
+		/**
 		 * Tasks the command buffer to find a new internal command buffer. Call this after the command buffer has been
 		 * submitted to a queue (it's not allowed to be used until the queue is done with it).
 		 */

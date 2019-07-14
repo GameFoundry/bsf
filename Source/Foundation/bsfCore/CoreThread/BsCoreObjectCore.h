@@ -14,7 +14,7 @@ namespace bs
 	 */
 
 	/**
-	 * Represents counterpart of a CoreObject that is meant to be used specifically on the core thread. 
+	 * Represents counterpart of a CoreObject that is meant to be used specifically on the core thread.
 	 *
 	 * @note	Core thread only.
 	 * @note	Different CoreObject implementations should implement this class for their own needs.
@@ -62,7 +62,7 @@ namespace bs
 		 * Update internal data from provided memory buffer that was populated with data from the sim thread.
 		 *
 		 * @note	
-		 * This generally happens at the start of a core thread frame. Data used was recorded on the previous sim thread 
+		 * This generally happens at the start of a core thread frame. Data used was recorded on the previous sim thread
 		 * frame.
 		 */
 		virtual void syncToCore(const CoreSyncData& data) { }

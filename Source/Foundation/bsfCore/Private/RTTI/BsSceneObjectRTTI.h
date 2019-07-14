@@ -76,9 +76,9 @@ namespace bs
 	public:
 		SceneObjectRTTI()
 		{
-			addReflectablePtrArrayField("mChildren", 0, &SceneObjectRTTI::getChild, 
+			addReflectablePtrArrayField("mChildren", 0, &SceneObjectRTTI::getChild,
 				&SceneObjectRTTI::getNumChildren, &SceneObjectRTTI::setChild, &SceneObjectRTTI::setNumChildren);
-			addReflectablePtrArrayField("mComponents", 1, &SceneObjectRTTI::getComponent, 
+			addReflectablePtrArrayField("mComponents", 1, &SceneObjectRTTI::getComponent,
 				&SceneObjectRTTI::getNumComponents, &SceneObjectRTTI::setComponent, &SceneObjectRTTI::setNumComponents);
 			addPlainField("mPrefabLink", 2, &SceneObjectRTTI::getPrefabLink, &SceneObjectRTTI::setPrefabLink);
 			addPlainField("mFlags", 3, &SceneObjectRTTI::getFlags, &SceneObjectRTTI::setFlags);
@@ -151,7 +151,7 @@ namespace bs
 			if(so->mUUID.empty() || ((coreContext->flags & GODM_UseNewUUID) != 0))
 				so->mUUID = UUIDGenerator::generateRandom();
 
-			// If this is the deserialization parent, end deserialization (which resolves all game object handles, if we 
+			// If this is the deserialization parent, end deserialization (which resolves all game object handles, if we
 			// provided valid IDs), and instantiate (i.e. activate) the deserialized hierarchy.
 			if (mIsDeserializationParent)
 			{

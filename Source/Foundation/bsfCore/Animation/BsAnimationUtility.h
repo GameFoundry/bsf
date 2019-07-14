@@ -74,7 +74,7 @@ namespace bs
 
 		/** Converts a curve in euler angles (in degrees) into a curve using quaternions. */
 		BS_SCRIPT_EXPORT()
-		static SPtr<TAnimationCurve<Quaternion>> eulerToQuaternionCurve(const SPtr<TAnimationCurve<Vector3>>& eulerCurve, 
+		static SPtr<TAnimationCurve<Quaternion>> eulerToQuaternionCurve(const SPtr<TAnimationCurve<Vector3>>& eulerCurve,
 			EulerAngleOrder order = EulerAngleOrder::YXZ);
 
 		/** Converts a curve in quaternions into a curve using euler angles (in degrees). */
@@ -99,12 +99,12 @@ namespace bs
 
 		/** Splits a multi-component curve into multiple individual curves, one for each component. */
 		template<class T>
-		static void splitCurve(const TAnimationCurve<T>& compoundCurve, 
+		static void splitCurve(const TAnimationCurve<T>& compoundCurve,
 			TAnimationCurve<float> (&output)[TCurveProperties<T>::NumComponents]);
 
 		/** Combines multiple single component curves into a multi-component curve. */
 		template<class T>
-		static void combineCurve(const TAnimationCurve<float> (&curveComponents)[TCurveProperties<T>::NumComponents], 
+		static void combineCurve(const TAnimationCurve<float> (&curveComponents)[TCurveProperties<T>::NumComponents],
 			TAnimationCurve<T>& output);
 		/**
 		 * Calculates the total range covered by a set of curves.
@@ -115,16 +115,16 @@ namespace bs
 		 * @param[out]	yMin		Minimum curve value present in the curves.
 		 * @param[out]	yMax		Maximum curve value present in the curves.
 		 */
-		static void calculateRange(const Vector<TAnimationCurve<float>>& curves, 
+		static void calculateRange(const Vector<TAnimationCurve<float>>& curves,
 			float& xMin, float& xMax, float& yMin, float& yMax);
 
 		/** @copydoc calculateRange(const Vector<TAnimationCurve<float>>&, float&, float&, float&, float&) */
 		BS_SCRIPT_EXPORT()
-		static void calculateRange(const Vector<SPtr<TAnimationCurve<float>>>& curves, 
+		static void calculateRange(const Vector<SPtr<TAnimationCurve<float>>>& curves,
 			float& xMin, float& xMax, float& yMin, float& yMax);
 
 		/** Scales all curve values and tangents by the specified scale factor. */
-		template<class T> 
+		template<class T>
 		static TAnimationCurve<T> scaleCurve(const TAnimationCurve<T>& curve, float factor);
 
 		/** Adds a time offset to all keyframes in the provided curve. */
@@ -144,7 +144,7 @@ namespace bs
 	};
 
 	/**
-	 * Flags that are used for describing how are tangents calculated for a specific keyframe in an animation curve. 
+	 * Flags that are used for describing how are tangents calculated for a specific keyframe in an animation curve.
 	 * Modes for "in" and "out" tangents can be combined.
 	 */
 	enum class BS_SCRIPT_EXPORT(m:Animation,n:TangentMode) TangentModeBits

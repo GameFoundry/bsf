@@ -44,7 +44,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Attempts to find a resource with the provided UUID and outputs the path to the resource if found. Returns true if 
+		/// Attempts to find a resource with the provided UUID and outputs the path to the resource if found. Returns true if
 		/// UUID was found, false otherwise.
 		/// </summary>
 		public bool UuidToFilePath(UUID uuid, out string filePath)
@@ -53,7 +53,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Attempts to find a resource with the provided path and outputs the UUID to the resource if found. Returns true if 
+		/// Attempts to find a resource with the provided path and outputs the UUID to the resource if found. Returns true if
 		/// path was found, false otherwise.
 		/// </summary>
 		public bool FilePathToUUID(string filePath, out UUID outUUID)

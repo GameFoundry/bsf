@@ -16,7 +16,7 @@ namespace bs
 	/**
 	 * Wrapper class which indicates a given angle value is in radians.
 	 * 			
-	 * @note 
+	 * @note
 	 * Radian values are interchangeable with Degree values, and conversions will be done automatically between them.
 	 */
 	class BS_UTILITY_EXPORT Radian

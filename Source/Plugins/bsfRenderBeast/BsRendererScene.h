@@ -9,8 +9,8 @@
 #include "Shading/BsLightProbes.h"
 #include "Utility/BsSamplerOverrides.h"
 
-namespace bs 
-{ 
+namespace bs
+{
 	struct EvaluatedAnimationData;
 	struct ParticlePerFrameData;
 
@@ -126,7 +126,7 @@ namespace bs
 		/** Removes a light probe volume from the scene. */
 		void unregisterLightProbeVolume(LightProbeVolume* volume);
 
-		/** 
+		/**
 		 * Rebuilds any light probe related information. Should be called once immediately before rendering. If no change
 		 * is detected since the last call, the call does nothing.
 		 */
@@ -177,16 +177,16 @@ namespace bs
 		 * Performs necessary steps to make a renderable ready for rendering. This must be called at least once every frame
 		 * for every renderable that will be drawn. Multiple calls for the same renderable during a single frame will result
 		 * in a no-op.
-		 * 
+		 *
 		 * @param[in]	idx			Index of the renderable to prepare.
 		 * @param[in]	frameInfo	Global information describing the current frame.
 		 */
 		void prepareRenderable(UINT32 idx, const FrameInfo& frameInfo);
 
 		/**
-		 * Performs necessary steps to make a particle system ready for rendering. This must be called at least once every 
-		 * frame for every particle system that will be drawn. 
-		 * 
+		 * Performs necessary steps to make a particle system ready for rendering. This must be called at least once every
+		 * frame for every particle system that will be drawn.
+		 *
 		 * @param[in]	idx			Index of the particle system to prepare.
 		 * @param[in]	frameInfo	Global information describing the current frame.
 		 */
@@ -194,8 +194,8 @@ namespace bs
 
 		/**
 		 * Performs necessary steps to make a decal ready for rendering. This must be called at least once every frame
-		 * for every decal that will be drawn. 
-		 * 
+		 * for every decal that will be drawn.
+		 *
 		 * @param[in]	idx			Index of the decal to prepare.
 		 * @param[in]	frameInfo	Global information describing the current frame.
 		 */
@@ -210,15 +210,15 @@ namespace bs
 		/** Creates a renderer view descriptor for the particular camera. */
 		RENDERER_VIEW_DESC createViewDesc(Camera* camera) const;
 
-		/** 
+		/**
 		 * Find the render target the camera belongs to and adds it to the relevant list. If the camera was previously
 		 * registered with some other render target it will be removed from it and added to the new target.
 		 */
 		void updateCameraRenderTargets(Camera* camera, bool remove = false);
 
-		/** 
-		 * Allocates (or returns existing) set of sampler state overrides that can be used for the provided render 
-		 * element. 
+		/**
+		 * Allocates (or returns existing) set of sampler state overrides that can be used for the provided render
+		 * element.
 		 */
 		MaterialSamplerOverrides* allocSamplerStateOverrides(RenderElement& elem);
 

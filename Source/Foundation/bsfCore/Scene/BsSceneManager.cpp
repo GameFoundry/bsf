@@ -33,14 +33,14 @@ namespace bs
 		bool& val;
 	};
 
-	SceneInstance::SceneInstance(ConstructPrivately dummy, const String& name, const HSceneObject& root, 
+	SceneInstance::SceneInstance(ConstructPrivately dummy, const String& name, const HSceneObject& root,
 		const SPtr<PhysicsScene>& physicsScene)
 		:mName(name), mRoot(root), mPhysicsScene(physicsScene)
 	{ }
 
 	SceneManager::SceneManager()
 		: mMainScene(
-			bs_shared_ptr_new<SceneInstance>(SceneInstance::ConstructPrivately(), "Main", 
+			bs_shared_ptr_new<SceneInstance>(SceneInstance::ConstructPrivately(), "Main",
 				SceneObject::createInternal("SceneRoot"),
 				gPhysics().createPhysicsScene()))
 	{
@@ -406,7 +406,7 @@ namespace bs
 		ScopeToggle toggle(mDisableStateChange);
 
 		const bool alwaysRun = component->hasFlag(ComponentFlag::AlwaysRun);
-		const bool isEnabled = component->sceneObject()->getActive() && (alwaysRun || 
+		const bool isEnabled = component->sceneObject()->getActive() && (alwaysRun ||
 			mComponentState != ComponentState::Stopped);
 
 		if (isEnabled)
@@ -486,7 +486,7 @@ namespace bs
 			UINT32 listType = 0;
 			switch(entry.type)
 			{
-			case ComponentStateEventType::Created: 
+			case ComponentStateEventType::Created:
 				if (alwaysRun || !isStopped)
 					listType = isActive ? ActiveList : InactiveList;
 				else
@@ -499,7 +499,7 @@ namespace bs
 				else
 					listType = (existingListType == UninitializedList) ? UninitializedList : InactiveList;
 				break;
-			case ComponentStateEventType::Destroyed: 
+			case ComponentStateEventType::Destroyed:
 				listType = 0;
 				break;
 			default: break;
@@ -560,7 +560,7 @@ namespace bs
 	}
 
 	void SceneManager::registerNewSO(const HSceneObject& node)
-	{ 
+	{
 		if(mMainScene->getRoot())
 			node->setParent(mMainScene->getRoot());
 	}

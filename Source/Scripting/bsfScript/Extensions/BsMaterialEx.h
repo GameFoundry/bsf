@@ -18,7 +18,7 @@ namespace bs
 	{
 	public:
 		BS_SCRIPT_EXPORT(e:Material,in:true)
-		static void setTexture(const HMaterial& thisPtr, const String& name, const HTexture& value, 
+		static void setTexture(const HMaterial& thisPtr, const String& name, const HTexture& value,
 			UINT32 mipLevel, UINT32 numMipLevels, UINT32 arraySlice, UINT32 numArraySlices);
 
 		BS_SCRIPT_EXPORT(e:Material,in:true)

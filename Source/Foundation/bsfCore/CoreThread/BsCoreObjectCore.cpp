@@ -5,7 +5,7 @@
 
 namespace bs
 {
-	namespace ct 
+	namespace ct
 	{
 	Signal CoreObject::mCoreGpuObjectLoadedCondition;
 	Mutex CoreObject::mCoreGpuObjectLoadedMutex;
@@ -15,7 +15,7 @@ namespace bs
 	{ }
 
 	CoreObject::~CoreObject()
-	{ 
+	{
 		THROW_IF_NOT_CORE_THREAD;
 	}
 

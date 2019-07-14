@@ -84,13 +84,13 @@ namespace bs { namespace ct
 
 	void D3D11GpuVertexProgram::loadFromMicrocode(D3D11Device& device, const DataBlob& microcode)
 	{
-		HRESULT hr = device.getD3D11Device()->CreateVertexShader( 
+		HRESULT hr = device.getD3D11Device()->CreateVertexShader(
 			microcode.data, microcode.size, device.getClassLinkage(), &mVertexShader);
 
 		if (FAILED(hr) || device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			BS_EXCEPT(RenderingAPIException, 
+			BS_EXCEPT(RenderingAPIException,
 				"Cannot create D3D11 vertex shader from microcode\nError Description:" + errorDescription);
 
 		}
@@ -118,7 +118,7 @@ namespace bs { namespace ct
 		if (FAILED(hr) || device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			BS_EXCEPT(RenderingAPIException, 
+			BS_EXCEPT(RenderingAPIException,
 				"Cannot create D3D11 pixel shader from microcode.\nError Description:" + errorDescription);
 		}
 	}
@@ -134,7 +134,7 @@ namespace bs { namespace ct
 	{ }
 
 	D3D11GpuGeometryProgram::~D3D11GpuGeometryProgram()
-	{ 
+	{
 		SAFE_RELEASE(mGeometryShader);
 	}
 
@@ -146,7 +146,7 @@ namespace bs { namespace ct
 		if (FAILED(hr) || device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			BS_EXCEPT(RenderingAPIException, 
+			BS_EXCEPT(RenderingAPIException,
 				"Cannot create D3D11 geometry shader from microcode.\nError Description:" + errorDescription);
 		}
 	}
@@ -161,7 +161,7 @@ namespace bs { namespace ct
 	{ }
 
 	D3D11GpuDomainProgram::~D3D11GpuDomainProgram()
-	{ 
+	{
 		SAFE_RELEASE(mDomainShader);
 	}
 
@@ -173,7 +173,7 @@ namespace bs { namespace ct
 		if (FAILED(hr) || device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			BS_EXCEPT(RenderingAPIException, 
+			BS_EXCEPT(RenderingAPIException,
 				"Cannot create D3D11 domain shader from microcode.\nError Description:" + errorDescription);
 		}
 	}
@@ -188,7 +188,7 @@ namespace bs { namespace ct
 	{ }
 
 	D3D11GpuHullProgram::~D3D11GpuHullProgram()
-	{ 
+	{
 		SAFE_RELEASE(mHullShader);
 	}
 
@@ -201,7 +201,7 @@ namespace bs { namespace ct
 		if (FAILED(hr) || device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			BS_EXCEPT(RenderingAPIException, 
+			BS_EXCEPT(RenderingAPIException,
 				"Cannot create D3D11 hull shader from microcode.\nError Description:" + errorDescription);
 		}
 	}

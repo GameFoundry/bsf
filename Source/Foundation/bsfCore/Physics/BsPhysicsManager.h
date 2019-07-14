@@ -28,11 +28,11 @@ namespace bs
 	class BS_CORE_EXPORT PhysicsManager : public Module<PhysicsManager>
 	{
 	public:
-		/** 
-		 * Initializes the physics manager and a particular physics implementation. 
+		/**
+		 * Initializes the physics manager and a particular physics implementation.
 		 *
 		 * @param[in]	pluginName	Name of the plugin containing a physics implementation.
-		 * @param[in]	cooking		Should the physics cooking library be initialized (normally only needed during 
+		 * @param[in]	cooking		Should the physics cooking library be initialized (normally only needed during
 		 *							development).
 		 */
 		PhysicsManager(const String& pluginName, bool cooking);

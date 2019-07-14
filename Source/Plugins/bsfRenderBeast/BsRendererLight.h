@@ -8,7 +8,7 @@
 #include "Renderer/BsLight.h"
 #include "RenderAPI/BsGpuPipelineParamInfo.h"
 
-namespace bs 
+namespace bs
 {
 	class Bounds;
 
@@ -48,15 +48,15 @@ namespace ct
 		/** Populates the structure with light parameters. */
 		void getParameters(LightData& output) const;
 
-		/** 
+		/**
 		 * Populates the provided parameter block buffer with information about the light. Provided buffer's structure
 		 * must match PerLightParamDef.
 		 */
 		void getParameters(SPtr<GpuParamBlockBuffer>& buffer) const;
 		
-		/** 
+		/**
 		 * Calculates the light position that is shifted in order to account for area spot lights. For non-spot lights
-		 * this method will return normal light position. The position will be shifted back from the light direction, 
+		 * this method will return normal light position. The position will be shifted back from the light direction,
 		 * magnitude of the shift depending on the source radius.
 		 */
 		Vector3 getShiftedLightPosition() const;
@@ -93,8 +93,8 @@ namespace ct
 	/** Helper struct containing all parameters required for forward lighting. */
 	struct ForwardLightingParams
 	{
-		/** 
-		 * Initializes the parameters from the provided parameters. 
+		/**
+		 * Initializes the parameters from the provided parameters.
 		 *
 		 * @param[in]	params		GPU parameters object to look for the parameters in.
 		 * @param[in]	clustered	If true, set up parameters for clustered forward rendering. If false, set up parameters
@@ -105,9 +105,9 @@ namespace ct
 		/** Binding indices representing where should lights param block buffer be bound to. */
 		GpuParamBinding gridParamsBindings[GPT_COUNT];
 
-		/** 
+		/**
 		 * Parameter to which to bind a buffer containing light grid offsets and size, per grid cell. Used for forward
-		 * rendering. 
+		 * rendering.
 		 */
 		GpuParamBuffer gridLightOffsetsAndSizeParam;
 
@@ -117,27 +117,27 @@ namespace ct
 		/** Parameter to which to bind light buffer used for forward rendering. */
 		GpuParamBuffer lightsBufferParam;
 
-		/** 
+		/**
 		 * Parameter to which to bind a buffer containing reflection probe grid offsets and size, per grid cell. Used for
-		 * forward rendering. 
+		 * forward rendering.
 		 */
 		GpuParamBuffer gridProbeOffsetsAndSizeParam;
 
-		/** 
+		/**
 		 * Binding for a parameter block containing a list of lights influencing this object. Only used when standard
-		 * (non-clustered) forward rendering is used. 
+		 * (non-clustered) forward rendering is used.
 		 */
 		GpuParamBinding lightsParamBlockBinding;
 
-		/** 
-		 * Binding for a parameter block that contains the number of lights and reflection probes in the light/refl. probe 
+		/**
+		 * Binding for a parameter block that contains the number of lights and reflection probes in the light/refl. probe
 		 * parameter blocks. Only used when standard (non-clustered) forward rendering is used.
 		 */
 		GpuParamBinding lightAndReflProbeParamsParamBlockBinding;
 	};
 
-	/** 
-	 * Contains lights that are visible from a specific set of views, determined by scene information provided to 
+	/**
+	 * Contains lights that are visible from a specific set of views, determined by scene information provided to
 	 * setLights().
 	 */
 	class VisibleLightData
@@ -145,7 +145,7 @@ namespace ct
 	public:
 		VisibleLightData();
 
-		/** 
+		/**
 		 * Updates the internal buffers with a new set of lights. Before calling make sure that light visibility has
 		 * been calculated for the provided view group.
 		 */
@@ -154,18 +154,18 @@ namespace ct
 		/** Returns a GPU bindable buffer containing information about every light. */
 		SPtr<GpuBuffer> getLightBuffer() const { return mLightBuffer; }
 
-		/** 
+		/**
 		 * Scans the list of lights visible in the view frustum to find the ones influencing the object described by
 		 * the provided bounds. A maximum number of STANDARD_FORWARD_MAX_NUM_LIGHTS will be output. If there are more
-		 * influencing lights, only the most important ones will be returned. 
-		 * 
+		 * influencing lights, only the most important ones will be returned.
+		 *
 		 * The lights will be output in the following order: directional, radial, spot. @p counts will contain the number
 		 * of directional lights (component 'x'), number of radial lights (component 'y') and number of spot lights
 		 * (component 'z');
-		 * 
+		 *
 		 * update() must have been called with most recent scene/view information before calling this method.
 		 */
-		void gatherInfluencingLights(const Bounds& bounds, const LightData* (&output)[STANDARD_FORWARD_MAX_NUM_LIGHTS], 
+		void gatherInfluencingLights(const Bounds& bounds, const LightData* (&output)[STANDARD_FORWARD_MAX_NUM_LIGHTS],
 			Vector3I& counts) const;
 
 		/** Returns the number of directional lights in the lights buffer. */

@@ -67,7 +67,7 @@ namespace bs
 		}
 	}
 
-	void ScriptGUIScrollArea::internal_createInstance(MonoObject* instance, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+	void ScriptGUIScrollArea::internal_createInstance(MonoObject* instance, ScrollBarType vertBarType, ScrollBarType horzBarType,
 		MonoString* scrollBarStyle, MonoString* scrollAreaStyle, MonoArray* guiOptions)
 	{
 		GUIOptions options;
@@ -77,7 +77,7 @@ namespace bs
 		for (UINT32 i = 0; i < arrayLen; i++)
 			options.addOption(scriptArray.get<GUIOption>(i));
 
-		GUIScrollArea* guiScrollArea = GUIScrollArea::create(vertBarType, horzBarType, options, 
+		GUIScrollArea* guiScrollArea = GUIScrollArea::create(vertBarType, horzBarType, options,
 			MonoUtil::monoToString(scrollBarStyle), MonoUtil::monoToString(scrollAreaStyle));
 
 		new (bs_alloc<ScriptGUIScrollArea>()) ScriptGUIScrollArea(instance, guiScrollArea);

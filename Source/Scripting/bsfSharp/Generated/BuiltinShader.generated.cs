@@ -17,12 +17,12 @@ namespace bs
 		/// <summary>Special shader used for rendering particles without any lighting, with support for transparency.</summary>
 		ParticlesUnlit = 3,
 		/// <summary>
-		/// Special shader used for rendering particles with lighting using the forward rendering pipeline (supports  
+		/// Special shader used for rendering particles with lighting using the forward rendering pipeline (supports
 		/// transparency).
 		/// </summary>
 		ParticlesLit = 4,
 		/// <summary>
-		/// Special shader used for rendering particles with lighting using the deferred rendering pipeline (no support for 
+		/// Special shader used for rendering particles with lighting using the deferred rendering pipeline (no support for
 		/// transparency).
 		/// </summary>
 		ParticlesLitOpaque = 5,

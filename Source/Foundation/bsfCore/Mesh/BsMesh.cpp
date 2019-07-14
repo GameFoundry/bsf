@@ -368,7 +368,7 @@ namespace bs
 
 		if (meshData.getIndexElementSize() != ibProps.getIndexSize())
 		{
-			BS_LOG(Error, Mesh, "Provided index size doesn't match meshes index size. Needed: {0}. Got: {1}", 
+			BS_LOG(Error, Mesh, "Provided index size doesn't match meshes index size. Needed: {0}. Got: {1}",
 				ibProps.getIndexSize(), meshData.getIndexElementSize());
 
 			return;
@@ -493,7 +493,7 @@ namespace bs
 
 				if (bufferSize > vertexBuffer->getSize())
 				{
-					BS_LOG(Error, Mesh, "Vertex buffer values for stream \"{0}\" are being read out of valid range.", 
+					BS_LOG(Error, Mesh, "Vertex buffer values for stream \"{0}\" are being read out of valid range.",
 						streamIdx);
 					continue;
 				}

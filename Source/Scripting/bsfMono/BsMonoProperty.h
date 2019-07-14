@@ -29,7 +29,7 @@ namespace bs
 		MonoObject* get(MonoObject* instance) const;
 
 		/**
-		 * Sets a value of the property in the specified instance. 
+		 * Sets a value of the property in the specified instance.
 		 *
 		 * @param[in]	instance	Object instance to access the property on. Can be null for static properties.
 		 * @param[in]	value		Value to set on the property. For value type it should be a pointer to the value and for
@@ -72,7 +72,7 @@ namespace bs
 		MonoObject* getAttribute(MonoClass* monoClass);
 
 		/**	
-		 * Returns property visibility in the class. If getter/setter methods have different visibility, the more 
+		 * Returns property visibility in the class. If getter/setter methods have different visibility, the more
 		 * restrictive one is returned.
 		 */
 		MonoMemberVisibility getVisibility();
@@ -81,8 +81,8 @@ namespace bs
 
 		MonoProperty(::MonoProperty* monoProp);
 
-		/** 
-		 * Some property data is not initialized by default on creation (with the assumption it will never be accessed). 
+		/**
+		 * Some property data is not initialized by default on creation (with the assumption it will never be accessed).
 		 * This method will initialize that data.
 		 */
 		void initializeDeferred() const;

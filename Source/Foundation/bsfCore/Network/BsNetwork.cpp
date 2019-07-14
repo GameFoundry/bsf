@@ -31,7 +31,7 @@ namespace bs
 		}
 	}
 
-	/** 
+	/**
 	 * Same as systemToNetworkAddress(const SystemAddress&, NetworkAddress&) except it returns a brand new NetworkAddress
 	 * object.
 	 */
@@ -69,17 +69,17 @@ namespace bs
 	{
 		switch(channel.priority)
 		{
-		case PacketPriority::Immediate: 
+		case PacketPriority::Immediate:
 			priority = IMMEDIATE_PRIORITY;
 			break;
-		case PacketPriority::High: 
+		case PacketPriority::High:
 			priority = HIGH_PRIORITY;
 			break;
 		default:
-		case PacketPriority::Medium: 
+		case PacketPriority::Medium:
 			priority = MEDIUM_PRIORITY;
 			break;
-		case PacketPriority::Low: 
+		case PacketPriority::Low:
 			priority = LOW_PRIORITY;
 			break;
 		}
@@ -96,13 +96,13 @@ namespace bs
 			switch(channel.ordering)
 			{
 			default:
-			case PacketOrdering::Unordered: 
+			case PacketOrdering::Unordered:
 				reliability = RELIABLE;
 				break;
-			case PacketOrdering::Ordered: 
+			case PacketOrdering::Ordered:
 				reliability = RELIABLE_ORDERED;
 				break;
-			case PacketOrdering::Sequenced: 
+			case PacketOrdering::Sequenced:
 				reliability = RELIABLE_SEQUENCED;
 				break;
 			}
@@ -308,37 +308,37 @@ namespace bs
 
 		switch(result)
 		{
-		case RAKNET_ALREADY_STARTED: 
+		case RAKNET_ALREADY_STARTED:
 			LOGWRN("Failed to start RakNet peer, RakNet already started.");
 			break;
-		case INVALID_SOCKET_DESCRIPTORS: 
+		case INVALID_SOCKET_DESCRIPTORS:
 			LOGERR("Failed to start RakNet peer, invalid socket descriptors provided.");
 			break;
-		case INVALID_MAX_CONNECTIONS: 
+		case INVALID_MAX_CONNECTIONS:
 			LOGERR("Failed to start RakNet peer, invalid max. connection count provided.");
 			break;
-		case SOCKET_FAMILY_NOT_SUPPORTED: 
+		case SOCKET_FAMILY_NOT_SUPPORTED:
 			LOGERR("Failed to start RakNet peer, socket family not supported.");
 			break;
-		case SOCKET_PORT_ALREADY_IN_USE: 
+		case SOCKET_PORT_ALREADY_IN_USE:
 			LOGERR("Failed to start RakNet peer, port already in use.");
 			break;
-		case SOCKET_FAILED_TO_BIND: 
+		case SOCKET_FAILED_TO_BIND:
 			LOGERR("Failed to start RakNet peer, socket failed to bind.");
 			break;
-		case SOCKET_FAILED_TEST_SEND: 
+		case SOCKET_FAILED_TEST_SEND:
 			LOGERR("Failed to start RakNet peer, socket failed to test send.");
 			break;
-		case PORT_CANNOT_BE_ZERO: 
+		case PORT_CANNOT_BE_ZERO:
 			LOGERR("Failed to start RakNet peer, port cannot be zero.");
 			break;
-		case FAILED_TO_CREATE_NETWORK_THREAD: 
+		case FAILED_TO_CREATE_NETWORK_THREAD:
 			LOGERR("Failed to start RakNet peer, failed to create the network thread.");
 			break;
-		case COULD_NOT_GENERATE_GUID: 
+		case COULD_NOT_GENERATE_GUID:
 			LOGERR("Failed to start RakNet peer, failed to generate GUID.");
 			break;
-		case STARTUP_OTHER_FAILURE: 
+		case STARTUP_OTHER_FAILURE:
 			LOGERR("Failed to start RakNet peer, unknown failure.");
 			break;
 		default:
@@ -364,22 +364,22 @@ namespace bs
 		{
 			switch(result)
 			{
-			case INVALID_PARAMETER: 
+			case INVALID_PARAMETER:
 				LOGERR_FMT("Unable to connect to {0}|{1}, invalid parameter.", host, port);
 				break;
-			case CANNOT_RESOLVE_DOMAIN_NAME: 
+			case CANNOT_RESOLVE_DOMAIN_NAME:
 				LOGERR_FMT("Unable to connect to {0}|{1}, domain name cannot be resolved.", host, port);
 				break;
-			case ALREADY_CONNECTED_TO_ENDPOINT: 
+			case ALREADY_CONNECTED_TO_ENDPOINT:
 				LOGWRN_FMT("Unable to connect to {0}|{1}, already connected.", host, port);
 				break;
-			case CONNECTION_ATTEMPT_ALREADY_IN_PROGRESS: 
+			case CONNECTION_ATTEMPT_ALREADY_IN_PROGRESS:
 				LOGWRN_FMT("Unable to connect to {0}|{1}, connection attempt already in progress.", host, port);
 				break;
 			case SECURITY_INITIALIZATION_FAILED:
 				LOGERR_FMT("Unable to connect to {0}|{1}, security initialization failed.", host, port);
 				break;
-			default: 
+			default:
 				break;
 			}
 

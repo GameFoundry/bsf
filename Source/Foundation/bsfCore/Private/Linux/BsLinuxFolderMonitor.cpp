@@ -170,7 +170,7 @@ namespace bs
 
 		static FileAction* createRenamed(const String& oldFilename, const String& newfileName)
 		{
-			UINT8* bytes = (UINT8*)bs_alloc((UINT32)(sizeof(FileAction) + 
+			UINT8* bytes = (UINT8*)bs_alloc((UINT32)(sizeof(FileAction) +
 				(oldFilename.size() + newfileName.size() + 2) * sizeof(String::value_type)));
 
 			FileAction* action = (FileAction*)bytes;

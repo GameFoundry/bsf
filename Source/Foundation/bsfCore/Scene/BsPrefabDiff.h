@@ -90,7 +90,7 @@ namespace bs
 	{
 	public:
 		/**
-		 * Creates a new prefab diff by comparing the provided instanced scene object hierarchy with the prefab scene 
+		 * Creates a new prefab diff by comparing the provided instanced scene object hierarchy with the prefab scene
 		 * object hierarchy.
 		 */
 		static SPtr<PrefabDiff> create(const HSceneObject& prefab, const HSceneObject& instance);
@@ -128,15 +128,15 @@ namespace bs
 		static void applyDiff(const SPtr<PrefabObjectDiff>& diff, const HSceneObject& object, SerializationContext* context);
 
 		/**
-		 * Renames all game objects in the provided instance so that IDs of the objects will match the IDs of their 
-		 * counterparts in the prefab. 
+		 * Renames all game objects in the provided instance so that IDs of the objects will match the IDs of their
+		 * counterparts in the prefab.
 		 *
 		 * @note	
-		 * This is a temporary action and should be undone by calling restoreInstanceIds() and providing  it with the 
-		 * output of this method. 
+		 * This is a temporary action and should be undone by calling restoreInstanceIds() and providing  it with the
+		 * output of this method.
 		 * @note
-		 * By doing this before calling generateDiff() we ensure that any game object handles pointing to objects within 
-		 * the prefab instance hierarchy aren't recorded by the diff system, since we want those to remain as they are 
+		 * By doing this before calling generateDiff() we ensure that any game object handles pointing to objects within
+		 * the prefab instance hierarchy aren't recorded by the diff system, since we want those to remain as they are
 		 * after applying the diff.
 		 */
 		static void renameInstanceIds(const HSceneObject& prefab, const HSceneObject& instance, Vector<RenamedGameObject>& output);

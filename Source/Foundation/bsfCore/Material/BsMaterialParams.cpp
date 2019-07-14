@@ -266,7 +266,7 @@ namespace bs
 		return GetParamResult::Success;
 	}
 
-	MaterialParamsBase::GetParamResult MaterialParamsBase::getParamData(const String& name, ParamType type, 
+	MaterialParamsBase::GetParamResult MaterialParamsBase::getParamData(const String& name, ParamType type,
 		GpuParamDataType dataType, UINT32 arrayIdx, const ParamData** output) const
 	{
 		auto iterFind = mParamLookup.find(name);

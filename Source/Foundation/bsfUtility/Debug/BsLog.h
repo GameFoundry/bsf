@@ -24,9 +24,9 @@ namespace bs
 		Info,
 		/** Same as Info, but the message will only be logged to the log file and not any console output. */
 		Log,
-		/** 
-		 * Messages that can provide additional information and warnings, but are too spammy to be displayed under normal 
-		 * circumstances. 
+		/**
+		 * Messages that can provide additional information and warnings, but are too spammy to be displayed under normal
+		 * circumstances.
 		 */
 		Verbose,
 		/** Same as Verbose, but for even spammier messages. */
@@ -76,7 +76,7 @@ namespace bs
 		~Log();
 
 		/**
-		 * Logs a new message. 
+		 * Logs a new message.
 		 *
 		 * @param[in]	message		The message describing the log entry.
 		 * @param[in]	verbosity	Verbosity of the message, determining its importance.
@@ -87,8 +87,8 @@ namespace bs
 		/** Removes all log entries. */
 		void clear();
 
-		/** 
-		 * Removes all log entries for a specific verbosity level and/or category. Specify -1 to clear all verbosity levels 
+		/**
+		 * Removes all log entries for a specific verbosity level and/or category. Specify -1 to clear all verbosity levels
 		 * and/or categories.
 		 */
 		void clear(LogVerbosity verbosity, UINT32 category);
@@ -131,10 +131,10 @@ namespace bs
 		
 		/**
 		 *  Get the name of the category based on its ID.
-		 *  
+		 *
 		 *  @param[in]	id		Number representing the category's ID.
 		 *  @param[in]	name	Variable in which the name will be written.
-		 *  @return				If found will write the name and return true. Otherwise will write the name "Unknown" 
+		 *  @return				If found will write the name and return true. Otherwise will write the name "Unknown"
 		 *						and return false.
 		 */
 		static bool getCategoryName(UINT32 id, String& name);
@@ -146,7 +146,7 @@ namespace bs
 
 		/**
 		 *  Registers the new category with the specified ID and name.
-		 * 
+		 *
 		 *  @param[in] id		Number representing the category's ID.
 		 *  @param[in] name		Name of the category.
 		 *  @return				False if the ID is already taken, otherwise true.

@@ -28,7 +28,7 @@ namespace bs
 			foundNearest = true;
 		}
 
-		// Ray is either passing next to the rectangle or parallel to it, 
+		// Ray is either passing next to the rectangle or parallel to it,
 		// compare ray to 4 edges of the rectangle
 		if (!foundNearest)
 		{

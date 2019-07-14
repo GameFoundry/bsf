@@ -50,12 +50,12 @@ namespace bs
 			_markContentAsDirty();
 	}
 
-	void GUIButtonBase::_setOn(bool on) 
-	{ 
+	void GUIButtonBase::_setOn(bool on)
+	{
 		if(on)
-			_setState((GUIElementState)((INT32)mActiveState | (INT32)GUIElementState::OnFlag)); 
+			_setState((GUIElementState)((INT32)mActiveState | (INT32)GUIElementState::OnFlag));
 		else
-			_setState((GUIElementState)((INT32)mActiveState & ~(INT32)GUIElementState::OnFlag)); 
+			_setState((GUIElementState)((INT32)mActiveState & ~(INT32)GUIElementState::OnFlag));
 	}
 
 	bool GUIButtonBase::_isOn() const

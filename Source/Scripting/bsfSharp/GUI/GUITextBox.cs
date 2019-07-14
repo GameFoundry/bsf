@@ -10,7 +10,7 @@ namespace bs
      */
 
     /// <summary>
-    /// GUI element that accepts Unicode textual input. It can be single or multi-line and handles various types of text 
+    /// GUI element that accepts Unicode textual input. It can be single or multi-line and handles various types of text
     /// manipulation.
     /// </summary>
     public sealed class GUITextBox : GUIElement
@@ -29,10 +29,10 @@ namespace bs
         /// Creates a new text box element.
         /// </summary>
         /// <param name="multiline">Determines should the input box allow text that spans multiple lines.</param>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
-        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUITextBox(bool multiline, string style, params GUIOption[] options)
         {
@@ -43,7 +43,7 @@ namespace bs
         /// Creates a new text box element.
         /// </summary>
         /// <param name="multiline">Determines should the input box allow text that spans multiple lines.</param>
-        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUITextBox(bool multiline, params GUIOption[] options)
         {
@@ -53,10 +53,10 @@ namespace bs
         /// <summary>
         /// Creates a new single-line text box element.
         /// </summary>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
-        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUITextBox(string style, params GUIOption[] options)
         {
@@ -66,7 +66,7 @@ namespace bs
         /// <summary>
         /// Creates a new single-line text box element.
         /// </summary>
-        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUITextBox(params GUIOption[] options)
         {

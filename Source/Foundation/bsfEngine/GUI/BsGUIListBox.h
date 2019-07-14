@@ -29,7 +29,7 @@ namespace bs
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
-		static GUIListBox* create(const Vector<HString>& elements, bool multiselect = false, 
+		static GUIListBox* create(const Vector<HString>& elements, bool multiselect = false,
 			const String& styleName = StringUtil::BLANK);
 
 		/**
@@ -42,7 +42,7 @@ namespace bs
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
-		static GUIListBox* create(const Vector<HString>& elements, bool multiselect, 
+		static GUIListBox* create(const Vector<HString>& elements, bool multiselect,
 			const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		/**
@@ -54,7 +54,7 @@ namespace bs
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
-		static GUIListBox* create(const Vector<HString>& elements, const GUIOptions& options, 
+		static GUIListBox* create(const Vector<HString>& elements, const GUIOptions& options,
 			const String& styleName = StringUtil::BLANK);
 
 		/**	Checks whether the listbox supports multiple selected elements at once. */
@@ -97,7 +97,7 @@ namespace bs
 		~GUIListBox();
 
 	private:
-		GUIListBox(const String& styleName, const Vector<HString>& elements, bool isMultiselect, 
+		GUIListBox(const String& styleName, const Vector<HString>& elements, bool isMultiselect,
 			const GUIDimensions& dimensions);
 
 		/** @copydoc GUIButtonBase::_mouseEvent */

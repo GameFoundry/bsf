@@ -425,7 +425,7 @@ namespace bs
 			if (findIter == validDataParameters.end())
 				continue;
 
-			if (findIter->second->type != iter->second.type && 
+			if (findIter->second->type != iter->second.type &&
 				!(iter->second.type == GPDT_COLOR && (findIter->second->type == GPDT_FLOAT4 || findIter->second->type == GPDT_FLOAT3)))
 			{
 				BS_LOG(Warning, Material, "Ignoring shader parameter \"{0}\". Type doesn't match the one defined in the "
@@ -503,10 +503,10 @@ namespace bs
 		//// Fill out various helper structures
 		Vector<ShaderBlockDesc> paramBlockData = determineValidShareableParamBlocks(allParamDescs, shader->getParamBlocks());
 		UnorderedMap<ValidParamKey, String> validParams = determineValidParameters(
-			allParamDescs, 
-			shader->getDataParams(), 
-			shader->getTextureParams(), 
-			shader->getBufferParams(), 
+			allParamDescs,
+			shader->getDataParams(),
+			shader->getTextureParams(),
+			shader->getBufferParams(),
 			shader->getSamplerParams());
 
 		Map<String, ParamBlockPtrType> paramBlockBuffers;
@@ -562,7 +562,7 @@ namespace bs
 						globalBlockIdx = (UINT32)mBlocks.size();
 
 						paramPtr->setParamBlockBuffer(progType, iterBlockDesc->first, newParamBlockBuffer);
-						mBlocks.emplace_back(iterBlockDesc->first, iterBlockDesc->second.set, 
+						mBlocks.emplace_back(iterBlockDesc->first, iterBlockDesc->second.set,
 							iterBlockDesc->second.slot, newParamBlockBuffer, false);
 					}
 					else
@@ -612,7 +612,7 @@ namespace bs
 		auto& allParamBlocks = shader->getParamBlocks();
 		for (auto& entry : allParamBlocks)
 		{
-			auto iterFind = std::find_if(mBlocks.begin(), mBlocks.end(), 
+			auto iterFind = std::find_if(mBlocks.begin(), mBlocks.end(),
 				[&](auto& x)
 			{
 				return x.name == entry.first;
@@ -644,7 +644,7 @@ namespace bs
 				{
 					GpuProgramType progType = (GpuProgramType)j;
 
-					auto processObjectParams = [&](const Map<String, GpuParamObjectDesc>& gpuParams, 
+					auto processObjectParams = [&](const Map<String, GpuParamObjectDesc>& gpuParams,
 						UINT32 stageIdx, MaterialParams::ParamType paramType)
 					{
 						for (auto& param : gpuParams)
@@ -870,7 +870,7 @@ namespace bs
 	}
 
 	template<bool Core>
-	void TGpuParamsSet<Core>::setParamBlockBuffer(const String& name, const ParamBlockPtrType& paramBlock, 
+	void TGpuParamsSet<Core>::setParamBlockBuffer(const String& name, const ParamBlockPtrType& paramBlock,
 		bool ignoreInUpdate)
 	{
 		UINT32 bufferIdx = getParamBlockBufferIndex(name);

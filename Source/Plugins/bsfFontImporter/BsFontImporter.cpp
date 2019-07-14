@@ -18,7 +18,7 @@ using namespace std::placeholders;
 namespace bs
 {
 	FontImporter::FontImporter()
-		:SpecificImporter() 
+		:SpecificImporter()
 	{
 		mExtensions.push_back(u8"ttf");
 		mExtensions.push_back(u8"otf");

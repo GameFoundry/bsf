@@ -29,7 +29,7 @@ if(NOT bsfImportTool_FIND_QUIET)
 endif()
 
 mark_as_advanced(
-	bsfImportTool_INSTALL_DIRS 
+	bsfImportTool_INSTALL_DIRS
 	bsfImportTool_EXECUTABLE)
 
 set(bsfImportTool_EXECUTABLE_PATH ${bsfImportTool_EXECUTABLE})

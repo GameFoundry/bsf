@@ -59,12 +59,12 @@ namespace bs { namespace ct
 	class VulkanFramebuffer : public VulkanResource
 	{
 	public:
-		/** Creates a new frame buffer with the specified image views attached. 
+		/** Creates a new frame buffer with the specified image views attached.
 		 *
 		 * @param[in]	owner		Resource manager that allocated this resource.
 		 * @param[in]	renderPass	Render pass that will be used for rendering to the frame buffer. Note that the
 		 *							framebuffer will be usable with this specific render pass, but also with any compatible
-		 *							render pass. Render passes are compatible if they use the same attachments and their 
+		 *							render pass. Render passes are compatible if they use the same attachments and their
 		 *							formats and sample counts match.
 		 * @param[in]	desc		Description of the frame buffer.
 		 */
@@ -86,8 +86,8 @@ namespace bs { namespace ct
 		/** Returns the render pass that this framebuffer is tied to. */
 		VulkanRenderPass* getRenderPass() const { return mRenderPass; }
 
-		/** 
-		 * Gets the number of layers in each framebuffer surface. A layer is an element in a texture array, or a depth 
+		/**
+		 * Gets the number of layers in each framebuffer surface. A layer is an element in a texture array, or a depth
 		 * slice in a 3D texture).
 		 */
 		UINT32 getNumLayers() const { return mNumLayers; }

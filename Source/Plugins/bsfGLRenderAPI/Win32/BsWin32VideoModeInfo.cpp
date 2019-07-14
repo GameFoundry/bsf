@@ -81,7 +81,7 @@ namespace bs { namespace ct
 
 			if (!foundVideoMode)
 			{
-				Win32VideoMode* videoMode = bs_new<Win32VideoMode>(devMode.dmPelsWidth, devMode.dmPelsHeight, 
+				Win32VideoMode* videoMode = bs_new<Win32VideoMode>(devMode.dmPelsWidth, devMode.dmPelsHeight,
 					(float)devMode.dmDisplayFrequency, outputIdx);
 				videoMode->isCustom = false;
 
@@ -92,7 +92,7 @@ namespace bs { namespace ct
 		// Get desktop display mode
 		EnumDisplaySettings(monitorInfo.szDevice, ENUM_CURRENT_SETTINGS, &devMode);
 
-		Win32VideoMode* desktopVideoMode = bs_new<Win32VideoMode>(devMode.dmPelsWidth, devMode.dmPelsHeight, 
+		Win32VideoMode* desktopVideoMode = bs_new<Win32VideoMode>(devMode.dmPelsWidth, devMode.dmPelsHeight,
 			(float)devMode.dmDisplayFrequency, outputIdx);
 		desktopVideoMode->isCustom = false;
 

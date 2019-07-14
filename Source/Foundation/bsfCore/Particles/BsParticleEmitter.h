@@ -43,20 +43,20 @@ namespace bs
 		/** Type that determines general behaviour. */
 		ParticleEmissionModeType type = ParticleEmissionModeType::Random;
 
-		/** 
-		 * Speed along which particle generation should move around the shape, relevant for Loop and PingPing emission 
-		 * modes. 
+		/**
+		 * Speed along which particle generation should move around the shape, relevant for Loop and PingPing emission
+		 * modes.
 		 */
 		float speed = 1.0f;
 
-		/** 
-		 * Determines the minimum interval allowed between the generated particles. 0 specifies the particles can be 
+		/**
+		 * Determines the minimum interval allowed between the generated particles. 0 specifies the particles can be
 		 * generated anywhere on the shape.
 		 */
-		float interval = 0.0f; 
+		float interval = 0.0f;
 	};
 
-	/** 
+	/**
 	 * Base class from all emitter shapes. Emitter shapes determine the position and direction of newly created particles.
 	 */
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleEmitterShape : public IReflectable
@@ -64,13 +64,13 @@ namespace bs
 	public:
 		virtual ~ParticleEmitterShape() = default;
 
-		/** 
+		/**
 		 * @name Internal
 		 * @{
 		 */
 
-		/** 
-		 * Spawns a new set of particles using the current shape's distribution. 
+		/**
+		 * Spawns a new set of particles using the current shape's distribution.
 		 *
 		 * @param[in]	random		Random number generator.
 		 * @param[in]	particles	Particle set in which to insert new particles.
@@ -80,7 +80,7 @@ namespace bs
 		 * @return					Index at which the first of the particles was inserted, with other particles following
 		 *							sequentially.
 		 */
-		virtual UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count, 
+		virtual UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count,
 			const ParticleSystemState& state) const = 0;
 
 		/** @} */
@@ -91,13 +91,13 @@ namespace bs
 
 		/**
 		 * Calculates the bounds of the emitter shape.
-		 * 
+		 *
 		 * @param[in]	shape		AABB for the emitter shape itself.
 		 * @param[in]	velocity	AABB for the generated normals.
 		 */
 		virtual void calcBounds(AABox& shape, AABox& velocity) const = 0;
 
-		/** 
+		/**
 		 * Checks has the emitter been initialized properly. If the emitter is not valid then the spawn() method is
 		 * not allowed to be called.
 		 */
@@ -130,7 +130,7 @@ namespace bs
 		/** Length of the cone. Irrelevant if emission type is Base. */
 		float length = 1.0f;
 
-		/** 
+		/**
 		 * Proportion of the volume that can emit particles. Thickness of 0 results in particles being emitted only from the
 		 * edge of the cone, while thickness of 1 results in particles being emitted from the entire volume. In-between
 		 * values will use a part of the volume.
@@ -172,13 +172,13 @@ namespace bs
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterConeShape> create();
 
-		/** 
+		/**
 		 * @name Internal
 		 * @{
 		 */
 
 		/** @copydoc ParticleEmitterShape::_spawn */
-		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count, 
+		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count,
 			const ParticleSystemState& state) const override;
 
 		/** Spawns a single particle randomly, generating its position and normal. */
@@ -212,7 +212,7 @@ namespace bs
 		/** Radius of the sphere. */
 		float radius = 1.0f;
 
-		/** 
+		/**
 		 * Proportion of the volume that can emit particles. Thickness of 0 results in particles being emitted only from the
 		 * edge of the volume, while thickness of 1 results in particles being emitted from the entire volume. In-between
 		 * values will use a part of the volume.
@@ -247,13 +247,13 @@ namespace bs
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterSphereShape> create();
 
-		/** 
+		/**
 		 * @name Internal
 		 * @{
 		 */
 
 		/** @copydoc ParticleEmitterShape::_spawn */
-		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count, 
+		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count,
 			const ParticleSystemState& state) const override;
 
 		/** Spawns a single particle, generating its position and normal. */
@@ -281,7 +281,7 @@ namespace bs
 		/** Radius of the hemisphere. */
 		float radius = 1.0f;
 
-		/** 
+		/**
 		 * Proportion of the volume that can emit particles. Thickness of 0 results in particles being emitted only from the
 		 * edge of the volume, while thickness of 1 results in particles being emitted from the entire volume. In-between
 		 * values will use a part of the volume.
@@ -291,7 +291,7 @@ namespace bs
 
 	/**
 	 * Particle emitter shape that emits particles from a hemisphere. Particles can be emitted from the hemisphere surface,
-	 * the entire volume or a proportion of the volume depending on the thickness parameter. All particles will have 
+	 * the entire volume or a proportion of the volume depending on the thickness parameter. All particles will have
 	 * normals pointing outwards in a spherical direction.
 	 */
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleEmitterHemisphereShape : public ParticleEmitterShape
@@ -316,13 +316,13 @@ namespace bs
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterHemisphereShape> create();
 
-		/** 
+		/**
 		 * @name Internal
 		 * @{
 		 */
 
 		/** @copydoc ParticleEmitterShape::_spawn */
-		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count, 
+		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count,
 			const ParticleSystemState& state) const override;
 
 		/** Spawns a single particle, generating its position and normal. */
@@ -350,7 +350,7 @@ namespace bs
 		/** Particles will be emitted from the entire volume. */
 		Volume,
 		/** Particles will be emitted only from box surface. */
-		Surface, 
+		Surface,
 		/** Particles will be emitted only from box edge. */
 		Edge
 	};
@@ -365,7 +365,7 @@ namespace bs
 		Vector3 extents = Vector3::ONE;
 	};
 
-	/** 
+	/**
 	 * Particle emitter shape that emits particles from an axis aligned box. Particles can be emitted from box volume,
 	 * surface or edges. All particles have their normals set to positive Z direction.
 	 */
@@ -391,13 +391,13 @@ namespace bs
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterBoxShape> create();
 
-		/** 
+		/**
 		 * @name Internal
 		 * @{
 		 */
 
 		/** @copydoc ParticleEmitterShape::_spawn */
-		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count, 
+		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count,
 			const ParticleSystemState& state) const override;
 
 		/** Spawns a single particle, generating its position and normal. */
@@ -455,13 +455,13 @@ namespace bs
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterLineShape> create();
 
-		/** 
+		/**
 		 * @name Internal
 		 * @{
 		 */
 
 		/** @copydoc ParticleEmitterShape::_spawn */
-		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count, 
+		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count,
 			const ParticleSystemState& state) const override;
 
 		/** Spawns a single particle randomly, generating its position and normal. */
@@ -492,9 +492,9 @@ namespace bs
 		/** Radius of the circle. */
 		float radius = 1.0f;
 
-		/** 
+		/**
 		 * Proportion of the surface that can emit particles. Thickness of 0 results in particles being emitted only from
-		 * the edge of the circle, while thickness of 1 results in particles being emitted from the entire surface. 
+		 * the edge of the circle, while thickness of 1 results in particles being emitted from the entire surface.
 		 * In-between values will use a part of the surface.
 		 */
 		float thickness = 0.0f;
@@ -506,7 +506,7 @@ namespace bs
 		ParticleEmissionMode mode;
 	};
 
-	/** 
+	/**
 	 * Particle emitter shape that emits particles from a circle. Using the thickness parameter you can control whether to
 	 * emit only from circle edge, the entire surface or just a part of the surface. Using the arc parameter you can emit
 	 * from a specific angular portion of the circle.
@@ -534,13 +534,13 @@ namespace bs
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterCircleShape> create();
 
-		/** 
+		/**
 		 * @name Internal
 		 * @{
 		 */
 
 		/** @copydoc ParticleEmitterShape::_spawn */
-		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count, 
+		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count,
 			const ParticleSystemState& state) const override;
 
 		/** Spawns a single particle randomly, generating its position and normal. */
@@ -595,13 +595,13 @@ namespace bs
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterRectShape> create();
 
-		/** 
+		/**
 		 * @name Internal
 		 * @{
 		 */
 
 		/** @copydoc ParticleEmitterShape::_spawn */
-		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count, 
+		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count,
 			const ParticleSystemState& state) const override;
 
 		/** Spawns a single particle, generating its position and normal. */
@@ -627,9 +627,9 @@ namespace bs
 	enum class BS_SCRIPT_EXPORT(m:Particles) ParticleEmitterMeshType
 	{
 		/** Particles will be emitted from mesh vertices. */
-		Vertex, 
+		Vertex,
 		/** Particles will be emitted from mesh edges. */
-		Edge, 
+		Edge,
 		/** Particles will be emitted from mesh triangles. */
 		Triangle
 	};
@@ -640,20 +640,20 @@ namespace bs
 		/** Determines from which portion of the mesh are the particles emitted from. */
 		ParticleEmitterMeshType type = ParticleEmitterMeshType::Triangle;
 
-		/** 
-		 * When enabled the particles will be emitted sequentially from mesh vertices in the order they are defined. 
+		/**
+		 * When enabled the particles will be emitted sequentially from mesh vertices in the order they are defined.
 		 * Only relevant for the Vertex emit mode.
 		 */
 		bool sequential = false;
 
-		/** 
+		/**
 		 * Mesh to spawn particles on. Must at least contain per-vertex position data encoded as 3D float vectors. Can
 		 * optionally contain per-vertex normals encoded as 3D float vectors or as 4-byte unsigned-normalized format.
 		 */
 		HMesh mesh;
 	};
 
-	/** 
+	/**
 	 * Calculates and stores per-triangle weights that can be used for easily picking a random triangle on a mesh, ensuring
 	 * larger triangles are picked more likely.
 	 */
@@ -684,10 +684,10 @@ namespace bs
 	class MeshEmissionHelper
 	{
 	public:
-		/** 
+		/**
 		 * Initializes the emission helper if the provided mesh contains necessary data for particle emission. Otherwise
 		 * reports any issues in the log.
-		 * 
+		 *
 		 * @param[in]	mesh		Mesh to validate.
 		 * @param[in]	perVertex	Set to true if particle emission is happening on mesh vertices.
 		 * @param[in]	skinning	Set to true if the mesh will be animated using skinning.
@@ -695,7 +695,7 @@ namespace bs
 		 */
 		bool initialize(const HMesh& mesh, bool perVertex, bool skinning);
 
-		/** 
+		/**
 		 * Returns the next sequential vertex on the mesh and increments the internal counter so the next vertex is
 		 * returned on the following call. Loops around if end is reached. Returns vertex position, normal and index.
 		 */
@@ -705,11 +705,11 @@ namespace bs
 		void getRandomVertex(const Random& random, Vector3& position, Vector3& normal, UINT32& idx) const;
 
 		/** Randomly picks an edge on the mesh and returns the position, normal and indices of its vertices. */
-		void getRandomEdge(const Random& random, std::array<Vector3, 2>& position, std::array<Vector3, 2>& normal, 
+		void getRandomEdge(const Random& random, std::array<Vector3, 2>& position, std::array<Vector3, 2>& normal,
 			std::array<UINT32, 2>& idx) const;
 
 		/** Randomly picks an triangle on the mesh and returns the position, normal and indices of its vertices. */
-		void getRandomTriangle(const Random& random, std::array<Vector3, 3>& position, std::array<Vector3, 3>& normal, 
+		void getRandomTriangle(const Random& random, std::array<Vector3, 3>& position, std::array<Vector3, 3>& normal,
 			std::array<UINT32, 3>& idx) const;
 
 		/** Evaluates a blend matrix for a vertex at the specified index. */
@@ -733,7 +733,7 @@ namespace bs
 		mutable UINT32 mNextSequentialIdx = 0;
 	};
 
-	/** 
+	/**
 	 * Particle emitter shape that emits particles from a surface of a static (non-animated) mesh. Particles can be
 	 * emitted from mesh vertices, edges or triangles. If information about normals exists, particles will also inherit
 	 * the normals.
@@ -761,13 +761,13 @@ namespace bs
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterStaticMeshShape> create();
 
-		/** 
+		/**
 		 * @name Internal
 		 * @{
 		 */
 
 		/** @copydoc ParticleEmitterShape::_spawn */
-		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count, 
+		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count,
 			const ParticleSystemState& state) const override;
 
 		/** @} */
@@ -793,27 +793,27 @@ namespace bs
 		/** Determines from which portion of the mesh are the particles emitted from. */
 		ParticleEmitterMeshType type = ParticleEmitterMeshType::Triangle;
 
-		/** 
-		 * When enabled the particles will be emitted sequentially from mesh vertices in the order they are defined. 
+		/**
+		 * When enabled the particles will be emitted sequentially from mesh vertices in the order they are defined.
 		 * Only relevant for the Vertex emit mode.
 		 */
 		bool sequential = false;
 
-		/** 
+		/**
 		 * Renderable object containing a mesh to spawn particles on, as well as the attached Animation object resposible
 		 * for performing skinned animation. Mesh must at least contain per-vertex position data encoded as 3D float
-		 * vectors, blend indices encoded in 4-byte format, and blend weights encoded a 4D float vectors. Can optionally 
+		 * vectors, blend indices encoded in 4-byte format, and blend weights encoded a 4D float vectors. Can optionally
 		 * contain per-vertex normals encoded as 3D float vectors or as 4-byte unsigned-normalized format.
 		 */
 		ComponentOrActor<Renderable> renderable;
 	};
 
-	/** 
+	/**
 	 * Particle emitter shape that emits particles from a surface of a skinned (animated) mesh. Particles can be
 	 * emitted from mesh vertices, edges or triangles. If information about normals exists, particles will also inherit
 	 * the normals.
 	 */
-	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleEmitterSkinnedMeshShape : public ParticleEmitterShape 
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Particles) ParticleEmitterSkinnedMeshShape : public ParticleEmitterShape
 	{
 	public:
 		ParticleEmitterSkinnedMeshShape(const PARTICLE_SKINNED_MESH_SHAPE_DESC& desc);
@@ -836,13 +836,13 @@ namespace bs
 		BS_SCRIPT_EXPORT(ec:T)
 		static SPtr<ParticleEmitterSkinnedMeshShape> create();
 
-		/** 
+		/**
 		 * @name Internal
 		 * @{
 		 */
 
 		/** @copydoc ParticleEmitterShape::_spawn */
-		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count, 
+		UINT32 _spawn(const Random& random, ParticleSet& particles, UINT32 count,
 			const ParticleSystemState& state) const override;
 
 		/** @} */
@@ -876,7 +876,7 @@ namespace bs
 		/** Number of particles to emit when the burst triggers. */
 		FloatDistribution count = 0;
 
-		/** 
+		/**
 		 * Determines how many times to trigger the burst. If 0 the burst will trigger infinitely. Use @p interval to
 		 * to control the time between each cycle.
 		 */
@@ -922,7 +922,7 @@ namespace bs
 		BS_SCRIPT_EXPORT(pr:getter,n:InitialLifetime)
 		const FloatDistribution& getInitialLifetime() const { return mInitialLifetime; }
 
-		/** 
+		/**
 		 * Sets the initial speed of the particles, in meters/second. The speed is applied along the particle's velocity
 		 * direction, which is determined by the emission shape and potentially other properties.
 		 */
@@ -933,9 +933,9 @@ namespace bs
 		BS_SCRIPT_EXPORT(pr:getter,n:InitialSpeed)
 		const FloatDistribution& getInitialSpeed() const { return mInitialSpeed; }
 
-		/** 
+		/**
 		 * Determines the size of the particles when initially spawned. The size is applied uniformly in all dimensions.
-		 * Only used if 3D size is disabled. 
+		 * Only used if 3D size is disabled.
 		 */
 		BS_SCRIPT_EXPORT(pr:setter,n:InitialSize)
 		void setInitialSize(FloatDistribution value) { mInitialSize = std::move(value); }
@@ -944,9 +944,9 @@ namespace bs
 		BS_SCRIPT_EXPORT(pr:getter,n:InitialSize)
 		const FloatDistribution& getInitialSize() const { return mInitialSize; }
 
-		/** 
+		/**
 		 * Determines the size of the particles when initially spawned. Size can be specified for each dimension separately.
-		 * Only used if 3D size is enabled. 
+		 * Only used if 3D size is enabled.
 		 */
 		BS_SCRIPT_EXPORT(pr:setter,n:InitialSize3D)
 		void setInitialSize3D(Vector3Distribution value) { mInitialSize3D = std::move(value); }
@@ -955,7 +955,7 @@ namespace bs
 		BS_SCRIPT_EXPORT(pr:getter,n:InitialSize3D)
 		const Vector3Distribution& getInitialSize3D() const { return mInitialSize3D; }
 
-		/** 
+		/**
 		 * Determines should the initial particle size be applied uniformly (if disabled), or evaluated separately for each
 		 * dimension (if enabled).
 		 */
@@ -966,9 +966,9 @@ namespace bs
 		BS_SCRIPT_EXPORT(pr:getter,n:Use3DSize)
 		bool getUse3DSize() const { return mUse3DSize; }
 
-		/** 
-		 * Determines the rotation of the particles when initially spawned, in degrees. The rotation is applied around the 
-		 * particle's local Z axis. Only used if 3D rotation is disabled. 
+		/**
+		 * Determines the rotation of the particles when initially spawned, in degrees. The rotation is applied around the
+		 * particle's local Z axis. Only used if 3D rotation is disabled.
 		 */
 		BS_SCRIPT_EXPORT(pr:setter,n:InitialRotation)
 		void setInitialRotation(FloatDistribution value) { mInitialRotation = std::move(value); }
@@ -977,9 +977,9 @@ namespace bs
 		BS_SCRIPT_EXPORT(pr:getter,n:InitialRotation)
 		const FloatDistribution& getInitialRotation() const { return mInitialRotation; }
 
-		/** 
+		/**
 		 * Determines the rotation of the particles when initially spawned, in Euler angles. Only used if 3D rotation is
-		 * enabled. 
+		 * enabled.
 		 */
 		BS_SCRIPT_EXPORT(pr:setter,n:InitialRotation3D)
 		void setInitialRotation3D(Vector3Distribution value) { mInitialRotation3D = std::move(value); }
@@ -989,7 +989,7 @@ namespace bs
 		const Vector3Distribution& getInitialRotation3D() const { return mInitialRotation3D; }
 
 		/**
-		 * Determines should the initial particle rotation be a single angle applied around a Z axis (if disabled), or a 
+		 * Determines should the initial particle rotation be a single angle applied around a Z axis (if disabled), or a
 		 * set of Euler angles that allow you to rotate around every axis (if enabled).
 		 */
 		BS_SCRIPT_EXPORT(pr:setter,n:Use3DRotation)
@@ -1007,8 +1007,8 @@ namespace bs
 		BS_SCRIPT_EXPORT(pr:getter,n:InitialColor)
 		const ColorDistribution& getInitialColor() const { return mInitialColor; }
 
-		/** 
-		 * Determines a range of values determining a random offset to apply to particle position after it has been emitted. 
+		/**
+		 * Determines a range of values determining a random offset to apply to particle position after it has been emitted.
 		 * Offset will be randomly selected in all three axes in range [-value, value].
 		 */
 		BS_SCRIPT_EXPORT(pr:setter,n:RandomOffset)
@@ -1018,9 +1018,9 @@ namespace bs
 		BS_SCRIPT_EXPORT(pr:getter,n:RandomOffset)
 		float getRandomOffset() const { return mRandomOffset; }
 
-		/** 
+		/**
 		 * Determines should particle U texture coordinate be randomly flipped, mirroring the image. The value represents
-		 * a percent of particles that should be flipped, in range [0, 1]. 
+		 * a percent of particles that should be flipped, in range [0, 1].
 		 */
 		BS_SCRIPT_EXPORT(pr:setter,n:FlipU)
 		void setFlipU(float value) { mFlipU = Math::clamp01(value); }
@@ -1029,9 +1029,9 @@ namespace bs
 		BS_SCRIPT_EXPORT(pr:getter,n:FlipU)
 		float getFlipU() const { return mFlipU; }
 
-		/** 
+		/**
 		 * Determines should particle V texture coordinate be randomly flipped, mirroring the image. The value represents
-		 * a percent of particles that should be flipped, in range [0, 1]. 
+		 * a percent of particles that should be flipped, in range [0, 1].
 		 */
 		BS_SCRIPT_EXPORT(pr:setter,n:FlipV)
 		void setFlipV(float value) { mFlipV = Math::clamp01(value); }
@@ -1046,8 +1046,8 @@ namespace bs
 	private:
 		friend class ParticleSystem;
 
-		/** 
-		 * Spawns new particles in the specified time increment (if any). 
+		/**
+		 * Spawns new particles in the specified time increment (if any).
 		 *
 		 * @param[in]	random			Random number generator.
 		 * @param[in]	state			Various per-frame information provided by the parent particle system.
@@ -1055,8 +1055,8 @@ namespace bs
 		 */
 		void spawn(Random& random, const ParticleSystemState& state, ParticleSet& set) const;
 
-		/** 
-		 * Spawns the specified number of particles. 
+		/**
+		 * Spawns the specified number of particles.
 		 *
 		 * @param[in]	count			Number of particles to spawn.
 		 * @param[in]	random			Random number generator.

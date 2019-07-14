@@ -17,10 +17,10 @@ namespace bs
 	 */
 
 	/**
-	 * Base class containing common functionality for a plain class field. 
+	 * Base class containing common functionality for a plain class field.
 	 * 			
 	 * @note	
-	 * Plain fields are considered those that may be serialized directly by copying their memory. (All built-in types, 
+	 * Plain fields are considered those that may be serialized directly by copying their memory. (All built-in types,
 	 * strings, etc.)
 	 */
 	struct RTTIPlainFieldBase : public RTTIField
@@ -61,7 +61,7 @@ namespace bs
 		}
 
 		/**
-		 * Gets the dynamic size of an array element. If the element has no dynamic size, static size of the element 
+		 * Gets the dynamic size of an array element. If the element has no dynamic size, static size of the element
 		 * is returned.
 		 */
 		virtual UINT32 getArrayElemDynamicSize(RTTITypeBase* rtti, void* object, int index)
@@ -70,7 +70,7 @@ namespace bs
 		}
 
 		/**
-		 * Retrieves the value from the provided field of the provided object, and copies it into the buffer. It does not 
+		 * Retrieves the value from the provided field of the provided object, and copies it into the buffer. It does not
 		 * check if buffer is large enough.
 		 */
 		virtual void toBuffer(RTTITypeBase* rtti, void* object, void* buffer) = 0;
@@ -82,15 +82,15 @@ namespace bs
 		virtual void arrayElemToBuffer(RTTITypeBase* rtti, void* object, int index, void* buffer) = 0;
 
 		/**
-		 * Sets the value on the provided field of the provided object. Value is copied from the buffer. It does not check 
-		 * the value in the buffer in any way. You must make sure buffer points to the proper location and contains the 
+		 * Sets the value on the provided field of the provided object. Value is copied from the buffer. It does not check
+		 * the value in the buffer in any way. You must make sure buffer points to the proper location and contains the
 		 * proper type.
 		 */
 		virtual void fromBuffer(RTTITypeBase* rtti, void* object, void* buffer) = 0;
 
 		/**
-		 * Sets the value at the specified array index on the provided field of the provided object. Value is copied from 
-		 * the buffer. It does not check the value in the buffer in any way. You must make sure buffer points to the proper 
+		 * Sets the value at the specified array index on the provided field of the provided object. Value is copied from
+		 * the buffer. It does not check the value in the buffer in any way. You must make sure buffer points to the proper
 		 * location and contains the proper type.
 		 */
 		virtual void arrayElemFromBuffer(RTTITypeBase* rtti, void* object, int index, void* buffer) = 0;
@@ -112,8 +112,8 @@ namespace bs
 		 * Initializes a plain field containing a single value.
 		 *
 		 * @param[in]	name		Name of the field.
-		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
-		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a
+		 *							small data type that can be used for efficiently serializing data to disk and similar.
 		 *							It is primarily used for compatibility between different versions of serialized data.
 		 * @param[in]	getter  	The getter method for the field.
 		 * @param[in]	setter  	The setter method for the field.
@@ -123,7 +123,7 @@ namespace bs
 		{
 			static_assert(sizeof(RTTIPlainType<DataType>::id) > 0, "Type has no RTTI ID."); // Just making sure provided type has a type ID
 
-			static_assert((RTTIPlainType<DataType>::hasDynamicSize != 0 || (sizeof(DataType) <= 255)), 
+			static_assert((RTTIPlainType<DataType>::hasDynamicSize != 0 || (sizeof(DataType) <= 255)),
 				"Trying to create a plain RTTI field with size larger than 255. In order to use larger sizes for plain types please specialize " \
 				" RTTIPlainType, set hasDynamicSize to true.");
 
@@ -134,11 +134,11 @@ namespace bs
 		}
 
 		/**
-		 * Initializes a plain field containing multiple values in an array. 
+		 * Initializes a plain field containing multiple values in an array.
 		 *
 		 * @param[in]	name		Name of the field.
-		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
-		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a
+		 *							small data type that can be used for efficiently serializing data to disk and similar.
 		 *							It is primarily used for compatibility between different versions of serialized data.
 		 * @param[in]	getter  	The getter method for the field.
 		 * @param[in]	getSize 	Getter method that returns the size of an array.
@@ -151,7 +151,7 @@ namespace bs
 		{
 			static_assert((RTTIPlainType<DataType>::id != 0) || true, ""); // Just making sure provided type has a type ID
 
-			static_assert((RTTIPlainType<DataType>::hasDynamicSize != 0 || (sizeof(DataType) <= 255)), 
+			static_assert((RTTIPlainType<DataType>::hasDynamicSize != 0 || (sizeof(DataType) <= 255)),
 				"Trying to create a plain RTTI field with size larger than 255. In order to use larger sizes for plain types please specialize " \
 				" RTTIPlainType, set hasDynamicSize to true.");
 
@@ -293,7 +293,7 @@ namespace bs
 
 			if(!arraySetter)
 			{
-				BS_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException,
 					"Specified field (" + mName + ") has no setter.");
 			}
 

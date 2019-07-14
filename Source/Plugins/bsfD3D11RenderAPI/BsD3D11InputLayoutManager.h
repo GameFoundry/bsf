@@ -23,7 +23,7 @@ namespace bs { namespace ct
 		};
 
 		/**	Creates a hash from vertex declaration key. */
-		class HashFunc 
+		class HashFunc
 		{
 		public:
 			::std::size_t operator()(const VertexDeclarationKey &key) const;

@@ -6,7 +6,7 @@
 #include "CoreThread/BsCoreObject.h"
 #include "RenderAPI/BsHardwareBuffer.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup RenderAPI
 	 *  @{
@@ -18,7 +18,7 @@ namespace bs
 		/** Number of elements in the buffer. */
 		UINT32 elementCount = 0;
 
-		/** 
+		/**
 		 * Size of each individual element in the buffer, in bytes. Only needed if using non-standard buffer. If using
 		 * standard buffers element size is calculated from format and this must be zero.
 		 */
@@ -34,9 +34,9 @@ namespace bs
 		GpuBufferUsage usage = GBU_STATIC;
 	};
 
-	/** 
-	 * Information about a GpuBuffer. Allows core and non-core versions of GpuBuffer to share the same structure for 
-	 * properties. 
+	/**
+	 * Information about a GpuBuffer. Allows core and non-core versions of GpuBuffer to share the same structure for
+	 * properties.
 	 */
 	class BS_CORE_EXPORT GpuBufferProperties
 	{
@@ -44,7 +44,7 @@ namespace bs
 		GpuBufferProperties(const GPU_BUFFER_DESC& desc);
 
 		/**
-		 * Returns the type of the GPU buffer. Type determines which kind of views (if any) can be created for the buffer, 
+		 * Returns the type of the GPU buffer. Type determines which kind of views (if any) can be created for the buffer,
 		 * and how is data read or modified in it.
 		 */
 		GpuBufferType getType() const { return mDesc.type; }
@@ -130,12 +130,12 @@ namespace bs
 			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
 
 		/** @copydoc HardwareBuffer::copyData */
-		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
+		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length,
 			bool discardWholeBuffer = false, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
-		/** 
+		/**
 		 * Returns a view of this buffer with specified format/type.
-		 * 
+		 *
 		 * @param[in]	type			Type of buffer to view the contents as. Only supported values are GBT_STANDARD and
 		 *								GBT_STRUCTURED.
 		 * @param[in]	format			Format of the data in the buffer. Size of the underlying buffer must be divisible by
@@ -151,7 +151,7 @@ namespace bs
 		/** @copydoc bs::HardwareBufferManager::createGpuBuffer */
 		static SPtr<GpuBuffer> create(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
-		/** 
+		/**
 		 * Creates a view of an existing hardware buffer. No internal buffer will be allocated and the provided buffer
 		 * will be used for all internal operations instead. Information provided in @p desc (such as element size and
 		 * count) must match the provided @p underlyingBuffer.

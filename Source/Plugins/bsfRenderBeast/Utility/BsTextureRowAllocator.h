@@ -29,7 +29,7 @@ namespace bs { namespace ct
 		TextureRowAllocator();
 		~TextureRowAllocator();
 
-		/** 
+		/**
 		 * Attempts to allocate a new region of size @p length pixels. Returned allocation will have the same size as the
 		 * requested size if sucessful.
 		 */

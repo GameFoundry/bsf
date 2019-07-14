@@ -44,7 +44,7 @@ namespace bs
 		BMP_HEADER header;
 		header.BM = 0x4d42;
 		header.size_of_file =  sizeof(header) + dataSize;
-		header.reserve = 0000; 
+		header.reserve = 0000;
 		header.offset_of_pixel_data = 54;
 		header.size_of_header = 40;
 		header.width = width;
@@ -64,7 +64,7 @@ namespace bs
 
 		// Write bytes
 		UINT32 widthBytes = width * bytesPerPixel;
-		 
+		
 		// BPP matches so we can just copy directly
 		if(bmpBytesPerPixel == bytesPerPixel)
 		{

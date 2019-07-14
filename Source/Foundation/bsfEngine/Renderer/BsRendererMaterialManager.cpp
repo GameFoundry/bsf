@@ -12,7 +12,7 @@ namespace bs
 	{
 		BuiltinResources& br = BuiltinResources::instance();
 
-		// Note: Ideally I want to avoid loading all materials, and instead just load those that are used. 
+		// Note: Ideally I want to avoid loading all materials, and instead just load those that are used.
 		Vector<RendererMaterialData>& materials = getMaterials();
 		Vector<SPtr<ct::Shader>> shaders;
 		for (auto& material : materials)
@@ -59,7 +59,7 @@ namespace bs
 
 #if BS_PROFILING_ENABLED
 			const String& filename = materials[i].shaderPath.getFilename(false);
-			materials[i].metaData->profilerSampleName = ProfilerString("RM: ") + 
+			materials[i].metaData->profilerSampleName = ProfilerString("RM: ") +
 				ProfilerString(filename.data(), filename.size());
 #endif
 		}

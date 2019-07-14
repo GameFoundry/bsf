@@ -11,8 +11,8 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Allows you to define a volume of light probes that will be used for indirect lighting. Lighting information in the 
-	/// scene will be interpolated from nearby probes to calculate the amount of indirect lighting at that position. It is up 
+	/// Allows you to define a volume of light probes that will be used for indirect lighting. Lighting information in the
+	/// scene will be interpolated from nearby probes to calculate the amount of indirect lighting at that position. It is up
 	/// to the caller to place the light probes in areas where the lighting changes in order to yield the best results.
 	///
 	/// The volume can never have less than 4 probes.
@@ -48,7 +48,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Adds a new probe at the specified position and returns a handle to the probe. The position is relative to the volume 
+		/// Adds a new probe at the specified position and returns a handle to the probe. The position is relative to the volume
 		/// origin.
 		/// </summary>
 		public int AddProbe(Vector3 position)
@@ -71,7 +71,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Removes the probe with the specified handle. Note that if this is one of the last four remaining probes in the volume 
+		/// Removes the probe with the specified handle. Note that if this is one of the last four remaining probes in the volume
 		/// it cannot be removed.
 		/// </summary>
 		public void RemoveProbe(int handle)
@@ -86,7 +86,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Causes the information for this specific light probe to be updated. You generally want to call this when the probe is 
+		/// Causes the information for this specific light probe to be updated. You generally want to call this when the probe is
 		/// moved or the scene around the probe changes.
 		/// </summary>
 		public void RenderProbe(int handle)
@@ -95,7 +95,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Causes the information for all lights probes to be updated. You generally want to call this if you move the entire 
+		/// Causes the information for all lights probes to be updated. You generally want to call this if you move the entire
 		/// light volume or the scene around the volume changes.
 		/// </summary>
 		public void RenderProbes()
@@ -104,18 +104,18 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Resizes the light probe grid and inserts new light probes, if the new size is larger than previous size. New probes 
+		/// Resizes the light probe grid and inserts new light probes, if the new size is larger than previous size. New probes
 		/// are inserted in a grid pattern matching the new size and density parameters.
 		///
-		/// Note that shrinking the volume will not remove light probes. In order to remove probes outside of the new volume call 
+		/// Note that shrinking the volume will not remove light probes. In order to remove probes outside of the new volume call
 		/// clip().
 		///
-		/// Resize will not change the positions of current light probes. If you wish to reset all probes to the currently set 
+		/// Resize will not change the positions of current light probes. If you wish to reset all probes to the currently set
 		/// grid position, call reset().
 		/// </summary>
 		/// <param name="volume">Axis aligned volume to be covered by the light probes.</param>
 		/// <param name="cellCount">
-		/// Number of grid cells to split the volume into. Minimum number of 1, in which case each corner of the volume is 
+		/// Number of grid cells to split the volume into. Minimum number of 1, in which case each corner of the volume is
 		/// represented by a single probe. Higher values subdivide the volume in an uniform way.
 		/// </param>
 		public void Resize(AABox volume, Vector3I cellCount)
@@ -130,7 +130,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Resets all probes to match the original grid pattern. This will reset probe positions, as well as add/remove probes 
+		/// Resets all probes to match the original grid pattern. This will reset probe positions, as well as add/remove probes
 		/// as necessary, essentially losing any custom changes to the probes.
 		/// </summary>
 		public void Reset()
@@ -139,13 +139,13 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Resizes the light probe grid and inserts new light probes, if the new size is larger than previous size. New probes 
+		/// Resizes the light probe grid and inserts new light probes, if the new size is larger than previous size. New probes
 		/// are inserted in a grid pattern matching the new size and density parameters.
 		///
-		/// Note that shrinking the volume will not remove light probes. In order to remove probes outside of the new volume call 
+		/// Note that shrinking the volume will not remove light probes. In order to remove probes outside of the new volume call
 		/// clip().
 		///
-		/// Resize will not change the positions of current light probes. If you wish to reset all probes to the currently set 
+		/// Resize will not change the positions of current light probes. If you wish to reset all probes to the currently set
 		/// grid position, call reset().
 		/// </summary>
 		/// <param name="volume">Axis aligned volume to be covered by the light probes.</param>

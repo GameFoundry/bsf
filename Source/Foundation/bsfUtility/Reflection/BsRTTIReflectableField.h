@@ -17,10 +17,10 @@ namespace bs
 	 */
 
 	/**
-	 * Base class containing common functionality for a reflectable class field. 
+	 * Base class containing common functionality for a reflectable class field.
 	 * 			
 	 * @note	
-	 * Reflectable fields are fields containing complex types deriving from IReflectable. They are serialized recursively 
+	 * Reflectable fields are fields containing complex types deriving from IReflectable. They are serialized recursively
 	 * and you may add/remove fields from them without breaking the serialized data.
 	 */
 	struct RTTIReflectableFieldBase : public RTTIField
@@ -76,11 +76,11 @@ namespace bs
 		typedef void(InterfaceType::*ArraySetSizeType)(ObjectType*, UINT32);
 
 		/**
-		 * Initializes a field containing a single data type implementing IReflectable interface. 
+		 * Initializes a field containing a single data type implementing IReflectable interface.
 		 *
 		 * @param[in]	name		Name of the field.
-		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
-		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a
+		 *							small data type that can be used for efficiently serializing data to disk and similar.
 		 *							It is primarily used for compatibility between different versions of serialized data.
 		 * @param[in]	getter  	The getter method for the field.
 		 * @param[in]	setter  	The setter method for the field.
@@ -98,8 +98,8 @@ namespace bs
 		 * Initializes a field containing an array of data types implementing IReflectable interface.
 		 *
 		 * @param[in]	name		Name of the field.
-		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
-		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a
+		 *							small data type that can be used for efficiently serializing data to disk and similar.
 		 *							It is primarily used for compatibility between different versions of serialized data.
 		 * @param[in]	getter  	The getter method for the field.
 		 * @param[in]	getSize 	Getter method that returns the size of an array.
@@ -107,7 +107,7 @@ namespace bs
 		 * @param[in]	setSize 	Setter method that allows you to resize an array.
 		 * @param[in]	info		Various optional information about the field.
 		 */
-		void initArray(const String& name, UINT16 uniqueId, ArrayGetterType getter, ArrayGetSizeType getSize, 
+		void initArray(const String& name, UINT16 uniqueId, ArrayGetterType getter, ArrayGetSizeType getSize,
 			ArraySetterType setter, ArraySetSizeType setSize, const RTTIFieldInfo& info)
 		{
 			arrayGetter = getter;
@@ -173,7 +173,7 @@ namespace bs
 
 			if(!arraySetter)
 			{
-				BS_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException,
 					"Specified field (" + mName + ") has no setter.");
 			}
 
@@ -202,7 +202,7 @@ namespace bs
 
 			if(!arraySetSize)
 			{
-				BS_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException,
 					"Specified field (" + mName + ") has no array size setter.");
 			}
 

@@ -100,7 +100,7 @@ namespace bs { namespace ct
 		return srv;
 	}
 
-	ID3D11UnorderedAccessView* GpuBufferView::createUAV(D3D11GpuBuffer* buffer, UINT32 firstElement, UINT32 numElements, 
+	ID3D11UnorderedAccessView* GpuBufferView::createUAV(D3D11GpuBuffer* buffer, UINT32 firstElement, UINT32 numElements,
 		bool useCounter)
 	{
 		const GpuBufferProperties& props = buffer->getProperties();
@@ -120,7 +120,7 @@ namespace bs { namespace ct
 				desc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_COUNTER;
 			else
 				desc.Buffer.Flags = 0;
-		} 
+		}
 		else if (props.getType() == GBT_STRUCTURED)
 		{
 			desc.Format = DXGI_FORMAT_UNKNOWN;

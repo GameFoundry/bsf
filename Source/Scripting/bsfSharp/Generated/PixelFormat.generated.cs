@@ -40,7 +40,7 @@ namespace bs
 		/// <summary>Format storing RGB in half (16-bit) floating point format usable for HDR. 8 bits per pixel.</summary>
 		BC6H = 19,
 		/// <summary>
-		/// Format storing RGB with optional alpha channel. Similar to BC1/BC2/BC3 formats but with higher quality and  higher 
+		/// Format storing RGB with optional alpha channel. Similar to BC1/BC2/BC3 formats but with higher quality and  higher
 		/// decompress overhead. 8 bits per pixel.
 		/// </summary>
 		BC7 = 20,

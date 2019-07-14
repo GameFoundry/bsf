@@ -9,8 +9,8 @@
 
 namespace bs { namespace ct
 {
-	VulkanSwapChain::VulkanSwapChain(VulkanResourceManager* owner, VkSurfaceKHR surface, UINT32 width, UINT32 height, 
-		bool vsync, VkFormat colorFormat, VkColorSpaceKHR colorSpace, bool createDepth, VkFormat depthFormat, 
+	VulkanSwapChain::VulkanSwapChain(VulkanResourceManager* owner, VkSurfaceKHR surface, UINT32 width, UINT32 height,
+		bool vsync, VkFormat colorFormat, VkColorSpaceKHR colorSpace, bool createDepth, VkFormat depthFormat,
 		VulkanSwapChain* oldSwapChain)
 		: VulkanResource(owner, false)
 	{

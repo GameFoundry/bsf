@@ -67,20 +67,20 @@ namespace bs
 		/** Returns the GPU program descriptor for the specified GPU program type. */
 		const GPU_PROGRAM_DESC& getProgramDesc(bs::GpuProgramType type) const;
 
-		/** 
+		/**
 		 * Returns the graphics pipeline state describing this pass, or null if its a compute pass.
 		 * Only valid after compile() has been called.
 		 */
 		const SPtr<GraphicsPipelineStateType>& getGraphicsPipelineState() const { return mGraphicsPipelineState; }
 
-		/** 
-		 * Returns the compute pipeline state describing this pass, or null if its a graphics pass. 
+		/**
+		 * Returns the compute pipeline state describing this pass, or null if its a graphics pass.
 		 * Only valid after compile has been called.
 		 */
 		const SPtr<ComputePipelineStateType>& getComputePipelineState() const { return mComputePipelineState; }
 
-		/** 
-		 * @name Internal 
+		/**
+		 * @name Internal
 		 * @{
 		 */
 
@@ -108,7 +108,7 @@ namespace bs
 	 */
 
 	/**
-	 * Class defining a single pass of a technique (of a material). Pass may contain multiple GPU programs (vertex, 
+	 * Class defining a single pass of a technique (of a material). Pass may contain multiple GPU programs (vertex,
 	 * fragment, geometry, etc.), and a set of pipeline states (blend, rasterizer, etc.). When initially created the pass
 	 * is in its uncompiled state. It needs to be explicitly compiled by calling compile() before use.
 	 *
@@ -122,8 +122,8 @@ namespace bs
 		/** Retrieves an implementation of a pass usable only from the core thread. */
 		SPtr<ct::Pass> getCore() const;
 
-		/** 
-		 * Initializes the pass internals by compiling the GPU programs and creating the relevant pipeline state. This 
+		/**
+		 * Initializes the pass internals by compiling the GPU programs and creating the relevant pipeline state. This
 		 * method must be called before pass pipelines can be retrieved. After initial compilation further calls do this
 		 * method will perform no operation.
 		 */

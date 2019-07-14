@@ -286,7 +286,7 @@ namespace bs
 			mHash = curHash;
 		}
 
-		// Hash now matches so transform won't be applied twice, so we can just call base class version 
+		// Hash now matches so transform won't be applied twice, so we can just call base class version
 		SceneActor::_updateState(so, force);
 	}
 
@@ -454,7 +454,7 @@ namespace bs
 
 	namespace ct
 	{
-	Renderable::Renderable() 
+	Renderable::Renderable()
 		:mRendererId(0), mAnimationId((UINT64)-1), mMorphShapeVersion(0)
 	{
 	}
@@ -655,8 +655,8 @@ namespace bs
 			}
 		}
 
-		UINT32 updateEverythingFlag = (UINT32)ActorDirtyFlag::Everything 
-			| (UINT32)ActorDirtyFlag::Active 
+		UINT32 updateEverythingFlag = (UINT32)ActorDirtyFlag::Everything
+			| (UINT32)ActorDirtyFlag::Active
 			| (UINT32)ActorDirtyFlag::Dependency;
 
 		if((dirtyFlags & updateEverythingFlag) != 0)

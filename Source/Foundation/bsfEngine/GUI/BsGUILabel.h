@@ -25,7 +25,7 @@ namespace bs
 		 * Creates a new label with the specified text.
 		 *
 		 * @param[in]	text		Text to display.
-		 * @param[in]	styleName	Optional style to use for the element. Style will be retrieved from GUISkin of the 
+		 * @param[in]	styleName	Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *							GUIWidget the element is used on. If not specified default button style is used.
 		 */
 		static GUILabel* create(const HString& text, const String& styleName = StringUtil::BLANK);

@@ -4,7 +4,7 @@
 
 namespace bs { namespace ct
 {
-	SPtr<SamplerState> NullRenderStateManager::createSamplerStateInternal(const SAMPLER_STATE_DESC& desc, 
+	SPtr<SamplerState> NullRenderStateManager::createSamplerStateInternal(const SAMPLER_STATE_DESC& desc,
 		GpuDeviceFlags deviceMask) const
 	{
 		SPtr<NullSamplerState> ret = bs_shared_ptr_new<NullSamplerState>(desc, deviceMask);

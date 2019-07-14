@@ -123,7 +123,7 @@ namespace bs { namespace ct
 					if (curIdx == (UINT32)-1)
 					{
 						BS_LOG(Error, Renderer, "Render compositor nodes recursion detected. Node \"{0}\" "
-							"depends on node \"{1}\" which is not available at this stage.", 
+							"depends on node \"{1}\" which is not available at this stage.",
 							String(nodeId.c_str()), String(iterFind->first.c_str()));
 						return false;
 					}
@@ -475,8 +475,8 @@ namespace bs { namespace ct
 
 	SmallVector<StringID, 4> RCNodeBasePass::getDependencies(const RendererView& view)
 	{
-		return { 
-			RCNodeSceneDepth::getNodeId(), RCNodeSceneColor::getNodeId(), RCNodeParticleSort::getNodeId(), 
+		return {
+			RCNodeSceneDepth::getNodeId(), RCNodeSceneColor::getNodeId(), RCNodeParticleSort::getNodeId(),
 			RCNodeMSAACoverage::getNodeId() };
 	}
 
@@ -496,7 +496,7 @@ namespace bs { namespace ct
 			usageFlags |= TU_LOADSTORE;
 
 		// Note: Consider customizable HDR format via options? e.g. smaller PF_FLOAT_R11G11B10 or larger 32-bit format
-		sceneColorTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, usageFlags, 
+		sceneColorTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, usageFlags,
 			numSamples, false));
 
 		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[0]);
@@ -504,7 +504,7 @@ namespace bs { namespace ct
 
 		if (tiledDeferredSupported && viewProps.target.numSamples > 1)
 		{
-			sceneColorTexArray = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, 
+			sceneColorTexArray = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height,
 				TU_LOADSTORE, 1, false, viewProps.target.numSamples));
 		}
 		else
@@ -723,7 +723,7 @@ namespace bs { namespace ct
 		UINT32 usage = TU_RENDERTARGET;
 		if (numSamples > 1)
 		{
-			resPool.get(lightAccumulationTexArray, 
+			resPool.get(lightAccumulationTexArray,
 				POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, TU_LOADSTORE, 1, false, numSamples));
 
 			ClearLoadStoreMat* clearMat = ClearLoadStoreMat::getVariation(ClearLoadStoreType::TextureArray,
@@ -746,7 +746,7 @@ namespace bs { namespace ct
 			lightAccumulationTexArray = nullptr;
 		}
 
-		resPool.get(lightAccumulationTex, 
+		resPool.get(lightAccumulationTex,
 			POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, usage, numSamples, false));
 
 		bool rebuildRT;
@@ -833,7 +833,7 @@ namespace bs { namespace ct
 				msaaCoverage = coverageNode->output->texture;
 			}
 
-			TiledDeferredLightingMat* tiledDeferredMat = 
+			TiledDeferredLightingMat* tiledDeferredMat =
 				TiledDeferredLightingMat::getVariation(viewProps.target.numSamples);
 
 			const VisibleLightData& lightData = inputs.viewGroup.getVisibleLightData();
@@ -1007,7 +1007,7 @@ namespace bs { namespace ct
 			rapi.clearRenderTarget(FBT_DEPTH);
 			gRendererUtility().clear(-1);
 
-			TetrahedraRenderMat* renderTetrahedra = 
+			TetrahedraRenderMat* renderTetrahedra =
 				TetrahedraRenderMat::getVariation(viewProps.target.numSamples > 1, true);
 			renderTetrahedra->execute(inputs.view, sceneDepthNode->depthTex->texture, lpInfo.tetrahedraVolume, rt);
 
@@ -1085,7 +1085,7 @@ namespace bs { namespace ct
 				msaaCoverage = coverageNode->output->texture;
 			}
 
-			TiledDeferredImageBasedLightingMat* material = 
+			TiledDeferredImageBasedLightingMat* material =
 				TiledDeferredImageBasedLightingMat::getVariation(viewProps.target.numSamples);
 
 			TiledDeferredImageBasedLightingMat::Inputs iblInputs;
@@ -1274,7 +1274,7 @@ namespace bs { namespace ct
 
 		// Prepare refl. probe param buffer
 		ReflProbeParamBuffer reflProbeParamBuffer;
-		reflProbeParamBuffer.populate(skybox, visibleReflProbeData.getNumProbes(), sceneInfo.reflProbeCubemapsTex, 
+		reflProbeParamBuffer.populate(skybox, visibleReflProbeData.getNumProbes(), sceneInfo.reflProbeCubemapsTex,
 			viewProps.capturingReflections);
 
 		SPtr<Texture> skyFilteredRadiance;
@@ -1302,7 +1302,7 @@ namespace bs { namespace ct
 		};
 
 		const auto bindParamsForStandardForward = [&standardForwardBuffers, &visibleLightData, &visibleReflProbeData]
-			(GpuParams& gpuParams, const Bounds& bounds, const ForwardLightingParams& fwdParams, 
+			(GpuParams& gpuParams, const Bounds& bounds, const ForwardLightingParams& fwdParams,
 				const ImageBasedLightingParams& iblParams)
 		{
 			// Populate light & probe buffers
@@ -1322,13 +1322,13 @@ namespace bs { namespace ct
 			INT32 numReflProbes = std::min(visibleReflProbeData.getNumProbes(), STANDARD_FORWARD_MAX_NUM_PROBES);
 			for (INT32 j = 0; j < numReflProbes; j++)
 			{
-				gReflProbesParamDef.gReflectionProbes.set(standardForwardBuffers.reflProbesParamBlock, 
+				gReflProbesParamDef.gReflectionProbes.set(standardForwardBuffers.reflProbesParamBlock,
 					visibleReflProbeData.getProbeData(j), j);
 			}
 
-			gLightAndReflProbeParamsParamDef.gLightOffsets.set(standardForwardBuffers.lightAndReflProbeParamsParamBlock, 
+			gLightAndReflProbeParamsParamDef.gLightOffsets.set(standardForwardBuffers.lightAndReflProbeParamsParamBlock,
 				lightOffsets);
-			gLightAndReflProbeParamsParamDef.gReflProbeCount.set(standardForwardBuffers.lightAndReflProbeParamsParamBlock, 
+			gLightAndReflProbeParamsParamDef.gReflProbeCount.set(standardForwardBuffers.lightAndReflProbeParamsParamBlock,
 				numReflProbes);
 
 			if (iblParams.reflProbesBinding.set != (UINT32)-1)
@@ -1424,7 +1424,7 @@ namespace bs { namespace ct
 					continue;
 
 				// Note: It would be nice to be able to set this once and keep it, only updating if the buffers actually
-				// change (e.g. when growing). 
+				// change (e.g. when growing).
 				const SPtr<GpuParams> gpuParams = element.params->getGpuParams();
 				if(supportsClusteredForward)
 					bindParamsForClustered(*gpuParams, element.forwardLightingParams, element.imageBasedParams);
@@ -1468,7 +1468,7 @@ namespace bs { namespace ct
 				const SPtr<GpuParams> gpuParams = renderElement.params->getGpuParams();
 
 				// Note: It would be nice to be able to set this once and keep it, only updating if the buffers actually
-				// change (e.g. when growing). 
+				// change (e.g. when growing).
 				if(supportsClusteredForward)
 					bindParamsForClustered(*gpuParams, renderElement.forwardLightingParams, renderElement.imageBasedParams);
 				else
@@ -1483,8 +1483,8 @@ namespace bs { namespace ct
 		}
 
 		// TODO: Forward pipeline rendering doesn't support shadows. In order to support this I'd have to render the light
-		// occlusion for all lights affecting this object into a single (or a few) textures. I can likely use texture 
-		// arrays for this, or to avoid sampling many textures, perhaps just jam it all in one or few texture channels. 
+		// occlusion for all lights affecting this object into a single (or a few) textures. I can likely use texture
+		// arrays for this, or to avoid sampling many textures, perhaps just jam it all in one or few texture channels.
 
 		// Render everything
 		RenderAPI& rapi = RenderAPI::instance();
@@ -1520,8 +1520,8 @@ namespace bs { namespace ct
 
 	SmallVector<StringID, 4> RCNodeClusteredForward::getDependencies(const RendererView& view)
 	{
-		return { 
-			RCNodeSceneColor::getNodeId(), 
+		return {
+			RCNodeSceneColor::getNodeId(),
 			RCNodeSkybox::getNodeId(),
 			RCNodeSceneDepth::getNodeId(),
 			RCNodeParticleSimulate::getNodeId(),
@@ -1747,7 +1747,7 @@ namespace bs { namespace ct
 			else
 			{
 				// Populate alpha values of the downsampled texture with luminance
-				SPtr<PooledRenderTexture> luminanceTex = 
+				SPtr<PooledRenderTexture> luminanceTex =
 					resPool.get(EyeAdaptationBasicSetupMat::getOutputDesc(downsampledScene->texture));
 
 				EyeAdaptationBasicSetupMat* setupMat = EyeAdaptationBasicSetupMat::get();
@@ -1765,7 +1765,7 @@ namespace bs { namespace ct
 				for(UINT32 i = 0; i < 5; i++)
 				{
 					DownsampleMat* downsampleMat = DownsampleMat::getVariation(1, false);
-					SPtr<PooledRenderTexture> downsampledLuminance = 
+					SPtr<PooledRenderTexture> downsampledLuminance =
 						resPool.get(DownsampleMat::getOutputDesc(downsampleInput));
 
 					downsampleMat->execute(downsampleInput, downsampledLuminance->renderTexture);
@@ -1905,9 +1905,9 @@ namespace bs { namespace ct
 	{
 		SmallVector<StringID, 4> deps = {
 			RCNodeEyeAdaptation::getNodeId(),
-			RCNodeSceneColor::getNodeId(), 
-			RCNodeClusteredForward::getNodeId(), 
-			RCNodePostProcess::getNodeId(), 
+			RCNodeSceneColor::getNodeId(),
+			RCNodeClusteredForward::getNodeId(),
+			RCNodePostProcess::getNodeId(),
 			RCNodeHalfSceneColor::getNodeId()
 		};
 
@@ -1960,7 +1960,7 @@ namespace bs { namespace ct
 		// Blur the out of focus pixels
 		// Note: Perhaps set up stencil so I can avoid performing blur on unused parts of the textures?
 		const TextureProperties& texProps = nearTex ? nearTex->texture->getProperties() : farTex->texture->getProperties();
-		POOLED_RENDER_TEXTURE_DESC tempTexDesc = POOLED_RENDER_TEXTURE_DESC::create2D(texProps.getFormat(), 
+		POOLED_RENDER_TEXTURE_DESC tempTexDesc = POOLED_RENDER_TEXTURE_DESC::create2D(texProps.getFormat(),
 			texProps.getWidth(), texProps.getHeight(), TU_RENDERTARGET);
 		SPtr<PooledRenderTexture> tempTexture = gGpuResourcePool().get(tempTexDesc);
 
@@ -1987,7 +1987,7 @@ namespace bs { namespace ct
 			}
 		}
 
-		combineMat->execute(ppLastFrame, blurredNearTex, blurredFarTex, 
+		combineMat->execute(ppLastFrame, blurredNearTex, blurredFarTex,
 			sceneDepthNode->depthTex->texture, ppOutput, inputs.view, settings);
 
 		separateMat->release();
@@ -2066,9 +2066,9 @@ namespace bs { namespace ct
 		const TextureProperties& halfSceneProps = halfSceneColorNode->output->texture->getProperties();
 
 		const UINT32 totalDownsampleLevels = PixelUtil::getMaxMipmaps(
-			halfSceneProps.getWidth(), 
-			halfSceneProps.getHeight(), 
-			1, 
+			halfSceneProps.getWidth(),
+			halfSceneProps.getHeight(),
+			1,
 			halfSceneProps.getFormat()
 		) + 1;
 
@@ -2108,7 +2108,7 @@ namespace bs { namespace ct
 			UINT32 height = viewProps.target.viewRect.height;
 
 			output = gGpuResourcePool().get(
-				POOLED_RENDER_TEXTURE_DESC::create2D(PF_D32_S8X24, width, height, TU_DEPTHSTENCIL, 1, false)); 
+				POOLED_RENDER_TEXTURE_DESC::create2D(PF_D32_S8X24, width, height, TU_DEPTHSTENCIL, 1, false));
 
 			RenderAPI& rapi = RenderAPI::instance();
 			rapi.setRenderTarget(output->renderTexture);
@@ -2144,7 +2144,7 @@ namespace bs { namespace ct
 		size = 1 << numMips;
 
 		// Note: Use the 32-bit buffer here as 16-bit causes too much banding (most of the scene gets assigned 4-5 different
-		// depth values). 
+		// depth values).
 		//  - When I add UNORM 16-bit format I should be able to switch to that
 		output = gGpuResourcePool().get(
 			POOLED_RENDER_TEXTURE_DESC::create2D(PF_R32F, size, size, TU_RENDERTARGET, 1, false, 1, numMips));
@@ -2248,7 +2248,7 @@ namespace bs { namespace ct
 		RenderAPI& rapi = RenderAPI::instance();
 		if(sceneNormals->getProperties().getNumSamples() > 1)
 		{
-			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(normalsProps.getFormat(), 
+			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(normalsProps.getFormat(),
 				normalsProps.getWidth(), normalsProps.getHeight(), TU_RENDERTARGET);
 			resolvedNormals = resPool.get(desc);
 
@@ -2277,7 +2277,7 @@ namespace bs { namespace ct
 				std::max(1, Math::divideAndRoundUp((INT32)viewProps.target.viewRect.height, 2))
 			);
 
-			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, downsampledSize.x, 
+			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, downsampledSize.x,
 				downsampledSize.y, TU_RENDERTARGET);
 			setupTex0 = resPool.get(desc);
 
@@ -2292,7 +2292,7 @@ namespace bs { namespace ct
 				std::max(1, Math::divideAndRoundUp((INT32)viewProps.target.viewRect.height, 4))
 			);
 
-			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, downsampledSize.x, 
+			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, downsampledSize.x,
 				downsampledSize.y, TU_RENDERTARGET);
 			setupTex1 = resPool.get(desc);
 
@@ -2314,7 +2314,7 @@ namespace bs { namespace ct
 				std::max(1, Math::divideAndRoundUp((INT32)viewProps.target.viewRect.height, 4))
 			);
 
-			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, downsampledSize.x, 
+			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, downsampledSize.x,
 				downsampledSize.y, TU_RENDERTARGET);
 			downAOTex1 = resPool.get(desc);
 
@@ -2337,7 +2337,7 @@ namespace bs { namespace ct
 				std::max(1, Math::divideAndRoundUp((INT32)viewProps.target.viewRect.height, 2))
 			);
 
-			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, downsampledSize.x, 
+			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, downsampledSize.x,
 				downsampledSize.y, TU_RENDERTARGET);
 			downAOTex0 = resPool.get(desc);
 
@@ -2380,7 +2380,7 @@ namespace bs { namespace ct
 		{
 			const RenderTargetProperties& rtProps = mPooledOutput->renderTexture->getProperties();
 
-			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, rtProps.width, 
+			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, rtProps.width,
 				rtProps.height, TU_RENDERTARGET);
 			SPtr<PooledRenderTexture> blurIntermediateTex = resPool.get(desc);
 
@@ -2574,9 +2574,9 @@ namespace bs { namespace ct
 
 			SPtr<PooledRenderTexture> filterOutput = gGpuResourcePool().get(
 				POOLED_RENDER_TEXTURE_DESC::create2D(
-					inputProps.getFormat(), 
-					inputProps.getWidth(), 
-					inputProps.getHeight(), 
+					inputProps.getFormat(),
+					inputProps.getWidth(),
+					inputProps.getHeight(),
 					TU_RENDERTARGET)
 			);
 
@@ -2584,7 +2584,7 @@ namespace bs { namespace ct
 			SPtr<PooledRenderTexture> blurOutput = filterOutput;
 			if(settings.bloom.threshold > 0.0f)
 			{
-				clipMat->execute(downsampledTex->texture, settings.bloom.threshold, eyeAdaptationTex, settings, 
+				clipMat->execute(downsampledTex->texture, settings.bloom.threshold, eyeAdaptationTex, settings,
 					filterOutput->renderTexture);
 
 				blurOutput = blurInput;
@@ -2596,7 +2596,7 @@ namespace bs { namespace ct
 				additiveInput = prevOutput->texture;
 
 			const Color tint = Color::White * (settings.bloom.intensity / (float)numSteps);
-			filterMat->execute(blurInput->texture, settings.bloom.filterSize, blurOutput->renderTexture, 
+			filterMat->execute(blurInput->texture, settings.bloom.filterSize, blurOutput->renderTexture,
 				tint, additiveInput);
 			prevOutput = blurOutput;
 		}
@@ -2613,11 +2613,11 @@ namespace bs { namespace ct
 
 	SmallVector<StringID, 4> RCNodeBloom::getDependencies(const RendererView& view)
 	{
-		return 
-		{ 
-			RCNodeClusteredForward::getNodeId(), 
-			RCNodeSceneColorDownsamples::getNodeId(), 
-			RCNodeEyeAdaptation::getNodeId() 
+		return
+		{
+			RCNodeClusteredForward::getNodeId(),
+			RCNodeSceneColorDownsamples::getNodeId(),
+			RCNodeEyeAdaptation::getNodeId()
 		};
 	}
 
@@ -2640,15 +2640,15 @@ namespace bs { namespace ct
 		// Ghost features
 		SPtr<PooledRenderTexture> featureTex = resPool.get(
 			POOLED_RENDER_TEXTURE_DESC::create2D(
-				sceneTexProps.getFormat(), 
+				sceneTexProps.getFormat(),
 				sceneTexProps.getWidth(),
-				sceneTexProps.getHeight(), 
+				sceneTexProps.getHeight(),
 				TU_RENDERTARGET));
 
 		bool haloAspect = lensFlareSettings.haloAspectRatio != 1.0f;
 		ScreenSpaceLensFlareMat* lensFlareMat = ScreenSpaceLensFlareMat::getVariation(
-			lensFlareSettings.halo, 
-			haloAspect, 
+			lensFlareSettings.halo,
+			haloAspect,
 			lensFlareSettings.chromaticAberration);
 		lensFlareMat->execute(downsampledTex->texture, lensFlareSettings, featureTex->renderTexture);
 
@@ -2683,10 +2683,10 @@ namespace bs { namespace ct
 
 	SmallVector<StringID, 4> RCNodeScreenSpaceLensFlare::getDependencies(const RendererView& view)
 	{
-		return 
-		{ 
-			RCNodeClusteredForward::getNodeId(), 
-			RCNodeSceneColor::getNodeId(), 
+		return
+		{
+			RCNodeClusteredForward::getNodeId(),
+			RCNodeSceneColor::getNodeId(),
 			RCNodeSceneColorDownsamples::getNodeId()
 		};
 	}

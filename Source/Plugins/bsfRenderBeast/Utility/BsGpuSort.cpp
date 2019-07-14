@@ -47,7 +47,7 @@ namespace bs { namespace ct
 
 	void runSortTest();
 
-	/** 
+	/**
 	 * Creates a new GPU parameter block buffer according to gRadixSortParamDef definition and writes GpuSort properties
 	 * into the buffer.
 	 */
@@ -64,17 +64,17 @@ namespace bs { namespace ct
 		return buffer;
 	}
 
-	/** 
+	/**
 	 * Checks can the provided buffer be used for GPU sort operation. Returns a pointer to the error message if check failed
 	 * or nullptr if check passed.
 	 */
 	const char* checkSortBuffer(GpuBuffer& buffer)
 	{
-		static constexpr const char* INVALID_GPU_WRITE_MSG = 
+		static constexpr const char* INVALID_GPU_WRITE_MSG =
 			"All buffers provided to GpuSort must be created with GBU_LOADSTORE flags enabled.";
-		static constexpr const char* INVALID_TYPE_MSG = 
+		static constexpr const char* INVALID_TYPE_MSG =
 			"All buffers provided to GpuSort must be of GBT_STANDARD type.";
-		static constexpr const char* INVALID_FORMAT_MSG = 
+		static constexpr const char* INVALID_FORMAT_MSG =
 			"All buffers provided to GpuSort must use a 32-bit unsigned integer format.";
 
 		const GpuBufferProperties& bufferProps = buffer.getProperties();
@@ -133,7 +133,7 @@ namespace bs { namespace ct
 		initCommonDefines(defines);
 	}
 
-	void RadixSortCountMat::execute(UINT32 numGroups, const SPtr<GpuParamBlockBuffer>& params, 
+	void RadixSortCountMat::execute(UINT32 numGroups, const SPtr<GpuParamBlockBuffer>& params,
 		const SPtr<GpuBuffer>& inputKeys, const SPtr<GpuBuffer>& outputOffsets)
 	{
 		BS_RENMAT_PROFILE_BLOCK
@@ -158,7 +158,7 @@ namespace bs { namespace ct
 		initCommonDefines(defines);
 	}
 
-	void RadixSortPrefixScanMat::execute(const SPtr<GpuParamBlockBuffer>& params, const SPtr<GpuBuffer>& inputCounts, 
+	void RadixSortPrefixScanMat::execute(const SPtr<GpuParamBlockBuffer>& params, const SPtr<GpuBuffer>& inputCounts,
 		const SPtr<GpuBuffer>& outputOffsets)
 	{
 		BS_RENMAT_PROFILE_BLOCK
@@ -186,7 +186,7 @@ namespace bs { namespace ct
 		initCommonDefines(defines);
 	}
 
-	void RadixSortReorderMat::execute(UINT32 numGroups, const SPtr<GpuParamBlockBuffer>& params, 
+	void RadixSortReorderMat::execute(UINT32 numGroups, const SPtr<GpuParamBlockBuffer>& params,
 		const SPtr<GpuBuffer>& inputPrefix, const GpuSortBuffers& buffers, UINT32 inputBufferIdx)
 	{
 		BS_RENMAT_PROFILE_BLOCK

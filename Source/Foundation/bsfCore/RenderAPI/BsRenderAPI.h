@@ -23,7 +23,7 @@ namespace bs
 	 */
 
 	/**
-	 * Provides access to ct::RenderAPI from the simulation thread. All the commands get queued on the core thread queue 
+	 * Provides access to ct::RenderAPI from the simulation thread. All the commands get queued on the core thread queue
 	 * for the calling thread.
 	 *
 	 * @see		ct::RenderAPI
@@ -33,125 +33,125 @@ namespace bs
 	class BS_CORE_EXPORT RenderAPI
 	{
 	public:
-		/** 
-		 * @see ct::RenderAPI::setGpuParams() 
+		/**
+		 * @see ct::RenderAPI::setGpuParams()
 		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setGpuParams(const SPtr<GpuParams>& gpuParams);
 
-		/** 
-		 * @see ct::RenderAPI::setGraphicsPipeline() 
-		 * 
+		/**
+		 * @see ct::RenderAPI::setGraphicsPipeline()
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setGraphicsPipeline(const SPtr<GraphicsPipelineState>& pipelineState);
 
-		/** 
-		 * @see ct::RenderAPI::setComputePipeline() 
-		 * 
+		/**
+		 * @see ct::RenderAPI::setComputePipeline()
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setComputePipeline(const SPtr<ComputePipelineState>& pipelineState);
 
-		/** 
-		 * @see ct::RenderAPI::setVertexBuffers() 
-		 * 
+		/**
+		 * @see ct::RenderAPI::setVertexBuffers()
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setVertexBuffers(UINT32 index, const Vector<SPtr<VertexBuffer>>& buffers);
 
-		/** 
-		 * @see ct::RenderAPI::setIndexBuffer() 
-		 * 
+		/**
+		 * @see ct::RenderAPI::setIndexBuffer()
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setIndexBuffer(const SPtr<IndexBuffer>& buffer);
 
-		/** 
-		 * @see ct::RenderAPI::setVertexDeclaration() 
-		 * 
+		/**
+		 * @see ct::RenderAPI::setVertexDeclaration()
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setVertexDeclaration(const SPtr<VertexDeclaration>& vertexDeclaration);
 
-		/** 
-		 * @see ct::RenderAPI::setViewport() 
-		 * 
+		/**
+		 * @see ct::RenderAPI::setViewport()
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setViewport(const Rect2& area);
 
-		/** 
+		/**
 		 * @see ct::RenderAPI::setStencilRef()
-		 * 
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setStencilRef(UINT32 value);
 
-		/** 
-		 * @see ct::RenderAPI::setDrawOperation()  
-		 * 
+		/**
+		 * @see ct::RenderAPI::setDrawOperation()
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setDrawOperation(DrawOperationType op);
 
-		/** 
-		 * @see ct::RenderAPI::setScissorRect() 
-		 * 
+		/**
+		 * @see ct::RenderAPI::setScissorRect()
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setScissorRect(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
 
-		/** 
-		 * @see ct::RenderAPI::setRenderTarget() 
-		 * 
+		/**
+		 * @see ct::RenderAPI::setRenderTarget()
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
-		static void setRenderTarget(const SPtr<RenderTarget>& target, UINT32 readOnlyFlags = 0, 
+		static void setRenderTarget(const SPtr<RenderTarget>& target, UINT32 readOnlyFlags = 0,
 			RenderSurfaceMask loadMask = RT_NONE);
 
-		/** 
-		 * @see ct::RenderAPI::clearRenderTarget() 
-		 * 
+		/**
+		 * @see ct::RenderAPI::clearRenderTarget()
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
-		static void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, 
+		static void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f,
 			UINT16 stencil = 0, UINT8 targetMask = 0xFF);
 
-		/** 
-		 * @see ct::RenderAPI::clearViewport() 
-		 * 
+		/**
+		 * @see ct::RenderAPI::clearViewport()
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0,
 			UINT8 targetMask = 0xFF);
 
-		/** 
-		 * @see ct::RenderAPI::swapBuffers() 
-		 * 
+		/**
+		 * @see ct::RenderAPI::swapBuffers()
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void swapBuffers(const SPtr<RenderTarget>& target);
 
-		/** 
-		 * @see ct::RenderAPI::draw() 
-		 * 
+		/**
+		 * @see ct::RenderAPI::draw()
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount = 0);
 
-		/** 
-		 * @see ct::RenderAPI::drawIndexed() 
-		 * 
+		/**
+		 * @see ct::RenderAPI::drawIndexed()
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
-		static void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount, 
+		static void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount,
 			UINT32 instanceCount = 0);
 
-		/** 
-		 * @see ct::RenderAPI::dispatchCompute() 
-		 * 
+		/**
+		 * @see ct::RenderAPI::dispatchCompute()
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY = 1, UINT32 numGroupsZ = 1);
@@ -172,12 +172,12 @@ namespace bs
 	 */
 
 	/**
-	 * Provides low-level API access to rendering commands (internally wrapping DirectX/OpenGL/Vulkan or similar). 
-	 * 
+	 * Provides low-level API access to rendering commands (internally wrapping DirectX/OpenGL/Vulkan or similar).
+	 *
 	 * Methods that accept a CommandBuffer parameter get queued in the provided command buffer, and don't get executed until
-	 * executeCommands() method is called. User is allowed to populate command buffers from non-core threads, but they all 
-	 * must get executed from the core thread. 
-	 * 
+	 * executeCommands() method is called. User is allowed to populate command buffers from non-core threads, but they all
+	 * must get executed from the core thread.
+	 *
 	 * If a command buffer is not provivided to such methods, they execute immediately. Without a command buffer the methods
 	 * are only allowed to be called from the core thread.
 	 *
@@ -191,7 +191,7 @@ namespace bs
 		virtual ~RenderAPI();
 
 		/**
-		 * Returns the name of the rendering system. 
+		 * Returns the name of the rendering system.
 		 *
 		 * @note	Thread safe.
 		 */
@@ -202,7 +202,7 @@ namespace bs
 		 * like textures, samplers, or uniform buffers. Caller is expected to ensure the provided parameters actually
 		 * match the currently bound programs.
 		 */
-		virtual void setGpuParams(const SPtr<GpuParams>& gpuParams, 
+		virtual void setGpuParams(const SPtr<GpuParams>& gpuParams,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
@@ -210,7 +210,7 @@ namespace bs
 		 *
 		 * @param[in]	pipelineState		Pipeline state to bind, or null to unbind.
 		 * @param[in]	commandBuffer		Optional command buffer to queue the operation on. If not provided operation
-		 *									is executed immediately. Otherwise it is executed when executeCommands() is 
+		 *									is executed immediately. Otherwise it is executed when executeCommands() is
 		 *									called. Buffer must support graphics operations.
 		 *
 		 * @see		GraphicsPipelineState
@@ -223,7 +223,7 @@ namespace bs
 		 *
 		 * @param[in]	pipelineState		Pipeline state to bind, or null to unbind.
 		 * @param[in]	commandBuffer		Optional command buffer to queue the operation on. If not provided operation
-		 *									is executed immediately. Otherwise it is executed when executeCommands() is 
+		 *									is executed immediately. Otherwise it is executed when executeCommands() is
 		 *									called. Buffer must support graphics operations.
 		 */
 		virtual void setComputePipeline(const SPtr<ComputePipelineState>& pipelineState,
@@ -251,7 +251,7 @@ namespace bs
 		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
 		 *								Buffer must support graphics operations.
 		 */
-		virtual void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom, 
+		virtual void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
@@ -265,7 +265,7 @@ namespace bs
 		virtual void setStencilRef(UINT32 value, const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
-		 * Sets the provided vertex buffers starting at the specified source index.	Set buffer to nullptr to clear the 
+		 * Sets the provided vertex buffers starting at the specified source index.	Set buffer to nullptr to clear the
 		 * buffer at the specified index.
 		 *
 		 * @param[in]	index			Index at which to start binding the vertex buffers.
@@ -275,11 +275,11 @@ namespace bs
 		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
 		 *								Buffer must support graphics operations.
 		 */
-		virtual void setVertexBuffers(UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers, 
+		virtual void setVertexBuffers(UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
-		 * Sets an index buffer to use when drawing. Indices in an index buffer reference vertices in the vertex buffer, 
+		 * Sets an index buffer to use when drawing. Indices in an index buffer reference vertices in the vertex buffer,
 		 * which increases cache coherency and reduces the size of vertex buffers by eliminating duplicate data.
 		 *
 		 * @param[in]	buffer			Index buffer to bind, null to unbind.
@@ -287,30 +287,30 @@ namespace bs
 		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
 		 *								Buffer must support graphics operations.
 		 */
-		virtual void setIndexBuffer(const SPtr<IndexBuffer>& buffer, 
+		virtual void setIndexBuffer(const SPtr<IndexBuffer>& buffer,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
-		 * Sets the vertex declaration to use when drawing. Vertex declaration is used to decode contents of a single 
+		 * Sets the vertex declaration to use when drawing. Vertex declaration is used to decode contents of a single
 		 * vertex in a vertex buffer.
 		 *
 		 * @param[in]	vertexDeclaration	Vertex declaration to bind.
 		 * @param[in]	commandBuffer		Optional command buffer to queue the operation on. If not provided operation
-		 *									is executed immediately. Otherwise it is executed when executeCommands() is 
+		 *									is executed immediately. Otherwise it is executed when executeCommands() is
 		 *									called. Buffer must support graphics operations.
 		 */
-		virtual void setVertexDeclaration(const SPtr<VertexDeclaration>& vertexDeclaration, 
+		virtual void setVertexDeclaration(const SPtr<VertexDeclaration>& vertexDeclaration,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
-		/** 
-		 * Sets the draw operation that determines how to interpret the elements of the index or vertex buffers. 
+		/**
+		 * Sets the draw operation that determines how to interpret the elements of the index or vertex buffers.
 		 *
 		 * @param[in]	op				Draw operation to enable.
 		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
 		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
 		 *								Buffer must support graphics operations.
 		 */
-		virtual void setDrawOperation(DrawOperationType op, 
+		virtual void setDrawOperation(DrawOperationType op,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
@@ -325,11 +325,11 @@ namespace bs
 		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
 		 *								Buffer must support graphics operations.
 		 */
-		virtual void draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount = 0, 
+		virtual void draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount = 0,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
-		/** 
-		 * Draw an object based on currently bound GPU programs, vertex declaration, vertex and index buffers. 
+		/**
+		 * Draw an object based on currently bound GPU programs, vertex declaration, vertex and index buffers.
 		 *
 		 * @param[in]	startIndex		Offset into the currently bound index buffer to start drawing from.
 		 * @param[in]	indexCount		Number of indices to draw.
@@ -341,11 +341,11 @@ namespace bs
 		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
 		 *								Buffer must support graphics operations.
 		 */
-		virtual void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount, 
+		virtual void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount,
 			UINT32 instanceCount = 0, const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
-		/** 
-		 * Executes the currently bound compute shader. 
+		/**
+		 * Executes the currently bound compute shader.
 		 *
 		 * @param[in]	numGroupsX		Number of groups to start in the X direction. Must be in range [1, 65535].
 		 * @param[in]	numGroupsY		Number of groups to start in the Y direction. Must be in range [1, 65535].
@@ -354,11 +354,11 @@ namespace bs
 		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
 		 *								Buffer must support compute or graphics operations.
 		 */
-		virtual void dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY = 1, UINT32 numGroupsZ = 1, 
+		virtual void dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY = 1, UINT32 numGroupsZ = 1,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
-		/** 
-		 * Swap the front and back buffer of the specified render target. 
+		/**
+		 * Swap the front and back buffer of the specified render target.
 		 *
 		 * @param[in]	target		Render target to perform the buffer swap on.
 		 * @param[in]	syncMask	Optional synchronization mask that determines for which queues should the system wait
@@ -379,8 +379,8 @@ namespace bs
 		 *										shader reads.
 		 * @param[in]	loadMask				Determines which render target surfaces will have their current contents
 		 *										preserved. By default when a render target is bound its contents will be
-		 *										lost. You might need to preserve contents if you need to perform blending 
-		 *										or similar operations with the existing contents of the render target. 
+		 *										lost. You might need to preserve contents if you need to perform blending
+		 *										or similar operations with the existing contents of the render target.
 		 *										
 		 *										Use the mask to select exactly which surfaces of the render target need
 		 *										their contents preserved.
@@ -394,7 +394,7 @@ namespace bs
 		/**
 		 * Clears the currently active render target.
 		 *
-		 * @param[in]	buffers			Combination of one or more elements of FrameBufferType denoting which buffers are 
+		 * @param[in]	buffers			Combination of one or more elements of FrameBufferType denoting which buffers are
 		 *								to be cleared.
 		 * @param[in]	color			The color to clear the color buffer with, if enabled.
 		 * @param[in]	depth			The value to initialize the depth buffer with, if enabled.
@@ -405,11 +405,11 @@ namespace bs
 		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
 		 *								Buffer must support graphics operations.
 		 */
-		virtual void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, 
+		virtual void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f,
 			UINT16 stencil = 0, UINT8 targetMask = 0xFF, const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
-		 * Clears the currently active viewport (meaning it clears just a sub-area of a render-target that is covered by the 
+		 * Clears the currently active viewport (meaning it clears just a sub-area of a render-target that is covered by the
 		 * viewport, as opposed to clearRenderTarget() which always clears the entire render target).
 		 *
 		 * @param[in]	buffers			Combination of one or more elements of FrameBufferType denoting which buffers are to
@@ -423,13 +423,13 @@ namespace bs
 		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
 		 *								Buffer must support graphics operations.
 		 */
-		virtual void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, 
+		virtual void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f,
 			UINT16 stencil = 0, UINT8 targetMask = 0xFF, const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/** Appends all commands from the provided secondary command buffer into the primary command buffer. */
 		virtual void addCommands(const SPtr<CommandBuffer>& commandBuffer, const SPtr<CommandBuffer>& secondary) = 0;
 
-		/** 
+		/**
 		 * Executes all commands in the provided command buffer. Command buffer cannot be secondary.
 		 *
 		 * @param[in]	commandBuffer	Command buffer whose commands to execute. Set to null to submit the main command
@@ -449,7 +449,7 @@ namespace bs
 
 		/**
 		 * Gets the capabilities of a specific GPU.
-		 * 
+		 *
 		 * @param[in]	deviceIdx	Index of the device to get the capabilities for.
 		 *
 		 * @note	Thread safe.
@@ -478,15 +478,15 @@ namespace bs
 		virtual void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest) = 0;
 
 		/**
-		 * Generates a parameter block description and calculates per-parameter offsets for the provided gpu data 
-		 * parameters. The offsets are render API specific and correspond to std140 layout for OpenGL, and the default 
+		 * Generates a parameter block description and calculates per-parameter offsets for the provided gpu data
+		 * parameters. The offsets are render API specific and correspond to std140 layout for OpenGL, and the default
 		 * layout in DirectX.
 		 * 			
 		 * @param[in]	name	Name to assign the parameter block.
 		 * @param[in]	params	List of parameters in the parameter block. Only name, type and array size fields need to be
 		 * 						populated, the rest will be populated when the method returns. If a parameter is a struct
 		 * 						then the elementSize field needs to be populated with the size of the struct in bytes.
-		 * @return				Descriptor for the parameter block holding the provided parameters as laid out by the 
+		 * @return				Descriptor for the parameter block holding the provided parameters as laid out by the
 		 *						default render API layout.
 		 */
 		virtual GpuParamBlockDesc generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params) = 0;
@@ -506,7 +506,7 @@ namespace bs
 		virtual void initialize();
 
 		/**
-		 * Performs (optional) secondary initialization of the render API system. Called after the render window is 
+		 * Performs (optional) secondary initialization of the render API system. Called after the render window is
 		 * created.
 		 */
 		virtual void initializeWithWindow(const SPtr<RenderWindow>& primaryWindow);

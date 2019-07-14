@@ -30,7 +30,7 @@ namespace bs
 			TextureScaleMode scaleMode, Color* color, UINT8 depth);
 		static void internal_drawTriangleStrip(ScriptGUICanvas* nativeInstance, MonoArray* vertices, Color* color, UINT8 depth);
 		static void internal_drawTriangleList(ScriptGUICanvas* nativeInstance, MonoArray* vertices, Color* color, UINT8 depth);
-		static void internal_drawText(ScriptGUICanvas* nativeInstance, MonoString* text, Vector2I* position, 
+		static void internal_drawText(ScriptGUICanvas* nativeInstance, MonoString* text, Vector2I* position,
 			ScriptFont* font, UINT32 size, Color* color, UINT8 depth);
 		static void internal_clear(ScriptGUICanvas* nativeInstance);
 	};

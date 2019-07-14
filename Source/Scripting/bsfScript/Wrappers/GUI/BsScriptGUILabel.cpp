@@ -31,7 +31,7 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUILabel::internal_setTint);
 	}
 
-	void ScriptGUILabel::internal_createInstance(MonoObject* instance, __GUIContentInterop* content, MonoString* style, 
+	void ScriptGUILabel::internal_createInstance(MonoObject* instance, __GUIContentInterop* content, MonoString* style,
 		MonoArray* guiOptions)
 	{
 		GUIOptions options;

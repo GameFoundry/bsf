@@ -230,13 +230,13 @@ namespace bs { namespace ct
 		rapi.setDrawOperation(subMesh.drawOp);
 
 		UINT32 indexCount = subMesh.indexCount;
-		rapi.drawIndexed(subMesh.indexOffset + mesh->getIndexOffset(), indexCount, mesh->getVertexOffset(), 
+		rapi.drawIndexed(subMesh.indexOffset + mesh->getIndexOffset(), indexCount, mesh->getVertexOffset(),
 			vertexData->vertexCount, numInstances);
 
 		mesh->_notifyUsedOnGPU();
 	}
 
-	void RendererUtility::drawMorph(const SPtr<MeshBase>& mesh, const SubMesh& subMesh, 
+	void RendererUtility::drawMorph(const SPtr<MeshBase>& mesh, const SubMesh& subMesh,
 		const SPtr<VertexBuffer>& morphVertices, const SPtr<VertexDeclaration>& morphVertexDeclaration)
 	{
 		// Bind buffers and draw

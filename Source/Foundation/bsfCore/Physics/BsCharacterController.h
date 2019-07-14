@@ -14,7 +14,7 @@ namespace bs
 	 *  @{
 	 */
 
-	/** 
+	/**
 	 * Controls climbing behaviour for a capsule character controller. Normally the character controller will not
 	 * automatically climb when heights are greater than the assigned step offset. However due to the shape of the capsule
 	 * it might automatically climb over slightly larger heights than assigned step offsets.
@@ -48,10 +48,10 @@ namespace bs
 	struct ControllerColliderCollision;
 	struct ControllerControllerCollision;
 
-	/** 
+	/**
 	 * Special physics controller meant to be used for game characters. Uses the "slide-and-collide" physics instead of
 	 * of the standard physics model to handle various issues with manually moving kinematic objects. Uses a capsule to
-	 * represent the character's bounds. 
+	 * represent the character's bounds.
 	 */
 	class BS_CORE_EXPORT CharacterController
 	{
@@ -70,7 +70,7 @@ namespace bs
 		/** Returns position of the center of the controller. */
 		virtual Vector3 getPosition() const = 0;
 
-		/** 
+		/**
 		 * Sets position of the center of the controller. This will teleport the character to the location. Use move()
 		 * for movement that includes physics.
 		 */
@@ -79,7 +79,7 @@ namespace bs
 		/** @copydoc setFootPosition() */
 		virtual Vector3 getFootPosition() const = 0;
 
-		/** 
+		/**
 		 * Determines the  position of the bottom of the controller. Position takes contact offset into account. Changing
 		 * this will teleport the character to the location. Use move() for movement that includes physics.
 		 */
@@ -145,8 +145,8 @@ namespace bs
 		/** @copydoc setLayer() */
 		virtual UINT64 getLayer() const { return mLayer; }
 
-		/** 
-		 * Creates a new character controller. 
+		/**
+		 * Creates a new character controller.
 		 *
 		 * @param[in]	scene		Scene to add the controller to.
 		 * @param[in]	desc		Describes controller geometry and movement.
@@ -163,13 +163,13 @@ namespace bs
 		 *  @{
 		 */
 
-		/** 
+		/**
 		 * Sets the object that owns this physics object, if any. Used for high level systems so they can easily map their
 		 * high level physics objects from the low level ones returned by various queries and events.
 		 */
 		void _setOwner(PhysicsOwnerType type, void* owner) { mOwner.type = type; mOwner.ownerData = owner; }
 
-		/** 
+		/**
 		 * Gets the object that owns this physics object, if any. Used for high level systems so they can easily map their
 		 * high level physics objects from the low level ones returned by various queries and events.
 		 */
@@ -205,14 +205,14 @@ namespace bs
 		 */
 		Radian slopeLimit = Degree(45.0f);
 
-		/** 
+		/**
 		 * Represents minimum distance that the character will move during a call to move(). This is used to stop the
 		 * recursive motion algorithm when the remaining distance is too small.
 		 */
 		float minMoveDistance = 0.0f;
 
 		/** Height between the centers of the two spheres of the controller capsule. */
-		float height = 1.0f; 
+		float height = 1.0f;
 
 		/** Radius of the controller capsule. */
 		float radius = 1.0f;
@@ -220,15 +220,15 @@ namespace bs
 		/** Up direction of controller capsule. Determines capsule orientation. */
 		Vector3 up = Vector3::UNIT_Y;
 
-		/** 
-		 * Controls what happens when character encounters a height higher than its step offset. 
+		/**
+		 * Controls what happens when character encounters a height higher than its step offset.
 		 *
 		 * @see	CharacterClimbingMode
 		 */
 		CharacterClimbingMode climbingMode = CharacterClimbingMode::Normal;
 
-		/** 
-		 * Controls what happens when character encounters a slope higher than its slope offset. 
+		/**
+		 * Controls what happens when character encounters a slope higher than its slope offset.
 		 *
 		 * @see	CharacterNonWalkableMode
 		 */
@@ -248,8 +248,8 @@ namespace bs
 	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) ControllerColliderCollision : ControllerCollision
 	{
 		/**
-		 * Component of the controller that was touched. Can be null if the controller has no component parent, in which 
-		 * case check #colliderRaw. 
+		 * Component of the controller that was touched. Can be null if the controller has no component parent, in which
+		 * case check #colliderRaw.
 		 */
 		HCollider collider;
 
@@ -262,10 +262,10 @@ namespace bs
 	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) ControllerControllerCollision : ControllerCollision
 	{
 		/**
-		 * Component of the controller that was touched. Can be null if the controller has no component parent, in which 
-		 * case check #controllerRaw. 
+		 * Component of the controller that was touched. Can be null if the controller has no component parent, in which
+		 * case check #controllerRaw.
 		 */
-		HCharacterController controller; 
+		HCharacterController controller;
 
 		BS_SCRIPT_EXPORT(ex:true)
 		CharacterController* controllerRaw; /**< Controller that was touched. */

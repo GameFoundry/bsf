@@ -66,7 +66,7 @@ namespace bs { namespace ct
 
 		ID3D11Device* mD3D11Device = nullptr;
 		ID3D11DeviceContext* mImmediateContext = nullptr;
-		ID3D11InfoQueue* mInfoQueue = nullptr; 
+		ID3D11InfoQueue* mInfoQueue = nullptr;
 		ID3D11ClassLinkage* mClassLinkage = nullptr;
 		D3D11_FEATURE_DATA_D3D11_OPTIONS mD3D11FeatureOptions;
 	};

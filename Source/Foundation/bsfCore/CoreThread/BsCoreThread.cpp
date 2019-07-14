@@ -137,7 +137,7 @@ namespace bs
 			}
 
 			// Play commands
-			mCommandQueue->playbackWithNotify(commands, std::bind(&CoreThread::commandCompletedNotify, this, _1)); 
+			mCommandQueue->playbackWithNotify(commands, std::bind(&CoreThread::commandCompletedNotify, this, _1));
 		}
 #endif
 	}

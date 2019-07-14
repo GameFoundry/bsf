@@ -50,7 +50,7 @@ namespace bs { namespace ct
 		 * Returns DirectX 11 texture filter from the provided min, mag and mip filter options, and optionally a filter
 		 * with comparison support.
 		 */
-		static D3D11_FILTER get(const FilterOptions min, const FilterOptions mag, 
+		static D3D11_FILTER get(const FilterOptions min, const FilterOptions mag,
 			const FilterOptions mip, const bool comparison = false);
 
 		/**	Converts engine to DX11 buffer usage. */
@@ -90,14 +90,14 @@ namespace bs { namespace ct
 
 		/**
 		 * Converts engine pixel format to DX11 pixel format. Some formats depend on whether hardware gamma is used or not,
-		 * in which case set the @p hwGamma parameter as needed. 
+		 * in which case set the @p hwGamma parameter as needed.
 		 */
 		static DXGI_FORMAT getPF(PixelFormat format, bool hwGamma);
 		
 		/** Converts engine GPU buffer format to DX11 GPU buffer format. */
 		static DXGI_FORMAT getBF(GpuBufferFormat format);
 
-		/** 
+		/**
 		 * Returns a typeless version of a depth stencil format. Required for creating a depth stencil texture it can be
 		 * bound both for shader reading and depth/stencil writing.
 		 */

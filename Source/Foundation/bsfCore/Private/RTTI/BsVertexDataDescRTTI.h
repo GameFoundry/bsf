@@ -25,7 +25,7 @@ namespace bs
 	public:
 		VertexDataDescRTTI()
 		{
-			addPlainArrayField("mVertexData", 0, &VertexDataDescRTTI::getVertexElementData, 
+			addPlainArrayField("mVertexData", 0, &VertexDataDescRTTI::getVertexElementData,
 				&VertexDataDescRTTI::getNumVertexElementData, &VertexDataDescRTTI::setVertexElementData, &VertexDataDescRTTI::setNumVertexElementData);
 		}
 

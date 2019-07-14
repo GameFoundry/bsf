@@ -218,7 +218,7 @@ namespace bs
 	{
 		if (((UINT32)mFlags & (UINT32)RigidbodyFlag::AutoTensors) != 0)
 		{
-			BS_LOG(Warning, Physics, 
+			BS_LOG(Warning, Physics,
 				"Attempting to set Rigidbody inertia tensor, but it has automatic tensor calculation turned on.");
 			return;
 		}
@@ -245,7 +245,7 @@ namespace bs
 	{
 		if (((UINT32)mFlags & (UINT32)RigidbodyFlag::AutoTensors) != 0)
 		{
-			BS_LOG(Warning, Physics, 
+			BS_LOG(Warning, Physics,
 				"Attempting to set Rigidbody center of mass, but it has automatic tensor calculation turned on.");
 			return;
 		}
@@ -357,7 +357,7 @@ namespace bs
 		return fromPxVector(velocity);
 	}
 
-	void PhysXRigidbody::updateMassDistribution() 
+	void PhysXRigidbody::updateMassDistribution()
 	{
 		if (((UINT32)mFlags & (UINT32)RigidbodyFlag::AutoTensors) == 0)
 			return;

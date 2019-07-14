@@ -88,7 +88,7 @@ namespace bs
 	{ }
 
 		Win32RenderWindow::~Win32RenderWindow()
-	{ 
+	{
 		SPtr<VulkanDevice> presentDevice = mRenderAPI._getPresentDevice();
 		presentDevice->waitIdle();
 
@@ -205,7 +205,7 @@ namespace bs
 		mDepthFormat = format.depthFormat;
 
 		// Create swap chain
-		mSwapChain = presentDevice->getResourceManager().create<VulkanSwapChain>(mSurface, props.width, props.height, 
+		mSwapChain = presentDevice->getResourceManager().create<VulkanSwapChain>(mSurface, props.width, props.height,
 			props.vsync, mColorFormat, mColorSpace, mDesc.depthBuffer, mDepthFormat);
 
 		// Make the window full screen if required

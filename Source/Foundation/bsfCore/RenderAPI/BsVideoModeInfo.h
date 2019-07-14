@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/**
-	 * Video mode contains information about how a render window presents its information to an output device like a 
+	 * Video mode contains information about how a render window presents its information to an output device like a
 	 * monitor.
 	 */
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:RenderAPI,pl:true,api:bsf) VideoMode
@@ -48,7 +48,7 @@ namespace bs
 		UINT32 outputIdx = 0;
 
 		/**
-		 * Determines was video mode user created or provided by the API/OS. API/OS created video modes can contain 
+		 * Determines was video mode user created or provided by the API/OS. API/OS created video modes can contain
 		 * additional information that allows the video mode to be used more accurately and you should use them when possible.
 		 */
 		bool isCustom = true;
@@ -96,7 +96,7 @@ namespace bs
 		UINT32 getNumOutputs() const { return (UINT32)mOutputs.size(); }
 
 		/**
-		 * Returns video mode information about a specific output device. 0th index always represents the primary device 
+		 * Returns video mode information about a specific output device. 0th index always represents the primary device
 		 * while order of others is undefined.
 		 */
 		const VideoOutputInfo& getOutputInfo(UINT32 idx) const { return *mOutputs[idx]; }

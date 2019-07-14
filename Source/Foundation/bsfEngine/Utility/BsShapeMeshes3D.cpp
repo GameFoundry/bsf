@@ -63,7 +63,7 @@ namespace bs
 		if (uvData != nullptr && desc->hasElement(VES_TANGENT))
 		{
 			UINT8* tangentData = meshData->getElementData(VES_TANGENT);
-			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, 
+			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices,
 				vertexOffset, indexOffset, vertexStride, tangentData);
 		}
 	}
@@ -89,7 +89,7 @@ namespace bs
 			vertexOffset + verticesPerArc * 2, indexOffset + indicesPerArc * 2, quality);
 	}
 
-	void ShapeMeshes3D::wireHemisphere(const Sphere& sphere, const SPtr<MeshData>& meshData, UINT32 vertexOffset, 
+	void ShapeMeshes3D::wireHemisphere(const Sphere& sphere, const SPtr<MeshData>& meshData, UINT32 vertexOffset,
 		UINT32 indexOffset, UINT32 quality)
 	{
 		UINT32 requiredNumVertices, requiredNumIndices;
@@ -111,7 +111,7 @@ namespace bs
 			vertexOffset + verticesPerArc * 2, indexOffset + indicesPerArc * 2, quality);
 	}
 
-	void ShapeMeshes3D::solidSphere(const Sphere& sphere, const SPtr<MeshData>& meshData, UINT32 vertexOffset, 
+	void ShapeMeshes3D::solidSphere(const Sphere& sphere, const SPtr<MeshData>& meshData, UINT32 vertexOffset,
 		UINT32 indexOffset, UINT32 quality)
 	{
 		const SPtr<VertexDataDesc>& desc = meshData->getVertexDesc();
@@ -139,7 +139,7 @@ namespace bs
 		if (uvData != nullptr && desc->hasElement(VES_TANGENT))
 		{
 			UINT8* tangentData = meshData->getElementData(VES_TANGENT);
-			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, 
+			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices,
 				vertexOffset, indexOffset, vertexStride, tangentData);
 		}
 	}
@@ -201,7 +201,7 @@ namespace bs
 		if (uvData != nullptr && desc->hasElement(VES_TANGENT))
 		{
 			UINT8* tangentData = meshData->getElementData(VES_TANGENT);
-			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, 
+			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices,
 				vertexOffset, indexOffset, vertexStride, tangentData);
 		}
 	}
@@ -247,7 +247,7 @@ namespace bs
 		if (uvData != nullptr && desc->hasElement(VES_TANGENT))
 		{
 			UINT8* tangentData = meshData->getElementData(VES_TANGENT);
-			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, 
+			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices,
 				vertexOffset, indexOffset, vertexStride, tangentData);
 		}
 	}
@@ -343,7 +343,7 @@ namespace bs
 		if(uvData != nullptr && desc->hasElement(VES_TANGENT))
 		{
 			UINT8* tangentData = meshData->getElementData(VES_TANGENT);
-			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, 
+			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices,
 				vertexOffset, indexOffset, vertexStride, tangentData);
 		}
 	}
@@ -382,7 +382,7 @@ namespace bs
 		}
 	}
 
-	void ShapeMeshes3D::antialiasedLine(const Vector3& a, const Vector3& b, const Vector3& up, float width, float borderWidth, 
+	void ShapeMeshes3D::antialiasedLine(const Vector3& a, const Vector3& b, const Vector3& up, float width, float borderWidth,
 		const Color& color, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
@@ -395,7 +395,7 @@ namespace bs
 		antialiasedLine(a, b, up, width, borderWidth, color, positionData, colorData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
-	void ShapeMeshes3D::antialiasedLineList(const Vector<Vector3>& linePoints, const Vector3& up, float width, float borderWidth, 
+	void ShapeMeshes3D::antialiasedLineList(const Vector<Vector3>& linePoints, const Vector3& up, float width, float borderWidth,
 		const Color& color, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		assert(linePoints.size() % 2 == 0);
@@ -573,7 +573,7 @@ namespace bs
 		outIndices[23] = vertexOffset + 4;
 	}
 
-	void ShapeMeshes3D::solidAABox(const AABox& box, UINT8* outVertices, UINT8* outNormals, UINT8* outUVs, 
+	void ShapeMeshes3D::solidAABox(const AABox& box, UINT8* outVertices, UINT8* outNormals, UINT8* outUVs,
 		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
 		outVertices += (vertexOffset * vertexStride);
@@ -615,7 +615,7 @@ namespace bs
 		outVertices = writeVector3(outVertices, vertexStride, box.getCorner(AABox::NEAR_LEFT_BOTTOM));
 
 		// Normals
-		static const Vector3 faceNormals[6] = 
+		static const Vector3 faceNormals[6] =
 		{
 			Vector3(0, 0, 1),
 			Vector3(0, 0, -1),
@@ -672,7 +672,7 @@ namespace bs
 		static const float x = 0.525731112119133606f;
 		static const float z = 0.850650808352039932f;
 
-		static const Vector3 vertices[12] = 
+		static const Vector3 vertices[12] =
 		{
 			Vector3(-x,		0.0f,	z),
 			Vector3(x,		0.0f,	z),
@@ -688,7 +688,7 @@ namespace bs
 			Vector3(-z,		-x,		0.0f)
 		};
 
-		static const UINT32 triangles[20][3] = 
+		static const UINT32 triangles[20][3] =
 		{
 				{ 0, 4, 1 },  { 0, 9, 4 },	{ 9, 5, 4 },	{ 4, 5, 8 },
 				{ 4, 8, 1 },  { 8, 10, 1 }, { 8, 3, 10 },	{ 5, 3, 8 },
@@ -699,7 +699,7 @@ namespace bs
 
 		// Tessellate it
 		UINT32 curVertOffset = vertexOffset;
-		for (int i = 0; i < 20; ++i) 
+		for (int i = 0; i < 20; ++i)
 		{
 			curVertOffset += subdivideTriangleOnSphere(sphere.getCenter(), sphere.getRadius(), quality,
 				vertices[triangles[i][2]], vertices[triangles[i][1]], vertices[triangles[i][0]],
@@ -907,7 +907,7 @@ namespace bs
 		}
 	}
 
-	void ShapeMeshes3D::wireArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, Degree amountAngle, 
+	void ShapeMeshes3D::wireArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, Degree amountAngle,
 		UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality)
 	{
 		UINT32 numVertices = (quality + 1) * 5;
@@ -924,8 +924,8 @@ namespace bs
 		}
 	}
 
-	void ShapeMeshes3D::solidArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, 
-		Degree amountAngle, UINT8* outVertices, UINT8* outNormals, UINT8* outUV, UINT32 vertexOffset, UINT32 vertexStride, 
+	void ShapeMeshes3D::solidArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle,
+		Degree amountAngle, UINT8* outVertices, UINT8* outNormals, UINT8* outUV, UINT32 vertexOffset, UINT32 vertexStride,
 		UINT32* outIndices, UINT32 indexOffset, UINT32 quality)
 	{
 		outVertices += vertexOffset * vertexStride;
@@ -1027,7 +1027,7 @@ namespace bs
 		Vector3 farWidth(far * fovTan * aspect, 0, 0);
 		Vector3 farHeight(0, (far * fovTan) / aspect, 0);
 
-		Vector3 points[8] = 
+		Vector3 points[8] =
 		{
 			nearPoint + nearWidth + nearHeight,
 			nearPoint - nearWidth + nearHeight,
@@ -1515,7 +1515,7 @@ namespace bs
 		}
 	}
 
-	void ShapeMeshes3D::solidQuad(const Rect3& area, UINT8* outVertices, UINT8* outNormals, UINT8* outUV, 
+	void ShapeMeshes3D::solidQuad(const Rect3& area, UINT8* outVertices, UINT8* outNormals, UINT8* outUV,
 		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
 		outVertices += (vertexOffset * vertexStride);
@@ -1784,13 +1784,13 @@ namespace bs
 
 			numLevels--;
 
-			numVertices += subdivideTriangleOnSphere(center, radius, numLevels, a, sub1, sub3, outVertices, 
+			numVertices += subdivideTriangleOnSphere(center, radius, numLevels, a, sub1, sub3, outVertices,
 				outNormals, numVertices, vertexStride);
-			numVertices += subdivideTriangleOnSphere(center, radius, numLevels, sub1, b, sub2, outVertices, 
+			numVertices += subdivideTriangleOnSphere(center, radius, numLevels, sub1, b, sub2, outVertices,
 				outNormals, numVertices, vertexStride);
-			numVertices += subdivideTriangleOnSphere(center, radius, numLevels, sub1, sub2, sub3, outVertices, 
+			numVertices += subdivideTriangleOnSphere(center, radius, numLevels, sub1, sub2, sub3, outVertices,
 				outNormals, numVertices, vertexStride);
-			numVertices += subdivideTriangleOnSphere(center, radius, numLevels, sub3, sub2, c, outVertices, 
+			numVertices += subdivideTriangleOnSphere(center, radius, numLevels, sub3, sub2, c, outVertices,
 				outNormals, numVertices, vertexStride);
 		}
 		else
@@ -1822,7 +1822,7 @@ namespace bs
 		return numVertices;
 	}
 
-	void ShapeMeshes3D::generateArcVertices(const Vector3& center, const Vector3& up, float radius, Degree startAngle, 
+	void ShapeMeshes3D::generateArcVertices(const Vector3& center, const Vector3& up, float radius, Degree startAngle,
 		Degree angleAmount, Vector2 scale, UINT32 numVertices, UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride)
 	{
 		assert(numVertices >= 2);
@@ -1852,10 +1852,10 @@ namespace bs
 		Vector3* tempBitangents = bs_stack_alloc<Vector3>(numVertices);
 
 		MeshUtility::calculateTangents(
-			(Vector3*)(positions + vertexOffset * vertexStride), 
-			(Vector3*)(normals + vertexOffset * vertexStride), 
-			(Vector2*)(uv + vertexOffset * vertexStride), 
-			(UINT8*)(indices + indexOffset), 
+			(Vector3*)(positions + vertexOffset * vertexStride),
+			(Vector3*)(normals + vertexOffset * vertexStride),
+			(Vector2*)(uv + vertexOffset * vertexStride),
+			(UINT8*)(indices + indexOffset),
 			numVertices, numIndices, tempTangents, tempBitangents, 4, vertexStride);
 
 		for (UINT32 i = 0; i < (UINT32)numVertices; i++)

@@ -26,7 +26,7 @@ namespace bs
 	namespace ct { class GUIRenderer; }
 
 	/**
-	 * Manages the rendering and input of all GUI widgets in the scene. 
+	 * Manages the rendering and input of all GUI widgets in the scene.
 	 * 			
 	 * @note	
 	 * If adding or modifying GUIManager functionality ensure that GUIManager data never gets modified outside of update()
@@ -35,7 +35,7 @@ namespace bs
 	 * @par
 	 * This ensures that GUIElements don't recursively modify GUIManager while GUIManager is still using that data.
 	 * @par
-	 * For example setFocus() usually gets called from within GUIElements, however we don't want elements in focus be 
+	 * For example setFocus() usually gets called from within GUIElements, however we don't want elements in focus be
 	 * modified immediately since that setFocus() call could have originated in sendCommandEvent and elements in focus array
 	 * would be modified while still being iterated upon.
 	 */
@@ -114,7 +114,7 @@ namespace bs
 		struct ElementInfoUnderPointer
 		{
 			ElementInfoUnderPointer(GUIElement* element, GUIWidget* widget)
-				:element(element), widget(widget), usesMouseOver(false), 
+				:element(element), widget(widget), usesMouseOver(false),
 				receivedMouseOver(false), isHovering(false)
 			{ }
 
@@ -166,8 +166,8 @@ namespace bs
 		void processDestroyQueue();
 
 		/**	
-		 * Change the GUI element focus state. 
-		 * 
+		 * Change the GUI element focus state.
+		 *
 		 * @param[in]	element		Element whose focus state to change
 		 * @param[in]	focus		Give the element focus or take it away.
 		 * @param[in]	clear		If true the focus will be cleared from any elements currently in focus. Otherwise
@@ -205,12 +205,12 @@ namespace bs
 		 * Allows you to bridge GUI input from a GUI element into another render target.
 		 *
 		 * @param[in]	renderTex 	The render target to which to bridge the input.
-		 * @param[in]	element		The element from which to bridge input. Input will be transformed according to this 
+		 * @param[in]	element		The element from which to bridge input. Input will be transformed according to this
 		 *							elements position and size. Provide nullptr if you want to remove a bridge for the
 		 *							specified widget.
 		 * 					
 		 * @note	
-		 * This is useful if you use render textures, where your GUI is rendered off-screen. In such case you need to 
+		 * This is useful if you use render textures, where your GUI is rendered off-screen. In such case you need to
 		 * display the render texture within another GUIElement in a GUIWidget, but have no way of sending input to the
 		 * render texture (normally input is only sent to render windows). This allows you to change that - any GUIWidget
 		 * using the bridged render texture as a render target will then receive input when mouse is over the specified
@@ -221,15 +221,15 @@ namespace bs
 		void setInputBridge(const RenderTexture* renderTex, const GUIElement* element);
 
 		/**
-		 * Converts window coordinates to coordinates relative to the specified bridged render target (target displayed 
+		 * Converts window coordinates to coordinates relative to the specified bridged render target (target displayed
 		 * with a GUI element). Returned coordinates will be relative to the bridge element.
 		 *
 		 * @return	If provided widget has no bridge, coordinates are returned as is.
 		 */
 		Vector2I windowToBridgedCoords(const SPtr<RenderTarget>& target, const Vector2I& windowPos) const;
 
-		/** 
-		 * Returns the render window that holds the GUI element that displays the provided render texture. 
+		/**
+		 * Returns the render window that holds the GUI element that displays the provided render texture.
 		 *
 		 * @param[in]	target	Render texture to find the bridged window for.
 		 * @return				Window that displays the GUI element with the render texture, or null if the render texture

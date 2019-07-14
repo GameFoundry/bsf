@@ -6,7 +6,7 @@
 #include "Physics/BsBoxCollider.h"
 #include "Components/BsCCollider.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Components-Core
 	 *  @{

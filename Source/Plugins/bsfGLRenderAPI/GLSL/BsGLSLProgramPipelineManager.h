@@ -22,7 +22,7 @@ namespace bs { namespace ct
 	 * @note	
 	 * In OpenGL you cannot bind GPU programs to the pipeline manually. Instead as a preprocessing step you create a
 	 * pipeline object containing the programs you plan on using, and then later you bind the previously created pipeline
-	 * object. 
+	 * object.
 	 */
 	class GLSLProgramPipelineManager
 	{
@@ -48,14 +48,14 @@ namespace bs { namespace ct
 		};
 
 		/**	Used for calculating a hash code from pipeline object key. */
-		class ProgramPipelineKeyHashFunction 
+		class ProgramPipelineKeyHashFunction
 		{
 		public:
 			::std::size_t operator()(const ProgramPipelineKey &key) const;
 		};
 
 		/**	Used for comparing two pipeline objects for equality. */
-		class ProgramPipelineKeyEqual 
+		class ProgramPipelineKeyEqual
 		{
 		public:
 			bool operator()(const ProgramPipelineKey &a, const ProgramPipelineKey &b) const;

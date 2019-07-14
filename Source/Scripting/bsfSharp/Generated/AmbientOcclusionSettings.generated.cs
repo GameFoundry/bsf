@@ -31,9 +31,9 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Radius (in world space, in meters) over which occluders are searched for. Smaller radius ensures better sampling 
-		/// precision but can miss occluders. Larger radius ensures far away occluders are considered but can yield lower quality 
-		/// or noise because of low sampling precision. Usually best to keep at around a meter, valid range is roughly [0.05, 
+		/// Radius (in world space, in meters) over which occluders are searched for. Smaller radius ensures better sampling
+		/// precision but can miss occluders. Larger radius ensures far away occluders are considered but can yield lower quality
+		/// or noise because of low sampling precision. Usually best to keep at around a meter, valid range is roughly [0.05,
 		/// 5.0].
 		/// </summary>
 		[ShowInInspector]
@@ -46,8 +46,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Bias used to reduce false occlusion artifacts. Higher values reduce the amount of artifacts but will cause details to 
-		/// be lost in areas where occlusion isn&apos;t high. Value is in millimeters. Usually best to keep at a few dozen 
+		/// Bias used to reduce false occlusion artifacts. Higher values reduce the amount of artifacts but will cause details to
+		/// be lost in areas where occlusion isn&apos;t high. Value is in millimeters. Usually best to keep at a few dozen
 		/// millimeters, valid range is roughly [0, 200].
 		/// </summary>
 		[ShowInInspector]
@@ -60,7 +60,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Distance (in view space, in meters) after which AO starts fading out. The fade process will happen over the range as 
+		/// Distance (in view space, in meters) after which AO starts fading out. The fade process will happen over the range as
 		/// specified by <see cref="fadeRange"/>.
 		/// </summary>
 		[ShowInInspector]
@@ -72,7 +72,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Range (in view space, in meters) in which AO fades out from 100% to 0%. AO starts fading out after the distance 
+		/// Range (in view space, in meters) in which AO fades out from 100% to 0%. AO starts fading out after the distance
 		/// specified in <see cref="fadeDistance"/>.
 		/// </summary>
 		[ShowInInspector]
@@ -84,7 +84,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Linearly scales the intensity of the AO effect. Values less than 1 make the AO effect less pronounced, and vice 
+		/// Linearly scales the intensity of the AO effect. Values less than 1 make the AO effect less pronounced, and vice
 		/// versa. Valid range is roughly [0.2, 2].
 		/// </summary>
 		[ShowInInspector]
@@ -97,8 +97,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Controls how quickly does the AO darkening effect increase with higher occlusion percent. This is a non-linear 
-		/// control and will cause the darkening to ramp up exponentially. Valid range is roughly [1, 4], where 1 means no extra 
+		/// Controls how quickly does the AO darkening effect increase with higher occlusion percent. This is a non-linear
+		/// control and will cause the darkening to ramp up exponentially. Valid range is roughly [1, 4], where 1 means no extra
 		/// darkening will occur.
 		/// </summary>
 		[ShowInInspector]
@@ -111,7 +111,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Quality level of generated ambient occlusion. In range [0, 4]. Higher levels yield higher quality AO at the cost of 
+		/// Quality level of generated ambient occlusion. In range [0, 4]. Higher levels yield higher quality AO at the cost of
 		/// performance.
 		/// </summary>
 		[ShowInInspector]

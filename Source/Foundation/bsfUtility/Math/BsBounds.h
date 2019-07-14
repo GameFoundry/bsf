@@ -37,7 +37,7 @@ namespace bs
 		/** Expands the bounds so it includes the provided point. */
 		void merge(const Vector3& point);
 
-		/** 
+		/**
 		 * Transforms the bounds by the given matrix.
 		 *
 		 * @note	

@@ -126,7 +126,7 @@ namespace bs
 		}
 
 		return std::make_pair(
-			Bitwise::uintToUnorm<16>(mTimes[0]), 
+			Bitwise::uintToUnorm<16>(mTimes[0]),
 			Bitwise::uintToUnorm<16>(mTimes[mNumKeys - 1])
 		);
 	}

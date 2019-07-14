@@ -53,7 +53,7 @@ namespace bs
 		// Convert the incoming line unit-length direction to capsule coordinates.
 		Vector3 D(basis[1].dot(dir), basis[2].dot(dir), dz);
 
-		// Test intersection of line with infinite cylinder 
+		// Test intersection of line with infinite cylinder
 		float a0 = P[0] * P[0] + P[1] * P[1] - rSqr;
 		float a1 = P[0] * D[0] + P[1] * D[1];
 		float a2 = D[0] * D[0] + D[1] * D[1];

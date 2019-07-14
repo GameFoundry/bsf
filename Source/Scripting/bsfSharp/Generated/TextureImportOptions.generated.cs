@@ -62,7 +62,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines whether the texture data should be treated as if its in sRGB (gamma) space. Such texture will be  
+		/// Determines whether the texture data should be treated as if its in sRGB (gamma) space. Such texture will be
 		/// converted by hardware to linear space before use on the GPU.
 		/// </summary>
 		[ShowInInspector]
@@ -74,7 +74,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines should the texture be imported as a cubemap. See setCubemapSource to choose how will the source texture be 
+		/// Determines should the texture be imported as a cubemap. See setCubemapSource to choose how will the source texture be
 		/// converted to a cubemap.
 		/// </summary>
 		[ShowInInspector]
@@ -86,7 +86,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines how should the source texture be interpreted when generating a cubemap. Only relevant when <see 
+		/// Determines how should the source texture be interpreted when generating a cubemap. Only relevant when <see
 		/// cref="cubemap"/> is set to true.
 		/// </summary>
 		[ShowInInspector]

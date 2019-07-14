@@ -565,14 +565,14 @@ namespace bs
 			{
 				if(value)
 				{
-					ScriptSceneObject* scriptSceneObject = 
+					ScriptSceneObject* scriptSceneObject =
 						ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(static_object_cast<SceneObject>(value));
 					return scriptSceneObject->getManagedInstance();
 				}
 				else
 					return nullptr;
 			}
-			else if(refTypeInfo->mType == ScriptReferenceType::ManagedComponentBase || 
+			else if(refTypeInfo->mType == ScriptReferenceType::ManagedComponentBase ||
 					refTypeInfo->mType == ScriptReferenceType::ManagedComponent)
 			{
 				if (value)
@@ -586,12 +586,12 @@ namespace bs
 				else
 					return nullptr;
 			}
-			else if (refTypeInfo->mType == ScriptReferenceType::BuiltinComponentBase || 
+			else if (refTypeInfo->mType == ScriptReferenceType::BuiltinComponentBase ||
 					 refTypeInfo->mType == ScriptReferenceType::BuiltinComponent)
 			{
 				if (value)
 				{
-					ScriptComponentBase* scriptComponent = 
+					ScriptComponentBase* scriptComponent =
 						ScriptGameObjectManager::instance().getBuiltinScriptComponent(static_object_cast<Component>(value));
 					assert(scriptComponent != nullptr);
 

@@ -52,9 +52,9 @@ namespace bs
 		/** Returns true if the script objects wraps an object implementing the IReflectable interface. */
 		virtual bool isReflectable() const { return false; }
 
-		/** 
+		/**
 		 * Clears any managed instance references from the interop object, and releases any GC handles. Called during
-		 * assembly refresh just before the script domain is unloaded. 
+		 * assembly refresh just before the script domain is unloaded.
 		 */
 		virtual void _clearManagedInstance() { }
 
@@ -117,7 +117,7 @@ namespace bs
 				metaData.thisPtrField->set(instance, &param);
 		}
 
-		virtual ~ScriptObject() 
+		virtual ~ScriptObject()
 		{ }
 
 		/**	Allows persistent objects to restore their managed instances after assembly reload. */

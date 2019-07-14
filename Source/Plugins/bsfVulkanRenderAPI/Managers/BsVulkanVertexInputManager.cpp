@@ -77,7 +77,7 @@ namespace bs { namespace ct
 		return iterFind->second.vertexInput;
 	}
 
-	void VulkanVertexInputManager::addNew(const SPtr<VertexDeclaration>& vbDecl, 
+	void VulkanVertexInputManager::addNew(const SPtr<VertexDeclaration>& vbDecl,
 		const SPtr<VertexDeclaration>& shaderInputDecl)
 	{
 		const Vector<VertexElement>& vbElements = vbDecl->getProperties().getElements();
@@ -199,7 +199,7 @@ namespace bs { namespace ct
 		{
 			BS_LOG(Warning, RenderBackend, "Vertex input buffer is full, pruning last {0} elements. This is "
 				"probably okay unless you are creating a massive amount of input layouts as they will get re-created every "
-				"frame. In that case you should increase the layout buffer size. This warning won't be shown again.", 
+				"frame. In that case you should increase the layout buffer size. This warning won't be shown again.",
 				NUM_ELEMENTS_TO_PRUNE);
 
 			mWarningShown = true;

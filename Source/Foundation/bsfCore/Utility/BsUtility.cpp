@@ -35,7 +35,7 @@ namespace bs
 		return false;
 	}
 
-	void findResourceDependenciesInternal(IReflectable& obj, FrameAlloc& alloc, bool recursive, 
+	void findResourceDependenciesInternal(IReflectable& obj, FrameAlloc& alloc, bool recursive,
 		Map<UUID, ResourceDependency>& dependencies)
 	{
 		RTTITypeBase* rtti = obj.getRTTI();
@@ -83,7 +83,7 @@ namespace bs
 					}
 					else if (recursive)
 					{
-						// Optimization, no need to retrieve its value and go deeper if it has no 
+						// Optimization, no need to retrieve its value and go deeper if it has no
 						// reflectable children that may hold the reference.
 						if (hasReflectableChildren(reflectableField->getType()))
 						{
@@ -108,7 +108,7 @@ namespace bs
 				{
 					auto reflectablePtrField = static_cast<RTTIReflectablePtrFieldBase*>(field);
 
-					// Optimization, no need to retrieve its value and go deeper if it has no 
+					// Optimization, no need to retrieve its value and go deeper if it has no
 					// reflectable children that may hold the reference.
 					if (hasReflectableChildren(reflectablePtrField->getType()))
 					{
@@ -117,7 +117,7 @@ namespace bs
 							const UINT32 numElements = reflectablePtrField->getArraySize(rttiInstance, &obj);
 							for (UINT32 j = 0; j < numElements; j++)
 							{
-								const SPtr<IReflectable>& childObj = 
+								const SPtr<IReflectable>& childObj =
 									reflectablePtrField->getArrayValue(rttiInstance, &obj, j);
 
 								if (childObj != nullptr)
@@ -203,7 +203,7 @@ namespace bs
 		return output;
 	}
 
-	class CoreSerializationContextRTTI : 
+	class CoreSerializationContextRTTI :
 		public RTTIType<CoreSerializationContext, SerializationContext, CoreSerializationContextRTTI>
 	{
 		const String& getRTTIName() override

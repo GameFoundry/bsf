@@ -14,11 +14,11 @@ namespace bs
 			IntermediateSerializer();
 
 			/** Encodes an IReflectable object into an intermediate representation. */
-			SPtr<SerializedObject> encode(IReflectable* object, bool shallow = false, 
+			SPtr<SerializedObject> encode(IReflectable* object, bool shallow = false,
 				SerializationContext* context = nullptr);
 
 			/** Decodes an intermediate representation of a serialized object into the actual object. */
-			SPtr<IReflectable> decode(const SerializedObject* serializedObject, 
+			SPtr<IReflectable> decode(const SerializedObject* serializedObject,
 				SerializationContext* context = nullptr);
 
 		private:
@@ -49,7 +49,7 @@ namespace bs
 			:mAlloc(&gFrameAlloc())
 		{ }
 
-		SPtr<IReflectable> IntermediateSerializer::decode(const SerializedObject* serializedObject, 
+		SPtr<IReflectable> IntermediateSerializer::decode(const SerializedObject* serializedObject,
 			SerializationContext* context)
 		{
 			mContext = context;
@@ -90,7 +90,7 @@ namespace bs
 			return output;
 		}
 
-		SPtr<SerializedObject> IntermediateSerializer::encode(IReflectable* object, bool shallow, 
+		SPtr<SerializedObject> IntermediateSerializer::encode(IReflectable* object, bool shallow,
 			SerializationContext* context)
 		{
 			mContext = context;
@@ -154,7 +154,7 @@ namespace bs
 									if (findObj == mObjectMap.end())
 									{
 										SPtr<IReflectable> newObject = childRtti->newRTTIObject();
-										findObj = mObjectMap.insert(std::make_pair(arrayElemData.get(), 
+										findObj = mObjectMap.insert(std::make_pair(arrayElemData.get(),
 											ObjectToDecode(newObject, arrayElemData.get()))).first;
 									}
 
@@ -249,7 +249,7 @@ namespace bs
 								if (findObj == mObjectMap.end())
 								{
 									SPtr<IReflectable> newObject = childRtti->newRTTIObject();
-									findObj = mObjectMap.insert(std::make_pair(fieldObjectData.get(), 
+									findObj = mObjectMap.insert(std::make_pair(fieldObjectData.get(),
 										ObjectToDecode(newObject, fieldObjectData.get()))).first;
 								}
 
@@ -627,7 +627,7 @@ namespace bs
 		{
 			if(stream->isFile())
 			{
-				BS_LOG(Warning, Generic, 
+				BS_LOG(Warning, Generic,
 					"Cloning a file stream. Streaming is disabled and stream data will be loaded into memory.");
 			}
 

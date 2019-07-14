@@ -27,7 +27,7 @@ namespace bs
 
 	void GameObjectHandleBase::throwIfDestroyed() const
 	{
-		if(isDestroyed()) 
+		if(isDestroyed())
 		{
 			BS_EXCEPT(InternalErrorException, "Trying to access an object that has been destroyed.");
 		}

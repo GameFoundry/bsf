@@ -72,7 +72,7 @@ namespace bs
 	ScriptManagedComponent* ScriptGameObjectManager::createManagedScriptComponent(MonoObject* existingInstance,
 																				  const HManagedComponent& component)
 	{
-		ScriptManagedComponent* nativeInstance = new (bs_alloc<ScriptManagedComponent>()) 
+		ScriptManagedComponent* nativeInstance = new (bs_alloc<ScriptManagedComponent>())
 			ScriptManagedComponent(existingInstance, component);
 
 		UINT64 instanceId = component->getInstanceId();

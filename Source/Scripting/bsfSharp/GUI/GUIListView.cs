@@ -12,7 +12,7 @@ namespace bs
     /// GUI element that can efficiently display a list of entries that share the same height. This element is mostly an
     /// optimization as only visible entries have actual GUI elements, as opposed to just adding GUI elements directly
     /// in a vertical GUI layout. This allows the list view to have thousands of elements with little performance impact.
-    /// 
+    ///
     /// Contains shared functionality used by all instances of <see cref="GUIListView{TEntry,TData}"/>.
     /// </summary>
     /// <typeparam name="TData">>Type used for storing the data for all list entries.</typeparam>
@@ -55,7 +55,7 @@ namespace bs
         /// <summary>
         /// Primary GUI scroll area that all entries are contained within.
         /// </summary>
-        internal GUIScrollArea ScrollArea 
+        internal GUIScrollArea ScrollArea
         {
             get { return scrollArea; }
         }
@@ -69,7 +69,7 @@ namespace bs
         /// <param name="layout">GUI layout into which the list view will be placed into.</param>
         protected GUIListViewBase(int width, int height, int entryHeight, GUILayout layout)
         {
-            scrollArea = new GUIScrollArea(ScrollBarType.ShowIfDoesntFit, ScrollBarType.NeverShow, 
+            scrollArea = new GUIScrollArea(ScrollBarType.ShowIfDoesntFit, ScrollBarType.NeverShow,
                 GUIOption.FixedWidth(width), GUIOption.FixedHeight(height));
             layout.AddElement(scrollArea);
 
@@ -167,7 +167,7 @@ namespace bs
     }
 
     /// <summary>
-    /// GUI element that can efficiently display a list of entries that share the same height. This element is mostly an 
+    /// GUI element that can efficiently display a list of entries that share the same height. This element is mostly an
     /// optimization as only visible entries have actual GUI elements, as opposed to just adding GUI elements directly
     /// in a vertical GUI layout. This allows the list view to have thousands of elements with little performance impact.
     /// </summary>
@@ -283,7 +283,7 @@ namespace bs
     /// </summary>
     public class GUIListViewData
     {
-        
+
     }
 
     /// <summary>

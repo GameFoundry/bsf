@@ -85,7 +85,7 @@ namespace bs
 			if(lastBracket == -1)
 			{
 				// If current char is non-escaped opening bracket start parameter definition
-				if(_string[i] == '{' && !escaped) 
+				if(_string[i] == '{' && !escaped)
 					lastBracket = i;
 				else
 					cleanString<<_string[i];
@@ -98,7 +98,7 @@ namespace bs
 				{
 					// If current char is non-escaped closing bracket end parameter definition
 					UINT32 numParamChars = (UINT32)bracketChars.tellp();
-					if(_string[i] == '}' && numParamChars > 0 && !escaped) 
+					if(_string[i] == '}' && numParamChars > 0 && !escaped)
 					{
 						numRemovedChars += numParamChars + 2; // +2 for open and closed brackets
 
@@ -126,7 +126,7 @@ namespace bs
 		numParameters = (UINT32)paramOffsets.size();
 
 		// Try to find out of order param offsets and fix them
-		std::sort(begin(paramOffsets), end(paramOffsets), 
+		std::sort(begin(paramOffsets), end(paramOffsets),
 			[&] (const ParamOffset& a, const ParamOffset& b) { return a.paramIdx < b.paramIdx; } );
 
 		if(paramOffsets.size() > 0)
@@ -149,7 +149,7 @@ namespace bs
 		}
 
 		// Re-sort based on location since we find that more useful at runtime
-		std::sort(begin(paramOffsets), end(paramOffsets), 
+		std::sort(begin(paramOffsets), end(paramOffsets),
 			[&] (const ParamOffset& a, const ParamOffset& b) { return a.location < b.location; } );
 
 		parameterOffsets = bs_newN<ParamOffset>(numParameters);

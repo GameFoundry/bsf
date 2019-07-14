@@ -55,7 +55,7 @@ namespace bs
 		struct META_FirstEntry {};																							\
 		static void META_GetPrevEntries(Vector<BuiltinResourceInfo>& entries, META_FirstEntry id) { }						\
 																															\
-		typedef META_FirstEntry 
+		typedef META_FirstEntry
 
 	/** Registers a new entry in the resource lookup table. */
 #define ADD_ENTRY(ResourceType, ScriptType, ResourceTypeEnum)																\

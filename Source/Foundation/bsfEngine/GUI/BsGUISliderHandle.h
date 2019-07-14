@@ -20,7 +20,7 @@ namespace bs
 		Horizontal = 1 << 0,
 		/** Slider handle will move vertically. Cannot be used with the Horizontal option. */
 		Vertical = 1 << 1,
-		/** 
+		/**
 		 * If enabled, clicking on a specific slider position will cause the handle to jump to that position. If false the
 		 * handle will only slightly move in that direction.
 		 */
@@ -93,8 +93,8 @@ namespace bs
 		 */
 		void setStep(float step);
 
-		/** 
-		 * Moves the slider handle one step forwards or backwards. Step size is determined by step (if set) or handle size 
+		/**
+		 * Moves the slider handle one step forwards or backwards. Step size is determined by step (if set) or handle size
 		 * otherwise. If @p forward is true the handle is moved one step forward, otherwise one step backward.
 		 */
 		void moveOneStep(bool forward);

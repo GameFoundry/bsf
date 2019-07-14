@@ -29,8 +29,8 @@ namespace bs { namespace ct
 		VkPipelineVertexInputStateCreateInfo mCreateInfo;
 	};
 
-	/** 
-	 * Maps vertex buffer structure and vertex shader inputs in order to create vertex input description usable by Vulkan.  
+	/**
+	 * Maps vertex buffer structure and vertex shader inputs in order to create vertex input description usable by Vulkan.
 	 */
 	class VulkanVertexInputManager : public Module<VulkanVertexInputManager>
     {
@@ -71,9 +71,9 @@ namespace bs { namespace ct
 		VulkanVertexInputManager();
 		~VulkanVertexInputManager();
 
-		/** 
-		 * Returns an object that describes how vertex buffer elements map to vertex shader inputs. 
-		 * 
+		/**
+		 * Returns an object that describes how vertex buffer elements map to vertex shader inputs.
+		 *
 		 * @param[in]	vbDecl		Describes the structure of a single vertex in a vertex buffer.
 		 * @param[in]	shaderDecl	Describes the vertex element inputs expected by a vertex shader.
 		 * @return					Vertex input state description, usable by Vulkan.

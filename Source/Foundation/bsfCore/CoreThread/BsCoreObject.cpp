@@ -16,7 +16,7 @@ namespace bs
 	{
 	}
 
-	CoreObject::~CoreObject() 
+	CoreObject::~CoreObject()
 	{
 		if(!isDestroyed())
 		{
@@ -75,7 +75,7 @@ namespace bs
 
 				// Even though this object might not require initialization on the core thread, it will be used on it, therefore
 				// do a memory barrier to ensure any stores are finished before continuing (When it requires init on core thread
-				// we use the core queue which uses a mutex, and therefore executes all stores as well, so we dont need to 
+				// we use the core queue which uses a mutex, and therefore executes all stores as well, so we dont need to
 				// do this explicitly)
 				std::atomic_thread_fence(std::memory_order_release); // TODO - Need atomic variable, currently this does nothing
 			}
@@ -152,7 +152,7 @@ namespace bs
 		func();
 	}
 
-	void CoreObject::executeReturnGpuCommand(const SPtr<ct::CoreObject>& obj, std::function<void(AsyncOp&)> func, 
+	void CoreObject::executeReturnGpuCommand(const SPtr<ct::CoreObject>& obj, std::function<void(AsyncOp&)> func,
 		AsyncOp& op)
 	{
 		volatile SPtr<ct::CoreObject> objParam = obj; // Makes sure obj isn't optimized out?

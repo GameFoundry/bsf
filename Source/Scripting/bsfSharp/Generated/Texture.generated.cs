@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Abstract class representing a texture. Specific render systems have their own Texture implementations. Internally 
+	/// Abstract class representing a texture. Specific render systems have their own Texture implementations. Internally
 	/// represented as one or more surfaces with pixels in a certain number of dimensions, backed by a hardware buffer.
 	/// </summary>
 	[ShowInInspector]
@@ -74,7 +74,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines does the texture contain gamma corrected data. If true then the GPU will automatically convert the  pixels 
+		/// Determines does the texture contain gamma corrected data. If true then the GPU will automatically convert the  pixels
 		/// to linear space before reading from the texture, and convert them to gamma space when writing to the texture.
 		/// </summary>
 		[NativeWrapper]
@@ -91,7 +91,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Gets the number of mipmaps to be used for this texture. This number excludes the top level map (which is always 
+		/// Gets the number of mipmaps to be used for this texture. This number excludes the top level map (which is always
 		/// assumed to be present).
 		/// </summary>
 		[NativeWrapper]
@@ -119,14 +119,14 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns pixels for the specified mip level &amp; face. Pixels will be read from system memory, which means the 
-		/// texture has to be created with TextureUsage.CPUCached. If the texture was updated from the GPU the pixels retrieved 
+		/// Returns pixels for the specified mip level &amp; face. Pixels will be read from system memory, which means the
+		/// texture has to be created with TextureUsage.CPUCached. If the texture was updated from the GPU the pixels retrieved
 		/// from this method will not reflect that, and you should use GetGPUPixels instead.
 		/// </summary>
 		/// <param name="mipLevel">Mip level to retrieve pixels for. Top level (0) is the highest quality.</param>
 		/// <param name="face">
-		/// Face to read the pixels from. Cubemap textures have six faces whose face indices are as specified in the CubeFace 
-		/// enum. Array textures can have an arbitrary number of faces (if it&apos;s a cubemap array it has to be a multiple of 
+		/// Face to read the pixels from. Cubemap textures have six faces whose face indices are as specified in the CubeFace
+		/// enum. Array textures can have an arbitrary number of faces (if it&apos;s a cubemap array it has to be a multiple of
 		/// 6).
 		/// </param>
 		/// <returns>A set of pixels for the specified mip level.</returns>
@@ -141,8 +141,8 @@ namespace bs
 		/// </param>
 		/// <param name="mipLevel">Mip level to set pixels for. Top level (0) is the highest quality.</param>
 		/// <param name="face">
-		/// Face to write the pixels to. Cubemap textures have six faces whose face indices are as specified in the CubeFace 
-		/// enum. Array textures can have an arbitrary number of faces (if it&apos;s a cubemap array it has to be a multiple of 
+		/// Face to write the pixels to. Cubemap textures have six faces whose face indices are as specified in the CubeFace
+		/// enum. Array textures can have an arbitrary number of faces (if it&apos;s a cubemap array it has to be a multiple of
 		/// 6).
 		/// </param>
 		public void SetPixels(PixelData data, int face = 0, int mipLevel = 0)
@@ -152,13 +152,13 @@ namespace bs
 
 		/// <summary>Sets pixels for the specified mip level and face.</summary>
 		/// <param name="colors">
-		/// Pixels to assign to the specified mip level. Size of the array must match the mip level dimensions. Data is expected 
+		/// Pixels to assign to the specified mip level. Size of the array must match the mip level dimensions. Data is expected
 		/// to be laid out row by row. Pixels will be automatically converted to the valid pixel format.
 		/// </param>
 		/// <param name="mipLevel">Mip level to set pixels for. Top level (0) is the highest quality.</param>
 		/// <param name="face">
-		/// Face to write the pixels to. Cubemap textures have six faces whose face indices are as specified in the CubeFace 
-		/// enum. Array textures can have an arbitrary number of faces (if it&apos;s a cubemap array it has to be a multiple of 
+		/// Face to write the pixels to. Cubemap textures have six faces whose face indices are as specified in the CubeFace
+		/// enum. Array textures can have an arbitrary number of faces (if it&apos;s a cubemap array it has to be a multiple of
 		/// 6).
 		/// </param>
 		public void SetPixels(Color[] colors, int face = 0, int mipLevel = 0)

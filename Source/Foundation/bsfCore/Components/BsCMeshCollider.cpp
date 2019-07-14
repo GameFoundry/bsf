@@ -39,7 +39,7 @@ namespace bs
 
 			if (mParent != nullptr)
 			{
-				// If triangle mesh its possible the parent can no longer use this collider (they're not supported for 
+				// If triangle mesh its possible the parent can no longer use this collider (they're not supported for
 				// non-kinematic rigidbodies)
 				if (mMesh.isLoaded() && mMesh->getType() == PhysicsMeshType::Triangle)
 					updateParentRigidbody();
@@ -54,7 +54,7 @@ namespace bs
 		const SPtr<SceneInstance>& scene = SO()->getScene();
 		const Transform& tfrm = SO()->getTransform();
 
-		SPtr<MeshCollider> collider = MeshCollider::create(*scene->getPhysicsScene(), tfrm.getPosition(), 
+		SPtr<MeshCollider> collider = MeshCollider::create(*scene->getPhysicsScene(), tfrm.getPosition(),
 			tfrm.getRotation());
 		collider->setMesh(mMesh);
 		collider->_setOwner(PhysicsOwnerType::Component, this);

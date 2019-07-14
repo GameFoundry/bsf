@@ -32,9 +32,9 @@ namespace bs { namespace ct
 	public:
 		virtual ~VulkanGpuProgram();
 
-		/** 
-		 * Returns the shader module for the specified device. If program device mask doesn't include the provided device, 
-		 * null is returned.  
+		/**
+		 * Returns the shader module for the specified device. If program device mask doesn't include the provided device,
+		 * null is returned.
 		 */
 		VulkanShaderModule* getShaderModule(UINT32 deviceIdx) const { return mModules[deviceIdx]; }
 
@@ -57,9 +57,9 @@ namespace bs { namespace ct
 	/** Identifier of the compiler used for compiling Vulkan GPU programs. */
 	static constexpr const char* VULKAN_COMPILER_ID = "Vulkan";
 
-	/** 
+	/**
 	 * Version of the compiler used for compiling Vulkan GPU programs. Tick this whenever the compiler updates in order
-	 * to force bytecode to rebuild. 
+	 * to force bytecode to rebuild.
 	 */
 	static constexpr UINT32 VULKAN_COMPILER_VERSION = 1;
 

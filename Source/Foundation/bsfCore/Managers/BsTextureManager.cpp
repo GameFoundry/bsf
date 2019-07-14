@@ -5,7 +5,7 @@
 #include "Image/BsPixelUtil.h"
 #include "RenderAPI/BsRenderAPI.h"
 
-namespace bs 
+namespace bs
 {
 	SPtr<Texture> TextureManager::createTexture(const TEXTURE_DESC& desc)
 	{
@@ -147,7 +147,7 @@ namespace bs
 		return newTex;
 	}
 
-	SPtr<RenderTexture> TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC& desc, 
+	SPtr<RenderTexture> TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC& desc,
 																	UINT32 deviceIdx)
 	{
 		SPtr<RenderTexture> newRT = createRenderTextureInternal(desc, deviceIdx);

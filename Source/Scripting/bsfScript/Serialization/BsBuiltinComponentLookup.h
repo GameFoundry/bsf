@@ -16,7 +16,7 @@ namespace bs
 		struct META_FirstEntry {};																							\
 		static void META_GetPrevEntries(Vector<BuiltinComponentInfo>& entries, META_FirstEntry id) { }						\
 																															\
-		typedef META_FirstEntry 
+		typedef META_FirstEntry
 
 	/** Registers a new entry in the component lookup table. */
 #define ADD_ENTRY(ComponentType, ScriptType)																				\

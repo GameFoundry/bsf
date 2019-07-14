@@ -14,8 +14,8 @@ namespace bs
 	 *  @{
 	 */
 
-	/** 
-	 * Contains information about 3D object's position, rotation and scale, and provides methods to manipulate it. 
+	/**
+	 * Contains information about 3D object's position, rotation and scale, and provides methods to manipulate it.
 	 */
 	class BS_CORE_EXPORT Transform : public IReflectable
 	{
@@ -50,21 +50,21 @@ namespace bs
 		/** Shorthand for getScale(). */
 		const Vector3& scl() const { return mScale; }
 
-		/** 
+		/**
 		 * Converts the provided world position to a space relative to the provided parent, and sets it as the current
-		 * transform's position. 
+		 * transform's position.
 		 */
 		void setWorldPosition(const Vector3& position, const Transform& parent);
 
-		/** 
+		/**
 		 * Converts the provided world rotation to a space relative to the provided parent, and sets it as the current
-		 * transform's rotation. 
+		 * transform's rotation.
 		 */
 		void setWorldRotation(const Quaternion& rotation, const Transform& parent);
 
-		/** 
+		/**
 		 * Converts the provided world scale to a space relative to the provided parent, and sets it as the current
-		 * transform's scale. 
+		 * transform's scale.
 		 */
 		void setWorldScale(const Vector3& scale, const Transform& parent);
 
@@ -74,9 +74,9 @@ namespace bs
 		/** Builds the inverse transform matrix from current translation, rotation and scale properties. */
 		Matrix4 getInvMatrix() const;
 
-		/** 
-		 * Makes the current transform relative to the provided transform. In another words, converts from a world 
-		 * coordinate system to one local to the provided transform. 
+		/**
+		 * Makes the current transform relative to the provided transform. In another words, converts from a world
+		 * coordinate system to one local to the provided transform.
 		 */
 		void makeLocal(const Transform& parent);
 
@@ -87,7 +87,7 @@ namespace bs
 		void makeWorld(const Transform& parent);
 
 		/**
-		 * Orients the object so it is looking at the provided @p location (world space) where @p up is used for 
+		 * Orients the object so it is looking at the provided @p location (world space) where @p up is used for
 		 * determining the location of the object's Y axis.
 		 */
 		void lookAt(const Vector3& location, const Vector3& up = Vector3::UNIT_Y);

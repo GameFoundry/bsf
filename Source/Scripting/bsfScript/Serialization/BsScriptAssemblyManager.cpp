@@ -55,8 +55,8 @@ namespace bs
 		const Vector<MonoClass*>& allClasses = curAssembly->getAllClasses();
 		for(auto& curClass : allClasses)
 		{
-			const bool isSerializable = 
-				curClass->isSubClassOf(mBuiltin.componentClass) || 
+			const bool isSerializable =
+				curClass->isSubClassOf(mBuiltin.componentClass) ||
 				curClass->isSubClassOf(resourceClass) ||
 				curClass->hasAttribute(mBuiltin.serializeObjectAttribute);
 

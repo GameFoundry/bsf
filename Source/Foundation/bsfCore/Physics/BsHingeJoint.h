@@ -33,7 +33,7 @@ namespace bs
 		/** Scales the velocity of the first body, and its response to drive torque is scaled down. */
 		float gearRatio = 1.0f;
 
-		/** 
+		/**
 		 * If the joint is moving faster than the drive's target speed, the drive will try to break. If you don't want
 		 * the breaking to happen set this to true.
 		 */
@@ -41,14 +41,14 @@ namespace bs
 
 		bool operator==(const HingeJointDrive& other) const
 		{
-			return speed == other.speed && forceLimit == other.forceLimit && gearRatio == other.gearRatio && 
+			return speed == other.speed && forceLimit == other.forceLimit && gearRatio == other.gearRatio &&
 				freeSpin && other.freeSpin;
 		}
 	};
 
 	/**
-	 * Hinge joint removes all but a single rotation degree of freedom from its two attached bodies (for example a door 
-	 * hinge). 
+	 * Hinge joint removes all but a single rotation degree of freedom from its two attached bodies (for example a door
+	 * hinge).
 	 */
 	class BS_CORE_EXPORT HingeJoint : public Joint
 	{
@@ -67,7 +67,7 @@ namespace bs
 
 		/**
 		 * Determines the limit of the joint. Limit constrains the motion to the specified angle range. You must enable the
-		 * limit flag on the joint in order for this to be recognized. 
+		 * limit flag on the joint in order for this to be recognized.
 		 *
 		 * @see LimitAngularRange
 		 */
@@ -76,8 +76,8 @@ namespace bs
 		/** @copydoc setDrive() */
 		virtual HingeJointDrive getDrive() const = 0;
 
-		/** 
-		 * Determines the drive properties of the joint. It drives the joint's angular velocity towards a particular value. 
+		/**
+		 * Determines the drive properties of the joint. It drives the joint's angular velocity towards a particular value.
 		 * You must enable the drive flag on the joint in order for the drive to be active.
 		 *
 		 * @see HingeJoint::Drive
@@ -90,9 +90,9 @@ namespace bs
 		/** Checks is the specified option enabled. */
 		virtual bool hasFlag(HingeJointFlag flag) const = 0;
 
-		/** 
-		 * Creates a new hinge joint. 
-		 * 
+		/**
+		 * Creates a new hinge joint.
+		 *
 		 * @param[in]	scene		Scene to which to add the joint.
 		 * @param[in]	desc		Settings describing the joint.
 		 */

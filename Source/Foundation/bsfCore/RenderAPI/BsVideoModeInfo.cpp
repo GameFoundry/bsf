@@ -6,12 +6,12 @@ namespace bs
 {
 	bool VideoMode::operator== (const VideoMode& other) const
 	{
-		return width == other.width && height == other.height && 
+		return width == other.width && height == other.height &&
 			outputIdx == other.outputIdx && refreshRate == other.refreshRate;
 	}
 
 	VideoOutputInfo::~VideoOutputInfo()
-	{ 
+	{
 		for (auto& videoMode : mVideoModes)
 			bs_delete(videoMode);
 
@@ -20,7 +20,7 @@ namespace bs
 	}
 
 	VideoModeInfo::~VideoModeInfo()
-	{ 
+	{
 		for (auto& output : mOutputs)
 			bs_delete(output);
 	}

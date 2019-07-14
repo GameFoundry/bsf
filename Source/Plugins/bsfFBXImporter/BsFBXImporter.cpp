@@ -102,7 +102,7 @@ namespace bs
 		MESH_DESC desc;
 
 		Vector<FBXAnimationClipData> dummy;
-		SPtr<RendererMeshData> rendererMeshData = importMeshData(filePath, importOptions, desc.subMeshes, dummy, 
+		SPtr<RendererMeshData> rendererMeshData = importMeshData(filePath, importOptions, desc.subMeshes, dummy,
 			desc.skeleton, desc.morphShapes);
 
 		const MeshImportOptions* meshImportOptions = static_cast<const MeshImportOptions*>(importOptions.get());
@@ -124,7 +124,7 @@ namespace bs
 		MESH_DESC desc;
 
 		Vector<FBXAnimationClipData> animationClips;
-		SPtr<RendererMeshData> rendererMeshData = importMeshData(filePath, importOptions, desc.subMeshes, animationClips, 
+		SPtr<RendererMeshData> rendererMeshData = importMeshData(filePath, importOptions, desc.subMeshes, animationClips,
 			desc.skeleton, desc.morphShapes);
 
 		const MeshImportOptions* meshImportOptions = static_cast<const MeshImportOptions*>(importOptions.get());
@@ -148,7 +148,7 @@ namespace bs
 			{
 				if(Physics::isStarted())
 				{
-					PhysicsMeshType type = collisionMeshType == CollisionMeshType::Convex ? 
+					PhysicsMeshType type = collisionMeshType == CollisionMeshType::Convex ?
 						PhysicsMeshType::Convex : PhysicsMeshType::Triangle;
 
 					SPtr<PhysicsMesh> physicsMesh = PhysicsMesh::_createPtr(rendererMeshData->getData(), type);
@@ -164,7 +164,7 @@ namespace bs
 			Vector<ImportedAnimationEvents> events = meshImportOptions->animationEvents;
 			for(auto& entry : animationClips)
 			{
-				SPtr<AnimationClip> clip = AnimationClip::_createPtr(entry.curves, entry.isAdditive, entry.sampleRate, 
+				SPtr<AnimationClip> clip = AnimationClip::_createPtr(entry.curves, entry.isAdditive, entry.sampleRate,
 					entry.rootMotion);
 				clip->setName(entry.name);
 				
@@ -184,8 +184,8 @@ namespace bs
 		return output;
 	}
 
-	SPtr<RendererMeshData> FBXImporter::importMeshData(const Path& filePath, SPtr<const ImportOptions> importOptions, 
-		Vector<SubMesh>& subMeshes, Vector<FBXAnimationClipData>& animation, SPtr<Skeleton>& skeleton, 
+	SPtr<RendererMeshData> FBXImporter::importMeshData(const Path& filePath, SPtr<const ImportOptions> importOptions,
+		Vector<SubMesh>& subMeshes, Vector<FBXAnimationClipData>& animation, SPtr<Skeleton>& skeleton,
 		SPtr<MorphShapes>& morphShapes)
 	{
 		FbxScene* fbxScene = nullptr;
@@ -610,7 +610,7 @@ namespace bs
 		Vector3 rotationEuler = FBXToNativeType(fbxNode->EvaluateLocalRotation(FbxTime(0)));
 		Vector3 scale = FBXToNativeType(fbxNode->EvaluateLocalScaling(FbxTime(0)));
 
-		Quaternion rotation((Degree)rotationEuler.x, (Degree)rotationEuler.y, (Degree)rotationEuler.z, 
+		Quaternion rotation((Degree)rotationEuler.x, (Degree)rotationEuler.y, (Degree)rotationEuler.z,
 			EulerAngleOrder::XYZ);
 
 		node->name = fbxNode->GetNameWithoutNameSpacePrefix().Buffer();
@@ -855,7 +855,7 @@ namespace bs
 		}
 	}
 
-	SPtr<RendererMeshData> FBXImporter::generateMeshData(const FBXImportScene& scene, const FBXImportOptions& options, 
+	SPtr<RendererMeshData> FBXImporter::generateMeshData(const FBXImportScene& scene, const FBXImportOptions& options,
 		Vector<SubMesh>& outputSubMeshes)
 	{
 		Vector<SPtr<MeshData>> allMeshData;
@@ -1385,7 +1385,7 @@ namespace bs
 
 						if (!importMesh->smoothingGroups.empty())
 						{
-							FBXUtility::normalsFromSmoothing(importMesh->positions, importMesh->indices, 
+							FBXUtility::normalsFromSmoothing(importMesh->positions, importMesh->indices,
 								importMesh->smoothingGroups, importMesh->normals);
 						}
 					}
@@ -1657,7 +1657,7 @@ namespace bs
 		UINT32 numBones = (UINT32)mesh.bones.size();
 		if (numBones > 256)
 		{
-			BS_LOG(Warning, FBXImporter, 
+			BS_LOG(Warning, FBXImporter,
 				"A maximum of 256 bones per skeleton are supported. Imported skeleton has {0} bones.", numBones);
 		}
 
@@ -1694,7 +1694,7 @@ namespace bs
 				mesh->tangents.resize(numVertices);
 				mesh->bitangents.resize(numVertices);
 
-				MeshUtility::calculateTangents(mesh->positions.data(), mesh->normals.data(), mesh->UV[0].data(), (UINT8*)mesh->indices.data(), 
+				MeshUtility::calculateTangents(mesh->positions.data(), mesh->normals.data(), mesh->UV[0].data(), (UINT8*)mesh->indices.data(),
 					numVertices, numIndices, mesh->tangents.data(), mesh->bitangents.data());
 			}
 
@@ -1822,7 +1822,7 @@ namespace bs
 				float defaultValues[3];
 				memcpy(defaultValues, &defaultTranslation, sizeof(defaultValues));
 
-				boneAnim.translation = importCurve<Vector3, 3>(translation, defaultValues, importOptions, 
+				boneAnim.translation = importCurve<Vector3, 3>(translation, defaultValues, importOptions,
 					clip.start, clip.end);
 			}
 			else
@@ -1908,7 +1908,7 @@ namespace bs
 
 							FbxAnimCurve* curves[1] = { curve };
 							float defaultValues[1] = { 0.0f };
-							blendShapeAnim.curve = importCurve<float, 1>(curves, defaultValues, importOptions, clip.start, 
+							blendShapeAnim.curve = importCurve<float, 1>(curves, defaultValues, importOptions, clip.start,
 								clip.end);
 
 							// FBX contains data in [0, 100] range, but we need it in [0, 1] range
@@ -2053,7 +2053,7 @@ namespace bs
 				keyCounts[i] = 0;
 		}
 
-		// If curve key-counts don't match, we need to force resampling 
+		// If curve key-counts don't match, we need to force resampling
 		bool forceResample = false;
 		if (!forceResample)
 		{
@@ -2195,7 +2195,7 @@ namespace bs
 		// We don't use the exact provided sample rate but instead modify it slightly so it
 		// completely covers the curve range including start/end points while maintaining
 		// constant time step between keyframes.
-		float dt = curveLength / (float)(numSamples - 1); 
+		float dt = curveLength / (float)(numSamples - 1);
 
 		INT32 lastKeyframe[] = { 0, 0, 0 };
 		INT32 lastLeftTangent[] = { 0, 0, 0 };

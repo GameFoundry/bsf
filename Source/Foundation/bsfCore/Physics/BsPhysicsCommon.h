@@ -28,17 +28,17 @@ namespace bs
 		Collider* colliders[2]; /**< Colliders involved in the collision. */
 
 		// Note: Not too happy this is heap allocated, use static allocator?
-		Vector<ContactPoint> contactPoints; /**< Information about all the contact points for the hit. */ 
+		Vector<ContactPoint> contactPoints; /**< Information about all the contact points for the hit. */
 	};
 
 	/** Information about a collision between two physics objects. */
 	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) CollisionData
 	{
 		/** Components of the colliders that have collided. */
-		HCollider collider[2]; 
+		HCollider collider[2];
 
 		// Note: Not too happy this is heap allocated, use static allocator?
-		Vector<ContactPoint> contactPoints; /**< Information about all the contact points for the hit. */ 
+		Vector<ContactPoint> contactPoints; /**< Information about all the contact points for the hit. */
 	};
 
 	/** Determines what parent, if any, owns a physics object. */
@@ -61,11 +61,11 @@ namespace bs
 	{
 		None, /**< No collision events will be triggered. */
 		Report, /**< Collision events will be triggered when object enters and/or leaves collision. */
-		/** 
+		/**
 		 * Collision events will be triggered when object enters and/or leaves collision, but also every frame the object
-		 * remains in collision. 
+		 * remains in collision.
 		 */
-		ReportPersistent, 
+		ReportPersistent,
 	};
 
 	/** Hit information from a physics query. */
@@ -78,14 +78,14 @@ namespace bs
 		UINT32 triangleIdx = 0; /**< Index of the triangle that was hit (only applicable when triangle meshes are hit). */
 
 		/**
-		 * Unmapped index of the triangle that was hit (only applicable when triangle meshes are hit). 
+		 * Unmapped index of the triangle that was hit (only applicable when triangle meshes are hit).
 		 * It represents an index into the original MeshData used to create the PhysicsMesh associated with @p collider.
-		 * In contrast, @p triangleIdx is only a valid index for the MeshData directly obtained from #collider which can 
+		 * In contrast, @p triangleIdx is only a valid index for the MeshData directly obtained from #collider which can
 		 * differ from the original MeshData due to the internal implementation.
 		 */
 		UINT32 unmappedTriangleIdx = 0;
 
-		/** 
+		/**
 		 * Component of the collider that was hit. This may be null if the hit collider has no owner component, in which
 		 * case refer to #colliderRaw.
 		 */

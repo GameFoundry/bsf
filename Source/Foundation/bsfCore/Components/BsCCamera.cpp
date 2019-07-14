@@ -6,7 +6,7 @@
 #include "Scene/BsSceneManager.h"
 #include "BsCoreApplication.h"
 
-namespace bs 
+namespace bs
 {
 	CCamera::CCamera()
 	{
@@ -81,4 +81,4 @@ namespace bs
 	{
 		return CCamera::getRTTIStatic();
 	}
-} 
+}

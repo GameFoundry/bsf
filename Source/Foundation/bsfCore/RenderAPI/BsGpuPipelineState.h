@@ -5,7 +5,7 @@
 #include "BsCorePrerequisites.h"
 #include "CoreThread/BsCoreObject.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup RenderAPI
 	 *  @{
@@ -73,9 +73,9 @@ namespace bs
 		typedef ct::PIPELINE_STATE_DESC StateDescType;
 	};
 
-	/** 
+	/**
 	 * Templated version of GraphicsPipelineState so it can be used for both core and non-core versions of the pipeline
-	 * state. 
+	 * state.
 	 */
 	template<bool Core>
 	class BS_CORE_EXPORT TGraphicsPipelineState
@@ -117,9 +117,9 @@ namespace bs
 		SPtr<GpuPipelineParamInfoType> mParamInfo;
 	};
 
-	/** 
+	/**
 	 * Templated version of ComputePipelineState so it can be used for both core and non-core versions of the pipeline
-	 * state. 
+	 * state.
 	 */
 	template<bool Core>
 	class BS_CORE_EXPORT TComputePipelineState
@@ -151,7 +151,7 @@ namespace bs
 
 	/**
 	 * Describes the state of the GPU pipeline that determines how are primitives rendered. It consists of programmable
-	 * states (vertex, fragment, geometry, etc. GPU programs), as well as a set of fixed states (blend, rasterizer, 
+	 * states (vertex, fragment, geometry, etc. GPU programs), as well as a set of fixed states (blend, rasterizer,
 	 * depth-stencil). Once created the state is immutable, and can be bound to RenderAPI for rendering.
 	 */
 	class BS_CORE_EXPORT GraphicsPipelineState : public CoreObject, public TGraphicsPipelineState<false>
@@ -178,7 +178,7 @@ namespace bs
 	};
 
 	/**
-	 * Describes the state of the GPU pipeline that determines how are compute programs executed. It consists of 
+	 * Describes the state of the GPU pipeline that determines how are compute programs executed. It consists of
 	 * of a single programmable state (GPU program). Once created the state is immutable, and can be bound to RenderAPI for
 	 * use.
 	 */
@@ -224,7 +224,7 @@ namespace bs
 		void initialize() override;
 
 		/** @copydoc RenderStateManager::createGraphicsPipelineState */
-		static SPtr<GraphicsPipelineState> create(const PIPELINE_STATE_DESC& desc, 
+		static SPtr<GraphicsPipelineState> create(const PIPELINE_STATE_DESC& desc,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 	protected:

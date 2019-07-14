@@ -5,7 +5,7 @@
 #include "Prerequisites/BsPrerequisitesUtil.h"
 #include <istream>
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Filesystem
 	 *  @{
@@ -19,7 +19,7 @@ namespace bs
 	};
 
 	/**
-	 * General purpose class used for encapsulating the reading and writing of data from and to various sources using a 
+	 * General purpose class used for encapsulating the reading and writing of data from and to various sources using a
 	 * common interface.
 	 */
 	class BS_UTILITY_EXPORT DataStream
@@ -27,18 +27,18 @@ namespace bs
 	public:
 		enum AccessMode
 		{
-			READ = 1, 
+			READ = 1,
 			WRITE = 2
 		};
 
 	public:
 		/** Creates an unnamed stream. */
-		DataStream(UINT16 accessMode = READ) 
-			: mAccess(accessMode) 
+		DataStream(UINT16 accessMode = READ)
+			: mAccess(accessMode)
 		{ }
 
 		/** Creates a named stream. */
-		DataStream(const String& name, UINT16 accessMode = READ) 
+		DataStream(const String& name, UINT16 accessMode = READ)
 			:mName(name), mAccess(accessMode) {}
 
 		virtual ~DataStream() = default;
@@ -87,7 +87,7 @@ namespace bs
 		/**
 		 * Writes the provided wide string to the steam. String is convered to the required encoding before being written.
 		 * 			
-		 * @param[in]	string		String containing wide characters to write, encoded as specified by platform for 
+		 * @param[in]	string		String containing wide characters to write, encoded as specified by platform for
 		 * 							wide characters.
 		 * @param[in]	encoding	Encoding to convert the string to before writing.
 		 */
@@ -96,9 +96,9 @@ namespace bs
 		/**
 		 * Returns a string containing the entire stream.
 		 *
-		 * @return	String data encoded as UTF-8. 
+		 * @return	String data encoded as UTF-8.
 		 *
-		 * @note	This is a convenience method for text streams only, allowing you to retrieve a String object containing 
+		 * @note	This is a convenience method for text streams only, allowing you to retrieve a String object containing
 		 *			all the data in the stream.
 		 */
 		virtual String getAsString();
@@ -108,13 +108,13 @@ namespace bs
 		 *
 		 * @return	Wide string encoded as specified by current platform.
 		 *
-		 * @note	This is a convenience method for text streams only, allowing you to retrieve a WString object 
+		 * @note	This is a convenience method for text streams only, allowing you to retrieve a WString object
 		 *			containing all the data in the stream.
 		 */
 		virtual WString getAsWString();
 
 		/**
-		 * Skip a defined number of bytes. This can also be a negative value, in which case the file pointer rewinds a 
+		 * Skip a defined number of bytes. This can also be a negative value, in which case the file pointer rewinds a
 		 * defined number of bytes.
 		 */
 		virtual void skip(size_t count) = 0;
@@ -131,10 +131,10 @@ namespace bs
 		/** Returns the total size of the data to be read from the stream, or 0 if this is indeterminate for this stream. */
 		size_t size() const { return mSize; }
 
-		/** 
-		 * Creates a copy of this stream. 
+		/**
+		 * Creates a copy of this stream.
 		 *
-		 * @param[in]	copyData	If true the internal stream data will be copied as well, otherwise it will just 
+		 * @param[in]	copyData	If true the internal stream data will be copied as well, otherwise it will just
 		 *							reference the data from the original stream (in which case the caller must ensure the
 		 *							original stream outlives the clone). This is not relevant for file streams.
 		 */
@@ -172,7 +172,7 @@ namespace bs
 		MemoryDataStream(void* memory, size_t size, bool freeOnClose = true);
 
 		/**
-		 * Create a stream which pre-buffers the contents of another stream. Data from the other buffer will be entirely 
+		 * Create a stream which pre-buffers the contents of another stream. Data from the other buffer will be entirely
 		 * read and stored in an internal buffer.
 		 *
 		 * @param[in]	sourceStream		Stream to read data from.
@@ -180,7 +180,7 @@ namespace bs
 		MemoryDataStream(DataStream& sourceStream);
 		
 		/**
-		 * Create a stream which pre-buffers the contents of another stream. Data from the other buffer will be entirely 
+		 * Create a stream which pre-buffers the contents of another stream. Data from the other buffer will be entirely
 		 * read and stored in an internal buffer.
 		 *
 		 * @param[in]	sourceStream		Stream to read data from.
@@ -238,7 +238,7 @@ namespace bs
 		 *
 		 * @param[in]	filePath	Path of the file to open.
 		 * @param[in]	accessMode	Determines should the file be opened in read, write or read/write mode.
-		 * @param[in]	freeOnClose	Determines should the internal stream be freed once the data stream is closed or goes 
+		 * @param[in]	freeOnClose	Determines should the internal stream be freed once the data stream is closed or goes
 		 *							out of scope.
 		 */
 		FileDataStream(const Path& filePath, AccessMode accessMode = READ, bool freeOnClose = true);

@@ -9,14 +9,14 @@
 #include <intrin.h>
 #endif
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup General
 	 *  @{
 	 */
 
 	/** Floating point number broken down into components for easier access. */
-	union Float754 
+	union Float754
 	{
 		UINT32 raw;
 		float value;
@@ -261,8 +261,8 @@ namespace bs
 			return (destValue << destBitShift);
 		}
 
-		/** 
-		 * Convert N bit color channel value to P bits. It fills P bits with the bit pattern repeated. 
+		/**
+		 * Convert N bit color channel value to P bits. It fills P bits with the bit pattern repeated.
 		 * (this is /((1<<n)-1) in fixed point).
 		 */
 		static uint32_t fixedToFixed(UINT32 value, uint32_t n, uint32_t p)
@@ -285,7 +285,7 @@ namespace bs
 			return value;
 		}
 
-		/** 
+		/**
 		 * Converts floating point value in range [0, 1] to an unsigned integer of a certain number of bits. Works for any
 		 * value of bits between 0 and 31.
 		 */
@@ -296,7 +296,7 @@ namespace bs
 			return Math::roundToInt(value * (1 << bits));
 		}
 
-		/** 
+		/**
 		 * Converts floating point value in range [-1, 1] to an unsigned integer of a certain number of bits. Works for any
 		 * value of bits between 0 and 31.
 		 */
@@ -317,7 +317,7 @@ namespace bs
 			return uintToUnorm(value) * 2.0f - 1.0f;
 		}
 
-		/** 
+		/**
 		 * Converts floating point value in range [0, 1] to an unsigned integer of a certain number of bits. Works for any
 		 * value of bits between 0 and 31.
 		 */
@@ -329,7 +329,7 @@ namespace bs
 			return Math::roundToInt(value * (1 << bits));
 		}
 
-		/** 
+		/**
 		 * Converts floating point value in range [-1, 1] to an unsigned integer of a certain number of bits. Works for any
 		 * value of bits between 0 and 31.
 		 */
@@ -353,7 +353,7 @@ namespace bs
 			return uintToUnorm<bits>(value) * 2.0f - 1.0f;
 		}
 
-		/** 
+		/**
 		 * Interpolates between two values using the @p t parameter. All parameters must be in [0, 255] range. When @p t
 		 * is zero, @p from value will be returned, and when it is 255 @p to value will be returned, and interpolation
 		 * between @p from and @p to will occurr for in-between values.
@@ -368,7 +368,7 @@ namespace bs
 			return (from + (((to - from) * t) >> 8)) & 0xFF;
 		}
 
-		/** 
+		/**
 		 * Interpolates between two values using the @p t parameter. All parameters must be in [0, 65536] range. When @p t
 		 * is zero, @p from value will be returned, and when it is 65536 @p to value will be returned, and interpolation
 		 * between @p from and @p to will occurr for in-between values.
@@ -424,7 +424,7 @@ namespace bs
 					((UINT16*)dest)[0] = (UINT16)value;
 					break;
 				case 3:
-#if BS_ENDIAN == BS_ENDIAN_BIG      
+#if BS_ENDIAN == BS_ENDIAN_BIG
 					((UINT8*)dest)[0] = (UINT8)((value >> 16) & 0xFF);
 					((UINT8*)dest)[1] = (UINT8)((value >> 8) & 0xFF);
 					((UINT8*)dest)[2] = (UINT8)(value & 0xFF);
@@ -448,7 +448,7 @@ namespace bs
 				case 2:
 					return ((UINT16*)src)[0];
 				case 3:
-#if BS_ENDIAN == BS_ENDIAN_BIG      
+#if BS_ENDIAN == BS_ENDIAN_BIG
 					return ((UINT32)((UINT8*)src)[0]<<16)|
 							((UINT32)((UINT8*)src)[1]<<8)|
 							((UINT32)((UINT8*)src)[2]);
@@ -459,7 +459,7 @@ namespace bs
 #endif
 				case 4:
 					return ((UINT32*)src)[0];
-			} 
+			}
 			return 0; // ?
 		}
 
@@ -493,7 +493,7 @@ namespace bs
 				if (m == 0) // Inf
 				{
 					return static_cast<UINT16>(s | 0x7c00);
-				} 
+				}
 				else    // NAN
 				{
 					m >>= 13;
@@ -725,7 +725,7 @@ namespace bs
 		/**
 		 * Encodes a 32-bit integer value as a base-128 varint. Varints are a method of serializing integers using one or
 		 * more bytes, where smaller values use less bytes.
-		 * 
+		 *
 		 * @param[in]	value		Value to encode.
 		 * @param[out]	output		Buffer to store the encoded bytes in. Must be at least 5 bytes in length.
 		 * @return					Number of bytes required to store the value, in range [1, 5]
@@ -733,22 +733,22 @@ namespace bs
 		static UINT32 encodeVarInt(UINT32 value, UINT8* output)
 		{
 			UINT32 idx = 0;
-			if (value & 0xFFFFFF80U) 
+			if (value & 0xFFFFFF80U)
 			{
 				output[idx++] = (UINT8)(value | 0x80);
 				value >>= 7;
 
-				if (value & 0xFFFFFF80U) 
+				if (value & 0xFFFFFF80U)
 				{
 					output[idx++] = (UINT8)(value | 0x80);
 					value >>= 7;
 
-					if (value & 0xFFFFFF80U) 
+					if (value & 0xFFFFFF80U)
 					{
 						output[idx++] = (UINT8)(value | 0x80);
 						value >>= 7;
 
-						if (value & 0xFFFFFF80U) 
+						if (value & 0xFFFFFF80U)
 						{
 							output[idx++] = (UINT8)(value | 0x80);
 							value >>= 7;
@@ -763,7 +763,7 @@ namespace bs
 
 		/**
 		 * Decodes a value encoded using encodeVarInt(UINT32, UINT8*).
-		 * 
+		 *
 		 * @param[out]	value	Variable to receive the decoded value.
 		 * @param[in]	input	Input buffer to decode the data from.
 		 * @param[in]	size	Size of the input buffer.
@@ -774,21 +774,21 @@ namespace bs
 			if(size == 0)
 				return 0;
 
-			UINT32 idx = 0; 
+			UINT32 idx = 0;
 			value = (UINT32)(input[idx] & 0x7F);
-			if (input[idx++] & 0x80 && --size) 
+			if (input[idx++] & 0x80 && --size)
 			{
 				value |= (UINT32)(input[idx] & 0x7F) << 7;
 
-				if (input[idx++] & 0x80 && --size) 
+				if (input[idx++] & 0x80 && --size)
 				{
 					value |= (UINT32)(input[idx] & 0x7F) << 14;
 
-					if (input[idx++] & 0x80 && --size) 
+					if (input[idx++] & 0x80 && --size)
 					{
 						value |= (UINT32)(input[idx] & 0x7F) << 21;
 
-						if (input[idx++] & 0x80 && --size) 
+						if (input[idx++] & 0x80 && --size)
 							value |= (UINT32)(input[idx++]) << 28;
 					}
 				}
@@ -808,7 +808,7 @@ namespace bs
 		/** @copydoc decodeVarInt(UINT32, UINT8*) */
 		static UINT32 decodeVarInt(INT32& value, const UINT8* input, UINT32 size)
 		{
-			UINT32 temp; 
+			UINT32 temp;
 			
 			UINT32 readBytes = decodeVarInt(temp, input, size);
 			value = (INT32)((temp >> 1) ^ -((INT32)temp & 1));
@@ -819,7 +819,7 @@ namespace bs
 		/**
 		 * Encodes a 64-bit integer value as a base-128 varint. Varints are a method of serializing integers using one or
 		 * more bytes, where smaller values use less bytes.
-		 * 
+		 *
 		 * @param[in]	value		Value to encode.
 		 * @param[out]	output		Buffer to store the encoded bytes in. Must be at least 10 bytes in length.
 		 * @return					Number of bytes required to store the value, in range [1, 10]
@@ -827,47 +827,47 @@ namespace bs
 		static UINT32 encodeVarInt(UINT64 value, UINT8* output)
 		{
 			UINT32 idx = 0;
-			if (value & 0xFFFFFFFFFFFFFF80ULL) 
+			if (value & 0xFFFFFFFFFFFFFF80ULL)
 			{
 				output[idx++] = (UINT8)(value | 0x80);
 				value >>= 7;
 
-				if (value & 0xFFFFFFFFFFFFFF80ULL) 
+				if (value & 0xFFFFFFFFFFFFFF80ULL)
 				{
 					output[idx++] = (UINT8)(value | 0x80);
 					value >>= 7;
 
-					if (value & 0xFFFFFFFFFFFFFF80ULL) 
+					if (value & 0xFFFFFFFFFFFFFF80ULL)
 					{
 						output[idx++] = (UINT8)(value | 0x80);
 						value >>= 7;
 
-						if (value & 0xFFFFFFFFFFFFFF80ULL) 
+						if (value & 0xFFFFFFFFFFFFFF80ULL)
 						{
 							output[idx++] = (UINT8)(value | 0x80);
 							value >>= 7;
 
-							if (value & 0xFFFFFFFFFFFFFF80ULL) 
+							if (value & 0xFFFFFFFFFFFFFF80ULL)
 							{
 								output[idx++] = (UINT8)(value | 0x80);
 								value >>= 7;
 
-								if (value & 0xFFFFFFFFFFFFFF80ULL) 
+								if (value & 0xFFFFFFFFFFFFFF80ULL)
 								{
 									output[idx++] = (UINT8)(value | 0x80);
 									value >>= 7;
 
-									if (value & 0xFFFFFFFFFFFFFF80ULL) 
+									if (value & 0xFFFFFFFFFFFFFF80ULL)
 									{
 										output[idx++] = (UINT8)(value | 0x80);
 										value >>= 7;
 
-										if (value & 0xFFFFFFFFFFFFFF80ULL) 
+										if (value & 0xFFFFFFFFFFFFFF80ULL)
 										{
 											output[idx++] = (UINT8)(value | 0x80);
 											value >>= 7;
 
-											if (value & 0xFFFFFFFFFFFFFF80ULL) 
+											if (value & 0xFFFFFFFFFFFFFF80ULL)
 											{
 												output[idx++] = (UINT8)(value | 0x80);
 												value >>= 7;
@@ -887,7 +887,7 @@ namespace bs
 
 		/**
 		 * Decodes a value encoded using encodeVarInt(UINT64, UINT8*).
-		 * 
+		 *
 		 * @param[out]	value	Variable to receive the decoded value.
 		 * @param[in]	input	Input buffer to decode the data from.
 		 * @param[in]	size	Size of the input buffer.
@@ -898,37 +898,37 @@ namespace bs
 			if(size == 0)
 				return 0;
 
-			UINT32 idx = 0; 
+			UINT32 idx = 0;
 			value = (UINT64)(input[idx] & 0x7F);
-			if (input[idx++] & 0x80 && --size) 
+			if (input[idx++] & 0x80 && --size)
 			{
 				value |= (UINT64)(input[idx] & 0x7F) << 7;
 
-				if (input[idx++] & 0x80 && --size) 
+				if (input[idx++] & 0x80 && --size)
 				{
 					value |= (UINT64)(input[idx] & 0x7F) << 14;
 
-					if (input[idx++] & 0x80 && --size) 
+					if (input[idx++] & 0x80 && --size)
 					{
 						value |= (UINT64)(input[idx] & 0x7F) << 21;
 
-						if (input[idx++] & 0x80 && --size) 
+						if (input[idx++] & 0x80 && --size)
 						{
 							value |= (UINT64)(input[idx] & 0x7F) << 28;
 
-							if (input[idx++] & 0x80 && --size) 
+							if (input[idx++] & 0x80 && --size)
 							{
 								value |= (UINT64)(input[idx] & 0x7F) << 35;
 
-								if (input[idx++] & 0x80 && --size) 
+								if (input[idx++] & 0x80 && --size)
 								{
 									value |= (UINT64)(input[idx] & 0x7F) << 42;
 
-									if (input[idx++] & 0x80 && --size) 
+									if (input[idx++] & 0x80 && --size)
 									{
 										value |= (UINT64)(input[idx] & 0x7F) << 49;
 
-										if (input[idx++] & 0x80 && --size) 
+										if (input[idx++] & 0x80 && --size)
 										{
 											value |= (UINT64)(input[idx] & 0x7F) << 56;
 
@@ -957,7 +957,7 @@ namespace bs
 		/** @copydoc decodeVarInt(UINT64, UINT8*) */
 		static UINT32 decodeVarInt(INT64& value, const UINT8* input, UINT32 size)
 		{
-			UINT64 temp; 
+			UINT64 temp;
 
 			UINT32 readBytes = decodeVarInt(temp, input, size);
 			value = (INT64)((temp >> 1) ^ -((INT64)temp & 1));

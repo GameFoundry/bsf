@@ -7,7 +7,7 @@
 #include "FileSystem/BsFileSystem.h"
 #include "FileSystem/BsDataStream.h"
 
-namespace bs 
+namespace bs
 {
 	namespace detail
 	{
@@ -257,7 +257,7 @@ namespace bs
 
 		if(*readPos != '\0')
 		{
-			BS_LOG(Warning, Particles, 
+			BS_LOG(Warning, Particles,
 				"Unexpected excess data. This might indicate corrupt data. Remaining data will be truncated.");
 		}
 

@@ -56,7 +56,7 @@ namespace bs { namespace ct
 	{ }
 
 	GLSLGpuProgram::~GLSLGpuProgram()
-	{ 
+	{
 		if (mIsCompiled && mGLHandle != 0)
 		{
 			glDeleteProgram(mGLHandle);
@@ -211,7 +211,7 @@ namespace bs { namespace ct
 			strcat(versionDefine, "\n");
 
 			const char* EXTRA_LINES[] =
-				{ 
+				{
 					"#define OPENGL\n",
 					versionDefine
 				};

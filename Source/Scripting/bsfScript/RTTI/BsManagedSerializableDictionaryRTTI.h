@@ -13,7 +13,7 @@ namespace bs
 	 *  @{
 	 */
 
-	class BS_SCR_BE_EXPORT ManagedSerializableDictionaryKeyValueRTTI : 
+	class BS_SCR_BE_EXPORT ManagedSerializableDictionaryKeyValueRTTI :
 		public RTTIType <ManagedSerializableDictionaryKeyValue, IReflectable, ManagedSerializableDictionaryKeyValueRTTI>
 	{
 	private:
@@ -68,22 +68,22 @@ namespace bs
 		void setTypeInfo(ManagedSerializableDictionary* obj, SPtr<ManagedSerializableTypeInfoDictionary> val) { obj->mDictionaryTypeInfo = val; }
 
 		ManagedSerializableDictionaryKeyValue& getEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx)
-		{ 
+		{
 			return mSequentialData[arrayIdx];
 		}
 
 		void setEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx, ManagedSerializableDictionaryKeyValue& val)
-		{ 
+		{
 			obj->setFieldData(val.key, val.value);
 		}
 
-		UINT32 getNumEntries(ManagedSerializableDictionary* obj) 
-		{ 
+		UINT32 getNumEntries(ManagedSerializableDictionary* obj)
+		{
 			return (UINT32)mSequentialData.size();
 		}
 
-		void setNumEntries(ManagedSerializableDictionary* obj, UINT32 numEntries) 
-		{ 
+		void setNumEntries(ManagedSerializableDictionary* obj, UINT32 numEntries)
+		{
 			// Do nothing
 		}
 		

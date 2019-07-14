@@ -17,7 +17,7 @@ namespace bs
 		float rangeMin; /**< Returns the lower bound of the range. Only relevant if @see hasRange is true. */
 		float rangeMax; /**< Returns the upper bound of the range. Only relevant if @see hasRange is true. */
 		/** Minimum increment the field value can be increment/decremented by. Only relevant if @see hasStep is true. */
-		float stepIncrement; 
+		float stepIncrement;
 		bool displayAsSlider; /**< If true, number fields will be displayed as sliders instead of regular input boxes. */
 		MonoString* categoryName; /**< Name of the category to display in inspector, if the member is part of one. */
 		int order; /**< Determines ordering in inspector relative to other members. */

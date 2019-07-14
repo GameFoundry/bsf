@@ -11,10 +11,10 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Represents a source for emitting audio. Audio can be played spatially (gun shot), or normally (music). Each audio 
+	/// Represents a source for emitting audio. Audio can be played spatially (gun shot), or normally (music). Each audio
 	/// source must have an AudioClip to play-back, and it can also have a position in the case of spatial (3D) audio.
 	///
-	/// Whether or not an audio source is spatial is controlled by the assigned AudioClip. The volume and the pitch of a 
+	/// Whether or not an audio source is spatial is controlled by the assigned AudioClip. The volume and the pitch of a
 	/// spatial audio source is controlled by its position and the AudioListener&apos;s position/direction/velocity.
 	/// </summary>
 	[ShowInInspector]
@@ -61,8 +61,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the priority of the audio source. If more audio sources are playing than supported by the hardware,  some 
-		/// might get disabled. By setting a higher priority the audio source is guaranteed to be disabled after sources with 
+		/// Determines the priority of the audio source. If more audio sources are playing than supported by the hardware,  some
+		/// might get disabled. By setting a higher priority the audio source is guaranteed to be disabled after sources with
 		/// lower priority.
 		/// </summary>
 		[ShowInInspector]
@@ -74,7 +74,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Minimum distance at which audio attenuation starts. When the listener is closer to the source than this value, audio 
+		/// Minimum distance at which audio attenuation starts. When the listener is closer to the source than this value, audio
 		/// is heard at full volume. Once farther away the audio starts attenuating.
 		/// </summary>
 		[ShowInInspector]
@@ -97,7 +97,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the current time of playback. If playback hasn&apos;t yet started, it specifies the time at which playback 
+		/// Determines the current time of playback. If playback hasn&apos;t yet started, it specifies the time at which playback
 		/// will start at. The time is in seconds, in range [0, clipLength].
 		/// </summary>
 		[NativeWrapper]

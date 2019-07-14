@@ -24,13 +24,13 @@ namespace bs
 	typedef LONG NTSTATUS, *PNTSTATUS;
 	typedef NTSTATUS (WINAPI* RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
 
-	RTL_OSVERSIONINFOW GetRealOSVersion() 
+	RTL_OSVERSIONINFOW GetRealOSVersion()
 	{
 		HMODULE handle = GetModuleHandleW(L"ntdll.dll");
-		if (handle) 
+		if (handle)
 		{
 			RtlGetVersionPtr rtlGetVersionFunc = (RtlGetVersionPtr)GetProcAddress(handle, "RtlGetVersion");
-			if (rtlGetVersionFunc != nullptr) 
+			if (rtlGetVersionFunc != nullptr)
 			{
 				RTL_OSVERSIONINFOW rovi = { 0 };
 				rovi.dwOSVersionInfoSize = sizeof(rovi);
@@ -84,7 +84,7 @@ namespace bs
 		// Get CPU clock speed
 		HKEY hKey;
 
-		long status = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", 0, KEY_READ, 
+		long status = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", 0, KEY_READ,
 			&hKey);
 
 		if (status == ERROR_SUCCESS)

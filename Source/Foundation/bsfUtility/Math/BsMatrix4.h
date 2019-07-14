@@ -23,7 +23,7 @@ namespace bs
 		constexpr Matrix4(const Matrix4&) = default;
 		constexpr Matrix4& operator=(const Matrix4&) = default;
 
-		constexpr Matrix4(BS_ZERO) 
+		constexpr Matrix4(BS_ZERO)
 			:m{ {0.0f, 0.0f, 0.0f, 0.0f},
 				{0.0f, 0.0f, 0.0f, 0.0f},
 				{0.0f, 0.0f, 0.0f, 0.0f},
@@ -438,8 +438,8 @@ namespace bs
 		/** Creates a view matrix and applies optional reflection. */
 		void makeView(const Vector3& position, const Quaternion& orientation);
 
-		/** 
-		 * Creates an ortographic projection matrix that scales the part of the view bounded by @p left, @p right, 
+		/**
+		 * Creates an ortographic projection matrix that scales the part of the view bounded by @p left, @p right,
 		 * @p top and @p bottom into [-1, 1] range. If @p far is non-zero the matrix will also transform the depth into
 		 * [-1, 1] range, otherwise it will leave it as-is.
 		 */
@@ -457,9 +457,9 @@ namespace bs
 		/** Creates a 4x4 transformation matrix that performs rotation. */
 		static Matrix4 rotation(const Quaternion& rotation);
 
-		/** 
-		 * Creates a 4x4 perspective projection matrix. 
-		 * 
+		/**
+		 * Creates a 4x4 perspective projection matrix.
+		 *
 		 * @param[in]	horzFOV		Horizontal field of view.
 		 * @param[in]	aspect		Aspect ratio. Determines the vertical field of view.
 		 * @param[in]	near		Distance to the near plane.
@@ -467,7 +467,7 @@ namespace bs
 		 * @param[in]	positiveZ	If true the matrix will project geometry as if its looking along the positive Z axis.
 		 *							Otherwise it projects along the negative Z axis (default).
 		 */
-		static Matrix4 projectionPerspective(const Degree& horzFOV, float aspect, float near, float far, 
+		static Matrix4 projectionPerspective(const Degree& horzFOV, float aspect, float near, float far,
 			bool positiveZ = false);
 
 		/** @copydoc makeProjectionOrtho() */

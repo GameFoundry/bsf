@@ -39,10 +39,10 @@ namespace bs { namespace ct
 		 * Returns a depth stencil view. Caller must take care this texture view actually contains a depth stencil view,
 		 * otherwise it returns null.
 		 *
-		 * @param[in]	readOnlyDepth	Should the view only support read operations for the depth portion of the 
+		 * @param[in]	readOnlyDepth	Should the view only support read operations for the depth portion of the
 		 *								depth/stencil buffer(allows the bound texture to be also used as a shader resource
 		 *								view while bound as a depth stencil target).
-		 * @param[in]	readOnlyStencil	Should the view only support read operations for the stencil portion of the 
+		 * @param[in]	readOnlyStencil	Should the view only support read operations for the stencil portion of the
 		 *								depth/stencil buffer(allows the bound texture to be also used as a shader resource
 		 *								view while bound as a depth stencil target).
 		 */
@@ -57,7 +57,7 @@ namespace bs { namespace ct
 		 * Creates a shader resource view that allows the provided surfaces to be bound as normal shader resources.
 		 *
 		 * @param[in]	texture			Texture to create the resource view for.
-		 * @param[in]	mostDetailMip	First mip level to create the resource view for (0 - base level). 
+		 * @param[in]	mostDetailMip	First mip level to create the resource view for (0 - base level).
 		 * @param[in]	numMips			Number of mip levels to create the view for.
 		 * @param[in]	firstArraySlice	First array slice to create the view for. This will be array index for 1D and 2D
 		 *								array textures, texture slice index for 3D textures, and face index for cube
@@ -66,7 +66,7 @@ namespace bs { namespace ct
 		 *								for 1D and 2D array textures, number of slices for 3D textures, and number of cubes
 		 *								for cube textures.
 		 */
-		ID3D11ShaderResourceView* createSRV(const D3D11Texture* texture, 
+		ID3D11ShaderResourceView* createSRV(const D3D11Texture* texture,
 			UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices);
 
 		/**
@@ -110,14 +110,14 @@ namespace bs { namespace ct
 		 * @param[in]	numArraySlices	Number of array slices to create the view for. This will be number of array elements
 		 *								for 1D and 2D array textures, number of slices for 3D textures, and number of cubes
 		 *								for cube textures.
-		 * @param[in]	readOnlyDepth	Should the view only support read operations for the depth portion of the 
+		 * @param[in]	readOnlyDepth	Should the view only support read operations for the depth portion of the
 		 *								depth/stencil buffer(allows the bound texture to be also used as a shader resource
 		 *								view while bound as a depth stencil target).
-		 * @param[in]	readOnlyStencil	Should the view only support read operations for the stencil portion of the 
+		 * @param[in]	readOnlyStencil	Should the view only support read operations for the stencil portion of the
 		 *								depth/stencil buffer(allows the bound texture to be also used as a shader resource
 		 *								view while bound as a depth stencil target).
 		 */
-		ID3D11DepthStencilView* createDSV(const D3D11Texture* texture, UINT32 mipSlice, UINT32 firstArraySlice, 
+		ID3D11DepthStencilView* createDSV(const D3D11Texture* texture, UINT32 mipSlice, UINT32 firstArraySlice,
 			UINT32 numArraySlices, bool readOnlyDepth, bool readOnlyStencil);
 
 		ID3D11ShaderResourceView* mSRV = nullptr;

@@ -32,7 +32,7 @@ namespace bs
 		MonoClass* managedClass = MonoManager::instance().findClass(metaData->typeNamespace, metaData->typeName);
 		if (managedClass == nullptr)
 		{
-			BS_LOG(Warning, Script, "Cannot create managed component: {0}.{1} because that type doesn't exist.", 
+			BS_LOG(Warning, Script, "Cannot create managed component: {0}.{1} because that type doesn't exist.",
 				metaData->typeNamespace, metaData->typeName);
 			return;
 		}

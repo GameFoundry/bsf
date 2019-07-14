@@ -9,7 +9,7 @@
 #include "RenderAPI/BsTextureView.h"
 #include "Math/BsVector3I.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Resources
 	 *  @{
@@ -19,7 +19,7 @@ namespace bs
 	enum BS_SCRIPT_EXPORT(m:Rendering) TextureUsage
 	{
 		/** A regular texture that is not often or ever updated from the CPU. */
-		TU_STATIC			BS_SCRIPT_EXPORT(n:Default)			= GBU_STATIC, 
+		TU_STATIC			BS_SCRIPT_EXPORT(n:Default)			= GBU_STATIC,
 		/** A regular texture that is often updated by the CPU. */
 		TU_DYNAMIC			BS_SCRIPT_EXPORT(n:Dynamic)			= GBU_DYNAMIC,
 		/** Texture that can be rendered to by the GPU. */
@@ -68,11 +68,11 @@ namespace bs
 		/** Describes how the caller plans on using the texture in the pipeline. */
 		INT32 usage = TU_DEFAULT;
 
-		/** 
+		/**
 		 * If true the texture data is assumed to have been gamma corrected and will be converted back to linear space when
 		 * sampled on GPU.
 		 */
-		bool hwGamma = false; 
+		bool hwGamma = false;
 
 		/** Number of samples per pixel. Set to 1 or 0 to use the default of a single sample per pixel. */
 		UINT32 numSamples = 0;
@@ -84,7 +84,7 @@ namespace bs
 	/** Structure used for specifying information about a texture copy operation. */
 	struct TEXTURE_COPY_DESC
 	{
-		/** 
+		/**
 		 * Face from which to copy. This can be an entry in an array of textures, or a single face of a cube map. If cubemap
 		 * array, then each array entry takes up six faces.
 		 */
@@ -96,7 +96,7 @@ namespace bs
 		/** Pixel volume from which to copy from. This defaults to all pixels of the face. */
 		PixelVolume srcVolume = PixelVolume(0, 0, 0, 0, 0, 0);
 
-		/** 
+		/**
 		 * Face to which to copy. This can be an entry in an array of textures, or a single face of a cube map. If cubemap
 		 * array, then each array entry takes up six faces.
 		 */
@@ -105,7 +105,7 @@ namespace bs
 		/** Mip level to which to copy. */
 		UINT32 dstMip = 0;
 
-		/** 
+		/**
 		 * Coordinates to write the source pixels to. The destination texture must have enough pixels to fit the entire
 		 * source volume.
 		 */
@@ -130,10 +130,10 @@ namespace bs
 		 */
 		UINT32 getNumMipmaps() const { return mDesc.numMips; }
 
-		/** 
-		 * Determines does the texture contain gamma corrected data. If true then the GPU will automatically convert the 
+		/**
+		 * Determines does the texture contain gamma corrected data. If true then the GPU will automatically convert the
 		 * pixels to linear space before reading from the texture, and convert them to gamma space when writing to the
-		 * texture. 
+		 * texture.
 		 */
 		bool isHardwareGammaEnabled() const { return mDesc.hwGamma; }
 
@@ -206,23 +206,23 @@ namespace bs
 		/**
 		 * Updates the texture with new data. Provided data buffer will be locked until the operation completes.
 		 *
-		 * @param[in]	data				Pixel data to write. User must ensure it is in format and size compatible with 
+		 * @param[in]	data				Pixel data to write. User must ensure it is in format and size compatible with
 		 *									the texture.
 		 * @param[in]	face				Texture face to write to.
 		 * @param[in]	mipLevel			Mipmap level to write to.
-		 * @param[in]	discardEntireBuffer When true the existing contents of the resource you are updating will be 
-		 *									discarded. This can make the operation faster. Resources with certain buffer 
-		 *									types might require this flag to be in a specific state otherwise the operation 
+		 * @param[in]	discardEntireBuffer When true the existing contents of the resource you are updating will be
+		 *									discarded. This can make the operation faster. Resources with certain buffer
+		 *									types might require this flag to be in a specific state otherwise the operation
 		 *									will fail.
 		 * @return							Async operation object you can use to track operation completion.
-		 * 
+		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		AsyncOp writeData(const SPtr<PixelData>& data, UINT32 face = 0, UINT32 mipLevel = 0,
 			bool discardEntireBuffer = false);
 
 		/**
-		 * Reads internal texture data to the provided previously allocated buffer. Provided data buffer will be locked 
+		 * Reads internal texture data to the provided previously allocated buffer. Provided data buffer will be locked
 		 * until the operation completes.
 		 *
 		 * @param[out]	data		Pre-allocated buffer of proper size and format where data will be read to. You can use
@@ -249,15 +249,15 @@ namespace bs
 		TAsyncOp<SPtr<PixelData>> readData(UINT32 face = 0, UINT32 mipLevel = 0);
 
 		/**
-		 * Reads data from the cached system memory texture buffer into the provided buffer. 
-		 * 		  
+		 * Reads data from the cached system memory texture buffer into the provided buffer.
+		 * 		
 		 * @param[out]	data		Pre-allocated buffer of proper size and format where data will be read to. You can use
 		 *							TextureProperties::allocBuffer() to allocate a buffer of a correct format and size.
 		 * @param[in]	face		Texture face to read from.
 		 * @param[in]	mipLevel	Mipmap level to read from.
 		 *
 		 * @note	
-		 * The data read is the cached texture data. Any data written to the texture from the GPU or core thread will not 
+		 * The data read is the cached texture data. Any data written to the texture from the GPU or core thread will not
 		 * be reflected in this data. Use readData() if you require those changes.
 		 * @note
 		 * The texture must have been created with TU_CPUCACHED usage otherwise this method will not return any data.
@@ -291,7 +291,7 @@ namespace bs
 		 */
 		static HTexture create(const SPtr<PixelData>& pixelData, int usage = TU_DEFAULT, bool hwGammaCorrection = false);
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 
@@ -299,7 +299,7 @@ namespace bs
 		static SPtr<Texture> _createPtr(const TEXTURE_DESC& desc);
 
 		/** Same as create() excepts it creates a pointer to the texture instead of a texture handle. */
-		static SPtr<Texture> _createPtr(const SPtr<PixelData>& pixelData, int usage = TU_DEFAULT, 
+		static SPtr<Texture> _createPtr(const SPtr<PixelData>& pixelData, int usage = TU_DEFAULT,
 			bool hwGammaCorrection = false);
 
 		/** @} */
@@ -385,8 +385,8 @@ namespace bs
 		PixelData lock(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 deviceIdx = 0,
 					   UINT32 queueIdx = 0);
 
-		/** 
-		 * Unlocks a previously locked buffer. After the buffer is unlocked, any data returned by lock becomes invalid. 
+		/**
+		 * Unlocks a previously locked buffer. After the buffer is unlocked, any data returned by lock becomes invalid.
 		 *
 		 * @see	lock()
 		 */
@@ -407,9 +407,9 @@ namespace bs
 		void copy(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc = TEXTURE_COPY_DESC::DEFAULT,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr);
 
-		/** 
-		 * Sets all the pixels of the specified face and mip level to the provided value. 
-		 * 
+		/**
+		 * Sets all the pixels of the specified face and mip level to the provided value.
+		 *
 		 * @param[in]	value			Color to clear the pixels to.
 		 * @param[in]	mipLevel		Mip level to clear.
 		 * @param[in]	face			Face (array index or cubemap face) to clear.
@@ -419,7 +419,7 @@ namespace bs
 
 		/**
 		 * Reads data from the texture buffer into the provided buffer.
-		 * 		  
+		 * 		
 		 * @param[out]	dest		Previously allocated buffer to read data into.
 		 * @param[in]	mipLevel	(optional) Mipmap level to read from.
 		 * @param[in]	face		(optional) Texture face to read from.
@@ -432,11 +432,11 @@ namespace bs
 
 		/**
 		 * Writes data from the provided buffer into the texture buffer.
-		 * 		  
+		 * 		
 		 * @param[in]	src					Buffer to retrieve the data from.
 		 * @param[in]	mipLevel			(optional) Mipmap level to write into.
 		 * @param[in]	face				(optional) Texture face to write into.
-		 * @param[in]	discardWholeBuffer	(optional) If true any existing texture data will be discard. This can improve 
+		 * @param[in]	discardWholeBuffer	(optional) If true any existing texture data will be discard. This can improve
 		 *									performance of the write operation.
 		 * @param[in]	queueIdx			Device queue to perform the write operation on. See @ref queuesDoc.
 		 */
@@ -450,17 +450,17 @@ namespace bs
 		/* 								STATICS		                     		*/
 		/************************************************************************/
 
-		/** 
-		 * @copydoc bs::Texture::create(const TEXTURE_DESC&) 
+		/**
+		 * @copydoc bs::Texture::create(const TEXTURE_DESC&)
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
 		static SPtr<Texture> create(const TEXTURE_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
-		/** 
-		 * @copydoc bs::Texture::create(const SPtr<PixelData>&, int, bool) 
+		/**
+		 * @copydoc bs::Texture::create(const SPtr<PixelData>&, int, bool)
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		static SPtr<Texture> create(const SPtr<PixelData>& pixelData, int usage = TU_DEFAULT, 
+		static SPtr<Texture> create(const SPtr<PixelData>& pixelData, int usage = TU_DEFAULT,
 			bool hwGammaCorrection = false, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/************************************************************************/
@@ -473,7 +473,7 @@ namespace bs
 		 *
 		 * @note	Core thread only.
 		 */
-		SPtr<TextureView> requestView(UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices, 
+		SPtr<TextureView> requestView(UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices,
 									  GpuViewUsage usage);
 
 		/** Returns a plain white texture. */
@@ -493,7 +493,7 @@ namespace bs
 		virtual void unlockImpl() = 0;
 
 		/** @copydoc copy */
-		virtual void copyImpl(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc, 
+		virtual void copyImpl(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc,
 			const SPtr<CommandBuffer>& commandBuffer) = 0;
 
 		/** @copydoc readData */
@@ -501,7 +501,7 @@ namespace bs
 			UINT32 queueIdx = 0) = 0;
 
 		/** @copydoc writeData */
-		virtual void writeDataImpl(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, 
+		virtual void writeDataImpl(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0,
 			bool discardWholeBuffer = false, UINT32 queueIdx = 0) = 0;
 
 		/** @copydoc clear */

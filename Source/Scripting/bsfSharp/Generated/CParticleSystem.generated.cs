@@ -11,11 +11,11 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Controls spawning, evolution and rendering of particles. Particles can be 2D or 3D, with a variety of rendering 
-	/// options. Particle system should be used for rendering objects that cannot properly be represented using static or 
+	/// Controls spawning, evolution and rendering of particles. Particles can be 2D or 3D, with a variety of rendering
+	/// options. Particle system should be used for rendering objects that cannot properly be represented using static or
 	/// animated meshes, like liquids, smoke or flames.
 	///
-	/// The particle system requires you to specify at least one ParticleEmitter, which controls how are new particles 
+	/// The particle system requires you to specify at least one ParticleEmitter, which controls how are new particles
 	/// generated. You will also want to specify one or more ParticleEvolver%s, which change particle properties over time.
 	/// </summary>
 	[ShowInInspector]
@@ -48,7 +48,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Set of objects that determine initial position, normal and other properties of newly spawned particles. Each particle 
+		/// Set of objects that determine initial position, normal and other properties of newly spawned particles. Each particle
 		/// system must have at least one emitter.
 		/// </summary>
 		[ShowInInspector]
@@ -60,7 +60,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Set of objects that determine how particle properties change during their lifetime. Evolvers only affect CPU 
+		/// Set of objects that determine how particle properties change during their lifetime. Evolvers only affect CPU
 		/// simulated particles.
 		/// </summary>
 		[ShowInInspector]
@@ -72,7 +72,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the layer bitfield that controls whether a system is considered visible in a specific camera.  Layer must 
+		/// Determines the layer bitfield that controls whether a system is considered visible in a specific camera.  Layer must
 		/// match camera layer in order for the camera to render the component.
 		/// </summary>
 		[ShowInInspector]
@@ -85,8 +85,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Enables or disabled preview mode. Preview mode allows the particle system to play while the game is not running,  
-		/// primarily for preview purposes in the editor. Returns true if the preview mode was enabled, false if it was disabled 
+		/// Enables or disabled preview mode. Preview mode allows the particle system to play while the game is not running,
+		/// primarily for preview purposes in the editor. Returns true if the preview mode was enabled, false if it was disabled
 		/// or enabling preview failed.
 		/// </summary>
 		internal bool TogglePreviewMode(bool enabled)

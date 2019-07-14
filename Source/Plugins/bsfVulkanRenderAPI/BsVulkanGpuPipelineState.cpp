@@ -17,7 +17,7 @@
 
 namespace bs { namespace ct
 {
-	VulkanPipeline::VulkanPipeline(VulkanResourceManager* owner, VkPipeline pipeline, 
+	VulkanPipeline::VulkanPipeline(VulkanResourceManager* owner, VkPipeline pipeline,
 		const std::array<bool, BS_MAX_MULTIPLE_RENDER_TARGETS>& colorReadOnly, bool depthStencilReadOnly)
 		: VulkanResource(owner, true), mPipeline(pipeline), mReadOnlyColor(colorReadOnly)
 		, mReadOnlyDepth(depthStencilReadOnly)
@@ -100,7 +100,7 @@ namespace bs { namespace ct
 		GraphicsPipelineState::initialize();
 
 		std::pair<VkShaderStageFlagBits, GpuProgram*> stages[] =
-			{ 
+			{
 				{ VK_SHADER_STAGE_VERTEX_BIT, mData.vertexProgram.get() },
 				{ VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, mData.hullProgram.get() },
 				{ VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, mData.domainProgram.get() },
@@ -319,7 +319,7 @@ namespace bs { namespace ct
 	}
 
 	VulkanPipeline* VulkanGraphicsPipelineState::getPipeline(
-		UINT32 deviceIdx, VulkanRenderPass* renderPass, UINT32 readOnlyFlags, DrawOperationType drawOp, 
+		UINT32 deviceIdx, VulkanRenderPass* renderPass, UINT32 readOnlyFlags, DrawOperationType drawOp,
 			const SPtr<VulkanVertexInput>& vertexInput)
 	{
 		Lock lock(mMutex);
@@ -494,7 +494,7 @@ namespace bs { namespace ct
 		return device->getResourceManager().create<VulkanPipeline>(pipeline, colorReadOnly, depthReadOnly);
 	}
 
-	VulkanComputePipelineState::VulkanComputePipelineState(const SPtr<GpuProgram>& program, 
+	VulkanComputePipelineState::VulkanComputePipelineState(const SPtr<GpuProgram>& program,
 		GpuDeviceFlags deviceMask)
 		:ComputePipelineState(program, deviceMask), mDeviceMask(deviceMask)
 	{

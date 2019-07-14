@@ -134,7 +134,7 @@ namespace bs
 	{
 		// See if this type even still exists
 		SPtr<ManagedSerializableObjectInfo> currentObjInfo = nullptr;
-		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(mObjInfo->mTypeInfo->mTypeNamespace, 
+		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(mObjInfo->mTypeInfo->mTypeNamespace,
 			mObjInfo->mTypeInfo->mTypeName, currentObjInfo))
 		{
 			return nullptr;

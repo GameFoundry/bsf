@@ -11,8 +11,8 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Controls climbing behaviour for a capsule character controller. Normally the character controller will not 
-	/// automatically climb when heights are greater than the assigned step offset. However due to the shape of the capsule it 
+	/// Controls climbing behaviour for a capsule character controller. Normally the character controller will not
+	/// automatically climb when heights are greater than the assigned step offset. However due to the shape of the capsule it
 	/// might automatically climb over slightly larger heights than assigned step offsets.
 	/// </summary>
 	public enum CharacterClimbingMode

@@ -24,9 +24,9 @@ namespace bs { namespace ct
 			:mParamDesc(paramDesc)
 		{ }
 
-		/** 
+		/**
 		 * Sets the parameter in the provided parameter block buffer. Caller is responsible for ensuring the param block
-		 * buffer contains this parameter. 
+		 * buffer contains this parameter.
 		 */
 		void set(const SPtr<GpuParamBlockBuffer>& paramBlock, const T& value, UINT32 arrayIdx = 0) const
 		{
@@ -61,16 +61,16 @@ namespace bs { namespace ct
 			}
 		}
 
-		/** 
+		/**
 		 * Gets the parameter in the provided parameter block buffer. Caller is responsible for ensuring the param block
-		 * buffer contains this parameter. 
+		 * buffer contains this parameter.
 		 */
 		T get(const SPtr<GpuParamBlockBuffer>& paramBlock, UINT32 arrayIdx = 0) const
 		{
 #if BS_DEBUG_MODE
 			if (arrayIdx >= mParamDesc.arraySize)
 			{
-				BS_LOG(Error, Material, "Array index out of range. Array size: {0}. Requested size: {1}", 
+				BS_LOG(Error, Material, "Array index out of range. Array size: {0}. Requested size: {1}",
 					mParamDesc.arraySize, arrayIdx);
 				return T();
 			}
@@ -97,9 +97,9 @@ namespace bs { namespace ct
 		virtual void initialize() = 0;
 	};
 
-	/** 
+	/**
 	 * Takes care of initializing param block definitions in a delayed manner since they depend on engine systems yet
-	 * are usually used as global variables which are initialized before engine systems are ready. 
+	 * are usually used as global variables which are initialized before engine systems are ready.
 	 */
 	class BS_CORE_EXPORT ParamBlockManager : public Module<ParamBlockManager>
 	{
@@ -149,7 +149,7 @@ namespace bs { namespace ct
 		static void META_GetPrevEntries(Vector<GpuParamDataDesc>& params, META_FirstEntry id) { }							\
 		void META_InitPrevEntry(const Vector<GpuParamDataDesc>& params, UINT32 idx, META_FirstEntry id) { }					\
 																															\
-		typedef META_FirstEntry 
+		typedef META_FirstEntry
 
 /**
  * Registers a new entry in a parameter block. Must be called in between BS_PARAM_BLOCK_BEGIN and BS_PARAM_BLOCK_END calls.

@@ -36,7 +36,7 @@ namespace bs { namespace ct
 
 	const char* bs_get_gl_error_string(GLenum errorCode)
 	{
-		switch (errorCode) 
+		switch (errorCode)
 		{
 			case GL_INVALID_OPERATION: return "INVALID_OPERATION";
 			case GL_INVALID_ENUM: return "INVALID_ENUM";
@@ -289,12 +289,12 @@ namespace bs { namespace ct
 					// Blending
 					if (stateProps.getBlendEnabled(i))
 					{
-						setSceneBlending(i, 
-							stateProps.getSrcBlend(i), 
-							stateProps.getDstBlend(i), 
+						setSceneBlending(i,
+							stateProps.getSrcBlend(i),
+							stateProps.getDstBlend(i),
 							stateProps.getAlphaSrcBlend(i),
-							stateProps.getAlphaDstBlend(i), 
-							stateProps.getBlendOperation(i), 
+							stateProps.getAlphaDstBlend(i),
+							stateProps.getBlendOperation(i),
 							stateProps.getAlphaBlendOperation(i));
 					}
 					else
@@ -302,10 +302,10 @@ namespace bs { namespace ct
 
 					// Color write mask
 					UINT8 writeMask = stateProps.getRenderTargetWriteMask(i);
-					setColorBufferWriteEnabled(i, 
-						(writeMask & 0x1) != 0, 
-						(writeMask & 0x2) != 0, 
-						(writeMask & 0x4) != 0, 
+					setColorBufferWriteEnabled(i,
+						(writeMask & 0x1) != 0,
+						(writeMask & 0x2) != 0,
+						(writeMask & 0x4) != 0,
 						(writeMask & 0x8) != 0);
 				}
 
@@ -331,11 +331,11 @@ namespace bs { namespace ct
 				// Set stencil buffer options
 				setStencilCheckEnabled(stateProps.getStencilEnable());
 
-				setStencilBufferOperations(stateProps.getStencilFrontFailOp(), stateProps.getStencilFrontZFailOp(), 
+				setStencilBufferOperations(stateProps.getStencilFrontFailOp(), stateProps.getStencilFrontZFailOp(),
 					stateProps.getStencilFrontPassOp(), true);
 				setStencilBufferFunc(stateProps.getStencilFrontCompFunc(), stateProps.getStencilReadMask(), true);
 
-				setStencilBufferOperations(stateProps.getStencilBackFailOp(), stateProps.getStencilBackZFailOp(), 
+				setStencilBufferOperations(stateProps.getStencilBackFailOp(), stateProps.getStencilBackZFailOp(),
 					stateProps.getStencilBackPassOp(), false);
 				setStencilBufferFunc(stateProps.getStencilBackCompFunc(), stateProps.getStencilReadMask(), false);
 
@@ -475,7 +475,7 @@ namespace bs { namespace ct
 						GLuint texId;
 						if (glTex != nullptr)
 						{
-#if BS_OPENGL_4_3 || BS_OPENGLES_3_1 
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_1
 							SPtr<TextureView> texView = glTex->requestView(
 								surface.mipLevel,
 								surface.numMipLevels,
@@ -495,7 +495,7 @@ namespace bs { namespace ct
 								(surface.numMipLevels != 0 && surface.numMipLevels != props.getNumMipmaps()) ||
 								(surface.numFaces != 0 && surface.numFaces != props.getNumFaces()))
 							{
-								BS_LOG(Warning, RenderBackend, 
+								BS_LOG(Warning, RenderBackend,
 									"Attempting to bind only a part of a texture, but texture views are not supported. "
 									"Entire texture will be bound instead.");
 							}
@@ -952,7 +952,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void GLRenderAPI::setRenderTarget(const SPtr<RenderTarget>& target, UINT32 readOnlyFlags, 
+	void GLRenderAPI::setRenderTarget(const SPtr<RenderTarget>& target, UINT32 readOnlyFlags,
 		RenderSurfaceMask loadMask, const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [&](const SPtr<RenderTarget>& target, UINT32 readOnlyFlags)
@@ -1018,14 +1018,14 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}
 
-	void GLRenderAPI::setVertexBuffers(UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers, 
+	void GLRenderAPI::setVertexBuffers(UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
 #if BS_DEBUG_MODE
 		UINT32 lastIdx = index + numBuffers;
 		if(lastIdx > MAX_VB_COUNT)
 		{
-			BS_LOG(Error, RenderBackend, "Provided vertex buffer slot range is invalid: {0} to {1}.", 
+			BS_LOG(Error, RenderBackend, "Provided vertex buffer slot range is invalid: {0} to {1}.",
 				index, index + numBuffers);
 			return;
 		}
@@ -1117,7 +1117,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void GLRenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount, 
+	void GLRenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [&](UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount)
@@ -1239,7 +1239,7 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT(NumIndexBufferBinds);
 	}
 
-	void GLRenderAPI::dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY, UINT32 numGroupsZ, 
+	void GLRenderAPI::dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY, UINT32 numGroupsZ,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [&](UINT32 numGroupsX, UINT32 numGroupsY, UINT32 numGroupsZ)
@@ -1278,7 +1278,7 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT(NumComputeCalls);
 	}
 
-	void GLRenderAPI::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom, 
+	void GLRenderAPI::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [&](UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
@@ -1391,7 +1391,7 @@ namespace bs { namespace ct
 		cb->clear();
 	}
 
-	void GLRenderAPI::clearArea(UINT32 buffers, const Color& color, float depth, UINT16 stencil, const Rect2I& clearRect, 
+	void GLRenderAPI::clearArea(UINT32 buffers, const Color& color, float depth, UINT16 stencil, const Rect2I& clearRect,
 		UINT8 targetMask)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1661,7 +1661,7 @@ namespace bs { namespace ct
 		BS_CHECK_GL_ERROR();
 	}
 
-	void GLRenderAPI::setSceneBlending(UINT32 target, BlendFactor sourceFactor, BlendFactor destFactor, 
+	void GLRenderAPI::setSceneBlending(UINT32 target, BlendFactor sourceFactor, BlendFactor destFactor,
 		BlendFactor sourceFactorAlpha, BlendFactor destFactorAlpha, BlendOperation op, BlendOperation alphaOp)
 	{
 		GLint sourceBlend = getBlendMode(sourceFactor);
@@ -1775,7 +1775,7 @@ namespace bs { namespace ct
 
 			// GL requires you to reset the scissor when disabling
 			x = mViewportLeft;
-			y = rtProps.height - (mViewportTop + mViewportHeight); 
+			y = rtProps.height - (mViewportTop + mViewportHeight);
 			w = mViewportWidth;
 			h = mViewportHeight;
 
@@ -1876,7 +1876,7 @@ namespace bs { namespace ct
 	void GLRenderAPI::setDepthBufferWriteEnabled(bool enabled)
 	{
 		GLboolean flag = enabled ? GL_TRUE : GL_FALSE;
-		glDepthMask(flag);  
+		glDepthMask(flag);
 		BS_CHECK_GL_ERROR();
 
 		mDepthWrite = enabled;
@@ -2150,7 +2150,7 @@ namespace bs { namespace ct
 			setScissorTestEnable(true);
 		}
 
-		const GLSLProgramPipeline* pipeline = mProgramPipelineManager->getPipeline(mCurrentVertexProgram.get(), 
+		const GLSLProgramPipeline* pipeline = mProgramPipelineManager->getPipeline(mCurrentVertexProgram.get(),
 			mCurrentFragmentProgram.get(), mCurrentGeometryProgram.get(), mCurrentHullProgram.get(), mCurrentDomainProgram.get());
 
 		glUseProgram(0);
@@ -2169,7 +2169,7 @@ namespace bs { namespace ct
 			mBoundVertexDeclaration,
 			mBoundVertexBuffers);
 
-		glBindVertexArray(vao.getGLHandle()); 
+		glBindVertexArray(vao.getGLHandle());
 		BS_CHECK_GL_ERROR();
 
 		BS_INC_RENDER_STAT(NumVertexBufferBinds);
@@ -2398,7 +2398,7 @@ namespace bs { namespace ct
 	{
 		if(caps->renderAPIName != getName())
 		{
-			BS_EXCEPT(InvalidParametersException, 
+			BS_EXCEPT(InvalidParametersException,
 				"Trying to initialize GLRenderAPI from RenderSystemCapabilities that do not support OpenGL");
 		}
 
@@ -2441,7 +2441,7 @@ namespace bs { namespace ct
 		mCurrentContext = context;
 		mCurrentContext->setCurrent(window);
 
-		// Must reset depth/colour write mask to according with user desired, otherwise, clearFrameBuffer would be wrong 
+		// Must reset depth/colour write mask to according with user desired, otherwise, clearFrameBuffer would be wrong
 		// because the value we recorded may be different from the real state stored in GL context.
 		glDepthMask(mDepthWrite);
 		BS_CHECK_GL_ERROR();
@@ -2602,7 +2602,7 @@ namespace bs { namespace ct
 			caps.numGpuParamBlockBuffersPerStage[GPT_DOMAIN_PROGRAM] = numUniformBlocks;
 		}
 
-		if (mGLSupport->checkExtension("GL_ARB_compute_shader")) 
+		if (mGLSupport->checkExtension("GL_ARB_compute_shader"))
 		{
 #if BS_OPENGL_4_3 || BS_OPENGLES_3_1
 			caps.setCapability(RSC_COMPUTE_PROGRAM);

@@ -39,9 +39,9 @@ namespace bs
 		 * Starts monitoring a folder at the specified path.
 		 *
 		 * @param[in]	folderPath		Absolute path to the folder you want to monitor.
-		 * @param[in]	subdirectories	If true, provided folder and all of its subdirectories will be monitored for 
+		 * @param[in]	subdirectories	If true, provided folder and all of its subdirectories will be monitored for
 		 *								changes. Otherwise only the provided folder will be monitored.
-		 * @param[in]	changeFilter	A set of flags you may OR together. Different notification events will trigger 
+		 * @param[in]	changeFilter	A set of flags you may OR together. Different notification events will trigger
 		 *								depending on which flags you set.
 		 */
 		void startMonitor(const Path& folderPath, bool subdirectories, FolderChangeBits changeFilter);

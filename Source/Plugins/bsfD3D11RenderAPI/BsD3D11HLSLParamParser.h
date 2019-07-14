@@ -22,7 +22,7 @@ namespace bs { namespace ct
 		 * @param[in]	microcode	Compiled GPU program microcode to parse.
 		 * @param[in]	type		Type of the GPU program.
 		 * @param[out]	desc		Output object that will contain parameter descriptions.
-		 * @param[out]	inputParams	Output object that will contain a set of program input parameters. Can be null if not 
+		 * @param[out]	inputParams	Output object that will contain a set of program input parameters. Can be null if not
 		 *							required. Only relevant for vertex programs.
 		 */
 		void parse(ID3DBlob* microcode, GpuProgramType type, GpuParamDesc& desc, Vector<VertexElement>* inputParams);

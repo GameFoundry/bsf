@@ -26,7 +26,7 @@
 		bs::RendererMaterialManager::_registerMaterial(&mMetaData, path);	\
 	};																		\
 
-/** 
+/**
  * References the shader path in RendererMaterial implementation. Provides an _initDefines() method allowing the C++
  * code to provide preprocessor defines to be set when compiling the shader. Note that when changing these defines you need
  * to manually force the shader to be reimported.
@@ -63,9 +63,9 @@ namespace bs { namespace ct
 #endif
 	};
 
-	/** 
-	 * Helper class that performs GPU profiling in the current block. Profiling sample is started when the class is 
-	 * constructed and ended upon destruction. 
+	/**
+	 * Helper class that performs GPU profiling in the current block. Profiling sample is started when the class is
+	 * constructed and ended upon destruction.
 	 */
 	struct RendererMaterialProfileBlock : ProfileGPUBlock
 	{
@@ -88,9 +88,9 @@ namespace bs { namespace ct
 		/** Returns the internal parameter set containing GPU bindable parameters. */
 		SPtr<GpuParams> getParams() const { return mParams; }
 
-		/** 
-		 * Helper field to be set before construction. Identifiers the variation of the material to initialize this 
-		 * object with. 
+		/**
+		 * Helper field to be set before construction. Identifiers the variation of the material to initialize this
+		 * object with.
 		 */
 		UINT32 _varIdx;
 	protected:
@@ -126,9 +126,9 @@ namespace bs { namespace ct
 	public:
 		virtual ~RendererMaterial() = default;
 
-		/** 
+		/**
 		 * Retrieves an instance of this renderer material. If material has multiple variations the first available
-		 * variation will be returned. 
+		 * variation will be returned.
 		 */
 		static T* get()
 		{
@@ -163,9 +163,9 @@ namespace bs { namespace ct
 			return (T*)mMetaData.instances[varIdx];
 		}
 
-		/** 
+		/**
 		 * Sets a shader that is to be used instead of the default shader for this material. Set to null to revert back
-		 * to using the default shader. All existing instances of the material will be invalidated (get() methods need to 
+		 * to using the default shader. All existing instances of the material will be invalidated (get() methods need to
 		 * be called again).
 		 */
 		static void setOverride(const SPtr<Shader>& shader)
@@ -190,7 +190,7 @@ namespace bs { namespace ct
 		/** Returns a set of dynamically defined defines used when compiling this shader. */
 		static ShaderDefines getShaderDefines() { return mMetaData.defines; }
 
-		/** 
+		/**
 		 * Binds the materials and its parameters to the pipeline. This material will be used for rendering any subsequent
 		 * draw calls, or executing dispatch calls. If @p bindParams is false you need to call bindParams() separately
 		 * to bind material parameters (if any).

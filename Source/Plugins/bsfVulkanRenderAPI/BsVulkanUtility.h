@@ -32,7 +32,7 @@ namespace bs { namespace ct
 		/**	Converts between framework's and Vulkan texture addressing mode. */
 		static VkSamplerAddressMode getAddressingMode(TextureAddressingMode mode);
 
-		/** 
+		/**
 		 * Attempts to map the provided color to one of the built-in border colors. Maps to black if no better match
 		 * is found.
 		 */
@@ -78,7 +78,7 @@ namespace bs { namespace ct
 		static VkPipelineStageFlags shaderToPipelineStage(VkShaderStageFlags shaderStageFlags);
 
 		/**
-		 * Populates the provided array with Vulkan devices that correspond to provided flags. Sets null in unused slots. 
+		 * Populates the provided array with Vulkan devices that correspond to provided flags. Sets null in unused slots.
 		 * Each device is placed at its own index in the output array.
 		 */
 		static void getDevices(const VulkanRenderAPI& rapi, GpuDeviceFlags flags, VulkanDevice* (&devices)[BS_MAX_DEVICES]);
@@ -86,10 +86,10 @@ namespace bs { namespace ct
 		/** Checks is a flag for a particular device enabled. */
 		static bool isDeviceIdxSet(const VulkanRenderAPI& rapi, UINT32 idx, GpuDeviceFlags flags);
 
-		/** 
+		/**
 		 * Subdivides an image subresource range by cutting it with another range. If the ranges don't overlap, or the
-		 * @p cutWith range completely overs the @p toCut range, the original @p toCut range is output. 
-		 * 
+		 * @p cutWith range completely overs the @p toCut range, the original @p toCut range is output.
+		 *
 		 * @param[in]	toCut		Range to cut.
 		 * @param[in]	cutWith		Range to cut with.
 		 * @param[out]	output		Pieces of the range that was cut.

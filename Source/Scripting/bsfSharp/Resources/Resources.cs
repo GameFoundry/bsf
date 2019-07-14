@@ -11,7 +11,7 @@ namespace bs
      */
 
     /// <summary>
-    /// Handles dynamic loading of resources during runtime. 
+    /// Handles dynamic loading of resources during runtime.
     /// </summary>
     public static class Resources
     {
@@ -67,7 +67,7 @@ namespace bs
         public static RRef<T> LoadAsync<T>(string path, ResourceLoadFlag flags = ResourceLoadFlag.Default) where T : Resource
         {
             RRefBase rref = Internal_LoadAsync(path, flags);
-            
+
             if(rref != null)
                 return rref.As<T>();
 
@@ -89,7 +89,7 @@ namespace bs
         /// <returns>Loaded resource, or null if resource cannot be found.</returns>
         public static RRef<T> LoadAsync<T>(UUID uuid, ResourceLoadFlag flags = ResourceLoadFlag.Default) where T : Resource
         {
-            RRefBase rref = Internal_LoadAsyncFromUUID(ref uuid, flags).As<T>();            
+            RRefBase rref = Internal_LoadAsyncFromUUID(ref uuid, flags).As<T>();
 
             if(rref != null)
                 return rref.As<T>();
@@ -101,8 +101,8 @@ namespace bs
         /// Releases an internal reference to the resource held by the resources system. This allows the resource
         ///	to be unloaded when it goes out of scope, if the resource was loaded with "keepLoaded" parameter.
         ///
-        /// Alternatively you can also skip manually calling <see cref="Release(RRefBase)"/> and call <see cref="UnloadUnused"/> 
-        /// which will unload all resources that do not have any external references, but you lose the fine grained control 
+        /// Alternatively you can also skip manually calling <see cref="Release(RRefBase)"/> and call <see cref="UnloadUnused"/>
+        /// which will unload all resources that do not have any external references, but you lose the fine grained control
         /// of what will be unloaded.
         /// </summary>
         /// <param name="resource">Resource to release</param>
@@ -118,8 +118,8 @@ namespace bs
         /// Releases an internal reference to the resource held by the resources system. This allows the resource
         ///	to be unloaded when it goes out of scope, if the resource was loaded with "keepLoaded" parameter.
         ///
-        /// Alternatively you can also skip manually calling <see cref="Release(Resource)"/> and call <see cref="UnloadUnused"/> 
-        /// which will unload all resources that do not have any external references, but you lose the fine grained control 
+        /// Alternatively you can also skip manually calling <see cref="Release(Resource)"/> and call <see cref="UnloadUnused"/>
+        /// which will unload all resources that do not have any external references, but you lose the fine grained control
         /// of what will be unloaded.
         /// </summary>
         /// <param name="resource">Resource to release</param>
@@ -141,7 +141,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Returns the loading progress of a resource that's being asynchronously loaded. 
+        /// Returns the loading progress of a resource that's being asynchronously loaded.
         /// </summary>
         /// <param name="resource">Resource whose load progress to check.</param>
         /// <param name="includeDependencies">If false the progress will reflect the load progress only for this individual
@@ -189,7 +189,7 @@ namespace bs
     partial class Resources
     {
         /// <summary>
-        /// Loads the resource from a given path. Returns an empty handle if resource can&apos;t be loaded. Resource is loaded  
+        /// Loads the resource from a given path. Returns an empty handle if resource can&apos;t be loaded. Resource is loaded
         /// synchronously.
         /// </summary>
         /// <param name="filePath">File path to the resource to load. This can be absolute or relative to the working folder.

@@ -20,8 +20,8 @@ namespace bs
 	 */
 
 	/**
-	 * Policy class that allows us to re-use this template class for matrices which might need transposing, and other 
-	 * types which do not. Matrix needs to be transposed for certain render systems depending on how they store them 
+	 * Policy class that allows us to re-use this template class for matrices which might need transposing, and other
+	 * types which do not. Matrix needs to be transposed for certain render systems depending on how they store them
 	 * in memory.
 	 */
 	template<class Type>
@@ -57,18 +57,18 @@ namespace bs
 
 	/**
 	 * A handle that allows you to set a GpuProgram parameter. Internally keeps a reference to the GPU parameter buffer and
-	 * the necessary offsets. You should specialize this type for specific parameter types. 
+	 * the necessary offsets. You should specialize this type for specific parameter types.
 	 *
-	 * Object of this type must be returned by a Material. Setting/Getting parameter values will internally access a GPU 
+	 * Object of this type must be returned by a Material. Setting/Getting parameter values will internally access a GPU
 	 * parameter buffer attached to the Material this parameter was created from. Anything rendered with that material will
 	 * then use those set values.
 	 * 			
 	 * @note	
-	 * Normally you can set a GpuProgram parameter by calling various set/get methods on a Material. This class primarily 
-	 * used an as optimization in performance critical bits of code where it is important to locate and set parameters 
-	 * quickly without any lookups (Mentioned set/get methods expect a parameter name). You just retrieve the handle once 
+	 * Normally you can set a GpuProgram parameter by calling various set/get methods on a Material. This class primarily
+	 * used an as optimization in performance critical bits of code where it is important to locate and set parameters
+	 * quickly without any lookups (Mentioned set/get methods expect a parameter name). You just retrieve the handle once
 	 * and then set the parameter value many times with minimal performance impact.
-	 * 
+	 *
 	 * @see		Material
 	 */
 	template<class T, bool Core>
@@ -86,16 +86,16 @@ namespace bs
 		 * Sets a parameter value at the specified array index. If parameter does not contain an array leave the index at 0.
 		 *
 		 * @note	
-		 * Like with all GPU parameters, the actual GPU buffer will not be updated until rendering with material this 
+		 * Like with all GPU parameters, the actual GPU buffer will not be updated until rendering with material this
 		 * parameter was created from starts on the core thread.
 		 */
 		void set(const T& value, UINT32 arrayIdx = 0) const;
 
 		/**
-		 * Returns a value of a parameter at the specified array index. If parameter does not contain an array leave the 
+		 * Returns a value of a parameter at the specified array index. If parameter does not contain an array leave the
 		 * index at 0.
 		 *
-		 * @note	No GPU reads are done. Data returned was cached when it was written. 
+		 * @note	No GPU reads are done. Data returned was cached when it was written.
 		 */
 		T get(UINT32 arrayIdx = 0) const;
 

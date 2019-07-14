@@ -34,8 +34,8 @@ namespace bs
 		BS_END_RTTI_MEMBERS
 
 		INT32& getUsage(Texture* obj) { return obj->mProperties.mDesc.usage; }
-		void setUsage(Texture* obj, INT32& val) 
-		{ 
+		void setUsage(Texture* obj, INT32& val)
+		{
 			// Render target and depth stencil texture formats are for in-memory use only
 			// and don't make sense when serialized
 			if ((val & (TU_DEPTHSTENCIL | TU_RENDERTARGET)) != 0)
@@ -80,7 +80,7 @@ namespace bs
 		{
 			addPlainField("mUsage", 11, &TextureRTTI::getUsage, &TextureRTTI::setUsage);
 
-			addReflectablePtrArrayField("mPixelData", 12, &TextureRTTI::getPixelData, &TextureRTTI::getPixelDataArraySize, 
+			addReflectablePtrArrayField("mPixelData", 12, &TextureRTTI::getPixelData, &TextureRTTI::getPixelDataArraySize,
 				&TextureRTTI::setPixelData, &TextureRTTI::setPixelDataArraySize, RTTIFieldInfo(RTTIFieldFlag::SkipInReferenceSearch));
 		}
 

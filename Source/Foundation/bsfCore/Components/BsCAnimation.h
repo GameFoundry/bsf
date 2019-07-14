@@ -6,7 +6,7 @@
 #include "Animation/BsAnimation.h"
 #include "Scene/BsComponent.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Components-Core
 	 *  @{
@@ -31,7 +31,7 @@ namespace bs
 		CAnimation(const HSceneObject& parent);
 		virtual ~CAnimation() = default;
 		
-		/** 
+		/**
 		 * Determines the default clip to play as soon as the component is enabled. If more control over playing clips is needed
 		 * use the play(), blend() and crossFade() methods to queue clips for playback manually, and setState() method for
 		 * modify their states individually.
@@ -107,7 +107,7 @@ namespace bs
 		 * Changes a weight of a single morph channel, determining how much of it to apply on top of the base mesh.
 		 *
 		 * @param name		Name of the morph channel to modify. This depends on the mesh the animation is currently
-		 *					animating. 
+		 *					animating.
 		 * @param weight	Weight that determines how much of the channel to apply to the mesh, in range [0, 1]. 	
 		 */
 		BS_SCRIPT_EXPORT(n:SetMorphChannelWeight)
@@ -121,7 +121,7 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:Bounds,pr:getter)
 		const AABox& getBounds() const { return mBounds; }
 
-		/** 
+		/**
 		 * Determines should animation bounds be used for visibility determination (culling). If false the bounds of the
 		 * mesh attached to the relevant CRenderable component will be used instead.
 		 */
@@ -158,9 +158,9 @@ namespace bs
 		/** Returns the Animation implementation wrapped by this component. */
 		SPtr<Animation> _getInternal() const { return mInternal; }
 
-		/** 
+		/**
 		 * Registers a new bone component, creating a new transform mapping from the bone name to the scene object the
-		 * component is attached to. 
+		 * component is attached to.
 		 */
 		void _addBone(HBone bone);
 
@@ -170,13 +170,13 @@ namespace bs
 		/** Called whenever the bone name the Bone component points to changes. */
 		void _notifyBoneChanged(const HBone& bone);
 
-		/** 
+		/**
 		 * Registers a Renderable component with the animation, should be called whenever a Renderable component is added
 		 * to the same scene object as this component.
 		 */
 		void _registerRenderable(const HRenderable& renderable);
 
-		/** 
+		/**
 		 * Removes renderable from the animation component. Should be called when a Renderable component is removed from
 		 * this scene object.
 		 */
@@ -197,10 +197,10 @@ namespace bs
 		BS_SCRIPT_EXPORT(in:true)
 		bool _getGenericCurveValue(UINT32 curveIdx, float& value);
 
-		/** 
-		 * Preview mode allows certain operations on the component to be allowed (like basic animation playback), 
-		 * even when the component is not actively running. This is intended for use primarily by the animation editor. 
-		 * Preview mode ends automatically when the component is enabled (i.e. starts running normally), or when 
+		/**
+		 * Preview mode allows certain operations on the component to be allowed (like basic animation playback),
+		 * even when the component is not actively running. This is intended for use primarily by the animation editor.
+		 * Preview mode ends automatically when the component is enabled (i.e. starts running normally), or when
 		 * explicitly disabled. Returns true if the preview mode was enabled (which could fail if the component is
 		 * currently running).
 		 */
@@ -256,8 +256,8 @@ namespace bs
 		/** Callback triggered whenever an animation event is triggered. */
 		void eventTriggered(const HAnimationClip& clip, const String& name);
 
-		/** 
-		 * Finds any scene objects that are mapped to bone transforms. Such object's transforms will be affected by 
+		/**
+		 * Finds any scene objects that are mapped to bone transforms. Such object's transforms will be affected by
 		 * skeleton bone animation.
 		 */
 		void setBoneMappings();

@@ -14,7 +14,7 @@ namespace bs
 	#define BS_INCLUDE_B3D_PATHS 0
 #endif
 
-#if BS_INCLUDE_B3D_PATHS 
+#if BS_INCLUDE_B3D_PATHS
 	constexpr const char* GAME_RESOURCES_FOLDER_NAME = "Resources/";
 	constexpr const char* GAME_SETTINGS_NAME = "GameSettings.asset";
 	constexpr const char* GAME_RESOURCE_MANIFEST_NAME = "ResourceManifest.asset";
@@ -43,11 +43,11 @@ namespace bs
 #endif
 		
 		/**
-		 * Searches common locations for a specified path by querying if the file/directory exists and returns the found 
+		 * Searches common locations for a specified path by querying if the file/directory exists and returns the found
 		 * path.
 		 * 			
 		 * @param[in]	path	Relative path to search for (for example "Data\").
-		 * @return				Path at which the relative path was found at. This path will be relative to the working 
+		 * @return				Path at which the relative path was found at. This path will be relative to the working
 		 *						directory.
 		 */
 		static Path findPath(const Path& path);

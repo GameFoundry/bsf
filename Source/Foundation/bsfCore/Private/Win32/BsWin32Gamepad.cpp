@@ -31,9 +31,9 @@ namespace bs
 		bool buttonState[16]; // Only for XInput
 	};
 
-	/** 
-	 * Initializes DirectInput gamepad device for a window with the specified handle. Only input from that window will be 
-	 * reported. 
+	/**
+	 * Initializes DirectInput gamepad device for a window with the specified handle. Only input from that window will be
+	 * reported.
 	 */
 	void initializeDirectInput(Gamepad::Pimpl* m, HWND hWnd)
 	{
@@ -93,7 +93,7 @@ namespace bs
 
 			switch (di.dwData)
 			{
-			case 0: 
+			case 0:
 				newPOVState.code = BC_GAMEPAD_DPAD_UP;
 				newPOVState.pressed = true;
 				break;
@@ -246,7 +246,7 @@ namespace bs
 			axisState[0].value = (int)inputState.Gamepad.sThumbLX;
 			axisState[1].value = -(int)inputState.Gamepad.sThumbLY;
 
-			// Right stick 
+			// Right stick
 			axisState[2].value = (int)inputState.Gamepad.sThumbRX;
 			axisState[3].value = -(int)inputState.Gamepad.sThumbRY;
 

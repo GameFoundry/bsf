@@ -38,17 +38,17 @@ namespace bs
 
 		/**
 	     * Traverses the object hierarchy, finds all child objects and components and records their instance data, as well
-		 * as their original place in the hierarchy. Instance data essentially holds the object's "identity" and by 
+		 * as their original place in the hierarchy. Instance data essentially holds the object's "identity" and by
 		 * restoring it we ensure any handles pointing to the object earlier will still point to the new version.
 		 *
 		 * @param[in]	so					Object to traverse and record.
 		 * @param[out]	output				Contains the output hierarchy of instance data.
-		 * @param[out]	linkedInstanceData	A map of link IDs to instance data. Objects without link IDs will not be 
+		 * @param[out]	linkedInstanceData	A map of link IDs to instance data. Objects without link IDs will not be
 		 *									included here.
 		 *
 		 * @note	Does not recurse into child prefab instances.
 		 */
-		void recordInstanceData(const HSceneObject& so, SceneObjectProxy& output, 
+		void recordInstanceData(const HSceneObject& so, SceneObjectProxy& output,
 			UnorderedMap<UINT32, LinkedInstanceData>& linkedInstanceData)
 		{
 			struct StackData
@@ -104,7 +104,7 @@ namespace bs
 		}
 
 		/**
-		 * Restores instance data in the provided hierarchy, using link ids to determine what data maps to which objects. 
+		 * Restores instance data in the provided hierarchy, using link ids to determine what data maps to which objects.
 		 *
 		 * @param[in]	so					Object to traverse and restore the instance data.
 		 * @param[in]	proxy				Hierarchy containing instance data for all objects and components, returned by
@@ -113,7 +113,7 @@ namespace bs
 		 *
 		 * @note	Does not recurse into child prefab instances.
 		 */
-		void restoreLinkedInstanceData(const HSceneObject& so, SceneObjectProxy& proxy, 
+		void restoreLinkedInstanceData(const HSceneObject& so, SceneObjectProxy& proxy,
 			UnorderedMap<UINT32, LinkedInstanceData>& linkedInstanceData)
 		{
 			Stack<HSceneObject> todo;

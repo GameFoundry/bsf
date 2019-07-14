@@ -145,7 +145,7 @@ namespace bs
 
 	namespace ct
 	{
-	Technique::Technique(const String& language, const Vector<StringID>& tags, const ShaderVariation& variation, 
+	Technique::Technique(const String& language, const Vector<StringID>& tags, const ShaderVariation& variation,
 		const Vector<SPtr<Pass>>& passes)
 		:TTechnique(language, tags, variation, passes)
 	{ }
@@ -160,7 +160,7 @@ namespace bs
 		return techniquePtr;
 	}
 
-	SPtr<Technique> Technique::create(const String& language, const Vector<StringID>& tags, 
+	SPtr<Technique> Technique::create(const String& language, const Vector<StringID>& tags,
 		const ShaderVariation& variation, const Vector<SPtr<Pass>>& passes)
 	{
 		Technique* technique = new (bs_alloc<Technique>()) Technique(language, tags, variation, passes);

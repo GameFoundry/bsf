@@ -47,7 +47,7 @@ namespace bs
 		static GUIDropDownDataEntry separator();
 
 		/** Creates a new button entry with the specified callback that is triggered when button is selected. */
-		static GUIDropDownDataEntry button(const String& label, std::function<void()> callback, 
+		static GUIDropDownDataEntry button(const String& label, std::function<void()> callback,
 			const String& shortcutTag = StringUtil::BLANK);
 
 		/** Creates a new sub-menu entry that will open the provided drop down data sub-menu when activated. */
@@ -77,7 +77,7 @@ namespace bs
 		GUIDropDownData mChildData;
 		String mLabel;
 		String mShortcutTag;
-		Type mType; 
+		Type mType;
 	};
 
 	/**	Type of drop down box types. */
@@ -130,7 +130,7 @@ namespace bs
 			 *								hierarchy to be in front of lower levels, so you should increase this value for
 			 *								each level of the sub-menu hierarchy.
 			 */
-			DropDownSubMenu(GUIDropDownMenu* owner, DropDownSubMenu* parent, const DropDownAreaPlacement& placement, 
+			DropDownSubMenu(GUIDropDownMenu* owner, DropDownSubMenu* parent, const DropDownAreaPlacement& placement,
 				const Rect2I& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, UINT32 depthOffset);
 			~DropDownSubMenu();
 
@@ -155,14 +155,14 @@ namespace bs
 			/**
 			 * Called when the user activates an element with the specified index.
 			 *
-			 * @param[in]	bounds	Bounds of the GUI element that is used as a visual representation of this drop down 
+			 * @param[in]	bounds	Bounds of the GUI element that is used as a visual representation of this drop down
 			 *						element.
 			 */
 			void elementActivated(UINT32 idx, const Rect2I& bounds);
 
 			/**
 			 * Called when the user selects an element with the specified index.
-			 * 
+			 *
 			 * @param[in]	idx		Index of the element that was selected.
 			 */
 			void elementSelected(UINT32 idx);

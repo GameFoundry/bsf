@@ -172,7 +172,7 @@ namespace bs
 		CoreObject::initialize();
 	}
 
-	SPtr<ComputePipelineState> ComputePipelineState::create(const SPtr<GpuProgram>& program, 
+	SPtr<ComputePipelineState> ComputePipelineState::create(const SPtr<GpuProgram>& program,
 		GpuDeviceFlags deviceMask)
 	{
 		return RenderStateManager::instance().createComputePipelineState(program, deviceMask);
