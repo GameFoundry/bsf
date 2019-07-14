@@ -84,8 +84,8 @@ namespace bs
 		mOnPointerPressedConn = gInput().onPointerPressed.connect(std::bind(&GUIManager::onPointerPressed, this, _1));
 		mOnPointerReleasedConn = gInput().onPointerReleased.connect(std::bind(&GUIManager::onPointerReleased, this, _1));
 		mOnPointerDoubleClick = gInput().onPointerDoubleClick.connect(std::bind(&GUIManager::onPointerDoubleClick, this, _1));
-		mOnTextInputConn = gInput().onCharInput.connect(std::bind(&GUIManager::onTextInput, this, _1)); 
-		mOnInputCommandConn = gInput().onInputCommand.connect(std::bind(&GUIManager::onInputCommandEntered, this, _1)); 
+		mOnTextInputConn = gInput().onCharInput.connect(std::bind(&GUIManager::onTextInput, this, _1));
+		mOnInputCommandConn = gInput().onInputCommand.connect(std::bind(&GUIManager::onInputCommandEntered, this, _1));
 		mOnVirtualButtonDown = VirtualInput::instance().onButtonDown.connect(std::bind(&GUIManager::onVirtualButtonDown, this, _1, _2));
 
 		mWindowGainedFocusConn = RenderWindowManager::instance().onFocusGained.connect(std::bind(&GUIManager::onWindowFocusGained, this, _1));
@@ -330,7 +330,7 @@ namespace bs
 					// Gain focus unless already in focus
 					if (iterFind == mElementsInFocus.end())
 					{
-						mElementsInFocus.push_back(ElementFocusInfo(focusElementInfo.element, 
+						mElementsInFocus.push_back(ElementFocusInfo(focusElementInfo.element,
 							focusElementInfo.element->_getParentWidget(), false));
 
 						mCommandEvent = GUICommandEvent();
@@ -483,9 +483,9 @@ namespace bs
 
 					// Compare pointers just to differentiate between two elements with the same depth, their order doesn't really matter, but std::set
 					// requires all elements to be unique
-					return (aDepth > bDepth) || 
-						(aDepth == bDepth && a.element > b.element) || 
-						(aDepth == bDepth && a.element == b.element && a.renderElement > b.renderElement); 
+					return (aDepth > bDepth) ||
+						(aDepth == bDepth && a.element > b.element) ||
+						(aDepth == bDepth && a.element == b.element && a.renderElement > b.renderElement);
 				};
 
 				FrameSet<GUIGroupElement, std::function<bool(const GUIGroupElement&, const GUIGroupElement&)>> allElements(elemComp);
@@ -702,8 +702,8 @@ namespace bs
 					for(auto& matElement : group->elements)
 					{
 						matElement.element->_fillBuffer(
-							vertices[typeIdx], indices[typeIdx], 
-							vertexOffset[typeIdx], indexOffset[typeIdx], 
+							vertices[typeIdx], indices[typeIdx],
+							vertexOffset[typeIdx], indexOffset[typeIdx],
 							numVertices[typeIdx], numIndices[typeIdx], matElement.renderElement);
 
 						UINT32 elemNumVertices;
@@ -993,7 +993,7 @@ namespace bs
 		{
 			for(auto& elementInfo : mElementsUnderPointer)
 			{
-				auto iterFind2 = std::find_if(mActiveElements.begin(), mActiveElements.end(), 
+				auto iterFind2 = std::find_if(mActiveElements.begin(), mActiveElements.end(),
 					[&](const ElementInfo& x) { return x.element == elementInfo.element; });
 
 				if(iterFind2 != mActiveElements.end())
@@ -1011,7 +1011,7 @@ namespace bs
 		}
 
 		// Send DragEnd event to whichever element is active
-		bool acceptEndDrag = (mDragState == DragState::Dragging || mDragState == DragState::HeldWithoutDrag) && mActiveMouseButton == guiButton && 
+		bool acceptEndDrag = (mDragState == DragState::Dragging || mDragState == DragState::HeldWithoutDrag) && mActiveMouseButton == guiButton &&
 			(guiButton == GUIMouseButton::Left);
 
 		if(acceptEndDrag)
@@ -1345,7 +1345,7 @@ namespace bs
 				}
 
 				GUIWidget* widget = widgetInfo.widget;
-				if(widgetWindows[widgetIdx] == windowUnderPointer 
+				if(widgetWindows[widgetIdx] == windowUnderPointer
 					&& widget->inBounds(windowToBridgedCoords(widget->getTarget()->getTarget(), windowPos)))
 				{
 					const Vector<GUIElement*>& elements = widget->getElements();
@@ -1378,7 +1378,7 @@ namespace bs
 			}
 		}
 
-		std::sort(mNewElementsUnderPointer.begin(), mNewElementsUnderPointer.end(), 
+		std::sort(mNewElementsUnderPointer.begin(), mNewElementsUnderPointer.end(),
 			[](const ElementInfoUnderPointer& a, const ElementInfoUnderPointer& b)
 		{
 			return a.element->_getDepth() < b.element->_getDepth();
@@ -1459,7 +1459,7 @@ namespace bs
 
 			if (iterFind == mNewElementsUnderPointer.end() || !iterFind->isHovering)
 			{
-				auto iterFind2 = std::find_if(mActiveElements.begin(), mActiveElements.end(), 
+				auto iterFind2 = std::find_if(mActiveElements.begin(), mActiveElements.end(),
 					[=](const ElementInfo& x) { return x.element == element; });
 
 				// Send MouseOut event
@@ -1557,7 +1557,7 @@ namespace bs
 				continue;
 			}
 
-			auto iterFind = std::find_if(mActiveElements.begin(), mActiveElements.end(), 
+			auto iterFind = std::find_if(mActiveElements.begin(), mActiveElements.end(),
 				[&](const ElementInfo& x) { return x.element == element; });
 
 			// Send MouseOut event

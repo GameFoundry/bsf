@@ -9,7 +9,7 @@
 
 namespace bs { namespace ct
 {
-	D3D11HardwareBuffer::D3D11HardwareBuffer(BufferType btype, GpuBufferUsage usage, UINT32 elementCount, UINT32 elementSize, 
+	D3D11HardwareBuffer::D3D11HardwareBuffer(BufferType btype, GpuBufferUsage usage, UINT32 elementCount, UINT32 elementSize,
 		D3D11Device& device, bool useSystemMem, bool streamOut)
 		: HardwareBuffer(elementCount * elementSize, usage, GDF_DEFAULT)
 		, mBufferType(btype), mElementCount(elementCount), mElementSize(elementSize), mUsage(usage), mDevice(device)
@@ -68,7 +68,7 @@ namespace bs { namespace ct
 		else
 		{
 			mDesc.Usage = D3D11Mappings::getUsage(usage);
-			mDesc.CPUAccessFlags = D3D11Mappings::getAccessFlags(usage); 
+			mDesc.CPUAccessFlags = D3D11Mappings::getAccessFlags(usage);
 
 			switch(btype)
 			{
@@ -142,8 +142,8 @@ namespace bs { namespace ct
 				}
 				else
 				{
-					// Map cannot be called with MAP_WRITE_DISCARD access, because the Resource was not created as 
-					// D3D11_USAGE_DYNAMIC. D3D11_USAGE_DYNAMIC Resources must use either MAP_WRITE_DISCARD 
+					// Map cannot be called with MAP_WRITE_DISCARD access, because the Resource was not created as
+					// D3D11_USAGE_DYNAMIC. D3D11_USAGE_DYNAMIC Resources must use either MAP_WRITE_DISCARD
 					// or MAP_WRITE_NO_OVERWRITE with Map.
 					mapType = D3D11_MAP_WRITE;
 				}
@@ -249,7 +249,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void D3D11HardwareBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, 
+	void D3D11HardwareBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset,
 		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer, const SPtr<ct::CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [this](HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length)
@@ -258,7 +258,7 @@ namespace bs { namespace ct
 			if (srcOffset == 0 && dstOffset == 0 &&
 				length == mSize && mSize == srcBuffer.getSize())
 			{
-				mDevice.getImmediateContext()->CopyResource(mD3DBuffer, 
+				mDevice.getImmediateContext()->CopyResource(mD3DBuffer,
 					static_cast<D3D11HardwareBuffer&>(srcBuffer).getD3DBuffer());
 				if (mDevice.hasError())
 				{
@@ -282,7 +282,7 @@ namespace bs { namespace ct
 				if (mDevice.hasError())
 				{
 					String errorDescription = mDevice.getErrorDescription();
-					BS_EXCEPT(RenderingAPIException, "Cannot copy D3D11 subresource region\nError Description:" + 
+					BS_EXCEPT(RenderingAPIException, "Cannot copy D3D11 subresource region\nError Description:" +
 						errorDescription);
 				}
 			}
@@ -307,7 +307,7 @@ namespace bs { namespace ct
 		this->unlock();
 	}
 
-	void D3D11HardwareBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags, 
+	void D3D11HardwareBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags,
 		UINT32 queueIdx)
 	{
 		if(mDesc.Usage == D3D11_USAGE_DYNAMIC || mDesc.Usage == D3D11_USAGE_STAGING)

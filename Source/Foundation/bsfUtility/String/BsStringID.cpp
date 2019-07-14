@@ -125,7 +125,7 @@ namespace bs
 	public:
 		static UINT32 size(String const& input) { return (UINT32)input.length(); }
 		static void copy(String const& input, char* dest)
-		{ 
+		{
 			UINT32 len = (UINT32)input.length();
 			input.copy(dest, len);
 			dest[len] = '\0';

@@ -28,7 +28,7 @@ namespace bs
 		FieldsField = metaData.scriptClass->getField("_fields");
 	}
 
-	MonoObject* ScriptSerializableObject::create(const ScriptSerializableProperty* native, MonoObject* managed, 
+	MonoObject* ScriptSerializableObject::create(const ScriptSerializableProperty* native, MonoObject* managed,
 		MonoReflectionType* reflType)
 	{
 		void* params[2] = { reflType, managed };

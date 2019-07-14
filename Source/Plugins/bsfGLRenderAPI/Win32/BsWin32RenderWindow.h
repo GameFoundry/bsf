@@ -100,8 +100,8 @@ namespace bs
 		/** @copydoc RenderWindow::setVSync */
 		void setVSync(bool enabled, UINT32 interval = 1) override;
 
-		/** 
-		 * Copies the contents of a frame buffer into the pre-allocated buffer. 
+		/**
+		 * Copies the contents of a frame buffer into the pre-allocated buffer.
 		 *
 		 * @param[out]	dst		Previously allocated buffer to read the contents into. Must be of valid size.
 		 * @param[in]	buffer	Frame buffer to read the contents from.

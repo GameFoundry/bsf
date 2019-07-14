@@ -296,7 +296,7 @@ namespace bs
 		 *
 		 * @note	Quaternion must be non-zero.
 		 */
-		Quaternion inverse() const; 
+		Quaternion inverse() const;
 
 		/** Rotates the provided vector. */
 		Vector3 rotate(const Vector3& vec) const;
@@ -388,19 +388,19 @@ namespace bs
 }
 
 /** @cond SPECIALIZATIONS */
-namespace std 
+namespace std
 {
-	template<> class numeric_limits<bs::Quaternion> 
+	template<> class numeric_limits<bs::Quaternion>
 	{
 	public:
-		constexpr static bs::Quaternion infinity() 
+		constexpr static bs::Quaternion infinity()
 		{
 			return bs::Quaternion(
-				std::numeric_limits<float>::infinity(), 
-				std::numeric_limits<float>::infinity(), 
-				std::numeric_limits<float>::infinity(), 
+				std::numeric_limits<float>::infinity(),
+				std::numeric_limits<float>::infinity(),
+				std::numeric_limits<float>::infinity(),
 				std::numeric_limits<float>::infinity());
 		}
 	};
-} 
+}
 /** @endcond */

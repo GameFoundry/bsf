@@ -81,4 +81,4 @@ namespace bs
 			BS_EXCEPT(InvalidParametersException, "Attribute not found.");
 		}
 	}
-}        
+}

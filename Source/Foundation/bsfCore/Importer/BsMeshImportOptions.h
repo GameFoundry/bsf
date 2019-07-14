@@ -113,7 +113,7 @@ namespace bs
 		bool reduceKeyFrames = true;
 
 		/**	
-		 * Enables or disables import of root motion curves. When enabled, any animation curves in imported animations 
+		 * Enables or disables import of root motion curves. When enabled, any animation curves in imported animations
 		 * affecting the root bone will be available through a set of separate curves in AnimationClip, and they won't be
 		 * evaluated through normal animation process. Instead it is expected that the user evaluates the curves manually
 		 * and applies them as required.
@@ -127,13 +127,13 @@ namespace bs
 
 		/**	
 		 * Determines what type (if any) of collision mesh should be imported. If enabled the collision mesh will be
-		 * available as a sub-resource returned by the importer (along with the normal mesh). 
+		 * available as a sub-resource returned by the importer (along with the normal mesh).
 		 */
 		BS_SCRIPT_EXPORT()
 		CollisionMeshType collisionMeshType = CollisionMeshType::None;
 
-		/** 
-		 * Animation split infos that determine how will the source animation clip be split. If no splits are present the 
+		/**
+		 * Animation split infos that determine how will the source animation clip be split. If no splits are present the
 		 * data will be imported as one clip, but if splits are present the data will be split according to the split infos.
 		 * Split infos only affect the primary animation clip, other clips will not be split.
 		 */

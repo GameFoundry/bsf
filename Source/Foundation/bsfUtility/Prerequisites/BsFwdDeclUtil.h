@@ -49,13 +49,13 @@ namespace bs
 	/** @ref scriptBindingMacro */
 	#define BS_SCRIPT_EXPORT(...) __attribute__((annotate("se," #__VA_ARGS__)))
 
-	/** 
+	/**
 	 * When applied to a parameter, makes it a variable argument parameter in the scripting interface (if supported
 	 * by the scripting language.
 	 */
 	#define BS_PARAMS __attribute__((annotate("params")))
 
-	/** 
+	/**
 	 * When applied to a parameter or a field of ResourceHandle type, makes that element be exported as a raw resource in
 	 * script code.
 	 */
@@ -64,13 +64,13 @@ namespace bs
 	/** @ref scriptBindingMacro */
 	#define BS_SCRIPT_EXPORT(...)
 
-	/** 
+	/**
 	 * When applied to a parameter, makes it a variable argument parameter in the scripting interface (if supported
 	 * by the scripting language).
 	 */
 	#define BS_PARAMS
 
-	/** 
+	/**
 	 * When applied to a parameter or a field of ResourceHandle type, makes that element be exported as a raw resource in
 	 * script code.
 	 */

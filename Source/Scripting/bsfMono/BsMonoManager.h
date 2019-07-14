@@ -83,7 +83,7 @@ namespace bs
 			ScriptMeta localMetaData;
 		};
 
-		/** 
+		/**
 		 * Initializes any script types registered with registerScriptType() for this assembly. This sets up any
 		 * native <-> managed internal calls and other similar code for such types.
 		 */

@@ -22,7 +22,7 @@ namespace bs { namespace ct
 		const StringID& getName() const override;
 		
 		/** @copydoc RenderAPI::setGraphicsPipeline */
-		void setGraphicsPipeline(const SPtr<GraphicsPipelineState>& pipelineState, 
+		void setGraphicsPipeline(const SPtr<GraphicsPipelineState>& pipelineState,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setComputePipeline */
@@ -30,11 +30,11 @@ namespace bs { namespace ct
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setGpuParams */
-		void setGpuParams(const SPtr<GpuParams>& gpuParams, 
+		void setGpuParams(const SPtr<GpuParams>& gpuParams,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::clearRenderTarget */
-		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, 
+		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0,
 			UINT8 targetMask = 0xFF, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::clearViewport */
@@ -49,7 +49,7 @@ namespace bs { namespace ct
 		void setViewport(const Rect2& area, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setScissorRect */
-		void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom, 
+		void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setStencilRef */
@@ -60,7 +60,7 @@ namespace bs { namespace ct
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setIndexBuffer */
-		void setIndexBuffer(const SPtr<IndexBuffer>& buffer, 
+		void setIndexBuffer(const SPtr<IndexBuffer>& buffer,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setVertexDeclaration */
@@ -76,7 +76,7 @@ namespace bs { namespace ct
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::drawIndexed */
-		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount, 
+		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount,
 			UINT32 instanceCount = 0, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::dispatchCompute */
@@ -115,7 +115,7 @@ namespace bs { namespace ct
 		/** Gets the total number of Vulkan compatible devices available on this system. */
 		UINT32 _getNumDevices() const { return (UINT32)mDevices.size(); }
 
-		/** 
+		/**
 		 * Returns one or multiple devices recognized as primary. This will be a single device in most cases, or multiple
 		 * devices if using some kind of a supported multi-GPU setup.
 		 */
@@ -137,9 +137,9 @@ namespace bs { namespace ct
 		/** Creates and populates a set of render system capabilities describing which functionality is available. */
 		void initCapabilites();
 
-		/** 
-		 * Returns a valid command buffer. Uses the provided buffer if not null. Otherwise returns the default command 
-		 * buffer. 
+		/**
+		 * Returns a valid command buffer. Uses the provided buffer if not null. Otherwise returns the default command
+		 * buffer.
 		 */
 		VulkanCommandBuffer* getCB(const SPtr<CommandBuffer>& buffer);
 

@@ -11,7 +11,7 @@ namespace bs
 	}
 
 	LayoutSizeRange GUIFixedSpace::_calculateLayoutSizeRange() const
-	{ 
+	{
 		LayoutSizeRange range;
 		range.optimal = _getOptimalSize();
 		range.min = range.optimal;

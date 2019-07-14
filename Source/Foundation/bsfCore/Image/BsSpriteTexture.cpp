@@ -51,10 +51,10 @@ namespace bs
 		case SpriteAnimationPlayback::Normal:
 			t = Math::clamp(t, 0.0f, duration);
 			break;
-		case SpriteAnimationPlayback::Loop: 
+		case SpriteAnimationPlayback::Loop:
 			t = Math::repeat(t, duration);
 			break;
-		case SpriteAnimationPlayback::PingPong: 
+		case SpriteAnimationPlayback::PingPong:
 			t = Math::pingPong(t, duration);
 			break;
 		}
@@ -141,7 +141,7 @@ namespace bs
 		if(mAtlasTexture.isLoaded())
 			texturePtr = mAtlasTexture->getCore();
 
-		ct::SpriteTexture* spriteTexture = new (bs_alloc<ct::SpriteTexture>()) ct::SpriteTexture(mUVOffset, mUVScale, 
+		ct::SpriteTexture* spriteTexture = new (bs_alloc<ct::SpriteTexture>()) ct::SpriteTexture(mUVOffset, mUVScale,
 			std::move(texturePtr), mAnimation, mPlayback);
 
 		SPtr<ct::SpriteTexture> spriteTexPtr = bs_shared_ptr<ct::SpriteTexture>(spriteTexture);

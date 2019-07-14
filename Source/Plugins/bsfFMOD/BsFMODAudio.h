@@ -46,7 +46,7 @@ namespace bs
 		/** @copydoc Audio::getAllDevices */
 		const Vector<AudioDevice>& getAllDevices() const override { return mAllDevices; }
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 

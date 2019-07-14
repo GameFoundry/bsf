@@ -68,7 +68,7 @@ namespace bs { namespace ct
 		vkCmdCopyBuffer(cb->getHandle(), mBuffer, destination->getHandle(), 1, &region);
 	}
 
-	void VulkanBuffer::copy(VulkanCmdBuffer* cb, VulkanImage* destination, const VkExtent3D& extent, 
+	void VulkanBuffer::copy(VulkanCmdBuffer* cb, VulkanImage* destination, const VkExtent3D& extent,
 		const VkImageSubresourceLayers& range, VkImageLayout layout)
 	{
 		VkBufferImageCopy region;
@@ -121,7 +121,7 @@ namespace bs { namespace ct
 
 	VkBufferView VulkanBuffer::getView(VkFormat format)
 	{
-		const auto iterFind = std::find_if(mViews.begin(), mViews.end(), 
+		const auto iterFind = std::find_if(mViews.begin(), mViews.end(),
 			[format](const ViewInfo& x) { return x.format == format; });
 
 		if(iterFind != mViews.end())
@@ -149,7 +149,7 @@ namespace bs { namespace ct
 
 	void VulkanBuffer::freeView(VkBufferView view)
 	{
-		const auto iterFind = std::find_if(mViews.begin(), mViews.end(), 
+		const auto iterFind = std::find_if(mViews.begin(), mViews.end(),
 			[view](const ViewInfo& x) { return x.view == view; });
 
 		if(iterFind != mViews.end())
@@ -177,7 +177,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	VulkanHardwareBuffer::VulkanHardwareBuffer(BufferType type, GpuBufferFormat format, GpuBufferUsage usage, 
+	VulkanHardwareBuffer::VulkanHardwareBuffer(BufferType type, GpuBufferFormat format, GpuBufferUsage usage,
 		UINT32 size, GpuDeviceFlags deviceMask)
 		: HardwareBuffer(size, usage, deviceMask), mBuffers(), mStagingBuffer(nullptr), mStagingMemory(nullptr)
 		, mMappedDeviceIdx(-1), mMappedGlobalQueueIdx(-1), mMappedOffset(0), mMappedSize(0)
@@ -303,7 +303,7 @@ namespace bs { namespace ct
 	{
 		if ((offset + length) > mSize)
 		{
-			BS_LOG(Error, RenderBackend, "Provided offset({0}) + length({1}) is larger than the buffer {2}.", 
+			BS_LOG(Error, RenderBackend, "Provided offset({0}) + length({1}) is larger than the buffer {2}.",
 				offset, length, mSize);
 
 			return nullptr;
@@ -357,7 +357,7 @@ namespace bs { namespace ct
 			// We're safe to map directly since GPU isn't using the buffer
 			if (!isUsedOnGPU)
 			{
-				// If some CB has an operation queued that will be using the current contents of the buffer, create a new 
+				// If some CB has an operation queued that will be using the current contents of the buffer, create a new
 				// buffer so we don't modify the previous use of the buffer
 				if(buffer->isBound())
 				{
@@ -428,7 +428,7 @@ namespace bs { namespace ct
 				// Submit the command buffer and wait until it finishes
 				transferCB->flush(true);
 
-				// If writing and some CB has an operation queued that will be using the current contents of the buffer, 
+				// If writing and some CB has an operation queued that will be using the current contents of the buffer,
 				// create a new  buffer so we don't modify the previous use of the buffer
 				if (options == GBL_READ_WRITE && buffer->isBound())
 				{
@@ -512,13 +512,13 @@ namespace bs { namespace ct
 		if (!mIsMapped)
 			return;
 
-		// Note: If we did any writes they need to be made visible to the GPU. However there is no need to execute 
+		// Note: If we did any writes they need to be made visible to the GPU. However there is no need to execute
 		// a pipeline barrier because (as per spec) host writes are implicitly visible to the device.
 
 		if(mStagingMemory == nullptr && mStagingBuffer == nullptr) // We directly mapped the buffer
 		{
 			mBuffers[mMappedDeviceIdx]->unmap();
-		} 
+		}
 		else
 		{
 			if(mStagingBuffer != nullptr)
@@ -548,7 +548,7 @@ namespace bs { namespace ct
 					// Try to avoid the wait by checking for special write conditions
 
 					// Caller guarantees he won't touch the same data as the GPU, so just copy
-					if (mMappedLockOptions == GBL_WRITE_ONLY_NO_OVERWRITE) 
+					if (mMappedLockOptions == GBL_WRITE_ONLY_NO_OVERWRITE)
 					{
 						// Fall through to copy()
 					}
@@ -559,7 +559,7 @@ namespace bs { namespace ct
 
 						buffer = createBuffer(device, mSize, false, true);
 						mBuffers[mMappedDeviceIdx] = buffer;
-					} 
+					}
 					else // Otherwise we have no choice but to issue a dependency between the queues
 					{
 						transferCB->appendMask(useMask);
@@ -683,7 +683,7 @@ namespace bs { namespace ct
 		unlock();
 	}
 
-	void VulkanHardwareBuffer::writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags, 
+	void VulkanHardwareBuffer::writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags,
 		UINT32 queueIdx)
 	{
 		GpuLockOptions lockOptions = GBL_WRITE_ONLY_DISCARD_RANGE;

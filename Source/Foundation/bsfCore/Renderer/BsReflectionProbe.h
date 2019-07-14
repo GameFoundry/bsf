@@ -20,13 +20,13 @@ namespace bs
 	enum BS_SCRIPT_EXPORT(m:Rendering) class ReflectionProbeType
 	{
 		/**
-		 * Reflection probe cubemap is generated, and box extents are used for calculating influence ranges and box 
+		 * Reflection probe cubemap is generated, and box extents are used for calculating influence ranges and box
 		 * geometry.
 		 */
 		Box,
-		/** 
+		/**
 		 * Reflection probe cubemap is generated, but sphere is used for calculating the influence radius and
-		 * proxy geometry. 
+		 * proxy geometry.
 		 */
 		Sphere
 	};
@@ -66,7 +66,7 @@ namespace bs
 		/**	Returns world space bounds that completely encompass the probe's area of influence. */
 		Sphere getBounds() const { return mBounds; }
 		
-		/** 
+		/**
 		 * Sets a distance that will be used for fading out the box reflection probe with distance. By default it
 		 * is equal to one, and can never be less than one. Only relevant for box probes.
 		 */
@@ -100,7 +100,7 @@ namespace bs
 		{ }
 		virtual ~TReflectionProbe() = default;
 
-		/** 
+		/**
 		 * Returns a pre-filtered texture that is generated either from the provided custom texture, or from scene capture.
 		 */
 		SPtr<TextureType> getFilteredTexture() const { return mFilteredTexture; }
@@ -118,10 +118,10 @@ namespace bs
 	 *  @{
 	 */
 
-	namespace ct 
+	namespace ct
 	{
 		class RendererTask;
-		class ReflectionProbe; 
+		class ReflectionProbe;
 	}
 
 	/**
@@ -133,7 +133,7 @@ namespace bs
 	public:
 		~ReflectionProbe();
 
-		/** 
+		/**
 		 * Allows you assign a custom texture to use as a reflection map. This will disable automatic generation of
 		 * reflections. To re-enable auto-generation call this with a null parameter.
 		 */
@@ -142,14 +142,14 @@ namespace bs
 		/** Gets the custom texture assigned through setCustomTexture(). */
 		HTexture getCustomTexture() const { return mCustomTexture; }
 
-		/** 
+		/**
 		 * Captures the scene at the current location and generates a filtered reflection cubemap. No action is taken
 		 * if a custom texture is set.
 		 */
 		void capture();
 
-		/** 
-		 * Filters the custom texture, making it usable for rendering. Called automatically when custom texture changes. If 
+		/**
+		 * Filters the custom texture, making it usable for rendering. Called automatically when custom texture changes. If
 		 * no custom texture is set, no action is taken.
 		 */
 		void filter();
@@ -160,7 +160,7 @@ namespace bs
 		/**
 		 * Creates a new sphere reflection probe.
 		 *
-		 * @param[in]	radius	Radius in which the reflection probe will be rendered within. 
+		 * @param[in]	radius	Radius in which the reflection probe will be rendered within.
 		 * @returns				New reflection probe.
 		 */
 		static SPtr<ReflectionProbe> createSphere(float radius);
@@ -168,7 +168,7 @@ namespace bs
 		/**
 		 * Creates a new box reflection probe.
 		 *
-		 * @param[in]	extents	Extents of the box in which the reflection probe will be rendered within. 
+		 * @param[in]	extents	Extents of the box in which the reflection probe will be rendered within.
 		 * @returns				New reflection probe.
 		 */
 		static SPtr<ReflectionProbe> createBox(const Vector3& extents);
@@ -185,7 +185,7 @@ namespace bs
 		/** @copydoc CoreObject::syncToCore */
 		CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
-		/** 
+		/**
 		 * Captures the scene color at current probe location and generates a filtered map. If a custom texture is set then
 		 * it will be filtered, instead of capturing scene color.
 		 */
@@ -226,7 +226,7 @@ namespace bs
 	protected:
 		friend class bs::ReflectionProbe;
 
-		ReflectionProbe(ReflectionProbeType type, float radius, const Vector3& extents, 
+		ReflectionProbe(ReflectionProbeType type, float radius, const Vector3& extents,
 			const SPtr<Texture>& filteredTexture);
 
 		/** @copydoc CoreObject::initialize */

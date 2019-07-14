@@ -14,7 +14,7 @@ namespace bs
     #pragma warning disable 649
 
     /// <summary>
-    /// Allows you to access meta-data about a managed dictionary and its children. Similar to Reflection but simpler and 
+    /// Allows you to access meta-data about a managed dictionary and its children. Similar to Reflection but simpler and
     /// faster.
     /// </summary>
     public sealed class SerializableDictionary : ScriptObject

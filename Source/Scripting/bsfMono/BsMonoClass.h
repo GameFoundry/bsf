@@ -52,7 +52,7 @@ namespace bs
 		 * Returns an object referencing a method with the specified name and number of parameters.
 		 *			
 		 * @note	
-		 * If the method is overloaded then you should use getMethodExact(). 
+		 * If the method is overloaded then you should use getMethodExact().
 		 * Does not query base class methods.
 		 * Returns null if method cannot be found.
 		 */
@@ -151,7 +151,7 @@ namespace bs
 		MonoObject* invokeMethod(const String& name, MonoObject* instance = nullptr, void** params = nullptr, UINT32 numParams = 0);
 
 		/**
-		 * Hooks up an internal call that will trigger the provided method callback when the managed method with the 
+		 * Hooks up an internal call that will trigger the provided method callback when the managed method with the
 		 * specified name is called. If name is not valid this will silently fail.
 		 */
 		void addInternalCall(const String& name, const void* method);
@@ -167,10 +167,10 @@ namespace bs
 		 * parameters.
 		 *
 		 * @param[in]	params		Array containing pointers to constructor parameters. Array length must be equal to
-		 *							number of parameters. 
+		 *							number of parameters.
 		 * @param[in]	numParams	Number of parameters the constructor accepts.
 		 *
-		 * @note	If the class have multiple constructors with the same number of parameters use the other 
+		 * @note	If the class have multiple constructors with the same number of parameters use the other
 		 *			createInstance(const String&, void**) overload that allows you to provide exact signature.
 		 */
 		MonoObject* createInstance(void** params, UINT32 numParams);
@@ -180,7 +180,7 @@ namespace bs
 		 *
 		 * @param[in]	ctorSignature	Method signature. Example: "Vector2,int[]"
 		 * @param[in]	params			Array containing pointers to constructor parameters. Array length must be equal to
-		 *								number of parameters. 
+		 *								number of parameters.
 		 */
 		MonoObject* createInstance(const String& ctorSignature, void** params);
 
@@ -194,7 +194,7 @@ namespace bs
 
 		/**
 		 * Constructs a new mono class object.
-		 * 
+		 *
 		 * @param[in]	ns				Namespace the class belongs to.
 		 * @param[in]	type			Type name of the class.
 		 * @param[in]	monoClass		Internal mono class.
@@ -208,8 +208,8 @@ namespace bs
 		String mTypeName;
 		String mFullName;
 
-		mutable UnorderedMap<MethodId, MonoMethod*, MethodId::Hash, MethodId::Equals> mMethods; 
-		mutable UnorderedMap<String, MonoField*> mFields; 
+		mutable UnorderedMap<MethodId, MonoMethod*, MethodId::Hash, MethodId::Equals> mMethods;
+		mutable UnorderedMap<String, MonoField*> mFields;
 		mutable UnorderedMap<String, MonoProperty*> mProperties;
 
 		mutable bool mHasCachedFields;

@@ -50,7 +50,7 @@ namespace bs
 		 * Percentage above which to ignore values in the eye adaptation histogram. The histogram is used for calculating
 		 * the average brightness of the scene. Total luminance in the histogram will be summed up and multiplied by this
 		 * value to calculate maximum luminance. Luminance values above the maximum luminance will be ignored and not used
-		 * in scene brightness calculations. This allows you to remove outliers on the high end of the histogram (for 
+		 * in scene brightness calculations. This allows you to remove outliers on the high end of the histogram (for
 		 * example a few very bright pixels). In range [0.0f, 1.0f].
 		 */
 		BS_SCRIPT_EXPORT(range:[0,1],slider)
@@ -74,7 +74,7 @@ namespace bs
 
 		/**
 		 * Determines how quickly does the eye adaptation adjust to larger values. This affects how quickly does the
-		 * automatic exposure changes when the scene brightness increases. In range [0.01f, 20.0f]. 
+		 * automatic exposure changes when the scene brightness increases. In range [0.01f, 20.0f].
 		 */
 		BS_SCRIPT_EXPORT(range:[0.01,20],slider)
 		float eyeAdaptationSpeedUp = 3.0f;
@@ -209,7 +209,7 @@ namespace bs
 
 		/**
 		 * Contrast to be applied during color grading. Larger values increase difference between light and dark areas of
-		 * the image. In range [0.0f, 2.0f]. 
+		 * the image. In range [0.0f, 2.0f].
 		 */
 		BS_SCRIPT_EXPORT()
 		Vector3 contrast = Vector3::ONE;
@@ -251,7 +251,7 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		bool enabled = true;
 
-		/** 
+		/**
 		 * Radius (in world space, in meters) over which occluders are searched for. Smaller radius ensures better sampling
 		 * precision but can miss occluders. Larger radius ensures far away occluders are considered but can yield lower
 		 * quality or noise because of low sampling precision. Usually best to keep at around a meter, valid range
@@ -327,41 +327,41 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		bool enabled = false;
 
-		/** 
+		/**
 		 * Distance from the camera at which the focal plane is located in. Objects at this distance will be fully in focus.
 		 */
 		BS_SCRIPT_EXPORT()
 		float focalDistance = 0.75f;
 		
-		/** 
-		 * Range within which the objects remain fully in focus. This range is applied relative to the focal distance. 
+		/**
+		 * Range within which the objects remain fully in focus. This range is applied relative to the focal distance.
 		 * Only relevant if Gaussian depth of field is used as other methods don't use a constant in-focus range.
 		 */
 		BS_SCRIPT_EXPORT()
 		float focalRange = 0.75f;
 
 		/**
-		 * Determines the size of the range within which objects transition from focused to fully unfocused, at the near 
+		 * Determines the size of the range within which objects transition from focused to fully unfocused, at the near
 		 * plane. Only relevant for Gaussian depth of field.
 		 */
 		BS_SCRIPT_EXPORT()
 		float nearTransitionRange = 0.25f;
 
 		/**
-		 * Determines the size of the range within which objects transition from focused to fully unfocused, at the far 
+		 * Determines the size of the range within which objects transition from focused to fully unfocused, at the far
 		 * plane. Only relevant for Gaussian depth of field.
 		 */
 		BS_SCRIPT_EXPORT()
 		float farTransitionRange = 0.25f;
 
-		/** 
+		/**
 		 * Determines the amount of blur to apply to fully unfocused objects that are closer to camera than the in-focus
 		 * zone. Set to zero to disable near-field blur. Only relevant for Gaussian depth of field.
 		 */
 		BS_SCRIPT_EXPORT()
 		float nearBlurAmount = 0.02f;
 
-		/** 
+		/**
 		 * Determines the amount of blur to apply to fully unfocused objects that are farther away from camera than the
 		 * in-focus zone. Set to zero to disable far-field blur. Only relevant for Gaussian depth of field.
 		 */
@@ -381,7 +381,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 	};
 
-	/** 
+	/**
 	 * Settings that control the screen space reflections effect. Screen space reflections provide high quality mirror-like
 	 * reflections at low performance cost. They should be used together with reflection probes as the effects complement
 	 * each other. As the name implies, the reflections are only limited to geometry drawn on the screen and the system will
@@ -398,7 +398,7 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		bool enabled = true;
 
-		/** 
+		/**
 		 * Quality of the SSR effect. Higher values cast more sample rays, and march those rays are lower increments for
 		 * better precision. This results in higher quality, as well as a higher performance requirement. Valid range is
 		 * [0, 4], default is 2.
@@ -410,7 +410,7 @@ namespace bs
 		BS_SCRIPT_EXPORT(range:[0,1],slider)
 		float intensity = 1.0f;
 
-		/** 
+		/**
 		 * Roughness at which screen space reflections start fading out and become replaced with refl. probes. Valid range
 		 * is [0, 1]. Default is 0.8.
 		 */
@@ -440,14 +440,14 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		bool enabled = false;
 
-		/** 
+		/**
 		 * Quality of the bloom effect. Higher values will use higher resolution texture for calculating bloom, at the cost
 		 * of lower performance. Valid range is [0, 3], default is 2.
 		 */
 		BS_SCRIPT_EXPORT()
 		UINT32 quality = 2;
 
-		/** 
+		/**
 		 * Determines the minimal threshold of pixel luminance to be included in the bloom calculations. Any pixel with
 		 * luminance below this value will be ignored for the purposes of bloom. The value represents luminance after
 		 * it is scaled by exposure. Set to zero or negative to disable the threshold and include all pixels in the
@@ -456,8 +456,8 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		float threshold = 1.0f;
 
-		/** 
-		 * Determines the intensity of the bloom effect. Ideally should be in [0, 4] range but higher values are allowed. 
+		/**
+		 * Determines the intensity of the bloom effect. Ideally should be in [0, 4] range but higher values are allowed.
 		 */
 		BS_SCRIPT_EXPORT()
 		float intensity = 0.5f;
@@ -466,7 +466,7 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		Color tint = Color::White;
 
-		/** 
+		/**
 		 * Determines the percent of the texture to account for when filtering for bloom. Larger values will include
 		 * farther away pixels.
 		 */
@@ -496,17 +496,17 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		bool enabled = false;
 
-		/** 
-		 * Determines how many times to downsample the scene texture before using it for lens flare effect. Lower values 
-		 * will use higher resolution texture for calculating lens flare, at the cost of lower performance. 
+		/**
+		 * Determines how many times to downsample the scene texture before using it for lens flare effect. Lower values
+		 * will use higher resolution texture for calculating lens flare, at the cost of lower performance.
 		 * Valid range is [1, 6], default is 4.
 		 */
 		BS_SCRIPT_EXPORT(range:[1,6])
 		UINT32 downsampleCount = 4;
 
-		/** 
-		 * Determines the minimal threshold of pixel luminance to be included in the lens flare calculations. Any pixel 
-		 * with luminance below this value will be ignored for the purposes of lens flare. Set to zero or negative to 
+		/**
+		 * Determines the minimal threshold of pixel luminance to be included in the lens flare calculations. Any pixel
+		 * with luminance below this value will be ignored for the purposes of lens flare. Set to zero or negative to
 		 * disable the threshold and include all pixels in the calculations.
 		 */
 		BS_SCRIPT_EXPORT()
@@ -516,21 +516,21 @@ namespace bs
 		BS_SCRIPT_EXPORT(range:[1,10])
 		UINT32 ghostCount = 2;
 
-		/** 
+		/**
 		 * Determines the distance between ghost features. Value is in normalized screen space, in range [0,1] where
 		 * 1 represents the full screen length.
 		 */
 		BS_SCRIPT_EXPORT(range:[0,1])
 		float ghostSpacing = 0.5f;
 
-		/** 
+		/**
 		 * Determines the brightness of the lens flare effect. Value of 1 means the lens flare will be displayed at the
 		 * same intensity as the scene it was derived from. In range [0, 1], default being 0.05.
 		 */
 		BS_SCRIPT_EXPORT(range:[0,1])
 		float brightness = 0.05f;
 
-		/** 
+		/**
 		 * Determines the size of the filter when blurring the lens flare features. Larger values yield a blurrier image
 		 * and will require more performance.
 		 */
@@ -541,7 +541,7 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		bool halo = true;
 
-		/** 
+		/**
 		 * Determines how far away from the screen center does the halo appear, in normalized screen space (range [0,1])
 		 * where 0.5 represents half screen length.
 		 */
@@ -552,7 +552,7 @@ namespace bs
 		BS_SCRIPT_EXPORT(range:[0.01,0.5])
 		float haloThickness = 0.15f;
 
-		/** 
+		/**
 		 * Determines the minimal threshold of pixel luminance to be included for halo generation. Any pixel with
 		 * luminance below this value will be ignored for the purposes of halo generation.
 		 */
@@ -563,7 +563,7 @@ namespace bs
 		BS_SCRIPT_EXPORT(range:[0,2])
 		float haloAspectRatio = 1.0f;
 
-		/** 
+		/**
 		 * Enables or disables chromatic aberration of the lens flare and halo features. Chromatic aberration separates
 		 * the values of red, green and blue channels according to a user provided offset.
 		 */
@@ -571,7 +571,7 @@ namespace bs
 		bool chromaticAberration = true;
 
 		/**
-		 * Determines the distance between pixels within which to sample different channels. The value is in 
+		 * Determines the distance between pixels within which to sample different channels. The value is in
 		 * UV coordinates, range [0, 1].
 		 */
 		BS_SCRIPT_EXPORT(range:[0,1])
@@ -603,7 +603,7 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		ShadowSettings() = default;
 
-		/** 
+		/**
 		 * Maximum distance that directional light shadows are allowed to render at. Decreasing the distance can yield
 		 * higher quality shadows nearer to the viewer, as the shadow map resolution isn't being used up on far away
 		 * portions of the scene. In world units (meters).
@@ -611,7 +611,7 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		float directionalShadowDistance = 250.0f;
 		
-		/** 
+		/**
 		 * Number of cascades to use for directional shadows. Higher number of cascades increases shadow quality as each
 		 * individual cascade has less area to cover, but can significantly increase performance cost, as well as a minor
 		 * increase in memory cost. Valid range is roughly [1, 6].
@@ -747,15 +747,15 @@ namespace bs
 		BS_SCRIPT_EXPORT(range:[1,3],slider)
 		float gamma = 2.2f;
 
-		/** 
+		/**
 		 * High dynamic range allows light intensity to be more correctly recorded when rendering by allowing for a larger
-		 * range of values. The stored light is then converted into visible color range using exposure and a tone mapping 
+		 * range of values. The stored light is then converted into visible color range using exposure and a tone mapping
 		 * operator.
 		 */
 		BS_SCRIPT_EXPORT()
 		bool enableHDR = true;
 
-		/** 
+		/**
 		 * Determines if scene objects will be lit by lights. If disabled everything will be rendered using their albedo
 		 * texture with no lighting applied.
 		 */
@@ -774,10 +774,10 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		bool enableIndirectLighting = true;
 
-		/** 
+		/**
 		 * Signals the renderer to only render overlays (like GUI), and not scene objects. Such rendering doesn't require
 		 * depth buffer or multi-sampled render targets and will not render any scene objects. This can improve performance
-		 * and memory usage for overlay-only views. 
+		 * and memory usage for overlay-only views.
 		 */
 		BS_SCRIPT_EXPORT()
 		bool overlayOnly = false;
@@ -789,8 +789,8 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		bool enableSkybox = true;
 
-		/** 
-		 * The absolute base cull-distance for objects rendered through this camera in world units. Objects will use this 
+		/**
+		 * The absolute base cull-distance for objects rendered through this camera in world units. Objects will use this
 		 * distance and apply their own factor to it to determine whether they should be visible.
 		 */
 		BS_SCRIPT_EXPORT()

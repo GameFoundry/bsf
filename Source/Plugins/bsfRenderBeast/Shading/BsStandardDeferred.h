@@ -44,12 +44,12 @@ namespace bs { namespace ct {
 		DeferredDirectionalLightMat();
 
 		/** Binds the material for rendering and sets up any parameters. */
-		void bind(const GBufferTextures& gBufferInput, const SPtr<Texture>& lightOcclusion, 
+		void bind(const GBufferTextures& gBufferInput, const SPtr<Texture>& lightOcclusion,
 			const SPtr<GpuParamBlockBuffer>& perCamera, const SPtr<GpuParamBlockBuffer>& perLight);
 
-		/** 
-		 * Returns the material variation matching the provided parameters. 
-		 * 
+		/**
+		 * Returns the material variation matching the provided parameters.
+		 *
 		 * @param[in]	msaa				True if the shader will operate on a multisampled surface.
 		 * @param[in]	singleSampleMSAA	Only relevant of @p msaa is true. When enabled only the first sample will be
 		 *									evaluated. Otherwise all samples will be evaluated.
@@ -83,12 +83,12 @@ namespace bs { namespace ct {
 		DeferredPointLightMat();
 
 		/** Binds the material for rendering and sets up any parameters. */
-		void bind(const GBufferTextures& gBufferInput, const SPtr<Texture>& lightOcclusion, 
+		void bind(const GBufferTextures& gBufferInput, const SPtr<Texture>& lightOcclusion,
 			const SPtr<GpuParamBlockBuffer>& perCamera, const SPtr<GpuParamBlockBuffer>& perLight);
 
-		/** 
-		 * Returns the material variation matching the provided parameters. 
-		 * 
+		/**
+		 * Returns the material variation matching the provided parameters.
+		 *
 		 * @param[in]	inside				Set to true if viewer is inside the light's stencil geometry.
 		 * @param[in]	msaa				True if the shader will operate on a multisampled surface.
 		 * @param[in]	singleSampleMSAA	Only relevant of @p msaa is true. When enabled only the first sample will be
@@ -112,10 +112,10 @@ namespace bs { namespace ct {
 
 	extern PerProbeParamDef gPerProbeParamDef;
 
-	/** 
-	 * Shader that prepares the surface for image based lighting. 
-	 * 
-	 * This is an alternative to TiledDeferredImageBasedLighting for cases when compute shaders are not usable or suitable. 
+	/**
+	 * Shader that prepares the surface for image based lighting.
+	 *
+	 * This is an alternative to TiledDeferredImageBasedLighting for cases when compute shaders are not usable or suitable.
 	 * Needs to be followed by execution of all other DeferredIBL* materials.
 	 */
 	class DeferredIBLSetupMat : public RendererMaterial<DeferredIBLSetupMat>
@@ -141,9 +141,9 @@ namespace bs { namespace ct {
 		void bind(const GBufferTextures& gBufferInput, const SPtr<GpuParamBlockBuffer>& perCamera,
 			const SPtr<Texture>& ssr, const SPtr<Texture>& ao, const SPtr<GpuParamBlockBuffer>& reflProbeParams);
 
-		/** 
-		 * Returns the material variation matching the provided parameters. 
-		 * 
+		/**
+		 * Returns the material variation matching the provided parameters.
+		 *
 		 * @param[in]	msaa				True if the shader will operate on a multisampled surface.
 		 * @param[in]	singleSampleMSAA	Only relevant of @p msaa is true. When enabled only the first sample will be
 		 *									evaluated. Otherwise all samples will be evaluated.
@@ -155,11 +155,11 @@ namespace bs { namespace ct {
 		ImageBasedLightingParams mIBLParams;
 	};
 
-	/** 
-	 * Shader that renders an individual reflection probe for image based lighting. 
-	 * 
-	 * This is an alternative to TiledDeferredImageBasedLighting for cases when compute shaders are not usable or suitable. 
-	 * Must be preceeded by DeferredIBLSetupMat and followed by DeferredIBLSkyMat and DeferredIBLFinalizeMat. 
+	/**
+	 * Shader that renders an individual reflection probe for image based lighting.
+	 *
+	 * This is an alternative to TiledDeferredImageBasedLighting for cases when compute shaders are not usable or suitable.
+	 * Must be preceeded by DeferredIBLSetupMat and followed by DeferredIBLSkyMat and DeferredIBLFinalizeMat.
 	 */
 	class DeferredIBLProbeMat : public RendererMaterial<DeferredIBLProbeMat>
 	{
@@ -185,9 +185,9 @@ namespace bs { namespace ct {
 		void bind(const GBufferTextures& gBufferInput, const SPtr<GpuParamBlockBuffer>& perCamera,
 			const SceneInfo& sceneInfo, const ReflProbeData& probeData, const SPtr<GpuParamBlockBuffer>& reflProbeParams);
 
-		/** 
-		 * Returns the material variation matching the provided parameters. 
-		 * 
+		/**
+		 * Returns the material variation matching the provided parameters.
+		 *
 		 * @param[in]	inside				Set to true if viewer is inside the probe's stencil geometry.
 		 * @param[in]	msaa				True if the shader will operate on a multisampled surface.
 		 * @param[in]	singleSampleMSAA	Only relevant of @p msaa is true. When enabled only the first sample will be
@@ -201,11 +201,11 @@ namespace bs { namespace ct {
 		ImageBasedLightingParams mIBLParams;
 	};
 
-	/** 
+	/**
 	 * Shader that renders the sky reflections. The results are additively blended with the currently bound render target.
-	 * 
+	 *
 	 * This is an alternative to TiledDeferredImageBasedLighting for cases when compute shaders are not usable or suitable.
-	 * Must be preceeded by DeferredIBLSetupMat and followed by DeferredIBLFinalizeMat. 
+	 * Must be preceeded by DeferredIBLSetupMat and followed by DeferredIBLFinalizeMat.
 	 */
 	class DeferredIBLSkyMat : public RendererMaterial<DeferredIBLSkyMat>
 	{
@@ -227,12 +227,12 @@ namespace bs { namespace ct {
 		DeferredIBLSkyMat();
 
 		/** Binds the material for rendering and sets up any parameters. */
-		void bind(const GBufferTextures& gBufferInput, const SPtr<GpuParamBlockBuffer>& perCamera, 
+		void bind(const GBufferTextures& gBufferInput, const SPtr<GpuParamBlockBuffer>& perCamera,
 			const Skybox* skybox, const SPtr<GpuParamBlockBuffer>& reflProbeParams);
 
-		/** 
-		 * Returns the material variation matching the provided parameters. 
-		 * 
+		/**
+		 * Returns the material variation matching the provided parameters.
+		 *
 		 * @param[in]	msaa				True if the shader will operate on a multisampled surface.
 		 * @param[in]	singleSampleMSAA	Only relevant of @p msaa is true. When enabled only the first sample will be
 		 *									evaluated. Otherwise all samples will be evaluated.
@@ -244,10 +244,10 @@ namespace bs { namespace ct {
 		ImageBasedLightingParams mIBLParams;
 	};
 
-	/** 
+	/**
 	 * Material that finalizes the rendering of reflections. As input it takes the texture output by previous DeferredIBL*
-	 * materials, and the resulting output is blended additively with the current render target. 
-	 * 
+	 * materials, and the resulting output is blended additively with the current render target.
+	 *
 	 * This is an alternative to TiledDeferredImageBasedLighting for cases when compute shaders are not usable or suitable.
 	 */
 	class DeferredIBLFinalizeMat : public RendererMaterial<DeferredIBLFinalizeMat>
@@ -270,13 +270,13 @@ namespace bs { namespace ct {
 		DeferredIBLFinalizeMat();
 
 		/** Binds the material for rendering and sets up any parameters. */
-		void bind(const GBufferTextures& gBufferInput, const SPtr<GpuParamBlockBuffer>& perCamera, 
-			const SPtr<Texture>& iblRadiance, const SPtr<Texture>& preintegratedBrdf, 
+		void bind(const GBufferTextures& gBufferInput, const SPtr<GpuParamBlockBuffer>& perCamera,
+			const SPtr<Texture>& iblRadiance, const SPtr<Texture>& preintegratedBrdf,
 			const SPtr<GpuParamBlockBuffer>& reflProbeParams);
 
-		/** 
-		 * Returns the material variation matching the provided parameters. 
-		 * 
+		/**
+		 * Returns the material variation matching the provided parameters.
+		 *
 		 * @param[in]	msaa				True if the shader will operate on a multisampled surface.
 		 * @param[in]	singleSampleMSAA	Only relevant of @p msaa is true. When enabled only the first sample will be
 		 *									evaluated. Otherwise all samples will be evaluated.
@@ -296,16 +296,16 @@ namespace bs { namespace ct {
 		StandardDeferred();
 
 		/** Calculates lighting for the specified light, using the standard deferred renderer. */
-		void renderLight(LightType type, const RendererLight& light, const RendererView& view, 
+		void renderLight(LightType type, const RendererLight& light, const RendererView& view,
 			const GBufferTextures& gBufferInput, const SPtr<Texture>& lightOcclusion);
 
-		/** 
-		 * Evaluates filtered radiance from a single reflection probe and blends it into the current render target. 
+		/**
+		 * Evaluates filtered radiance from a single reflection probe and blends it into the current render target.
 		 * Alpha value of the render target is used for determining the contribution and will be updated with new
 		 * contibution after blending.
 		 */
-		void renderReflProbe(const ReflProbeData& probeData, const RendererView& view, 
-			const GBufferTextures& gBufferInput, const SceneInfo& sceneInfo, 
+		void renderReflProbe(const ReflProbeData& probeData, const RendererView& view,
+			const GBufferTextures& gBufferInput, const SceneInfo& sceneInfo,
 			const SPtr<GpuParamBlockBuffer>& reflProbeParams);
 
 	private:

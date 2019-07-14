@@ -13,7 +13,7 @@ namespace bs
 
 	ScriptInputConfiguration::ScriptInputConfiguration(MonoObject* instance, const SPtr<InputConfiguration>& inputConfig)
 		:ScriptObject(instance), mInputConfig(inputConfig)
-	{ 
+	{
 		mGCHandle = MonoUtil::newWeakGCHandle(instance);
 
 		UINT64 configId = (UINT64)inputConfig.get();

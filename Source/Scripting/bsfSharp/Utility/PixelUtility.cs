@@ -78,7 +78,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Returns the maximum number of mip maps that can be generated until we reachthe minimum size possible. This does 
+        /// Returns the maximum number of mip maps that can be generated until we reachthe minimum size possible. This does
         /// not count the base level.
         /// </summary>
         /// <param name="width">Number of pixels in each row.</param>
@@ -117,12 +117,12 @@ namespace bs
         }
 
         /// <summary>
-        /// Generates mip-maps from the provided source data using the specified compression options. Returned list includes 
+        /// Generates mip-maps from the provided source data using the specified compression options. Returned list includes
         /// the base level.
         /// </summary>
         /// <param name="source">Pixels to generate mip-maps for.</param>
         /// <param name="options">Options controlling mip-map generation.</param>
-        /// <returns>A list of calculated mip-map data. First entry is the largest mip and other follow in order from 
+        /// <returns>A list of calculated mip-map data. First entry is the largest mip and other follow in order from
         ///          largest to smallest.</returns>
         public static PixelData[] GenerateMipmaps(PixelData source, MipMapGenOptions options)
         {
@@ -323,7 +323,7 @@ namespace bs
         /// <summary>
         /// Determines has the input data been gamma corrected.
         /// </summary>
-        bool isSRGB; 
+        bool isSRGB;
     };
 
     /** @} */

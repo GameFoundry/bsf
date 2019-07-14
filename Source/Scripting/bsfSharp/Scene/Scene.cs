@@ -36,7 +36,7 @@ namespace bs
         internal static UUID ActiveSceneUUID { get { return activeSceneUUID; } }
 
         /// <summary>
-        /// Checks is the loaded scene a generic scene object group, instead of an actual scene. 
+        /// Checks is the loaded scene a generic scene object group, instead of an actual scene.
         /// <see cref="Prefab.IsScene"/>.
         /// </summary>
         internal static bool IsGenericPrefab { get { return isGenericPrefab; } }
@@ -112,7 +112,7 @@ namespace bs
         {
             Clear();
 
-            activateOnLoadScene = Resources.LoadAsync<Prefab>(path); 
+            activateOnLoadScene = Resources.LoadAsync<Prefab>(path);
 
             if(activateOnLoadScene != null && activateOnLoadScene.IsLoaded)
                 SetActive(activateOnLoadScene.Value);

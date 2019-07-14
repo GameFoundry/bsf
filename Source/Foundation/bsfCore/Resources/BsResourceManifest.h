@@ -15,8 +15,8 @@ namespace bs
 	 * Serializable class that contains UUID <-> file path mapping for resources.
 	 * 			
 	 * @note	
-	 * This class allows you to reference resources between sessions. At the end of a session save the resource manifest, 
-	 * and then restore it at the start of a new session. This way ensures that resource UUIDs stay consistent and anything 
+	 * This class allows you to reference resources between sessions. At the end of a session save the resource manifest,
+	 * and then restore it at the start of a new session. This way ensures that resource UUIDs stay consistent and anything
 	 * referencing them can find the resources.
 	 * @note
 	 * Thread safe.
@@ -67,7 +67,7 @@ namespace bs
 		 *
 		 * @param[in]	manifest		Manifest to save.
 		 * @param[in]	path			Full pathname of the file to save the manifest in.
-		 * @param[in]	relativePath	If not empty, all pathnames in the manifest will be stored as if relative to this 
+		 * @param[in]	relativePath	If not empty, all pathnames in the manifest will be stored as if relative to this
 		 *								path.
 		 */
 		BS_SCRIPT_EXPORT()

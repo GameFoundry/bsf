@@ -31,7 +31,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Recursively copies a directory from one path to another, while creating any parent directories if they don't 
+        /// Recursively copies a directory from one path to another, while creating any parent directories if they don't
         /// already exist.
         /// </summary>
         /// <param name="source">Path to the directory to copy.</param>

@@ -16,7 +16,7 @@ namespace bs
 	 *  @{
 	 */
 
-	class BS_CORE_EXPORT ParticleEmitterConeShapeRTTI : 
+	class BS_CORE_EXPORT ParticleEmitterConeShapeRTTI :
 		public RTTIType<ParticleEmitterConeShape, IReflectable, ParticleEmitterConeShapeRTTI>
 	{
 	private:
@@ -50,7 +50,7 @@ namespace bs
 		}
 	};
 
-	class BS_CORE_EXPORT ParticleEmitterSphereShapeRTTI : 
+	class BS_CORE_EXPORT ParticleEmitterSphereShapeRTTI :
 		public RTTIType<ParticleEmitterSphereShape, IReflectable, ParticleEmitterSphereShapeRTTI>
 	{
 	private:
@@ -77,7 +77,7 @@ namespace bs
 		}
 	};
 
-	class BS_CORE_EXPORT ParticleEmitterHemisphereShapeRTTI : 
+	class BS_CORE_EXPORT ParticleEmitterHemisphereShapeRTTI :
 		public RTTIType<ParticleEmitterHemisphereShape, IReflectable, ParticleEmitterHemisphereShapeRTTI>
 	{
 	private:
@@ -104,7 +104,7 @@ namespace bs
 		}
 	};
 
-	class BS_CORE_EXPORT ParticleEmitterBoxShapeRTTI : 
+	class BS_CORE_EXPORT ParticleEmitterBoxShapeRTTI :
 		public RTTIType<ParticleEmitterBoxShape, IReflectable, ParticleEmitterBoxShapeRTTI>
 	{
 	private:
@@ -131,7 +131,7 @@ namespace bs
 		}
 	};
 
-	class BS_CORE_EXPORT ParticleEmitterLineShapeRTTI : 
+	class BS_CORE_EXPORT ParticleEmitterLineShapeRTTI :
 		public RTTIType<ParticleEmitterLineShape, IReflectable, ParticleEmitterLineShapeRTTI>
 	{
 	private:
@@ -160,7 +160,7 @@ namespace bs
 		}
 	};
 
-	class BS_CORE_EXPORT ParticleEmitterCircleShapeRTTI : 
+	class BS_CORE_EXPORT ParticleEmitterCircleShapeRTTI :
 		public RTTIType<ParticleEmitterCircleShape, IReflectable, ParticleEmitterCircleShapeRTTI>
 	{
 	private:
@@ -191,7 +191,7 @@ namespace bs
 		}
 	};
 
-	class BS_CORE_EXPORT ParticleEmitterRectShapeRTTI : 
+	class BS_CORE_EXPORT ParticleEmitterRectShapeRTTI :
 		public RTTIType<ParticleEmitterRectShape, IReflectable, ParticleEmitterRectShapeRTTI>
 	{
 	private:
@@ -217,7 +217,7 @@ namespace bs
 		}
 	};
 
-	class BS_CORE_EXPORT ParticleEmitterStaticMeshShapeRTTI : 
+	class BS_CORE_EXPORT ParticleEmitterStaticMeshShapeRTTI :
 		public RTTIType<ParticleEmitterStaticMeshShape, IReflectable, ParticleEmitterStaticMeshShapeRTTI>
 	{
 	private:
@@ -245,7 +245,7 @@ namespace bs
 		}
 	};
 
-	class BS_CORE_EXPORT ParticleEmitterSkinnedMeshShapeRTTI : 
+	class BS_CORE_EXPORT ParticleEmitterSkinnedMeshShapeRTTI :
 		public RTTIType<ParticleEmitterSkinnedMeshShape, IReflectable, ParticleEmitterSkinnedMeshShapeRTTI>
 	{
 	private:
@@ -373,7 +373,7 @@ namespace bs
 		}
 	};
 
-	class BS_CORE_EXPORT ParticleTextureAnimationRTTI : 
+	class BS_CORE_EXPORT ParticleTextureAnimationRTTI :
 		public RTTIType<ParticleTextureAnimation, IReflectable, ParticleTextureAnimationRTTI>
 	{
 	private:
@@ -584,7 +584,7 @@ namespace bs
 		}
 	};
 
-	class BS_CORE_EXPORT ParticleCollisionsRTTI : 
+	class BS_CORE_EXPORT ParticleCollisionsRTTI :
 		public RTTIType<ParticleCollisions, IReflectable, ParticleCollisionsRTTI>
 	{
 	private:
@@ -649,7 +649,7 @@ namespace bs
 		}
 	};
 
-	class BS_CORE_EXPORT ParticleDepthCollisionSettingsRTTI : 
+	class BS_CORE_EXPORT ParticleDepthCollisionSettingsRTTI :
 	public RTTIType<ParticleDepthCollisionSettings, IReflectable, ParticleDepthCollisionSettingsRTTI>
 	{
 	private:
@@ -678,7 +678,7 @@ namespace bs
 		}
 	};
 
-	class BS_CORE_EXPORT ParticleGpuSimulationSettingsRTTI : 
+	class BS_CORE_EXPORT ParticleGpuSimulationSettingsRTTI :
 	public RTTIType<ParticleGpuSimulationSettings, IReflectable, ParticleGpuSimulationSettingsRTTI>
 	{
 	private:
@@ -709,7 +709,7 @@ namespace bs
 		}
 	};
 
-	class BS_CORE_EXPORT ParticleSystemSettingsRTTI : 
+	class BS_CORE_EXPORT ParticleSystemSettingsRTTI :
 		public RTTIType<ParticleSystemSettings, IReflectable, ParticleSystemSettingsRTTI>
 	{
 	private:

@@ -49,7 +49,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Returns the precise time since application start, in microseconds. Unlike other time methods this is 
+        /// Returns the precise time since application start, in microseconds. Unlike other time methods this is
         /// not only updated every frame, but will return exact time at the moment it is called.
         /// </summary>
         public static UInt64 Precise

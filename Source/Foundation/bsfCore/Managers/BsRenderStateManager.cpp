@@ -90,7 +90,7 @@ namespace bs
 
 	SPtr<GraphicsPipelineState> RenderStateManager::_createGraphicsPipelineState(const PIPELINE_STATE_DESC& desc) const
 	{
-		SPtr<GraphicsPipelineState> pipelineState = 
+		SPtr<GraphicsPipelineState> pipelineState =
 			bs_core_ptr<GraphicsPipelineState>(new (bs_alloc<GraphicsPipelineState>()) GraphicsPipelineState(desc));
 		pipelineState->_setThisPtr(pipelineState);
 
@@ -106,41 +106,41 @@ namespace bs
 		return pipelineState;
 	}
 
-	const SPtr<SamplerState>& RenderStateManager::getDefaultSamplerState() const 
-	{ 
+	const SPtr<SamplerState>& RenderStateManager::getDefaultSamplerState() const
+	{
 		if(mDefaultSamplerState == nullptr)
 			mDefaultSamplerState = createSamplerState(SAMPLER_STATE_DESC());
 
-		return mDefaultSamplerState; 
+		return mDefaultSamplerState;
 	}
 
-	const SPtr<BlendState>& RenderStateManager::getDefaultBlendState() const 
-	{ 
+	const SPtr<BlendState>& RenderStateManager::getDefaultBlendState() const
+	{
 		if(mDefaultBlendState == nullptr)
 			mDefaultBlendState = createBlendState(BLEND_STATE_DESC());
 
-		return mDefaultBlendState; 
+		return mDefaultBlendState;
 	}
 
-	const SPtr<RasterizerState>& RenderStateManager::getDefaultRasterizerState() const 
-	{ 
+	const SPtr<RasterizerState>& RenderStateManager::getDefaultRasterizerState() const
+	{
 		if(mDefaultRasterizerState == nullptr)
 			mDefaultRasterizerState = createRasterizerState(RASTERIZER_STATE_DESC());
 
-		return mDefaultRasterizerState; 
+		return mDefaultRasterizerState;
 	}
 
-	const SPtr<DepthStencilState>& RenderStateManager::getDefaultDepthStencilState() const 
-	{ 
+	const SPtr<DepthStencilState>& RenderStateManager::getDefaultDepthStencilState() const
+	{
 		if(mDefaultDepthStencilState == nullptr)
 			mDefaultDepthStencilState = createDepthStencilState(DEPTH_STENCIL_STATE_DESC());
 
-		return mDefaultDepthStencilState; 
+		return mDefaultDepthStencilState;
 	}
 
 	namespace ct
 	{
-	SPtr<SamplerState> RenderStateManager::createSamplerState(const SAMPLER_STATE_DESC& desc, 
+	SPtr<SamplerState> RenderStateManager::createSamplerState(const SAMPLER_STATE_DESC& desc,
 		GpuDeviceFlags deviceMask) const
 	{
 		SPtr<SamplerState> state = findCachedState(desc);
@@ -209,7 +209,7 @@ namespace bs
 		return state;
 	}
 
-	SPtr<GraphicsPipelineState> RenderStateManager::createGraphicsPipelineState(const PIPELINE_STATE_DESC& desc, 
+	SPtr<GraphicsPipelineState> RenderStateManager::createGraphicsPipelineState(const PIPELINE_STATE_DESC& desc,
 		GpuDeviceFlags deviceMask) const
 	{
 		SPtr<GraphicsPipelineState> state = _createGraphicsPipelineState(desc, deviceMask);
@@ -236,7 +236,7 @@ namespace bs
 		return paramInfo;
 	}
 
-	SPtr<SamplerState> RenderStateManager::_createSamplerState(const SAMPLER_STATE_DESC& desc, 
+	SPtr<SamplerState> RenderStateManager::_createSamplerState(const SAMPLER_STATE_DESC& desc,
 		GpuDeviceFlags deviceMask) const
 	{
 		SPtr<SamplerState> state = findCachedState(desc);
@@ -305,7 +305,7 @@ namespace bs
 		GpuDeviceFlags deviceMask) const
 	{
 		SPtr<GraphicsPipelineState> pipelineState =
-			bs_shared_ptr<GraphicsPipelineState>(new (bs_alloc<GraphicsPipelineState>()) 
+			bs_shared_ptr<GraphicsPipelineState>(new (bs_alloc<GraphicsPipelineState>())
 			GraphicsPipelineState(desc, deviceMask));
 
 		pipelineState->_setThisPtr(pipelineState);
@@ -317,7 +317,7 @@ namespace bs
 																					   GpuDeviceFlags deviceMask) const
 	{
 		SPtr<ComputePipelineState> pipelineState =
-			bs_shared_ptr<ComputePipelineState>(new (bs_alloc<ComputePipelineState>()) 
+			bs_shared_ptr<ComputePipelineState>(new (bs_alloc<ComputePipelineState>())
 			ComputePipelineState(program, deviceMask));
 
 		pipelineState->_setThisPtr(pipelineState);
@@ -488,7 +488,7 @@ namespace bs
 
 	SPtr<SamplerState> RenderStateManager::createSamplerStateInternal(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask) const
 	{
-		SPtr<SamplerState> state = 
+		SPtr<SamplerState> state =
 			bs_shared_ptr<SamplerState>(new (bs_alloc<SamplerState>()) SamplerState(desc, deviceMask));
 		state->_setThisPtr(state);
 

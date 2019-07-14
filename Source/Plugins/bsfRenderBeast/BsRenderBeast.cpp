@@ -85,7 +85,7 @@ namespace bs { namespace ct
 		IBLUtility::startUp<RenderBeastIBLUtility>();
 		RendererTextures::startUp();
 
-		mCoreOptions = bs_shared_ptr_new<RenderBeastOptions>(); 
+		mCoreOptions = bs_shared_ptr_new<RenderBeastOptions>();
 		mScene = bs_shared_ptr_new<RendererScene>(mCoreOptions);
 
 		mMainViewGroup = bs_new<RendererViewGroup>(nullptr, 0, true);
@@ -337,7 +337,7 @@ namespace bs { namespace ct
 		gCoreThread().queueCommand(setShaderOverride);
 	}
 
-	void RenderBeast::renderAll(PerFrameData perFrameData) 
+	void RenderBeast::renderAll(PerFrameData perFrameData)
 	{
 		// Sync all dirty sim thread CoreObject data to core thread
 		PROFILE_CALL(CoreObjectManager::instance().syncToCore(), "Sync to core")
@@ -500,7 +500,7 @@ namespace bs { namespace ct
 				case RenderLocation::Prepare:
 					inputs.extPrepare.add(extension);
 					break;
-				case RenderLocation::PreBasePass: 
+				case RenderLocation::PreBasePass:
 					inputs.extPreBasePass.add(extension);
 					break;
 				case RenderLocation::PostBasePass:
@@ -625,7 +625,7 @@ namespace bs { namespace ct
 						continue;
 
 					auto& srcProps = texture->getProperties();
-					bool isValid = srcProps.getWidth() == IBLUtility::REFLECTION_CUBEMAP_SIZE && 
+					bool isValid = srcProps.getWidth() == IBLUtility::REFLECTION_CUBEMAP_SIZE &&
 						srcProps.getHeight() == IBLUtility::REFLECTION_CUBEMAP_SIZE &&
 						srcProps.getNumMipmaps() == cubemapArrayProps.getNumMipmaps() &&
 						srcProps.getTextureType() == TEX_TYPE_CUBE_MAP;
@@ -634,8 +634,8 @@ namespace bs { namespace ct
 					{
 						if (!probeInfo.errorFlagged)
 						{
-							BS_LOG(Error, Renderer, "Cubemap texture invalid to use as a reflection cubemap. " 
-								"Check texture size (must be {0}x{0}) and mip-map count", 
+							BS_LOG(Error, Renderer, "Cubemap texture invalid to use as a reflection cubemap. "
+								"Check texture size (must be {0}x{0}) and mip-map count",
 								IBLUtility::REFLECTION_CUBEMAP_SIZE);
 
 							probeInfo.errorFlagged = true;
@@ -667,7 +667,7 @@ namespace bs { namespace ct
 		bs_frame_clear();
 	}
 
-	void RenderBeast::captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position, 
+	void RenderBeast::captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position,
 		const CaptureSettings& settings)
 	{
 		const SceneInfo& sceneInfo = mScene->getSceneInfo();

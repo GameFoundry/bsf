@@ -21,7 +21,7 @@ namespace bs
 	constexpr const char* GUIDropDownContent::ENTRY_EXP_STYLE_TYPE;
 	constexpr const char* GUIDropDownContent::SEPARATOR_STYLE_TYPE;
 
-	GUIDropDownContent::GUIDropDownContent(GUIDropDownMenu::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
+	GUIDropDownContent::GUIDropDownContent(GUIDropDownMenu::DropDownSubMenu* parent, const GUIDropDownData& dropDownData,
 		const String& style, const GUIDimensions& dimensions)
 		: GUIElementContainer(dimensions, style), mDropDownData(dropDownData), mStates(dropDownData.states)
 		, mSelectedIdx(UINT_MAX), mRangeStart(0), mRangeEnd(0), mParent(parent), mKeyboardFocus(true)
@@ -30,7 +30,7 @@ namespace bs
 
 	}
 
-	GUIDropDownContent* GUIDropDownContent::create(GUIDropDownMenu::DropDownSubMenu* parent, 
+	GUIDropDownContent* GUIDropDownContent::create(GUIDropDownMenu::DropDownSubMenu* parent,
 		const GUIDropDownData& dropDownData, const String& style)
 	{
 		const String* curStyle = &style;
@@ -40,7 +40,7 @@ namespace bs
 		return new (bs_alloc<GUIDropDownContent>()) GUIDropDownContent(parent, dropDownData, *curStyle, GUIDimensions::create());
 	}
 
-	GUIDropDownContent* GUIDropDownContent::create(GUIDropDownMenu::DropDownSubMenu* parent, 
+	GUIDropDownContent* GUIDropDownContent::create(GUIDropDownMenu::DropDownSubMenu* parent,
 		const GUIDropDownData& dropDownData, const GUIOptions& options,
 		const String& style)
 	{
@@ -73,16 +73,16 @@ namespace bs
 
 	void GUIDropDownContent::setRange(UINT32 start, UINT32 end)
 	{
-		std::function<void(UINT32, UINT32)> onHover = 
-			[&](UINT32 idx, UINT32 visIdx) 
-		{ 
+		std::function<void(UINT32, UINT32)> onHover =
+			[&](UINT32 idx, UINT32 visIdx)
+		{
 			setSelected(visIdx);
-			mParent->elementSelected(idx); 
+			mParent->elementSelected(idx);
 		};
 
 		std::function<void(UINT32, UINT32)> onClick =
 			[&](UINT32 idx, UINT32 visIdx)
-		{ 
+		{
 			setSelected(visIdx);
 
 			if (mIsToggle)
@@ -187,9 +187,9 @@ namespace bs
 			return HString(label);
 	}
 
-	void GUIDropDownContent::setKeyboardFocus(bool focus) 
-	{ 
-		mKeyboardFocus = focus; 
+	void GUIDropDownContent::setKeyboardFocus(bool focus)
+	{
+		mKeyboardFocus = focus;
 		setFocus(focus);
 	}
 

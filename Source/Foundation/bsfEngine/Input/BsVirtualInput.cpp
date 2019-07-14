@@ -29,7 +29,7 @@ namespace bs
 		// Note: Technically this is slightly wrong as it will
 		// "forget" any buttons currently held down, but shouldn't matter much in practice.
 		for (auto& deviceData : mDevices)
-			deviceData.cachedStates.clear(); 
+			deviceData.cachedStates.clear();
 	}
 
 	bool VirtualInput::isButtonDown(const VirtualButton& button, UINT32 deviceIdx) const

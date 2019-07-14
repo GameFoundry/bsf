@@ -38,7 +38,7 @@ namespace bs { namespace ct
 		 */
 		SPtr<GLPixelBuffer> getBuffer(UINT32 face, UINT32 mipmap);
 
-		/** 
+		/**
 		 * Picks an OpenGL texture target based on the texture type, number of samples per pixel, and number of faces.
 		 */
 		static GLenum getGLTextureTarget(TextureType type, UINT32 numSamples, UINT32 numFaces);
@@ -49,7 +49,7 @@ namespace bs { namespace ct
 	protected:
 		friend class GLTextureManager;
 
-		GLTexture(GLSupport& support, const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData, 
+		GLTexture(GLSupport& support, const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData,
 			GpuDeviceFlags deviceMask);
 
 		/** @copydoc Texture::initialize */
@@ -63,7 +63,7 @@ namespace bs { namespace ct
 		void unlockImpl() override;
 
 		/** @copydoc Texture::copyImpl */
-		void copyImpl(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc, 
+		void copyImpl(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc,
 			const SPtr<CommandBuffer>& commandBuffer) override;
 
 		/** @copydoc Texture::readData */

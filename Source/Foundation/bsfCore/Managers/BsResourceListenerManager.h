@@ -12,7 +12,7 @@ namespace bs
 	 */
 
 	/**
-	 * Handles all active implementations of IResourceListener interface and notifies them when events they're listening 
+	 * Handles all active implementations of IResourceListener interface and notifies them when events they're listening
 	 * to occur.
 	 *
 	 * @see		IResourceListener
@@ -24,23 +24,23 @@ namespace bs
 		~ResourceListenerManager();
 
 		/**	
-		 * Register a new listener to notify for events. 
+		 * Register a new listener to notify for events.
 		 *
 		 * @note	Thread safe
 		 */
 		void registerListener(IResourceListener* listener);
 
 		/**	
-		 * Unregister a listener so it will no longer receive notifications. 
-		 * 
+		 * Unregister a listener so it will no longer receive notifications.
+		 *
 		 * @note	Thread safe
 		 */
 		void unregisterListener(IResourceListener* listener);
 
 		/**
-		 * Marks the listener as dirty which forces the manager to updates its internal list of resources for the 
+		 * Marks the listener as dirty which forces the manager to updates its internal list of resources for the
 		 * listener.
-		 * 
+		 *
 		 * @note	Thread safe
 		 */
 		void markListenerDirty(IResourceListener* listener);
@@ -49,7 +49,7 @@ namespace bs
 		void update();
 
 		/**
-		 * Forces the listener to send out events about the specified resource immediately, instead of waiting for the 
+		 * Forces the listener to send out events about the specified resource immediately, instead of waiting for the
 		 * next update() call.
 		 */
 		void notifyListeners(const UUID& resourceUUID);

@@ -42,7 +42,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines should the clip be played as spatial (3D) audio or as normal audio. 3D clips will be converted to mono on 
+		/// Determines should the clip be played as spatial (3D) audio or as normal audio. 3D clips will be converted to mono on
 		/// import.
 		/// </summary>
 		[ShowInInspector]

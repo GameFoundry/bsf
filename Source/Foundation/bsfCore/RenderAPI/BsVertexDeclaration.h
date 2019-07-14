@@ -13,7 +13,7 @@ namespace bs
 	 */
 
 	/** Semantics that are used for identifying the meaning of vertex buffer elements. */
-	enum VertexElementSemantic 
+	enum VertexElementSemantic
 	{
 		VES_POSITION = 1, /**< Position */
 		VES_BLEND_WEIGHTS = 2, /**< Blend weights */
@@ -84,7 +84,7 @@ namespace bs
 		VertexElementSemantic getSemantic() const { return mSemantic; }
 
 		/**
-		 * Gets an index of this element. Only relevant when you have multiple elements with the same semantic, 
+		 * Gets an index of this element. Only relevant when you have multiple elements with the same semantic,
 		 * for example uv0, uv1.
 		 */
 		UINT16 getSemanticIdx() const { return mIndex; }
@@ -92,11 +92,11 @@ namespace bs
 		/** Returns the size of this element in bytes. */
 		UINT32 getSize() const;
 
-		/** 
-		 * Returns at what rate do the vertex elements advance during instanced rendering. Provide zero for default 
+		/**
+		 * Returns at what rate do the vertex elements advance during instanced rendering. Provide zero for default
 		 * behaviour where each vertex receives the next value from the vertex buffer. Provide a value larger than zero
 		 * to ensure vertex data is advanced with every instance, instead of every vertex (for example a value of 1 means
-		 * each instance will retrieve a new value from the vertex buffer, a value of 2 means each second instance will, 
+		 * each instance will retrieve a new value from the vertex buffer, a value of 2 means each second instance will,
 		 * etc.).
 		 */
 		UINT32 getInstanceStepRate() const { return mInstanceStepRate; }
@@ -231,13 +231,13 @@ namespace bs
 		UINT32 getId() const { return mId; }
 
 		/**
-		 * Checks can a vertex buffer declared with this declaration be bound to a shader defined with the provided 
+		 * Checks can a vertex buffer declared with this declaration be bound to a shader defined with the provided
 		 * declaration.
 		 */
 		bool isCompatible(const SPtr<VertexDeclaration>& shaderDecl);
 
 		/**
-		 * Returns a list of vertex elements that the provided shader's vertex declaration expects but aren't present in 
+		 * Returns a list of vertex elements that the provided shader's vertex declaration expects but aren't present in
 		 * this vertex declaration.
 		 */
 		Vector<VertexElement> getMissingElements(const SPtr<VertexDeclaration>& shaderDecl);

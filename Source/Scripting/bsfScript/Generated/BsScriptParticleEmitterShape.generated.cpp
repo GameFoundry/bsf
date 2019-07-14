@@ -28,7 +28,7 @@ namespace bs
 
 	MonoObject* ScriptParticleEmitterShape::create(const SPtr<ParticleEmitterShape>& value)
 	{
-		if(value == nullptr) return nullptr; 
+		if(value == nullptr) return nullptr;
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };

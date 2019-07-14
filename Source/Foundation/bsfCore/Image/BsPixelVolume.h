@@ -13,11 +13,11 @@ namespace bs
 	/**	Represents a 3D region of pixels used for referencing pixel data. */
 	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(pl:true,n:PixelVolume) PixelVolume
 	{
-		UINT32 left = 0; 
-		UINT32 top = 0; 
-		UINT32 right = 1; 
-		UINT32 bottom = 1; 
-		UINT32 front = 0; 
+		UINT32 left = 0;
+		UINT32 top = 0;
+		UINT32 right = 1;
+		UINT32 bottom = 1;
+		UINT32 front = 0;
 		UINT32 back = 1;
 
 		PixelVolume() = default;

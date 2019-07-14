@@ -20,18 +20,18 @@ namespace bs
 	/**
 	 * Types of fields we can serialize:
 	 * 			
-	 * - Plain - Native data types, POD (Plain old data) structures, or in general types we don't want to (or can't) inherit from IReflectable.   
+	 * - Plain - Native data types, POD (Plain old data) structures, or in general types we don't want to (or can't) inherit from IReflectable.
 	 *			 Type must be copyable by memcpy.
-	 *			  
-	 * - DataBlock - Array of bytes of a certain size. When returning a data block you may specify if its managed or unmanaged.  
+	 *			
+	 * - DataBlock - Array of bytes of a certain size. When returning a data block you may specify if its managed or unmanaged.
 	 *				 Managed data blocks have their buffers deleted after they go out of scope. This is useful if you need to return some
 	 *				 temporary data. On the other hand if the data in the block belongs to your class, and isn't temporary, keep the data unmanaged.
-	 *				 
-	 * - Reflectable - Field that is of IReflectable type. Cannot be a pointer to IReflectable and must be actual value type.   
+	 *				
+	 * - Reflectable - Field that is of IReflectable type. Cannot be a pointer to IReflectable and must be actual value type.
 	 *				   Type and its fields are serialized recursively. Supports versioning so you may add/remove fields from the type
 	 *				   without breaking previously serialized data.
-	 * 
-	 * - ReflectablePtr - A pointer to IReflectable. Same as "Reflectable" except that data isn't serialized as a value type,  
+	 *
+	 * - ReflectablePtr - A pointer to IReflectable. Same as "Reflectable" except that data isn't serialized as a value type,
 	 *					  but as a pointer, which may be referenced by multiple other instances. All references are saved upon
 	 *					  serialization and restored upon deserialization.
 	 */
@@ -46,11 +46,11 @@ namespace bs
 	/** Various flags you can assign to RTTI fields. */
 	enum class RTTIFieldFlag
 	{
-		/** 
+		/**
 		 * This flag is only used on field types of ReflectablePtr type, and it is used
-		 * to solve circular references. Circular references cause an issue when deserializing, 
-		 * as the algorithm doesn't know which object to deserialize first. By making one of 
-		 * the references weak, you tell the algorithm that it doesn't have to guarantee 
+		 * to solve circular references. Circular references cause an issue when deserializing,
+		 * as the algorithm doesn't know which object to deserialize first. By making one of
+		 * the references weak, you tell the algorithm that it doesn't have to guarantee
 		 * the object will be fully deserialized before being assigned to the field.
 		 *
 		 * In short: If you make a reference weak, when "set" method of that field is called,
@@ -59,8 +59,8 @@ namespace bs
 		 * complains that is has found a circular reference.
 		 */
 		WeakRef = 1 << 0,
-		/** 
-		 * This flags signals various systems that the flagged field should not be searched when looking for 
+		/**
+		 * This flags signals various systems that the flagged field should not be searched when looking for
 		 * object references. This normally means the value of this field will no be retrieved during reference
 		 * searches but it will likely still be retrieved during other operations (for example serialization).
 		 * This is used as an optimization to avoid retrieving values of potentially very expensive fields that
@@ -93,14 +93,14 @@ namespace bs
 	};
 
 	/**
-	 * Structure that keeps meta-data concerning a single class field. You can use this data for setting and getting values 
+	 * Structure that keeps meta-data concerning a single class field. You can use this data for setting and getting values
 	 * for that field on a specific class instance.
 	 * 			
-	 * Class also contains an unique field name, and an unique field ID. Fields may contain single types or an array of types. 
+	 * Class also contains an unique field name, and an unique field ID. Fields may contain single types or an array of types.
 	 * See SerializableFieldType for information about specific field types.
 	 * 			
 	 * @note	
-	 * Most of the methods for retrieving and setting data accept "void *" for both the data and the owning class instance. 
+	 * Most of the methods for retrieving and setting data accept "void *" for both the data and the owning class instance.
 	 * It is up to the caller to ensure that pointer is of proper type.
 	 */
 	struct BS_UTILITY_EXPORT RTTIField
@@ -132,13 +132,13 @@ namespace bs
 		const RTTIFieldInfo& getInfo() const { return mInfo; }
 
 		/**
-		 * Gets the size of an array contained by the field, if the field represents an array. Throws exception if field 
+		 * Gets the size of an array contained by the field, if the field represents an array. Throws exception if field
 		 * is not an array.
 		 */
 		virtual UINT32 getArraySize(RTTITypeBase* rtti, void* object) = 0;
 
 		/**
-		 * Changes the size of an array contained by the field, if the field represents an array. Throws exception if field 
+		 * Changes the size of an array contained by the field, if the field represents an array. Throws exception if field
 		 * is not an array.
 		 */
 		virtual void setArraySize(RTTITypeBase* rtti, void* object, UINT32 size) = 0;
@@ -147,13 +147,13 @@ namespace bs
 		virtual UINT32 getTypeSize() = 0;
 
 		/**
-		 * Query if the field has dynamic size. 
+		 * Query if the field has dynamic size.
 		 *
 		 * @note	
 		 * Field should have dynamic size if:
-		 *  - The field can have varying size  
-		 * 	- The field size is over 255  
-		 * @note			 
+		 *  - The field can have varying size
+		 * 	- The field size is over 255
+		 * @note			
 		 * Types like integers, floats, bools, POD structs dont have dynamic size.
 		 * Types like strings, vectors, maps do.
 		 * @note		

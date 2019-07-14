@@ -20,22 +20,22 @@ namespace bs { namespace ct
 		enum BufferType
 		{
 			/** Contains geometry vertices and their properties. */
-			BT_VERTEX = 1 << 0, 
+			BT_VERTEX = 1 << 0,
 			/** Contains triangle to vertex mapping. */
-			BT_INDEX = 1 << 1, 
+			BT_INDEX = 1 << 1,
 			/** Contains GPU program parameters. */
-			BT_CONSTANT = 1 << 2, 
+			BT_CONSTANT = 1 << 2,
 			/** Generic buffer that contains primitive types. */
 			BT_STANDARD = 1 << 3,
 			/** Generic buffer that holds one or more user-defined structures laid out sequentially. */
-			BT_STRUCTURED = 1 << 4, 
+			BT_STRUCTURED = 1 << 4,
 			/** Generic buffer that holds raw block of bytes with no defined structure. */
-			BT_RAW = 1 << 5, 
+			BT_RAW = 1 << 5,
 			/** Generic buffer that is used for holding parameters used for indirect rendering. */
-			BT_INDIRECTARGUMENT = 1 << 6, 
+			BT_INDIRECTARGUMENT = 1 << 6,
 		};
 
-		D3D11HardwareBuffer(BufferType btype, GpuBufferUsage usage, UINT32 elementCount, UINT32 elementSize, 
+		D3D11HardwareBuffer(BufferType btype, GpuBufferUsage usage, UINT32 elementCount, UINT32 elementSize,
 			D3D11Device& device, bool systemMemory = false, bool streamOut = false);
 		~D3D11HardwareBuffer();
 
@@ -43,11 +43,11 @@ namespace bs { namespace ct
 		void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) override;
 
 		/** @copydoc HardwareBuffer::writeData */
-		void writeData(UINT32 offset, UINT32 length, const void* source, 
+		void writeData(UINT32 offset, UINT32 length, const void* source,
 			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
 
 		/** @copydoc HardwareBuffer::copyData */
-		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, 
+		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset,
 			UINT32 length, bool discardWholeBuffer = false, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/**	Returns the internal DX11 buffer object. */

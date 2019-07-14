@@ -18,7 +18,7 @@ namespace bs
 		bs_frame_mark();
 		{
 			const U32String utf32text = UTF8::toUTF32(desc.text);
-			TextData<FrameAlloc> textData(utf32text, desc.font, desc.fontSize, desc.width, desc.height, desc.wordWrap, 
+			TextData<FrameAlloc> textData(utf32text, desc.font, desc.fontSize, desc.width, desc.height, desc.wordWrap,
 				desc.wordBreak);
 
 			UINT32 numPages = textData.getNumPages();

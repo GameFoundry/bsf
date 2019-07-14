@@ -33,7 +33,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Checks if the game object has been destroyed. 
+        /// Checks if the game object has been destroyed.
         /// </summary>
         public bool IsDestroyed => Internal_GetIsDestroyed(mCachedPtr);
 

@@ -50,7 +50,7 @@ namespace bs
 		onDoubleClickThunk = (OnDoubleClickThunkDef)metaData.scriptClass->getMethod("DoOnDoubleClick")->getThunk();
 	}
 
-	void ScriptGUIToggle::internal_createInstance(MonoObject* instance, __GUIContentInterop* content, 
+	void ScriptGUIToggle::internal_createInstance(MonoObject* instance, __GUIContentInterop* content,
 		MonoObject* monoToggleGroup, MonoString* style, MonoArray* guiOptions)
 	{
 		GUIOptions options;

@@ -72,7 +72,7 @@ namespace bs
 		/** @copydoc Component::calculateBounds */
 		bool calculateBounds(Bounds& bounds) override;
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 

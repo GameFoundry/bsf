@@ -9,14 +9,14 @@
 
 namespace bs { namespace ct
 {
-	void D3D11HLSLParamParser::parse(ID3DBlob* microcode, GpuProgramType type, GpuParamDesc& desc, 
+	void D3D11HLSLParamParser::parse(ID3DBlob* microcode, GpuProgramType type, GpuParamDesc& desc,
 		Vector<VertexElement>* inputParams)
 	{
 		const char* commentString = nullptr;
 		ID3DBlob* pIDisassembly = nullptr;
 		char* pDisassembly = nullptr;
 
-		HRESULT hr = D3DDisassemble((UINT*)microcode->GetBufferPointer(), 
+		HRESULT hr = D3DDisassemble((UINT*)microcode->GetBufferPointer(),
 			microcode->GetBufferSize(), D3D_DISASM_ENABLE_COLOR_CODE, commentString, &pIDisassembly);
 
 		const char* assemblyCode =  static_cast<const char*>(pIDisassembly->GetBufferPointer());
@@ -78,7 +78,7 @@ namespace bs { namespace ct
 		shaderReflection->Release();
 	}
 
-	void D3D11HLSLParamParser::parseResource(D3D11_SHADER_INPUT_BIND_DESC& resourceDesc, GpuProgramType type, 
+	void D3D11HLSLParamParser::parseResource(D3D11_SHADER_INPUT_BIND_DESC& resourceDesc, GpuProgramType type,
 		GpuParamDesc& desc)
 	{
 		for(UINT32 i = 0; i < resourceDesc.BindCount; i++)
@@ -216,7 +216,7 @@ namespace bs { namespace ct
 						desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
 						break;
 					default:
-						BS_LOG(Warning, RenderBackend, "Skipping typed UAV because it has unsupported dimension: {0}", 
+						BS_LOG(Warning, RenderBackend, "Skipping typed UAV because it has unsupported dimension: {0}",
 							resourceDesc.Dimension);
 					}
 
@@ -253,14 +253,14 @@ namespace bs { namespace ct
 					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
 					break;
 				default:
-					BS_LOG(Warning, RenderBackend, "Skipping resource because it has unsupported type: {0}", 
+					BS_LOG(Warning, RenderBackend, "Skipping resource because it has unsupported type: {0}",
 						resourceDesc.Type);
 				}
 			}
 		}
 	}
 
-	void D3D11HLSLParamParser::parseBuffer(ID3D11ShaderReflectionConstantBuffer* bufferReflection, 
+	void D3D11HLSLParamParser::parseBuffer(ID3D11ShaderReflectionConstantBuffer* bufferReflection,
 		GpuParamDesc& desc)
 	{
 		D3D11_SHADER_BUFFER_DESC constantBufferDesc;
@@ -295,7 +295,7 @@ namespace bs { namespace ct
 		blockDesc.blockSize = constantBufferDesc.Size / 4;
 	}
 
-	void D3D11HLSLParamParser::parseVariable(D3D11_SHADER_TYPE_DESC& varTypeDesc, D3D11_SHADER_VARIABLE_DESC& varDesc, 
+	void D3D11HLSLParamParser::parseVariable(D3D11_SHADER_TYPE_DESC& varTypeDesc, D3D11_SHADER_VARIABLE_DESC& varDesc,
 		GpuParamDesc& desc, GpuParamBlockDesc& paramBlock)
 	{
 		GpuParamDataDesc memberDesc;
@@ -341,7 +341,7 @@ namespace bs { namespace ct
 					memberDesc.type = GPDT_FLOAT1;
 					break;
 				default:
-					BS_LOG(Warning, RenderBackend, "Skipping variable because it has unsupported type: {0}", 
+					BS_LOG(Warning, RenderBackend, "Skipping variable because it has unsupported type: {0}",
 						varTypeDesc.Type);
 				}
 			}

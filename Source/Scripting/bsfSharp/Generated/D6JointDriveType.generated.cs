@@ -28,14 +28,14 @@ namespace bs
 		/// </summary>
 		Twist = 4,
 		/// <summary>
-		/// Rotation using spherical linear interpolation. Uses the SLERP angular drive mode which performs rotation by 
-		/// interpolating the quaternion values directly over the shortest path (applies to all three axes, which they all must 
+		/// Rotation using spherical linear interpolation. Uses the SLERP angular drive mode which performs rotation by
+		/// interpolating the quaternion values directly over the shortest path (applies to all three axes, which they all must
 		/// be unlocked).
 		/// </summary>
 		SLERP = 5,
 		/// <summary>
-		/// Rotation using spherical linear interpolation. Uses the SLERP angular drive mode which performs rotation by 
-		/// interpolating the quaternion values directly over the shortest path (applies to all three axes, which they all must 
+		/// Rotation using spherical linear interpolation. Uses the SLERP angular drive mode which performs rotation by
+		/// interpolating the quaternion values directly over the shortest path (applies to all three axes, which they all must
 		/// be unlocked).
 		/// </summary>
 		Count = 6

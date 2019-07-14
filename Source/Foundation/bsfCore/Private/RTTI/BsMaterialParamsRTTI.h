@@ -196,7 +196,7 @@ namespace bs
 
 		MaterialParamsRTTI()
 		{
-			addPlainArrayField("paramData", 0, &MaterialParamsRTTI::getParamData, &MaterialParamsRTTI::getParamDataArraySize, 
+			addPlainArrayField("paramData", 0, &MaterialParamsRTTI::getParamData, &MaterialParamsRTTI::getParamDataArraySize,
 				&MaterialParamsRTTI::setParamData, &MaterialParamsRTTI::setParamDataArraySize);
 
 			addDataBlockField("dataBuffer", 1, &MaterialParamsRTTI::getDataBuffer, &MaterialParamsRTTI::setDataBuffer);
@@ -276,9 +276,9 @@ namespace bs
 			return name;
 		}
 
-		UINT32 getRTTIId() override 
-		{ 
-			return TID_MaterialParams; 
+		UINT32 getRTTIId() override
+		{
+			return TID_MaterialParams;
 		}
 
 		SPtr<IReflectable> newRTTIObject() override
@@ -423,7 +423,7 @@ namespace bs
 		enum { id = TID_MaterialRTTIParam }; enum { hasDynamicSize = 1 };
 
 		static void toMemory(const MaterialParamsRTTI::MaterialParam& data, char* memory)
-		{ 
+		{
 			static constexpr UINT32 VERSION = 1;
 
 			const UINT32 size = getDynamicSize(data);
@@ -438,7 +438,7 @@ namespace bs
 		}
 
 		static UINT32 fromMemory(MaterialParamsRTTI::MaterialParam& data, char* memory)
-		{ 
+		{
 			UINT32 size = 0;
 			UINT32 sizeRead = 0;
 			
@@ -469,8 +469,8 @@ namespace bs
 		}
 
 		static UINT32 getDynamicSize(const MaterialParamsRTTI::MaterialParam& data)
-		{ 
-			const UINT64 dataSize = rttiGetElemSize(data.name) + rttiGetElemSize(data.data) + rttiGetElemSize(data.index) + 
+		{
+			const UINT64 dataSize = rttiGetElemSize(data.name) + rttiGetElemSize(data.data) + rttiGetElemSize(data.index) +
 				sizeof(UINT32) * 2;
 
 #if BS_DEBUG_MODE
@@ -482,7 +482,7 @@ namespace bs
 
 			return (UINT32)dataSize;
 		}	
-	}; 
+	};
 
 	/** @} */
 	/** @endcond */

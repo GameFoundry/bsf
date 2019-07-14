@@ -15,7 +15,7 @@ namespace bs
 	 */
 
 	/**
-	 * Input box is a GUI element that accepts Unicode textual input. It can be single or multi-line and handles various 
+	 * Input box is a GUI element that accepts Unicode textual input. It can be single or multi-line and handles various
 	 * types of text manipulation.
 	 */
 	class BS_EXPORT GUIInputBox : public GUIElement
@@ -35,10 +35,10 @@ namespace bs
 		/**
 		 * Creates a new input box.
 		 *
-		 * @param[in]	multiline		If true the input box can be of arbitrary height and will accept multiple lines of 
+		 * @param[in]	multiline		If true the input box can be of arbitrary height and will accept multiple lines of
 		 *								text.
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
-		 *								GUIWidget the element is used on. If not specified default style for this element 
+		 *								GUIWidget the element is used on. If not specified default style for this element
 		 *								is used.
 		 */
 		static GUIInputBox* create(bool multiline = false, const String& styleName = StringUtil::BLANK);
@@ -46,7 +46,7 @@ namespace bs
 		/**
 		 * Creates a new input box.
 		 *
-		 * @param[in]	multiline		If true the input box can be of arbitrary height and will accept multiple lines of 
+		 * @param[in]	multiline		If true the input box can be of arbitrary height and will accept multiple lines of
 		 *								text.
 		 * @param[in]	options			Options that allow you to control how is the element positioned and sized. This will
 		 *								override any similar options set by style.
@@ -185,7 +185,7 @@ namespace bs
 		/**
 		 * Deletes text that is currently selected.
 		 * 			
-		 * @param[in]	internal	If internal no filter will be applied after the text is deleted, and no event will be 
+		 * @param[in]	internal	If internal no filter will be applied after the text is deleted, and no event will be
 		 * 							triggered either.
 		 */
 		void deleteSelectedText(bool internal = false);
@@ -201,7 +201,7 @@ namespace bs
 
 		/**
 		 * Shows selection with the specified anchor position. You must position selection start and end before selection
-		 * will actually render. Anchor position determines selection behavior as the user moves the selection with the 
+		 * will actually render. Anchor position determines selection behavior as the user moves the selection with the
 		 * keyboard.
 		 */
 		void showSelection(UINT32 anchorCaretPos);

@@ -19,15 +19,15 @@ namespace bs
 		 */
 		Prepare,
 
-		/** 
-		 * Rendering happens before any scene objects are rendered. The renderer guarantees the render targets used for 
+		/**
+		 * Rendering happens before any scene objects are rendered. The renderer guarantees the render targets used for
 		 * rendering scene objects will be bound (e.g. GBuffer).
 		 */
 		PreBasePass,
 
-		/** 
-		 * Rendering happens after all scene objects are rendered. The renderer guarantees the render targets used for 
-		 * rendering scene objects will be bound (e.g. GBuffer). 
+		/**
+		 * Rendering happens after all scene objects are rendered. The renderer guarantees the render targets used for
+		 * rendering scene objects will be bound (e.g. GBuffer).
 		 */
 		PostBasePass,
 
@@ -40,26 +40,26 @@ namespace bs
 
 		/**
 		 * Rendering happens after all scene objects have been rendered and their final information has been written to
-		 * the final scene color buffer, with post-processing. The renderer guarantees the final scene color render target 
+		 * the final scene color buffer, with post-processing. The renderer guarantees the final scene color render target
 		 * will be bound.
 		 */
 		Overlay
 	};
 
-	/** 
-	 * Interface that can be implemented in order to provide custom rendering code to the renderer. 
+	/**
+	 * Interface that can be implemented in order to provide custom rendering code to the renderer.
 	 * See Renderer::addPlugin().
-	 * 
+	 *
 	 * @note	Core thread.
 	 */
 	class BS_CORE_EXPORT RendererExtension
 	{
 	public:
-		/** 
+		/**
 		 * Creates a brand new instance of a specific implementation of a renderer extension. Queues initialization of the
 		 * object on the core thread and registers it with the renderer. Destruction will be queued on the core thread when
 		 * the object goes out of scope.
-		 * 
+		 *
 		 * @note	Sim thread.
 		 */
 		template<class T>
@@ -80,21 +80,21 @@ namespace bs
 		/** Returns true if the render() method should be called for the provided camera. */
 		virtual bool check(const ct::Camera& camera) = 0;
 
-		/** 
+		/**
 		 * Called at the point at which rendering should be performed for the provided camera. Relevant render targets
 		 * are guaranteed to be already bound to the render API, depending on the RenderLocation. Note that actual structure
 		 * of the render targets depends on the active renderer.
 		 */
 		virtual void render(const ct::Camera& camera) = 0;
 
-		/** 
-		 * Determines when will the render() method execute, compared to other plugins using the same RenderLocation. 
-		 * Higher number means the extension will execute before extensions with lower numbers. Priorities only matter for 
+		/**
+		 * Determines when will the render() method execute, compared to other plugins using the same RenderLocation.
+		 * Higher number means the extension will execute before extensions with lower numbers. Priorities only matter for
 		 * extensions that share the same RenderLocation.
 		 */
 		UINT32 getPriority() const { return mPriority; }
 
-		/** 
+		/**
 		 * Returns a location that determines at which point in rendering should the system call the render() method. See
 		 * RenderLocation.
 		 */

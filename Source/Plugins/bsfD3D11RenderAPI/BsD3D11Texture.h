@@ -48,7 +48,7 @@ namespace bs { namespace ct
 		void unlockImpl() override;
 
 		/** @copydoc Texture::copyImpl */
-		void copyImpl(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc, 
+		void copyImpl(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc,
 			const SPtr<CommandBuffer>& commandBuffer) override;
 
 		/** @copydoc Texture::readData */
@@ -75,7 +75,7 @@ namespace bs { namespace ct
 		void createStagingBuffer();
 
 		/**
-		 * Maps the specified texture surface for reading/writing. 
+		 * Maps the specified texture surface for reading/writing.
 		 *
 		 * @param[in]	res			Texture resource to map.
 		 * @param[in]	flags		Mapping flags that let the API know what are we planning to do with mapped memory.
@@ -95,7 +95,7 @@ namespace bs { namespace ct
 		void unmap(ID3D11Resource* res);
 
 		/**
-		 * Copies texture data into a staging buffer and maps the staging buffer. Will create a staging buffer if one 
+		 * Copies texture data into a staging buffer and maps the staging buffer. Will create a staging buffer if one
 		 * doesn't already exist (potentially wasting a lot of memory).
 		 *
 		 * @param[in]	flags		Mapping flags that let the API know what are we planning to do with mapped memory.

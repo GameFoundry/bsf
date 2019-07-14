@@ -10,7 +10,7 @@ namespace bs { namespace ct
 {
 	UINT32 VulkanFramebuffer::sNextValidId = 1;
 
-	VulkanFramebuffer::VulkanFramebuffer(VulkanResourceManager* owner, VulkanRenderPass* renderPass, 
+	VulkanFramebuffer::VulkanFramebuffer(VulkanResourceManager* owner, VulkanRenderPass* renderPass,
 		const VULKAN_FRAMEBUFFER_DESC& desc)
 		: VulkanResource(owner, false), mRenderPass(renderPass), mWidth(desc.width), mHeight(desc.height)
 		, mNumLayers(desc.layers)

@@ -58,7 +58,7 @@ namespace bs
 	public:
 		VertexDeclarationRTTI()
 		{
-			addPlainArrayField("mElementList", 0, &VertexDeclarationRTTI::getElement, &VertexDeclarationRTTI::getElementArraySize, 
+			addPlainArrayField("mElementList", 0, &VertexDeclarationRTTI::getElement, &VertexDeclarationRTTI::getElementArraySize,
 				&VertexDeclarationRTTI::setElement, &VertexDeclarationRTTI::setElementArraySize);
 		}
 

@@ -120,7 +120,7 @@ namespace bs
 		// If char is a newline, I want that to count as being on the next line because that's
 		// how user sees it
 		if(desc.isNewline(charIdx))
-			lineIdx++;					  
+			lineIdx++;					
 
 		if(lineIdx == (getNumLines() - 1))
 		{

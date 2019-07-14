@@ -95,9 +95,9 @@ namespace bs { namespace ct
 		/** Updates the per-object GPU buffer according to the currently set properties. */
 		void updatePerObjectBuffer();
 
-		/** 
-		 * Updates the per-call GPU buffer according to the provided parameters. 
-		 * 
+		/**
+		 * Updates the per-call GPU buffer according to the provided parameters.
+		 *
 		 * @param[in]	viewProj	Combined view-projection matrix of the current camera.
 		 * @param[in]	flush		True if the buffer contents should be immediately flushed to the GPU.
 		 */

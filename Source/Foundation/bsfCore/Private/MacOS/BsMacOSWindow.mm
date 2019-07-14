@@ -693,7 +693,7 @@ namespace bs
 	{
         if (m->window != nil)
             _destroy();
-        
+
         m->delegate = nil;
         m->responder = nil;
         m->view = nil;
@@ -915,7 +915,7 @@ namespace bs
 	{
 		[m->view setLayer:(__bridge CALayer*)layer];
 		[m->view setWantsLayer:TRUE];
-        
+
         m->layer = (__bridge CALayer*)layer;
 	}
 

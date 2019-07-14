@@ -104,7 +104,7 @@ namespace bs
 		return bs_shared_ptr<Skeleton>(rawPtr);
 	}
 
-	void Skeleton::getPose(Matrix4* pose, LocalSkeletonPose& localPose, const SkeletonMask& mask, 
+	void Skeleton::getPose(Matrix4* pose, LocalSkeletonPose& localPose, const SkeletonMask& mask,
 		const AnimationClip& clip, float time, bool loop)
 	{
 		bs_frame_mark();
@@ -141,7 +141,7 @@ namespace bs
 		bs_frame_clear();
 	}
 
-	void Skeleton::getPose(Matrix4* pose, LocalSkeletonPose& localPose, const SkeletonMask& mask, 
+	void Skeleton::getPose(Matrix4* pose, LocalSkeletonPose& localPose, const SkeletonMask& mask,
 		const AnimationStateLayer* layers, UINT32 numLayers)
 	{
 		// Note: If more performance is required this method could be optimized with vector instructions

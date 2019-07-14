@@ -16,7 +16,7 @@ namespace bs
 	{
 	public:
 		/**
-		 * Remove any instance specific changes to the object or its hierarchy from the provided prefab instance and 
+		 * Remove any instance specific changes to the object or its hierarchy from the provided prefab instance and
 		 * restore it to the exact copy of the linked prefab.
 		 *
 		 * @param[in]	so	Object to revert.

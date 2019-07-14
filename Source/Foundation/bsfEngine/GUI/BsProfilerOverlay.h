@@ -122,7 +122,7 @@ namespace bs
 		void updateGPUSampleAreaSizes();
 
 		/**
-		 * Updates CPU GUI elements from the data in the provided profiler reports. To be called whenever a new report is 
+		 * Updates CPU GUI elements from the data in the provided profiler reports. To be called whenever a new report is
 		 * received.
 		 */
 		void updateCPUSampleContents(const ProfilerReport& simReport, const ProfilerReport& coreReport);

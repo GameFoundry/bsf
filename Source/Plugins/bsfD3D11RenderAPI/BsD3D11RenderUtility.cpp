@@ -19,7 +19,7 @@ namespace bs { namespace ct
 	};
 
 	D3D11RenderUtility::D3D11RenderUtility(D3D11Device* device)
-		:mDevice(device), mClearQuadIB(nullptr), mClearQuadVB(nullptr), 
+		:mDevice(device), mClearQuadIB(nullptr), mClearQuadVB(nullptr),
 		mClearQuadIL(nullptr), mClearQuadVS(nullptr), mClearQuadPS(nullptr)
 	{
 		initClearQuadResources();
@@ -186,7 +186,7 @@ namespace bs { namespace ct
 
 		SAFE_RELEASE(errors);
 
-		hr = mDevice->getD3D11Device()->CreatePixelShader(static_cast<DWORD*>(microcode->GetBufferPointer()), 
+		hr = mDevice->getD3D11Device()->CreatePixelShader(static_cast<DWORD*>(microcode->GetBufferPointer()),
 			microcode->GetBufferSize(), mDevice->getClassLinkage(), &mClearQuadPS);
 
 		if (FAILED(hr))
@@ -210,7 +210,7 @@ namespace bs { namespace ct
 
 		SAFE_RELEASE(errors);
 
-		hr = mDevice->getD3D11Device()->CreateVertexShader(static_cast<DWORD*>(microcode->GetBufferPointer()), 
+		hr = mDevice->getD3D11Device()->CreateVertexShader(static_cast<DWORD*>(microcode->GetBufferPointer()),
 			microcode->GetBufferSize(), mDevice->getClassLinkage(), &mClearQuadVS);
 
 		if (FAILED(hr))
@@ -239,7 +239,7 @@ namespace bs { namespace ct
 		declElements[1].InputSlotClass			= D3D11_INPUT_PER_VERTEX_DATA;
 		declElements[1].InstanceDataStepRate	= 0;
 
-		hr = mDevice->getD3D11Device()->CreateInputLayout(declElements, 2, microcode->GetBufferPointer(), 
+		hr = mDevice->getD3D11Device()->CreateInputLayout(declElements, 2, microcode->GetBufferPointer(),
 			microcode->GetBufferSize(), &mClearQuadIL);
 
 		bs_deleteN(declElements, 2);
@@ -257,7 +257,7 @@ namespace bs { namespace ct
 		mVBDesc.StructureByteStride = 0;
 
 		mVBDesc.Usage = D3D11_USAGE_DEFAULT;
-		mVBDesc.CPUAccessFlags = 0; 
+		mVBDesc.CPUAccessFlags = 0;
 		mVBDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
 		ClearVertex vertexData[4];
@@ -289,7 +289,7 @@ namespace bs { namespace ct
 		mIBDesc.StructureByteStride = 0;
 
 		mIBDesc.Usage = D3D11_USAGE_DEFAULT;
-		mIBDesc.CPUAccessFlags = 0; 
+		mIBDesc.CPUAccessFlags = 0;
 		mIBDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
 		UINT16 indexData[6];

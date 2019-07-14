@@ -24,13 +24,13 @@ namespace bs { namespace ct
 		void writeData(UINT32 offset, UINT32 length, const void* source,
 			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
 
-		/** 
+		/**
 		 * Gets the resource wrapping the buffer object, on the specified device. If the object wasn't initialized for the
-		 * specified device, null is returned. 
+		 * specified device, null is returned.
 		 */
 		VulkanBuffer* getResource(UINT32 deviceIdx) const;
 
-		/** 
+		/**
 		 * Returns a view of the buffer object using the format specified when creating this object, per device. If the
 		 * object wasn't initialized for the specified device, null is returned.
 		 */

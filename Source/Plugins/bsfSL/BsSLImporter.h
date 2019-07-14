@@ -11,7 +11,7 @@ namespace bs
 	 *  @{
 	 */
 
-	/** 
+	/**
 	 * Importer using for importing a shader written using the BSL syntax. Shader files are plain text files ending with
 	 * ".bsl" extension.
 	 */

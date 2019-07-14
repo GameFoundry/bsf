@@ -36,7 +36,7 @@ namespace bs
 			addPlainField("mNumVertices", 0, &MeshBaseRTTI::getNumVertices, &MeshBaseRTTI::setNumVertices);
 			addPlainField("mNumIndices", 1, &MeshBaseRTTI::getNumIndices, &MeshBaseRTTI::setNumIndices);
 
-			addPlainArrayField("mSubMeshes", 2, &MeshBaseRTTI::getSubMesh, 
+			addPlainArrayField("mSubMeshes", 2, &MeshBaseRTTI::getSubMesh,
 				&MeshBaseRTTI::getNumSubmeshes, &MeshBaseRTTI::setSubMesh, &MeshBaseRTTI::setNumSubmeshes);
 		}
 

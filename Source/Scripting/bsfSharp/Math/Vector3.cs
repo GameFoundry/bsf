@@ -227,7 +227,7 @@ namespace bs
             float num = value.Length;
             if (num > 9.999999E-06)
                 return value / num;
-            
+
             return Zero;
         }
 

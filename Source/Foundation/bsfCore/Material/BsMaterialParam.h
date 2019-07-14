@@ -43,7 +43,7 @@ namespace bs
 
 	/**
 	 * A handle that allows you to set a Material parameter. Internally keeps a reference to the material parameters so that
-	 * possibly expensive lookup of parameter name can be avoided each time the parameter is accessed, and instead the 
+	 * possibly expensive lookup of parameter name can be avoided each time the parameter is accessed, and instead the
 	 * handle can be cached.
 	 * 			
 	 * @note	
@@ -54,7 +54,7 @@ namespace bs
 	 * @note
 	 * For core-thread version of this class no shader-based caching is done, and instead this represents just a wrapper
 	 * for multiple GPU parameters.
-	 * 
+	 *
 	 * @see		Material
 	 */
 	template<class T, bool Core>

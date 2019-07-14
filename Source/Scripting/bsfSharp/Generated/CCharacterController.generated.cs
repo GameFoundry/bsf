@@ -11,8 +11,8 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Special physics controller meant to be used for game characters. Uses the &quot;slide-and-collide&quot; physics 
-	/// instead of of the standard physics model to handle various issues with manually moving kinematic objects. Uses a 
+	/// Special physics controller meant to be used for game characters. Uses the &quot;slide-and-collide&quot; physics
+	/// instead of of the standard physics model to handle various issues with manually moving kinematic objects. Uses a
 	/// capsule to represent the character&apos;s bounds.
 	/// </summary>
 	[ShowInInspector]
@@ -22,7 +22,7 @@ namespace bs
 		protected CharacterController() { }
 
 		/// <summary>
-		/// Determines the position of the bottom of the controller. Position takes contact offset into account. Changing this 
+		/// Determines the position of the bottom of the controller. Position takes contact offset into account. Changing this
 		/// will teleport the character to the location. Use move() for movement that includes physics.
 		/// </summary>
 		[NativeWrapper]
@@ -88,7 +88,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Represents minimum distance that the character will move during a call to move(). This is used to stop the recursive 
+		/// Represents minimum distance that the character will move during a call to move(). This is used to stop the recursive
 		/// motion algorithm when the remaining distance is too small.
 		/// </summary>
 		[ShowInInspector]
@@ -100,7 +100,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Contact offset specifies a skin around the object within which contacts will be generated. It should be a small 
+		/// Contact offset specifies a skin around the object within which contacts will be generated. It should be a small
 		/// positive non-zero value.
 		/// </summary>
 		[ShowInInspector]
@@ -112,7 +112,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Controls which obstacles will the character be able to automatically step over without being stopped. This is the 
+		/// Controls which obstacles will the character be able to automatically step over without being stopped. This is the
 		/// height of the maximum obstacle that will be stepped over (with exceptions, see climbingMode).
 		/// </summary>
 		[ShowInInspector]
@@ -124,7 +124,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Controls which slopes should the character consider too steep and won&apos;t be able to move over. See 
+		/// Controls which slopes should the character consider too steep and won&apos;t be able to move over. See
 		/// nonWalkableMode for more information.
 		/// </summary>
 		[ShowInInspector]
@@ -158,7 +158,7 @@ namespace bs
 		public event Action<ControllerControllerCollision> OnControllerHit;
 
 		/// <summary>
-		/// Moves the controller in the specified direction by the specified amount, while interacting with surrounding geometry. 
+		/// Moves the controller in the specified direction by the specified amount, while interacting with surrounding geometry.
 		/// Returns flags signaling where collision occurred after the movement.
 		///
 		/// Does not account for gravity, you must apply it manually.

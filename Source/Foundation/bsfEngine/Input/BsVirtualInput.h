@@ -82,7 +82,7 @@ namespace bs
 		bool isButtonUp(const VirtualButton& button, UINT32 deviceIdx = 0) const;
 
 		/**
-		 * Check is the virtual button is being held. This state is active as long as the button is being held down, 
+		 * Check is the virtual button is being held. This state is active as long as the button is being held down,
 		 * possibly for multiple frames.
 		 *
 		 * @param[in]	button		Virtual button identifier.

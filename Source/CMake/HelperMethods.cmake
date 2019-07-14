@@ -329,7 +329,7 @@ function(update_binary_deps DEP_PREFIX DEP_NAME DEP_FOLDER DEP_VERSION)
 	endif()
 
 	set(BINARY_DEPENDENCIES_URL ${BS_BINARY_DEP_WEBSITE}/${DEP_PREFIX}_${DEP_TYPE}_Master_${DEP_VERSION}.zip)
-	file(DOWNLOAD ${BINARY_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip 
+	file(DOWNLOAD ${BINARY_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip
 		SHOW_PROGRESS
 		STATUS DOWNLOAD_STATUS)
 		
@@ -383,7 +383,7 @@ function(strip_symbols targetName outputFilename)
 				add_custom_command(
 					TARGET ${targetName}
 					POST_BUILD
-					VERBATIM 
+					VERBATIM
 					COMMAND ${DSYMUTIL_TOOL} --flat --minimize ${fileToStrip}
 					COMMAND ${STRIP_TOOL} -u -r ${fileToStrip}
 					COMMENT Stripping symbols from ${fileToStrip} into file ${symbolsFile}
@@ -396,7 +396,7 @@ function(strip_symbols targetName outputFilename)
 				add_custom_command(
 					TARGET ${targetName}
 					POST_BUILD
-					VERBATIM 
+					VERBATIM
 					COMMAND ${OBJCOPY_TOOL} --only-keep-debug ${fileToStrip} ${symbolsFile}
 					COMMAND ${OBJCOPY_TOOL} --strip-unneeded ${fileToStrip}
 					COMMAND ${OBJCOPY_TOOL} --add-gnu-debuglink=${symbolsFile} ${fileToStrip}
@@ -433,13 +433,13 @@ function(install_bsf_target targetName)
 	
 	if(MSVC)
 		install(
-			FILES $<TARGET_PDB_FILE:${targetName}> 
+			FILES $<TARGET_PDB_FILE:${targetName}>
 			DESTINATION ${BIN_DIR}
 			OPTIONAL
 		)
 	else()
 		install(
-			FILES ${symbolsFile} 
+			FILES ${symbolsFile}
 			DESTINATION lib
 			OPTIONAL)
 	endif()
@@ -654,7 +654,7 @@ function(update_builtin_assets ASSET_PREFIX ASSET_FOLDER FOLDER_NAME ASSET_VERSI
 	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/Temp)	
 	
 	set(ASSET_DEPENDENCIES_URL ${BS_BINARY_DEP_WEBSITE}/${ASSET_PREFIX}Data_Master_${ASSET_VERSION}.zip)
-	file(DOWNLOAD ${ASSET_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip 
+	file(DOWNLOAD ${ASSET_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/Temp/Dependencies.zip
 		SHOW_PROGRESS
 		STATUS DOWNLOAD_STATUS)
 		

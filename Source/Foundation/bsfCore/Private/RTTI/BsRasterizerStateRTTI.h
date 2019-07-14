@@ -18,7 +18,7 @@ namespace bs
 	{
 	private:
 		RASTERIZER_STATE_DESC& getData(RasterizerState* obj) { return obj->mProperties.mData; }
-		void setData(RasterizerState* obj, RASTERIZER_STATE_DESC& val) { obj->mProperties.mData = val; } 
+		void setData(RasterizerState* obj, RASTERIZER_STATE_DESC& val) { obj->mProperties.mData = val; }
 
 	public:
 		RasterizerStateRTTI()

@@ -430,11 +430,11 @@ namespace bs
 
 		const VertexElement* blendIndicesElem = vertexDesc->getElement(VES_BLEND_INDICES);
 		const VertexElement* blendWeightsElem = vertexDesc->getElement(VES_BLEND_WEIGHTS);
-		if (blendIndicesElem != nullptr && blendIndicesElem->getType() == VET_UBYTE4 && 
+		if (blendIndicesElem != nullptr && blendIndicesElem->getType() == VET_UBYTE4 &&
 			blendWeightsElem != nullptr && blendWeightsElem->getType() == VET_FLOAT4)
 			type |= (INT32)VertexLayout::BoneWeights;
 
-		SPtr<RendererMeshData> rendererMeshData = create(numVertices, numIndices, (VertexLayout)type, 
+		SPtr<RendererMeshData> rendererMeshData = create(numVertices, numIndices, (VertexLayout)type,
 			meshData->getIndexType());
 
 		SPtr<MeshData> output = rendererMeshData->mMeshData;

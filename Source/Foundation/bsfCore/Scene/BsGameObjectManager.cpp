@@ -171,7 +171,7 @@ namespace bs
 	void GameObjectDeserializationState::registerUnresolvedHandle(UINT64 originalId, GameObjectHandleBase& object)
 	{
 		// All handles that are deserialized during a single begin/endDeserialization session pointing to the same object
-		// must share the same GameObjectHandleData as that makes certain operations in other systems much simpler. 
+		// must share the same GameObjectHandleData as that makes certain operations in other systems much simpler.
 		// Therefore we store all the unresolved handles, and if a handle pointing to the same object was already
 		// processed, or that object was already created we replace the handle's internal GameObjectHandleData.
 

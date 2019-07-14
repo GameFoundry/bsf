@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Specifies a location at which a pre-computed texture containing scene radiance will be generated. This texture will 
+	/// Specifies a location at which a pre-computed texture containing scene radiance will be generated. This texture will
 	/// then be used by the renderer to provide specular reflections.
 	/// </summary>
 	[ShowInInspector]
@@ -53,7 +53,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Allows you assign a custom texture to use as a reflection map. This will disable automatic generation of reflections. 
+		/// Allows you assign a custom texture to use as a reflection map. This will disable automatic generation of reflections.
 		/// To re-enable auto-generation call this with a null parameter.
 		/// </summary>
 		[ShowInInspector]
@@ -65,7 +65,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Captures the scene at the current location and generates a filtered reflection cubemap. No action is taken if a 
+		/// Captures the scene at the current location and generates a filtered reflection cubemap. No action is taken if a
 		/// custom texture is set.
 		/// </summary>
 		public void Capture()

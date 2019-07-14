@@ -56,7 +56,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if  the 
+		/// Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if  the
 		/// distribution is represented by a gradient.
 		/// </summary>
 		public Color GetMinConstant()
@@ -77,7 +77,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns the gradient representing the distribution, or the first gradient representing a gradient range.  Undefined 
+		/// Returns the gradient representing the distribution, or the first gradient representing a gradient range.  Undefined
 		/// if the distribution is represented by a constant or a non-gradient range.
 		/// </summary>
 		public ColorGradient GetMinGradient()
@@ -86,7 +86,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns the curve representing the second gradient of a gradient range. Only defined if the distribution  represents 
+		/// Returns the curve representing the second gradient of a gradient range. Only defined if the distribution  represents
 		/// a gradient range.
 		/// </summary>
 		public ColorGradient GetMaxGradient()
@@ -99,8 +99,8 @@ namespace bs
 		/// Time at which to evaluate the distribution. This is only relevant if the distribution contains gradients.
 		/// </param>
 		/// <param name="factor">
-		/// Value in range [0, 1] that determines how to interpolate between min/max value, if the distribution represents a 
-		/// range. Value of 0 will return the minimum value, while value of 1 will return the maximum value, and interpolate the 
+		/// Value in range [0, 1] that determines how to interpolate between min/max value, if the distribution represents a
+		/// range. Value of 0 will return the minimum value, while value of 1 will return the maximum value, and interpolate the
 		/// values in-between.
 		/// </param>
 		/// <returns>Evaluated color.</returns>
@@ -116,7 +116,7 @@ namespace bs
 		/// Time at which to evaluate the distribution. This is only relevant if the distribution contains gradients.
 		/// </param>
 		/// <param name="factor">
-		/// Random number generator that determines the factor. Factor determines how to interpolate between min/max value, if 
+		/// Random number generator that determines the factor. Factor determines how to interpolate between min/max value, if
 		/// the distribution represents a range.
 		/// </param>
 		/// <returns>Evaluated color.</returns>

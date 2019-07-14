@@ -23,7 +23,7 @@ namespace bs
 	 *
 	 * Widgets are the only GUI objects that may be arbitrarily transformed, allowing you to create 3D interfaces.
 	 */
-	class BS_EXPORT GUIWidget 
+	class BS_EXPORT GUIWidget
 	{
 	public:
 		virtual ~GUIWidget();
@@ -41,13 +41,13 @@ namespace bs
 		GUIPanel* getPanel() const { return mPanel; }
 
 		/**
-		 * Returns the depth to render the widget at. If two widgets overlap the widget with the lower depth will be 
+		 * Returns the depth to render the widget at. If two widgets overlap the widget with the lower depth will be
 		 * rendered in front.
 		 */
 		UINT8 getDepth() const { return mDepth; }
 
 		/**
-		 * Changes the depth to render the widget at. If two widgets overlap the widget with the lower depth will be 
+		 * Changes the depth to render the widget at. If two widgets overlap the widget with the lower depth will be
 		 * rendered in front.
 		 */
 		void setDepth(UINT8 depth);
@@ -64,7 +64,7 @@ namespace bs
 		 * Return true if widget or any of its elements are dirty.
 		 *
 		 * @param[in]	cleanIfDirty	If true, all dirty elements will be updated and widget will be marked as clean.
-		 * @return						True if dirty, false if not. If "cleanIfDirty" is true, the returned state is the 
+		 * @return						True if dirty, false if not. If "cleanIfDirty" is true, the returned state is the
 		 *								one before cleaning.
 		 */
 		bool isDirty(bool cleanIfDirty);
@@ -111,12 +111,12 @@ namespace bs
 		void _registerElement(GUIElementBase* elem);
 		
 		/**
-		 * Unregisters an element from the widget. Usually called when the element is destroyed, or reparented to another 
+		 * Unregisters an element from the widget. Usually called when the element is destroyed, or reparented to another
 		 * widget.
 		 */
 		void _unregisterElement(GUIElementBase* elem);
 
-		/** 
+		/**
 		 * Returns the default navigation group assigned to all elements of this widget that don't have an explicit nav-
 		 * group. See GUIElement::setNavGroup().
 		 */
@@ -147,9 +147,9 @@ namespace bs
 		 */
 		void _updateTransform(const HSceneObject& parent);
 
-		/** 
-		 * Checks if the render target of the destination camera changed, and updates the widget with new information if 
-		 * it has. Should be called every frame. 
+		/**
+		 * Checks if the render target of the destination camera changed, and updates the widget with new information if
+		 * it has. Should be called every frame.
 		 */
 		void _updateRT();
 

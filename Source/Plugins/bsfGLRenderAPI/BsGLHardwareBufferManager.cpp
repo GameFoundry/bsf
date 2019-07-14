@@ -11,7 +11,7 @@
 
 namespace bs { namespace ct
 {
-	SPtr<VertexBuffer> GLHardwareBufferManager::createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc, 
+	SPtr<VertexBuffer> GLHardwareBufferManager::createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc,
 		GpuDeviceFlags deviceMask)
 	{
 		SPtr<GLVertexBuffer> ret = bs_shared_ptr_new<GLVertexBuffer>(desc, deviceMask);
@@ -29,10 +29,10 @@ namespace bs { namespace ct
 		return ret;
 	}
 
-	SPtr<GpuParamBlockBuffer> GLHardwareBufferManager::createGpuParamBlockBufferInternal(UINT32 size, 
+	SPtr<GpuParamBlockBuffer> GLHardwareBufferManager::createGpuParamBlockBufferInternal(UINT32 size,
 		GpuBufferUsage usage, GpuDeviceFlags deviceMask)
 	{
-		GLGpuParamBlockBuffer* paramBlockBuffer = 
+		GLGpuParamBlockBuffer* paramBlockBuffer =
 			new (bs_alloc<GLGpuParamBlockBuffer>()) GLGpuParamBlockBuffer(size, usage, deviceMask);
 
 		SPtr<GpuParamBlockBuffer> paramBlockBufferPtr = bs_shared_ptr<GLGpuParamBlockBuffer>(paramBlockBuffer);

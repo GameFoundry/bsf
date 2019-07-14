@@ -20,7 +20,7 @@ namespace bs { namespace ct
 
 		/**	
 		 * Returns internal OpenGL buffer ID. If binding the buffer to the pipeline, bind the texture using
-		 * getGLTextureId() instead. 
+		 * getGLTextureId() instead.
 		 */
 		GLuint getGLBufferId() const { return static_cast<GLHardwareBuffer*>(mBuffer)->getGLBufferId(); }
 

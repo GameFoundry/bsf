@@ -13,7 +13,7 @@ namespace bs { namespace ct
 		: mDevice(device)
 	{ }
 
-	SPtr<VertexBuffer> D3D11HardwareBufferManager::createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc, 
+	SPtr<VertexBuffer> D3D11HardwareBufferManager::createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc,
 		GpuDeviceFlags deviceMask)
 	{
 		SPtr<D3D11VertexBuffer> ret = bs_shared_ptr_new<D3D11VertexBuffer>(mDevice, desc, deviceMask);
@@ -22,7 +22,7 @@ namespace bs { namespace ct
 		return ret;
 	}
 
-	SPtr<IndexBuffer> D3D11HardwareBufferManager::createIndexBufferInternal(const INDEX_BUFFER_DESC& desc, 
+	SPtr<IndexBuffer> D3D11HardwareBufferManager::createIndexBufferInternal(const INDEX_BUFFER_DESC& desc,
 		GpuDeviceFlags deviceMask)
 	{
 		SPtr<D3D11IndexBuffer> ret = bs_shared_ptr_new<D3D11IndexBuffer>(mDevice, desc, deviceMask);
@@ -31,10 +31,10 @@ namespace bs { namespace ct
 		return ret;
 	}
 
-	SPtr<GpuParamBlockBuffer> D3D11HardwareBufferManager::createGpuParamBlockBufferInternal(UINT32 size, 
+	SPtr<GpuParamBlockBuffer> D3D11HardwareBufferManager::createGpuParamBlockBufferInternal(UINT32 size,
 		GpuBufferUsage usage, GpuDeviceFlags deviceMask)
 	{
-		D3D11GpuParamBlockBuffer* paramBlockBuffer = 
+		D3D11GpuParamBlockBuffer* paramBlockBuffer =
 			new (bs_alloc<D3D11GpuParamBlockBuffer>()) D3D11GpuParamBlockBuffer(size, usage, deviceMask);
 
 		SPtr<GpuParamBlockBuffer> paramBlockBufferPtr = bs_shared_ptr<D3D11GpuParamBlockBuffer>(paramBlockBuffer);

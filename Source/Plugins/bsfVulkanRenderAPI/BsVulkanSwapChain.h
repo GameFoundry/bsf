@@ -27,13 +27,13 @@ namespace bs { namespace ct
 	class VulkanSwapChain : public VulkanResource, INonCopyable
 	{
 	public:
-		/** 
+		/**
 		 * Creates the swap chain with the provided properties. Destroys any previously existing swap chain. Caller must
 		 * ensure the swap chain is not used at the device when this is called.
 		 */
-		VulkanSwapChain(VulkanResourceManager* owner, VkSurfaceKHR surface, UINT32 width, UINT32 height, bool vsync, 
-			VkFormat colorFormat, VkColorSpaceKHR colorSpace, bool createDepth, VkFormat depthFormat, 
-			VulkanSwapChain* oldSwapChain = nullptr); 
+		VulkanSwapChain(VulkanResourceManager* owner, VkSurfaceKHR surface, UINT32 width, UINT32 height, bool vsync,
+			VkFormat colorFormat, VkColorSpaceKHR colorSpace, bool createDepth, VkFormat depthFormat,
+			VulkanSwapChain* oldSwapChain = nullptr);
 		~VulkanSwapChain();
 
 		/**
@@ -42,24 +42,24 @@ namespace bs { namespace ct
 		 */
 		UINT32 getWidth() const { return mWidth; }
 
-		/** 
+		/**
 		 * Returns the actual height of the swap chain, in pixels. This might differ from the requested size in case it
 		 * wasn't supported.
 		 */
 		UINT32 getHeight() const { return mHeight; }
 
 		/**
-		 * Attempts to acquire a new back buffer image. Caller can retrieve the surface by calling getBackBuffer(). Caller 
+		 * Attempts to acquire a new back buffer image. Caller can retrieve the surface by calling getBackBuffer(). Caller
 		 * must wait on the semaphore provided by the surface before rendering to it. Method might fail if the swap
 		 * chain is no longer valid, and failure result will be returned.
-		 * 
+		 *
 		 * @note Must only be called once in-between present() calls, or before the first present() call.
 		 */
 		VkResult acquireBackBuffer();
 
-		/** 
-		 * Prepares the swap chain for the present operation. 
-		 * 
+		/**
+		 * Prepares the swap chain for the present operation.
+		 *
 		 * @param[out] backBufferIdx	Index of the image representing the current back buffer.
 		 * @return						True if there is anything to present, false otherwise.
 		 */

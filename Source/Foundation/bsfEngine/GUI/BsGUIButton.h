@@ -17,7 +17,7 @@ namespace bs
 	{
 	public:
 		/**
-		 * Returns type name of the GUI element used for finding GUI element styles. 
+		 * Returns type name of the GUI element used for finding GUI element styles.
 		 */
 		static const String& getGUITypeName();
 
@@ -34,7 +34,7 @@ namespace bs
 		 * Creates a new button with the specified label.
 		 *
 		 * @param[in]	text			Label to display on the button.
-		 * @param[in]	options			Options that allow you to control how is the element positioned and sized. 
+		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
 		 *								This will override any similar options set by style.
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default button style is used.
@@ -45,7 +45,7 @@ namespace bs
 		 * Creates a new button with the specified label.
 		 *
 		 * @param[in]	content		Content to display on a button. May include a label, image and a tooltip.
-		 * @param[in]	styleName	Optional style to use for the element. Style will be retrieved from GUISkin of the 
+		 * @param[in]	styleName	Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *							GUIWidget the element is used on. If not specified default button style is used.
 		 */
 		static GUIButton* create(const GUIContent& content, const String& styleName = StringUtil::BLANK);
@@ -54,9 +54,9 @@ namespace bs
 		 * Creates a new button with the specified label.
 		 *
 		 * @param[in]	content		Content to display on a button. May include a label, image and a tooltip.
-		 * @param[in]	options		Options that allow you to control how is the element positioned and sized. This will 
+		 * @param[in]	options		Options that allow you to control how is the element positioned and sized. This will
 		 *							override any similar options set by style.
-		 * @param[in]	styleName	Optional style to use for the element. Style will be retrieved from GUISkin of the 
+		 * @param[in]	styleName	Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *							GUIWidget the element is used on. If not specified default button style is used.
 		 */
 		static GUIButton* create(const GUIContent& content, const GUIOptions& options, const String& styleName = StringUtil::BLANK);

@@ -61,7 +61,7 @@ namespace bs
 	};
 
 	/**
-	 * GUI element that may be inserted into layouts to make a space of a flexible size. The space will expand only if 
+	 * GUI element that may be inserted into layouts to make a space of a flexible size. The space will expand only if
 	 * there is room and other elements are not squished because of it. If multiple flexible spaces are in a layout, their
 	 * sizes will be shared equally.
 	 *

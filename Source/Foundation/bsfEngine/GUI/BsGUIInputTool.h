@@ -21,7 +21,7 @@ namespace bs
 		 * @param[in]	startChar		Index of the first character on the line.
 		 * @param[in]	endChar			Index of the last character on the line.
 		 * @param[in]	lineHeight		Height of the line in pixels.
-		 * @param[in]	lineYStart		Vertical offset from the top of the text to the start of this line (0 for first 
+		 * @param[in]	lineYStart		Vertical offset from the top of the text to the start of this line (0 for first
 		 *								line usually).
 		 * @param[in]	includesNewline	True if the lines end character is a newline character.
 		 */
@@ -29,7 +29,7 @@ namespace bs
 
 		/**
 		 * Returns index of the last character on the line. If lines contains a newline character it will be returned unless
-		 * you set @p includeNewLine to false, in which case the next end-most character is returned. (If newline is the 
+		 * you set @p includeNewLine to false, in which case the next end-most character is returned. (If newline is the
 		 * only character on the line, its index will still be returned).
 		 */
 		UINT32 getEndChar(bool includeNewline = true) const;
@@ -69,7 +69,7 @@ namespace bs
 		~GUIInputTool() = default;
 
 		/**
-		 * Updates the input tool with new text descriptor and parent GUI element. These values will be used for all 
+		 * Updates the input tool with new text descriptor and parent GUI element. These values will be used for all
 		 * further calculations.
 		 */
 		void updateText(const GUIElement* element, const TEXT_SPRITE_DESC& textDesc);
@@ -99,7 +99,7 @@ namespace bs
 		Rect2I getCharRect(UINT32 charIdx) const;
 
 		/**
-		 * Returns a rectangle containing position and size of the character with the provided index, relative to parent 
+		 * Returns a rectangle containing position and size of the character with the provided index, relative to parent
 		 * element.
 		 */
 		Rect2I getLocalCharRect(UINT32 charIdx) const;
@@ -111,7 +111,7 @@ namespace bs
 		bool isDescValid() const;
 
 		/**
-		 * Gets a character index after the input index. Input index represents the empty areas between the characters. 
+		 * Gets a character index after the input index. Input index represents the empty areas between the characters.
 		 * Newline counts as a character. (for example 0 is before the first character, 1 is after the first character but
 		 * before the second, etc.)
 		 * 			

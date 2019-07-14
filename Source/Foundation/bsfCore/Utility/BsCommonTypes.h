@@ -2,7 +2,7 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #pragma once
 
-namespace bs 
+namespace bs
 {
 	// Undefine defines from other libs, that conflict with enums below
 #undef None
@@ -88,7 +88,7 @@ namespace bs
 
 	/**
 	 * Types of culling that determine how (and if) hardware discards faces with certain winding order. Winding order can
-	 * be used for determining front or back facing polygons by checking the order of its vertices from the render 
+	 * be used for determining front or back facing polygons by checking the order of its vertices from the render
 	 * perspective.
 	 */
 	enum CullingMode
@@ -146,12 +146,12 @@ namespace bs
 	enum GpuLockOptions
 	{
 		/**
-		 * Allows you to write to the buffer. Can cause a CPU-GPU sync point so avoid using it often (every frame) as 
+		 * Allows you to write to the buffer. Can cause a CPU-GPU sync point so avoid using it often (every frame) as
 		 * that might limit your performance significantly.
 		 */
 		GBL_READ_WRITE,
 		/**
-		 * Allows you to write to the buffer. Tells the driver to completely discard the contents of the buffer you are 
+		 * Allows you to write to the buffer. Tells the driver to completely discard the contents of the buffer you are
 		 * writing to. The driver will (most likely) internally allocate another buffer with same specifications (which is
 		 * fairly fast) and you will avoid CPU-GPU stalls.
 		 */
@@ -165,7 +165,7 @@ namespace bs
 		/**  Allows you to read from a buffer. Be aware that reading is usually a very slow operation. */
 		GBL_READ_ONLY,
 		/**
-		 * Allows you to write to the buffer. Guarantees the driver that you will not be updating any part of the buffer 
+		 * Allows you to write to the buffer. Guarantees the driver that you will not be updating any part of the buffer
 		 * that is currently used. This will also avoid CPU-GPU stalls, without requiring you to discard the entire buffer.
 		 * However it is hard to guarantee when GPU has finished using a buffer.
 		 */
@@ -190,15 +190,15 @@ namespace bs
 	 * Values that represent hardware buffer usage. These usually determine in what type of memory is buffer placed in,
 	 * however that depends on rendering API.
 	 */
-	enum GpuBufferUsage 
+	enum GpuBufferUsage
 	{
-		/** 
-		 * Signifies that you don't plan on modifying the buffer often (or at all) after creation. Modifying such buffer 
+		/**
+		 * Signifies that you don't plan on modifying the buffer often (or at all) after creation. Modifying such buffer
 		 * will involve a larger performance hit. Mutually exclusive with GBU_DYNAMIC.
 		 */
 		GBU_STATIC = 1 << 0,
-		/** 
-		 * Signifies that you will modify this buffer fairly often (e.g. every frame). Mutually exclusive with GBU_STATIC. 
+		/**
+		 * Signifies that you will modify this buffer fairly often (e.g. every frame). Mutually exclusive with GBU_STATIC.
 		 */
 		GBU_DYNAMIC = 1 << 1,
 		/** Siginifies that the buffer can be used for arbitrary load/store operations on the GPU. Implies GBU_STATIC. */
@@ -210,13 +210,13 @@ namespace bs
 	{
 		/** Buffer containing an array of primitives (e.g. float4's). */
 		GBT_STANDARD,
-		/** 
+		/**
 		 * Buffer containing an array of structures. Structure parameters can usually be easily accessed from within the
 		 * GPU program.
 		 */
 		GBT_STRUCTURED,
 		/**
-		 * Special type of buffer allowing you to specify arguments for draw operations inside the buffer instead of 
+		 * Special type of buffer allowing you to specify arguments for draw operations inside the buffer instead of
 		 * providing them directly. Useful when you want to control drawing directly from GPU.
 		 */
 		GBT_INDIRECTARGUMENT,
@@ -278,9 +278,9 @@ namespace bs
 	/** Combineable set of bits that describe a set of physical GPU's. */
 	enum GpuDeviceFlags
 	{
-		/** 
+		/**
 		 * Use the default set of devices. This may be the primary device or multiple devices. Cannot be used together with
-		 * other device flags. 
+		 * other device flags.
 		 */
 		GDF_DEFAULT = 0,
 		/** Use only the primary GPU. */
@@ -335,18 +335,18 @@ namespace bs
 	enum BS_SCRIPT_EXPORT(m:Rendering) TextureType
 	{
 		/** One dimensional texture. Just a row of pixels. */
-		TEX_TYPE_1D			BS_SCRIPT_EXPORT(n:Texture1D)	= 1, 
+		TEX_TYPE_1D			BS_SCRIPT_EXPORT(n:Texture1D)	= 1,
 		/** Two dimensional texture. */
 		TEX_TYPE_2D			BS_SCRIPT_EXPORT(n:Texture2D)	= 2,
 		/** Three dimensional texture. */
 		TEX_TYPE_3D			BS_SCRIPT_EXPORT(n:Texture3D)	= 3,
 		/** Texture consisting out of six 2D textures describing an inside of a cube. Allows special sampling. */
-		TEX_TYPE_CUBE_MAP	BS_SCRIPT_EXPORT(n:TextureCube) = 4 
+		TEX_TYPE_CUBE_MAP	BS_SCRIPT_EXPORT(n:TextureCube) = 4
 	};
 
 	/**	Projection type to use by the camera. */
 	enum BS_SCRIPT_EXPORT() ProjectionType
-	{ 
+	{
 		/** Projection type where object size remains constant and parallel lines remain parallel. */
 		PT_ORTHOGRAPHIC		BS_SCRIPT_EXPORT(n:Orthographic),
 		/** Projection type that emulates human vision. Objects farther away appear smaller. */
@@ -455,13 +455,13 @@ namespace bs
 		BWT_NORMAL,
 		/**
 		 * Tells the driver to completely discard the contents of the buffer you are writing to. The driver will (most
-		 * likely) internally allocate another buffer with same specifications (which is fairly fast) and you will avoid 
-		 * CPU-GPU stalls. 
+		 * likely) internally allocate another buffer with same specifications (which is fairly fast) and you will avoid
+		 * CPU-GPU stalls.
 		 */
 		BWT_DISCARD,
 		/**
-		 * Guarantees the driver that you will not be updating any part of the buffer that is currently used. This will 
-		 * also avoid CPU-GPU stalls, without requiring you to discard the entire buffer. However it is hard to guarantee 
+		 * Guarantees the driver that you will not be updating any part of the buffer that is currently used. This will
+		 * also avoid CPU-GPU stalls, without requiring you to discard the entire buffer. However it is hard to guarantee
 		 * when GPU has finished using a buffer.
 		 */
 		BTW_NO_OVERWRITE
@@ -500,12 +500,12 @@ namespace bs
 	/** Valid types of a mesh used for physics. */
 	enum class BS_SCRIPT_EXPORT() PhysicsMeshType
 	{
-		/** 
-		 * A regular triangle mesh. Mesh can be of arbitrary size but cannot be used for triggers and non-kinematic 
+		/**
+		 * A regular triangle mesh. Mesh can be of arbitrary size but cannot be used for triggers and non-kinematic
 		 * objects. Incurrs a significantly larger performance impact than convex meshes.
 		 */
 		Triangle,
-		/** 
+		/**
 		 * Mesh representing a convex shape. Mesh will not have more than 256 vertices. Incurrs a significantly lower
 		 * performance impact than triangle meshes.
 		 */
@@ -518,8 +518,8 @@ namespace bs
 		/** Source is a single image that will be replicated on all cubemap faces. */
 		Single,
 
-		/** 
-		 * Source is a list of 6 images, either sequentially next to each other or in a cross format. The system will 
+		/**
+		 * Source is a list of 6 images, either sequentially next to each other or in a cross format. The system will
 		 * automatically guess the layout and orientation based on the aspect ratio.
 		 */
 		Faces,
@@ -549,7 +549,7 @@ namespace bs
 		Min, Max
 	};
 
-	/** 
+	/**
 	 * Bits that map to a specific surface of a render target. Combine the bits to generate a mask that references
 	 * only specific render target surfaces.
 	 */
@@ -573,7 +573,7 @@ namespace bs
 	typedef Flags<RenderSurfaceMaskBits> RenderSurfaceMask;
 	BS_FLAGS_OPERATORS(RenderSurfaceMaskBits);
 
-	/** 
+	/**
 	 * Controls what kind of mobility restrictions a scene object has. This is used primarily as a performance hint to
 	 * other systems. Generally the more restricted the mobility the higher performance can be achieved.
 	 */
@@ -581,7 +581,7 @@ namespace bs
 	{
 		/** Scene object can be moved and has no mobility restrictions. */
 		Movable,
-		/** 
+		/**
 		 * Scene object isn't allowed to be moved but is allowed to be visually changed in other ways (e.g. changing the
 		 * displayed mesh or light intensity (depends on attached components).
 		 */
@@ -618,8 +618,8 @@ namespace bs
 		/** Number of mip levels to reference. Must be greater than zero. */
 		UINT32 numMipLevels;
 
-		/** 
-		 * First face to reference. Face can represent a single cubemap face, or a single array entry in a 
+		/**
+		 * First face to reference. Face can represent a single cubemap face, or a single array entry in a
 		 * texture array. If cubemaps are laid out in a texture array then every six sequential faces represent a single
 		 * array entry.
 		 */

@@ -37,7 +37,7 @@ namespace bs { namespace ct
 		bool offscreen = false;
 	};
 
-	/** 
+	/**
 	 * Wrapper around a Vulkan render pass. Currently sub-passes are not used, so different render passes just
 	 * represent a different number of attachments and their layout transitions as well as load and store operations.
 	 */
@@ -52,8 +52,8 @@ namespace bs { namespace ct
 		UINT32 getId() const { return mId; }
 
 		/**
-		 * Gets internal Vulkan render pass object. 
-		 * 
+		 * Gets internal Vulkan render pass object.
+		 *
 		 * @param[in]	loadMask	Mask that control which render target surface contents should be preserved on load.
 		 * @param[in]	readMask	Mask that controls which render targets can be read by shaders while they're bound.
 		 * @param[in]	clearMask	Mask that controls which render targets should be cleared on render pass start. Target
@@ -61,9 +61,9 @@ namespace bs { namespace ct
 		 */
 		VkRenderPass getVkRenderPass(RenderSurfaceMask loadMask, RenderSurfaceMask readMask, ClearMask clearMask) const;
 
-		/** 
+		/**
 		 * Returns the attachment descriptor for the specified color attachment. The attachment index is sequential in
-		 * range [0, getNumColorAttachments()). 
+		 * range [0, getNumColorAttachments()).
 		 */
 		const VkAttachmentDescription& getColorDesc(UINT32 idx) const { return mAttachments[idx]; }
 
@@ -85,7 +85,7 @@ namespace bs { namespace ct
 		/** Returns sample flags that determine if the framebuffer supports multi-sampling, and for how many samples. */
 		VkSampleCountFlagBits getSampleFlags() const { return mSampleFlags; }
 
-		/** 
+		/**
 		 * Returns the maximum required number of clear entries to provide in a render pass start structure. This depends on
 		 * the clear mask and the number of attachments.
 		 */
@@ -143,7 +143,7 @@ namespace bs { namespace ct
 	public:
 		~VulkanRenderPasses();
 
-		/** 
+		/**
 		 * Returns an existing matching render pass or creates a new one with specified settings.
 		 *
 		 * @param[in]	device		Device to create the render pass on.

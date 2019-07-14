@@ -31,7 +31,7 @@ namespace bs
 		void send(MessageId message);
 
 		/**
-		 * Subscribes a message listener for the specified message. Provided callback will be triggered whenever that 
+		 * Subscribes a message listener for the specified message. Provided callback will be triggered whenever that
 		 * message gets sent.
 		 *
 		 * @return	A handle to the message subscription that you can use to unsubscribe from listening.

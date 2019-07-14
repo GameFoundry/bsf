@@ -19,15 +19,15 @@ namespace bs
 
 	enum class GUIElementOption
 	{
-		/** 
+		/**
 		 * Enable this option if you want pointer events to pass through this element by default. This will allow elements
 		 * underneath this element to receive pointer events.
 		 */
 		ClickThrough = 0x01,
 
-		/** 
+		/**
 		 * Enable this option if the element accepts keyboard/gamepad input focus. This will allow the element to be
-		 * navigated to using keys/buttons. 
+		 * navigated to using keys/buttons.
 		 */
 		AcceptsKeyFocus = 0x02
 	};
@@ -61,8 +61,8 @@ namespace bs
 		virtual ~GUIElement() = default;
 
 		/**	
-		 * Change the GUI element focus state. 
-		 * 
+		 * Change the GUI element focus state.
+		 *
 		 * @param[in]	enabled		Give the element focus or take it away.
 		 * @param[in]	clear		If true the focus will be cleared from any elements currently in focus. Otherwise
 		 *							the element will just be appended to the in-focus list (if enabling focus).
@@ -93,7 +93,7 @@ namespace bs
 		 */
 		void setContextMenu(const SPtr<GUIContextMenu>& menu) { mContextMenu = menu; }
 
-		/** 
+		/**
 		 * Sets a navigation group that determines in what order are GUI elements visited when using a keyboard or gamepad
 		 * to switch between the elements. If you don't set a navigation group the elements will inherit the default
 		 * navigation group from their parent GUIWidget. Also see setNavGroupIndex().
@@ -113,7 +113,7 @@ namespace bs
 		Rect2I getVisibleBounds() override;
 
 		/**
-		 * Destroy the element. Removes it from parent and widget, and queues it for deletion. Element memory will be 
+		 * Destroy the element. Removes it from parent and widget, and queues it for deletion. Element memory will be
 		 * released delayed, next frame.
 		 */	
 		static void destroy(GUIElement* element);
@@ -132,7 +132,7 @@ namespace bs
 		 * @return	The number render elements.
 		 *
 		 * @note	
-		 * GUI system attempts to reduce the number of GUI meshes so it will group sprites based on their material and 
+		 * GUI system attempts to reduce the number of GUI meshes so it will group sprites based on their material and
 		 * textures. One render elements represents a group of such sprites that share a material/texture.
 		 */
 		virtual UINT32 _getNumRenderElements() const = 0;
@@ -197,7 +197,7 @@ namespace bs
 		virtual bool _textInputEvent(const GUITextInputEvent& ev);
 
 		/**
-		 * Called when a command event is triggered. Return true if you have processed the event and don't want other 
+		 * Called when a command event is triggered. Return true if you have processed the event and don't want other
 		 * elements to process it.
 		 */
 		virtual bool _commandEvent(const GUICommandEvent& ev);
@@ -252,9 +252,9 @@ namespace bs
 		/**	Gets GUI element bounds relative to parent widget, clipped by specified clip rect. */
 		const Rect2I& _getClippedBounds() const { return mClippedBounds; }
 
-		/** 
-		 * Returns GUI element padding. Padding is modified by changing element style and determines minimum distance 
-		 * between different GUI elements. 
+		/**
+		 * Returns GUI element padding. Padding is modified by changing element style and determines minimum distance
+		 * between different GUI elements.
 		 */
 		const RectOffset& _getPadding() const override;
 
@@ -295,7 +295,7 @@ namespace bs
 		virtual void updateRenderElementsInternal();
 
 		/**
-		 * Called whenever element clipped bounds need to be recalculated. (for example when width, height or clip 
+		 * Called whenever element clipped bounds need to be recalculated. (for example when width, height or clip
 		 * rectangles changes).
 		 */
 		virtual void updateClippedBounds();

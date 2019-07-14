@@ -16,9 +16,9 @@ namespace bs
 		HWND hWnd;
 	};
 
-	/** 
-	 * Initializes DirectInput mouse device for a window with the specified handle. Only input from that window will be 
-	 * reported. 
+	/**
+	 * Initializes DirectInput mouse device for a window with the specified handle. Only input from that window will be
+	 * reported.
 	 */
 	void initializeDirectInput(Mouse::Pimpl* m, HWND hWnd)
 	{

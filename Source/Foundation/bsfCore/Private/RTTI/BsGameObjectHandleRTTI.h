@@ -28,7 +28,7 @@ namespace bs
 			return invalidId;
 		}
 
-		void setInstanceId(GameObjectHandleBase* obj, UINT64& value) { mOriginalInstanceId = value; } 
+		void setInstanceId(GameObjectHandleBase* obj, UINT64& value) { mOriginalInstanceId = value; }
 
 	public:
 		GameObjectHandleRTTI()

@@ -13,7 +13,7 @@
 namespace bs
 {
 	PlayInEditor::PlayInEditor()
-		:mState(PlayInEditorState::Stopped), mNextState(PlayInEditorState::Stopped), 
+		:mState(PlayInEditorState::Stopped), mNextState(PlayInEditorState::Stopped),
 		mFrameStepActive(false), mScheduledStateChange(false), mPausableTime(0.0f)
 	{
 		if (!gApplication().isEditor())

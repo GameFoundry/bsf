@@ -43,7 +43,7 @@ namespace bs
 		if (mDistance == distance)
 			return;
 
-		mDistance = distance; 
+		mDistance = distance;
 		mLocalPosition = mNormal * distance;
 
 		if (mInternal != nullptr)

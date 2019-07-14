@@ -39,7 +39,7 @@ namespace bs { namespace ct
 		/** Executes the material on the currently bound render target, copying from @p source. */
 		void execute(const SPtr<Texture>& source, const Rect2& area, bool flipUV);
 
-		/** 
+		/**
 		 * Returns the material variation matching the provided parameters.
 		 *
 		 * @param	msaaCount		Number of MSAA samples in the input texture. If larger than 1 the texture will be resolved
@@ -71,7 +71,7 @@ namespace bs { namespace ct
 	public:
 		CompositeMat();
 
-		/** 
+		/**
 		 * Executes the post-process effect with the provided parameters and writes the results to the provided
 		 * render target.
 		*
@@ -114,7 +114,7 @@ namespace bs { namespace ct
 	public:
 		BicubicUpsampleMat();
 
-		/** 
+		/**
 		* Executes the post-process effect with the provided parameters and writes the results to the provided
 		* render target.
 		*
@@ -125,7 +125,7 @@ namespace bs { namespace ct
 		*/
 		void execute(const SPtr<Texture>& source, const SPtr<RenderTarget>& target, const Color& tint = Color::White);
 
-		/** 
+		/**
 		 * Returns the material variation matching the provided parameters.
 		 *
 		 * @param	hermite		If true, use Hermite cubic filtering, otherwise use Lagrange cubic filtering.
@@ -224,14 +224,14 @@ namespace bs { namespace ct
 		 *
 		 * @param[in]	mesh					Mesh to draw.
 		 * @param[in]	subMesh					Portion of the mesh to draw.
-		 * @param[in]	morphVertices			Buffer containing the morph shape vertices. Will be bound to stream 1. 
+		 * @param[in]	morphVertices			Buffer containing the morph shape vertices. Will be bound to stream 1.
 		 *										Expected to contain the same number of vertices as the source mesh.
 		 * @param[in]	morphVertexDeclaration	Vertex declaration describing vertices of the provided mesh and the vertices
 		 *										provided in the morph vertex buffer.
 		 *
 		 * @note	Core thread.
 		 */
-		void drawMorph(const SPtr<MeshBase>& mesh, const SubMesh& subMesh, const SPtr<VertexBuffer>& morphVertices, 
+		void drawMorph(const SPtr<MeshBase>& mesh, const SubMesh& subMesh, const SPtr<VertexBuffer>& morphVertices,
 			const SPtr<VertexDeclaration>& morphVertexDeclaration);
 
 		/**
@@ -248,16 +248,16 @@ namespace bs { namespace ct
 		 * @param	isFiltered	True if to apply bilinear filtering to the sampled texture. Only relevant for color
 		 *						textures with no multiple samples.
 		 */
-		void blit(const SPtr<Texture>& texture, const Rect2I& area = Rect2I::EMPTY, bool flipUV = false, 
+		void blit(const SPtr<Texture>& texture, const Rect2I& area = Rect2I::EMPTY, bool flipUV = false,
 			bool isDepth = false, bool isFiltered = false);
 
 		/**
 		 * Draws a quad over the entire viewport in normalized device coordinates.
 		 * 			
 		 * @param[in]	uv				UV coordinates to assign to the corners of the quad.
-		 * @param[in]	textureSize		Size of the texture the UV coordinates are specified for. If the UV coordinates are 
-		 *								already in normalized (0, 1) range then keep this value as is. If the UV coordinates 
-		 *								are in texels then set this value to the texture size so they can be normalized 
+		 * @param[in]	textureSize		Size of the texture the UV coordinates are specified for. If the UV coordinates are
+		 *								already in normalized (0, 1) range then keep this value as is. If the UV coordinates
+		 *								are in texels then set this value to the texture size so they can be normalized
 		 *								internally.
 		 * @param[in]	numInstances	How many instances of the quad to draw (using instanced rendering). Useful when
 		 *								drawing to 3D textures.
@@ -265,7 +265,7 @@ namespace bs { namespace ct
 		 * 			
 		 * @note	Core thread.
 		 */
-		void drawScreenQuad(const Rect2& uv, const Vector2I& textureSize = Vector2I(1, 1), 
+		void drawScreenQuad(const Rect2& uv, const Vector2I& textureSize = Vector2I(1, 1),
 			UINT32 numInstances = 1, bool flipUV = false);
 
 		/**
@@ -284,8 +284,8 @@ namespace bs { namespace ct
 			drawScreenQuad(uv, textureSize, numInstances);
 		}
 
-		/** 
-		 * Clears the currently bound render target to the provided integer value. This is similar to 
+		/**
+		 * Clears the currently bound render target to the provided integer value. This is similar to
 		 * RenderAPI::clearRenderTarget(), except it supports integer clears.
 		 */
 		void clear(UINT32 value);
@@ -296,9 +296,9 @@ namespace bs { namespace ct
 		/** Returns a unit axis aligned box stencil mesh. */
 		SPtr<Mesh> getBoxStencil() const { return mUnitBoxStencilMesh; }
 
-		/** 
+		/**
 		 * Returns a stencil mesh used for a spot light. Actual vertex positions need to be computed in shader as this
-		 * method will return uninitialized vertex positions. 
+		 * method will return uninitialized vertex positions.
 		 */
 		SPtr<Mesh> getSpotLightStencil() const { return mSpotLightStencilMesh; }
 

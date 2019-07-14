@@ -25,7 +25,7 @@ namespace bs { namespace ct
 
 	SPtr<OcclusionQuery> D3D11QueryManager::createOcclusionQuery(bool binary, UINT32 deviceIdx) const
 	{
-		SPtr<OcclusionQuery> query = SPtr<D3D11OcclusionQuery>(bs_new<D3D11OcclusionQuery>(binary, deviceIdx), 
+		SPtr<OcclusionQuery> query = SPtr<D3D11OcclusionQuery>(bs_new<D3D11OcclusionQuery>(binary, deviceIdx),
 			&QueryManager::deleteOcclusionQuery, StdAlloc<D3D11OcclusionQuery>());
 		mOcclusionQueries.push_back(query.get());
 

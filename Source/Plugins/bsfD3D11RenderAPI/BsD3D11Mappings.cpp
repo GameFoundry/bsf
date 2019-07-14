@@ -345,7 +345,7 @@ namespace bs { namespace ct
 			return VES_TANGENT;
 		if(strcmp(sem, "POSITIONT") == 0)
 			return VES_POSITIONT;
-		if(strcmp(sem, "PSIZE") == 0) 
+		if(strcmp(sem, "PSIZE") == 0)
 			return VES_PSIZE;
 
 		// Unsupported type
@@ -614,13 +614,13 @@ namespace bs { namespace ct
 		case PF_R8U:
 			return DXGI_FORMAT_R8_UINT;
 		case PF_RG8:
-			return DXGI_FORMAT_R8G8_UNORM; 
+			return DXGI_FORMAT_R8G8_UNORM;
 		case PF_RG8S:
-			return DXGI_FORMAT_R8G8_SNORM; 
+			return DXGI_FORMAT_R8G8_SNORM;
 		case PF_RG8I:
-			return DXGI_FORMAT_R8G8_SINT; 
+			return DXGI_FORMAT_R8G8_SINT;
 		case PF_RG8U:
-			return DXGI_FORMAT_R8G8_UINT; 
+			return DXGI_FORMAT_R8G8_UINT;
 		case PF_BGR8:
 			if (gamma)
 				return DXGI_FORMAT_B8G8R8X8_UNORM_SRGB;
@@ -950,7 +950,7 @@ namespace bs { namespace ct
 		case GBL_WRITE_ONLY:
 			return D3D11_MAP_WRITE;
 			break;
-		default: 
+		default:
 			break;
 		};
 

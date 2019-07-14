@@ -25,7 +25,7 @@ namespace bs
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_createInstance(MonoObject* instance, __GUIContentInterop* content, MonoString* style, 
+		static void internal_createInstance(MonoObject* instance, __GUIContentInterop* content, MonoString* style,
 			MonoArray* guiOptions);
 		static void internal_setContent(ScriptGUILabel* nativeInstance, __GUIContentInterop* content);
 		static void internal_setTint(ScriptGUILabel* nativeInstance, Color* color);

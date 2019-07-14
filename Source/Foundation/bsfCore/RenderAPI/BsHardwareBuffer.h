@@ -4,14 +4,14 @@
 
 #include "BsCorePrerequisites.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
 
 	/**
-	 * Abstract class defining common features of hardware buffers. Hardware buffers usually represent areas of memory the 
+	 * Abstract class defining common features of hardware buffers. Hardware buffers usually represent areas of memory the
 	 * GPU or the driver can access directly.
 	 *
 	 * @note	Core thread only.
@@ -46,7 +46,7 @@ namespace bs
 		/**
 		 * Locks the entire buffer and returns pointer to the locked area. You must call unlock() when done.
 		 *
-		 * @param[in]	options		Signifies what you want to do with the returned pointer. Caller must ensure not to do 
+		 * @param[in]	options		Signifies what you want to do with the returned pointer. Caller must ensure not to do
 		 *							anything he hasn't requested (for example don't try to read from the buffer unless you
 		 *							requested it here).
 		 * @param[in]	deviceIdx	Index of the device whose memory to map. If the buffer doesn't exist on this device,
@@ -68,7 +68,7 @@ namespace bs
 		}
 
 		/**
-		 * Reads data from a portion of the buffer and copies it to the destination buffer. Caller must ensure destination 
+		 * Reads data from a portion of the buffer and copies it to the destination buffer. Caller must ensure destination
 		 * buffer is large enough.
 		 *
 		 * @param[in]	offset		Offset in bytes from which to copy the data.
@@ -82,7 +82,7 @@ namespace bs
 		virtual void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) = 0;
 
 		/**
-		 * Writes data into a portion of the buffer from the source memory. 
+		 * Writes data into a portion of the buffer from the source memory.
 		 *
 		 * @param[in]	offset		Offset in bytes from which to copy the data.
 		 * @param[in]	length		Length of the area you want to copy, in bytes.
@@ -106,12 +106,12 @@ namespace bs
 		 * @param[in]	commandBuffer		Command buffer to queue the copy operation on. If null, main command buffer is
 		 *									used.
 		 */
-		virtual void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
+		virtual void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length,
 			bool discardWholeBuffer = false, const SPtr<ct::CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Copy data from the provided buffer into this buffer. If buffers are not the same size, smaller size will be used.
-		 * 
+		 *
 		 * @param[in]	srcBuffer		Hardware buffer to copy from.
 		 * @param[in]	commandBuffer	Command buffer to queue the copy operation on. If null, main command buffer is
 		 *								used.
@@ -146,7 +146,7 @@ namespace bs
 		{  }
 
 		/** @copydoc lock */
-		virtual void* map(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, 
+		virtual void* map(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx,
 			UINT32 queueIdx) { return nullptr; }
 
 		/** @copydoc unlock */

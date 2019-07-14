@@ -103,7 +103,7 @@ namespace bs { namespace ct
 		mCompositor.build(*this, RCNodeFinalResolve::getNodeId());
 	}
 
-	void RendererView::setTransform(const Vector3& origin, const Vector3& direction, const Matrix4& view, 
+	void RendererView::setTransform(const Vector3& origin, const Vector3& direction, const Matrix4& view,
 									  const Matrix4& proj, const ConvexVolume& worldFrustum)
 	{
 		mProperties.viewOrigin = origin;
@@ -129,7 +129,7 @@ namespace bs { namespace ct
 	{
 		// Check if render target resized and update the view properties accordingly
 		// Note: Normally we rely on the renderer notify* methods to let us know of changes to camera/viewport, but since
-		// render target resize can often originate from the core thread, this avoids the back and forth between 
+		// render target resize can often originate from the core thread, this avoids the back and forth between
 		// main <-> core thread, and the frame delay that comes with it
 		if(mCamera)
 		{
@@ -201,7 +201,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void RendererView::determineVisible(const Vector<RendererParticles>& particleSystems, const Vector<CullInfo>& cullInfos, 
+	void RendererView::determineVisible(const Vector<RendererParticles>& particleSystems, const Vector<CullInfo>& cullInfos,
 		Vector<bool>* visibility)
 	{
 		mVisibility.particleSystems.clear();
@@ -223,7 +223,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void RendererView::determineVisible(const Vector<RendererDecal>& decals, const Vector<CullInfo>& cullInfos, 
+	void RendererView::determineVisible(const Vector<RendererDecal>& decals, const Vector<CullInfo>& cullInfos,
 		Vector<bool>* visibility)
 	{
 		mVisibility.decals.clear();
@@ -245,7 +245,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void RendererView::determineVisible(const Vector<RendererLight>& lights, const Vector<Sphere>& bounds, 
+	void RendererView::determineVisible(const Vector<RendererLight>& lights, const Vector<Sphere>& bounds,
 		LightType lightType, Vector<bool>* visibility)
 	{
 		// Special case for directional lights, they're always visible
@@ -427,7 +427,7 @@ namespace bs { namespace ct
 			const UINT32* techniqueIndices = renderElem.techniqueIndices[(INT32)isInside];
 
 			// No MSAA evaluation, or same value for all samples (no divergence between samples)
-			mDecalQueue->add(&renderElem, distanceToCamera, 
+			mDecalQueue->add(&renderElem, distanceToCamera,
 				techniqueIndices[(INT32)(isMSAA ? MSAAMode::Single : MSAAMode::None)]);
 
 			// Evaluates all MSAA samples for pixels that are marked as divergent
@@ -446,16 +446,16 @@ namespace bs { namespace ct
 		// Returns a set of values that will transform depth buffer values (in range [0, 1]) to a distance
 		// in view space. This involes applying the inverse projection transform to the depth value. When you multiply
 		// a vector with the projection matrix you get [clipX, clipY, Az + B, C * z], where we don't care about clipX/clipY.
-		// A is [2, 2], B is [2, 3] and C is [3, 2] elements of the projection matrix (only ones that matter for our depth 
-		// value). The hardware will also automatically divide the z value with w to get the depth, therefore the final 
+		// A is [2, 2], B is [2, 3] and C is [3, 2] elements of the projection matrix (only ones that matter for our depth
+		// value). The hardware will also automatically divide the z value with w to get the depth, therefore the final
 		// formula is:
 		// depth = (Az + B) / (C * z)
 
-		// To get the z coordinate back we simply do the opposite: 
+		// To get the z coordinate back we simply do the opposite:
 		// z = B / (depth * C - A)
 
-		// However some APIs will also do a transformation on the depth values before storing them to the texture 
-		// (e.g. OpenGL will transform from [-1, 1] to [0, 1]). And we need to reverse that as well. Therefore the final 
+		// However some APIs will also do a transformation on the depth values before storing them to the texture
+		// (e.g. OpenGL will transform from [-1, 1] to [0, 1]). And we need to reverse that as well. Therefore the final
 		// formula is:
 		// z = B / ((depth * (maxDepth - minDepth) + minDepth) * C - A)
 
@@ -492,12 +492,12 @@ namespace bs { namespace ct
 		// Returns a set of values that will transform depth buffer values (e.g. [0, 1] in DX, [-1, 1] in GL) to a distance
 		// in view space. This involes applying the inverse projection transform to the depth value. When you multiply
 		// a vector with the projection matrix you get [clipX, clipY, Az + B, C * z], where we don't care about clipX/clipY.
-		// A is [2, 2], B is [2, 3] and C is [3, 2] elements of the projection matrix (only ones that matter for our depth 
-		// value). The hardware will also automatically divide the z value with w to get the depth, therefore the final 
+		// A is [2, 2], B is [2, 3] and C is [3, 2] elements of the projection matrix (only ones that matter for our depth
+		// value). The hardware will also automatically divide the z value with w to get the depth, therefore the final
 		// formula is:
 		// depth = (Az + B) / (C * z)
 
-		// To get the z coordinate back we simply do the opposite: 
+		// To get the z coordinate back we simply do the opposite:
 		// z = B / (depth * C - A)
 
 		// Are we reorganize it because it needs to fit the "(1.0f / (depth + y)) * x" format used in the shader:
@@ -577,7 +577,7 @@ namespace bs { namespace ct
 		gPerCameraParamDef.gMatInvProj.set(mParamBuffer, invProj);
 
 		// Construct a special inverse view-projection matrix that had projection entries that effect z and w eliminated.
-		// Used to transform a vector(clip_x, clip_y, view_z, view_w), where clip_x/clip_y are in clip space, and 
+		// Used to transform a vector(clip_x, clip_y, view_z, view_w), where clip_x/clip_y are in clip space, and
 		// view_z/view_w in view space, into world space.
 
 		// Only projects z/w coordinates (cancels out with the inverse matrix below)
@@ -650,7 +650,7 @@ namespace bs { namespace ct
 		return ndcToUV;
 	}
 
-	void RendererView::updateLightGrid(const VisibleLightData& visibleLightData, 
+	void RendererView::updateLightGrid(const VisibleLightData& visibleLightData,
 		const VisibleReflProbeData& visibleReflProbeData)
 	{
 		mLightGrid.updateGrid(*this, visibleLightData, visibleReflProbeData, !mRenderSettings->enableLighting);

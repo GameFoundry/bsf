@@ -223,16 +223,16 @@ namespace bs
 
 		using Component::destroyInternal;
 
-		/** 
+		/**
 		 * Searches child scene objects for Collider components and attaches them to the rigidbody. Make sure to call
-		 * clearColliders() if you need to clear old colliders first. 
+		 * clearColliders() if you need to clear old colliders first.
 		 */
 		void updateColliders();
 
 		/** Unregisters all child colliders from the Rigidbody. */
 		void clearColliders();
 
-		/** 
+		/**
 		 * Registers a new collider with the Rigidbody. This collider will then be used to calculate Rigidbody's geometry
 		 * used for collisions, and optionally (depending on set flags) total mass, inertia tensors and center of mass.
 		 */

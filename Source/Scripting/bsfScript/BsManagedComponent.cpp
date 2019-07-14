@@ -36,7 +36,7 @@ namespace bs
 	{
 		RawBackupData backupData;
 
-		// If type is not missing read data from actual managed instance, instead just 
+		// If type is not missing read data from actual managed instance, instead just
 		// return the data we backed up before the type was lost
 		if (!mMissingType)
 		{

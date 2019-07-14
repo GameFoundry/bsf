@@ -31,19 +31,19 @@ namespace bs
 	/** Types of builtin shaders that are always available. */
 	enum class BS_SCRIPT_EXPORT() BuiltinShader
 	{
-		Custom, 
+		Custom,
 		/** Physically based shader used for opaque 3D geometry. */
-		Standard, 
+		Standard,
 		/** Physically based shader used for transparent 3D geometry. */
 		Transparent,
 		/** Special shader used for rendering particles without any lighting, with support for transparency. */
 		ParticlesUnlit,
-		/** 
-		 * Special shader used for rendering particles with lighting using the forward rendering pipeline (supports 
-		 * transparency). 
+		/**
+		 * Special shader used for rendering particles with lighting using the forward rendering pipeline (supports
+		 * transparency).
 		 */
 		ParticlesLit,
-		/** 
+		/**
 		 * Special shader used for rendering particles with lighting using the deferred rendering pipeline (no support
 		 * for transparency).
 		 */
@@ -124,7 +124,7 @@ namespace bs
 
 		/**
 		 * Loads a shader at the specified path.
-		 * 
+		 *
 		 * @param[in]	path	Path relative to the default shader folder with no file extension.
 		 */
 		HShader getShader(const Path& path) const;

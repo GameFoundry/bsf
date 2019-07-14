@@ -16,9 +16,9 @@ namespace bs
 	class BS_EXPORT Application : public CoreApplication
 	{
 	private:
-		/** 
+		/**
 		 * Builds the start-up descriptor structure, filling out the provided parameters and using the default values
-		 * for the rest. 
+		 * for the rest.
 		 */
 		static START_UP_DESC buildStartUpDesc(VideoMode videoMode, const String& title, bool fullscreen);
 	public:
@@ -40,8 +40,8 @@ namespace bs
 			CoreApplication::startUp<T>(desc);
 		}
 
-		/** 
-		 * Shows the profiler overlay. 
+		/**
+		 * Shows the profiler overlay.
 		 *
 		 * @param[in]	type	Type of information to display on the overlay.
 		 * @param[in]	camera	Camera to show the overlay on. If none the overlay will be shown on the main camera.

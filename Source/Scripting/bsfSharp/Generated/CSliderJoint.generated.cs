@@ -34,7 +34,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines a limit that constrains the movement of the joint to a specific minimum and maximum distance. You must 
+		/// Determines a limit that constrains the movement of the joint to a specific minimum and maximum distance. You must
 		/// enable the limit flag on the joint in order for this to be recognized.
 		/// </summary>
 		[ShowInInspector]

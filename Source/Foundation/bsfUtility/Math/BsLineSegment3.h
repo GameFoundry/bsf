@@ -21,7 +21,7 @@ namespace bs
 		/**
 		 * Find the nearest point on the line segment and the provided ray.
 		 *
-		 * @return	Set of nearest points and distance from the points. First nearest point is a point along the ray, 
+		 * @return	Set of nearest points and distance from the points. First nearest point is a point along the ray,
 		 *			while the second is along the line segment.
 		 *
 		 * @note	If segment and ray are parallel the set of points at the segment origin are returned.

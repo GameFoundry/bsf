@@ -109,7 +109,7 @@ namespace bs
 		/**
 		 * Creates a managed serializable object that references an existing managed object. Created object will be in
 		 * linked mode.
-		 * 
+		 *
 		 * @param[in]	managedInstance		Constructed managed instance of the object to link with.
 		 */
 		static SPtr<ManagedSerializableObject> createFromExisting(MonoObject* managedInstance);

@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Represents a three dimensional field of vectors. It is represented by spatial bounds which are split into a grid of 
+	/// Represents a three dimensional field of vectors. It is represented by spatial bounds which are split into a grid of
 	/// values with user-defined density, where each grid cell is assigned a vector.
 	/// </summary>
 	[ShowInInspector]

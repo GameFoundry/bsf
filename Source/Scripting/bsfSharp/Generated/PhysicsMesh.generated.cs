@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Represents a physics mesh that can be used with a MeshCollider. Physics mesh can be a generic triangle mesh or a 
+	/// Represents a physics mesh that can be used with a MeshCollider. Physics mesh can be a generic triangle mesh or a
 	/// convex mesh. Convex meshes are limited to 255 faces.
 	/// </summary>
 	[ShowInInspector]
@@ -23,7 +23,7 @@ namespace bs
 		/// <summary>Creates a new physics mesh.</summary>
 		/// <param name="meshData">Index and vertices of the mesh data.</param>
 		/// <param name="type">
-		/// Type of the mesh. If convex the provided mesh geometry will be converted into a convex mesh (that might not be the 
+		/// Type of the mesh. If convex the provided mesh geometry will be converted into a convex mesh (that might not be the
 		/// same as the provided mesh data).
 		/// </param>
 		public PhysicsMesh(MeshData meshData, PhysicsMeshType type = PhysicsMeshType.Convex)

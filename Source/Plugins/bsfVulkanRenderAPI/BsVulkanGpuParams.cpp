@@ -280,7 +280,7 @@ namespace bs { namespace ct
 		UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
 		if(bindingIdx == (UINT32)-1)
 		{
-			BS_LOG(Error, RenderBackend, "Provided set/slot combination is not used by the GPU program: {0},{1}.", 
+			BS_LOG(Error, RenderBackend, "Provided set/slot combination is not used by the GPU program: {0},{1}.",
 				set, slot);
 			return;
 		}
@@ -330,7 +330,7 @@ namespace bs { namespace ct
 		UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
 		if (bindingIdx == (UINT32)-1)
 		{
-			BS_LOG(Error, RenderBackend, "Provided set/slot combination is not used by the GPU program: {0},{1}.", 
+			BS_LOG(Error, RenderBackend, "Provided set/slot combination is not used by the GPU program: {0},{1}.",
 				set, slot);
 			return;
 		}
@@ -384,7 +384,7 @@ namespace bs { namespace ct
 		mSetsDirty[set] = true;
 	}
 
-	void VulkanGpuParams::setLoadStoreTexture(UINT32 set, UINT32 slot, const SPtr<Texture>& texture, 
+	void VulkanGpuParams::setLoadStoreTexture(UINT32 set, UINT32 slot, const SPtr<Texture>& texture,
 		const TextureSurface& surface)
 	{
 		GpuParams::setLoadStoreTexture(set, slot, texture, surface);
@@ -393,7 +393,7 @@ namespace bs { namespace ct
 		UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
 		if (bindingIdx == (UINT32)-1)
 		{
-			BS_LOG(Error, RenderBackend, "Provided set/slot combination is not used by the GPU program: {0},{1}.", 
+			BS_LOG(Error, RenderBackend, "Provided set/slot combination is not used by the GPU program: {0},{1}.",
 				set, slot);
 			return;
 		}
@@ -446,7 +446,7 @@ namespace bs { namespace ct
 		UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
 		if (bindingIdx == (UINT32)-1)
 		{
-			BS_LOG(Error, RenderBackend, "Provided set/slot combination is not used by the GPU program: {0},{1}.", 
+			BS_LOG(Error, RenderBackend, "Provided set/slot combination is not used by the GPU program: {0},{1}.",
 				set, slot);
 			return;
 		}
@@ -535,7 +535,7 @@ namespace bs { namespace ct
 		UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
 		if (bindingIdx == (UINT32)-1)
 		{
-			BS_LOG(Error, RenderBackend, "Provided set/slot combination is not used by the GPU program: {0},{1}.", 
+			BS_LOG(Error, RenderBackend, "Provided set/slot combination is not used by the GPU program: {0},{1}.",
 				set, slot);
 			return;
 		}
@@ -567,7 +567,7 @@ namespace bs { namespace ct
 			}
 			else
 			{
-				VulkanSamplerState* defaultSampler = 
+				VulkanSamplerState* defaultSampler =
 					static_cast<VulkanSamplerState*>(SamplerState::getDefault().get());
 
 				VkSampler vkSampler = defaultSampler->getResource(i)->getHandle();;

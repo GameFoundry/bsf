@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Name and weight of a single shape in a morph target animation. Each shape internally represents a set of vertices that 
+	/// Name and weight of a single shape in a morph target animation. Each shape internally represents a set of vertices that
 	/// describe the morph shape.
 	/// </summary>
 	[ShowInInspector]

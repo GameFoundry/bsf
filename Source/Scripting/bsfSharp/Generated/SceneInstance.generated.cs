@@ -41,7 +41,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Physical representation of the scene, as assigned by the physics sub-system. Exact implementation depends on the  
+		/// Physical representation of the scene, as assigned by the physics sub-system. Exact implementation depends on the
 		/// physics plugin used.
 		/// </summary>
 		[NativeWrapper]

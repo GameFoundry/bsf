@@ -574,7 +574,7 @@ namespace bs
 					{
 						const Xsc::Reflection::DefaultValue& defVal = reflData.defaultValues[entry.defaultValue];
 
-						desc.addParameter(SHADER_DATA_PARAM_DESC(ident, ident, type, StringID::NONE, arraySize, 0), 
+						desc.addParameter(SHADER_DATA_PARAM_DESC(ident, ident, type, StringID::NONE, arraySize, 0),
 							(UINT8*)defVal.matrix);
 					}
 
@@ -1841,7 +1841,7 @@ cleanup:
 
 	BSLFXCompileResult BSLFXCompiler::compileTechniques(
 		const Vector<std::pair<ASTFXNode*, ShaderMetaData>>& shaderMetaData, const String& source,
-		const UnorderedMap<String, String>& defines, ShadingLanguageFlags languages, SHADER_DESC& shaderDesc, 
+		const UnorderedMap<String, String>& defines, ShadingLanguageFlags languages, SHADER_DESC& shaderDesc,
 		Vector<String>& includes)
 	{
 		BSLFXCompileResult output;
@@ -2115,7 +2115,7 @@ cleanup:
 
 				SHADER_DESC subShaderDesc;
 				Vector<String> subShaderIncludes;
-				BSLFXCompileResult subShaderOutput = compileShader(subShaderSource.str(), subShaderDefines, languages, 
+				BSLFXCompileResult subShaderOutput = compileShader(subShaderSource.str(), subShaderDefines, languages,
 					subShaderDesc, subShaderIncludes);
 
 				if (!subShaderOutput.errorMessage.empty())

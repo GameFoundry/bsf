@@ -43,7 +43,7 @@ namespace bs
 			UINT32 curLineIdx = 0;
 
 			Vector2I* alignmentOffsets = bs_frame_new<Vector2I>(numLines);
-			TextSprite::getAlignmentOffsets(textData, mTextDesc.width, mTextDesc.height, mTextDesc.horzAlign, 
+			TextSprite::getAlignmentOffsets(textData, mTextDesc.width, mTextDesc.height, mTextDesc.horzAlign,
 				mTextDesc.vertAlign, alignmentOffsets);
 
 			for (UINT32 i = 0; i < numLines; i++)
@@ -139,7 +139,7 @@ namespace bs
 
 			// Newline chars count in the startChar/endChar variables, but don't actually exist in the buffers
 			// so we need to filter them out
-			numNewlineChars += (line.hasNewlineChar() ? 1 : 0); 
+			numNewlineChars += (line.hasNewlineChar() ? 1 : 0);
 
 			lineIdx++;
 		}
@@ -180,7 +180,7 @@ namespace bs
 		UINT32 idx = 0;
 		for(auto& line : mLineDescs)
 		{
-			if((charIdx >= line.getStartChar() && charIdx < line.getEndChar()) || 
+			if((charIdx >= line.getStartChar() && charIdx < line.getEndChar()) ||
 				(charIdx == line.getStartChar() && line.getStartChar() == line.getEndChar()))
 			{
 				if(line.isNewline(charIdx) && newlineCountsOnNextLine)
@@ -222,7 +222,7 @@ namespace bs
 				continue;
 			}
 
-			UINT32 diff = inputIdx - curPos; 
+			UINT32 diff = inputIdx - curPos;
 			curCharIdx += diff + 1; // Character after the caret
 
 			return curCharIdx;

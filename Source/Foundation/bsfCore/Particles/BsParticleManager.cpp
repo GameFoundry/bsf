@@ -40,9 +40,9 @@ namespace bs
 		iterateOverPixels<T>(pixels, count, sizeof(T), predicate);
 	}
 
-	/** 
+	/**
 	 * Maintains a pool of buffers that are used for passing results of particle simulation from the simulation to the
-	 * core thread. 
+	 * core thread.
 	 */
 	class ParticleSimulationDataPool
 	{
@@ -74,7 +74,7 @@ namespace bs
 				mGPUAlloc.destruct(entry);
 		}
 
-		/** 
+		/**
 		 * Returns a set of buffers containing particle data from the provided particle set. Usable for rendering the
 		 * results of the CPU particle simulation as billboards.
 		 */
@@ -141,7 +141,7 @@ namespace bs
 			return output;
 		}
 
-		/** 
+		/**
 		 * Returns a set of buffers containing particle data from the provided particle set. Usable for rendering the
 		 * results of the CPU particle simulation as 3D meshes.
 		 */
@@ -215,9 +215,9 @@ namespace bs
 			return output;
 		}
 
-		/** 
+		/**
 		 * Returns a list of particles from the provided particle set that may be used for inserting the particles into the
-		 * GPU simulation. 
+		 * GPU simulation.
 		 */
 		ParticleGPUSimulationData* allocGPU(const ParticleSet& particleSet)
 		{
@@ -468,7 +468,7 @@ namespace bs
 		return &mSimulationData[mWriteBufferIdx];
 	}
 
-	void ParticleManager::sortParticles(const ParticleSet& set, ParticleSortMode sortMode, const Vector3& viewPoint, 
+	void ParticleManager::sortParticles(const ParticleSet& set, ParticleSortMode sortMode, const Vector3& viewPoint,
 		UINT32* indices)
 	{
 		assert(sortMode != ParticleSortMode::None);
@@ -494,14 +494,14 @@ namespace bs
 			switch(sortMode)
 			{
 			default:
-			case ParticleSortMode::Distance: 
+			case ParticleSortMode::Distance:
 				for(UINT32 i = 0; i < count; i++)
 				{
 					float distance = viewPoint.squaredDistance(particles.position[i]);
 					sortData.emplace_back(distance, i);
 				}
 				break;
-			case ParticleSortMode::OldToYoung: 
+			case ParticleSortMode::OldToYoung:
 				for(UINT32 i = 0; i < count; i++)
 				{
 					float lifetime = particles.lifetime[i];
@@ -517,7 +517,7 @@ namespace bs
 				break;
 			}
 
-			std::sort(sortData.begin(), sortData.end(), 
+			std::sort(sortData.begin(), sortData.end(),
 				[](const ParticleSortData& lhs, const ParticleSortData& rhs)
 			{
 				return rhs.key < lhs.key;

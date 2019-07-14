@@ -185,7 +185,7 @@ namespace bs
 		// Note: This isn't particularily correct because if the joint is being moved by physics but the rigidbodies
 		// themselves are not parented to the joint, the transform will need updating. However I'm leaving it up to the
 		// user to ensure rigidbodies are always parented to the joint in such a case (It's an unlikely situation that
-		// I can't think of an use for - joint transform will almost always be set as an initialization step and not a 
+		// I can't think of an use for - joint transform will almost always be set as an initialization step and not a
 		// physics response).
 		if (gPhysics()._isUpdateInProgress())
 			return;

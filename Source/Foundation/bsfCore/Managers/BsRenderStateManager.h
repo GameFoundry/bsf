@@ -22,8 +22,8 @@ namespace bs
 	{
 	public:
 		/**	
-		 * Creates and initializes a new SamplerState. 
-		 * 
+		 * Creates and initializes a new SamplerState.
+		 *
 		 * @param[in]	desc	Object describing the sampler state to create.
 		 */
 		SPtr<SamplerState> createSamplerState(const SAMPLER_STATE_DESC& desc) const;
@@ -38,14 +38,14 @@ namespace bs
 		SPtr<BlendState> createBlendState(const BLEND_STATE_DESC& desc) const;
 
 		/**	
-		 * Creates and initializes a new GraphicsPipelineState. 
+		 * Creates and initializes a new GraphicsPipelineState.
 		 *
 		 * @param[in]	desc	Object describing the pipeline to create.
 		 */
 		SPtr<GraphicsPipelineState> createGraphicsPipelineState(const PIPELINE_STATE_DESC& desc) const;
 
 		/**	
-		 * Creates and initializes a new ComputePipelineState. 
+		 * Creates and initializes a new ComputePipelineState.
 		 *
 		 * @param[in]	program		Compute GPU program to be executed by the pipeline.
 		 */
@@ -141,11 +141,11 @@ namespace bs
 	public:
 		RenderStateManager() = default;
 
-		/** 
-		 * @copydoc bs::RenderStateManager::createSamplerState 
+		/**
+		 * @copydoc bs::RenderStateManager::createSamplerState
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		SPtr<SamplerState> createSamplerState(const SAMPLER_STATE_DESC& desc, 
+		SPtr<SamplerState> createSamplerState(const SAMPLER_STATE_DESC& desc,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
 		/** @copydoc bs::RenderStateManager::createDepthStencilState */
@@ -157,15 +157,15 @@ namespace bs
 		/** @copydoc bs::RenderStateManager::createBlendState */
 		SPtr<BlendState> createBlendState(const BLEND_STATE_DESC& desc) const;
 
-		/** 
-		 * @copydoc bs::RenderStateManager::createGraphicsPipelineState 
+		/**
+		 * @copydoc bs::RenderStateManager::createGraphicsPipelineState
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		SPtr<GraphicsPipelineState> createGraphicsPipelineState(const PIPELINE_STATE_DESC& desc, 
+		SPtr<GraphicsPipelineState> createGraphicsPipelineState(const PIPELINE_STATE_DESC& desc,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
-		/** 
-		 * @copydoc bs::RenderStateManager::createComputePipelineState 
+		/**
+		 * @copydoc bs::RenderStateManager::createComputePipelineState
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
 		SPtr<ComputePipelineState> createComputePipelineState(const SPtr<GpuProgram>& program,
@@ -176,7 +176,7 @@ namespace bs
 															   GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
 		/** Creates an uninitialized sampler state. Requires manual initialization after creation. */
-		SPtr<SamplerState> _createSamplerState(const SAMPLER_STATE_DESC& desc, 
+		SPtr<SamplerState> _createSamplerState(const SAMPLER_STATE_DESC& desc,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
 		/** Creates an uninitialized depth-stencil state. Requires manual initialization after creation. */
@@ -189,7 +189,7 @@ namespace bs
 		SPtr<BlendState> _createBlendState(const BLEND_STATE_DESC& desc) const;
 
 		/**	Creates an uninitialized GraphicsPipelineState. Requires manual initialization after creation. */
-		virtual SPtr<GraphicsPipelineState> _createGraphicsPipelineState(const PIPELINE_STATE_DESC& desc, 
+		virtual SPtr<GraphicsPipelineState> _createGraphicsPipelineState(const PIPELINE_STATE_DESC& desc,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
 		/**	Creates an uninitialized ComputePipelineState. Requires manual initialization after creation. */
@@ -257,7 +257,7 @@ namespace bs
 		void notifySamplerStateDestroyed(const SAMPLER_STATE_DESC& desc) const;
 
 		/**
-		 * Attempts to find a cached sampler state corresponding to the provided descriptor. Returns null if one doesn't 
+		 * Attempts to find a cached sampler state corresponding to the provided descriptor. Returns null if one doesn't
 		 * exist.
 		 */
 		SPtr<SamplerState> findCachedState(const SAMPLER_STATE_DESC& desc) const;
@@ -268,13 +268,13 @@ namespace bs
 		SPtr<BlendState> findCachedState(const BLEND_STATE_DESC& desc, UINT32& id) const;
 
 		/**
-		 * Attempts to find a cached rasterizer state corresponding to the provided descriptor. Returns null if one doesn't 
+		 * Attempts to find a cached rasterizer state corresponding to the provided descriptor. Returns null if one doesn't
 		 * exist.
 		 */
 		SPtr<RasterizerState> findCachedState(const RASTERIZER_STATE_DESC& desc, UINT32& id) const;
 
 		/**
-		 * Attempts to find a cached depth-stencil state corresponding to the provided descriptor. Returns null if one 
+		 * Attempts to find a cached depth-stencil state corresponding to the provided descriptor. Returns null if one
 		 * doesn't exist.
 		 */
 		SPtr<DepthStencilState> findCachedState(const DEPTH_STENCIL_STATE_DESC& desc, UINT32& id) const;

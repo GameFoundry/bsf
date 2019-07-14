@@ -28,17 +28,17 @@ namespace bs
 		/** Sets the position and rotation of the collider. */
 		virtual void setTransform(const Vector3& pos, const Quaternion& rotation) = 0;
 
-		/** 
-		 * Enables/disables a collider as a trigger. A trigger will not be used for collisions (objects will pass 
-		 * through it), but collision events will still be reported. 
+		/**
+		 * Enables/disables a collider as a trigger. A trigger will not be used for collisions (objects will pass
+		 * through it), but collision events will still be reported.
 		 */
 		virtual void setIsTrigger(bool value) = 0;
 
 		/** @copydoc setIsTrigger() */
 		virtual bool getIsTrigger() const = 0;
 
-		/** 
-		 * Determines whether the collider is a part of a rigidbody (non-static), or is on its own (static). You should 
+		/**
+		 * Determines whether the collider is a part of a rigidbody (non-static), or is on its own (static). You should
 		 * change this whenever you are attaching or detaching a collider from a rigidbody.
 		 */
 		virtual void setIsStatic(bool value) = 0;
@@ -46,7 +46,7 @@ namespace bs
 		/** @copydoc setIsStatic() */
 		virtual bool getIsStatic() const = 0;
 
-		/** 
+		/**
 		 * Determines the mass of the collider. Only relevant if the collider is part of a rigidbody. Ultimately this will
 		 * determine the total mass, center of mass and inertia tensors of the parent rigidbody (if they're being calculated
 		 * automatically).
@@ -56,9 +56,9 @@ namespace bs
 		/** @copydoc setMass() */
 		virtual float getMass() const { return mMass; }
 
-		/** 
-		 * Determines the physical material of the collider. The material determines how objects hitting the collider 
-		 * behave. 
+		/**
+		 * Determines the physical material of the collider. The material determines how objects hitting the collider
+		 * behave.
 		 */
 		virtual void setMaterial(const HPhysicsMaterial& material);
 
@@ -66,9 +66,9 @@ namespace bs
 		virtual HPhysicsMaterial getMaterial() const { return mMaterial; }
 
 		/**
-		 * Determines how far apart do two shapes need to be away from each other before the physics runtime starts 
+		 * Determines how far apart do two shapes need to be away from each other before the physics runtime starts
 		 * generating repelling impulse for them. This distance will be the sum of contact offsets of the two interacting
-		 * objects. If objects are moving fast you can increase this value to start generating the impulse earlier and 
+		 * objects. If objects are moving fast you can increase this value to start generating the impulse earlier and
 		 * potentially prevent the objects from interpenetrating. This value is in meters. Must be positive and greater
 		 * than rest offset.
 		 *
@@ -81,7 +81,7 @@ namespace bs
 
 		/**
 		 * Determines at what distance should two objects resting on one another come to an equilibrium. The value used in
-		 * the runtime will be the sum of rest offsets for both interacting objects. This value is in meters. Cannot be 
+		 * the runtime will be the sum of rest offsets for both interacting objects. This value is in meters. Cannot be
 		 * larger than contact offset.
 		 *
 		 * Also see setContactOffset().

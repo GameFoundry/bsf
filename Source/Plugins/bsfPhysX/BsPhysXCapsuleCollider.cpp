@@ -9,7 +9,7 @@ using namespace physx;
 
 namespace bs
 {
-	PhysXCapsuleCollider::PhysXCapsuleCollider(PxPhysics* physx, PxScene* scene, const Vector3& position, 
+	PhysXCapsuleCollider::PhysXCapsuleCollider(PxPhysics* physx, PxScene* scene, const Vector3& position,
 		const Quaternion& rotation, float radius, float halfHeight)
 		:mRadius(radius), mHalfHeight(halfHeight)
 	{
@@ -58,7 +58,7 @@ namespace bs
 
 	void PhysXCapsuleCollider::applyGeometry()
 	{
-		PxCapsuleGeometry geometry(std::max(0.01f, mRadius * std::max(mScale.x, mScale.z)), 
+		PxCapsuleGeometry geometry(std::max(0.01f, mRadius * std::max(mScale.x, mScale.z)),
 			std::max(0.01f, mHalfHeight * mScale.y));
 
 		getInternal()->_getShape()->setGeometry(geometry);

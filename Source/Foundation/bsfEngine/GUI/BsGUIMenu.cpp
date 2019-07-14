@@ -10,7 +10,7 @@ namespace bs
 		return a->mPriority > b->mPriority || (a->mPriority == b->mPriority && a->mSeqIdx < b->mSeqIdx);
 	}
 
-	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, const String& name, std::function<void()> callback, 
+	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, const String& name, std::function<void()> callback,
 		INT32 priority, UINT32 seqIdx, const ShortcutKey& key)
 		:mParent(parent), mIsSeparator(false), mName(name), mCallback(callback), mPriority(priority),
 		mShortcut(key), mSeqIdx(seqIdx)
@@ -93,7 +93,7 @@ namespace bs
 		return addMenuItemInternal(path, nullptr, true, priority, ShortcutKey::NONE);
 	}
 
-	GUIMenuItem* GUIMenu::addMenuItemInternal(const String& path, std::function<void()> callback, bool isSeparator, 
+	GUIMenuItem* GUIMenu::addMenuItemInternal(const String& path, std::function<void()> callback, bool isSeparator,
 		INT32 priority, const ShortcutKey& key)
 	{
 		Vector<String> pathElements = StringUtil::split(path, "/");
@@ -187,12 +187,12 @@ namespace bs
 			{
 				if(menuItem->getNumChildren() == 0)
 				{
-					dropDownData.entries.push_back(GUIDropDownDataEntry::button(menuItem->getName(), 
+					dropDownData.entries.push_back(GUIDropDownDataEntry::button(menuItem->getName(),
 						menuItem->getCallback(), menuItem->getShortcut().getName()));
 				}
 				else
 				{
-					dropDownData.entries.push_back(GUIDropDownDataEntry::subMenu(menuItem->getName(), 
+					dropDownData.entries.push_back(GUIDropDownDataEntry::subMenu(menuItem->getName(),
 						getDropDownDataInternal(*menuItem)));
 				}
 			}

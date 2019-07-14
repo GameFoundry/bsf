@@ -22,8 +22,8 @@ namespace bs
 		UnorderedMap<UUID, Path>& getUUIDMap(ResourceManifest* obj) { return obj->mUUIDToFilePath; }
 
 		void setUUIDMap(ResourceManifest* obj, UnorderedMap<UUID, Path>& val)
-		{ 
-			obj->mUUIDToFilePath = val; 
+		{
+			obj->mUUIDToFilePath = val;
 
 			obj->mFilePathToUUID.clear();
 
@@ -31,7 +31,7 @@ namespace bs
 			{
 				obj->mFilePathToUUID[entry.second] = entry.first;
 			}
-		} 
+		}
 	public:
 		ResourceManifestRTTI()
 		{

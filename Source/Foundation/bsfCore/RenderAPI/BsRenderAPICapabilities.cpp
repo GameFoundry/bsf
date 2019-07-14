@@ -2,9 +2,9 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "RenderAPI/BsRenderAPICapabilities.h"
 
-namespace bs 
+namespace bs
 {
-	char const * const RenderAPICapabilities::GPU_VENDOR_STRINGS[GPU_VENDOR_COUNT] = 
+	char const * const RenderAPICapabilities::GPU_VENDOR_STRINGS[GPU_VENDOR_COUNT] =
 	{
 		"unknown",
 		"nvidia"

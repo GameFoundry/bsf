@@ -69,7 +69,7 @@ namespace bs
 				mReportProgress(1.0f - mRemaining / (float)mTotal);
 		}
 	private:
-		SPtr<DataStream> mStream; 
+		SPtr<DataStream> mStream;
 		std::function<void(float)> mReportProgress;
 
 		size_t mRemaining;

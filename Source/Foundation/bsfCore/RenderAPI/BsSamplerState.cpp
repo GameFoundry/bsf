@@ -4,19 +4,19 @@
 #include "Private/RTTI/BsSamplerStateRTTI.h"
 #include "Managers/BsRenderStateManager.h"
 
-namespace bs 
+namespace bs
 {
 	bool SAMPLER_STATE_DESC::operator == (const SAMPLER_STATE_DESC& rhs) const
 	{
-		return addressMode == rhs.addressMode && 
-			minFilter == rhs.minFilter && 
-			magFilter == rhs.magFilter && 
+		return addressMode == rhs.addressMode &&
+			minFilter == rhs.minFilter &&
+			magFilter == rhs.magFilter &&
 			mipFilter == rhs.mipFilter &&
-			maxAniso == rhs.maxAniso && 
-			mipmapBias == rhs.mipmapBias && 
-			mipMin == rhs.mipMin && 
-			mipMax == rhs.mipMax && 
-			borderColor == rhs.borderColor && 
+			maxAniso == rhs.maxAniso &&
+			mipmapBias == rhs.mipmapBias &&
+			mipMin == rhs.mipMin &&
+			mipMax == rhs.mipMax &&
+			borderColor == rhs.borderColor &&
 			comparisonFunc == rhs.comparisonFunc;
 	}
 
@@ -108,7 +108,7 @@ namespace bs
 		return SamplerState::getRTTIStatic();
 	}
 
-	namespace ct 
+	namespace ct
 	{
 
 	SamplerState::SamplerState(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask)

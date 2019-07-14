@@ -16,7 +16,7 @@ namespace bs
 		updateAttenuationRange();
 	}
 
-	LightBase::LightBase(LightType type, Color color, float intensity, float attRadius, float srcRadius, bool castsShadows, 
+	LightBase::LightBase(LightType type, Color color, float intensity, float attRadius, float srcRadius, bool castsShadows,
 		Degree spotAngle, Degree spotFalloffAngle)
 		: mType(type), mCastsShadows(castsShadows), mColor(color), mAttRadius(attRadius), mSourceRadius(srcRadius)
 		, mIntensity(intensity), mSpotAngle(spotAngle), mSpotFalloffAngle(spotFalloffAngle), mAutoAttenuation(false)
@@ -27,7 +27,7 @@ namespace bs
 
 	void LightBase::setUseAutoAttenuation(bool enabled)
 	{
-		mAutoAttenuation = enabled; 
+		mAutoAttenuation = enabled;
 
 		if(enabled)
 			updateAttenuationRange();
@@ -41,7 +41,7 @@ namespace bs
 			return;
 
 		mAttRadius = radius;
-		_markCoreDirty(); 
+		_markCoreDirty();
 		updateBounds();
 	}
 
@@ -57,12 +57,12 @@ namespace bs
 
 	void LightBase::setIntensity(float intensity)
 	{
-		mIntensity = intensity; 
+		mIntensity = intensity;
 
 		if (mAutoAttenuation)
 			updateAttenuationRange();
 
-		_markCoreDirty(); 
+		_markCoreDirty();
 	}
 
 	float LightBase::getLuminance() const
@@ -78,9 +78,9 @@ namespace bs
 				return mIntensity / (4 * Math::PI); // Luminous flux -> luminous intensity
 		case LightType::Spot:
 		{
-			if (mSourceRadius > 0.0f) 
+			if (mSourceRadius > 0.0f)
 				return mIntensity / (radius2 * Math::PI); // Luminous flux -> luminance
-			else 
+			else
 			{
 				// Note: Consider using the simpler conversion I / PI to match with the area-light conversion
 				float cosTotalAngle = Math::cos(mSpotAngle);
@@ -193,7 +193,7 @@ namespace bs
 		p(mShadowBias);
 	}
 
-	Light::Light(LightType type, Color color, float intensity, float attRadius, float srcRadius, bool castsShadows, 
+	Light::Light(LightType type, Color color, float intensity, float attRadius, float srcRadius, bool castsShadows,
 		Degree spotAngle, Degree spotFalloffAngle)
 		: LightBase(type, color, intensity, attRadius, srcRadius, castsShadows, spotAngle, spotFalloffAngle)
 	{
@@ -209,7 +209,7 @@ namespace bs
 	SPtr<Light> Light::create(LightType type, Color color,
 		float intensity, float attRadius, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
 	{
-		Light* handler = new (bs_alloc<Light>()) 
+		Light* handler = new (bs_alloc<Light>())
 			Light(type, color, intensity, attRadius, 0.0f, castsShadows, spotAngle, spotFalloffAngle);
 		SPtr<Light> handlerPtr = bs_core_ptr<Light>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);

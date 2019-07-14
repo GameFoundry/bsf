@@ -48,7 +48,7 @@ namespace bs
         {
             if (a < b)
                 return a;
-            
+
             return b;
         }
 
@@ -582,7 +582,7 @@ namespace bs
         /// Clamps a value between zero and one.
         /// </summary>
         /// <param name="value">Value to clamp.</param>
-        /// <returns>Returns unchanged value if it is in [0, 1] range, otherwise returns value clamped to the range. 
+        /// <returns>Returns unchanged value if it is in [0, 1] range, otherwise returns value clamped to the range.
         /// </returns>
         public static float Clamp01(float value)
         {
@@ -591,7 +591,7 @@ namespace bs
 
             if (value > 1.0)
                 return 1f;
-            
+
             return value;
         }
 
@@ -789,8 +789,8 @@ namespace bs
         public static bool ApproxEquals(Vector4 a, Vector4 b, float epsilon = 1.192092896e-07F)
         {
             return
-                Abs(b.x - a.x) <= epsilon && 
-                Abs(b.y - a.y) <= epsilon && 
+                Abs(b.x - a.x) <= epsilon &&
+                Abs(b.y - a.y) <= epsilon &&
                 Abs(b.z - a.z) <= epsilon &&
                 Abs(b.w - a.w) <= epsilon;
         }
@@ -804,9 +804,9 @@ namespace bs
         /// <returns>True if equal, false otherwise.</returns>
         public static bool ApproxEquals(Quaternion a, Quaternion b, float epsilon = 1.192092896e-07F)
         {
-            return 
-                Abs(b.x - a.x) <= epsilon && 
-                Abs(b.y - a.y) <= epsilon && 
+            return
+                Abs(b.x - a.x) <= epsilon &&
+                Abs(b.y - a.y) <= epsilon &&
                 Abs(b.z - a.z) <= epsilon &&
                 Abs(b.w - a.w) <= epsilon;
         }

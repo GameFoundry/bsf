@@ -201,7 +201,7 @@ namespace bs
 		mSliderHandle->setStep(step);
 	}
 
-	float GUISlider::getStep() const 
+	float GUISlider::getStep() const
 	{
 		return mSliderHandle->getStep();
 	}

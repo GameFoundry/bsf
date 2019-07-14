@@ -31,7 +31,7 @@ namespace bs
 		static ScriptInputConfiguration* getScriptInputConfig(const SPtr<InputConfiguration>& inputConfig);
 
 		/**
-		 * Creates a new interop object for the provided input configuration. Caller should first call 
+		 * Creates a new interop object for the provided input configuration. Caller should first call
 		 * getScriptInputConfig() to ensure one doesn't already exist.
 		 */
 		static ScriptInputConfiguration* createScriptInputConfig(const SPtr<InputConfiguration>& inputConfig);

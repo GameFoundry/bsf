@@ -166,7 +166,7 @@ namespace bs
 		 * Decompose a Matrix3 to rotation and scale.
 		 *
 		 * @note	
-		 * Matrix must consist only of rotation and uniform scale transformations, otherwise accurate results are not 
+		 * Matrix must consist only of rotation and uniform scale transformations, otherwise accurate results are not
 		 * guaranteed. Applying non-uniform scale guarantees rotation portion will not be accurate.
 		 */
 		void decomposition(Quaternion& rotation, Vector3& scale) const;

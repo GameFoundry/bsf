@@ -190,11 +190,11 @@ namespace bs { namespace ct
 		const SortableElement& a = lookup[aIdx];
 		const SortableElement& b = lookup[bIdx];
 
-		UINT8 isHigher = (a.priority > b.priority) << 5 | 
-			(a.distFromCamera < b.distFromCamera) << 4 | 
-			(a.shaderId < b.shaderId) << 3 | 
+		UINT8 isHigher = (a.priority > b.priority) << 5 |
+			(a.distFromCamera < b.distFromCamera) << 4 |
+			(a.shaderId < b.shaderId) << 3 |
 			(a.techniqueIdx < b.techniqueIdx) << 2 |
-			(a.passIdx < b.passIdx) << 1 | 
+			(a.passIdx < b.passIdx) << 1 |
 			(a.seqIdx < b.seqIdx);
 
 		UINT8 isLower = (a.priority < b.priority) << 5 |

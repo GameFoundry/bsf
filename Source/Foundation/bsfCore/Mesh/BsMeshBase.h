@@ -18,17 +18,17 @@ namespace bs
 	 * on modifying the mesh often, otherwise specify dynamic.
 	 */
 	enum BS_SCRIPT_EXPORT(m:Rendering) MeshUsage
-	{ 
+	{
 		/** Specify for a mesh that is not often updated from the CPU. */
 		MU_STATIC		BS_SCRIPT_EXPORT(n:Static) = 1 << 0,
 
 		/** Specify for a mesh that is often updated from the CPU. */
 		MU_DYNAMIC		BS_SCRIPT_EXPORT(n:Dynamic) = 1 << 1,
-		/** 
-		 * All mesh data will also be cached in CPU memory, making it available for fast read access from the CPU. Can be 
-		 * combined with other usage flags. 
+		/**
+		 * All mesh data will also be cached in CPU memory, making it available for fast read access from the CPU. Can be
+		 * combined with other usage flags.
 		 */
-		MU_CPUCACHED	BS_SCRIPT_EXPORT(n:CPUCached) = 0x1000, 
+		MU_CPUCACHED	BS_SCRIPT_EXPORT(n:CPUCached) = 0x1000,
 	};
 
 	/** Properties of a Mesh. Shared between sim and core thread versions of a Mesh. */
@@ -79,7 +79,7 @@ namespace bs
 	 */
 
 	/**
-	 * Base class all mesh implementations derive from. Meshes hold geometry information, normally in the form of one or 
+	 * Base class all mesh implementations derive from. Meshes hold geometry information, normally in the form of one or
 	 * several index or vertex buffers. Different mesh implementations might choose to manage those buffers differently.
 	 *
 	 * @note	Sim thread.
@@ -91,8 +91,8 @@ namespace bs
 		 * Constructs a new mesh with no sub-meshes.
 		 *
 		 * @param[in]	numVertices		Number of vertices in the mesh.
-		 * @param[in]	numIndices		Number of indices in the mesh. 
-		 * @param[in]	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default 
+		 * @param[in]	numIndices		Number of indices in the mesh.
+		 * @param[in]	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default
 		 *								option is triangles, where three indices represent a single triangle.
 		 */
 		MeshBase(UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
@@ -103,7 +103,7 @@ namespace bs
 		 *
 		 * @param[in]	numVertices		Number of vertices in the mesh.
 		 * @param[in]	numIndices		Number of indices in the mesh.
-		 * @param[in]	subMeshes		Defines how are indices separated into sub-meshes, and how are those sub-meshes 
+		 * @param[in]	subMeshes		Defines how are indices separated into sub-meshes, and how are those sub-meshes
 		 *								rendered.
 		 */
 		MeshBase(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes);

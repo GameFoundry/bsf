@@ -46,7 +46,7 @@ namespace bs
 
 		/**
 		 * Checks if the convex volume contains the provided point.
-		 * 
+		 *
 		 * @param[in]	p		Point to check.
 		 * @param[in]	expand	Optional value to expand the size of the convex volume by the specified value during the
 		 *						check. Negative values shrink the volume.

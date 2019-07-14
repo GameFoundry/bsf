@@ -13,18 +13,18 @@ namespace bs
 		ScriptObjectManager::instance().registerScriptObject(this);
 	}
 
-	ScriptObjectBase::~ScriptObjectBase() 
+	ScriptObjectBase::~ScriptObjectBase()
 	{
 		ScriptObjectManager::instance().unregisterScriptObject(this);
 	}
 
-	ScriptObjectBackup ScriptObjectBase::beginRefresh() 
-	{ 
-		return ScriptObjectBackup(); 
+	ScriptObjectBackup ScriptObjectBase::beginRefresh()
+	{
+		return ScriptObjectBackup();
 	}
 
-	void ScriptObjectBase::endRefresh(const ScriptObjectBackup& data) 
-	{ 
+	void ScriptObjectBase::endRefresh(const ScriptObjectBackup& data)
+	{
 
 	}
 

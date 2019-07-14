@@ -57,9 +57,9 @@ namespace bs
 			return *this;
 		}
 
-		/** 
+		/**
 		 * Allocates internal memory as reserved by previous calls to reserve(). Must be called before any calls to
-		 * construct or alloc. 
+		 * construct or alloc.
 		 */
 		void init()
 		{
@@ -71,7 +71,7 @@ namespace bs
 			mDataPtr = mData;
 		}
 
-		/** 
+		/**
 		 * Reserves the specified amount of bytes to allocate. Multiple calls to reserve() are cumulative. After all needed
 		 * memory is reserved, call init(), followed by actual allocation via construct() or alloc() methods.
 		 */
@@ -83,7 +83,7 @@ namespace bs
 			return *this;
 		}
 
-		/** 
+		/**
 		 * Reserves the specified amount of bytes to allocate. Multiple calls to reserve() are cumulative. After all needed
 		 * memory is reserved, call init(), followed by actual allocation via construct() or alloc() methods. If you need
 		 * to change the size of your allocation, free your memory by using free(), followed by a call to clear(). Then

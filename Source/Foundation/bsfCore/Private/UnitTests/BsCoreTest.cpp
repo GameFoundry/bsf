@@ -39,18 +39,18 @@ namespace bs
 
 		// Construct some curves
 		TAnimationCurve<float> curveConstant(
-			{ 
+			{
 				TKeyframe<float>{ 1.0f, 0.0f, 0.0f, 0.0f },
 			});
 
 		TAnimationCurve<float> curveLinear(
-			{ 
+			{
 				TKeyframe<float>{ 0.0f, 0.0f, 1.0f, 0.0f },
 				TKeyframe<float>{ 1.0f, 1.0f, 0.0f, 1.0f }
 			});
 
 		TAnimationCurve<float> curveAcceleration(
-			{ 
+			{
 				TKeyframe<float>{ -9.81f, 0.0f, 0.0f, 0.0f },
 				TKeyframe<float>{ -9.81f, 0.0f, 0.0f, 10.0f }
 			});
@@ -75,7 +75,7 @@ namespace bs
 			float times[] = { 0.0f, 0.5f, 1.0f };
 			for(auto time : times)
 			{
-				BS_TEST_ASSERT(Math::approxEquals(curveConstant.evaluateIntegratedDouble(time, cache), 
+				BS_TEST_ASSERT(Math::approxEquals(curveConstant.evaluateIntegratedDouble(time, cache),
 					evalPosition(1.0f, 0.0f, time), EPSILON));
 			}
 		}
@@ -86,7 +86,7 @@ namespace bs
 			float times[] = { 0.0f, 0.5f, 1.0f, 2.0f, 3.0f, 5.0f, 10.0f };
 			for(auto time : times)
 			{
-				BS_TEST_ASSERT(Math::approxEquals(curveAcceleration.evaluateIntegrated(time, cache), 
+				BS_TEST_ASSERT(Math::approxEquals(curveAcceleration.evaluateIntegrated(time, cache),
 					evalVelocity(-9.81f, time), EPSILON));
 			}
 
@@ -101,7 +101,7 @@ namespace bs
 			float times[] = { 0.0f, 0.5f, 1.0f, 2.0f, 3.0f, 5.0f, 10.0f };
 			for(auto time : times)
 			{
-				BS_TEST_ASSERT(Math::approxEquals(curveAcceleration.evaluateIntegratedDouble(time, cache), 
+				BS_TEST_ASSERT(Math::approxEquals(curveAcceleration.evaluateIntegratedDouble(time, cache),
 					evalPosition(-9.81f, 0.0f, time)));
 			}
 

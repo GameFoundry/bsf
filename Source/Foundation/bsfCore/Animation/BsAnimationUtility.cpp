@@ -6,7 +6,7 @@
 
 namespace bs
 {
-	void setStepTangent(const TKeyframe<Vector3>& lhsIn, const TKeyframe<Vector3>& rhsIn, 
+	void setStepTangent(const TKeyframe<Vector3>& lhsIn, const TKeyframe<Vector3>& rhsIn,
 		TKeyframe<Quaternion>& lhsOut, TKeyframe<Quaternion>& rhsOut)
 	{
 		for (UINT32 i = 0; i < 3; i++)
@@ -20,7 +20,7 @@ namespace bs
 		}
 	}
 
-	void setStepTangent(const TKeyframe<Quaternion>& lhsIn, const TKeyframe<Quaternion>& rhsIn, 
+	void setStepTangent(const TKeyframe<Quaternion>& lhsIn, const TKeyframe<Quaternion>& rhsIn,
 		TKeyframe<Vector3>& lhsOut, TKeyframe<Vector3>& rhsOut)
 	{
 		for (UINT32 i = 0; i < 4; i++)
@@ -70,10 +70,10 @@ namespace bs
 		const SPtr<TAnimationCurve<Vector3>>& eulerCurve, EulerAngleOrder order)
 	{
 		// TODO: We calculate tangents by sampling which can introduce error in the tangents. The error can be exacerbated
-		// by the fact we constantly switch between the two representations, possibly losing precision every time. Instead 
+		// by the fact we constantly switch between the two representations, possibly losing precision every time. Instead
 		// there must be an analytical way to calculate tangents when converting a curve, or a better way of dealing with
 		// tangents.
-		// Consider: 
+		// Consider:
 		//  - Sampling multiple points to calculate tangents to improve precision
 		//  - Store the original quaternion curve with the euler curve
 		//    - This way conversion from euler to quaternion can be done while individual keyframes are being modified
@@ -218,7 +218,7 @@ namespace bs
 
 	template <class T>
 	void splitCurve(
-		const TAnimationCurve<T>& compoundCurve, 
+		const TAnimationCurve<T>& compoundCurve,
 		Vector<TKeyframe<float>> (&keyFrames)[TCurveProperties<T>::NumComponents])
 	{
 		constexpr UINT32 NUM_COMPONENTS = TCurveProperties<T>::NumComponents;
@@ -258,7 +258,7 @@ namespace bs
 
 	template <class T>
 	void combineCurve(
-		const TAnimationCurve<float>* (& curveComponents)[TCurveProperties<T>::NumComponents], 
+		const TAnimationCurve<float>* (& curveComponents)[TCurveProperties<T>::NumComponents],
 		Vector<TKeyframe<T>>& output)
 	{
 		constexpr UINT32 NUM_COMPONENTS = TCurveProperties<T>::NumComponents;
@@ -360,7 +360,7 @@ namespace bs
 	}
 
 	template <class T>
-	void AnimationUtility::splitCurve(const TAnimationCurve<T>& compoundCurve, 
+	void AnimationUtility::splitCurve(const TAnimationCurve<T>& compoundCurve,
 		TAnimationCurve<float> (& output)[TCurveProperties<T>::NumComponents])
 	{
 		constexpr UINT32 NUM_COMPONENTS = TCurveProperties<T>::NumComponents;
@@ -374,7 +374,7 @@ namespace bs
 
 	template <class T>
 	void AnimationUtility::combineCurve(
-		const TAnimationCurve<float> (& curveComponents)[TCurveProperties<T>::NumComponents], 
+		const TAnimationCurve<float> (& curveComponents)[TCurveProperties<T>::NumComponents],
 		TAnimationCurve<T>& output)
 	{
 		constexpr UINT32 NUM_COMPONENTS = TCurveProperties<T>::NumComponents;
@@ -389,7 +389,7 @@ namespace bs
 		output = TAnimationCurve<T>(keyFrames);
 	}
 
-	void AnimationUtility::calculateRange(const Vector<TAnimationCurve<float>>& curves, float& xMin, float& xMax, 
+	void AnimationUtility::calculateRange(const Vector<TAnimationCurve<float>>& curves, float& xMin, float& xMax,
 		float& yMin, float& yMax)
 	{
 		xMin = std::numeric_limits<float>::infinity();
@@ -421,7 +421,7 @@ namespace bs
 			yMax = 0.0f;
 	}
 
-	void AnimationUtility::calculateRange(const Vector<SPtr<TAnimationCurve<float>>>& curves, float& xMin, float& xMax, 
+	void AnimationUtility::calculateRange(const Vector<SPtr<TAnimationCurve<float>>>& curves, float& xMin, float& xMax,
 		float& yMin, float& yMax)
 	{
 		xMin = std::numeric_limits<float>::infinity();

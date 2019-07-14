@@ -16,8 +16,8 @@ namespace bs
 
 	struct JOINT_DESC;
 
-	/** 
-	 * Base class for all Joint types. Joints constrain how two rigidbodies move relative to one another (for example a door 
+	/**
+	 * Base class for all Joint types. Joints constrain how two rigidbodies move relative to one another (for example a door
 	 * hinge). One of the bodies in the joint must always be movable (non-kinematic).
 	 */
 	class BS_CORE_EXPORT Joint
@@ -66,13 +66,13 @@ namespace bs
 		 *  @{
 		 */
 
-		/** 
+		/**
 		 * Sets the object that owns this physics object, if any. Used for high level systems so they can easily map their
 		 * high level physics objects from the low level ones returned by various queries and events.
 		 */
 		void _setOwner(PhysicsOwnerType type, void* owner) { mOwner.type = type; mOwner.ownerData = owner; }
 
-		/** 
+		/**
 		 * Gets the object that owns this physics object, if any. Used for high level systems so they can easily map their
 		 * high level physics objects from the low level ones returned by various queries and events.
 		 */
@@ -101,8 +101,8 @@ namespace bs
 		bool enableCollision = false;
 	};
 
-	/** 
-	 * Controls spring parameters for a physics joint limits. If a limit is soft (body bounces back due to restition when 
+	/**
+	 * Controls spring parameters for a physics joint limits. If a limit is soft (body bounces back due to restition when
 	 * the limit is reached) the spring will pull the body back towards the limit using the specified parameters.
 	 */
 	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) Spring
@@ -110,8 +110,8 @@ namespace bs
 		/** Constructs a spring with no force. */
 		Spring() { }
 
-		/** 
-		 * Constructs a spring. 
+		/**
+		 * Constructs a spring.
 		 *
 		 * @param	stiffness	Spring strength. Force proportional to the position error.
 		 * @param	damping		Damping strength. Force propertional to the velocity error.
@@ -143,7 +143,7 @@ namespace bs
 			: restitution(restitution), spring(spring)
 		{ }
 
-		/** 
+		/**
 		 * Distance from the limit at which it becomes active. Allows the solver to activate earlier than the limit is
 		 * reached to avoid breaking the limit.
 		 */
@@ -168,7 +168,7 @@ namespace bs
 
 		/**
 		 * Constructs a hard limit. Once the limit is reached the movement of the attached bodies will come to a stop.
-		 * 
+		 *
 		 * @param	lower		Lower distance of the limit. Must be less than @p upper.
 		 * @param	upper		Upper distance of the limit. Must be more than @p lower.
 		 * @param	contactDist	Distance from the limit at which it becomes active. Allows the solver to activate earlier
@@ -181,7 +181,7 @@ namespace bs
 		/**
 		 * Constructs a soft limit. Once the limit is reached the bodies will bounce back according to the resitution
 		 * parameter and will be pulled back towards the limit by the provided spring.
-		 * 
+		 *
 		 * @param	lower		Lower distance of the limit. Must be less than @p upper.
 		 * @param	upper		Upper distance of the limit. Must be more than @p lower.
 		 * @param	spring		Spring that controls how are the bodies pulled back towards the limit when they breach it.
@@ -195,12 +195,12 @@ namespace bs
 
 		bool operator==(const LimitLinearRange& other) const
 		{
-			return lower == other.lower && upper == other.upper && contactDist == other.contactDist && 
+			return lower == other.lower && upper == other.upper && contactDist == other.contactDist &&
 				restitution == other.restitution && spring == other.spring;
 		}
 
 		/** Lower distance of the limit. Must be less than #upper. */
-		float lower = 0.0f; 
+		float lower = 0.0f;
 
 		/** Upper distance of the limit. Must be more than #lower. */
 		float upper = 0.0f;
@@ -215,8 +215,8 @@ namespace bs
 
 		/**
 		 * Constructs a hard limit. Once the limit is reached the movement of the attached bodies will come to a stop.
-		 * 
-		 * @param	extent		Distance at which the limit becomes active. 
+		 *
+		 * @param	extent		Distance at which the limit becomes active.
 		 * @param	contactDist	Distance from the limit at which it becomes active. Allows the solver to activate earlier
 		 *						than the limit is reached to avoid breaking the limit. Specify -1 for the default.
 		 */
@@ -227,8 +227,8 @@ namespace bs
 		/**
 		 * Constructs a soft limit. Once the limit is reached the bodies will bounce back according to the resitution
 		 * parameter and will be pulled back towards the limit by the provided spring.
-		 * 
-		 * @param	extent		Distance at which the limit becomes active. 
+		 *
+		 * @param	extent		Distance at which the limit becomes active.
 		 * @param	spring		Spring that controls how are the bodies pulled back towards the limit when they breach it.
 		 * @param	restitution	Controls how do objects react when the limit is reached, values closer to zero specify
 		 *						non-ellastic collision, while those closer to one specify more ellastic (i.e bouncy)
@@ -257,7 +257,7 @@ namespace bs
 
 		/**
 		 * Constructs a hard limit. Once the limit is reached the movement of the attached bodies will come to a stop.
-		 * 
+		 *
 		 * @param	lower		Lower angle of the limit. Must be less than @p upper.
 		 * @param	upper		Upper angle of the limit. Must be more than @p lower.
 		 * @param	contactDist	Distance from the limit at which it becomes active. Allows the solver to activate earlier
@@ -270,7 +270,7 @@ namespace bs
 		/**
 		 * Constructs a soft limit. Once the limit is reached the bodies will bounce back according to the resitution
 		 * parameter and will be pulled back towards the limit by the provided spring.
-		 * 
+		 *
 		 * @param	lower		Lower angle of the limit. Must be less than @p upper.
 		 * @param	upper		Upper angle of the limit. Must be more than @p lower.
 		 * @param	spring		Spring that controls how are the bodies pulled back towards the limit when they breach it.
@@ -284,7 +284,7 @@ namespace bs
 
 		bool operator==(const LimitAngularRange& other) const
 		{
-			return lower == other.lower && upper == other.upper && contactDist == other.contactDist && 
+			return lower == other.lower && upper == other.upper && contactDist == other.contactDist &&
 				restitution == other.restitution && spring == other.spring;
 		}
 
@@ -306,11 +306,11 @@ namespace bs
 
 		/**
 		 * Constructs a hard limit. Once the limit is reached the movement of the attached bodies will come to a stop.
-		 * 
+		 *
 		 * @param	yLimitAngle		Y angle of the cone. Movement is constrainted between 0 and this angle on the Y axis.
 		 * @param	zLimitAngle		Z angle of the cone. Movement is constrainted between 0 and this angle on the Z axis.
-		 * @param	contactDist		Distance from the limit at which it becomes active. Allows the solver to activate 
-		 *							earlier than the limit is reached to avoid breaking the limit. Specify -1 for the 
+		 * @param	contactDist		Distance from the limit at which it becomes active. Allows the solver to activate
+		 *							earlier than the limit is reached to avoid breaking the limit. Specify -1 for the
 		 *							default.
 		 */
 		LimitConeRange(Radian yLimitAngle, Radian zLimitAngle, float contactDist = -1.0f)
@@ -320,7 +320,7 @@ namespace bs
 		/**
 		 * Constructs a soft limit. Once the limit is reached the bodies will bounce back according to the resitution
 		 * parameter and will be pulled back towards the limit by the provided spring.
-		 * 
+		 *
 		 * @param	yLimitAngle	Y angle of the cone. Movement is constrainted between 0 and this angle on the Y axis.
 		 * @param	zLimitAngle	Z angle of the cone. Movement is constrainted between 0 and this angle on the Z axis.
 		 * @param	spring		Spring that controls how are the bodies pulled back towards the limit when they breach it.
@@ -334,7 +334,7 @@ namespace bs
 
 		bool operator==(const LimitConeRange& other) const
 		{
-			return yLimitAngle == other.yLimitAngle && zLimitAngle == other.zLimitAngle && 
+			return yLimitAngle == other.yLimitAngle && zLimitAngle == other.zLimitAngle &&
 				contactDist == other.contactDist && restitution == other.restitution && spring == other.spring;
 		}
 

@@ -22,13 +22,13 @@ namespace bs
 	enum class BS_SCRIPT_EXPORT(m:Audio) AudioReadMode
 	{
 		/** Entire audio clip will be loaded and decompressed. Uses most memory but has lowest CPU impact. */
-		LoadDecompressed, 
+		LoadDecompressed,
 		/**
 		 * Entire audio clip will be loaded, but will be decompressed while playing. Uses medium amount of memory and has
-		 * the highest CPU impact. 
+		 * the highest CPU impact.
 		 */
 		LoadCompressed,
-		/** 
+		/**
 		 * Audio will be slowly streamed from the disk, and decompressed if needed. Uses very little memory, and has either
 		 * low or high CPU impact depending if the audio is in a compressed format. Since data is streamed from the disk,
 		 * read speeds could also be a bottleneck.
@@ -57,8 +57,8 @@ namespace bs
 		/** Determines should the audio clip be played using 3D positioning. Only valid for mono audio. */
 		bool is3D = true;
 
-		/** 
-		 * Determines should the audio clip keep the original data in memory after creation. For example if the audio data 
+		/**
+		 * Determines should the audio clip keep the original data in memory after creation. For example if the audio data
 		 * is normally compressed, but audio clip uncompresses it on load, the original compressed data will be lost unless
 		 * this is enabled. This will cause extra memory to be used, but can be useful in certain circumstances (for example
 		 * you might require that data to save the audio clip on disk).
@@ -68,7 +68,7 @@ namespace bs
 		bool keepSourceData = true;
 	};
 
-	/** 
+	/**
 	 * Audio clip stores audio data in a compressed or uncompressed format. Clips can be provided to audio sources or
 	 * other audio methods to be played.
 	 */
@@ -89,16 +89,16 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:NumChannels,pr:getter)
 		UINT32 getNumChannels() const { return mDesc.numChannels; }
 
-		/** 
-		 * Returns in which format is audio data stored in. 
+		/**
+		 * Returns in which format is audio data stored in.
 		 *
 		 * @see	AudioFormat
 		 */
 		BS_SCRIPT_EXPORT(n:Format,pr:getter)
 		AudioFormat getFormat() const { return mDesc.format; }
 
-		/** 
-		 * Returns how is the audio data read/decoded. 
+		/**
+		 * Returns how is the audio data read/decoded.
 		 *
 		 * @see	AudioReadMode
 		 */
@@ -121,7 +121,7 @@ namespace bs
 		 * Creates a new AudioClip and populates it with provided samples.
 		 *
 		 * @param[in]	samples		Data streams containing the samples to load. Data will be read starting from the current
-		 *							position in the stream. The samples should be in audio format as specified in the 
+		 *							position in the stream. The samples should be in audio format as specified in the
 		 *							@p desc parameter. Ownership of the data stream is taken by the audio clip and the
 		 *							caller must not close it manually.
 		 * @param[in]	streamSize	Number of bytes to read from the @p samples stream.
@@ -139,7 +139,7 @@ namespace bs
 		 */
 
 		/** Creates a new AudioClip without initializing it. Use create() for normal use. */
-		static SPtr<AudioClip> _createPtr(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples, 
+		static SPtr<AudioClip> _createPtr(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples,
 			const AUDIO_CLIP_DESC& desc);
 
 		/** @} */
@@ -171,7 +171,7 @@ namespace bs
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 
-		/** 
+		/**
 		 * Creates an AudioClip with no samples. You must populate its data manually followed by a call to initialize().
 		 *
 		 * @note	For serialization use only.

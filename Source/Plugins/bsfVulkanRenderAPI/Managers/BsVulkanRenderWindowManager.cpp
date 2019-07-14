@@ -10,7 +10,7 @@
 #include "MacOS/BsMacOSRenderWindow.h"
 #endif
 
-namespace bs 
+namespace bs
 {
 	SPtr<RenderWindow> VulkanRenderWindowManager::createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const SPtr<RenderWindow>& parentWindow)
 	{

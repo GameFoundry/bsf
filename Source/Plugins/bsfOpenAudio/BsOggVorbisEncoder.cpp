@@ -24,7 +24,7 @@ namespace bs
 		close();
 	}
 
-	bool OggVorbisEncoder::open(std::function<void(UINT8*, UINT32)> writeCallback, UINT32 sampleRate, UINT32 bitDepth, 
+	bool OggVorbisEncoder::open(std::function<void(UINT8*, UINT32)> writeCallback, UINT32 sampleRate, UINT32 bitDepth,
 		UINT32 numChannels)
 	{
 		mNumChannels = numChannels;

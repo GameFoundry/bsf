@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/**
-	 * Factory class for creating Renderer objects. Implement this class for any custom renderer classes you may have, and 
+	 * Factory class for creating Renderer objects. Implement this class for any custom renderer classes you may have, and
 	 * register it with renderer manager.
 	 * 			
 	 * @see		RendererManager

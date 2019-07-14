@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Controls spring parameters for a physics joint limits. If a limit is soft (body bounces back due to restition when  
+	/// Controls spring parameters for a physics joint limits. If a limit is soft (body bounces back due to restition when
 	/// the limit is reached) the spring will pull the body back towards the limit using the specified parameters.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential), SerializeObject]

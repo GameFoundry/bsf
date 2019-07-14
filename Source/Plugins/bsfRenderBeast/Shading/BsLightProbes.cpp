@@ -12,7 +12,7 @@
 #include "Renderer/BsSkybox.h"
 #include "Utility/BsRendererTextures.h"
 
-namespace bs { namespace ct 
+namespace bs { namespace ct
 {
 	TetrahedraRenderParamDef gTetrahedraRenderParamDef;
 
@@ -39,7 +39,7 @@ namespace bs { namespace ct
 		mParams->setParamBlockBuffer("Params", mParamBuffer);
 	}
 
-	void TetrahedraRenderMat::execute(const RendererView& view, const SPtr<Texture>& sceneDepth, const SPtr<Mesh>& mesh, 
+	void TetrahedraRenderMat::execute(const RendererView& view, const SPtr<Texture>& sceneDepth, const SPtr<Mesh>& mesh,
 		const SPtr<RenderTexture>& output)
 	{
 		BS_RENMAT_PROFILE_BLOCK
@@ -59,7 +59,7 @@ namespace bs { namespace ct
 		gRendererUtility().draw(mesh);
 	}
 
-	void TetrahedraRenderMat::getOutputDesc(const RendererView& view, POOLED_RENDER_TEXTURE_DESC& colorDesc, 
+	void TetrahedraRenderMat::getOutputDesc(const RendererView& view, POOLED_RENDER_TEXTURE_DESC& colorDesc,
 		POOLED_RENDER_TEXTURE_DESC& depthDesc)
 	{
 		const RendererViewProperties& viewProps = view.getProperties();
@@ -106,8 +106,8 @@ namespace bs { namespace ct
 		mParams->setParamBlockBuffer("Params", mParamBuffer);
 	}
 
-	void IrradianceEvaluateMat::execute(const RendererView& view, const GBufferTextures& gbuffer, 
-		const SPtr<Texture>& lightProbeIndices, const LightProbesInfo& lightProbesInfo, const Skybox* skybox, 
+	void IrradianceEvaluateMat::execute(const RendererView& view, const GBufferTextures& gbuffer,
+		const SPtr<Texture>& lightProbeIndices, const LightProbesInfo& lightProbesInfo, const Skybox* skybox,
 		const SPtr<Texture>& ambientOcclusion, const SPtr<RenderTexture>& output)
 	{
 		BS_RENMAT_PROFILE_BLOCK
@@ -157,7 +157,7 @@ namespace bs { namespace ct
 
 		bind();
 
-		gRendererUtility().drawScreenQuad(Rect2(0.0f, 0.0f, (float)viewProps.target.viewRect.width, 
+		gRendererUtility().drawScreenQuad(Rect2(0.0f, 0.0f, (float)viewProps.target.viewRect.width,
 			(float)viewProps.target.viewRect.height));
 
 		rapi.setRenderTarget(nullptr);
@@ -398,7 +398,7 @@ namespace bs { namespace ct
 
 			center /= 4.0f;
 
-			static const UINT32 Permutations[4][3] = 
+			static const UINT32 Permutations[4][3] =
 			{
 				{ 0, 1, 2 },
 				{ 0, 1, 3 },
@@ -656,7 +656,7 @@ namespace bs { namespace ct
 			resizeTetrahedronBuffer(newSize);
 		}
 
-		TetrahedronDataGPU* dst = (TetrahedronDataGPU*)mTetrahedronInfosGPU->lock(0, mTetrahedronInfosGPU->getSize(), 
+		TetrahedronDataGPU* dst = (TetrahedronDataGPU*)mTetrahedronInfosGPU->lock(0, mTetrahedronInfosGPU->getSize(),
 			GBL_WRITE_ONLY_DISCARD);
 
 		// Write inner tetrahedron data
@@ -715,7 +715,7 @@ namespace bs { namespace ct
 			resizeTetrahedronFaceBuffer(newSize);
 		}
 
-		TetrahedronFaceDataGPU* faceDst = (TetrahedronFaceDataGPU*)mTetrahedronFaceInfosGPU->lock(0, 
+		TetrahedronFaceDataGPU* faceDst = (TetrahedronFaceDataGPU*)mTetrahedronFaceInfosGPU->lock(0,
 			mTetrahedronFaceInfosGPU->getSize(), GBL_WRITE_ONLY_DISCARD);
 
 		for (UINT32 i = 0; i < (UINT32)outerFaces.size(); i++)
@@ -1035,7 +1035,7 @@ namespace bs { namespace ct
 					//
 					// Or if p ends up being zero, we end up with a quadratic instead:
 					// q t^2 + r t + s = 0
-					// 
+					//
 					// We want to create a matrix that when multiplied with the position, yields us the three coefficients,
 					// which we can then use to solve for "t". For this we create a 4x3 matrix, where each row represents
 					// a solution for one of the coefficients. We factor contributons to each coefficient whether they depend on
@@ -1060,10 +1060,10 @@ namespace bs { namespace ct
 					float qx = -v1.y * v0.z + v2.y * v0.z + v0.y * v1.z - v2.y * v1.z - v0.y * v2.z + v1.y * v2.z;
 					float qy = v1.x * v0.z - v2.x * v0.z - v0.x * v1.z + v2.x * v1.z + v0.x * v2.z - v1.x * v2.z;
 					float qz = -v1.x * v0.y + v2.x * v0.y + v0.x * v1.y - v2.x * v1.y - v0.x * v2.y + v1.x * v2.y;
-					float qw = v2.y * v1.z * p0.x - v1.y * v2.z * p0.x - v2.y * v0.z * p1.x + v0.y * v2.z * p1.x + 
-						v1.y * v0.z * p2.x - v0.y * v1.z * p2.x - v2.x * v1.z * p0.y + v1.x * v2.z * p0.y + 
-						v2.x * v0.z * p1.y - v0.x * v2.z * p1.y - v1.x * v0.z * p2.y + v0.x * v1.z * p2.y + 
-						v2.x * v1.y * p0.z - v1.x * v2.y * p0.z - v2.x * v0.y * p1.z + v0.x * v2.y * p1.z + 
+					float qw = v2.y * v1.z * p0.x - v1.y * v2.z * p0.x - v2.y * v0.z * p1.x + v0.y * v2.z * p1.x +
+						v1.y * v0.z * p2.x - v0.y * v1.z * p2.x - v2.x * v1.z * p0.y + v1.x * v2.z * p0.y +
+						v2.x * v0.z * p1.y - v0.x * v2.z * p1.y - v1.x * v0.z * p2.y + v0.x * v1.z * p2.y +
+						v2.x * v1.y * p0.z - v1.x * v2.y * p0.z - v2.x * v0.y * p1.z + v0.x * v2.y * p1.z +
 						v1.x * v0.y * p2.z - v0.x * v1.y * p2.z;
 
 					float rx = v1.z * p0.y - v2.z * p0.y - v0.z * p1.y + v2.z * p1.y + v0.z * p2.y - v1.z * p2.y -
@@ -1081,7 +1081,7 @@ namespace bs { namespace ct
 					float sx = -p1.y * p0.z + p2.y * p0.z + p0.y * p1.z - p2.y * p1.z - p0.y * p2.z + p1.y * p2.z;
 					float sy = p1.x * p0.z - p2.x * p0.z - p0.x * p1.z + p2.x * p1.z + p0.x * p2.z - p1.x * p2.z;
 					float sz = -p1.x * p0.y + p2.x * p0.y + p0.x * p1.y - p2.x * p1.y - p0.x * p2.y + p1.x * p2.y;
-					float sw = p2.x * p1.y * p0.z - p1.x * p2.y * p0.z - p2.x * p0.y * p1.z + 
+					float sw = p2.x * p1.y * p0.z - p1.x * p2.y * p0.z - p2.x * p0.y * p1.z +
 						p0.x * p2.y * p1.z + p1.x * p0.y * p2.z - p0.x * p1.y * p2.z;
 
 					faceData.transform[0][0] = qx;
@@ -1169,7 +1169,7 @@ namespace bs { namespace ct
 				//
 				// Solved for barycentric coordinates:
 				//  a
-				// [b] = Minv * P 
+				// [b] = Minv * P
 				//  c
 				//  1
 				//

@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Renderable represents any visible object in the scene. It has a mesh, bounds and a set of materials. Renderer will 
+	/// Renderable represents any visible object in the scene. It has a mesh, bounds and a set of materials. Renderer will
 	/// render any Renderable objects visible by a camera.
 	/// </summary>
 	[ShowInInspector]
@@ -21,7 +21,7 @@ namespace bs
 		protected Renderable() { }
 
 		/// <summary>
-		/// Determines the mesh to render. All sub-meshes of the mesh will be rendered, and you may set individual materials for 
+		/// Determines the mesh to render. All sub-meshes of the mesh will be rendered, and you may set individual materials for
 		/// each sub-mesh.
 		/// </summary>
 		[ShowInInspector]
@@ -33,8 +33,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines all materials used for rendering this renderable. Each of the materials is used for rendering a single 
-		/// sub-mesh. If number of materials is larger than number of sub-meshes, they will be ignored. If lower, the remaining 
+		/// Determines all materials used for rendering this renderable. Each of the materials is used for rendering a single
+		/// sub-mesh. If number of materials is larger than number of sub-meshes, they will be ignored. If lower, the remaining
 		/// materials will be removed.
 		/// </summary>
 		[ShowInInspector]
@@ -55,7 +55,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the layer bitfield that controls whether a renderable is considered visible in a specific camera.  
+		/// Determines the layer bitfield that controls whether a renderable is considered visible in a specific camera.
 		/// Renderable layer must match camera layer in order for the camera to render the component.
 		/// </summary>
 		[ShowInInspector]
@@ -79,7 +79,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Sets a material that will be used for rendering a sub-mesh with the specified index. If a sub-mesh doesn&apos;t have 
+		/// Sets a material that will be used for rendering a sub-mesh with the specified index. If a sub-mesh doesn&apos;t have
 		/// a specific material set then the primary material will be used.
 		/// </summary>
 		public void SetMaterial(int idx, RRef<Material> material)
@@ -88,7 +88,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Sets a material that will be used for rendering a sub-mesh with the specified index. If a sub-mesh doesn&apos;t have 
+		/// Sets a material that will be used for rendering a sub-mesh with the specified index. If a sub-mesh doesn&apos;t have
 		/// a specific material set then the primary material will be used.
 		/// </summary>
 		public void SetMaterial(RRef<Material> material)

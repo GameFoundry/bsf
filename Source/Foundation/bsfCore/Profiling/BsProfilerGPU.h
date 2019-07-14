@@ -82,7 +82,7 @@ namespace bs
 		 * Signals an end of the currently sampled frame. Results of the sampling will be available once
 		 * getNumAvailableReports increments. This may take a while as the sampling is scheduled on the core thread and
 		 * on the GPU.
-		 * 
+		 *
 		 * @param[in]	 discard		If true, the results of the frame will not be resolved and it will be discarded.
 		 */
 		void endFrame(bool discard = false);
@@ -126,7 +126,7 @@ namespace bs
 		 */
 		GPUProfilerReport getNextReport();
 
-	public: 
+	public:
 		// ***** INTERNAL ******
 		/** @name Internal
 		 *  @{
@@ -190,9 +190,9 @@ namespace bs
 	#define BS_GPU_PROFILE_END(name)
 #endif
 
-	/** 
-	 * Helper class that performs GPU profiling in the current block. Profiling sample is started when the class is 
-	 * constructed and ended upon destruction. 
+	/**
+	 * Helper class that performs GPU profiling in the current block. Profiling sample is started when the class is
+	 * constructed and ended upon destruction.
 	 */
 	struct ProfileGPUBlock
 	{

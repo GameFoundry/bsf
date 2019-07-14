@@ -10,7 +10,7 @@ namespace bs
      */
 
     /// <summary>
-    /// Allows you to display a render texture in the GUI. Has the same functionality as GUITexture, but also forwards any 
+    /// Allows you to display a render texture in the GUI. Has the same functionality as GUITexture, but also forwards any
     /// input to underlying GUI elements being rendered on the provided render texture.
     /// </summary>
     public sealed class GUIRenderTexture : GUIElement
@@ -43,10 +43,10 @@ namespace bs
         /// </summary>
         /// <param name="texture">Render texture to display in the element.</param>
         /// <param name="transparent">Determines should the texture be rendered with transparency active.</param>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
-        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUIRenderTexture(RenderTexture texture, bool transparent, string style, params GUIOption[] options)
         {
@@ -62,7 +62,7 @@ namespace bs
         /// </summary>
         /// <param name="texture">Render texture to display in the element.</param>
         /// <param name="transparent">Determines should the texture be rendered with transparency active.</param>
-        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUIRenderTexture(RenderTexture texture, bool transparent, params GUIOption[] options)
         {
@@ -77,10 +77,10 @@ namespace bs
         /// Creates a new render texture element.
         /// </summary>
         /// <param name="texture">Render texture to display in the element.</param>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
-        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUIRenderTexture(RenderTexture texture, string style, params GUIOption[] options)
         {
@@ -95,7 +95,7 @@ namespace bs
         /// Creates a new render texture element.
         /// </summary>
         /// <param name="texture">Render texture to display in the element.</param>
-        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUIRenderTexture(RenderTexture texture, params GUIOption[] options)
         {

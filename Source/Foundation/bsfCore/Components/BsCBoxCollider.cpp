@@ -53,7 +53,7 @@ namespace bs
 		const SPtr<SceneInstance>& scene = SO()->getScene();
 		const Transform& tfrm = SO()->getTransform();
 
-		SPtr<Collider> collider = BoxCollider::create(*scene->getPhysicsScene(), mExtents, tfrm.getPosition(), 
+		SPtr<Collider> collider = BoxCollider::create(*scene->getPhysicsScene(), mExtents, tfrm.getPosition(),
 			tfrm.getRotation());
 		collider->_setOwner(PhysicsOwnerType::Component, this);
 

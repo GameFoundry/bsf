@@ -7,7 +7,7 @@
 #include "Math/BsMath.h"
 #include "Utility/BsBitwise.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Implementation
 	 *  @{
@@ -147,7 +147,7 @@ namespace bs
 	 *  @{
 	 */
 
-	/** 
+	/**
 	 * Dynamically sized field that contains a sequential list of bits. The bits are compactly stored and allow for
 	 * quick sequential searches (compared to single or multi-byte type sequential searches).
 	 */
@@ -160,8 +160,8 @@ namespace bs
 		using Iterator = TBitfieldIterator<false>;
 		using ConstIterator = TBitfieldIterator<true>;
 
-		/** 
-		 * Initializes the bitfield with enough storage for @p count bits and sets them to the initial value of @p value. 
+		/**
+		 * Initializes the bitfield with enough storage for @p count bits and sets them to the initial value of @p value.
 		 */
 		Bitfield(bool value = false, uint32_t count = 0)
 			:mNumBits(count)
@@ -346,9 +346,9 @@ namespace bs
 			memset(mData, mask, numBytes);
 		}
 
-		/** 
-		 * Removes all the bits from the field. If @p free is true then the underlying memory buffers will be freed as 
-		 * well. 
+		/**
+		 * Removes all the bits from the field. If @p free is true then the underlying memory buffers will be freed as
+		 * well.
 		 */
 		void clear(bool free = false)
 		{
@@ -417,7 +417,7 @@ namespace bs
 			{
 				assert(numBits > mMaxBits);
 
-				const uint32_t numDwords = Math::divideAndRoundUp(numBits, BITS_PER_DWORD); 
+				const uint32_t numDwords = Math::divideAndRoundUp(numBits, BITS_PER_DWORD);
 				
 				// Note: Eventually add support for custom allocators
 				auto buffer = bs_allocN<uint32_t>(numDwords);

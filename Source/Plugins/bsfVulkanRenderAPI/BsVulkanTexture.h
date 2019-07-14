@@ -59,16 +59,16 @@ namespace bs { namespace ct
 		/** Returns the preferred (not necessarily current) layout of the image. */
 		VkImageLayout getOptimalLayout() const;
 
-		/** 
-		 * Returns an image view that covers all faces and mip maps of the texture. 
-		 * 
+		/**
+		 * Returns an image view that covers all faces and mip maps of the texture.
+		 *
 		 * @param[in]	framebuffer	Set to true if the view will be used as a framebuffer attachment. Ensures proper
 		 *							attachment flags are set on the view.
 		 */
 		VkImageView getView(bool framebuffer) const;
 
-		/** 
-		 * Returns an image view that covers the specified faces and mip maps of the texture. 
+		/**
+		 * Returns an image view that covers the specified faces and mip maps of the texture.
 		 *
 		 * @param[in]	surface		Surface that describes which faces and mip levels to retrieve the view for.
 		 * @param[in]	framebuffer	Set to true if the view will be used as a framebuffer attachment. Ensures proper
@@ -76,7 +76,7 @@ namespace bs { namespace ct
 		 */
 		VkImageView getView(const TextureSurface& surface, bool framebuffer) const;
 		
-		/** 
+		/**
 		 * Returns an image view with a specific format.
 		 *
 		 * @param[in]	format		Format to view the texture pixels as.
@@ -85,8 +85,8 @@ namespace bs { namespace ct
 		 */
 		VkImageView getView(VkFormat format, bool framebuffer) const;
 
-		/** 
-		 * Returns an image view that covers the specified faces and mip maps of the texture, with a specific format. 
+		/**
+		 * Returns an image view that covers the specified faces and mip maps of the texture, with a specific format.
 		 *
 		 * @param[in]	format		Format to view the texture pixels as.
 		 * @param[in]	surface		Surface that describes which faces and mip levels to retrieve the view for.
@@ -104,24 +104,24 @@ namespace bs { namespace ct
 		/** Retrieves a subresource range covering all the specified sub-resource range of the image. */
 		VkImageSubresourceRange getRange(const TextureSurface& surface) const;
 
-		/** 
+		/**
 		 * Retrieves a separate resource for a specific image face & mip level. This allows the caller to track subresource
-		 * usage individually, instead for the entire image. 
+		 * usage individually, instead for the entire image.
 		 */
 		VulkanImageSubresource* getSubresource(UINT32 face, UINT32 mipLevel);
 
-		/** 
+		/**
 		 * Returns a pointer to internal image memory for the specified sub-resource. Must be followed by unmap(). Caller
 		 * must ensure the image was created in CPU readable memory, and that image isn't currently being written to by the
 		 * GPU.
-		 * 
+		 *
 		 * @param[in]	face		Index of the face to map.
 		 * @param[in]	mipLevel	Index of the mip level to map.
 		 * @param[in]	output		Output object containing the pointer to the sub-resource data.
 		 */
 		void map(UINT32 face, UINT32 mipLevel, PixelData& output) const;
 
-		/** 
+		/**
 		 * Returns a pointer to internal image memory for the entire resource. Must be followed by unmap(). Caller
 		 * must ensure the image was created in CPU readable memory, and that image isn't currently being written to by the
 		 * GPU.
@@ -131,24 +131,24 @@ namespace bs { namespace ct
 		/** Unmaps a buffer previously mapped with map(). */
 		void unmap();
 
-		/** 
+		/**
 		 * Queues a command on the provided command buffer. The command copies the contents of the current image
-		 * subresource to the destination buffer. 
+		 * subresource to the destination buffer.
 		 */
-		void copy(VulkanTransferBuffer* cb, VulkanBuffer* destination, const VkExtent3D& extent, 
+		void copy(VulkanTransferBuffer* cb, VulkanBuffer* destination, const VkExtent3D& extent,
 			const VkImageSubresourceLayers& range, VkImageLayout layout);
 
-		/** 
-		 * Determines a set of access flags based on the current image and provided image layout. This method makes 
-		 * certain assumptions about image usage, so it might not be valid in all situations. 
-		 * 
+		/**
+		 * Determines a set of access flags based on the current image and provided image layout. This method makes
+		 * certain assumptions about image usage, so it might not be valid in all situations.
+		 *
 		 * @param[in]	layout		Layout the image is currently in.
 		 * @param[in]	readOnly	True if the image is only going to be read without writing, allows the system to
 		 *							set less general access flags. If unsure, set to false.
 		 */
 		VkAccessFlags getAccessFlags(VkImageLayout layout, bool readOnly = false);
 
-		/** 
+		/**
 		 * Generates a set of image barriers that are grouped depending on the current layout of individual sub-resources
 		 * in the specified range. The method will try to reduce the number of generated barriers by grouping as many
 		 * sub-resources as possibly.
@@ -189,8 +189,8 @@ namespace bs { namespace ct
 	public:
 		VulkanImageSubresource(VulkanResourceManager* owner, VkImageLayout layout);
 
-		/** 
-		 * Returns the layout the subresource is currently in. Note that this is only used to communicate layouts between 
+		/**
+		 * Returns the layout the subresource is currently in. Note that this is only used to communicate layouts between
 		 * different command buffers, and will only be updated only after command buffer submit() call. In short this means
 		 * you should only care about this value on the core thread.
 		 */
@@ -209,9 +209,9 @@ namespace bs { namespace ct
 	public:
 		~VulkanTexture();
 
-		/** 
-		 * Gets the resource wrapping the Vulkan image object, on the specified device. If texture device mask doesn't 
-		 * include the provided device, null is returned. 
+		/**
+		 * Gets the resource wrapping the Vulkan image object, on the specified device. If texture device mask doesn't
+		 * include the provided device, null is returned.
 		 */
 		VulkanImage* getResource(UINT32 deviceIdx) const { return mImages[deviceIdx]; }
 
@@ -231,7 +231,7 @@ namespace bs { namespace ct
 		void unlockImpl() override;
 
 		/** @copydoc Texture::copyImpl */
-		void copyImpl(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc, 
+		void copyImpl(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc,
 			const SPtr<CommandBuffer>& commandBuffer) override;
 
 		/** @copydoc Texture::readData */
@@ -246,9 +246,9 @@ namespace bs { namespace ct
 		/** Creates a new image for the specified device, matching the current properties. */
 		VulkanImage* createImage(VulkanDevice& device, PixelFormat format);
 
-		/** 
+		/**
 		 * Creates a staging buffer that can be used for texture transfer operations.
-		 * 
+		 *
 		 * @param[in]	device		Device to create the buffer on.
 		 * @param[in]	pixelData	Object that describes the image sub-resource that will be in the buffer.
 		 * @param[in]	needsRead	True if we will be copying data from the buffer, false if just reading. True if both.
@@ -256,12 +256,12 @@ namespace bs { namespace ct
 		 */
 		VulkanBuffer* createStaging(VulkanDevice& device, const PixelData& pixelData, bool needsRead);
 
-		/** 
+		/**
 		 * Copies all sub-resources from the source image to the destination image. Caller must ensure the images
-		 * are of the same size. The operation will be queued on the provided command buffer. The system assumes the 
+		 * are of the same size. The operation will be queued on the provided command buffer. The system assumes the
 		 * provided image matches the current texture properties (i.e. num faces, mips, size).
 		 */
-		void copyImage(VulkanTransferBuffer* cb, VulkanImage* srcImage, VulkanImage* dstImage, 
+		void copyImage(VulkanTransferBuffer* cb, VulkanImage* srcImage, VulkanImage* dstImage,
 			VkImageLayout srcFinalLayout, VkImageLayout dstFinalLayout);
 
 		VulkanImage* mImages[BS_MAX_DEVICES];

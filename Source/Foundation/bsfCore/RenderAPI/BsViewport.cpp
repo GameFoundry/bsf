@@ -8,7 +8,7 @@
 #include "RenderAPI/BsRenderAPI.h"
 #include "CoreThread/BsCoreObjectSync.h"
 
-namespace bs 
+namespace bs
 {
 	const Color ViewportBase::DEFAULT_CLEAR_COLOR = Color(0.0f, 0.3685f, 0.7969f);
 
@@ -96,7 +96,7 @@ namespace bs
 
 	void Viewport::setTarget(const SPtr<RenderTarget>& target)
 	{
-		mTarget = target; 
+		mTarget = target;
 		
 		markDependenciesDirty();
 		_markCoreDirty();

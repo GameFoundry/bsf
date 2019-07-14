@@ -36,7 +36,7 @@ namespace bs
 
 	MonoObject* ScriptFontImportOptions::create(const SPtr<FontImportOptions>& value)
 	{
-		if(value == nullptr) return nullptr; 
+		if(value == nullptr) return nullptr;
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };

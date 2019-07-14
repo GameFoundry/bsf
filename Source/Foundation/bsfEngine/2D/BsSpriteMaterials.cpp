@@ -25,9 +25,9 @@ namespace bs
 
 	SpriteImageMaterial::SpriteImageMaterial(bool transparent, bool animated)
 		:SpriteMaterial(
-			getMaterialId(transparent, animated), 
+			getMaterialId(transparent, animated),
 			BuiltinResources::instance().createSpriteImageMaterial(),
-			getMaterialVariation(transparent, animated), 
+			getMaterialVariation(transparent, animated),
 			!animated)
 	{
 		

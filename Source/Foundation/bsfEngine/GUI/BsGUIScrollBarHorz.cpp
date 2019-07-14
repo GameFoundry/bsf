@@ -13,25 +13,25 @@ namespace bs
 
 	GUIScrollBarHorz* GUIScrollBarHorz::create(const String& styleName)
 	{
-		return new (bs_alloc<GUIScrollBarHorz>()) GUIScrollBarHorz(false, getStyleName<GUIScrollBarHorz>(false, styleName), 
+		return new (bs_alloc<GUIScrollBarHorz>()) GUIScrollBarHorz(false, getStyleName<GUIScrollBarHorz>(false, styleName),
 			GUIDimensions::create());
 	}
 
 	GUIScrollBarHorz* GUIScrollBarHorz::create(bool resizeable, const String& styleName)
 	{
-		return new (bs_alloc<GUIScrollBarHorz>()) GUIScrollBarHorz(resizeable, getStyleName<GUIScrollBarHorz>(resizeable, styleName), 
+		return new (bs_alloc<GUIScrollBarHorz>()) GUIScrollBarHorz(resizeable, getStyleName<GUIScrollBarHorz>(resizeable, styleName),
 			GUIDimensions::create());
 	}
 
 	GUIScrollBarHorz* GUIScrollBarHorz::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIScrollBarHorz>()) GUIScrollBarHorz(false, getStyleName<GUIScrollBarHorz>(false, styleName), 
+		return new (bs_alloc<GUIScrollBarHorz>()) GUIScrollBarHorz(false, getStyleName<GUIScrollBarHorz>(false, styleName),
 			GUIDimensions::create(options));
 	}
 
 	GUIScrollBarHorz* GUIScrollBarHorz::create(bool resizeable, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIScrollBarHorz>()) GUIScrollBarHorz(resizeable, getStyleName<GUIScrollBarHorz>(resizeable, styleName), 
+		return new (bs_alloc<GUIScrollBarHorz>()) GUIScrollBarHorz(resizeable, getStyleName<GUIScrollBarHorz>(resizeable, styleName),
 			GUIDimensions::create(options));
 	}
 

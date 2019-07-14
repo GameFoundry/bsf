@@ -13,7 +13,7 @@ namespace bs
 
 	/**
 	 * A memory allocator that allocates elements of the same size. Allows for fairly quick allocations and deallocations.
-	 * 
+	 *
 	 * @tparam	ElemSize		Size of a single element in the pool. This will be the exact allocation size. 4 byte minimum.
 	 * @tparam	ElemsPerBlock	Determines how much space to reserve for elements. This determines the initial size of the
 	 *							pool, and the additional size the pool will be expanded by every time the number of elements
@@ -50,7 +50,7 @@ namespace bs
 			}
 
 			/**
-			 * Returns the first free address and increments the free pointer. Caller needs to ensure the remaining block 
+			 * Returns the first free address and increments the free pointer. Caller needs to ensure the remaining block
 			 * size is adequate before calling.
 			 */
 			UINT8* alloc()
@@ -229,7 +229,7 @@ namespace bs
 		UINT32 mNumBlocks = 0;
 	};
 
-	/** 
+	/**
 	 * Helper class used by GlobalPoolAlloc that allocates a static pool allocator. GlobalPoolAlloc cannot do it
 	 * directly since it gets specialized which means the static members would need to be defined in the implementation
 	 * file, which complicates its usage.
@@ -254,7 +254,7 @@ namespace bs
 		static_assert(AlwaysFalse<T>::value, "No global pool allocator exists for the type.");
 	};
 
-	/** 
+	/**
 	 * Implements a global pool for the specified type. The pool will initially have enough room for ElemsPerBlock and
 	 * will grow by that amount when exceeded. Global pools are thread safe by default.
 	 */

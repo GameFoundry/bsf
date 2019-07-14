@@ -40,14 +40,14 @@ namespace bs
 		bool enableDoubleClick = true; /**< Does window accept double-clicks. */
 		bool toolWindow = false; /**< Tool windows have a different look than normal windows and have no task bar entry. */
 		/**
-		 * Optional background image to apply to the window. This must be a buffer of size 
-		 * backgroundWidth * backgroundHeight. 
+		 * Optional background image to apply to the window. This must be a buffer of size
+		 * backgroundWidth * backgroundHeight.
 		 */
 		Color* backgroundPixels = nullptr;
 		UINT32 backgroundWidth = 0; /** Width of the background image. Only relevant if backgroundPixels is not null. */
 		UINT32 backgroundHeight = 0; /** Width of the background image. Only relevant if backgroundPixels is not null. */
 		/** If true the window will support transparency based on the alpha channel of the background image. */
-		bool alphaBlending = false; 
+		bool alphaBlending = false;
 		bool modal = false; /**< When a modal window is open all other windows will be locked until modal window is closed. */
 		WNDPROC wndProc = nullptr; /**< Pointer to a function that handles windows message processing. */
 	};
@@ -110,15 +110,15 @@ namespace bs
 		/** Called when window is moved or resized externally. */
 		void _windowMovedOrResized();
 
-		/** 
-		 * Enables all open windows. Enabled windows can receive mouse and keyboard input. This includes even windows 
+		/**
+		 * Enables all open windows. Enabled windows can receive mouse and keyboard input. This includes even windows
 		 * disabled because there is a modal window on top of them.
 		 */
 		void static _enableAllWindows();
 
 		/**
 		 * Restores disabled state of all windows that were disabled due to modal windows being on top of them. Companion
-		 * method to _enableAllWindows() that can help restore original state after it is called. 
+		 * method to _enableAllWindows() that can help restore original state after it is called.
 		 */
 		void static _restoreModalWindows();
 

@@ -10,9 +10,9 @@ namespace bs
 	 *  @{
 	 */
 
-	/** 
+	/**
 	 * Contains a resource that was imported from a file that contains multiple resources (for example an animation from an
-	 * FBX file). 
+	 * FBX file).
 	 */
 	struct SubResourceRaw
 	{
@@ -33,7 +33,7 @@ namespace bs
 	 * Abstract class that is to be specialized for converting a certain asset type into an engine usable resource
 	 * (for example a .png file into an engine usable texture).
 	 * 			
-	 * On initialization this class must register itself with the Importer module, which delegates asset import calls to a 
+	 * On initialization this class must register itself with the Importer module, which delegates asset import calls to a
 	 * specific importer.
 	 */
 	class BS_CORE_EXPORT SpecificImporter
@@ -50,13 +50,13 @@ namespace bs
 		virtual bool isExtensionSupported(const String& ext) const = 0;
 
 		/** Check if the provided magic number is supported by this importer. */
-		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const = 0; 
+		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const = 0;
 
 		/** Returns the level of asynchronous import supported by this importer. */
 		virtual ImporterAsyncMode getAsyncMode() const { return ImporterAsyncMode::Multi; }
 
 		/**
-		 * Imports the given file. If file contains more than one resource only the primary resource is imported (for 
+		 * Imports the given file. If file contains more than one resource only the primary resource is imported (for
 		 * example for an FBX a mesh would be imported, but animations ignored).
 		 *
 		 * @param[in]	filePath		Pathname of the file, with file extension.
@@ -67,17 +67,17 @@ namespace bs
 
 		/**
 		 * Imports the given file. This method returns all imported resources, which is relevant for files that can contain
-		 * multiple resources (for example an FBX which may contain both a mesh and animations). 
+		 * multiple resources (for example an FBX which may contain both a mesh and animations).
 		 *
 		 * @param[in]	filePath		Pathname of the file, with file extension.
 		 * @param[in]	importOptions	Options that can control how are the resources imported.
-		 * @return						Empty array if it fails, otherwise the loaded objects. First element is always the 
+		 * @return						Empty array if it fails, otherwise the loaded objects. First element is always the
 		 *								primary resource.
 		 */
 		virtual Vector<SubResourceRaw> importAll(const Path& filePath, SPtr<const ImportOptions> importOptions);
 
 		/**
-		 * Creates import options specific for this importer. Import options are provided when calling import() in order 
+		 * Creates import options specific for this importer. Import options are provided when calling import() in order
 		 * to customize the import, and provide additional information.
 		 */
 		virtual SPtr<ImportOptions> createImportOptions() const;

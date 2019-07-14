@@ -11,7 +11,7 @@
 #include "Math/BsRect2.h"
 #include "Utility/BsEvent.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Implementation
 	 *  @{
@@ -85,7 +85,7 @@ namespace bs
 	protected:
 		ViewportBase(float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
 
-		/** 
+		/**
 		 * Marks the core data as dirty. This causes the data from the sim thread object be synced with the core thread
 		 * version of the object.
 		 */
@@ -114,7 +114,7 @@ namespace bs
 	public:
 		using RenderTargetType = CoreVariantType<RenderTarget, Core>;
 
-		TViewport(SPtr<RenderTargetType> target = nullptr, float x = 0.0f, float y = 0.0f, float width = 1.0f, 
+		TViewport(SPtr<RenderTargetType> target = nullptr, float x = 0.0f, float y = 0.0f, float width = 1.0f,
 			float height = 1.0f)
 			:ViewportBase(x, y, width, height), mTarget(std::move(target))
 		{ }
@@ -158,7 +158,7 @@ namespace bs
 		 * @note	Viewport coordinates are normalized in [0, 1] range.
 		 */
 		BS_SCRIPT_EXPORT(ec:Viewport)
-		static SPtr<Viewport> create(const SPtr<RenderTarget>& target, float x = 0.0f, float y = 0.0f, 
+		static SPtr<Viewport> create(const SPtr<RenderTarget>& target, float x = 0.0f, float y = 0.0f,
 			float width = 1.0f, float height = 1.0f);
 
 	protected:
@@ -214,7 +214,7 @@ namespace bs
 		void setTarget(const SPtr<RenderTarget>& target) { mTarget = target; }
 
 		/** @copydoc bs::Viewport::create() */
-		static SPtr<Viewport> create(const SPtr<RenderTarget>& target, float x = 0.0f, float y = 0.0f, 
+		static SPtr<Viewport> create(const SPtr<RenderTarget>& target, float x = 0.0f, float y = 0.0f,
 			float width = 1.0f, float height = 1.0f);
 
 	protected:

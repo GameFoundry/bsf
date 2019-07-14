@@ -7,7 +7,7 @@
 #include "Math/BsRay.h"
 #include "Math/BsMath.h"
 
-namespace bs 
+namespace bs
 {
 	Plane::Plane(const Vector3& normal, float d)
 		:normal(normal), d(d)

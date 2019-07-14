@@ -22,7 +22,7 @@ namespace bs
 		/**
 		 * Starts the render API with the provided name and creates the primary render window.
 		 *
-		 * @param[in]	name				Name of the render system to start. Factory for this render system must be 
+		 * @param[in]	name				Name of the render system to start. Factory for this render system must be
 		 *									previously registered.
 		 * @param[in]	primaryWindowDesc	Contains options used for creating the primary window.
 		 * @return							Created render window if initialization is successful, null otherwise.

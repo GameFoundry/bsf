@@ -20,7 +20,7 @@ namespace bs
 		/** @copydoc ColorGradient::evaluate */
 		BS_SCRIPT_EXPORT(e:ColorGradient)
 		static Color evaluate(const SPtr<ColorGradient>& thisPtr, float t);
-	}; 
+	};
 
 	/** @endcond */
 	/** @} */

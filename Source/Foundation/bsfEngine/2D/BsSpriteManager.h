@@ -31,7 +31,7 @@ namespace bs
 		SpriteManager();
 		~SpriteManager();
 
-		/** Returns the material used for rendering image sprites. 
+		/** Returns the material used for rendering image sprites.
 		 *
 		 * @param[in]	transparent		True if the material should be able to render transparecy.
 		 * @param[in]	animation		True if the material should be able to perform sprite sheet animation.
@@ -66,7 +66,7 @@ namespace bs
 		/** Returns a sprite material with the specified ID. Returns null if one cannot be found. */
 		SpriteMaterial* getMaterial(UINT32 id) const;
 
-		/** 
+		/**
 		 * Registers a new material in the sprite manager. Caller must ensure the material has a unique ID that doesn't
 		 * already exist in the sprite manager, otherwise the call will be ignored.
 		 *

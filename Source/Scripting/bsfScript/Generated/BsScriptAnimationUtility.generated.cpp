@@ -31,7 +31,7 @@ namespace bs
 
 	MonoObject* ScriptAnimationUtility::create(const SPtr<AnimationUtility>& value)
 	{
-		if(value == nullptr) return nullptr; 
+		if(value == nullptr) return nullptr;
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };

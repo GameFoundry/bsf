@@ -55,7 +55,7 @@ namespace bs
 			rows.resize(curIdx);
 		}
 
-		void addData(UINT32 depth, const String& name, float pctOfParent, UINT32 numCalls, UINT64 numAllocs, 
+		void addData(UINT32 depth, const String& name, float pctOfParent, UINT32 numCalls, UINT64 numAllocs,
 			UINT64 numFrees, double avgTime, double totalTime, double avgSelfTime, double totalSelfTime)
 		{
 			if(curIdx >= rows.size())
@@ -156,7 +156,7 @@ namespace bs
 			rows.resize(curIdx);
 		}
 
-		void addData(UINT32 depth, const String& name, float pctOfParent, UINT32 numCalls, UINT64 numAllocs, 
+		void addData(UINT32 depth, const String& name, float pctOfParent, UINT32 numCalls, UINT64 numAllocs,
 			UINT64 numFrees, UINT64 avgCycles, UINT64 totalCycles, UINT64 avgSelfCycles, UINT64 totalSelfCycles)
 		{
 			if(curIdx >= rows.size())
@@ -235,7 +235,7 @@ namespace bs
 		GUIWidget& widget;
 		Vector<ProfilerOverlay::GPUSampleRow>& rows;
 
-		GPUSampleRowFiller(Vector<ProfilerOverlay::GPUSampleRow>& rows, GUILayout& labelLayout, GUILayout& contentLayout, 
+		GPUSampleRowFiller(Vector<ProfilerOverlay::GPUSampleRow>& rows, GUILayout& labelLayout, GUILayout& contentLayout,
 			GUIWidget& _widget)
 			:curIdx(0), labelLayout(labelLayout), contentLayout(contentLayout), widget(_widget), rows(rows)
 		{ }
@@ -661,7 +661,7 @@ namespace bs
 				todoBasic.pop();
 
 				const CPUProfilerBasicSamplingEntry::Data& data = curEntry.entry.data;
-				basicRowFiller.addData(curEntry.depth, data.name, data.pctOfParent, data.numCalls, data.memAllocs, data.memFrees, 
+				basicRowFiller.addData(curEntry.depth, data.name, data.pctOfParent, data.numCalls, data.memAllocs, data.memFrees,
 					data.avgTimeMs, data.totalTimeMs, data.avgSelfTimeMs, data.totalSelfTimeMs);
 
 				if(curEntry.depth <= MAX_DEPTH)
@@ -691,7 +691,7 @@ namespace bs
 				todoPrecise.pop();
 
 				const CPUProfilerPreciseSamplingEntry::Data& data = curEntry.entry.data;
-				preciseRowFiller.addData(curEntry.depth, data.name, data.pctOfParent, data.numCalls, data.memAllocs, data.memFrees, 
+				preciseRowFiller.addData(curEntry.depth, data.name, data.pctOfParent, data.numCalls, data.memAllocs, data.memFrees,
 					data.avgCycles, data.totalCycles, data.avgSelfCycles, data.totalSelfCycles);
 
 				if(curEntry.depth <= MAX_DEPTH)
@@ -745,7 +745,7 @@ namespace bs
 		mGPUVertexBufferBindsLbl->setContent(mGPUVertexBufferBindsStr);
 		mGPUIndexBufferBindsLbl->setContent(mGPUIndexBufferBindsStr);
 
-		GPUSampleRowFiller sampleRowFillers[GPU_NUM_SAMPLE_COLUMNS] = 
+		GPUSampleRowFiller sampleRowFillers[GPU_NUM_SAMPLE_COLUMNS] =
 		{
 			GPUSampleRowFiller(mGPUSampleRows[0], *mGPULayoutSampleLabels[0], *mGPULayoutSampleContents[0], *mWidget->_getInternal()),
 			GPUSampleRowFiller(mGPUSampleRows[1], *mGPULayoutSampleLabels[1], *mGPULayoutSampleContents[1], *mWidget->_getInternal()),

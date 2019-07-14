@@ -23,19 +23,19 @@ namespace bs
 		{
 			/** No flags, just import asset as normal. Each entry is expected to have an "UUID" and a "Path" field. */
 			Normal,
-			/** 
-			 * Assumes imported assets are textures. Will generate sprite assets for each imported texture. Expects 
+			/**
+			 * Assumes imported assets are textures. Will generate sprite assets for each imported texture. Expects
 			 * "TextureUUID", "Path" and "SpriteUUID" fields present in per-entry JSON.
 			 */
 			Sprite,
 		};
 		
-		/** 
-		 * Iterates over all entires in the provided json file, imports the files linked by the entries them and stores them 
+		/**
+		 * Iterates over all entires in the provided json file, imports the files linked by the entries them and stores them
 		 * in the corresponding folder. Also registers the imported files in the provided manifest.
-		 * 
+		 *
 		 * @param[in]	entries			JSON array containing the entries to parse, with each entry containing
-		 *								data determine by set ImportMode. 
+		 *								data determine by set ImportMode.
 		 * @param[in]	importFlags		A set of import flags (one for each entry) that specify which entries need to be
 		 *								imported.
 		 * @param[in]	inputFolder		Folder in which to look for the input files.
@@ -46,7 +46,7 @@ namespace bs
 		 * @param[in]	compress		True if the imported asset should be compressed when saved to the disk.
 		 * @param[in]	mipmap			True if mipmaps should be generated.
 		 */
-		static void importAssets(const nlohmann::json& entries, const Vector<bool>& importFlags, const Path& inputFolder, 
+		static void importAssets(const nlohmann::json& entries, const Vector<bool>& importFlags, const Path& inputFolder,
 			const Path& outputFolder, const SPtr<ResourceManifest>& manifest, AssetType mode = AssetType::Normal,
 			nlohmann::json* dependencies = nullptr, bool compress = false, bool mipmap = false);
 
@@ -54,14 +54,14 @@ namespace bs
 		 * Imports a font from the specified file. Imported font assets are saved in the output folder. All saved resources
 		 * are registered in the provided resource manifest.
 		 */
-		static void importFont(const Path& inputFile, const String& outputName, const Path& outputFolder, 
+		static void importFont(const Path& inputFile, const String& outputName, const Path& outputFolder,
 			const Vector<UINT32>& fontSizes, bool antialiasing, const UUID& UUID, const SPtr<ResourceManifest>& manifest);
 
-		/** 
+		/**
 		 * Iterates over all the provided entries and generates a list of flags that determine should the asset be imported
 		 * or not. This is done by comparing file modification dates with the last update time and/or checking if any
 		 * dependencies require import.
-		 * 
+		 *
 		 * @param[in]	entries				JSON array containing entries to iterate over.
 		 * @param[in]	inputFolder			Folder in which to look for the input files.
 		 * @param[in]	lastUpdateTime		Timestamp of when the last asset import occurred.
@@ -75,35 +75,35 @@ namespace bs
 		 *									an asset should be imported, or false otherwise.
 		 */
 		static Vector<bool> generateImportFlags(const nlohmann::json& entries, const Path& inputFolder,
-			time_t lastUpdateTime, bool forceImport, const nlohmann::json* dependencies = nullptr, 
+			time_t lastUpdateTime, bool forceImport, const nlohmann::json* dependencies = nullptr,
 			const Path& dependencyFolder = Path::BLANK);
 
-		/** 
+		/**
 		 * Scans the provided folder for any files that are currently not part of the provided JSON entries. If some are
 		 * found they are appended to the JSON entry array. Returns true if any new files were found, false otherwise.
-		 * 
+		 *
 		 * @param[in]		folder		Folder to check for new entries.
 		 * @param[in]		type		Type of entries in the folder. Determines the type of JSON data generated.
 		 * @param[in, out]	entries		Current data file entries.
 		 */
 		static bool updateJSON(const Path& folder, AssetType type, nlohmann::json& entries);
 
-		/** 
-		 * Updates the resource manifest from the UUID's and paths provided in the JSON. 
-		 * 
+		/**
+		 * Updates the resource manifest from the UUID's and paths provided in the JSON.
+		 *
 		 * @param[in]		folder		Folder containing the imported assets the manifest will point to.
 		 * @param[in]		entries		JSON entries detailing each asset.
 		 * @param[in]		manifest	Manifest in which to register the assets in.
 		 * @param[in]		type		Type of assets we're registering.
 		 */
-		static void updateManifest(const Path& folder, const nlohmann::json& entries, 
+		static void updateManifest(const Path& folder, const nlohmann::json& entries,
 			const SPtr<ResourceManifest>& manifest, AssetType type);
 
 		/** Writes a timestamp with the current date and time in the specified file. */
 		static void writeTimestamp(const Path& file);
 
 		/**
-		 * Checks all files in the specified folder for modifications compared to the time stored in the timestamp file. 
+		 * Checks all files in the specified folder for modifications compared to the time stored in the timestamp file.
 		 * Timestamp file must have been saved using writeTimestamp(). Returns 0 if no changes, 1 if timestamp is out date,
 		 * or 2 if timestamp doesn't exist. @p lastUpdateTime will contain the time stored in the timestamp, if it exist.
 		 */
@@ -119,7 +119,7 @@ namespace bs
 		static GUIElementStyle loadGUIStyleFromJSON(const nlohmann::json& entry, const GUIElementStyleLoader& loader);
 	};
 
-	/** 
+	/**
 	 * Determines how are resources for GUIElementStyle loaded, when it is being decoded from a non-binary format that only
 	 * stores resource names.
 	 */

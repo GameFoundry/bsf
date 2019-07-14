@@ -30,7 +30,7 @@ namespace bs
 		/**	Creates a new script code resource with the specified source code. */
 		static HScriptCode create(const WString& data, bool editorScript = false);
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 

@@ -54,7 +54,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if  the 
+		/// Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if  the
 		/// distribution is represented by a curve.
 		/// </summary>
 		public float GetMinConstant()
@@ -71,7 +71,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns the curve representing the distribution, or the first curve representing a curve range. Undefined if the 
+		/// Returns the curve representing the distribution, or the first curve representing a curve range. Undefined if the
 		/// distribution is represented by a constant or a non-curve range.
 		/// </summary>
 		public AnimationCurve GetMinCurve()
@@ -80,7 +80,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns the curve representing the second curve of a curve range. Only defined if the distribution represents a curve 
+		/// Returns the curve representing the second curve of a curve range. Only defined if the distribution represents a curve
 		/// range.
 		/// </summary>
 		public AnimationCurve GetMaxCurve()
@@ -93,8 +93,8 @@ namespace bs
 		/// Time at which to evaluate the distribution. This is only relevant if the distribution contains curves.
 		/// </param>
 		/// <param name="factor">
-		/// Value in range [0, 1] that determines how to interpolate between min/max value, if the distribution represents a 
-		/// range. Value of 0 will return the minimum value, while value of 1 will return the maximum value, and interpolate the 
+		/// Value in range [0, 1] that determines how to interpolate between min/max value, if the distribution represents a
+		/// range. Value of 0 will return the minimum value, while value of 1 will return the maximum value, and interpolate the
 		/// values in-between.
 		/// </param>
 		/// <returns>Evaluated value.</returns>
@@ -108,7 +108,7 @@ namespace bs
 		/// Time at which to evaluate the distribution. This is only relevant if the distribution contains curves.
 		/// </param>
 		/// <param name="factor">
-		/// Random number generator that determines the factor. Factor determines how to interpolate between min/max value, if 
+		/// Random number generator that determines the factor. Factor determines how to interpolate between min/max value, if
 		/// the distribution represents a range.
 		/// </param>
 		/// <returns>Evaluated value.</returns>
@@ -193,7 +193,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if  the 
+		/// Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if  the
 		/// distribution is represented by a curve.
 		/// </summary>
 		public Vector3 GetMinConstant()
@@ -214,7 +214,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns the curve representing the distribution, or the first curve representing a curve range. Undefined if the 
+		/// Returns the curve representing the distribution, or the first curve representing a curve range. Undefined if the
 		/// distribution is represented by a constant or a non-curve range.
 		/// </summary>
 		public Vector3Curve GetMinCurve()
@@ -223,7 +223,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns the curve representing the second curve of a curve range. Only defined if the distribution represents a curve 
+		/// Returns the curve representing the second curve of a curve range. Only defined if the distribution represents a curve
 		/// range.
 		/// </summary>
 		public Vector3Curve GetMaxCurve()
@@ -236,8 +236,8 @@ namespace bs
 		/// Time at which to evaluate the distribution. This is only relevant if the distribution contains curves.
 		/// </param>
 		/// <param name="factor">
-		/// Value in range [0, 1] that determines how to interpolate between min/max value, if the distribution represents a 
-		/// range. Value of 0 will return the minimum value, while value of 1 will return the maximum value, and interpolate the 
+		/// Value in range [0, 1] that determines how to interpolate between min/max value, if the distribution represents a
+		/// range. Value of 0 will return the minimum value, while value of 1 will return the maximum value, and interpolate the
 		/// values in-between.
 		/// </param>
 		/// <returns>Evaluated value.</returns>
@@ -253,7 +253,7 @@ namespace bs
 		/// Time at which to evaluate the distribution. This is only relevant if the distribution contains curves.
 		/// </param>
 		/// <param name="factor">
-		/// Random number generator that determines the factor. Factor determines how to interpolate between min/max value, if 
+		/// Random number generator that determines the factor. Factor determines how to interpolate between min/max value, if
 		/// the distribution represents a range.
 		/// </param>
 		/// <returns>Evaluated value.</returns>
@@ -340,7 +340,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if  the 
+		/// Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if  the
 		/// distribution is represented by a curve.
 		/// </summary>
 		public Vector2 GetMinConstant()
@@ -361,7 +361,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns the curve representing the distribution, or the first curve representing a curve range. Undefined if the 
+		/// Returns the curve representing the distribution, or the first curve representing a curve range. Undefined if the
 		/// distribution is represented by a constant or a non-curve range.
 		/// </summary>
 		public Vector2Curve GetMinCurve()
@@ -370,7 +370,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns the curve representing the second curve of a curve range. Only defined if the distribution represents a curve 
+		/// Returns the curve representing the second curve of a curve range. Only defined if the distribution represents a curve
 		/// range.
 		/// </summary>
 		public Vector2Curve GetMaxCurve()
@@ -383,8 +383,8 @@ namespace bs
 		/// Time at which to evaluate the distribution. This is only relevant if the distribution contains curves.
 		/// </param>
 		/// <param name="factor">
-		/// Value in range [0, 1] that determines how to interpolate between min/max value, if the distribution represents a 
-		/// range. Value of 0 will return the minimum value, while value of 1 will return the maximum value, and interpolate the 
+		/// Value in range [0, 1] that determines how to interpolate between min/max value, if the distribution represents a
+		/// range. Value of 0 will return the minimum value, while value of 1 will return the maximum value, and interpolate the
 		/// values in-between.
 		/// </param>
 		/// <returns>Evaluated value.</returns>
@@ -400,7 +400,7 @@ namespace bs
 		/// Time at which to evaluate the distribution. This is only relevant if the distribution contains curves.
 		/// </param>
 		/// <param name="factor">
-		/// Random number generator that determines the factor. Factor determines how to interpolate between min/max value, if 
+		/// Random number generator that determines the factor. Factor determines how to interpolate between min/max value, if
 		/// the distribution represents a range.
 		/// </param>
 		/// <returns>Evaluated value.</returns>

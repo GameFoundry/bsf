@@ -6,7 +6,7 @@
 #include "RenderAPI/BsHardwareBuffer.h"
 #include "CoreThread/BsCoreObject.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup RenderAPI
 	 *  @{
@@ -93,17 +93,17 @@ namespace bs
 		void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) override;
 
 		/** @copydoc HardwareBuffer::writeData */
-		void writeData(UINT32 offset, UINT32 length, const void* source, 
+		void writeData(UINT32 offset, UINT32 length, const void* source,
 			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
 
 		/** @copydoc HardwareBuffer::copyData */
-		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
+		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length,
 			bool discardWholeBuffer = false, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
-		/** 
+		/**
 		 * Returns a view of this buffer that can be used for load-store operations. Buffer must have been created with
 		 * the GBU_LOADSTORE usage flag.
-		 * 
+		 *
 		 * @param[in]	type			Type of buffer to view the contents as. Only supported values are GBT_STANDARD and
 		 *								GBT_STRUCTURED.
 		 * @param[in]	format			Format of the data in the buffer. Size of the underlying buffer must be divisible by
@@ -121,7 +121,7 @@ namespace bs
 		/** @copydoc HardwareBufferManager::createVertexBuffer */
 		static SPtr<VertexBuffer> create(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
-	protected: 
+	protected:
 		friend class HardwareBufferManager;
 
 		/** @copydoc HardwareBuffer::map */

@@ -11,8 +11,8 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Particle emitter shape that emits particles from a cone. Particles can be created on cone base or volume, while 
-	/// controling the radial arc of the emitted portion of the volume, as well as thickness of the cone emission volume. All 
+	/// Particle emitter shape that emits particles from a cone. Particles can be created on cone base or volume, while
+	/// controling the radial arc of the emitted portion of the volume, as well as thickness of the cone emission volume. All
 	/// particles will have random normals within the distribution of the cone.
 	/// </summary>
 	[ShowInInspector]

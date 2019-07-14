@@ -25,7 +25,7 @@ namespace bs
 		return "TooltipFrame";
 	}
 
-	GUITooltip::GUITooltip(const HSceneObject& parent, const GUIWidget& overlaidWidget, const Vector2I& position, 
+	GUITooltip::GUITooltip(const HSceneObject& parent, const GUIWidget& overlaidWidget, const Vector2I& position,
 		const String& text)
 		:CGUIWidget(parent, overlaidWidget.getCamera())
 	{
@@ -77,8 +77,8 @@ namespace bs
 		backgroundLayout->addElement(backgroundFrame);
 
 		GUILayout* contentLayout = contentPanel->addNewElement<GUILayoutY>();
-		contentLayout->addNewElement<GUILabel>(HString(text), 
-			GUIOptions(GUIOption::fixedWidth(TOOLTIP_WIDTH), GUIOption::flexibleHeight()), 
+		contentLayout->addNewElement<GUILabel>(HString(text),
+			GUIOptions(GUIOption::fixedWidth(TOOLTIP_WIDTH), GUIOption::flexibleHeight()),
 			BuiltinResources::MultiLineLabelStyle);
 
 		Rect2I positionBounds;

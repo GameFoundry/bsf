@@ -7,7 +7,7 @@
 #include "RenderAPI/BsRenderTarget.h"
 
 namespace bs
-{    
+{
 	/** @addtogroup RenderAPI
 	 *  @{
 	 */
@@ -30,7 +30,7 @@ namespace bs
 		virtual ~RenderTextureProperties() { }
 
 	private:
-		void construct(const TextureProperties* textureProps, UINT32 numSlices, UINT32 mipLevel, bool requiresFlipping, 
+		void construct(const TextureProperties* textureProps, UINT32 numSlices, UINT32 mipLevel, bool requiresFlipping,
 					   bool hwGamma);
 
 		friend class ct::RenderTexture;
@@ -49,7 +49,7 @@ namespace bs
 		virtual ~RenderTexture() = default;
 
 		/** @copydoc TextureManager::createRenderTexture(const TEXTURE_DESC&, bool, PixelFormat) */
-		static SPtr<RenderTexture> create(const TEXTURE_DESC& colorDesc, 
+		static SPtr<RenderTexture> create(const TEXTURE_DESC& colorDesc,
 			bool createDepth = true, PixelFormat depthStencilFormat = PF_D32);
 
 		/** @copydoc TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC&) */

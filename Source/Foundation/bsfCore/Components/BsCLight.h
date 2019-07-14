@@ -6,7 +6,7 @@
 #include "Renderer/BsLight.h"
 #include "Scene/BsComponent.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Components-Core
 	 *  @{
@@ -20,8 +20,8 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering,n:Light) CLight : public Component
 	{
 	public:
-		CLight(const HSceneObject& parent, LightType type = LightType::Radial, Color color = Color::White, 
-			float intensity = 100.0f, float range = 1.0f, bool castsShadows = false, Degree spotAngle = Degree(45), 
+		CLight(const HSceneObject& parent, LightType type = LightType::Radial, Color color = Color::White,
+			float intensity = 100.0f, float range = 1.0f, bool castsShadows = false, Degree spotAngle = Degree(45),
 			Degree spotFalloffAngle = Degree(40));
 
 		virtual ~CLight();
@@ -110,7 +110,7 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:Bounds,pr:getter)
 		Sphere getBounds() const;
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 
@@ -127,8 +127,8 @@ namespace bs
 		Color mColor = Color::White;
 		float mIntensity = 100.0f;
 		float mRange = 1.0f;
-		bool mCastsShadows = false; 
-		Degree mSpotAngle = Degree(45); 
+		bool mCastsShadows = false;
+		Degree mSpotAngle = Degree(45);
 		Degree mSpotFalloffAngle = Degree(40);
 
 		/************************************************************************/

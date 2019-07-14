@@ -99,7 +99,7 @@ namespace bs
         /// </summary>
         /// <param name="pathElements">Path elements representing field names and keys to look for.</param>
         /// <param name="elementIdx">Index in the <paramref name="pathElements"/> array to start the search at.</param>
-        /// <returns>Property representing the final path element, or null if not found (array index is out of range, or 
+        /// <returns>Property representing the final path element, or null if not found (array index is out of range, or
         ///          property with that path doesn't exist).</returns>
         internal SerializableProperty FindProperty(PropertyPathElement[] pathElements, int elementIdx)
         {

@@ -103,11 +103,11 @@ namespace bs
 		void onObstacleHit(const physx::PxControllerObstacleHit& hit) override { /* Do nothing */ };
 
 		/** @copydoc physx::PxQueryFilterCallback::preFilter */
-		physx::PxQueryHitType::Enum preFilter(const physx::PxFilterData& filterData, const physx::PxShape* shape, 
+		physx::PxQueryHitType::Enum preFilter(const physx::PxFilterData& filterData, const physx::PxShape* shape,
 			const physx::PxRigidActor* actor, physx::PxHitFlags& queryFlags) override;
 
 		/** @copydoc physx::PxQueryFilterCallback::postFilter */
-		physx::PxQueryHitType::Enum postFilter(const physx::PxFilterData& filterData, 
+		physx::PxQueryHitType::Enum postFilter(const physx::PxFilterData& filterData,
 			const physx::PxQueryHit& hit) override;
 
 		/** @copydoc physx::PxControllerFilterCallback::filter */

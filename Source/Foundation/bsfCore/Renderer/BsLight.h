@@ -20,8 +20,8 @@ namespace bs
 	/** Light type that determines how is light information parsed by the renderer and other systems. */
 	enum BS_SCRIPT_EXPORT(m:Rendering) class LightType
 	{
-		Directional, 
-		Radial, 
+		Directional,
+		Radial,
 		Spot,
 
 		Count			BS_SCRIPT_EXPORT(ex:true) // Keep at end
@@ -55,14 +55,14 @@ namespace bs
 		/** @copydoc setCastsShadow */
 		bool getCastsShadow() const { return mCastsShadows; }
 
-		/** 
+		/**
 		 * Shadow bias determines offset at which the shadows are rendered from the shadow caster. Bias value of 0 means
 		 * the shadow will be renderered exactly at the casters position. If your geometry has thin areas this will
-		 * produce an artifact called shadow acne, in which case you can increase the shadow bias value to eliminate it. 
+		 * produce an artifact called shadow acne, in which case you can increase the shadow bias value to eliminate it.
 		 * Note that increasing the shadow bias will on the other hand make the shadow be offset from the caster and may
 		 * make the caster appear as if floating (Peter Panning artifact). Neither is perfect, so it is preferable to ensure
 		 * all your geometry has thickness and keep the bias at zero, or even at negative values.
-		 * 
+		 *
 		 * Default value is 0.5. Should be in rough range [-1, 1].
 		 */
 		void setShadowBias(float bias) { mShadowBias = bias; _markCoreDirty(); }
@@ -102,8 +102,8 @@ namespace bs
 		/**	@copydoc setSourceRadius */
 		float getSourceRadius() const { return mSourceRadius; }
 
-		/** 
-		 * If enabled the attenuation radius will automatically be controlled in order to provide reasonable light radius, 
+		/**
+		 * If enabled the attenuation radius will automatically be controlled in order to provide reasonable light radius,
 		 * depending on its intensity.
 		 */
 		void setUseAutoAttenuation(bool enabled);
@@ -112,7 +112,7 @@ namespace bs
 		bool getUseAutoAttenuation() const { return mAutoAttenuation; }
 
 		/**
-		 * Determines the power of the light source. This will be luminous flux for radial & spot lights, 
+		 * Determines the power of the light source. This will be luminous flux for radial & spot lights,
 		 * luminance for directional lights with no area, and illuminance for directional lights with area (non-zero source
 		 * radius).
 		 */
@@ -128,10 +128,10 @@ namespace bs
 		Degree getSpotAngle() const { return mSpotAngle; }
 
 		/**
-		 * Determines the falloff angle covered by a spot light. Falloff angle determines at what point does light intensity 
+		 * Determines the falloff angle covered by a spot light. Falloff angle determines at what point does light intensity
 		 * starts quadratically falling off as the angle approaches the total spot angle.
 		 */
-		void setSpotFalloffAngle(const Degree& spotFallofAngle) 
+		void setSpotFalloffAngle(const Degree& spotFallofAngle)
 		{ mSpotFalloffAngle = spotFallofAngle; _markCoreDirty(); updateBounds(); }
 
 		/** @copydoc setSpotFalloffAngle */
@@ -195,8 +195,8 @@ namespace bs
 		 *
 		 * @param[in]	type				Type of light that determines how are the rest of the parameters interpreted.
 		 * @param[in]	color				Color of the light.
-		 * @param[in]	intensity			Power of the light source. This will be luminous flux for radial & spot lights, 
-		 *									luminance for directional lights with no area, and illuminance for directional 
+		 * @param[in]	intensity			Power of the light source. This will be luminous flux for radial & spot lights,
+		 *									luminance for directional lights with no area, and illuminance for directional
 		 *									lights with area (non-zero source radius).
 		 * @param[in]	attRadius			Radius at which light's influence fades out to zero.
 		 * @param[in]	castsShadows		Determines whether the light casts shadows.
@@ -208,7 +208,7 @@ namespace bs
 			Degree spotAngle = Degree(45), Degree spotFalloffAngle = Degree(40));
 
 	protected:
-		Light(LightType type, Color color, float intensity, float attRadius, float srcRadius, 
+		Light(LightType type, Color color, float intensity, float attRadius, float srcRadius,
 			bool castsShadows, Degree spotAngle, Degree spotFalloffAngle);
 
 		/** @copydoc CoreObject::createCore */
@@ -254,7 +254,7 @@ namespace bs
 	protected:
 		friend class bs::Light;
 
-		Light(LightType type, Color color, float intensity, float attRadius, float srcRadius, bool castsShadows, 
+		Light(LightType type, Color color, float intensity, float attRadius, float srcRadius, bool castsShadows,
 			  Degree spotAngle, Degree spotFalloffAngle);
 
 		/** @copydoc CoreObject::initialize */

@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Material that controls how two physical objects interact with each other. Materials of both objects are used during 
+	/// Material that controls how two physical objects interact with each other. Materials of both objects are used during
 	/// their interaction and their combined values are used.
 	/// </summary>
 	[ShowInInspector]
@@ -22,15 +22,15 @@ namespace bs
 
 		/// <summary>Creates a new physics material.</summary>
 		/// <param name="staticFriction">
-		/// Controls friction when two in-contact objects are not moving lateral to each other (for example how difficult is to 
+		/// Controls friction when two in-contact objects are not moving lateral to each other (for example how difficult is to
 		/// get an object moving from a static state while it is in contact other object(s)).
 		/// </param>
 		/// <param name="dynamicFriction">
-		/// Sets dynamic friction of the material. Controls friction when two in-contact objects are moving lateral to each other 
+		/// Sets dynamic friction of the material. Controls friction when two in-contact objects are moving lateral to each other
 		/// (for example how quickly does an object slow down when sliding along another object).
 		/// </param>
 		/// <param name="restitution">
-		/// Controls &quot;bounciness&quot; of an object during a collision. Value of 1 means the collision is elastic, and value 
+		/// Controls &quot;bounciness&quot; of an object during a collision. Value of 1 means the collision is elastic, and value
 		/// of 0 means the value is inelastic. Must be in [0, 1] range.
 		/// </param>
 		public PhysicsMaterial(float staticFriction = 0f, float dynamicFriction = 0f, float restitution = 0f)
@@ -45,7 +45,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Controls friction when two in-contact objects are not moving lateral to each other (for example how difficult  it is 
+		/// Controls friction when two in-contact objects are not moving lateral to each other (for example how difficult  it is
 		/// to get an object moving from a static state while it is in contact with other object(s)).
 		/// </summary>
 		[ShowInInspector]
@@ -57,7 +57,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Controls friction when two in-contact objects are moving lateral to each other (for example how quickly does an 
+		/// Controls friction when two in-contact objects are moving lateral to each other (for example how quickly does an
 		/// object slow down when sliding along another object).
 		/// </summary>
 		[ShowInInspector]
@@ -69,7 +69,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Controls &quot;bounciness&quot; of an object during a collision. Value of 1 means the collision is elastic, and value 
+		/// Controls &quot;bounciness&quot; of an object during a collision. Value of 1 means the collision is elastic, and value
 		/// of 0  means the value is inelastic. Must be in [0, 1] range.
 		/// </summary>
 		[ShowInInspector]

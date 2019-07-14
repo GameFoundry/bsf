@@ -15,7 +15,7 @@ namespace bs
 		return format;
 	}
 
-	namespace ct 
+	namespace ct
 	{
 		SPtr<Texture> NullTextureManager::createTextureInternal(const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData,
 			GpuDeviceFlags deviceMask)

@@ -32,7 +32,7 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUIRenderTexture::internal_setTint);
 	}
 
-	void ScriptGUIRenderTexture::internal_createInstance(MonoObject* instance, 
+	void ScriptGUIRenderTexture::internal_createInstance(MonoObject* instance,
 		ScriptRenderTexture* texture, bool transparent, MonoString* style, MonoArray* guiOptions)
 	{
 		GUIOptions options;

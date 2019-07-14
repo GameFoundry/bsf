@@ -10,7 +10,7 @@ namespace bs
      */
 
     /// <summary>
-    /// GUI element containing a background image and a fill image that is scaled depending on the percentage set by the 
+    /// GUI element containing a background image and a fill image that is scaled depending on the percentage set by the
     /// caller.
     /// </summary>
     public sealed class GUIProgressBar : GUIElement
@@ -27,10 +27,10 @@ namespace bs
         /// <summary>
         /// Creates a new progress bar element.
         /// </summary>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
-        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUIProgressBar(string style, params GUIOption[] options)
         {
@@ -40,8 +40,8 @@ namespace bs
         /// <summary>
         /// Creates a new progress bar element.
         /// </summary>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
         public GUIProgressBar(string style = "")
         {

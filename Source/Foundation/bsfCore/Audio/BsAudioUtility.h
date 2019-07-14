@@ -14,13 +14,13 @@ namespace bs
 	class BS_CORE_EXPORT AudioUtility
 	{
 	public:
-		/** 
-		 * Converts a set of audio samples using multiple channels into a set of mono samples. 
+		/**
+		 * Converts a set of audio samples using multiple channels into a set of mono samples.
 		 *
 		 * @param[in]	input		A set of input samples. Per-channels samples should be interleaved. Size of each sample
 		 *							is determined by @p bitDepth. Total size of the buffer should be @p numSamples *
 		 *							@p numChannels * @p bitDepth / 8.
-		 * @param[out]	output		Pre-allocated buffer to store the mono samples. Should be of @p numSamples * 
+		 * @param[out]	output		Pre-allocated buffer to store the mono samples. Should be of @p numSamples *
 		 *							@p bitDepth / 8 size.
 		 * @param[in]	bitDepth	Size of a single sample in bits.
 		 * @param[in]	numSamples	Number of samples per a single channel.
@@ -53,8 +53,8 @@ namespace bs
 		 */
 		static void convertToFloat(const UINT8* input, UINT32 inBitDepth, float* output, UINT32 numSamples);
 
-		/** 
-		 * Converts a 24-bit signed integer into a 32-bit signed integer. 
+		/**
+		 * Converts a 24-bit signed integer into a 32-bit signed integer.
 		 *
 		 * @param[in]	input	24-bit signed integer as an array of 3 bytes.
 		 * @return				32-bit signed integer.

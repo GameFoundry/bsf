@@ -19,7 +19,7 @@ namespace bs
 		 * Returns a copy of the provided object with identical data.
 		 *
 		 * @param[in]	object		Object to clone.
-		 * @param[in]	shallow		If false then all referenced objects will be cloned as well, otherwise the references 
+		 * @param[in]	shallow		If false then all referenced objects will be cloned as well, otherwise the references
 		 *							to the original objects will be kept.
 		 */
 		static SPtr<IReflectable> clone(IReflectable* object, bool shallow = false);
@@ -42,7 +42,7 @@ namespace bs
 		};
 
 		/**
-		 * Contains all object references in a portion of an object belonging to a specific class (base and derived 
+		 * Contains all object references in a portion of an object belonging to a specific class (base and derived
 		 * classes count as separate sub-objects).
 		 */
 		struct SubObjectReferenceData
@@ -62,13 +62,13 @@ namespace bs
 		};
 
 		/**
-		 * Iterates over the provided object hierarchy and retrieves all object references which are returned in 
+		 * Iterates over the provided object hierarchy and retrieves all object references which are returned in
 		 * @p referenceData output parameter, also in a hierarchical format for easier parsing.
 		 */
 		static void gatherReferences(IReflectable* object, FrameAlloc& alloc, ObjectReferenceData& referenceData);
 
 		/**
-		 * Restores a set of references retrieved by gatherReferences() and applies them to a specific object. Type of the 
+		 * Restores a set of references retrieved by gatherReferences() and applies them to a specific object. Type of the
 		 * object must be the same as the type that was used when calling gatherReferences().
 		 */
 		static void restoreReferences(IReflectable* object, FrameAlloc& alloc, const ObjectReferenceData& referenceData);

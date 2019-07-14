@@ -49,7 +49,7 @@ namespace bs
 	};
 
 	/**
-	 * Holds data used for displaying content in a GUIElement. Content can consist of a string, image, a tooltip or none 
+	 * Holds data used for displaying content in a GUIElement. Content can consist of a string, image, a tooltip or none
 	 * of those.
 	 */
 	class BS_EXPORT BS_SCRIPT_EXPORT(pl:true,m:GUI) GUIContent

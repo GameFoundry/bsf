@@ -17,7 +17,7 @@
 #include "BsRenderBeast.h"
 #include "Utility/BsGpuSort.h"
 
-namespace bs { namespace ct 
+namespace bs { namespace ct
 {
 	BS_PARAM_BLOCK_BEGIN(GpuParticleTileVertexParamsDef)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gUVToNDC)
@@ -90,7 +90,7 @@ namespace bs { namespace ct
 
 	GpuParticleSimulateParamsDef gGpuParticleSimulateParamsDef;
 
-	/** 
+	/**
 	 * Material used for performing GPU particle simulation. State is read from the provided input textures and output
 	 * into the output textures bound as render targets.
 	 */
@@ -113,22 +113,22 @@ namespace bs { namespace ct
 		GpuParticleSimulateMat();
 
 		/** Binds the material to the pipeline along with any frame-static parameters. */
-		void bindGlobal(GpuParticleResources& resources, const SPtr<GpuParamBlockBuffer>& viewParams, 
+		void bindGlobal(GpuParticleResources& resources, const SPtr<GpuParamBlockBuffer>& viewParams,
 			const SPtr<Texture>& depth, const SPtr<Texture>& normals, const SPtr<GpuParamBlockBuffer>& simulationParams);
 
-		/** 
-		 * Binds parameters that change with every material dispatch. 
+		/**
+		 * Binds parameters that change with every material dispatch.
 		 *
-		 * @param[in]	tileUVs					Sets the UV offsets of individual tiles for a particular particle system 
+		 * @param[in]	tileUVs					Sets the UV offsets of individual tiles for a particular particle system
 		 *										that's being rendered.
 		 * @param[in]	perObjectParams			General purpose particle system parameters.
 		 * @param[in]	vectorFieldParams		Information about the currently bound vector field, if any.
 		 * @param[in]	vectorFieldTexture		3D texture representing the vector field, or null if none.
 		 * @param[in]	depthCollisionParams	Parameter buffer for controlling depth buffer collisions, if enabled.
-		 * 
+		 *
 		 */
-		void bindPerCallParams(const SPtr<GpuBuffer>& tileUVs, const SPtr<GpuParamBlockBuffer>& perObjectParams, 
-			const SPtr<GpuParamBlockBuffer>& vectorFieldParams, const SPtr<Texture>& vectorFieldTexture, 
+		void bindPerCallParams(const SPtr<GpuBuffer>& tileUVs, const SPtr<GpuParamBlockBuffer>& perObjectParams,
+			const SPtr<GpuParamBlockBuffer>& vectorFieldParams, const SPtr<Texture>& vectorFieldTexture,
 			const SPtr<GpuParamBlockBuffer>& depthCollisionParams);
 
 		/** Returns the material variation matching the provided parameters. */
@@ -174,7 +174,7 @@ namespace bs { namespace ct
 		/** Binds the material to the pipeline along with the global input texture containing particle positions and times. */
 		void bind(const SPtr<Texture>& positionAndTime);
 
-		/** 
+		/**
 		 * Executes the material, calculating the bounds. Note that this function reads back from the GPU and should not
 		 * be called at runtime.
 		 *
@@ -214,7 +214,7 @@ namespace bs { namespace ct
 		/** Binds the material to the pipeline along with the global input texture containing particle positions and times. */
 		void bind(const SPtr<Texture>& positionAndTime);
 
-		/** 
+		/**
 		 * Executes the material, generating sort data for a particular particle system and injecting it into the specified
 		 * location in the key and index buffers.
 		 *
@@ -229,7 +229,7 @@ namespace bs { namespace ct
 		 *								as @p outKeys.
 		 * @return						Number of particle that were written to the buffers.
 		 */
-		UINT32 execute(const GpuParticleSystem& system, UINT32 systemIdx, const Vector3& viewOrigin, UINT32 offset, 
+		UINT32 execute(const GpuParticleSystem& system, UINT32 systemIdx, const Vector3& viewOrigin, UINT32 offset,
 			const SPtr<GpuBuffer>& outKeys, const SPtr<GpuBuffer>& outIndices);
 
 	private:
@@ -324,8 +324,8 @@ namespace bs { namespace ct
 		sortedIndicesBufferDesc.elementCount = TEX_SIZE * TEX_SIZE;
 		sortedIndicesBufferDesc.usage = GBU_LOADSTORE;
 
-		mSortedIndices[0] = GpuBuffer::create(sortedIndicesBufferDesc); 
-		mSortedIndices[1] = GpuBuffer::create(sortedIndicesBufferDesc); 
+		mSortedIndices[0] = GpuBuffer::create(sortedIndicesBufferDesc);
+		mSortedIndices[1] = GpuBuffer::create(sortedIndicesBufferDesc);
 
 		mSortBuffers.values[0] = mSortedIndices[0]->getView(GBT_STANDARD, BF_32X1U);
 		mSortBuffers.values[1] = mSortedIndices[1]->getView(GBT_STANDARD, BF_32X1U);
@@ -501,7 +501,7 @@ namespace bs { namespace ct
 		GpuParticleSimulation::instance().removeSystem(this);
 	}
 
-	bool GpuParticleSystem::allocateTiles(GpuParticleResources& resources, Vector<GpuParticle>& newParticles, 
+	bool GpuParticleSystem::allocateTiles(GpuParticleResources& resources, Vector<GpuParticle>& newParticles,
 		Vector<UINT32>& newTiles)
 	{
 		GpuParticleTile cachedTile = mLastAllocatedTile == (UINT32)-1 ? GpuParticleTile() : mTiles[mLastAllocatedTile];
@@ -668,7 +668,7 @@ namespace bs { namespace ct
 
 			mParticleIndices->unlock();
 		}
-	} 
+	}
 	
 	void GpuParticleSystem::advanceTime(float dt)
 	{
@@ -721,7 +721,7 @@ namespace bs { namespace ct
 		m->systems.erase(system);
 	}
 
-	void GpuParticleSimulation::simulate(const SceneInfo& sceneInfo, const ParticlePerFrameData* simData, 
+	void GpuParticleSimulation::simulate(const SceneInfo& sceneInfo, const ParticlePerFrameData* simData,
 		const SPtr<GpuParamBlockBuffer>& viewParams, const GBufferTextures& gbuffer, float dt)
 	{
 		m->resources.swap();
@@ -756,7 +756,7 @@ namespace bs { namespace ct
 		clearTiles(newTiles);
 		injectParticles(allNewParticles);
 
-		// Simulate 
+		// Simulate
 		// TODO - Run multiple iterations for more stable simulation at lower/erratic framerates
 		gGpuParticleSimulateParamsDef.gDT.set(m->simulationParams, dt);
 		gGpuParticleSimulateParamsDef.gNumIterations.set(m->simulationParams, 1);
@@ -808,7 +808,7 @@ namespace bs { namespace ct
 				if (simSettings.vectorField.vectorField)
 					vfTexture = simSettings.vectorField.vectorField->getTexture();
 
-				simulateMat->bindPerCallParams(entry->getTileUVs(), rendererParticles.perObjectParamBuffer, 
+				simulateMat->bindPerCallParams(entry->getTileUVs(), rendererParticles.perObjectParamBuffer,
 					m->vectorFieldParams, vfTexture, m->depthCollisionParams);
 
 				const UINT32 tileCount = entry->getNumTiles();
@@ -933,16 +933,16 @@ namespace bs { namespace ct
 			float uniformScale = std::max(std::max(scale3D.x, scale3D.y), scale3D.z);
 
 			gGpuParticleDepthCollisionParamsDef.gCollisionRange.set(m->depthCollisionParams, 2.0f);
-			gGpuParticleDepthCollisionParamsDef.gCollisionRadiusScale.set(m->depthCollisionParams, 
+			gGpuParticleDepthCollisionParamsDef.gCollisionRadiusScale.set(m->depthCollisionParams,
 				depthCollisionSettings.radiusScale * uniformScale);
-			gGpuParticleDepthCollisionParamsDef.gDampening.set(m->depthCollisionParams, 
+			gGpuParticleDepthCollisionParamsDef.gDampening.set(m->depthCollisionParams,
 				depthCollisionSettings.dampening);
-			gGpuParticleDepthCollisionParamsDef.gRestitution.set(m->depthCollisionParams, 
+			gGpuParticleDepthCollisionParamsDef.gRestitution.set(m->depthCollisionParams,
 				depthCollisionSettings.restitution);
 
-			const Vector2 sizeScaleUVOffset = 
+			const Vector2 sizeScaleUVOffset =
 					GpuParticleCurves::getUVOffset(rendererInfo.sizeScaleFrameIdxCurveAlloc);
-			const float sizeScaleUVScale = 
+			const float sizeScaleUVScale =
 					GpuParticleCurves::getUVScale(rendererInfo.sizeScaleFrameIdxCurveAlloc);
 
 			gGpuParticleDepthCollisionParamsDef.gSizeScaleCurveOffset.set(m->depthCollisionParams, sizeScaleUVOffset);
@@ -972,7 +972,7 @@ namespace bs { namespace ct
 		UINT32 tileStart = 0;
 		for (UINT32 i = 0; i < numIterations; i++)
 		{
-			static_assert(GpuParticleHelperBuffers::NUM_SCRATCH_TILES % TILES_PER_INSTANCE == 0, 
+			static_assert(GpuParticleHelperBuffers::NUM_SCRATCH_TILES % TILES_PER_INSTANCE == 0,
 				"Tile scratch buffer size must be divisble with number of tiles per instance.");
 
 			const UINT32 tileEnd = std::min(numTiles, tileStart + GpuParticleHelperBuffers::NUM_SCRATCH_TILES);
@@ -1144,7 +1144,7 @@ namespace bs { namespace ct
 		defines.set("TILES_PER_INSTANCE", TILES_PER_INSTANCE);
 	}
 
-	void GpuParticleSimulateMat::bindGlobal(GpuParticleResources& resources, const SPtr<GpuParamBlockBuffer>& viewParams, 
+	void GpuParticleSimulateMat::bindGlobal(GpuParticleResources& resources, const SPtr<GpuParamBlockBuffer>& viewParams,
 		const SPtr<Texture>& depth, const SPtr<Texture>& normals, const SPtr<GpuParamBlockBuffer>& simulationParams)
 	{
 		GpuParticleStateTextures& prevState = resources.getPreviousState();
@@ -1169,8 +1169,8 @@ namespace bs { namespace ct
 		RendererMaterial::bind(false);
 	}
 
-	void GpuParticleSimulateMat::bindPerCallParams(const SPtr<GpuBuffer>& tileUVs, 
-		const SPtr<GpuParamBlockBuffer>& perObjectParams, const SPtr<GpuParamBlockBuffer>& vectorFieldParams, 
+	void GpuParticleSimulateMat::bindPerCallParams(const SPtr<GpuBuffer>& tileUVs,
+		const SPtr<GpuParamBlockBuffer>& perObjectParams, const SPtr<GpuParamBlockBuffer>& vectorFieldParams,
 		const SPtr<Texture>& vectorFieldTexture, const SPtr<GpuParamBlockBuffer>& depthCollisionParams)
 	{
 		mTileUVParam.set(tileUVs);

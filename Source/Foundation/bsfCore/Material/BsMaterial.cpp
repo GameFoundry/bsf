@@ -113,23 +113,23 @@ namespace bs
 				switch(matchesSearch)
 				{
 				default:
-				case NoParam: 
+				case NoParam:
 					switch(matchesInternal)
 					{
-					default: 
-					case NoParam: 
+					default:
+					case NoParam:
 						// When it comes to parameters not part of the search, prefer those with 0 default value
 						currentScore += param.second.ui;
 						break;
-					case NotMatching: 
+					case NotMatching:
 						foundMatch = false;
 						break;
-					case Matching: 
+					case Matching:
 						numMatchedInternalParams++;
 						break;
 					}
 					break;
-				case NotMatching: 
+				case NotMatching:
 					if(desc.override)
 					{
 						foundMatch = false;
@@ -139,26 +139,26 @@ namespace bs
 					switch(matchesInternal)
 					{
 					default:
-					case NoParam: 
+					case NoParam:
 						foundMatch = false;
 						break;
-					case NotMatching: 
+					case NotMatching:
 						foundMatch = false;
 						break;
-					case Matching: 
+					case Matching:
 						numMatchedSearchParams++;
 						numMatchedInternalParams++;
 						break;
 					}
 					break;
-				case Matching: 
-					switch(matchesInternal) 
-					{ 
+				case Matching:
+					switch(matchesInternal)
+					{
 					default:
-						case NoParam: 
+						case NoParam:
 						numMatchedSearchParams++;
 						break;
-						case NotMatching: 
+						case NotMatching:
 						if(desc.override)
 						{
 							numMatchedSearchParams++;
@@ -167,7 +167,7 @@ namespace bs
 						else
 							foundMatch = false;
 						break;
-						case Matching: 
+						case Matching:
 							numMatchedSearchParams++;
 							numMatchedInternalParams++;
 						break;
@@ -238,14 +238,14 @@ namespace bs
 				switch(matches)
 				{
 				default:
-				case NoParam: 
+				case NoParam:
 					// When it comes to parameters not part of the search, prefer those with 0 default value
 					currentScore += param.second.ui;
 					break;
-				case NotMatching: 
+				case NotMatching:
 					foundMatch = false;
 					break;
-				case Matching: 
+				case Matching:
 					numMatchedParams++;
 					break;
 				}
@@ -415,7 +415,7 @@ namespace bs
 
 			switch (paramData.second.type)
 			{
-			case GPDT_FLOAT1: 
+			case GPDT_FLOAT1:
 				setParamValue<float>(paramData.first, buffer, paramData.second.arraySize);
 				break;
 			case GPDT_FLOAT2:
@@ -675,7 +675,7 @@ namespace bs
 			mParams->getSyncData(nullptr, paramsSize, syncAllParams);
 
 		UINT32 numTechniques = (UINT32)mTechniques.size();
-		UINT32 size = sizeof(bool) + sizeof(UINT32) * 2 + sizeof(SPtr<ct::Shader>) + 
+		UINT32 size = sizeof(bool) + sizeof(UINT32) * 2 + sizeof(SPtr<ct::Shader>) +
 			sizeof(SPtr<ct::Technique>) * numTechniques + paramsSize;
 
 		size += coreSyncGetElemSize(mVariation);
@@ -802,7 +802,7 @@ namespace bs
 	}
 
 	template<class T>
-	void copyParam(const SPtr<MaterialParams>& from, Material* to, const String& name, 
+	void copyParam(const SPtr<MaterialParams>& from, Material* to, const String& name,
 		const MaterialParams::ParamData& paramRef, UINT32 arraySize)
 	{
 		TMaterialDataParam<T, false> param;
@@ -822,7 +822,7 @@ namespace bs
 			return;
 
 		std::function<
-			void(const SPtr<MaterialParams>&, Material*, const String&, const MaterialParams::ParamData&, UINT32)> 
+			void(const SPtr<MaterialParams>&, Material*, const String&, const MaterialParams::ParamData&, UINT32)>
 			copyParamLookup[GPDT_COUNT];
 
 		copyParamLookup[GPDT_FLOAT1] = &copyParam<float>;
@@ -919,7 +919,7 @@ namespace bs
 			switch(texType)
 			{
 			default:
-			case MateralParamTextureType::Normal: 
+			case MateralParamTextureType::Normal:
 			{
 				TMaterialParamTexture<false> curParam = getParamTexture(param.first);
 

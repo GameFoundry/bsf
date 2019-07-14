@@ -12,7 +12,7 @@
 #include "Utility/BsBitwise.h"
 #include "Utility/BsLookupTable.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Particles-Internal
 	 *  @{
@@ -92,36 +92,36 @@ namespace bs
 		BS_SCRIPT_EXPORT(pr:getter,n:DistributionType)
 		PropertyDistributionType getType() const { return mType; }
 
-		/** 
-		 * Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if 
-		 * the distribution is represented by a gradient. 
+		/**
+		 * Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if
+		 * the distribution is represented by a gradient.
 		 */
 		BS_SCRIPT_EXPORT()
 		Color getMinConstant() const { return mMinGradient.getKey(0).color; }
 
-		/** 
+		/**
 		 * Returns the maximum value of a constant range. Only defined if the distribution represents a non-gradient range.
 		 */
 		BS_SCRIPT_EXPORT()
 		Color getMaxConstant() const { return mMaxGradient.getKey(0).color; }
 
-		/** 
-		 * Returns the gradient representing the distribution, or the first gradient representing a gradient range. 
+		/**
+		 * Returns the gradient representing the distribution, or the first gradient representing a gradient range.
 		 * Undefined if the distribution is represented by a constant or a non-gradient range.
 		 */
 		BS_SCRIPT_EXPORT()
 		const ColorGradient& getMinGradient() const { return mMinGradient; }
 
-		/** 
-		 * Returns the curve representing the second gradient of a gradient range. Only defined if the distribution 
+		/**
+		 * Returns the curve representing the second gradient of a gradient range. Only defined if the distribution
 		 * represents a gradient range.
 		 */
 		BS_SCRIPT_EXPORT()
 		const ColorGradient& getMaxGradient() const { return mMaxGradient; }
 
-		/** 
+		/**
 		 * Evaluates the value of the distribution.
-		 * 
+		 *
 		 * @param[in]	t		Time at which to evaluate the distribution. This is only relevant if the distribution
 		 *						contains gradients.
 		 * @param[in]	factor	Value in range [0, 1] that determines how to interpolate between min/max value, if the
@@ -157,9 +157,9 @@ namespace bs
 			}
 		}
 
-		/** 
+		/**
 		 * Evaluates the value of the distribution.
-		 * 
+		 *
 		 * @param[in]	t		Time at which to evaluate the distribution. This is only relevant if the distribution
 		 *						contains gradients.
 		 * @param[in]	factor	Random number generator that determines the factor. Factor determines how to interpolate
@@ -198,7 +198,7 @@ namespace bs
 		/**
 		 * Converts the distribution into a lookup table that's faster to access. The distribution will be resampled
 		 * using a fixed sample rate with equidistant samples.
-		 * 
+		 *
 		 * @param[in]	numSamples			Determines how many samples to output in the lookup table. This value is ignored
 		 *									for non-curve distributions in which case there is always just one sample.
 		 * @param[in]	ignoreRange			If the curve represents a range (either between constants or curves), this
@@ -284,36 +284,36 @@ namespace bs
 		BS_SCRIPT_EXPORT(pr:getter,n:DistributionType)
 		PropertyDistributionType getType() const { return mType; }
 
-		/** 
-		 * Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if 
-		 * the distribution is represented by a curve. 
+		/**
+		 * Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if
+		 * the distribution is represented by a curve.
 		 */
 		BS_SCRIPT_EXPORT()
 		const T& getMinConstant() const { return mMinCurve.getKeyFrames()[0].value; }
 
-		/** 
+		/**
 		 * Returns the maximum value of a constant range. Only defined if the distribution represents a non-curve range.
 		 */
 		BS_SCRIPT_EXPORT()
 		const T& getMaxConstant() const { return mMaxCurve.getKeyFrames()[0].value; }
 
-		/** 
+		/**
 		 * Returns the curve representing the distribution, or the first curve representing a curve range. Undefined if
 		 * the distribution is represented by a constant or a non-curve range.
 		 */
 		BS_SCRIPT_EXPORT()
 		const TAnimationCurve<T>& getMinCurve() const { return mMinCurve; }
 
-		/** 
+		/**
 		 * Returns the curve representing the second curve of a curve range. Only defined if the distribution represents
 		 * a curve range.
 		 */
 		BS_SCRIPT_EXPORT()
 		const TAnimationCurve<T>& getMaxCurve() const { return mMaxCurve; }
 
-		/** 
+		/**
 		 * Evaluates the value of the distribution.
-		 * 
+		 *
 		 * @param[in]	t		Time at which to evaluate the distribution. This is only relevant if the distribution
 		 *						contains curves.
 		 * @param[in]	factor	Value in range [0, 1] that determines how to interpolate between min/max value, if the
@@ -344,9 +344,9 @@ namespace bs
 			}
 		}
 
-		/** 
+		/**
 		 * Evaluates the value of the distribution.
-		 * 
+		 *
 		 * @param[in]	t		Time at which to evaluate the distribution. This is only relevant if the distribution
 		 *						contains curves.
 		 * @param[in]	factor	Random number generator that determines the factor. Factor determines how to interpolate
@@ -379,7 +379,7 @@ namespace bs
 		/**
 		 * Converts the distribution into a lookup table that's faster to access. The distribution will be resampled
 		 * using a fixed sample rate with equidistant samples.
-		 * 
+		 *
 		 * @param[in]	numSamples			Determines how many samples to output in the lookup table. This value is ignored
 		 *									for non-curve distributions in which case there is always just one sample.
 		 * @param[in]	ignoreRange			If the curve represents a range (either between constants or curves), this

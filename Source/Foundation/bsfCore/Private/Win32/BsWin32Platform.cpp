@@ -181,9 +181,9 @@ namespace bs
 		PostMessage((HWND)hwnd, WM_SETCURSOR, WPARAM((HWND)hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
 	}
 
-	bool Platform::isCursorHidden() 
-	{ 
-		return mData->mIsCursorHidden; 
+	bool Platform::isCursorHidden()
+	{
+		return mData->mIsCursorHidden;
 	}
 
 	void Platform::clipCursorToWindow(const RenderWindow& window)
@@ -248,7 +248,7 @@ namespace bs
 
 		mData->mCursor.cursor = CreateIconIndirect(&iconinfo);
 		
-		DeleteObject(hBitmap);          
+		DeleteObject(hBitmap);
 		DeleteObject(hMonoBitmap);
 
 		// Make sure we notify the message loop to perform the actual cursor update
@@ -569,7 +569,7 @@ namespace bs
 		POINT clientPoint;
 
 		clientPoint.x = GET_X_LPARAM(lParam);
-		clientPoint.y = GET_Y_LPARAM(lParam); 
+		clientPoint.y = GET_Y_LPARAM(lParam);
 
 		if (!nonClient)
 			ClientToScreen(hWnd, &clientPoint);
@@ -592,8 +592,8 @@ namespace bs
 	 */
 	bool getCommand(unsigned int virtualKeyCode, InputCommandType& command)
 	{
-		switch (virtualKeyCode) 
-		{ 
+		switch (virtualKeyCode)
+		{
 		case VK_LEFT:
 			command = isShiftPressed ? InputCommandType::SelectLeft : InputCommandType::CursorMoveLeft;
 			return true;
@@ -782,7 +782,7 @@ namespace bs
 
 				POINT mousePos;
 				mousePos.x = GET_X_LPARAM(lParam);
-				mousePos.y = GET_Y_LPARAM(lParam); 
+				mousePos.y = GET_Y_LPARAM(lParam);
 
 				ScreenToClient(hWnd, &mousePos);
 
@@ -1018,11 +1018,11 @@ namespace bs
 				if(isCtrlPressed || isAltPressed)
 					break;
 
-				switch (wParam) 
-				{ 
+				switch (wParam)
+				{
 				case VK_ESCAPE:
-					break; 
-				default:    // displayable character 
+					break;
+				default:    // displayable character
 					{
 						UINT32 finalChar = (UINT32)wParam;
 
@@ -1031,7 +1031,7 @@ namespace bs
 
 						return 0;
 					}
-				} 
+				}
 
 				break;
 			}

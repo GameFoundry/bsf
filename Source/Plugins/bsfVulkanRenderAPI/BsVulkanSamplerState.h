@@ -32,9 +32,9 @@ namespace bs { namespace ct
 	public:
 		~VulkanSamplerState();
 
-		/** 
-		 * Gets the resource wrapping the sampler object, on the specified device. If sampler state device mask doesn't 
-		 * include the provided device, null is returned. 
+		/**
+		 * Gets the resource wrapping the sampler object, on the specified device. If sampler state device mask doesn't
+		 * include the provided device, null is returned.
 		 */
 		VulkanSampler* getResource(UINT32 deviceIdx) const { return mSamplers[deviceIdx]; }
 

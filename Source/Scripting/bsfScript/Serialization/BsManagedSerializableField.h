@@ -126,7 +126,7 @@ namespace bs
 		 * @param[in]	allowNull	Determines should null values be allowed. If false the objects with null values will
 		 *							instead be instantiated to their default values.
 		 */
-		static SPtr<ManagedSerializableFieldData> create(const SPtr<ManagedSerializableTypeInfo>& typeInfo, MonoObject* value, 
+		static SPtr<ManagedSerializableFieldData> create(const SPtr<ManagedSerializableTypeInfo>& typeInfo, MonoObject* value,
 			bool allowNull);
 
 		/************************************************************************/

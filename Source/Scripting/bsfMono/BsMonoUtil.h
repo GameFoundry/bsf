@@ -49,13 +49,13 @@ namespace bs
 
 		/**
 		 * Creates a new GC handle for the provided managed object. The handle can be stored and later used for retrieving
-		 * the MonoObject* related to it by calling getObjectFromGCHandle(). This is a strong handle, meaning it will 
+		 * the MonoObject* related to it by calling getObjectFromGCHandle(). This is a strong handle, meaning it will
 		 * prevent the garbage collector from collecting the object until it is released by calling freeGCHandle().
-		 * 
+		 *
 		 * @param[in]	object		Managed object to create the handle for.
 		 * @param[in]	pinned		If true the object will be pinned in memory, meaning you will be allowed to store
 		 *							a reference to the MonoObject directly. Never store MonoObject* unless they have been
-		 *							previously pinned (instead use getObjectFromGCHandle*( to get the current pointer). 
+		 *							previously pinned (instead use getObjectFromGCHandle*( to get the current pointer).
 		 *							Note that pinning can have an impact on memory fragmentation as it prevents the GC from
 		 *							moving the object, so use it sparingly.
 		 */
@@ -81,7 +81,7 @@ namespace bs
 		/** Unboxes a managed object back to a raw value type. */
 		static void* unbox(MonoObject* object);
 
-		/** 
+		/**
 		 * Copies the value from @p src to @p dest. This must be a value-type of type @p klass. You need to use this
 		 * form of copying if @p dest is a struct that gets passed to managed code and it contains a reference type. This
 		 * way the GC is informed about the reference in the struct. You can use normal copies otherwise.
@@ -113,14 +113,14 @@ namespace bs
 		/** Binds parameters to a generic class, and returns a new instantiable class with the bound parameters. */
 		static ::MonoClass* bindGenericParameters(::MonoClass* klass, ::MonoClass** params, UINT32 numParams);
 
-		/** 
+		/**
 		 * Returns the generic parameters of the provided type. @p params must be a pre-allocated buffer able to hold the
 		 * class types for each parameter. If @p params is null, then @p numParams will be populated with the number of
 		 * available parameters.
 		 */
 		static void getGenericParameters(::MonoClass* klass, ::MonoClass** params, UINT32& numParams);
 
-		/** 
+		/**
 		 * Returns the generic parameters of the provided type. @p params must be a pre-allocated buffer able to hold the
 		 * class types for each parameter. If @p params is null, then @p numParams will be populated with the number of
 		 * available parameters.

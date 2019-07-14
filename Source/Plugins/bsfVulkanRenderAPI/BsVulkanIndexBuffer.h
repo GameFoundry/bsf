@@ -17,9 +17,9 @@ namespace bs { namespace ct
 	public:
 		VulkanIndexBuffer(const INDEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask);
 
-		/** 
+		/**
 		 * Gets the resource wrapping the buffer object, on the specified device. If GPU param block buffer's device mask
-		 * doesn't include the provided device, null is returned. 
+		 * doesn't include the provided device, null is returned.
 		 */
 		VulkanBuffer* getResource(UINT32 deviceIdx) const;
 

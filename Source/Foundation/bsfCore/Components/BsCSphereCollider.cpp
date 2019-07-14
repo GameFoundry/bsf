@@ -41,7 +41,7 @@ namespace bs
 		if (mLocalPosition == center)
 			return;
 
-		mLocalPosition = center; 
+		mLocalPosition = center;
 		
 		if (mInternal != nullptr)
 			updateTransform();
@@ -52,7 +52,7 @@ namespace bs
 		const SPtr<SceneInstance>& scene = SO()->getScene();
 		const Transform& tfrm = SO()->getTransform();
 
-		SPtr<Collider> collider = SphereCollider::create(*scene->getPhysicsScene(), mRadius, tfrm.getPosition(), 
+		SPtr<Collider> collider = SphereCollider::create(*scene->getPhysicsScene(), mRadius, tfrm.getPosition(),
 			tfrm.getRotation());
 
 		collider->_setOwner(PhysicsOwnerType::Component, this);

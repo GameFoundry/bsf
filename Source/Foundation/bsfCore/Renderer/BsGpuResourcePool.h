@@ -49,7 +49,7 @@ namespace bs { namespace ct
 		UINT32 mLastUsedFrame = 0;
 	};
 
-	/** 
+	/**
 	 * Contains a pool of textures and buffers meant to accommodate reuse of such resources for the main purpose of using
 	 * them as write targets on the GPU.
 	 */
@@ -58,7 +58,7 @@ namespace bs { namespace ct
 	public:
 		/**
 		 * Attempts to find the unused render texture with the specified parameters in the pool, or creates a new texture
-		 * otherwise. 
+		 * otherwise.
 		 *
 		 * @param[in]	desc		Descriptor structure that describes what kind of texture to retrieve.
 		 */
@@ -101,7 +101,7 @@ namespace bs { namespace ct
 		/** Lets the pool know that another frame has passed. */
 		void update();
 
-		/** 
+		/**
 		 * Destroys all unreferenced resources with that were last used @p age frames ago. Specify 0 to destroy all
 		 * unreferenced resources.
 		 */
@@ -109,7 +109,7 @@ namespace bs { namespace ct
 	private:
 		/**
 		 * Checks does the provided texture match the parameters.
-		 * 
+		 *
 		 * @param[in]	desc	Descriptor structure that describes what kind of texture to match.
 		 * @return				True if the texture matches the descriptor, false otherwise.
 		 */
@@ -117,7 +117,7 @@ namespace bs { namespace ct
 
 		/**
 		 * Checks does the provided buffer match the parameters.
-		 * 
+		 *
 		 * @param[in]	desc	Descriptor structure that describes what kind of buffer to match.
 		 * @return				True if the buffer matches the descriptor, false otherwise.
 		 */
@@ -148,7 +148,7 @@ namespace bs { namespace ct
 		 * @param[in]	mipCount	Number of mip levels, excluding the root mip level.
 		 * @return					Descriptor that is accepted by RenderTexturePool.
 		 */
-		static POOLED_RENDER_TEXTURE_DESC create2D(PixelFormat format, UINT32 width, UINT32 height, 
+		static POOLED_RENDER_TEXTURE_DESC create2D(PixelFormat format, UINT32 width, UINT32 height,
 			INT32 usage = TU_STATIC, UINT32 samples = 0, bool hwGamma = false, UINT32 arraySize = 1, UINT32 mipCount = 0);
 
 		/**
@@ -205,7 +205,7 @@ namespace bs { namespace ct
 		 * @param[in]	numElements	Number of elements in the buffer.
 		 * @param[in]	usage		Usage flag hinting the driver how is buffer going to be used.
 		 */
-		static POOLED_STORAGE_BUFFER_DESC createStandard(GpuBufferFormat format, UINT32 numElements, 
+		static POOLED_STORAGE_BUFFER_DESC createStandard(GpuBufferFormat format, UINT32 numElements,
 			GpuBufferUsage usage = GBU_LOADSTORE);
 
 		/**

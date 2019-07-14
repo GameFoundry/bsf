@@ -140,9 +140,9 @@ namespace bs
 			static SPtr<ModifiedDictionary> create();
 
 			/** A list of modified entries in the dictionary. */
-			Vector<ModifiedDictionaryEntry> entries; 
+			Vector<ModifiedDictionaryEntry> entries;
 			/** A list of keys for entries that were removed from the dictionary. */
-			Vector<SPtr<ManagedSerializableFieldData>> removed; 
+			Vector<SPtr<ManagedSerializableFieldData>> removed;
 
 			/************************************************************************/
 			/* 								RTTI		                     		*/
@@ -200,7 +200,7 @@ namespace bs
 		SPtr<ModifiedObject> generateDiff(const SPtr<ManagedSerializableObject>& oldObj, const SPtr<ManagedSerializableObject>& newObj);
 
 		/**
-		 * Generates a diff between two fields. Fields can be of any type and the system will generate the diff 
+		 * Generates a diff between two fields. Fields can be of any type and the system will generate the diff
 		 * appropriately. Diff is generated recursively on all complex objects as well. Returns null if fields contain
 		 * identical data.
 		 */

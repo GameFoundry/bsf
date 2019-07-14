@@ -9,7 +9,7 @@ namespace bs
      */
 
     /// <summary>
-    /// Handles virtual input that allows you to receive virtual input events that hide the actual physical input, allowing 
+    /// Handles virtual input that allows you to receive virtual input events that hide the actual physical input, allowing
     /// you to easily change the input keys while being transparent to the external code.
     /// </summary>
     public static class VirtualInput
@@ -73,11 +73,11 @@ namespace bs
         }
 
         /// <summary>
-        /// Returns normalized value for the specified input axis. 
+        /// Returns normalized value for the specified input axis.
         /// </summary>
         /// <param name="axis">Virtual axis identifier.</param>
         /// <param name="deviceIdx">Optional device index in case multiple input devices are available.</param>
-        /// <returns>Axis value, normally in [-1.0, 1.0] range, but can be outside the range for devices with unbound axes 
+        /// <returns>Axis value, normally in [-1.0, 1.0] range, but can be outside the range for devices with unbound axes
         ///          (for example mouse).</returns>
         public static float GetAxisValue(VirtualAxis axis, int deviceIdx = 0)
         {

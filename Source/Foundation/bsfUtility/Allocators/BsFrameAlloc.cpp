@@ -294,7 +294,7 @@ namespace bs
 	{
 		if (_GlobalFrameAlloc == nullptr)
 		{
-			// Note: This will leak memory but since it should exist throughout the entirety 
+			// Note: This will leak memory but since it should exist throughout the entirety
 			// of runtime it should only leak on shutdown when the OS will free it anyway.
 			_GlobalFrameAlloc = new FrameAlloc();
 		}

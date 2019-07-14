@@ -105,7 +105,7 @@ namespace bs
         ///                    a dictionary append its name with a "[x]" where x is the element index in the array/list, or
         ///                    a key name (surrounded by "") in case of a dictionary. Only primitive dictionary keys are
         ///                    supported.
-        /// 
+        ///
         ///                    Example path: subObject/myDictionary["someElement"]/theArray[4]/fieldToGet
         ///                    </param>
         /// <returns>Property you can use for reading or modifying the property, or null if not found.</returns>
@@ -147,7 +147,7 @@ namespace bs
 
                     if (endIdx > (startIdx + 1) && entry[endIdx - 1] == '"')
                         endIdx--;
-                    
+
                     if (foundKey)
                     {
                         pathElements[i].name = entry.Substring(0, nameEndIdx);
@@ -210,7 +210,7 @@ namespace bs
     }
 
     /// <summary>
-    /// Contains a single element of a path to a field or array/list/dictionary entry, as used for 
+    /// Contains a single element of a path to a field or array/list/dictionary entry, as used for
     /// <see cref="SerializableObject"/>.
     /// </summary>
     internal struct PropertyPathElement

@@ -172,7 +172,7 @@ namespace bs
 		frustumData.center = mTransform.multiplyAffine(position);
 	}
 
-	void DrawHelper::cone(const Vector3& base, const Vector3& normal, float height, float radius, const Vector2& scale, 
+	void DrawHelper::cone(const Vector3& base, const Vector3& normal, float height, float radius, const Vector2& scale,
 		UINT32 quality)
 	{
 		mConeData.push_back(ConeData());
@@ -238,7 +238,7 @@ namespace bs
 		discData.center = mTransform.multiplyAffine(position);
 	}
 
-	void DrawHelper::arc(const Vector3& position, const Vector3& normal, float radius, 
+	void DrawHelper::arc(const Vector3& position, const Vector3& normal, float radius,
 		Degree startAngle, Degree amountAngle, UINT32 quality)
 	{
 		mArcData.push_back(ArcData());
@@ -256,7 +256,7 @@ namespace bs
 		arcData.center = mTransform.multiplyAffine(position);
 	}
 
-	void DrawHelper::wireArc(const Vector3& position, const Vector3& normal, float radius, 
+	void DrawHelper::wireArc(const Vector3& position, const Vector3& normal, float radius,
 		Degree startAngle, Degree amountAngle, UINT32 quality)
 	{
 		mWireArcData.push_back(ArcData());
@@ -346,7 +346,7 @@ namespace bs
 
 		enum class ShapeType
 		{
-			Cube, Sphere, WireCube, WireSphere, WireCone, Line, LineList, Frustum, 
+			Cube, Sphere, WireCube, WireSphere, WireCone, Line, LineList, Frustum,
 			Cone, Disc, WireDisc, Arc, WireArc, Rectangle, Text, WireMesh, WireHemisphere
 		};
 
@@ -411,7 +411,7 @@ namespace bs
 			rawData.shapeType = ShapeType::Sphere;
 			rawData.distance = shapeData.center.distance(reference);
 
-			ShapeMeshes3D::getNumElementsSphere(shapeData.quality, 
+			ShapeMeshes3D::getNumElementsSphere(shapeData.quality,
 				rawData.numVertices, rawData.numIndices);
 		}
 
@@ -433,7 +433,7 @@ namespace bs
 			rawData.shapeType = ShapeType::Cone;
 			rawData.distance = shapeData.center.distance(reference);
 
-			ShapeMeshes3D::getNumElementsCone(shapeData.quality, 
+			ShapeMeshes3D::getNumElementsCone(shapeData.quality,
 				rawData.numVertices, rawData.numIndices);
 		}
 
@@ -477,7 +477,7 @@ namespace bs
 			rawData.shapeType = ShapeType::Arc;
 			rawData.distance = shapeData.center.distance(reference);
 
-			ShapeMeshes3D::getNumElementsArc(shapeData.quality, 
+			ShapeMeshes3D::getNumElementsArc(shapeData.quality,
 				rawData.numVertices, rawData.numIndices);
 		}
 
@@ -671,7 +671,7 @@ namespace bs
 			rawData.shapeType = ShapeType::WireDisc;
 			rawData.distance = shapeData.center.distance(reference);
 
-			ShapeMeshes3D::getNumElementsWireDisc(shapeData.quality, 
+			ShapeMeshes3D::getNumElementsWireDisc(shapeData.quality,
 				rawData.numVertices, rawData.numIndices);
 		}
 
@@ -752,7 +752,7 @@ namespace bs
 				rawData.meshType = MeshType::Text;
 				rawData.shapeType = ShapeType::Text;
 				rawData.distance = shapeData.center.distance(reference);
-				rawData.numVertices = numQuads * 4; 
+				rawData.numVertices = numQuads * 4;
 				rawData.numIndices = numQuads * 6;
 
 				TextRenderData& renderData = textRenderData[textIdx];
@@ -881,7 +881,7 @@ namespace bs
 		UINT32 vertexOffset[4] = { 0, 0, 0, 0 };
 		UINT32 indexOffset[4] = { 0, 0, 0, 0 };
 
-		VertexElemIter<Vector3> positionIter[4]; 
+		VertexElemIter<Vector3> positionIter[4];
 		VertexElemIter<UINT32> colorIter[4];
 
 		for(UINT32 i = 0; i < 4; i++)
@@ -938,7 +938,7 @@ namespace bs
 					{
 						SphereData& sphereData = mSolidSphereData[shapeData.idx];
 						Sphere sphere(sphereData.position, sphereData.radius);
-						ShapeMeshes3D::solidSphere(sphere, meshData[typeIdx], vertexOffset[typeIdx], indexOffset[typeIdx], 
+						ShapeMeshes3D::solidSphere(sphere, meshData[typeIdx], vertexOffset[typeIdx], indexOffset[typeIdx],
 							sphereData.quality);
 
 						transform = &sphereData.transform;
@@ -948,7 +948,7 @@ namespace bs
 					case ShapeType::Cone:
 					{
 						ConeData& coneData = mConeData[shapeData.idx];
-						ShapeMeshes3D::solidCone(coneData.base, coneData.normal, coneData.height, coneData.radius, 
+						ShapeMeshes3D::solidCone(coneData.base, coneData.normal, coneData.height, coneData.radius,
 							coneData.scale, meshData[typeIdx], vertexOffset[typeIdx], indexOffset[typeIdx], coneData.quality);
 
 						transform = &coneData.transform;
@@ -969,7 +969,7 @@ namespace bs
 					{
 						ArcData& arcData = mArcData[shapeData.idx];
 						ShapeMeshes3D::solidArc(arcData.position, arcData.radius, arcData.normal,
-							arcData.startAngle, arcData.amountAngle, meshData[typeIdx], vertexOffset[typeIdx], 
+							arcData.startAngle, arcData.amountAngle, meshData[typeIdx], vertexOffset[typeIdx],
 							indexOffset[typeIdx], arcData.quality);
 
 						transform = &arcData.transform;
@@ -979,7 +979,7 @@ namespace bs
 					case ShapeType::Rectangle:
 					{
 						Rect3Data& rectData = mRect3Data[shapeData.idx];
-						ShapeMeshes3D::solidQuad(rectData.area, meshData[typeIdx], vertexOffset[typeIdx], 
+						ShapeMeshes3D::solidQuad(rectData.area, meshData[typeIdx], vertexOffset[typeIdx],
 							indexOffset[typeIdx]);
 
 						transform = &rectData.transform;
@@ -1113,7 +1113,7 @@ namespace bs
 					{
 						ConeData& coneData = mWireConeData[shapeData.idx];
 						ShapeMeshes3D::wireCone(coneData.base, coneData.normal, coneData.height, coneData.radius,
-							coneData.scale, meshData[typeIdx], vertexOffset[typeIdx], indexOffset[typeIdx], 
+							coneData.scale, meshData[typeIdx], vertexOffset[typeIdx], indexOffset[typeIdx],
 							coneData.quality);
 
 						transform = &coneData.transform;
@@ -1124,7 +1124,7 @@ namespace bs
 					{
 						LineData& lineData = mLineData[shapeData.idx];
 
-						ShapeMeshes3D::pixelLine(lineData.start, lineData.end, meshData[typeIdx], vertexOffset[typeIdx], 
+						ShapeMeshes3D::pixelLine(lineData.start, lineData.end, meshData[typeIdx], vertexOffset[typeIdx],
 							indexOffset[typeIdx]);
 
 						transform = &lineData.transform;
@@ -1135,7 +1135,7 @@ namespace bs
 					{
 						LineListData& lineListData = mLineListData[shapeData.idx];
 
-						ShapeMeshes3D::pixelLineList(lineListData.lines, meshData[typeIdx], vertexOffset[typeIdx], 
+						ShapeMeshes3D::pixelLineList(lineListData.lines, meshData[typeIdx], vertexOffset[typeIdx],
 							indexOffset[typeIdx]);
 
 						transform = &lineListData.transform;
@@ -1169,7 +1169,7 @@ namespace bs
 						ArcData& arcData = mWireArcData[shapeData.idx];
 
 						ShapeMeshes3D::wireArc(arcData.position, arcData.radius, arcData.normal,
-							arcData.startAngle, arcData.amountAngle, meshData[typeIdx], vertexOffset[typeIdx], 
+							arcData.startAngle, arcData.amountAngle, meshData[typeIdx], vertexOffset[typeIdx],
 							indexOffset[typeIdx], arcData.quality);
 
 						transform = &arcData.transform;
@@ -1270,16 +1270,16 @@ namespace bs
 		{
 			switch(entry.type)
 			{
-			case MeshType::Solid: 
+			case MeshType::Solid:
 				entry.mesh = meshes[0];
 				break;
-			case MeshType::Wire: 
+			case MeshType::Wire:
 				entry.mesh = meshes[1];
 				break;
-			case MeshType::Line: 
+			case MeshType::Line:
 				entry.mesh = meshes[2];
 				break;
-			case MeshType::Text: 
+			case MeshType::Text:
 				entry.mesh = meshes[3];
 				break;
 			default: ;

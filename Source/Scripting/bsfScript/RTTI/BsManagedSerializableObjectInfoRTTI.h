@@ -27,8 +27,8 @@ namespace bs
 			obj->mName = val;
 		}
 
-		SPtr<ManagedSerializableObjectInfo> getSerializableObjectInfo(ManagedSerializableAssemblyInfo* obj, UINT32 idx) 
-		{ 
+		SPtr<ManagedSerializableObjectInfo> getSerializableObjectInfo(ManagedSerializableAssemblyInfo* obj, UINT32 idx)
+		{
 			auto iter = obj->mObjectInfos.begin();
 			for(UINT32 i = 0; i < idx; i++)
 				iter++;
@@ -36,8 +36,8 @@ namespace bs
 			return iter->second;
 		}
 
-		void setSerializableObjectInfo(ManagedSerializableAssemblyInfo* obj, UINT32 idx, SPtr<ManagedSerializableObjectInfo> val) 
-		{ 
+		void setSerializableObjectInfo(ManagedSerializableAssemblyInfo* obj, UINT32 idx, SPtr<ManagedSerializableObjectInfo> val)
+		{
 			obj->mTypeNameToId[val->getFullTypeName()] = val->mTypeInfo->mTypeId;
 			obj->mObjectInfos[val->mTypeInfo->mTypeId] = val;
 		}
@@ -49,8 +49,8 @@ namespace bs
 		ManagedSerializableAssemblyInfoRTTI()
 		{
 			addPlainField("mName", 0, &ManagedSerializableAssemblyInfoRTTI::getName, &ManagedSerializableAssemblyInfoRTTI::setName);
-			addReflectablePtrArrayField("mObjectInfos", 1, &ManagedSerializableAssemblyInfoRTTI::getSerializableObjectInfo, 
-				&ManagedSerializableAssemblyInfoRTTI::getSerializableObjectInfoArraySize, &ManagedSerializableAssemblyInfoRTTI::setSerializableObjectInfo, 
+			addReflectablePtrArrayField("mObjectInfos", 1, &ManagedSerializableAssemblyInfoRTTI::getSerializableObjectInfo,
+				&ManagedSerializableAssemblyInfoRTTI::getSerializableObjectInfoArraySize, &ManagedSerializableAssemblyInfoRTTI::setSerializableObjectInfo,
 				&ManagedSerializableAssemblyInfoRTTI::setSerializableObjectInfoArraySize);
 		}
 
@@ -96,8 +96,8 @@ namespace bs
 			obj->mBaseClass = val;
 		}
 
-		SPtr<ManagedSerializableMemberInfo> getSerializableFieldInfo(ManagedSerializableObjectInfo* obj, UINT32 idx) 
-		{ 
+		SPtr<ManagedSerializableMemberInfo> getSerializableFieldInfo(ManagedSerializableObjectInfo* obj, UINT32 idx)
+		{
 			auto iter = obj->mFields.begin();
 			for(UINT32 i = 0; i < idx; i++)
 				iter++;
@@ -105,8 +105,8 @@ namespace bs
 			return iter->second;
 		}
 
-		void setSerializableFieldInfo(ManagedSerializableObjectInfo* obj, UINT32 idx, SPtr<ManagedSerializableMemberInfo> val) 
-		{ 
+		void setSerializableFieldInfo(ManagedSerializableObjectInfo* obj, UINT32 idx, SPtr<ManagedSerializableMemberInfo> val)
+		{
 			obj->mFieldNameToId[val->mName] = val->mFieldId;
 			obj->mFields[val->mFieldId] = val;
 		}
@@ -120,8 +120,8 @@ namespace bs
 			addReflectablePtrField("mTypeInfo", 0, &ManagedSerializableObjectInfoRTTI::getTypeInfo, &ManagedSerializableObjectInfoRTTI::setTypeInfo);
 			addReflectablePtrField("mBaseClass", 2, &ManagedSerializableObjectInfoRTTI::getBaseClass, &ManagedSerializableObjectInfoRTTI::setBaseClass);
 
-			addReflectablePtrArrayField("mFields", 3, &ManagedSerializableObjectInfoRTTI::getSerializableFieldInfo, 
-				&ManagedSerializableObjectInfoRTTI::getSerializableFieldInfoArraySize, &ManagedSerializableObjectInfoRTTI::setSerializableFieldInfo, 
+			addReflectablePtrArrayField("mFields", 3, &ManagedSerializableObjectInfoRTTI::getSerializableFieldInfo,
+				&ManagedSerializableObjectInfoRTTI::getSerializableFieldInfoArraySize, &ManagedSerializableObjectInfoRTTI::setSerializableFieldInfo,
 				&ManagedSerializableObjectInfoRTTI::setSerializableFieldInfoArraySize);
 		}
 

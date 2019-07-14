@@ -38,7 +38,7 @@ namespace bs
 
 		/**
 		 * Finds all components of a specific type on a scene object and any of its children.
-		 * 
+		 *
 		 * @param[in]	object		Object which to search for components. All children will be searched as well.
 		 * @param[in]	typeId		RTTI type ID of the component type to search for.
 		 * @return					A list of all components of the specified type.

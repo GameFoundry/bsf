@@ -21,9 +21,9 @@ namespace bs
 		/**
 		 * Performs a deep clone of this object any any potential child objects.
 		 * 			
-		 * @param[in]	cloneData	If true the data contained by the objects will be cloned as well, instead of just 
-		 *							meta-data. If false then both the original and the cloned instances will point to the 
-		 *							same instances of data. The original will retain data ownership and it will go out of 
+		 * @param[in]	cloneData	If true the data contained by the objects will be cloned as well, instead of just
+		 *							meta-data. If false then both the original and the cloned instances will point to the
+		 *							same instances of data. The original will retain data ownership and it will go out of
 		 *							scope when the original does.
 		 */
 		virtual SPtr<SerializedInstance> clone(bool cloneData = true) = 0;
@@ -71,7 +71,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 	};
 
-	/** 
+	/**
 	 * Represents a serialized version of an IReflectable object. Data for all leaf fields will be serialized into raw
 	 * memory but complex objects, their references and fields are available as their own serialized objects and can be
 	 * iterated over, viewed, compared or modified. Serialized object can later be decoded back into a IReflectable object.
@@ -84,29 +84,29 @@ namespace bs
 		/** @copydoc SerializedInstance::clone */
 		SPtr<SerializedInstance> clone(bool cloneData = true) override;
 
-		/** 
-		 * Decodes the serialized object back into its original IReflectable object form. 
-		 * 
+		/**
+		 * Decodes the serialized object back into its original IReflectable object form.
+		 *
 		 * @param[in]	context			Optional object that will be passed along to all serialized objects through
-		 *								their serialization callbacks. Can be used for controlling serialization, 
-		 *								maintaining state or sharing information between objects during 
+		 *								their serialization callbacks. Can be used for controlling serialization,
+		 *								maintaining state or sharing information between objects during
 		 *								serialization.
 		 */
 		SPtr<IReflectable> decode(SerializationContext* context = nullptr) const;
 
-		/** 
-		 * Serializes the provided object and returns its SerializedObject representation. 
-		 * 
+		/**
+		 * Serializes the provided object and returns its SerializedObject representation.
+		 *
 		 * @param[in]	obj			Object to serialize;
 		 * @param[in]	shallow		If true then pointers to other IReflectable objects will not be followed. If false the
 		 *							entire hierarchy will be serialized.
 		 * @param[in]	context		Optional object that will be passed along to all deserialized objects through
-		 *							their deserialization callbacks. Can be used for controlling deserialization, 
-		 *							maintaining state or sharing information between objects during 
+		 *							their deserialization callbacks. Can be used for controlling deserialization,
+		 *							maintaining state or sharing information between objects during
 		 *							deserialization.
 		 * @return					Serialized version of @p obj.
 		 */
-		static SPtr<SerializedObject> create(IReflectable& obj, bool shallow = false, 
+		static SPtr<SerializedObject> create(IReflectable& obj, bool shallow = false,
 			SerializationContext* context = nullptr);
 
 		Vector<SerializedSubObject> subObjects;

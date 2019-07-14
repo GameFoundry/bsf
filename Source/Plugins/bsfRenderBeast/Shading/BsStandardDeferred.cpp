@@ -18,7 +18,7 @@ namespace bs { namespace ct {
 		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gLightOcclusionTex", mLightOcclusionTexParam);
 	}
 
-	void DeferredDirectionalLightMat::bind(const GBufferTextures& gBufferInput, const SPtr<Texture>& lightOcclusion, 
+	void DeferredDirectionalLightMat::bind(const GBufferTextures& gBufferInput, const SPtr<Texture>& lightOcclusion,
 		const SPtr<GpuParamBlockBuffer>& perCamera, const SPtr<GpuParamBlockBuffer>& perLight)
 	{
 		mGBufferParams.bind(gBufferInput);
@@ -48,7 +48,7 @@ namespace bs { namespace ct {
 		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gLightOcclusionTex", mLightOcclusionTexParam);
 	}
 
-	void DeferredPointLightMat::bind(const GBufferTextures& gBufferInput, const SPtr<Texture>& lightOcclusion, 
+	void DeferredPointLightMat::bind(const GBufferTextures& gBufferInput, const SPtr<Texture>& lightOcclusion,
 		const SPtr<GpuParamBlockBuffer>& perCamera, const SPtr<GpuParamBlockBuffer>& perLight)
 	{
 		mGBufferParams.bind(gBufferInput);
@@ -95,7 +95,7 @@ namespace bs { namespace ct {
 		mIBLParams.populate(mParams, GPT_FRAGMENT_PROGRAM, true, false, false);
 	}
 
-	void DeferredIBLSetupMat::bind(const GBufferTextures& gBufferInput, const SPtr<GpuParamBlockBuffer>& perCamera, 
+	void DeferredIBLSetupMat::bind(const GBufferTextures& gBufferInput, const SPtr<GpuParamBlockBuffer>& perCamera,
 		const SPtr<Texture>& ssr, const SPtr<Texture>& ao, const SPtr<GpuParamBlockBuffer>& reflProbeParams)
 	{
 		mGBufferParams.bind(gBufferInput);
@@ -133,7 +133,7 @@ namespace bs { namespace ct {
 		mParams->setParamBlockBuffer("PerProbe", mParamBuffer);
 	}
 
-	void DeferredIBLProbeMat::bind(const GBufferTextures& gBufferInput, const SPtr<GpuParamBlockBuffer>& perCamera, 
+	void DeferredIBLProbeMat::bind(const GBufferTextures& gBufferInput, const SPtr<GpuParamBlockBuffer>& perCamera,
 		const SceneInfo& sceneInfo, const ReflProbeData& probeData, const SPtr<GpuParamBlockBuffer>& reflProbeParams)
 	{
 		mGBufferParams.bind(gBufferInput);
@@ -195,7 +195,7 @@ namespace bs { namespace ct {
 		mIBLParams.populate(mParams, GPT_FRAGMENT_PROGRAM, true, false, false);
 	}
 
-	void DeferredIBLSkyMat::bind(const GBufferTextures& gBufferInput, const SPtr<GpuParamBlockBuffer>& perCamera, 
+	void DeferredIBLSkyMat::bind(const GBufferTextures& gBufferInput, const SPtr<GpuParamBlockBuffer>& perCamera,
 		const Skybox* skybox, const SPtr<GpuParamBlockBuffer>& reflProbeParams)
 	{
 		mGBufferParams.bind(gBufferInput);
@@ -232,8 +232,8 @@ namespace bs { namespace ct {
 		mIBLParams.populate(mParams, GPT_FRAGMENT_PROGRAM, true, false, false);
 	}
 
-	void DeferredIBLFinalizeMat::bind(const GBufferTextures& gBufferInput, const SPtr<GpuParamBlockBuffer>& perCamera, 
-		const SPtr<Texture>& iblRadiance, const SPtr<Texture>& preintegratedBrdf, 
+	void DeferredIBLFinalizeMat::bind(const GBufferTextures& gBufferInput, const SPtr<GpuParamBlockBuffer>& perCamera,
+		const SPtr<Texture>& iblRadiance, const SPtr<Texture>& preintegratedBrdf,
 		const SPtr<GpuParamBlockBuffer>& reflProbeParams)
 	{
 		mGBufferParams.bind(gBufferInput);
@@ -268,7 +268,7 @@ namespace bs { namespace ct {
 		mPerLightBuffer = gPerLightParamDef.createBuffer();
 	}
 
-	void StandardDeferred::renderLight(LightType lightType, const RendererLight& light, const RendererView& view, 
+	void StandardDeferred::renderLight(LightType lightType, const RendererLight& light, const RendererView& view,
 		const GBufferTextures& gBufferInput, const SPtr<Texture>& lightOcclusion)
 	{
 		const auto& viewProps = view.getProperties();
@@ -351,7 +351,7 @@ namespace bs { namespace ct {
 			
 			isInside = distSqrd < (boundRadius * boundRadius);
 			stencilMesh = RendererUtility::instance().getSphereStencil();
-		} 
+		}
 		else // Box
 		{
 			Vector3 extents = probeData.boxExtents + radiusBuffer;

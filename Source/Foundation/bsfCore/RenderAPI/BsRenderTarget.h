@@ -8,7 +8,7 @@
 #include "CoreThread/BsCoreObject.h"
 #include "Utility/BsEvent.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup RenderAPI
 	 *  @{
@@ -22,16 +22,16 @@ namespace bs
 		HTexture texture;
 
 		/** First face of the texture to bind (array index in texture arrays, or Z slice in 3D textures). */
-		UINT32 face = 0; 
+		UINT32 face = 0;
 
 		/**
 		 * Number of faces to bind (entries in a texture array, or Z slices in 3D textures). When zero the entire resource
-		 * will be bound. 
+		 * will be bound.
 		 */
 		UINT32 numFaces = 0;
 
 		/** If the texture has multiple mips, which one to bind (only one can be bound for rendering). */
-		UINT32 mipLevel = 0; 
+		UINT32 mipLevel = 0;
 	};
 
 	namespace ct
@@ -48,16 +48,16 @@ namespace bs
 		SPtr<Texture> texture;
 
 		/** First face of the texture to bind (array index in texture arrays, or Z slice in 3D textures). */
-		UINT32 face = 0; 
+		UINT32 face = 0;
 
 		/**
 		 * Number of faces to bind (entries in a texture array, or Z slices in 3D textures). When zero the entire resource
-		 * will be bound. 
+		 * will be bound.
 		 */
 		UINT32 numFaces = 0;
 
 		/** If the texture has multiple mips, which one to bind (only one can be bound for rendering). */
-		UINT32 mipLevel = 0; 
+		UINT32 mipLevel = 0;
 	};
 	}
 
@@ -73,26 +73,26 @@ namespace bs
 		/** Height of the render target, in pixels. */
 		UINT32 height = 0;
 
-		/** 
+		/**
 		 * Number of three dimensional slices of the render target. This will be number of layers for array
 		 * textures or number of faces cube textures.
 		 */
 		UINT32 numSlices = 0;
 
 		/**
-		 * Controls in what order is the render target rendered to compared to other render targets. Targets with higher 
+		 * Controls in what order is the render target rendered to compared to other render targets. Targets with higher
 		 * priority will be rendered before ones with lower priority.
 		 */
 		INT32 priority = 0;
 
 		/**
-		 * True if the render target will wait for vertical sync before swapping buffers. This will eliminate 
+		 * True if the render target will wait for vertical sync before swapping buffers. This will eliminate
 		 * tearing but may increase input latency.
 		 */
 		bool vsync = false;
 
 		/**
-		 * Controls how often should the frame be presented in respect to display device refresh rate. Normal value is 1 
+		 * Controls how often should the frame be presented in respect to display device refresh rate. Normal value is 1
 		 * where it will match the refresh rate. Higher values will decrease the frame rate (for example present interval of
 		 * 2 on 60Hz refresh rate will display at most 30 frames per second).
 		 */
@@ -129,8 +129,8 @@ namespace bs
 		/** Queries the render target for a custom attribute. This may be anything and is implementation specific. */
 		virtual void getCustomAttribute(const String& name, void* pData) const;
 
-		/** 
-		 * @copydoc ct::RenderTarget::setPriority 
+		/**
+		 * @copydoc ct::RenderTarget::setPriority
 		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
@@ -202,13 +202,13 @@ namespace bs
 		 */
 		void setPriority(INT32 priority);
 
-		/** 
-		 * Swaps the frame buffers to display the next frame. 
+		/**
+		 * Swaps the frame buffers to display the next frame.
 		 *
 		 * @param[in]	syncMask	Optional synchronization mask that determines for which queues should the system wait
 		 *							before performing the swap buffer operation. By default the system waits for all queues.
-		 *							However if certain queues are performing non-rendering operations, or operations not 
-		 *							related to this render target, you can exclude them from the sync mask for potentially 
+		 *							However if certain queues are performing non-rendering operations, or operations not
+		 *							related to this render target, you can exclude them from the sync mask for potentially
 		 *							better performance. You can use CommandSyncMask to generate a valid sync mask.
 		 */
 		virtual void swapBuffers(UINT32 syncMask = 0xFFFFFFFF) {}

@@ -72,7 +72,7 @@ namespace bs
 
 		/**
 		 * Creates a new animation curve.
-		 * 
+		 *
 		 * @param[in]	keyframes	Keyframes to initialize the curve with. They must be sorted by time.
 		 */
 		BS_SCRIPT_EXPORT()
@@ -98,7 +98,7 @@ namespace bs
 		 * using the cached version of evaluate() for better performance.
 		 *
 		 * @param[in]	time	%Time to evaluate the curve at.		
-		 * @param[in]	loop	If true the curve will loop when it goes past the end or beggining. Otherwise the curve 
+		 * @param[in]	loop	If true the curve will loop when it goes past the end or beggining. Otherwise the curve
 		 *						value will be clamped.
 		 * @return				Interpolated value from the curve at provided time.
 		 */
@@ -136,14 +136,14 @@ namespace bs
 		 * and tangents.
 		 *
 		 * @param[in]	time	%Time to evaluate the curve at.		
-		 * @param[in]	loop	If true the curve will loop when it goes past the end or beginning. Otherwise the curve 
+		 * @param[in]	loop	If true the curve will loop when it goes past the end or beginning. Otherwise the curve
 		 *						value will be clamped.
 		 * @return				Keyframe containing the interpolated value and tangents at provided time.
 		 */
 		KeyFrame evaluateKey(float time, bool loop = true) const;
 
-		/** 
-		 * Splits a piece of the animation curve into a separate animation curve. 
+		/**
+		 * Splits a piece of the animation curve into a separate animation curve.
 		 *
 		 * @param[in]	start	Beginning time of the split curve.
 		 * @param[in]	end		End time of the split curve.
@@ -151,7 +151,7 @@ namespace bs
 		 */
 		TAnimationCurve<T> split(float start, float end);
 
-		/** 
+		/**
 		 * Converts a normal curve into an additive curve. It is assumed the first keyframe in the curve is the reference
 		 * key from which to generate the additive curve. Such curves can then be added on top of a curve containing
 		 * reference keys.
@@ -188,7 +188,7 @@ namespace bs
 	private:
 		friend struct RTTIPlainType<TAnimationCurve<T>>;
 
-		/** 
+		/**
 		 * Returns a pair of keys that can be used for interpolating to field the value at the provided time. This attempts
 		 * to find keys using the cache first, and if not possible falls back to a full search.
 		 *
@@ -202,8 +202,8 @@ namespace bs
 		 */
 		void findKeys(float time, const TCurveCache<T>& cache, UINT32& leftKey, UINT32& rightKey) const;
 
-		/** 
-		 * Returns a pair of keys that can be used for interpolating to field the value at the provided time. 
+		/**
+		 * Returns a pair of keys that can be used for interpolating to field the value at the provided time.
 		 *
 		 * @param[in]	time			Time for which to find the relevant keys from. It is expected to be clamped to a
 		 *								valid range within the curve.
@@ -215,8 +215,8 @@ namespace bs
 		/** Returns a keyframe index nearest to the provided time. */
 		UINT32 findKey(float time);
 
-		/** 
-		 * Calculates a key in-between the provided two keys. 
+		/**
+		 * Calculates a key in-between the provided two keys.
 		 *
 		 * @param[in]	lhs		Key to interpolate from.
 		 * @param[in]	rhs		Key to interpolate to.
@@ -273,7 +273,7 @@ namespace bs
 
 		/**
 		 * Constructs a new named animation curve.
-		 * 
+		 *
 		 * @param[in]	name	Name of the curve.
 		 * @param[in]	curve	Curve containing the animation data.
 		 */
@@ -283,7 +283,7 @@ namespace bs
 
 		/**
 		 * Constructs a new named animation curve.
-		 * 
+		 *
 		 * @param[in]	name	Name of the curve.
 		 * @param[in]	flags	Flags that describe the animation curve.
 		 * @param[in]	curve	Curve containing the animation data.

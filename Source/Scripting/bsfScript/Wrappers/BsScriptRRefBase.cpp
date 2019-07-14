@@ -133,7 +133,7 @@ namespace bs
 			return nullptr; // Not a valid type
 
 		::MonoClass* rrefType = nullptr;
-		if(resType == ScriptResource::getMetaData()->scriptClass || 
+		if(resType == ScriptResource::getMetaData()->scriptClass ||
 			resType->isSubClassOf(ScriptResource::getMetaData()->scriptClass))
 			rrefType = bindGenericParam(rawResType);
 

@@ -31,7 +31,7 @@ namespace bs
 	{
 		SpriteMaterialInfo() { }
 
-		/** 
+		/**
 		 * Creates a new deep copy of the object. This is different from standard copy constructor which will just reference
 		 * the original "additionalData" field, while this will copy it.
 		 */
@@ -72,14 +72,14 @@ namespace bs
 		/** Determines is this material allowed to be batched with other materials with the same merge hash. */
 		bool allowBatching() const { return mAllowBatching; }
 
-		/** 
+		/**
 		 * Generates a hash value that describes the contents of the sprite material info structure. Returned hash doesn't
 		 * guarantee that the two objects with the same hash are identical, but rather that the objects are mergeable via
 		 * merge().
 		 */
 		virtual UINT64 getMergeHash(const SpriteMaterialInfo& info) const;
 
-		/** 
+		/**
 		 * Merges two SpriteMaterialInfo%s into one structure. User must guarantee that the two objects are mergeable
 		 * by ensuring their merge hashes match (by calling getMergeHash()).
 		 *

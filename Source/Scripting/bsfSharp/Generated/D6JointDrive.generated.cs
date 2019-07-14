@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Specifies parameters for a drive that will attempt to move the joint bodies to the specified drive position and 
+	/// Specifies parameters for a drive that will attempt to move the joint bodies to the specified drive position and
 	/// velocity.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential), SerializeObject]
@@ -36,7 +36,7 @@ namespace bs
 		/// <summary>Maximum force the drive can apply.</summary>
 		public float forceLimit;
 		/// <summary>
-		/// If true the drive will generate acceleration instead of forces. Acceleration drives are easier to tune as they 
+		/// If true the drive will generate acceleration instead of forces. Acceleration drives are easier to tune as they
 		/// account for the masses of the actors to which the joint is attached.
 		/// </summary>
 		public bool acceleration;

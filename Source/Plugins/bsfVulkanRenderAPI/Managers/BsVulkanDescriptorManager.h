@@ -96,7 +96,7 @@ namespace bs { namespace ct
 	protected:
 		VulkanDevice& mDevice;
 
-		UnorderedSet<VulkanLayoutKey> mLayouts; 
+		UnorderedSet<VulkanLayoutKey> mLayouts;
 		UnorderedMap<VulkanPipelineLayoutKey, VkPipelineLayout> mPipelineLayouts;
 		Vector<VulkanDescriptorPool*> mPools;
 	};

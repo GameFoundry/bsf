@@ -28,7 +28,7 @@ namespace bs
 		MonoObject* getManagedInstance() const;
 
 	protected:
-		/** 
+		/**
 		 * Makes the object reference the specific managed instance. Internally this allocates a GC handle that keeps a
 		 * reference to the object and allows getManagedInstance to retrieve the managed instance when requested. Should
 		 * be called on initial creation and whenever the managed instance changes (e.g. after assembly refresh). This
@@ -37,9 +37,9 @@ namespace bs
 		 */
 		void setManagedInstance(MonoObject* instance);
 
-		/** 
-		 * Frees a managed instace assigned with setManagedInstance(). Should be called before the object is destroyed or 
-		 * when you changing the managed instance it points to (in order to release the previous instance). 
+		/**
+		 * Frees a managed instace assigned with setManagedInstance(). Should be called before the object is destroyed or
+		 * when you changing the managed instance it points to (in order to release the previous instance).
 		 */
 		void freeManagedInstance();
 

@@ -360,14 +360,14 @@ namespace bs
 	}
 
 	/**
-	 * An object used to transparently clean up a stack allocation when it's no longer in scope. Make sure to take great 
+	 * An object used to transparently clean up a stack allocation when it's no longer in scope. Make sure to take great
 	 * care not to free non-managed stack allocations out of order or to free the stack allocation managed by this object!
 	 */
 	template<typename T>
 	struct StackMemory
 	{
 		/*
-		 * Provide implicit conversion to the allocated buffer so that users of this code can "pretend" this object is a 
+		 * Provide implicit conversion to the allocated buffer so that users of this code can "pretend" this object is a
 		 * pointer to the stack buffer that they wanted.
 		 */
 		constexpr operator T*() const & noexcept
@@ -376,9 +376,9 @@ namespace bs
 		}
 
 		/*
-		 * This ensures that the result of bs_managed_stack_alloc() doesn't get passed to a function call as a temporary, 
-		 * or immediately assigned as a T*. Instead, the user of this class is forced to deal with this class as itself, 
-		 * when handling the return value of bs_managed_stack_alloc() preventing an immediate (and erroneous) call to 
+		 * This ensures that the result of bs_managed_stack_alloc() doesn't get passed to a function call as a temporary,
+		 * or immediately assigned as a T*. Instead, the user of this class is forced to deal with this class as itself,
+		 * when handling the return value of bs_managed_stack_alloc() preventing an immediate (and erroneous) call to
 		 * bs_stack_free().
 		 */
 		constexpr operator T*() const && noexcept = delete;
@@ -414,18 +414,18 @@ namespace bs
 		size_t mCount = 0;
 	};
 
-	/** 
-	 * Same as bs_stack_alloc() except the returned object takes care of automatically cleaning up when it goes out of 
-	 * scope. 
+	/**
+	 * Same as bs_stack_alloc() except the returned object takes care of automatically cleaning up when it goes out of
+	 * scope.
 	 */
 	inline StackMemory<void> bs_managed_stack_alloc(UINT32 amount)
 	{
 		return StackMemory<void>(bs_stack_alloc(amount));
 	}
 
-	/** 
-	 * Same as bs_stack_alloc() except the returned object takes care of automatically cleaning up when it goes out of 
-	 * scope. 
+	/**
+	 * Same as bs_stack_alloc() except the returned object takes care of automatically cleaning up when it goes out of
+	 * scope.
 	 */
 	template<class T>
 	StackMemory<T> bs_managed_stack_alloc()
@@ -433,9 +433,9 @@ namespace bs
 		return StackMemory<T>(bs_stack_alloc<T>());
 	}
 
-	/** 
-	 * Same as bs_stack_alloc() except the returned object takes care of automatically cleaning up when it goes out of 
-	 * scope. 
+	/**
+	 * Same as bs_stack_alloc() except the returned object takes care of automatically cleaning up when it goes out of
+	 * scope.
 	 */
 	template<class T>
 	StackMemory<T> bs_managed_stack_alloc(UINT32 amount)
@@ -443,9 +443,9 @@ namespace bs
 		return StackMemory<T>(bs_stack_alloc<T>(amount));
 	}
 
-	/** 
-	 * Same as bs_stack_new() except the returned object takes care of automatically cleaning up when it goes out of 
-	 * scope. 
+	/**
+	 * Same as bs_stack_new() except the returned object takes care of automatically cleaning up when it goes out of
+	 * scope.
 	 */
 	template<class T>
 	StackMemory<T> bs_managed_stack_new(size_t count = 1)
@@ -453,9 +453,9 @@ namespace bs
 		return StackMemory<T>(bs_stack_new<T>(count), count);
 	}
 
-	/** 
-	 * Same as bs_stack_new() except the returned object takes care of automatically cleaning up when it goes out of 
-	 * scope. 
+	/**
+	 * Same as bs_stack_new() except the returned object takes care of automatically cleaning up when it goes out of
+	 * scope.
 	 */
 	template<class T, class... Args>
 	StackMemory<T> bs_managed_stack_new(Args && ... args, size_t count = 1)

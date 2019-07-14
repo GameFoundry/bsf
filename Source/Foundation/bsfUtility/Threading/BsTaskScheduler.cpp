@@ -12,7 +12,7 @@ namespace bs
 
 	}
 
-	SPtr<Task> Task::create(const String& name, std::function<void()> taskWorker, TaskPriority priority, 
+	SPtr<Task> Task::create(const String& name, std::function<void()> taskWorker, TaskPriority priority,
 		SPtr<Task> dependency)
 	{
 		return bs_shared_ptr_new<Task>(PrivatelyConstruct(), name, std::move(taskWorker), priority, std::move(dependency));
@@ -46,7 +46,7 @@ namespace bs
 		mState = 3;
 	}
 
-	TaskGroup::TaskGroup(const PrivatelyConstruct& dummy, String name, std::function<void(UINT32)> taskWorker, 
+	TaskGroup::TaskGroup(const PrivatelyConstruct& dummy, String name, std::function<void(UINT32)> taskWorker,
 		UINT32 count, TaskPriority priority, SPtr<Task> dependency)
 		: mName(std::move(name)), mCount(count), mPriority(priority), mTaskWorker(std::move(taskWorker))
 		, mTaskDependency(std::move(dependency))
@@ -54,10 +54,10 @@ namespace bs
 
 	}
 
-	SPtr<TaskGroup> TaskGroup::create(String name, std::function<void(UINT32)> taskWorker, UINT32 count, 
+	SPtr<TaskGroup> TaskGroup::create(String name, std::function<void(UINT32)> taskWorker, UINT32 count,
 		TaskPriority priority, SPtr<Task> dependency)
 	{
-		return bs_shared_ptr_new<TaskGroup>(PrivatelyConstruct(), std::move(name), std::move(taskWorker), count, priority, 
+		return bs_shared_ptr_new<TaskGroup>(PrivatelyConstruct(), std::move(name), std::move(taskWorker), count, priority,
 			std::move(dependency));
 	}
 
@@ -131,9 +131,9 @@ namespace bs
 
 		for(UINT32 i = 0; i < taskGroup->mCount; i++)
 		{
-			const auto worker = [i, taskGroup] 
-			{ 
-				taskGroup->mTaskWorker(i); 
+			const auto worker = [i, taskGroup]
+			{
+				taskGroup->mTaskWorker(i);
 				--taskGroup->mNumRemainingTasks;
 			};
 

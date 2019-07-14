@@ -126,7 +126,7 @@ namespace bs { namespace ct
 
 	VertexElementType mapGLSLangToVertexElemType(const glslang::TType& type)
 	{
-		if (type.isVector()) 
+		if (type.isVector())
 		{
 			UINT32 vectorSize = type.getVectorSize();
 
@@ -156,14 +156,14 @@ namespace bs { namespace ct
 				case 4:		return VET_UINT4;
 				default:	return VET_UNKNOWN;
 				}
-			default:            
+			default:
 				return VET_UNKNOWN;
 			}
 		}
 
-		if (type.getVectorSize() == 1) 
+		if (type.getVectorSize() == 1)
 		{
-			switch (type.getBasicType()) 
+			switch (type.getBasicType())
 			{
 				case glslang::EbtFloat:      return VET_FLOAT1;
 				case glslang::EbtInt:        return VET_INT1;
@@ -210,20 +210,20 @@ namespace bs { namespace ct
 				case 4:		return GPDT_INT4;
 				default:	return GPDT_UNKNOWN;
 				}
-			default:        
+			default:
 				return GPDT_UNKNOWN;
 			}
 		}
 
-		if (type.isMatrix()) 
+		if (type.isMatrix())
 		{
-			switch (type.getBasicType()) 
+			switch (type.getBasicType())
 			{
 			case glslang::EbtFloat:
-				switch (type.getMatrixCols()) 
+				switch (type.getMatrixCols())
 				{
 				case 2:
-					switch (type.getMatrixRows()) 
+					switch (type.getMatrixRows())
 					{
 						case 2:    return GPDT_MATRIX_2X2;
 						case 3:    return GPDT_MATRIX_3X2;
@@ -231,7 +231,7 @@ namespace bs { namespace ct
 						default:   return GPDT_UNKNOWN;
 					}
 				case 3:
-					switch (type.getMatrixRows()) 
+					switch (type.getMatrixRows())
 					{
 						case 2:    return GPDT_MATRIX_2X3;
 						case 3:    return GPDT_MATRIX_3X3;
@@ -239,7 +239,7 @@ namespace bs { namespace ct
 						default:   return GPDT_UNKNOWN;
 					}
 				case 4:
-					switch (type.getMatrixRows()) 
+					switch (type.getMatrixRows())
 					{
 						case 2:    return GPDT_MATRIX_2X4;
 						case 3:    return GPDT_MATRIX_3X4;
@@ -438,7 +438,7 @@ namespace bs { namespace ct
 			{
 				VertexElementType type = mapGLSLangToVertexElemType(*ttype);
 				if (type == VET_UNKNOWN)
-					BS_LOG(Error, RenderBackend, "Cannot determine vertex input attribute type for attribute: {0}", 
+					BS_LOG(Error, RenderBackend, "Cannot determine vertex input attribute type for attribute: {0}",
 						attribName);
 
 				elementList.push_back(VertexElement(0, location, type, semantic, index));
@@ -448,7 +448,7 @@ namespace bs { namespace ct
 				// Ignore built-in attributes
 				if (memcmp(attribName, "gl_", 3) != 0)
 				{
-					BS_LOG(Error, RenderBackend, "Cannot determine vertex input attribute semantic for attribute: {0}", 
+					BS_LOG(Error, RenderBackend, "Cannot determine vertex input attribute semantic for attribute: {0}",
 						attribName);
 				}
 			}
@@ -537,7 +537,7 @@ namespace bs { namespace ct
 					case glslang::Esd1D:		param.type = sampler.isArrayed() ? GPOT_RWTEXTURE1DARRAY : GPOT_RWTEXTURE1D; break;
 					case glslang::Esd2D:
 						if(sampler.isArrayed())
-							param.type = sampler.isMultiSample() ? GPOT_RWTEXTURE2DMSARRAY : GPOT_RWTEXTURE2DARRAY; 
+							param.type = sampler.isMultiSample() ? GPOT_RWTEXTURE2DMSARRAY : GPOT_RWTEXTURE2DARRAY;
 						else
 							param.type = sampler.isMultiSample() ? GPOT_RWTEXTURE2DMS : GPOT_RWTEXTURE2D;
 						break;
@@ -575,7 +575,7 @@ namespace bs { namespace ct
 						case glslang::Esd1D:		param.type = sampler.isArrayed() ? GPOT_TEXTURE1DARRAY : GPOT_TEXTURE1D; break;
 						case glslang::Esd2D:
 							if(sampler.isArrayed())
-								param.type = sampler.isMultiSample() ? GPOT_TEXTURE2DMSARRAY : GPOT_TEXTURE2DARRAY; 
+								param.type = sampler.isMultiSample() ? GPOT_TEXTURE2DMSARRAY : GPOT_TEXTURE2DARRAY;
 							else
 								param.type = sampler.isMultiSample() ? GPOT_TEXTURE2DMS : GPOT_TEXTURE2D;
 							break;

@@ -57,13 +57,13 @@ namespace bs { namespace ct
 		return _getParticleShaderVariation<false, FWD>(orient, lockY, gpu);
 	}
 	
-	const ShaderVariation& getParticleShaderVariation(ParticleOrientation orient, bool lockY, bool gpu, 
+	const ShaderVariation& getParticleShaderVariation(ParticleOrientation orient, bool lockY, bool gpu,
 		bool is3D, ParticleForwardLightingType forwardLighting)
 	{
 		switch(forwardLighting)
 		{
 		default:
-		case ParticleForwardLightingType::None: 
+		case ParticleForwardLightingType::None:
 			return _getParticleShaderVariation<ParticleForwardLightingType::None>(orient, lockY, gpu, is3D);
 		case ParticleForwardLightingType::Clustered:
 			return _getParticleShaderVariation<ParticleForwardLightingType::Clustered>(orient, lockY, gpu, is3D);
@@ -412,7 +412,7 @@ namespace bs { namespace ct
 		rapi.draw(0, 4, count);
 	}
 
-	void ParticleRenderer::sortByDistance(const Vector3& refPoint, const PixelData& positions, UINT32 numParticles, 
+	void ParticleRenderer::sortByDistance(const Vector3& refPoint, const PixelData& positions, UINT32 numParticles,
 		UINT32 stride, Vector<UINT32>& indices)
 	{
 		struct ParticleSortData

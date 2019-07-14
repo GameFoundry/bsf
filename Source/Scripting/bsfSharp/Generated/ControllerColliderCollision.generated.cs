@@ -28,7 +28,7 @@ namespace bs
 		}
 
 		///<summary>
-		/// Assigns values to a subset of fields of this struct. This subset usually contains common field shared with 
+		/// Assigns values to a subset of fields of this struct. This subset usually contains common field shared with
 		/// another struct.
 		///</summary>
 		public void SetBase(ControllerCollision value)
@@ -40,7 +40,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Component of the controller that was touched. Can be null if the controller has no component parent, in which  case 
+		/// Component of the controller that was touched. Can be null if the controller has no component parent, in which  case
 		/// check #colliderRaw.
 		/// </summary>
 		public Collider collider;

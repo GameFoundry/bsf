@@ -14,7 +14,7 @@ namespace bs
 
 	/**	
 	 * Base class for all interop object that derive from IReflectable (except for those that have their own specialized
-	 * base classes, such as resources and components). 
+	 * base classes, such as resources and components).
 	 */
 	class BS_SCR_BE_EXPORT ScriptReflectableBase : public ScriptObjectBase
 	{

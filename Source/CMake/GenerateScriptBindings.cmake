@@ -30,13 +30,13 @@ function(add_generate_script_bindings_target)
 			addForGeneration(${PROJECT_SOURCE_DIR}/Source/EditorScript)
 		endif()
 
-		set(BS_SCRIPT_PARSER_INCLUDE_DIRS 
-			${BS_SCRIPT_PARSER_INCLUDE_DIRS} 
+		set(BS_SCRIPT_PARSER_INCLUDE_DIRS
+			${BS_SCRIPT_PARSER_INCLUDE_DIRS}
 			"-I${BSF_SOURCE_DIR}/Scripting/bsfMono"
 			"-I${BSF_SOURCE_DIR}/Foundation/bsfUtility/ThirdParty"
 			"-I${PROJECT_BINARY_DIR}/Generated/bsfUtility/")
 
-		set(BS_SCRIPT_PARSER_H_FILES 
+		set(BS_SCRIPT_PARSER_H_FILES
 			"${BSF_SOURCE_DIR}/Foundation/bsfUtility/Prerequisites/BsPrerequisitesUtil.h"
 			${BS_SCRIPT_PARSER_H_FILES})
 			

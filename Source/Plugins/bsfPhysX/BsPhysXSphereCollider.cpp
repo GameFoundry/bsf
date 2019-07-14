@@ -9,7 +9,7 @@ using namespace physx;
 
 namespace bs
 {
-	PhysXSphereCollider::PhysXSphereCollider(PxPhysics* physx, PxScene* scene, const Vector3& position, 
+	PhysXSphereCollider::PhysXSphereCollider(PxPhysics* physx, PxScene* scene, const Vector3& position,
 		const Quaternion& rotation, float radius)
 		:mRadius(radius)
 	{

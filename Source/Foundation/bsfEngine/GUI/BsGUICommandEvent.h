@@ -18,12 +18,12 @@ namespace bs
 		FocusGained, /**< GUI element gained input focus. */
 		MoveLeft, /**< Input caret was moved left (for example for navigating an input box). */
 		MoveRight, /**< Input caret was moved right (for example for navigating an input box). */
-		MoveUp, /**< Input caret was moved up (for example for navigating an input box). */ 
-		MoveDown, /**< Input caret was moved down (for example for navigating an input box). */ 
-		SelectLeft, /**< Input Selection was moved left (for example for selecting text in an input box). */ 
-		SelectRight, /**< Input Selection was moved right (for example for selecting text in an input box). */ 
-		SelectUp, /**< Input Selection was moved up (for example for selecting text in an input box). */ 
-		SelectDown, /**< Input Selection was moved down (for example for selecting text in an input box). */ 
+		MoveUp, /**< Input caret was moved up (for example for navigating an input box). */
+		MoveDown, /**< Input caret was moved down (for example for navigating an input box). */
+		SelectLeft, /**< Input Selection was moved left (for example for selecting text in an input box). */
+		SelectRight, /**< Input Selection was moved right (for example for selecting text in an input box). */
+		SelectUp, /**< Input Selection was moved up (for example for selecting text in an input box). */
+		SelectDown, /**< Input Selection was moved down (for example for selecting text in an input box). */
 		Escape, /**< Escape key was pressed. */
 		Delete, /**< Delete key was pressed. */
 		Backspace, /**< Backspace key was pressed. */

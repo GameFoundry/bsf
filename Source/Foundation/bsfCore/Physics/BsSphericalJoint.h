@@ -20,8 +20,8 @@ namespace bs
 		Limit = 0x1 /**< Enables the cone range limit. */
 	};
 
-	/** 
-	 * A spherical joint removes all translational degrees of freedom but allows all rotational degrees of freedom. 
+	/**
+	 * A spherical joint removes all translational degrees of freedom but allows all rotational degrees of freedom.
 	 * Essentially this ensures that the anchor points of the two bodies are always coincident. Bodies are allowed to
 	 * rotate around the anchor points, and their rotatation can be limited by an elliptical cone.
 	 */
@@ -34,9 +34,9 @@ namespace bs
 		/** @copydoc setLimit() */
 		virtual LimitConeRange getLimit() const = 0;
 
-		/** 
+		/**
 		 * Determines the limit of the joint. This clamps the rotation inside an eliptical angular cone. You must enable
-		 * limit flag on the joint in order for this to be recognized. 
+		 * limit flag on the joint in order for this to be recognized.
 		 */
 		virtual void setLimit(const LimitConeRange& limit) = 0;
 
@@ -46,9 +46,9 @@ namespace bs
 		/** Checks is the specified flag enabled. */
 		virtual bool hasFlag(SphericalJointFlag flag) const = 0;
 
-		/** 
-		 * Creates a new spherical joint. 
-		 * 
+		/**
+		 * Creates a new spherical joint.
+		 *
 		 * @param[in]	scene		Scene to which to add the joint.
 		 * @param[in]	desc		Settings describing the joint.
 		 */

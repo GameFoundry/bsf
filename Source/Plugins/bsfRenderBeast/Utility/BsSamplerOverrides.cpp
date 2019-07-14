@@ -12,8 +12,8 @@
 
 namespace bs { namespace ct
 {
-	MaterialSamplerOverrides* SamplerOverrideUtility::generateSamplerOverrides(const SPtr<Shader>& shader, 
-		const SPtr<MaterialParams>& params, const SPtr<GpuParamsSet>& paramsSet, 
+	MaterialSamplerOverrides* SamplerOverrideUtility::generateSamplerOverrides(const SPtr<Shader>& shader,
+		const SPtr<MaterialParams>& params, const SPtr<GpuParamsSet>& paramsSet,
 		const SPtr<RenderBeastOptions>& options)
 	{
 		MaterialSamplerOverrides* output = nullptr;
@@ -31,7 +31,7 @@ namespace bs { namespace ct
 			for(auto& samplerParam : samplerParams)
 			{
 				UINT32 paramIdx;
-				auto result = params->getParamIndex(samplerParam.first, MaterialParams::ParamType::Sampler, GPDT_UNKNOWN, 
+				auto result = params->getParamIndex(samplerParam.first, MaterialParams::ParamType::Sampler, GPDT_UNKNOWN,
 					0, paramIdx);
 
 				// Parameter shouldn't be in the valid parameter list if it cannot be found

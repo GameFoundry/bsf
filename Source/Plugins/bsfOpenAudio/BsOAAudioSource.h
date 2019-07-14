@@ -87,15 +87,15 @@ namespace bs
 		/** Pauses or resumes audio playback due to the global pause setting. */
 		void setGlobalPause(bool pause);
 
-		/** 
+		/**
 		 * Returns true if the sound source is three dimensional (volume and pitch varies based on listener distance
-		 * and velocity). 
+		 * and velocity).
 		 */
 		bool is3D() const;
 
-		/** 
+		/**
 		 * Returns true if the audio source is receiving audio data from a separate thread (as opposed to loading it all
-		 * at once. 
+		 * at once.
 		 */
 		bool requiresStreaming() const;
 

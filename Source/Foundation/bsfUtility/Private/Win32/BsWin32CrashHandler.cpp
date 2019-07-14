@@ -30,7 +30,7 @@ namespace bs
 	/**
 	 * Returns the raw stack trace using the provided context. Raw stack trace contains only function addresses.
 	 * 			
-	 * @param[in]	context		Processor context from which to start the stack trace. 
+	 * @param[in]	context		Processor context from which to start the stack trace.
 	 * @param[in]	stackTrace	Output parameter that will contain the function addresses. First address is the deepest
 	 * 							called function and following address is its caller and so on.
 	 * @return					Number of functions in the call stack.
@@ -87,7 +87,7 @@ namespace bs
 	 * Returns a string containing a stack trace using the provided context. If function can be found in the symbol table
 	 * its readable name will be present in the stack trace, otherwise just its address.
 	 * 			
-	 * @param[in]	context		Processor context from which to start the stack trace. 
+	 * @param[in]	context		Processor context from which to start the stack trace.
 	 * @param[in]	skip		Number of bottom-most call stack entries to skip.
 	 * @return					String containing the call stack with each function on its own line.
 	 */
@@ -131,7 +131,7 @@ namespace bs
 			{
 				Path filePath = lineData.FileName;
 
-				outputStream << StringUtil::format("0x{0} File[{1}:{2} ({3})]", addressString, 
+				outputStream << StringUtil::format("0x{0} File[{1}:{2} ({3})]", addressString,
 					filePath.getFilename(), (UINT32)lineData.LineNumber, (UINT32)column);
 			}
 			else
@@ -255,7 +255,7 @@ namespace bs
 
 				if(!SymGetModuleInfo64(GetCurrentProcess(), moduleAddress, &imageInfo))
 				{
-					BS_LOG(Warning, Platform, "Failed retrieving module info for module: {0}. Error code: {1}", 
+					BS_LOG(Warning, Platform, "Failed retrieving module info for module: {0}. Error code: {1}",
 						moduleName, (UINT32)GetLastError());
 				}
 				else
@@ -269,7 +269,7 @@ namespace bs
 			}
 			else
 			{
-				BS_LOG(Warning, Platform, "Failed loading module {0}.Error code: {1}. Search path: {2}. Image name: {3}", 
+				BS_LOG(Warning, Platform, "Failed loading module {0}.Error code: {1}. Search path: {2}. Image name: {3}",
 					moduleName, (UINT32)GetLastError(), pdbSearchPath, imageName);
 			}
 		}
@@ -415,7 +415,7 @@ namespace bs
 		MiniDumpParams* params = (MiniDumpParams*)data;
 
 		WString pathString = UTF8::toWide(params->filePath.toString());
-		HANDLE hFile = CreateFileW(pathString.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 
+		HANDLE hFile = CreateFileW(pathString.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
 			nullptr);
 
 		if (hFile != INVALID_HANDLE_VALUE)
@@ -464,7 +464,7 @@ namespace bs
 #endif
 
 	}
-	void CrashHandler::reportCrash(const String& type, const String& description, const String& function, 
+	void CrashHandler::reportCrash(const String& type, const String& description, const String& function,
 		const String& file, UINT32 line) const
 	{
 		// Win32 debug methods are not thread safe

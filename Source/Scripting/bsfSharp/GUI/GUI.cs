@@ -10,8 +10,8 @@ namespace bs
      */
 
     /// <summary>
-    /// Provides access to a global <see cref="GUIPanel"/> that renders GUI on the main viewport. Use 
-    /// <see cref="GUIWidget"/> if you need more control over the placement of GUI, or require it to be rendered to a 
+    /// Provides access to a global <see cref="GUIPanel"/> that renders GUI on the main viewport. Use
+    /// <see cref="GUIWidget"/> if you need more control over the placement of GUI, or require it to be rendered to a
     /// different viewport.
     /// </summary>
     public static class GUI

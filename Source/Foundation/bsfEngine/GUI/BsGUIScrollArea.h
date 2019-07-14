@@ -34,7 +34,7 @@ namespace bs
 		 * @param[in]	scrollBarStyle	Style used by the scroll bars.
 		 * @param[in]	scrollAreaStyle	Style used by the scroll content area.
 		 */
-		static GUIScrollArea* create(ScrollBarType vertBarType, ScrollBarType horzBarType, 
+		static GUIScrollArea* create(ScrollBarType vertBarType, ScrollBarType horzBarType,
 			const String& scrollBarStyle = StringUtil::BLANK, const String& scrollAreaStyle = StringUtil::BLANK);
 
 		/**
@@ -47,8 +47,8 @@ namespace bs
 		 * @param[in]	scrollBarStyle	Style used by the scroll bars.
 		 * @param[in]	scrollAreaStyle	Style used by the scroll content area.
 		 */
-		static GUIScrollArea* create(ScrollBarType vertBarType, ScrollBarType horzBarType, 
-			const GUIOptions& options, const String& scrollBarStyle = StringUtil::BLANK, 
+		static GUIScrollArea* create(ScrollBarType vertBarType, ScrollBarType horzBarType,
+			const GUIOptions& options, const String& scrollBarStyle = StringUtil::BLANK,
 			const String& scrollAreaStyle = StringUtil::BLANK);
 
 		/**
@@ -57,7 +57,7 @@ namespace bs
 		 * @param[in]	scrollBarStyle	Style used by the scroll bars.
 		 * @param[in]	scrollAreaStyle	Style used by the scroll content area.
 		 */
-		static GUIScrollArea* create(const String& scrollBarStyle = StringUtil::BLANK, 
+		static GUIScrollArea* create(const String& scrollBarStyle = StringUtil::BLANK,
 			const String& scrollAreaStyle = StringUtil::BLANK);
 
 		/**
@@ -68,7 +68,7 @@ namespace bs
 		 * @param[in]	scrollBarStyle	Style used by the scroll bars.
 		 * @param[in]	scrollAreaStyle	Style used by the scroll content area.
 		 */
-		static GUIScrollArea* create(const GUIOptions& options, const String& scrollBarStyle = StringUtil::BLANK, 
+		static GUIScrollArea* create(const GUIOptions& options, const String& scrollBarStyle = StringUtil::BLANK,
 			const String& scrollAreaStyle = StringUtil::BLANK);
 
 		/**	Returns the scroll area layout that you may use to add elements inside the scroll area. */
@@ -123,7 +123,7 @@ namespace bs
 		float getHorizontalScroll() const;
 
 		/**
-		 * Returns the bounds of the scroll area not including the scroll bars (meaning only the portion that contains the 
+		 * Returns the bounds of the scroll area not including the scroll bars (meaning only the portion that contains the
 		 * contents).
 		 */
 		Rect2I getContentBounds();
@@ -134,7 +134,7 @@ namespace bs
 		 */
 		static const UINT32 ScrollBarWidth;
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 
@@ -160,21 +160,21 @@ namespace bs
 		/** @copydoc GUIElementContainer::_getOptimalSize */
 		Vector2I _getOptimalSize() const override;
 	private:
-		GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, 
+		GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType,
 			const String& scrollBarStyle, const String& scrollAreaStyle, const GUIDimensions& dimensions);
 
 		/** @copydoc GUIElementContainer::mouseEvent */
 		bool _mouseEvent(const GUIMouseEvent& ev) override;
 
 		/**
-		 * Called when the vertical scrollbar moves. 
+		 * Called when the vertical scrollbar moves.
 		 *
 		 * @param[in]	pct	Scrollbar position ranging [0, 1].
 		 */
 		void vertScrollUpdate(float pct);
 
 		/**
-		 * Called when the horizontal scrollbar moves. 
+		 * Called when the horizontal scrollbar moves.
 		 *
 		 * @param[in]	pct	Scrollbar position ranging [0, 1].
 		 */
@@ -184,7 +184,7 @@ namespace bs
 		void _updateLayoutInternal(const GUILayoutData& data) override;
 
 		/** @copydoc	GUIElementContainer::_getElementAreas */
-		void _getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements, 
+		void _getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
 			const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const override;
 
 		/**
@@ -192,7 +192,7 @@ namespace bs
 		 *
 		 * @note	Also calculates some scroll area specific values.
 		 */
-		void _getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements, 
+		void _getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
 			const Vector<LayoutSizeRange>& sizeRanges, Vector2I& visibleSize, Vector2I& contentSize) const;
 
 		ScrollBarType mVertBarType;

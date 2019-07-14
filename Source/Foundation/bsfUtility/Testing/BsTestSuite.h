@@ -13,13 +13,13 @@ namespace bs
 	 */
 
 /** Tests if condition is true, and reports unit test failure if it fails. */
-#define BS_TEST_ASSERT(expr) assertment((expr), __FUNCTION__, __FILE__, __LINE__); 
+#define BS_TEST_ASSERT(expr) assertment((expr), __FUNCTION__, __FILE__, __LINE__);
 
 /** Tests if condition is true, and reports unit test failure with a message if it fails. */
-#define BS_TEST_ASSERT_MSG(expr, msg) assertment((expr), msg, __FILE__, __LINE__); 
+#define BS_TEST_ASSERT_MSG(expr, msg) assertment((expr), msg, __FILE__, __LINE__);
 
 	/**
-	 * Primary class for unit testing. Override and register unit tests in constructor then run the tests using the 
+	 * Primary class for unit testing. Override and register unit tests in constructor then run the tests using the
 	 * desired method of output.
 	 */
 	class BS_UTILITY_EXPORT TestSuite

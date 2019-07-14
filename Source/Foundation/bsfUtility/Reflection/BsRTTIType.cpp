@@ -5,7 +5,7 @@
 
 namespace bs
 {
-	RTTITypeBase::~RTTITypeBase() 
+	RTTITypeBase::~RTTITypeBase()
 	{
 		for(const auto& item : mFields)
 			bs_delete(item);
@@ -17,7 +17,7 @@ namespace bs
 
 		if(foundElement == mFields.end())
 		{
-			BS_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException,
 				"Cannot find a field with the specified name: " + name);
 		}
 
@@ -38,7 +38,7 @@ namespace bs
 	{
 		if(field == nullptr)
 		{
-			BS_EXCEPT(InvalidParametersException, 
+			BS_EXCEPT(InvalidParametersException,
 				"Field argument can't be null.");
 		}
 
@@ -47,7 +47,7 @@ namespace bs
 
 		if(foundElementById != mFields.end())
 		{
-			BS_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException,
 				"Field with the same ID already exists.");
 		}
 
@@ -56,7 +56,7 @@ namespace bs
 
 		if(foundElementByName != mFields.end())
 		{
-			BS_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException,
 				"Field with the same name already exists.");
 		}
 

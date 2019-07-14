@@ -13,15 +13,15 @@ namespace bs
 	 */
 
 	/**
-	 * Static allocator that attempts to perform zero heap (dynamic) allocations by always keeping an active preallocated 
+	 * Static allocator that attempts to perform zero heap (dynamic) allocations by always keeping an active preallocated
 	 * buffer. The allocator provides a fixed amount of preallocated memory, and if the size of the allocated data goes over
 	 * that limit the allocator will fall back to dynamic heap allocations using the selected allocator.
-	 * 
+	 *
 	 * @note		Static allocations can only be freed if memory is deallocated in opposite order it is allocated.
 	 *				Otherwise static memory gets orphaned until a call to clear(). Dynamic memory allocations behave
 	 *				depending on the selected allocator.
-	 * 
-	 * @tparam	BlockSize			Size of the initially allocated static block, and minimum size of any dynamically 
+	 *
+	 * @tparam	BlockSize			Size of the initially allocated static block, and minimum size of any dynamically
 	 *								allocated memory.
 	 * @tparam	DynamicAllocator	Allocator to fall-back to when static buffer is full.
 	 */
@@ -33,7 +33,7 @@ namespace bs
 		class MemBlock
 		{
 		public:
-			MemBlock(UINT8* data, UINT32 size) 
+			MemBlock(UINT8* data, UINT32 size)
 				:mData(data), mSize(size)
 			{ }
 
@@ -46,7 +46,7 @@ namespace bs
 				return freePtr;
 			}
 
-			/** 
+			/**
 			 * Frees a piece of memory within the block. If the memory isn't the last allocated memory, no deallocation
 			 * happens and that memory is instead orphaned.
 			 */
@@ -226,7 +226,7 @@ namespace bs
 		typedef std::size_t size_type;
 		typedef std::ptrdiff_t difference_type;
 
-		StdStaticAlloc() = default; 
+		StdStaticAlloc() = default;
 
 		StdStaticAlloc(StaticAlloc<BlockSize, FreeAlloc>* alloc) noexcept
 			:mStaticAlloc(alloc)
@@ -275,14 +275,14 @@ namespace bs
 
 	/** Return that all specializations of this allocator are interchangeable. */
 	template <class T1, int N1, class T2, int N2>
-	bool operator== (const StdStaticAlloc<N1, T1>& a, const StdStaticAlloc<N2, T2>& b) throw() 
+	bool operator== (const StdStaticAlloc<N1, T1>& a, const StdStaticAlloc<N2, T2>& b) throw()
 	{
 		return N1 == N2 && a.mStaticAlloc == b.mStaticAlloc;
 	}
 
 	/** Return that all specializations of this allocator are interchangeable. */
 	template <class T1, int N1, class T2, int N2>
-	bool operator!= (const StdStaticAlloc<N1, T1>& a, const StdStaticAlloc<N2, T2>& b) throw() 
+	bool operator!= (const StdStaticAlloc<N1, T1>& a, const StdStaticAlloc<N2, T2>& b) throw()
 	{
 		return !(a == b);
 	}
@@ -295,11 +295,11 @@ namespace bs
 	 *  @{
 	 */
 
-	/** 
-	 * Equivalent to Vector, except it avoids any dynamic allocations until the number of elements exceeds @p Count. 
+	/**
+	 * Equivalent to Vector, except it avoids any dynamic allocations until the number of elements exceeds @p Count.
 	 * Requires allocator to be explicitly provided.
 	 */
-	template <typename T, int Count> 
+	template <typename T, int Count>
 	using StaticVector = std::vector<T, StdStaticAlloc<sizeof(T) * Count, T>>;
 
 	/** @} */

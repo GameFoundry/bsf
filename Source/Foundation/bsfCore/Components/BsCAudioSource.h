@@ -6,7 +6,7 @@
 #include "Audio/BsAudioSource.h"
 #include "Scene/BsComponent.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Components-Core
 	 *  @{
@@ -152,7 +152,7 @@ namespace bs
 		/** Destroys the internal AudioSource representation. */
 		void destroyInternal();
 
-		/** 
+		/**
 		 * Updates the transform of the internal AudioSource representation from the transform of the component's scene
 		 * object.
 		 */

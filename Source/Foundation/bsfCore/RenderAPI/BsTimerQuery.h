@@ -11,7 +11,7 @@ namespace bs { namespace ct
 	 */
 
 	/**
-	 * Represents a GPU query that measures execution time of GPU operations. The query will measure any GPU operations 
+	 * Represents a GPU query that measures execution time of GPU operations. The query will measure any GPU operations
 	 * that take place between its begin() and end() calls.
 	 * 			
 	 * @note	Core thread only.
@@ -22,10 +22,10 @@ namespace bs { namespace ct
 		virtual ~TimerQuery() = default;
 
 		/**
-		 * Starts the counter. 
-		 * 
+		 * Starts the counter.
+		 *
 		 * @param[in]	cb		Optional command buffer to queue the operation on. If not provided operation
-		 *						is executed on the main command buffer. Otherwise it is executed when 
+		 *						is executed on the main command buffer. Otherwise it is executed when
 		 *						RenderAPI::executeCommands() is called. Buffer must support graphics or compute operations.
 		 *									
 		 * @note	Place any commands you want to measure after this call. Call "end" when done.
@@ -33,7 +33,7 @@ namespace bs { namespace ct
 		virtual void begin(const SPtr<CommandBuffer>& cb = nullptr) = 0;
 
 		/**	
-		 * Stops the counter. 
+		 * Stops the counter.
 		 *
 		 * @param[in]	cb		Command buffer that was provided to the last begin() operation (if any).
 		 */
@@ -55,9 +55,9 @@ namespace bs { namespace ct
 		Event<void(float)> onTriggered;
 
 		/**	
-		 * Creates a new query, but does not schedule it on GPU. 
-		 * 
-		 * @param[in]	deviceIdx	Index of the GPU device to create the query on. 
+		 * Creates a new query, but does not schedule it on GPU.
+		 *
+		 * @param[in]	deviceIdx	Index of the GPU device to create the query on.
 		 */
 		static SPtr<TimerQuery> create(UINT32 deviceIdx = 0);
 

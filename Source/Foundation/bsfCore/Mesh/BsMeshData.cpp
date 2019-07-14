@@ -58,7 +58,7 @@ namespace bs
 	}
 
 	// TODO - This doesn't handle the case where multiple elements in same slot have different data types
-	SPtr<MeshData> MeshData::combine(const Vector<SPtr<MeshData>>& meshes, const Vector<Vector<SubMesh>>& allSubMeshes, 
+	SPtr<MeshData> MeshData::combine(const Vector<SPtr<MeshData>>& meshes, const Vector<Vector<SubMesh>>& allSubMeshes,
 		Vector<SubMesh>& subMeshes)
 	{
 		UINT32 totalVertexCount = 0;
@@ -316,13 +316,13 @@ namespace bs
 	}
 
 	UINT8* MeshData::getElementData(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx) const
-	{ 
-		return getData() + getIndexBufferSize() + getElementOffset(semantic, semanticIdx, streamIdx); 
+	{
+		return getData() + getIndexBufferSize() + getElementOffset(semantic, semanticIdx, streamIdx);
 	}
 
 	UINT8* MeshData::getStreamData(UINT32 streamIdx) const
-	{ 
-		return getData() + getIndexBufferSize() + getStreamOffset(streamIdx); 
+	{
+		return getData() + getIndexBufferSize() + getStreamOffset(streamIdx);
 	}
 
 	UINT32 MeshData::getIndexElementSize() const
@@ -336,8 +336,8 @@ namespace bs
 	}
 
 	UINT32 MeshData::getIndexBufferSize() const
-	{ 
-		return mNumIndices * getIndexElementSize(); 
+	{
+		return mNumIndices * getIndexElementSize();
 	}
 
 	UINT32 MeshData::getStreamSize(UINT32 streamIdx) const

@@ -202,7 +202,7 @@ namespace bs
                 else
                     output.r = 4.0f + (input.r - input.g) / delta;
             }
-            
+
             output.r /= 6.0f;
 
             if (output.r < 0.0f)

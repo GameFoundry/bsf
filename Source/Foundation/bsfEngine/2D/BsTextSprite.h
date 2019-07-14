@@ -18,16 +18,16 @@ namespace bs
 	/**	Specifies how is text horizontally aligned within its bounds. */
 	enum BS_SCRIPT_EXPORT(m:GUI) TextHorzAlign
 	{
-		THA_Left	BS_SCRIPT_EXPORT(n:Left), 
-		THA_Center	BS_SCRIPT_EXPORT(n:Center), 
+		THA_Left	BS_SCRIPT_EXPORT(n:Left),
+		THA_Center	BS_SCRIPT_EXPORT(n:Center),
 		THA_Right	BS_SCRIPT_EXPORT(n:Right)
 	};
 
 	/**	Specifies how is text vertically aligned within its bounds. */
 	enum BS_SCRIPT_EXPORT(m:GUI) TextVertAlign
 	{
-		TVA_Top		BS_SCRIPT_EXPORT(n:Top), 
-		TVA_Center	BS_SCRIPT_EXPORT(n:Center), 
+		TVA_Top		BS_SCRIPT_EXPORT(n:Top),
+		TVA_Center	BS_SCRIPT_EXPORT(n:Center),
 		TVA_Bottom	BS_SCRIPT_EXPORT(n:Bottom)
 	};
 
@@ -61,14 +61,14 @@ namespace bs
 		 * Recreates internal sprite data according the specified description structure.
 		 *
 		 * @param[in]	desc	Describes the geometry and material of the sprite.
-		 * @param[in]	groupId	Group identifier that forces different materials to be used for different groups (for 
+		 * @param[in]	groupId	Group identifier that forces different materials to be used for different groups (for
 		 *						example you don't want the sprites to share the same group if they use different world
 		 *						transform matrices).
 		 */
 		void update(const TEXT_SPRITE_DESC& desc, UINT64 groupId);
 
 		/**
-		 * Calculates and returns offset for each individual text line. The offsets provide information on how much to 
+		 * Calculates and returns offset for each individual text line. The offsets provide information on how much to
 		 * offset the lines within provided bounds.
 		 *
 		 * @param[in]	textData	Text data to generate offsets for.
@@ -79,7 +79,7 @@ namespace bs
 		 * @param[out]	output		Pre-allocated buffer to output the results in. Buffer must have an element
 		 *							for every line in @p textData.
 		 */
-		static void getAlignmentOffsets(const TextDataBase& textData, 
+		static void getAlignmentOffsets(const TextDataBase& textData,
 			UINT32 width, UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign, Vector2I* output);
 
 		/**
@@ -94,19 +94,19 @@ namespace bs
 		 * @param[in]	vertAlign		Specifies how is text vertically aligned within its bounds.
 		 * @param[in]	anchor			Determines how to anchor the text within the bounds.
 		 * @param[out]	vertices		Output buffer containing quad positions. Must be allocated and of adequate size.
-		 * @param[out]	uv				Output buffer containing quad UV coordinates. Must be allocated and of adequate 
+		 * @param[out]	uv				Output buffer containing quad UV coordinates. Must be allocated and of adequate
 		 *								size. Can be null.
 		 * @param[out]	indices			Output buffer containing quad indices. Must be allocated and of adequate size. Can
 		 *								be null.
 		 * @param[in]	bufferSizeQuads	Size of the output buffers, in number of quads.
 		 * @return						Number of generated quads.
 		 */
-		static UINT32 genTextQuads(UINT32 page, const TextDataBase& textData, UINT32 width, UINT32 height, 
-			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, Vector2* vertices, Vector2* uv, UINT32* indices, 
+		static UINT32 genTextQuads(UINT32 page, const TextDataBase& textData, UINT32 width, UINT32 height,
+			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, Vector2* vertices, Vector2* uv, UINT32* indices,
 			UINT32 bufferSizeQuads);
 
 		/**
-		 * Calculates text quads you may use for text rendering, based on the specified text data. Generates quads for all 
+		 * Calculates text quads you may use for text rendering, based on the specified text data. Generates quads for all
 		 * pages.
 		 * 			
 		 * @param[in]	textData		Text data to generate offsets for.
@@ -116,7 +116,7 @@ namespace bs
 		 * @param[in]	vertAlign		Specifies how is text vertically aligned within its bounds.
 		 * @param[in]	anchor			Determines how to anchor the text within the bounds.
 		 * @param[out]	vertices		Output buffer containing quad positions. Must be allocated and of adequate size.
-		 * @param[out]	uv				Output buffer containing quad UV coordinates. Must be allocated and of adequate 
+		 * @param[out]	uv				Output buffer containing quad UV coordinates. Must be allocated and of adequate
 		 *								size. Can be null.
 		 * @param[out]	indices			Output buffer containing quad indices. Must be allocated and of adequate size. Can
 		 *								be null.
@@ -124,7 +124,7 @@ namespace bs
 		 * @return						Number of generated quads.
 		 */
 		static UINT32 genTextQuads(const TextDataBase& textData, UINT32 width, UINT32 height,
-			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, Vector2* vertices, Vector2* uv, UINT32* indices, 
+			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, Vector2* vertices, Vector2* uv, UINT32* indices,
 			UINT32 bufferSizeQuads);
 
 	private:

@@ -39,15 +39,15 @@ namespace bs
 		/** @copydoc PhysicsMesh::getMeshData */
 		SPtr<MeshData> getMeshData() const override;
 
-		/** 
-		 * Returns the internal PhysX representation of a triangle mesh. Caller must ensure the physics mesh type is 
-		 * triangle. 
+		/**
+		 * Returns the internal PhysX representation of a triangle mesh. Caller must ensure the physics mesh type is
+		 * triangle.
 		 */
 		physx::PxTriangleMesh* _getTriangle() const { assert(mType == PhysicsMeshType::Triangle); return mTriangleMesh; }
 
-		/** 
-		 * Returns the internal PhysX representation of a convex mesh. Caller must ensure the physics mesh type is 
-		 * convex. 
+		/**
+		 * Returns the internal PhysX representation of a convex mesh. Caller must ensure the physics mesh type is
+		 * convex.
 		 */
 		physx::PxConvexMesh* _getConvex() const { assert(mType == PhysicsMeshType::Convex); return mConvexMesh; }
 

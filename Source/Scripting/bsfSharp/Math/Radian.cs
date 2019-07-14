@@ -9,7 +9,7 @@ namespace bs
      */
 
     /// <summary>
-    ///	Wrapper class which indicates a given angle value is in radians. Radian values are interchangeable with degree 
+    ///	Wrapper class which indicates a given angle value is in radians. Radian values are interchangeable with degree
     /// values, and conversions will be done automatically between them.
     /// </summary>
     [StructLayout(LayoutKind.Sequential), SerializeObject]
@@ -100,9 +100,9 @@ namespace bs
             return new Radian(a.value + b.value);
         }
 
-        public static Radian operator +(Radian a, Degree d) 
+        public static Radian operator +(Radian a, Degree d)
         {
-            return new Radian(a.value + d.Radians); 
+            return new Radian(a.value + d.Radians);
         }
 
         public static Radian operator -(Radian a)
@@ -115,9 +115,9 @@ namespace bs
             return new Radian(a.value - b.value);
         }
 
-        public static Radian operator -(Radian a, Degree d) 
+        public static Radian operator -(Radian a, Degree d)
         {
-            return new Radian(a.value - d.Radians); 
+            return new Radian(a.value - d.Radians);
         }
 
         public static Radian operator *(Radian a, float s)

@@ -133,7 +133,7 @@ namespace bs { namespace ct
 	public:
 		IrradianceComputeSHMat();
 
-		/** 
+		/**
 		 * Computes spherical harmonic coefficients from a radiance texture and outputs a buffer containing a list of
 		 * coefficient sets (one set of coefficients for each thread group). Coefficients must be reduced and normalized
 		 * by IrradianceReduceSHMat before use. Output buffer should be created by calling createOutputBuffer().
@@ -143,10 +143,10 @@ namespace bs { namespace ct
 		/** Creates a buffer of adequate size to be used as output for this material. */
 		SPtr<GpuBuffer> createOutputBuffer(const SPtr<Texture>& source, UINT32& numCoeffSets);
 
-		/** 
+		/**
 		 * Returns the material variation matching the provided parameters.
 		 *
-		 * @param order		SH order, which defines the number of coefficients and quality. Only values of 3 and 5 are 
+		 * @param order		SH order, which defines the number of coefficients and quality. Only values of 3 and 5 are
 		 *					supported.
 		 */
 		static IrradianceComputeSHMat* getVariation(int order = 5);
@@ -164,9 +164,9 @@ namespace bs { namespace ct
 
 	extern IrradianceReduceSHParamDef gIrradianceReduceSHParamDef;
 
-	/** 
+	/**
 	 * Sums spherical harmonic coefficients calculated by each thread group of IrradianceComputeSHMat and outputs a single
-	 * set of normalized coefficients. 
+	 * set of normalized coefficients.
 	 */
 	class IrradianceReduceSHMat : public RendererMaterial<IrradianceReduceSHMat>
 	{
@@ -186,7 +186,7 @@ namespace bs { namespace ct
 	public:
 		IrradianceReduceSHMat();
 
-		/** 
+		/**
 		 * Sums spherical harmonic coefficients calculated by each thread group of IrradianceComputeSHMat and outputs a
 		 * single set of normalized coefficients. Output texture should be created by calling createOutputTexture(). The
 		 * value will be recorded at the @p outputIdx position in the texture.
@@ -196,10 +196,10 @@ namespace bs { namespace ct
 		/** Creates a texture of adequate size to be used as output for this material. */
 		SPtr<Texture> createOutputTexture(UINT32 numCoeffSets);
 
-		/** 
+		/**
 		 * Returns the material variation matching the provided parameters.
 		 *
-		 * @param order		SH order, which defines the number of coefficients and quality. Only values of 3 and 5 are 
+		 * @param order		SH order, which defines the number of coefficients and quality. Only values of 3 and 5 are
 		 *					supported.
 		 */
 		static IrradianceReduceSHMat* getVariation(int order = 5);
@@ -219,9 +219,9 @@ namespace bs { namespace ct
 
 	extern IrradianceComputeSHFragParamDef gIrradianceComputeSHFragParamDef;
 
-	/** 
+	/**
 	 * Computes spherical harmonic coefficients from a radiance cubemap. This is an alternative to IrradianceComputeSHMat
-	 * that does not require compute shader support. 
+	 * that does not require compute shader support.
 	 */
 	class IrradianceComputeSHFragMat : public RendererMaterial<IrradianceComputeSHFragMat>
 	{
@@ -230,19 +230,19 @@ namespace bs { namespace ct
 	public:
 		IrradianceComputeSHFragMat();
 
-		/** 
+		/**
 		 * Computes spherical harmonic coefficients from a face of an input cube radiance texture and outputs them to the
 		 * specified face of the output cube texture. Only a single coefficient is output per execution. The output texture
-		 * will contain the coefficients for red, green and blue channels in the corresponding texture channels, and 
-		 * per-texel weight in the alpha channel. Output coefficients must be summed up and normalized before use (using 
+		 * will contain the coefficients for red, green and blue channels in the corresponding texture channels, and
+		 * per-texel weight in the alpha channel. Output coefficients must be summed up and normalized before use (using
 		 * IrradianceAccumulateCubeSH).
 		 */
 		void execute(const SPtr<Texture>& source, UINT32 face, UINT32 coefficientIdx, const SPtr<RenderTarget>& output);
 
-		/** 
+		/**
 		 * Returns the texture descriptor that can be used for initializing the output render target. Note that the
 		 * output texture is a cubemap but the execute() method expects a render target that is a single face of a
-		 * cubemap. 
+		 * cubemap.
 		 */
 		static POOLED_RENDER_TEXTURE_DESC getOutputDesc(const SPtr<Texture>& source);
 
@@ -259,7 +259,7 @@ namespace bs { namespace ct
 
 	extern IrradianceAccumulateSHParamDef gIrradianceAccumulateSHParamDef;
 
-	/** 
+	/**
 	 * Downsamples a cubemap face containing SH coefficient and weight values as output by IrradianceComputeSHFragMat. Each
 	 * downsample sums up 2x2 pixel area coefficients/weights from the previous mip level.
 	 */
@@ -270,13 +270,13 @@ namespace bs { namespace ct
 	public:
 		IrradianceAccumulateSHMat();
 
-		/** 
+		/**
 		 * Downsamples the provided face and mip level of the source texture and outputs the downsampled (i.e summed up)
-		 * values in the resulting output texture. 
+		 * values in the resulting output texture.
 		 */
 		void execute(const SPtr<Texture>& source, UINT32 face, UINT32 sourceMip, const SPtr<RenderTarget>& output);
 
-		/** 
+		/**
 		 * Returns the texture descriptor that can be used for initializing the output render target. Note the output
 		 * is a cubemap.
 		 */
@@ -287,7 +287,7 @@ namespace bs { namespace ct
 		GpuParamTexture mInputTexture;
 	};
 
-	/** 
+	/**
 	 * Accumulates SH coefficient values from all six faces of a cubemap and normalizes them. The cubemap is expected to be
 	 * 1x1 in size (previously downsampled by IrradianceAccumulateSHMat). After this shader is ran for all SH coefficients
 	 * the output texture will contain final valid set of SH coefficients.
@@ -299,14 +299,14 @@ namespace bs { namespace ct
 	public:
 		IrradianceAccumulateCubeSHMat();
 
-		/** 
+		/**
 		 * Sums up all faces of the input cube texture and writes the value to the corresponding index in the output
 		 * texture. The source mip should point to a mip level with size 1x1.
 		 */
-		void execute(const SPtr<Texture>& source, UINT32 sourceMip, const Vector2I& outputOffset, UINT32 coefficientIdx, 
+		void execute(const SPtr<Texture>& source, UINT32 sourceMip, const Vector2I& outputOffset, UINT32 coefficientIdx,
 			const SPtr<RenderTarget>& output);
 
-		/** 
+		/**
 		 * Returns the texture descriptor that can be used for initializing the output render target. The render target
 		 * will be able to hold all required SH coefficients (even though execute() outputs just one coefficient at a time).
 		 */
@@ -323,7 +323,7 @@ namespace bs { namespace ct
 
 	extern IrradianceProjectSHParamDef gIrradianceProjectSHParamDef;
 
-	/** 
+	/**
 	 * Projects spherical harmonic coefficients calculated by IrradianceReduceSHMat and projects them onto faces of
 	 * a cubemap.
 	 */
@@ -334,7 +334,7 @@ namespace bs { namespace ct
 	public:
 		IrradianceProjectSHMat();
 
-		/** 
+		/**
 		 * Projects spherical harmonic coefficients calculated by IrradianceReduceSHMat and projects them onto faces of
 		 * a cubemap.
 		 */
@@ -356,15 +356,15 @@ namespace bs { namespace ct
 		void filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output) const override;
 
 		/** @copydoc IBLUtility::filterCubemapForIrradiance(const SPtr<Texture>&, const SPtr<Texture>&, UINT32) const */
-		void filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output, 
+		void filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output,
 			UINT32 outputIdx) const override;
 
 		/** @copydoc IBLUtility::scaleCubemap */
 		void scaleCubemap(const SPtr<Texture>& src, UINT32 srcMip, const SPtr<Texture>& dst, UINT32 dstMip) const override;
 	private:
-		/** 
-		 * Downsamples a cubemap using hardware bilinear filtering. 
-		 * 
+		/**
+		 * Downsamples a cubemap using hardware bilinear filtering.
+		 *
 		 * @param[in]	src		Cubemap to downsample.
 		 * @param[in]   srcMip	Determines which mip level of the source texture to downsample.
 		 * @param[in]   dst		Desination texture to output the scaled data to. Must be usable as a render target.
@@ -372,11 +372,11 @@ namespace bs { namespace ct
 		 */
 		static void downsampleCubemap(const SPtr<Texture>& src, UINT32 srcMip, const SPtr<Texture>& dst, UINT32 dstMip);
 
-		/** 
+		/**
 		 * Generates irradiance SH coefficients from the input cubemap and writes them to a 1D texture. Does not make
 		 * use of the compute shader.
 		 */
-		static void filterCubemapForIrradianceNonCompute(const SPtr<Texture>& cubemap, UINT32 outputIdx, 
+		static void filterCubemapForIrradianceNonCompute(const SPtr<Texture>& cubemap, UINT32 outputIdx,
 			const SPtr<RenderTexture>& output);
 	};
 

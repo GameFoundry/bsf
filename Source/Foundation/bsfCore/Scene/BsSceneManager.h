@@ -40,7 +40,7 @@ namespace bs
 	{
 		struct ConstructPrivately {};
 	public:
-		SceneInstance(ConstructPrivately dummy, const String& name, const HSceneObject& root, 
+		SceneInstance(ConstructPrivately dummy, const String& name, const HSceneObject& root,
 			const SPtr<PhysicsScene>& physicsScene);
 
 		/** Name of the scene. */
@@ -55,9 +55,9 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:IsActive,pr:getter)
 		bool isActive() const { return mIsActive; }
 
-		/** 
-		 * Physical representation of the scene, as assigned by the physics sub-system. Exact implementation depends on the 
-		 * physics plugin used. 
+		/**
+		 * Physical representation of the scene, as assigned by the physics sub-system. Exact implementation depends on the
+		 * physics plugin used.
 		 */
 		BS_SCRIPT_EXPORT(n:Physics,pr:getter)
 		const SPtr<PhysicsScene>& getPhysicsScene() const { return mPhysicsScene; }
@@ -70,7 +70,7 @@ namespace bs
 		SPtr<PhysicsScene> mPhysicsScene;
 	};
 
-	/** 
+	/**
 	 * Keeps track of all active SceneObject%s and their components. Keeps track of component state and triggers their
 	 * events. Updates the transforms of objects as SceneObject%s move.
 	 */
@@ -96,26 +96,26 @@ namespace bs
 		 */
 		void loadScene(const HPrefab& scene);
 
-		/** 
+		/**
 		 * Saves all the currently active scene objects into a brand new prefab which can then be saved to disk, loaded back
 		 * and provided to setScene() for loading.
 		 */
 		HPrefab saveScene() const;
 
-		/** 
+		/**
 		 * Changes the component state that globally determines which component callbacks are activated. Only affects
-		 * components that don't have the ComponentFlag::AlwaysRun flag set. 
+		 * components that don't have the ComponentFlag::AlwaysRun flag set.
 		 */
 		void setComponentState(ComponentState state);
 
 		/** Checks are the components currently in the Running state. */
 		bool isRunning() const { return mComponentState == ComponentState::Running; }
 
-		/** 
-		 * Returns a list of all components of the specified type currently in the scene. 
+		/**
+		 * Returns a list of all components of the specified type currently in the scene.
 		 *
 		 * @tparam		T			Type of the component to search for.
-		 * 
+		 *
 		 * @param[in]	activeOnly	If true only active components are returned, otherwise all components are returned.
 		 * @return					A list of all matching components in the scene.
 		 */
@@ -140,9 +140,9 @@ namespace bs
 		/** Changes the root scene object. Any persistent objects will remain in the scene, now parented to the new root. */
 		void _setRootNode(const HSceneObject& root);
 
-		/** 
+		/**
 		 * Binds a scene actor with a scene object. Every frame the scene object's transform will be monitored for
-		 * changes and those changes will be automatically transfered to the actor. 
+		 * changes and those changes will be automatically transfered to the actor.
 		 */
 		void _bindActor(const SPtr<SceneActor>& actor, const HSceneObject& so);
 
@@ -173,15 +173,15 @@ namespace bs
 		/** Notifies the manager that a new component has just been created. The manager triggers necessary callbacks. */
 		void _notifyComponentCreated(const HComponent& component, bool parentActive);
 
-		/** 
+		/**
 		 * Notifies the manager that a scene object the component belongs to was activated. The manager triggers necessary
-		 * callbacks. 
+		 * callbacks.
 		 */
 		void _notifyComponentActivated(const HComponent& component, bool triggerEvent);
 
-		/** 
+		/**
 		 * Notifies the manager that a scene object the component belongs to was deactivated. The manager triggers necessary
-		 * callbacks. 
+		 * callbacks.
 		 */
 		void _notifyComponentDeactivated(const HComponent& component, bool triggerEvent);
 
@@ -211,12 +211,12 @@ namespace bs
 		/**
 		 * Register a new node in the scene manager, on the top-most level of the hierarchy.
 		 * 			
-		 * @param[in]	node	Node you wish to add. It's your responsibility not to add duplicate or null nodes. This 
+		 * @param[in]	node	Node you wish to add. It's your responsibility not to add duplicate or null nodes. This
 		 *						method won't check.
 		 *
 		 * @note	
 		 * After you add a node in the scene manager, it takes ownership of its memory and is responsible for releasing it.
-		 * Do NOT add nodes that have already been added (if you just want to change their parent). Normally this 
+		 * Do NOT add nodes that have already been added (if you just want to change their parent). Normally this
 		 * method will only be called by SceneObject.
 		 */
 		void registerNewSO(const HSceneObject& node);
@@ -224,7 +224,7 @@ namespace bs
 		/**	Callback that is triggered when the main render target size is changed. */
 		void onMainRenderTargetResized();
 
-		/** 
+		/**
 		 * Adds a component to the specified state list. Caller is expected to first remove the component from any
 		 * existing state lists.
 		 */
@@ -236,7 +236,7 @@ namespace bs
 		/** Iterates over components that had their state modified and moves them to the appropriate state lists. */
 		void processStateChanges();
 
-		/** 
+		/**
 		 * Encodes an index and a type into a single 32-bit integer. Top 2 bits represent the type, while the rest represent
 		 * the index.
 		 */
@@ -259,7 +259,7 @@ namespace bs
 		Vector<HComponent> mInactiveComponents;
 		Vector<HComponent> mUninitializedComponents;
 
-		std::array<Vector<HComponent>*, 3> mComponentsPerState = 
+		std::array<Vector<HComponent>*, 3> mComponentsPerState =
 			{ { &mActiveComponents, &mInactiveComponents, &mUninitializedComponents } };
 
 		SPtr<RenderTarget> mMainRT;

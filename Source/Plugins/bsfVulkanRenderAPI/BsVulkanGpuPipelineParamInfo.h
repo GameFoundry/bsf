@@ -34,9 +34,9 @@ namespace bs { namespace ct
 		/** Returns the sequential index of the binding at the specificn set/slot. Returns -1 if slot is not used. */
 		UINT32 getBindingIdx(UINT32 set, UINT32 slot) const { return mSetExtraInfos[set].slotIndices[slot]; }
 
-		/** 
-		 * Returns a layout for the specified device, at the specified index. Returns null if no layout for the specified 
-		 * device index. 
+		/**
+		 * Returns a layout for the specified device, at the specified index. Returns null if no layout for the specified
+		 * device index.
 		 */
 		VulkanDescriptorLayout* getLayout(UINT32 deviceIdx, UINT32 layoutIdx) const;
 

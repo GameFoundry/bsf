@@ -18,13 +18,13 @@ namespace bs
 	/**
 	 * Manager that keeps track of all active CoreObject%s.
 	 * 			
-	 * @note	Internal class. 
+	 * @note	Internal class.
 	 * @note	Thread safe unless specified otherwise.
 	 */
 	class BS_CORE_EXPORT CoreObjectManager : public Module<CoreObjectManager>
 	{
 		/**
-		 * Stores dirty data that is to be transferred from sim  thread to core thread part of a CoreObject, for a single 
+		 * Stores dirty data that is to be transferred from sim  thread to core thread part of a CoreObject, for a single
 		 * object.
 		 */
 		struct CoreStoredSyncObjData
@@ -80,7 +80,7 @@ namespace bs
 		void notifyDependenciesDirty(CoreObject* object);
 
 		/**
-		 * Synchronizes all dirty CoreObjects with the core thread. Their dirty data will be allocated using the global 
+		 * Synchronizes all dirty CoreObjects with the core thread. Their dirty data will be allocated using the global
 		 * frame allocator and then queued for update using the core thread queue for the calling thread.
 		 *
 		 * @note	Sim thread only.
@@ -89,7 +89,7 @@ namespace bs
 		void syncToCore();
 
 		/**
-		 * Synchronizes an individual dirty CoreObject with the core thread. Its dirty data will be allocated using the 
+		 * Synchronizes an individual dirty CoreObject with the core thread. Its dirty data will be allocated using the
 		 * global frame allocator and then queued for update the core thread queue for the calling thread.
 		 *
 		 * @note	Sim thread only.
@@ -99,7 +99,7 @@ namespace bs
 
 	private:
 		/**
-		 * Stores all syncable data from dirty core objects into memory allocated by the provided allocator. Additional 
+		 * Stores all syncable data from dirty core objects into memory allocated by the provided allocator. Additional
 		 * meta-data is stored internally to be used by call to syncUpload().
 		 *
 		 * @param[in]	allocator Allocator to use for allocating memory for stored data.

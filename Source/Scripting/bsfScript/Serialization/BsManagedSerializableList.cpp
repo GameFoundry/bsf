@@ -17,7 +17,7 @@ namespace bs
 
 	}
 
-	ManagedSerializableList::ManagedSerializableList(const ConstructPrivately& dummy, 
+	ManagedSerializableList::ManagedSerializableList(const ConstructPrivately& dummy,
 		const SPtr<ManagedSerializableTypeInfoList>& typeInfo, MonoObject* managedInstance)
 		:mListTypeInfo(typeInfo)
 	{
@@ -41,7 +41,7 @@ namespace bs
 		}
 	}
 
-	SPtr<ManagedSerializableList> ManagedSerializableList::createFromExisting(MonoObject* managedInstance, 
+	SPtr<ManagedSerializableList> ManagedSerializableList::createFromExisting(MonoObject* managedInstance,
 		const SPtr<ManagedSerializableTypeInfoList>& typeInfo)
 	{
 		if(managedInstance == nullptr)

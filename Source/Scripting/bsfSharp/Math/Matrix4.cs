@@ -45,7 +45,7 @@ namespace bs
         /// <summary>
         /// Creates a new matrix with the specified elements.
         /// </summary>
-        public Matrix4(float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, 
+        public Matrix4(float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13,
             float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33)
         {
             this.m00 = m00;
@@ -86,7 +86,7 @@ namespace bs
 
         /// <summary>
         /// Value of the specified element in the matrix using a linear index.
-        /// Linear index can be calculated using the following formula: idx = row * 4 + column. 
+        /// Linear index can be calculated using the following formula: idx = row * 4 + column.
         /// </summary>
         /// <param name="index">Linear index to get the value of.</param>
         /// <returns>Value of the element.</returns>
@@ -192,7 +192,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Calculates the inverse of the matrix. 
+        /// Calculates the inverse of the matrix.
         /// </summary>
         public Matrix4 Inverse
         {
@@ -437,8 +437,8 @@ namespace bs
         }
 
         /// <summary>
-        /// Decompose a matrix to translation, rotation and scale components. Matrix must consist only of translation, 
-        /// rotation and uniform scale transformations, otherwise accurate results are not guaranteed. Applying non-uniform 
+        /// Decompose a matrix to translation, rotation and scale components. Matrix must consist only of translation,
+        /// rotation and uniform scale transformations, otherwise accurate results are not guaranteed. Applying non-uniform
         /// scale guarantees results will not be accurate.
         /// </summary>
         /// <param name="translation">Translation offset.</param>
@@ -457,7 +457,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Transform a 3D point by this matrix. Matrix must be affine. Affine multiplication offers better performance 
+        /// Transform a 3D point by this matrix. Matrix must be affine. Affine multiplication offers better performance
         /// than the general case.
         /// </summary>
         /// <param name="p">Point to transform.</param>
@@ -471,20 +471,20 @@ namespace bs
         }
 
         /// <summary>
-        /// Transform a 3D direction vector by this matrix. w component is assumed to be 0. 
+        /// Transform a 3D direction vector by this matrix. w component is assumed to be 0.
         /// </summary>
         /// <param name="d">Direction vector to transform.</param>
         /// <returns>Direction vector transformed by this matrix.</returns>
         public Vector3 MultiplyDirection(Vector3 d)
         {
             return new Vector3(
-                    m00 * d.x + m01 * d.y + m02 * d.z + m03, 
+                    m00 * d.x + m01 * d.y + m02 * d.z + m03,
                     m10 * d.x + m11 * d.y + m12 * d.z + m13,
                     m20 * d.x + m21 * d.y + m22 * d.z + m23);
         }
 
         /// <summary>
-        /// Transform a 4D vector by this matrix. Matrix must be affine. Affine multiplication offers better performance 
+        /// Transform a 4D vector by this matrix. Matrix must be affine. Affine multiplication offers better performance
         /// than the general case.
         /// </summary>
         /// <param name="v">Vector to transform.</param>
@@ -492,15 +492,15 @@ namespace bs
         public Vector4 MultiplyAffine(Vector4 v)
         {
             return new Vector4(
-                m00 * v.x + m01 * v.y + m02 * v.z + m03 * v.w, 
+                m00 * v.x + m01 * v.y + m02 * v.z + m03 * v.w,
                 m10 * v.x + m11 * v.y + m12 * v.z + m13 * v.w,
                 m20 * v.x + m21 * v.y + m22 * v.z + m23 * v.w,
                 v.w);
         }
 
         /// <summary>
-        /// Transform a 3D point by this matrix. w component of the vector is assumed to be 1. After transformation all 
-        /// components are projected back so that w remains 1. If your matrix doesn't contain projection components use 
+        /// Transform a 3D point by this matrix. w component of the vector is assumed to be 1. After transformation all
+        /// components are projected back so that w remains 1. If your matrix doesn't contain projection components use
         /// <see cref="MultiplyAffine(Vector4)"/> as it is faster.
         /// </summary>
         /// <param name="p">Point to transform.</param>
@@ -519,7 +519,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Transform a 4D vector by this matrix. If your matrix doesn't contain projection components 
+        /// Transform a 4D vector by this matrix. If your matrix doesn't contain projection components
         /// use <see cref="MultiplyAffine(Vector4)"/> as it is faster.
         /// </summary>
         /// <param name="v">Vector to transform.</param>
@@ -527,7 +527,7 @@ namespace bs
         public Vector4 Multiply(Vector4 v)
         {
             return new Vector4(
-                m00 * v.x + m01 * v.y + m02 * v.z + m03 * v.w, 
+                m00 * v.x + m01 * v.y + m02 * v.z + m03 * v.w,
                 m10 * v.x + m11 * v.y + m12 * v.z + m13 * v.w,
                 m20 * v.x + m21 * v.y + m22 * v.z + m23 * v.w,
                 m30 * v.x + m31 * v.y + m32 * v.z + m33 * v.w);
@@ -577,7 +577,7 @@ namespace bs
         {
             return new Matrix3(
                 mat.m00, mat.m01, mat.m02,
-                mat.m10, mat.m11, mat.m12, 
+                mat.m10, mat.m11, mat.m12,
                 mat.m20, mat.m21, mat.m22);
         }
 

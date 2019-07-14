@@ -303,7 +303,7 @@ namespace bs { namespace ct
 		bs::RenderWindowManager::startUp<bs::VulkanRenderWindowManager>();
 		RenderWindowManager::startUp();
 
-		// Create query manager 
+		// Create query manager
 		QueryManager::startUp<VulkanQueryManager>(*this);
 
 		// Create vertex input manager
@@ -738,17 +738,17 @@ namespace bs { namespace ct
 
 			caps.numCombinedTextureUnits
 				= caps.numTextureUnitsPerStage[GPT_FRAGMENT_PROGRAM]
-				+ caps.numTextureUnitsPerStage[GPT_VERTEX_PROGRAM] 
+				+ caps.numTextureUnitsPerStage[GPT_VERTEX_PROGRAM]
 				+ caps.numTextureUnitsPerStage[GPT_GEOMETRY_PROGRAM]
-				+ caps.numTextureUnitsPerStage[GPT_HULL_PROGRAM] 
+				+ caps.numTextureUnitsPerStage[GPT_HULL_PROGRAM]
 				+ caps.numTextureUnitsPerStage[GPT_DOMAIN_PROGRAM]
 				+ caps.numTextureUnitsPerStage[GPT_COMPUTE_PROGRAM];
 
 			caps.numCombinedParamBlockBuffers
 				= caps.numGpuParamBlockBuffersPerStage[GPT_FRAGMENT_PROGRAM]
-				+ caps.numGpuParamBlockBuffersPerStage[GPT_VERTEX_PROGRAM] 
+				+ caps.numGpuParamBlockBuffersPerStage[GPT_VERTEX_PROGRAM]
 				+ caps.numGpuParamBlockBuffersPerStage[GPT_GEOMETRY_PROGRAM]
-				+ caps.numGpuParamBlockBuffersPerStage[GPT_HULL_PROGRAM] 
+				+ caps.numGpuParamBlockBuffersPerStage[GPT_HULL_PROGRAM]
 				+ caps.numGpuParamBlockBuffersPerStage[GPT_DOMAIN_PROGRAM]
 				+ caps.numGpuParamBlockBuffersPerStage[GPT_COMPUTE_PROGRAM];
 

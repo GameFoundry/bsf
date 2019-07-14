@@ -13,7 +13,7 @@ namespace bs
 	 */
 
 	/**
-	 * Prefab is a saveable hierarchy of scene objects. In general it can serve as any grouping of scene objects 
+	 * Prefab is a saveable hierarchy of scene objects. In general it can serve as any grouping of scene objects
 	 * (for example a level) or be used as a form of a template instantiated and reused throughout the scene.
 	 */
 	class BS_CORE_EXPORT Prefab : public Resource
@@ -23,7 +23,7 @@ namespace bs
 		~Prefab();
 
 		/**
-		 * Creates a new prefab from the provided scene object. If the scene object has an existing prefab link it will 
+		 * Creates a new prefab from the provided scene object. If the scene object has an existing prefab link it will
 		 * be broken. After the prefab is created the scene object will be automatically linked to it.
 		 *
 		 * @param[in]	sceneObject		Scene object to create the prefab from.
@@ -33,7 +33,7 @@ namespace bs
 		static HPrefab create(const HSceneObject& sceneObject, bool isScene = true);
 
 		/**
-		 * Instantiates a prefab by creating an instance of the prefab's scene object hierarchy. The returned hierarchy 
+		 * Instantiates a prefab by creating an instance of the prefab's scene object hierarchy. The returned hierarchy
 		 * will be parented to world root by default.
 		 *			
 		 * @return	Instantiated clone of the prefab's scene object hierarchy.
@@ -52,9 +52,9 @@ namespace bs
 		 */
 		UINT32 getHash() const { return mHash; }
 
-		/** 
+		/**
 		 * Determines if the prefab represents a scene or just a generic group of objects. The only difference between the
-		 * two is the way root object is handled: scenes are assumed to be saved with the scene root object (which is 
+		 * two is the way root object is handled: scenes are assumed to be saved with the scene root object (which is
 		 * hidden), while object group root is a normal scene object (not hidden). This is relevant when when prefabs are
 		 * loaded, so the systems knows to append the root object to non-scene prefabs.
 		 */
@@ -69,7 +69,7 @@ namespace bs
 		void _updateChildInstances() const;
 
 		/**
-		 * Returns a reference to the internal prefab hierarchy. Returned hierarchy is not instantiated and cannot be 
+		 * Returns a reference to the internal prefab hierarchy. Returned hierarchy is not instantiated and cannot be
 		 * interacted with in a manner you would with normal scene objects.
 		 */
 		HSceneObject _getRoot() const { return mRoot; }
@@ -86,7 +86,7 @@ namespace bs
 		HSceneObject _clone(bool preserveUUIDs = false) const;
 
 		/**
-		 * Instantiates a prefab by creating an instance of the prefab's scene object hierarchy. The returned hierarchy 
+		 * Instantiates a prefab by creating an instance of the prefab's scene object hierarchy. The returned hierarchy
 		 * will be parented to world root by default.
 		 *			
 		 * @param[in]	preserveUUIDs	If false, each cloned game object will be assigned a brand new UUID. Otherwise

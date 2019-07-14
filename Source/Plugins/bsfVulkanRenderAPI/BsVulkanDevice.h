@@ -42,9 +42,9 @@ namespace bs { namespace ct
 		/** Blocks the calling thread until all operations on the device finish. */
 		void waitIdle();
 
-		/** 
-		 * Checks if any of the active command buffers finished executing on the device and updates their states 
-		 * accordingly. 
+		/**
+		 * Checks if any of the active command buffers finished executing on the device and updates their states
+		 * accordingly.
 		 */
 		void refreshStates(bool forceWait = false);
 
@@ -63,14 +63,14 @@ namespace bs { namespace ct
 		/** Returns queue of the specified type at the specified index. Index must be in range [0, getNumQueues()). */
 		VulkanQueue* getQueue(GpuQueueType type, UINT32 idx) const { return mQueueInfos[(int)type].queues[idx]; }
 
-		/** 
-		 * Returns index of the queue family for the specified queue type. Returns -1 if no queues for the specified type 
+		/**
+		 * Returns index of the queue family for the specified queue type. Returns -1 if no queues for the specified type
 		 * exist. There will always be a queue family for the graphics type.
 		 */
 		UINT32 getQueueFamily(GpuQueueType type) const { return mQueueInfos[(int)type].familyIdx; }
 
-		/** 
-		 * Fills out a mask that has bits set for every queue index that maps to the same physical queue as the provided 
+		/**
+		 * Fills out a mask that has bits set for every queue index that maps to the same physical queue as the provided
 		 * index. This is useful as different queue indices will sometimes map to the same physical queue.
 		 */
 		UINT32 getQueueMask(GpuQueueType type, UINT32 queueIdx) const;
@@ -90,13 +90,13 @@ namespace bs { namespace ct
 		/** Returns a manager that can be used for allocating Vulkan objects wrapped as managed resources. */
 		VulkanResourceManager& getResourceManager() const { return *mResourceManager; }
 
-		/** 
+		/**
 		 * Allocates memory for the provided image, and binds it to the image. Returns null if it cannot find memory
 		 * with the specified flags.
 		 */
 		VmaAllocation allocateMemory(VkImage image, VkMemoryPropertyFlags flags);
 
-		/** 
+		/**
 		 * Allocates memory for the provided buffer, and binds it to the buffer. Returns null if it cannot find memory
 		 * with the specified flags.
 		 */

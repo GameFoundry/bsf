@@ -12,7 +12,7 @@ namespace bs
 	 */
 
 	/**
-	 * Allows you to change and retrieve the active renderer. Active renderer will be used for rendering all objects in 
+	 * Allows you to change and retrieve the active renderer. Active renderer will be used for rendering all objects in
 	 * the following frame.
 	 * 			
 	 * @note	No renderer is active by default. You must make a renderer active before doing any rendering.
@@ -23,8 +23,8 @@ namespace bs
 		~RendererManager();
 
 		/**
-		 * Attempts to find a renderer with the specified name and makes it active. Exception is thrown if renderer with 
-		 * the specified name doesn't exist. You must call initialize() after setting the active renderer to properly 
+		 * Attempts to find a renderer with the specified name and makes it active. Exception is thrown if renderer with
+		 * the specified name doesn't exist. You must call initialize() after setting the active renderer to properly
 		 * activate it.
 		 */
 		void setActive(const String& name);
@@ -36,7 +36,7 @@ namespace bs
 		SPtr<ct::Renderer> getActive() { return mActiveRenderer; }
 
 		/**
-		 * Registers a new renderer factory. Any renderer you try to make active with setActive() you will need to have 
+		 * Registers a new renderer factory. Any renderer you try to make active with setActive() you will need to have
 		 * previously registered here.
 		 */
 		void _registerFactory(SPtr<RendererFactory> factory);

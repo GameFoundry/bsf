@@ -73,7 +73,7 @@ namespace bs
 	protected:
 		TScriptGUIElementBase(MonoObject* instance, GUIElementBase* element)
 			:ScriptObject<Type, ScriptGUIElementBaseTBase>(instance)
-		{ 
+		{
 			this->initialize(element);
 		}
 	};

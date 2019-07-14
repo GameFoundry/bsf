@@ -11,7 +11,7 @@ namespace bs
 	{
 		if(_isTypeIdDuplicate(rttiType->getRTTIId()))
 		{
-			BS_EXCEPT(InternalErrorException, "RTTI type \"" + rttiType->getRTTIName() + 
+			BS_EXCEPT(InternalErrorException, "RTTI type \"" + rttiType->getRTTIName() +
 				"\" has a duplicate ID: " + toString(rttiType->getRTTIId()));
 		}
 
@@ -86,7 +86,7 @@ namespace bs
 						!otherReflectablePtrField->getInfo().flags.isSet(RTTIFieldFlag::WeakRef)))
 					{
 						BS_EXCEPT(InternalErrorException, "Found circular reference on RTTI type: " + myType->getRTTIName()
-							+ " to type: " + otherType->getRTTIName() + ". Either remove one of the references or mark it" 
+							+ " to type: " + otherType->getRTTIName() + ". Either remove one of the references or mark it"
 							+ " as a weak reference when defining the RTTI field.");
 					}
 				}
@@ -95,8 +95,8 @@ namespace bs
 	}
 
 	UINT32 IReflectable::getTypeId() const
-	{ 
-		return getRTTI()->getRTTIId(); 
+	{
+		return getRTTI()->getRTTIId();
 	}
 
 	const String& IReflectable::getTypeName() const

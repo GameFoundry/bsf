@@ -1949,13 +1949,13 @@ namespace bs
 
 				if(src.getLeft() % blockDim.x != 0 || src.getTop() % blockDim.y != 0)
 				{
-					BS_LOG(Error, PixelUtility, 
+					BS_LOG(Error, PixelUtility,
 						"Source offset must be a multiple of block size for compressed formats.");
 				}
 
 				if(dst.getLeft() % blockDim.x != 0 || dst.getTop() % blockDim.y != 0)
 				{
-					BS_LOG(Error, PixelUtility, 
+					BS_LOG(Error, PixelUtility,
 						"Destination offset must be a multiple of block size for compressed formats.");
 				}
 			}

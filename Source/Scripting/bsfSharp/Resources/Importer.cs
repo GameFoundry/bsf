@@ -7,12 +7,12 @@ namespace bs
     partial class Importer
     {
         /// <summary>
-        /// Imports a resource at the specified location, and returns the loaded data. If file contains more than one resource 
+        /// Imports a resource at the specified location, and returns the loaded data. If file contains more than one resource
         /// only the primary resource is imported (for example an FBX a mesh would be imported, but animations ignored).
         /// </summary>
         /// <param name="inputFilePath">Pathname of the input file.</param>
         /// <param name="importOptions">
-        /// (optional) Options for controlling the import. Caller must ensure import options  actually match the type of the 
+        /// (optional) Options for controlling the import. Caller must ensure import options  actually match the type of the
         /// importer used for the file type.
         /// </param>
         /// <param name="UUID">
@@ -25,12 +25,12 @@ namespace bs
         }
 
         /// <summary>
-        /// Imports a resource at the specified location, and returns the loaded data. If file contains more than one resource 
+        /// Imports a resource at the specified location, and returns the loaded data. If file contains more than one resource
         /// only the primary resource is imported (for example an FBX a mesh would be imported, but animations ignored).
         /// </summary>
         /// <param name="inputFilePath">Pathname of the input file.</param>
         /// <param name="importOptions">
-        /// (optional) Options for controlling the import. Caller must ensure import options  actually match the type of the 
+        /// (optional) Options for controlling the import. Caller must ensure import options  actually match the type of the
         /// importer used for the file type.
         /// </param>
         /// <returns>Imported resource.</returns>
@@ -41,7 +41,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Imports a resource at the specified location, and returns the loaded data. If file contains more than one resource 
+        /// Imports a resource at the specified location, and returns the loaded data. If file contains more than one resource
         /// only the primary resource is imported (for example an FBX a mesh would be imported, but animations ignored).
         /// </summary>
         /// <param name="inputFilePath">Pathname of the input file.</param>

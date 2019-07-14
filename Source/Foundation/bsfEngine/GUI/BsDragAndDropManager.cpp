@@ -49,7 +49,7 @@ namespace bs
 
 		// This generally happens when window loses focus and capture is lost (for example alt+tab)
 		int captureActive = mCaptureActive.load();
-		if (!captureActive && mCaptureChanged.load() && 
+		if (!captureActive && mCaptureChanged.load() &&
 			(gTime().getFrameIdx() > mCaptureChangeFrame.load())) // Wait one frame to ensure input (like mouse up) gets a chance to be processed
 		{
 			endDrag(false);

@@ -13,25 +13,25 @@ namespace bs
 
 	GUIScrollBarVert* GUIScrollBarVert::create(const String& styleName)
 	{
-		return new (bs_alloc<GUIScrollBarVert>()) GUIScrollBarVert(false, getStyleName<GUIScrollBarVert>(false, styleName), 
+		return new (bs_alloc<GUIScrollBarVert>()) GUIScrollBarVert(false, getStyleName<GUIScrollBarVert>(false, styleName),
 			GUIDimensions::create());
 	}
 
 	GUIScrollBarVert* GUIScrollBarVert::create(bool resizeable, const String& styleName)
 	{
-		return new (bs_alloc<GUIScrollBarVert>()) GUIScrollBarVert(resizeable, getStyleName<GUIScrollBarVert>(resizeable, styleName), 
+		return new (bs_alloc<GUIScrollBarVert>()) GUIScrollBarVert(resizeable, getStyleName<GUIScrollBarVert>(resizeable, styleName),
 			GUIDimensions::create());
 	}
 
 	GUIScrollBarVert* GUIScrollBarVert::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIScrollBarVert>()) GUIScrollBarVert(false, getStyleName<GUIScrollBarVert>(false, styleName), 
+		return new (bs_alloc<GUIScrollBarVert>()) GUIScrollBarVert(false, getStyleName<GUIScrollBarVert>(false, styleName),
 			GUIDimensions::create(options));
 	}
 
 	GUIScrollBarVert* GUIScrollBarVert::create(bool resizeable, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIScrollBarVert>()) GUIScrollBarVert(resizeable, getStyleName<GUIScrollBarVert>(resizeable, styleName), 
+		return new (bs_alloc<GUIScrollBarVert>()) GUIScrollBarVert(resizeable, getStyleName<GUIScrollBarVert>(resizeable, styleName),
 			GUIDimensions::create(options));
 	}
 

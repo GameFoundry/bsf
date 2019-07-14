@@ -3,7 +3,7 @@
 #include "RenderAPI/BsTextureView.h"
 #include "Image/BsTexture.h"
 
-namespace bs { namespace ct 
+namespace bs { namespace ct
 {
 	size_t TextureView::HashFunction::operator()(const TEXTURE_VIEW_DESC &key) const
 	{
@@ -20,7 +20,7 @@ namespace bs { namespace ct
 	bool TextureView::EqualFunction::operator()
 		(const TEXTURE_VIEW_DESC &a, const TEXTURE_VIEW_DESC &b) const
 	{
-		return a.mostDetailMip == b.mostDetailMip && a.numMips == b.numMips 
+		return a.mostDetailMip == b.mostDetailMip && a.numMips == b.numMips
 			&& a.firstArraySlice == b.firstArraySlice && a.numArraySlices == b.numArraySlices && a.usage == b.usage;
 	}
 

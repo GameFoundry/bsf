@@ -47,7 +47,7 @@ namespace bs
 
 		BinarySerializer bs;
 		UINT32 totalBytesWritten = 0;
-		bs.encode(object, mWriteBuffer, WRITE_BUFFER_SIZE, &totalBytesWritten, 
+		bs.encode(object, mWriteBuffer, WRITE_BUFFER_SIZE, &totalBytesWritten,
 			std::bind(&FileEncoder::flushBuffer, this, _1, _2, _3), false, context);
 
 		mOutputStream.seekp(curPos);

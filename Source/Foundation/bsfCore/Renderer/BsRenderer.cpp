@@ -21,7 +21,7 @@ namespace bs { namespace ct
 
 	SPtr<RendererMeshData> Renderer::_createMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType)
 	{
-		return bs_shared_ptr<RendererMeshData>(new (bs_alloc<RendererMeshData>()) 
+		return bs_shared_ptr<RendererMeshData>(new (bs_alloc<RendererMeshData>())
 			RendererMeshData(numVertices, numIndices, layout, indexType));
 	}
 
@@ -169,7 +169,7 @@ namespace bs { namespace ct
 		return std::static_pointer_cast<Renderer>(RendererManager::instance().getActive());
 	}
 
-	RendererTask::RendererTask(const PrivatelyConstruct& dummy, String name, std::function<bool()> taskWorker) 
+	RendererTask::RendererTask(const PrivatelyConstruct& dummy, String name, std::function<bool()> taskWorker)
 		:mName(std::move(name)), mTaskWorker(std::move(taskWorker))
 	{ }
 

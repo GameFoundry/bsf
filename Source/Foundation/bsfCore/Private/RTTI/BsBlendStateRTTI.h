@@ -18,7 +18,7 @@ namespace bs
 	{
 	private:
 		BLEND_STATE_DESC& getData(BlendState* obj) { return obj->mProperties.mData; }
-		void setData(BlendState* obj, BLEND_STATE_DESC& val) { obj->mProperties.mData = val; } 
+		void setData(BlendState* obj, BLEND_STATE_DESC& val) { obj->mProperties.mData = val; }
 
 	public:
 		BlendStateRTTI()

@@ -25,7 +25,7 @@ namespace bs
 	{
 		SOF_DontInstantiate = 0x01, /**< Object wont be in the main scene and its components won't receive updates. */
 		SOF_DontSave = 0x02,		/**< Object will be skipped when saving the scene hierarchy or a prefab. */
-		SOF_Persistent = 0x04,		/**< Object will remain in the scene even after scene clear, unless destroyed directly. 
+		SOF_Persistent = 0x04,		/**< Object will remain in the scene even after scene clear, unless destroyed directly.
 										 This only works with top-level objects. */
 		SOF_Internal = 0x08			/**< Provides a hint to external systems that his object is used by engine internals.
 										 For example, those systems might not want to display those objects together with the
@@ -36,7 +36,7 @@ namespace bs
 	 * An object in the scene graph. It has a transform object that allows it to be positioned, scaled and rotated. It can
 	 * have other scene objects as children, and will have a scene object as a parent, in which case transform changes
 	 * to the parent are reflected to the child scene objects (children are relative to the parent).
-	 * 
+	 *
 	 * Each scene object can have one or multiple Component%s attached to it, where the components inherit the scene
 	 * object's transform, and receive updates about transform and hierarchy changes.
 	 */
@@ -76,16 +76,16 @@ namespace bs
 		HSceneObject getHandle() const { return mThisHandle; }
 
 		/**
-		 * Returns the UUID of the prefab this object is linked to, if any. 
+		 * Returns the UUID of the prefab this object is linked to, if any.
 		 *
 		 * @param[in]	onlyDirect	If true, this method will return prefab link only for the root object of the prefab
 		 *							instance. If false the parent objects will be searched for the prefab ID.
 		 */
 		UUID getPrefabLink(bool onlyDirect = false) const;
 
-		/** 
-		 * Returns the root object of the prefab instance that this object belongs to, if any. Returns null if the object 
-		 * is not part of a prefab instance. 
+		/**
+		 * Returns the root object of the prefab instance that this object belongs to, if any. Returns null if the object
+		 * is not part of a prefab instance.
 		 */
 		HSceneObject getPrefabParent() const;
 
@@ -106,8 +106,8 @@ namespace bs
 		/** @copydoc GameObject::_setInstanceData */
 		void _setInstanceData(GameObjectInstanceDataPtr& other) override;
 
-		/** 
-		 * Register the scene object with the scene and activate all of its components. 
+		/**
+		 * Register the scene object with the scene and activate all of its components.
 		 *
 		 * @param[in]	prefabOnly	If true, only objects within the current prefab will be instantiated. If false all child
 		 *							objects and components will.
@@ -115,7 +115,7 @@ namespace bs
 		void _instantiate(bool prefabOnly = false);
 
 		/**
-		 * Clears the internally stored prefab diff. If this object is updated from prefab its instance specific changes 
+		 * Clears the internally stored prefab diff. If this object is updated from prefab its instance specific changes
 		 * will be lost.
 		 */
 		void _clearPrefabDiff() { mPrefabDiff = nullptr; }
@@ -163,7 +163,7 @@ namespace bs
 		static HSceneObject createInternal(const String& name, UINT32 flags = 0);
 
 		/**
-		 * Creates a new SceneObject instance from an existing pointer, registers it with the game object manager, creates 
+		 * Creates a new SceneObject instance from an existing pointer, registers it with the game object manager, creates
 		 * and returns a handle to the object.
 		 *			
 		 * @param[in]	soPtr		Pointer to the scene object register and return a handle to.
@@ -174,7 +174,7 @@ namespace bs
 		 * Destroys this object and any of its held components.
 		 *
 		 * @param[in]	handle		Game object handle to this object.
-		 * @param[in]	immediate	If true, the object will be deallocated and become unusable right away. Otherwise the 
+		 * @param[in]	immediate	If true, the object will be deallocated and become unusable right away. Otherwise the
 		 *							deallocation will be delayed to the end of frame (preferred method).
 		 *
 		 * @note	Unlike destroy(), does not remove the object from its parent.
@@ -224,7 +224,7 @@ namespace bs
 		void setWorldScale(const Vector3& scale);
 
 		/**
-		 * Orients the object so it is looking at the provided @p location (world space) where @p up is used for 
+		 * Orients the object so it is looking at the provided @p location (world space) where @p up is used for
 		 * determining the location of the object's Y axis.
 		 */
 		void lookAt(const Vector3& location, const Vector3& up = Vector3::UNIT_Y);
@@ -298,7 +298,7 @@ namespace bs
 		void updateTransformsIfDirty();
 
 		/**
-		 * Returns a hash value that changes whenever a scene objects transform gets updated. It allows you to detect 
+		 * Returns a hash value that changes whenever a scene objects transform gets updated. It allows you to detect
 		 * changes with the local or world transforms without directly comparing their values with some older state.
 		 */
 		UINT32 getTransformHash() const { return mDirtyHash; }
@@ -313,9 +313,9 @@ namespace bs
 		mutable UINT32 mDirtyFlags = 0xFFFFFFFF;
 		mutable UINT32 mDirtyHash = 0;
 
-		/** 
-		 * Notifies components and child scene object that a transform has been changed.  
-		 * 
+		/**
+		 * Notifies components and child scene object that a transform has been changed.
+		 *
 		 * @param	flags		Specifies in what way was the transform changed.
 		 */
 		void notifyTransformChanged(TransformChangedFlags flags) const;
@@ -341,11 +341,11 @@ namespace bs
 		/************************************************************************/
 	public:
 		/**
-		 * Changes the parent of this object. Also removes the object from the current parent, and assigns it to the new 
+		 * Changes the parent of this object. Also removes the object from the current parent, and assigns it to the new
 		 * parent.
 		 *
 		 * @param[in]	parent				New parent.
-		 * @param[in]	keepWorldTransform	Determines should the current transform be maintained even after the parent is 
+		 * @param[in]	keepWorldTransform	Determines should the current transform be maintained even after the parent is
 		 *									changed (this means the local transform will be modified accordingly).
 		 */
 		void setParent(const HSceneObject& parent, bool keepWorldTransform = true);
@@ -379,11 +379,11 @@ namespace bs
 		/** Returns the scene this object is part of. Can be null if scene object hasn't been instantiated. */
 		const SPtr<SceneInstance>& getScene() const;
 
-		/** 
+		/**
 		 * Searches the scene object hierarchy to find a child scene object using the provided path.
 		 *
 		 * @param[in]	path	Path to the property, where each element of the path is separated with "/" Path elements signify
-		 *						names of child scene objects (first one relative to this object). 
+		 *						names of child scene objects (first one relative to this object).
 		 */
 		HSceneObject findPath(const String& path) const;
 
@@ -429,15 +429,15 @@ namespace bs
 		 */
 		void setMobility(ObjectMobility mobility);
 
-		/** 
-		 * Gets the mobility setting for this scene object. See setMobility(); 
+		/**
+		 * Gets the mobility setting for this scene object. See setMobility();
 		 */
 		ObjectMobility getMobility() const { return mMobility; }
 
 		/**
 		 * Makes a deep copy of this object.
 		 * 			
-		 * @param[in]	instantiate		If false, the cloned hierarchy will just be a memory copy, but will not be present 
+		 * @param[in]	instantiate		If false, the cloned hierarchy will just be a memory copy, but will not be present
 		 *								in the scene or otherwise active until instantiate() is called.
 		 * @param[in]	preserveUUIDs	If false, each cloned game object will be assigned a brand new UUID. Otherwise
 		 *								the UUID of the original game objects will be preserved. Note that two instantiated
@@ -458,7 +458,7 @@ namespace bs
 		 * Internal version of setParent() that allows you to set a null parent.
 		 *
 		 * @param[in]	parent				New parent.
-		 * @param[in]	keepWorldTransform	Determines should the current transform be maintained even after the parent is 
+		 * @param[in]	keepWorldTransform	Determines should the current transform be maintained even after the parent is
 		 *									changed (this means the local transform will be modified accordingly).
 		 */
 		void _setParent(const HSceneObject& parent, bool keepWorldTransform = true);
@@ -474,7 +474,7 @@ namespace bs
 		void addChild(const HSceneObject& object);
 		
 		/**
-		 * Removes the child from the object. 
+		 * Removes the child from the object.
 		 *
 		 * @param[in]	object	Child to remove.
 		 */
@@ -505,7 +505,7 @@ namespace bs
 			return static_object_cast<T>(newComponent);
 		}
 
-		/** 
+		/**
 		 * Constructs a new component of the specified type id and adds it to the internal component list. Component must
 		 * have a parameterless constructor.
 		 */
@@ -519,13 +519,13 @@ namespace bs
 		 * @return		Component if found, nullptr otherwise.
 		 *
 		 * @note	
-		 * Don't call this too often as it is relatively slow. It is more efficient to call it once and store the result 
+		 * Don't call this too often as it is relatively slow. It is more efficient to call it once and store the result
 		 * for further use.
 		 */
 		template <typename T>
 		GameObjectHandle<T> getComponent()
 		{
-			static_assert((std::is_base_of<bs::Component, T>::value), 
+			static_assert((std::is_base_of<bs::Component, T>::value),
 				"Specified type is not a valid Component.");
 
 			return static_object_cast<T>(getComponent(T::getRTTIStatic()));
@@ -538,13 +538,13 @@ namespace bs
 		 * @return				Array of found components.
 		 *
 		 * @note	
-		 * Don't call this too often as it is relatively slow. It is more efficient to call it once and store the result 
+		 * Don't call this too often as it is relatively slow. It is more efficient to call it once and store the result
 		 * for further use.
 		 */
 		template <typename T>
 		Vector<GameObjectHandle<T>> getComponents()
 		{
-			static_assert((std::is_base_of<bs::Component, T>::value), 
+			static_assert((std::is_base_of<bs::Component, T>::value),
 				"Specified type is not a valid Component.");
 
 			Vector<GameObjectHandle<T>> output;
@@ -569,7 +569,7 @@ namespace bs
 		template <typename T>
 		bool hasComponent()
 		{
-			static_assert((std::is_base_of<bs::Component, T>::value), 
+			static_assert((std::is_base_of<bs::Component, T>::value),
 				"Specified type is not a valid Component.");
 
 			for (auto entry : mComponents)
@@ -595,10 +595,10 @@ namespace bs
 		HComponent getComponent(RTTITypeBase* type) const;
 
 		/**
-		 * Removes the component from this object, and deallocates it. 
+		 * Removes the component from this object, and deallocates it.
 		 *
 		 * @param[in]	component	The component to destroy.
-		 * @param[in]	immediate	If true, the component will be deallocated and become unusable right away. Otherwise 
+		 * @param[in]	immediate	If true, the component will be deallocated and become unusable right away. Otherwise
 		 *							the deallocation will be delayed to the end of frame (preferred method).
 		 */
 		void destroyComponent(const HComponent component, bool immediate = false);
@@ -607,7 +607,7 @@ namespace bs
 		 * Removes the component from this object, and deallocates it.
 		 *
 		 * @param[in]	component	The component to destroy.
-		 * @param[in]	immediate	If true, the component will be deallocated and become unusable right away. Otherwise 
+		 * @param[in]	immediate	If true, the component will be deallocated and become unusable right away. Otherwise
 		 *							the deallocation will be delayed to the end of frame (preferred method).
 		 */
 		void destroyComponent(Component* component, bool immediate = false);

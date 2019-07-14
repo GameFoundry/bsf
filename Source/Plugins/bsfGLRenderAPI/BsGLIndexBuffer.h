@@ -7,7 +7,7 @@
 #include "BsGLHardwareBuffer.h"
 
 namespace bs { namespace ct
-{ 
+{
 	/** @addtogroup GL
 	 *  @{
 	 */

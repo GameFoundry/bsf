@@ -35,7 +35,7 @@ namespace bs
 	}
 
 	GLRenderTexture::~GLRenderTexture()
-	{ 
+	{
 		if (mFB != nullptr)
 			bs_delete(mFB);
 	}
@@ -118,7 +118,7 @@ namespace bs
 				if (!allLayers)
 					firstSlice = mDepthStencilSurface->getFirstArraySlice();
 
-				depthStencilBuffer = glDepthStencilTexture->getBuffer(firstSlice, 
+				depthStencilBuffer = glDepthStencilTexture->getBuffer(firstSlice,
 					mDepthStencilSurface->getMostDetailedMip());
 			}
 

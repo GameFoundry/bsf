@@ -6,7 +6,7 @@
 #include "Renderer/BsLightProbeVolume.h"
 #include "Scene/BsComponent.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Components-Core
 	 *  @{
@@ -20,7 +20,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering,n:LightProbeVolume) CLightProbeVolume : public Component
 	{
 	public:
-		CLightProbeVolume(const HSceneObject& parent, const AABox& volume = AABox::UNIT_BOX, 
+		CLightProbeVolume(const HSceneObject& parent, const AABox& volume = AABox::UNIT_BOX,
 			const Vector3I& cellCount = Vector3I(1, 1, 1));
 		virtual ~CLightProbeVolume();
 
@@ -72,7 +72,7 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:CellCount,pr:getter)
 		const Vector3I& getCellCount() const { return mCellCount; }
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 

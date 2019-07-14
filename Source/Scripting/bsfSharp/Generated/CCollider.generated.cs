@@ -11,8 +11,8 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Collider represents physics geometry that can be in multiple states: - Default: Static geometry that physics objects 
-	/// can collide with. - Trigger: Static geometry that can&apos;t be collided with but will report touch events. - Dynamic: 
+	/// Collider represents physics geometry that can be in multiple states: - Default: Static geometry that physics objects
+	/// can collide with. - Trigger: Static geometry that can&apos;t be collided with but will report touch events. - Dynamic:
 	/// Dynamic geometry that is a part of a Rigidbody. A set of colliders defines the shape of the parent  rigidbody.
 	/// </summary>
 	[ShowInInspector]
@@ -22,7 +22,7 @@ namespace bs
 		protected Collider() { }
 
 		/// <summary>
-		/// Enables/disables a collider as a trigger. A trigger will not be used for collisions (objects will pass  through it), 
+		/// Enables/disables a collider as a trigger. A trigger will not be used for collisions (objects will pass  through it),
 		/// but collision events will still be reported.
 		/// </summary>
 		[ShowInInspector]
@@ -34,8 +34,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the mass of the collider. Only relevant if the collider is part of a rigidbody. Ultimately this will 
-		/// determine the total mass, center of mass and inertia tensors of the parent rigidbody (if they&apos;re being 
+		/// Determines the mass of the collider. Only relevant if the collider is part of a rigidbody. Ultimately this will
+		/// determine the total mass, center of mass and inertia tensors of the parent rigidbody (if they&apos;re being
 		/// calculated automatically).
 		/// </summary>
 		[ShowInInspector]
@@ -58,9 +58,9 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines how far apart do two shapes need to be away from each other before the physics runtime starts  generating 
-		/// repelling impulse for them. This distance will be the sum of contact offsets of the two interacting objects. If 
-		/// objects are moving fast you can increase this value to start generating the impulse earlier and  potentially prevent 
+		/// Determines how far apart do two shapes need to be away from each other before the physics runtime starts  generating
+		/// repelling impulse for them. This distance will be the sum of contact offsets of the two interacting objects. If
+		/// objects are moving fast you can increase this value to start generating the impulse earlier and  potentially prevent
 		/// the objects from interpenetrating. This value is in meters. Must be positive and greater than rest offset.
 		///
 		/// Also see setRestOffset().
@@ -74,8 +74,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines at what distance should two objects resting on one another come to an equilibrium. The value used in the 
-		/// runtime will be the sum of rest offsets for both interacting objects. This value is in meters. Cannot be  larger than 
+		/// Determines at what distance should two objects resting on one another come to an equilibrium. The value used in the
+		/// runtime will be the sum of rest offsets for both interacting objects. This value is in meters. Cannot be  larger than
 		/// contact offset.
 		///
 		/// Also see setContactOffset().
@@ -108,19 +108,19 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Triggered when some object starts interacting with the collider. Only triggered if proper collision report mode is 
+		/// Triggered when some object starts interacting with the collider. Only triggered if proper collision report mode is
 		/// turned on.
 		/// </summary>
 		public event Action<CollisionData> OnCollisionBegin;
 
 		/// <summary>
-		/// Triggered for every frame that an object remains interacting with a collider. Only triggered if proper collision 
+		/// Triggered for every frame that an object remains interacting with a collider. Only triggered if proper collision
 		/// report mode is turned on.
 		/// </summary>
 		public event Action<CollisionData> OnCollisionStay;
 
 		/// <summary>
-		/// Triggered when some object stops interacting with the collider. Only triggered if proper collision report mode is 
+		/// Triggered when some object stops interacting with the collider. Only triggered if proper collision report mode is
 		/// turned on.
 		/// </summary>
 		public event Action<CollisionData> OnCollisionEnd;

@@ -8,8 +8,8 @@
 
 using namespace std::placeholders;
 
-namespace bs 
-{ 
+namespace bs
+{
 	constexpr const char* NullRendererFactory::SystemName;
 
 	SPtr<ct::Renderer> NullRendererFactory::create()

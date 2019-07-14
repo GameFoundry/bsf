@@ -17,7 +17,7 @@ namespace bs
         public delegate void OnSelectionChangedDelegate(int index);
 
         /// <summary>
-        /// Triggered whenever user selects a new element in the list box. Returned index maps to the element in the 
+        /// Triggered whenever user selects a new element in the list box. Returned index maps to the element in the
         /// elements array that the list box was initialized with.
         /// </summary>
         public event OnSelectionChangedDelegate OnSelectionChanged;
@@ -34,14 +34,14 @@ namespace bs
         /// <summary>
         /// Creates a new list box with the specified elements.
         /// </summary>
-        /// <param name="elements">Array of elements to display in the list box. Elements will be displayed in the same 
+        /// <param name="elements">Array of elements to display in the list box. Elements will be displayed in the same
         ///                        order as in the array.</param>
         /// <param name="multiselect">Determines should the listbox allow multiple elements to be selected or just one.
         ///                           </param>
-        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified
         ///                     default element style is used.</param>
-        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUIListBox(LocString[] elements, bool multiselect = false, string style = "", params GUIOption[] options)
         {
@@ -51,11 +51,11 @@ namespace bs
         /// <summary>
         /// Creates a new list box with the specified elements.
         /// </summary>
-        /// <param name="elements">Array of elements to display in the list box. Elements will be displayed in the same 
+        /// <param name="elements">Array of elements to display in the list box. Elements will be displayed in the same
         ///                        order as in the array.</param>
         /// <param name="multiselect">Determines should the listbox allow multiple elements to be selected or just one.
         ///                           </param>
-        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
+        /// <param name="options">Options that allow you to control how is the element positioned and sized. This will
         ///                       override any similar options set by style.</param>
         public GUIListBox(LocString[] elements, bool multiselect = false, params GUIOption[] options)
         {
@@ -65,7 +65,7 @@ namespace bs
         /// <summary>
         /// Updates the list box with a new set of elements.
         /// </summary>
-        /// <param name="elements">Array of elements to display in the list box. Elements will be displayed in the same 
+        /// <param name="elements">Array of elements to display in the list box. Elements will be displayed in the same
         ///                        order as in the array.</param>
         public void SetElements(LocString[] elements)
         {

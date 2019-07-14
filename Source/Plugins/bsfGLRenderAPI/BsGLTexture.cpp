@@ -15,7 +15,7 @@
 
 namespace bs { namespace ct
 {
-	GLTexture::GLTexture(GLSupport& support, const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData, 
+	GLTexture::GLTexture(GLSupport& support, const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData,
 		GpuDeviceFlags deviceMask)
 		: Texture(desc, initialData, deviceMask), mGLSupport(support)
 	{
@@ -68,7 +68,7 @@ namespace bs { namespace ct
 		{
 			if (texType != TEX_TYPE_2D && texType != TEX_TYPE_CUBE_MAP)
 			{
-				BS_LOG(Error, RenderBackend, 
+				BS_LOG(Error, RenderBackend,
 					"Only 2D and cubemap depth stencil textures are supported. Ignoring depth-stencil flag.");
 				usage &= ~TU_DEPTHSTENCIL;
 			}
@@ -176,7 +176,7 @@ namespace bs { namespace ct
 			}
 #else
 			if((usage & TU_DEPTHSTENCIL) != 0)
-			{ 
+			{
 				GLenum depthStencilType = GLPixelUtil::getDepthStencilTypeFromPF(mInternalFormat);
 				GLenum depthStencilFormat = GLPixelUtil::getDepthStencilFormatFromPF(mInternalFormat);
 
@@ -449,7 +449,7 @@ namespace bs { namespace ct
 			getBuffer(face, mipLevel)->upload(src, src.getExtents());
 	}
 
-	void GLTexture::copyImpl(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc, 
+	void GLTexture::copyImpl(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [this](const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc)
@@ -458,8 +458,8 @@ namespace bs { namespace ct
 			GLTextureBuffer* dest = static_cast<GLTextureBuffer*>(destTex->getBuffer(desc.dstFace, desc.dstMip).get());
 			GLTextureBuffer* src = static_cast<GLTextureBuffer*>(getBuffer(desc.srcFace, desc.srcMip).get());
 
-			bool copyEntireSurface = desc.srcVolume.getWidth() == 0 || 
-				desc.srcVolume.getHeight() == 0 || 
+			bool copyEntireSurface = desc.srcVolume.getWidth() == 0 ||
+				desc.srcVolume.getHeight() == 0 ||
 				desc.srcVolume.getDepth() == 0;
 
 			PixelVolume srcVolume = desc.srcVolume;
@@ -509,8 +509,8 @@ namespace bs { namespace ct
 			for (UINT32 mip = 0; mip <= mProperties.getNumMipmaps(); mip++)
 			{
 				GLPixelBuffer *buf = bs_new<GLTextureBuffer>(getGLTextureTarget(), mTextureID, face, mip, mInternalFormat,
-					static_cast<GpuBufferUsage>(mProperties.getUsage()), 
-					mProperties.isHardwareGammaEnabled(), 
+					static_cast<GpuBufferUsage>(mProperties.getUsage()),
+					mProperties.isHardwareGammaEnabled(),
 					mProperties.getNumSamples());
 
 				mSurfaceList.push_back(bs_shared_ptr<GLPixelBuffer>(buf));

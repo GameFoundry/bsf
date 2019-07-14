@@ -10,7 +10,7 @@
 #include "Resources/BsResources.h"
 #include "Image/BsPixelUtil.h"
 
-namespace bs 
+namespace bs
 {
 	TEXTURE_COPY_DESC TEXTURE_COPY_DESC::DEFAULT = TEXTURE_COPY_DESC();
 
@@ -385,7 +385,7 @@ namespace bs
 		if (pixelData.getWidth() != mipWidth || pixelData.getHeight() != mipHeight ||
 			pixelData.getDepth() != mipDepth || pixelData.getFormat() != mProperties.getFormat())
 		{
-			BS_LOG(Error, Texture, 
+			BS_LOG(Error, Texture,
 				"Provided buffer is not of valid dimensions or format in order to read from this texture.");
 			return;
 		}
@@ -462,7 +462,7 @@ namespace bs
 
 		if (desc.dstMip > target->mProperties.getNumMipmaps())
 		{
-			BS_LOG(Error, Texture, "Destination mip level out of range. Valid range is [0, {0}].", 
+			BS_LOG(Error, Texture, "Destination mip level out of range. Valid range is [0, {0}].",
 				target->mProperties.getNumMipmaps());
 			return;
 		}
@@ -487,7 +487,7 @@ namespace bs
 			dstHeight,
 			dstDepth);
 
-		if(desc.dstPosition.x < 0 || desc.dstPosition.x >= (INT32)dstWidth || 
+		if(desc.dstPosition.x < 0 || desc.dstPosition.x >= (INT32)dstWidth ||
 			desc.dstPosition.y < 0 || desc.dstPosition.y >= (INT32)dstHeight ||
 			desc.dstPosition.z < 0 || desc.dstPosition.z >= (INT32)dstDepth)
 		{
@@ -495,8 +495,8 @@ namespace bs
 			return;
 		}
 
-		bool entireSurface = desc.srcVolume.getWidth() == 0 || 
-			desc.srcVolume.getHeight() == 0 || 
+		bool entireSurface = desc.srcVolume.getWidth() == 0 ||
+			desc.srcVolume.getHeight() == 0 ||
 			desc.srcVolume.getDepth() == 0;
 
 		UINT32 dstRight = (UINT32)desc.dstPosition.x;
@@ -573,7 +573,7 @@ namespace bs
 		mTextureViews.clear();
 	}
 
-	SPtr<TextureView> Texture::requestView(UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, 
+	SPtr<TextureView> Texture::requestView(UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice,
 										   UINT32 numArraySlices, GpuViewUsage usage)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -606,7 +606,7 @@ namespace bs
 		return TextureManager::instance().createTexture(desc, deviceMask);
 	}
 
-	SPtr<Texture> Texture::create(const SPtr<PixelData>& pixelData, int usage, bool hwGammaCorrection, 
+	SPtr<Texture> Texture::create(const SPtr<PixelData>& pixelData, int usage, bool hwGammaCorrection,
 		GpuDeviceFlags deviceMask)
 	{
 		TEXTURE_DESC desc;

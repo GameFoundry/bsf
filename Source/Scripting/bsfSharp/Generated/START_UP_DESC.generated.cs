@@ -42,8 +42,8 @@ namespace bs
 		/// <summary>Name of the input plugin to use.</summary>
 		public string input;
 		/// <summary>
-		/// True if physics cooking library should be loaded. Cooking is useful for creating collision meshes during development 
-		/// type, but might be unnecessary in the final application. When turned off you can save on space by not shipping the 
+		/// True if physics cooking library should be loaded. Cooking is useful for creating collision meshes during development
+		/// type, but might be unnecessary in the final application. When turned off you can save on space by not shipping the
 		/// cooking library.
 		/// </summary>
 		public bool physicsCooking;

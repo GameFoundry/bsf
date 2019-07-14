@@ -10,7 +10,7 @@ namespace bs
      */
 
     /// <summary>
-    /// An object in the scene graph. It has a position, place in the hierarchy and optionally a number of attached 
+    /// An object in the scene graph. It has a position, place in the hierarchy and optionally a number of attached
     /// components.
     /// </summary>
     public sealed class SceneObject : GameObject
@@ -241,7 +241,7 @@ namespace bs
         /// </summary>
         private SceneObject()
         {
-            
+
         }
 
         /// <summary>
@@ -300,7 +300,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Searches for all components of a specific type. 
+        /// Searches for all components of a specific type.
         /// </summary>
         /// <typeparam name="T">Type of the component to search for. Includes any components derived from the type.
         /// </typeparam>
@@ -365,7 +365,7 @@ namespace bs
         /// Searches the child objects for an object matching the specified name.
         /// </summary>
         /// <param name="name">Name of the object to locate.</param>
-        /// <param name="recursive">If true all descendants of the scene object will be searched, otherwise only immediate 
+        /// <param name="recursive">If true all descendants of the scene object will be searched, otherwise only immediate
         ///                         children.</param>
         /// <returns>First found scene object, or empty handle if none found.</returns>
         public SceneObject FindChild(string name, bool recursive = true)
@@ -377,7 +377,7 @@ namespace bs
         /// Searches the child objects for objects matching the specified name.
         /// </summary>
         /// <param name="name">Name of the objects to locate.</param>
-        /// <param name="recursive">If true all descendants of the scene object will be searched, otherwise only immediate 
+        /// <param name="recursive">If true all descendants of the scene object will be searched, otherwise only immediate
         ///                         children.</param>
         /// <returns>All scene objects matching the specified name.</returns>
         public SceneObject[] FindChildren(string name, bool recursive = true)
@@ -618,13 +618,13 @@ namespace bs
         DontSave = 0x02,
 
         /// <summary>
-        /// Object will remain in the scene even after scene clear, unless destroyed directly. This only works with 
+        /// Object will remain in the scene even after scene clear, unless destroyed directly. This only works with
         /// top-level objects.
         /// </summary>
         Persistent = 0x04,
 
         /// <summary>
-        /// Provides a hint to external systems that his object is used by engine internals. For example, those systems 
+        /// Provides a hint to external systems that his object is used by engine internals. For example, those systems
         /// might not want to display those objects together with the user created ones.
         /// </summary>
         Internal = 0x08

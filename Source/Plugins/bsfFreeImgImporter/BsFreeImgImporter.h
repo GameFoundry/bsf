@@ -39,16 +39,16 @@ namespace bs
 		/**	Imports an image from the provided data stream. */
 		SPtr<PixelData> importRawImage(const Path& fileData);
 
-		/** 
+		/**
 		 * Generates six cubemap faces from the provided source texture. *
-		 * 
+		 *
 		 * @param[in]	source		Source texture containing the pixels to generate the cubemap from.
 		 * @param[in]	sourceType	Type of the source texture, determines how is the data interpreted.
 		 * @param[out]	output		Will contain the six cubemap faces, if the method returns true. The faces will be in the
 		 *							same order as presented in the CubemapFace enum.
 		 * @return					True if the cubemap faces were successfully generated, false otherwise.
 		 */
-		bool generateCubemap(const SPtr<PixelData>& source, CubemapSourceType sourceType, 
+		bool generateCubemap(const SPtr<PixelData>& source, CubemapSourceType sourceType,
 			std::array<SPtr<PixelData>, 6>& output);
 
 		Vector<String> mExtensions;

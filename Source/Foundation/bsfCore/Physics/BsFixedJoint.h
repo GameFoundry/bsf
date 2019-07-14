@@ -21,9 +21,9 @@ namespace bs
 		FixedJoint(const FIXED_JOINT_DESC& desc) { }
 		virtual ~FixedJoint() = default;
 
-		/** 
-		 * Creates a new fixed joint. 
-		 * 
+		/**
+		 * Creates a new fixed joint.
+		 *
 		 * @param[in]	scene		Scene to which to add the joint.
 		 * @param[in]	desc		Settings describing the joint.
 		 */

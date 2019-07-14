@@ -16,8 +16,8 @@ namespace bs
 	public:
 		virtual ~AudioDecoder() = default;
 
-		/** 
-		 * Attempts to open audio data from the provided stream. Must be called before any reads or seeks. 
+		/**
+		 * Attempts to open audio data from the provided stream. Must be called before any reads or seeks.
 		 *
 		 * @param[in]	stream	Data stream audio data is stored in.
 		 * @param[out]	info	Output information describing meta-data of the audio in the stream.
@@ -26,7 +26,7 @@ namespace bs
 		 */
 		virtual bool open(const SPtr<DataStream>& stream, AudioDataInfo& info, UINT32 offset = 0) = 0;
 
-		/** 
+		/**
 		 * Moves the read pointer to the specified offset. Any further read() calls will read from this location. User must
 		 * ensure not to seek past the end of the data.
 		 *
@@ -46,7 +46,7 @@ namespace bs
 		 */
 		virtual UINT32 read(UINT8* samples, UINT32 numSamples) = 0;
 
-		/** 
+		/**
 		 * Checks if the data in the provided stream valid audio data for the current format. You should check this before
 		 * calling open().
 		 *

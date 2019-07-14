@@ -80,7 +80,7 @@ namespace bs
 		return bs_shared_ptr_new<NullPhysicsPlaneCollider>(position, rotation);
 	}
 
-	SPtr<CapsuleCollider> NullPhysicsScene::createCapsuleCollider(float radius, float halfHeight, const Vector3& position, 
+	SPtr<CapsuleCollider> NullPhysicsScene::createCapsuleCollider(float radius, float halfHeight, const Vector3& position,
 		const Quaternion& rotation)
 	{
 		return bs_shared_ptr_new<NullPhysicsCapsuleCollider>(position, rotation, radius, halfHeight);

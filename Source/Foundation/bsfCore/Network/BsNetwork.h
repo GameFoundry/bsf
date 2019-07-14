@@ -4,9 +4,9 @@
 
 #include "BsCorePrerequisites.h"
 
-namespace bs 
+namespace bs
 {
-	/** @addtogroup Network 
+	/** @addtogroup Network
 	 *  @{
 	 */
 
@@ -41,8 +41,8 @@ namespace bs
 		 */
 		NetworkAddress(const char* ip, UINT16 port);
 
-		/** 
-		 * Converts the network address into printable string, with an optional port component. 
+		/**
+		 * Converts the network address into printable string, with an optional port component.
 		 *
 		 * @param[in]		withPort		If true the returned string will contain a port component delimited with "|"
 		 *									after the IP string. For example, "192.0.0.1|1234".
@@ -53,7 +53,7 @@ namespace bs
 
 		/**
 		 * Compares the IP portion of a network address with another address (ignoring port).
-		 * 
+		 *
 		 * @param[in]	other		Other address to compare with.
 		 * @return					True if the IP addresses match, false otherwise.
 		 */
@@ -97,9 +97,9 @@ namespace bs
 		/** New incoming connection request has been received and accepted. */
 		IncomingNew,
 
-		/** 
-		 * New incoming connection request has been received but cannot be fulfilled as we have reached the maximum 
-		 * incoming connection capacity. 
+		/**
+		 * New incoming connection request has been received but cannot be fulfilled as we have reached the maximum
+		 * incoming connection capacity.
 		 */
 		IncomingNoFree,
 
@@ -119,7 +119,7 @@ namespace bs
 	/** Determines when are packets sent. */
 	enum class PacketPriority
 	{
-		/** 
+		/**
 		 * Packets will be send immediately (not waiting for the next network thread update). This also means the packets
 		 * will not be aggregated, resulting in higher per-packet overhead at the benefit to latency.
 		 */
@@ -138,13 +138,13 @@ namespace bs
 	/** Determines how should packets that were failed to be delivered be handled. */
 	enum class PacketReliability
 	{
-		/** 
+		/**
 		 * Lost packets will send again until successfuly delivered. Internally this comes with an overhead as each
 		 * packet delivery must be confirmed, as well as the overhead for retransmisson itself.
 		 */
 		Reliable,
 
-		/** 
+		/**
 		 * Lost packets will be ignored and never received by the remote. Internally this comes with low overhead as
 		 * packets can be sent using a 'fire-and-forget' approach.
 		 */
@@ -157,8 +157,8 @@ namespace bs
 		/** Packets are allowed to be received in order different from the order they were sent in. */
 		Unordered,
 
-		/** 
-		 * Packets will arrive in the order you have sent them. This means events might be delayed waiting for 
+		/**
+		 * Packets will arrive in the order you have sent them. This means events might be delayed waiting for
 		 * out-of-order packets. When used with 'Unreliable' reliability this is the same as 'Sequenced'.
 		 */
 		Ordered,
@@ -213,7 +213,7 @@ namespace bs
 	/** Information required for initializing a new network peer. */
 	struct NETWORK_PEER_DESC
 	{
-		/** 
+		/**
 		 * A list of addresses and ports the peer should be listening on. For clients this can usually be a single
 		 * null network address. For servers this can usually be a single network address with a port to listen on.
 		 */
@@ -221,7 +221,7 @@ namespace bs
 
 		/**
 		 * Maximum number of connections (both incoming and outgoing) allowed to be established by the peer. In a regular
-		 * client-server model, this should be 1 for client, and same as @p maxNumIncomingConnections for server. 
+		 * client-server model, this should be 1 for client, and same as @p maxNumIncomingConnections for server.
 		 */
 		UINT32 maxNumConnections = 1;
 
@@ -248,10 +248,10 @@ namespace bs
 		// TODO Low Priority - Perhaps disallow domain-name here and use NetworkAddress directly?
 		//  - Add a separate async method for resolving domain name beforehand
 
-		/** 
-		 * Attempts to connect to a new peer. This will execute asynchronously and you must query @p receive() for a 
+		/**
+		 * Attempts to connect to a new peer. This will execute asynchronously and you must query @p receive() for a
 		 * network event of type 'ConnectingDone' to confirm the connection has been established.
-		 * 
+		 *
 		 * @param[in]		host		Host name of the peer to connect to. This can be an IP address or a domain name.
 		 * @param[in]		port		Port on which to try connecting to.
 		 * @return						True if the connection attempt succesfully started, and false otherwise. If false
@@ -259,21 +259,21 @@ namespace bs
 		 */
 		bool connect(const char* host, UINT16 port);
 
-		/** 
-		 * Disconnects from a previously connected remote peer. 
+		/**
+		 * Disconnects from a previously connected remote peer.
 		 *
 		 * @param[in]	address		Address of the peer to disconnect from.
-		 * @param[in]	silent		If true the peer will neatly disconnect from the remote by first sending a disconnect 
+		 * @param[in]	silent		If true the peer will neatly disconnect from the remote by first sending a disconnect
 		 *							message. If false the peer will immediately close the connection without notifying the
 		 *							remote.
 		 */
 		void disconnect(const NetworkAddress& address, bool silent = false);
 
-		/** 
-		 * Disconnects from a previously connected remote peer. 
+		/**
+		 * Disconnects from a previously connected remote peer.
 		 *
 		 * @param[in]	id			Unique network id of the peer to disconnect from.
-		 * @param[in]	silent		If true the peer will neatly disconnect from the remote by first sending a disconnect 
+		 * @param[in]	silent		If true the peer will neatly disconnect from the remote by first sending a disconnect
 		 *							message. If false the peer will immediately close the connection without notifying the
 		 *							remote.
 		 */
@@ -293,8 +293,8 @@ namespace bs
 		// TODO Low priority - Hide NETWORK_USER_MESSAGE_ID from the outside world. Allow user to use an ID starting at 0.
 
 		/**
-		 * Attempts to send some data to the specified remote peer. 
-		 * 
+		 * Attempts to send some data to the specified remote peer.
+		 *
 		 * @param[in]	data		Data to send in the form of raw bytes. The first byte of your message /must/ contain
 		 *							the message identifier, starting with NETWORK_USER_MESSAGE_ID (lower identifiers are
 		 *							reserved).
@@ -302,27 +302,27 @@ namespace bs
 		 *							peer at the specified address.
 		 * @param[in]	channel		Channel determining reliability, ordering and priority of the sent data.
 		 *							
-		 * @note		Whenever possible prefer to use the variant of this method that accepts NetworkId for the 
+		 * @note		Whenever possible prefer to use the variant of this method that accepts NetworkId for the
 		 *				@p destination parameter, as it is faster.
 		 */
-		void send(const PacketData& data, const NetworkAddress& destination, 
+		void send(const PacketData& data, const NetworkAddress& destination,
 			const PacketChannel& channel = PacketChannel::DEFAULT);
 
 		/**
-		 * Attempts to send some data to the specified remote peer. 
-		 * 
+		 * Attempts to send some data to the specified remote peer.
+		 *
 		 * @param[in]	data		Data to send in the form of raw bytes. The first byte of your message /must/ contain
 		 *							the message identifier, starting with NETWORK_USER_MESSAGE_ID (lower identifiers are
 		 *							reserved).
-		 * @param[in]	destination	Network id of the peer to send the message to. 
+		 * @param[in]	destination	Network id of the peer to send the message to.
 		 * @param[in]	channel		Channel determining reliability, ordering and priority of the sent data.
 		 */
-		void send(const PacketData& data, const NetworkId& destination, 
+		void send(const PacketData& data, const NetworkId& destination,
 			const PacketChannel& channel = PacketChannel::DEFAULT);
 
 		/**
 		 * Broadcasts some data to all currently connected peers.
-		 * 
+		 *
 		 * @param[in]	data		Data to send in the form of raw bytes. The first byte of your message /must/ contain
 		 *							the message identifier, starting with NETWORK_USER_MESSAGE_ID (lower identifiers are
 		 *							reserved).

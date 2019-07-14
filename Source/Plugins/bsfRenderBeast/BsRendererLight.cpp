@@ -294,7 +294,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void VisibleLightData::gatherInfluencingLights(const Bounds& bounds, 
+	void VisibleLightData::gatherInfluencingLights(const Bounds& bounds,
 		const LightData* (&output)[STANDARD_FORWARD_MAX_NUM_LIGHTS], Vector3I& counts) const
 	{
 		UINT32 outputIndices[STANDARD_FORWARD_MAX_NUM_LIGHTS];

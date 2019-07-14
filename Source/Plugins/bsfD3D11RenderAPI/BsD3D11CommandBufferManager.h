@@ -11,8 +11,8 @@ namespace bs { namespace ct
 	 *  @{
 	 */
 
-	/** 
-	 * Handles creation of DirectX 11 command buffers. See CommandBuffer. 
+	/**
+	 * Handles creation of DirectX 11 command buffers. See CommandBuffer.
 	 *
 	 * @note Core thread only.
 	 */

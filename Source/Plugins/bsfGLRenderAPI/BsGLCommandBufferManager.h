@@ -11,8 +11,8 @@ namespace bs { namespace ct
 	 *  @{
 	 */
 
-	/** 
-	 * Handles creation of OpenGL command buffers. See CommandBuffer. 
+	/**
+	 * Handles creation of OpenGL command buffers. See CommandBuffer.
 	 *
 	 * @note Core thread only.
 	 */

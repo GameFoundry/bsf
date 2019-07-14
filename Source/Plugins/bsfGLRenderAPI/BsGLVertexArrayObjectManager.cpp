@@ -11,7 +11,7 @@
 
 namespace bs { namespace ct
 {
-	GLVertexArrayObject::GLVertexArrayObject(GLuint handle, UINT64 vertexProgramId, 
+	GLVertexArrayObject::GLVertexArrayObject(GLuint handle, UINT64 vertexProgramId,
 		GLVertexBuffer** attachedBuffers, UINT32 numBuffers)
 		:mHandle(handle), mVertProgId(vertexProgramId), mAttachedBuffers(attachedBuffers), mNumBuffers(numBuffers)
 	{ }
@@ -102,7 +102,7 @@ namespace bs { namespace ct
 			streamToSeqIdx[streamIdx] = (INT32)numUsedBuffers;
 
 			if (vertexBuffer != nullptr)
-				usedBuffers[numUsedBuffers] = static_cast<GLVertexBuffer*>(vertexBuffer.get()); 
+				usedBuffers[numUsedBuffers] = static_cast<GLVertexBuffer*>(vertexBuffer.get());
 			else
 				usedBuffers[numUsedBuffers] = nullptr;
 
@@ -164,7 +164,7 @@ namespace bs { namespace ct
 
 			UINT16 typeCount = VertexElement::getTypeCount(elem.getType());
 			GLenum glType = GLHardwareBufferManager::getGLType(elem.getType());
-			bool isInteger = glType == GL_SHORT || glType == GL_UNSIGNED_SHORT || glType == GL_INT 
+			bool isInteger = glType == GL_SHORT || glType == GL_UNSIGNED_SHORT || glType == GL_INT
 				|| glType == GL_UNSIGNED_INT || glType == GL_UNSIGNED_BYTE;
 
 			GLboolean normalized = GL_FALSE;

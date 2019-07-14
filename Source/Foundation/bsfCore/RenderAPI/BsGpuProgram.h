@@ -8,7 +8,7 @@
 #include "Utility/BsDataBlob.h"
 #include "BsVertexDeclaration.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup RenderAPI
 	 *  @{
@@ -25,7 +25,7 @@ namespace bs
 		GpuProgramType type = GPT_VERTEX_PROGRAM; /**< Type of the program, for example vertex or fragment. */
 		bool requiresAdjacency = false; /**< If true then adjacency information will be provided when rendering. */
 
-		/** 
+		/**
 		 * Optional intermediate version of the GPU program. Can significantly speed up GPU program compilation/creation
 		 * when supported by the render backend. Call ct::GpuProgram::compileBytecode to generate it.
 		 */
@@ -50,7 +50,7 @@ namespace bs
 		virtual ~GpuProgram() = default;
 
 		/**
-		 * Returns true if the program was successfully compiled. 
+		 * Returns true if the program was successfully compiled.
 		 *
 		 * @note	Only valid after core thread has initialized the program.
 		 */
@@ -107,9 +107,9 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 	};
 
-	/** 
+	/**
 	 * A GPU program compiled to an intermediate bytecode format, as well as any relevant meta-data that could be
-	 * extracted from that format. 
+	 * extracted from that format.
 	 */
 	struct BS_CORE_EXPORT GpuProgramBytecode : IReflectable
 	{
@@ -195,13 +195,13 @@ namespace bs
 		/** Returns the compiled bytecode of this program. */
 		SPtr<GpuProgramBytecode> getBytecode() const { return mBytecode; }
 
-		/** 
+		/**
 		 * @copydoc bs::GpuProgram::create(const GPU_PROGRAM_DESC&)
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
 		static SPtr<GpuProgram> create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
-		/** 
+		/**
 		 * Compiles the GPU program to an intermediate bytecode format. The bytecode can be cached and used for
 		 * quicker compilation/creation of GPU programs.
 		 */

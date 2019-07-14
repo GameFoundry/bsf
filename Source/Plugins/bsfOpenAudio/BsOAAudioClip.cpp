@@ -44,8 +44,8 @@ namespace bs
 			}
 
 			// Load decompressed data into a sound buffer
-			bool loadDecompressed = 
-				mDesc.readMode == AudioReadMode::LoadDecompressed || 
+			bool loadDecompressed =
+				mDesc.readMode == AudioReadMode::LoadDecompressed ||
 				(mDesc.readMode == AudioReadMode::LoadCompressed && mDesc.format == AudioFormat::PCM);
 
 			if(loadDecompressed)
@@ -93,7 +93,7 @@ namespace bs
 			else if(mDesc.readMode == AudioReadMode::LoadCompressed)
 			{
 				// If reading from file, make a copy of data in memory, otherwise just take ownership of the existing buffer
-				if (mStreamData->isFile()) 
+				if (mStreamData->isFile())
 				{
 					if (mSourceStreamData != nullptr) // If it's already loaded in memory, use it directly
 						mStreamData = mSourceStreamData;

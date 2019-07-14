@@ -48,7 +48,7 @@ namespace bs { namespace ct
 
 		/** Binds the material for rendering, sets up parameters and executes it. */
 		void execute(const RendererView& view, const VisibleLightData& lightData, const GBufferTextures& gbuffer,
-			const SPtr<Texture>& inputTexture, const SPtr<Texture>& lightAccumTex, const SPtr<Texture>& lightAccumTexArray, 
+			const SPtr<Texture>& inputTexture, const SPtr<Texture>& lightAccumTex, const SPtr<Texture>& lightAccumTexArray,
 			const SPtr<Texture>& msaaCoverage);
 
 		/** Returns the material variation matching the provided parameters. */
@@ -69,8 +69,8 @@ namespace bs { namespace ct
 		static const UINT32 TILE_SIZE;
 	};
 
-	/** 
-	 * Moves data from a texture array into a MSAA texture. Primarily useful when needing to do unordered writes to a 
+	/**
+	 * Moves data from a texture array into a MSAA texture. Primarily useful when needing to do unordered writes to a
 	 * MSAA texture which isn't directly supported on some backends, so writes are done to a texture array instead. The
 	 * array is expected to have the same number of layers as the number of samples in the MSAA texture, each layer
 	 * containing a sample for that specific pixel.
@@ -125,8 +125,8 @@ namespace bs { namespace ct
 		void execute(const SPtr<GpuBuffer>& target, const Color& clearValue = Color::ZERO);
 
 		/**
-		 * Returns the material variation matching the provided parameters. 
-		 * 
+		 * Returns the material variation matching the provided parameters.
+		 *
 		 * @param[in]		objType			Type of object used for clear source.
 		 * @param[in]		dataType		Base data type stored in the clear source object.
 		 * @param[in]		numComponents	Number of components in the source objects's data type (e.g. float2, float4).
@@ -186,7 +186,7 @@ namespace bs { namespace ct
 		TiledDeferredImageBasedLightingMat();
 
 		/** Binds the material for rendering, sets up parameters and executes it. */
-		void execute(const RendererView& view, const SceneInfo& sceneInfo, const VisibleReflProbeData& probeData, 
+		void execute(const RendererView& view, const SceneInfo& sceneInfo, const VisibleReflProbeData& probeData,
 			const Inputs& inputs);
 
 		/** Returns the material variation matching the provided parameters. */

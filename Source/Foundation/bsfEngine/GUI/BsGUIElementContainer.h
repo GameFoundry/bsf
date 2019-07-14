@@ -19,7 +19,7 @@ namespace bs
 		void setFocus(bool enabled, bool clear = false) override;
 
 	protected:
-		GUIElementContainer(const GUIDimensions& dimensions, const String& style = StringUtil::BLANK, 
+		GUIElementContainer(const GUIDimensions& dimensions, const String& style = StringUtil::BLANK,
 			GUIElementOptions options = GUIElementOptions(0));
 		virtual ~GUIElementContainer() = default;
 

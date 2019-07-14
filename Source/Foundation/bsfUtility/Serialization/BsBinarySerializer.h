@@ -18,13 +18,13 @@ namespace bs
 	struct SerializationContext;
 
 	/**
-	 * Encodes/decodes all the fields of the provided object into/from a binary format. Fields are encoded using their 
+	 * Encodes/decodes all the fields of the provided object into/from a binary format. Fields are encoded using their
 	 * unique IDs. Encoded data will remain compatible for decoding even if you modify the encoded class, as long as you
 	 * assign new unique field IDs to added/modified fields.
 	 * 			
 	 * Like for any serializable class, fields are defined in RTTIType that each IReflectable class must be able to return.
 	 *
-	 * Any data the object or its children are pointing to will also be serialized (unless the pointer isn't registered in 
+	 * Any data the object or its children are pointing to will also be serialized (unless the pointer isn't registered in
 	 * RTTIType). Upon decoding the pointer addresses will be set to proper values.
 	 */
 	class BS_UTILITY_EXPORT BinarySerializer
@@ -33,25 +33,25 @@ namespace bs
 		BinarySerializer();
 
 		/**
-		 * Encodes all serializable fields provided by @p object into a binary format. Data is written in chunks. Whenever a 
-		 * chunk is filled a callback is triggered that gives the user opportunity to expand or empty the buffer (for 
+		 * Encodes all serializable fields provided by @p object into a binary format. Data is written in chunks. Whenever a
+		 * chunk is filled a callback is triggered that gives the user opportunity to expand or empty the buffer (for
 		 * example write the chunk to disk)
 		 *
 		 * @param[in]	object					Object to encode into binary format.
 		 * @param[out]	buffer					Preallocated buffer where the data will be stored.
 		 * @param[in]	bufferLength			Length of the buffer, in bytes.
 		 * @param[out]	bytesWritten			Length of the data that was actually written to the buffer, in bytes.
-		 * @param[in]	flushBufferCallback 	This callback will get called whenever the buffer gets full (Be careful to 
-		 *										check the provided @p bytesRead variable, as buffer might not be full 
-		 *										completely). User must then either create a new buffer or empty the existing 
-		 *										one, and then return it by the callback. If the returned buffer address is 
+		 * @param[in]	flushBufferCallback 	This callback will get called whenever the buffer gets full (Be careful to
+		 *										check the provided @p bytesRead variable, as buffer might not be full
+		 *										completely). User must then either create a new buffer or empty the existing
+		 *										one, and then return it by the callback. If the returned buffer address is
 		 *										NULL, encoding is aborted.
-		 * @param[in]	shallow					Determines how to handle referenced objects. If true then references will 
-		 *										not be encoded and will be set to null. If false then references will be 
+		 * @param[in]	shallow					Determines how to handle referenced objects. If true then references will
+		 *										not be encoded and will be set to null. If false then references will be
 		 *										encoded as well and restored upon decoding.
 		 * @param[in]	context					Optional object that will be passed along to all serialized objects through
-		 *										their serialization callbacks. Can be used for controlling serialization, 
-		 *										maintaining state or sharing information between objects during 
+		 *										their serialization callbacks. Can be used for controlling serialization,
+		 *										maintaining state or sharing information between objects during
 		 *										serialization.
 		 */
 		void encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, UINT32* bytesWritten,
@@ -64,7 +64,7 @@ namespace bs
 		 * @param[in]	data  		Binary data to decode.
 		 * @param[in]	dataLength	Length of the data in bytes.
 		 * @param[in]	context		Optional object that will be passed along to all serialized objects through
-		 *							their deserialization callbacks. Can be used for controlling deserialization, 
+		 *							their deserialization callbacks. Can be used for controlling deserialization,
 		 *							maintaining state or sharing information between objects during deserialization.
 		 * @param[in]	progress	Optional callback that will occassionally trigger, reporting the current progress
 		 *							of the operation. The reported value is in range [0, 1].
@@ -125,17 +125,17 @@ namespace bs
 		UINT32 findOrCreatePersistentId(IReflectable* object);
 
 		/**
-		 * Finds or creates an id for the provided object and returns it. And it adds the object to a list of objects that 
+		 * Finds or creates an id for the provided object and returns it. And it adds the object to a list of objects that
 		 * need to be encoded, if it's not already there.
 		 */
 		UINT32 registerObjectPtr(SPtr<IReflectable> object);
 
 		/** Encodes data required for representing a serialized field, into 4 bytes. */
-		static UINT32 encodeFieldMetaData(UINT16 id, UINT8 size, bool array, 
+		static UINT32 encodeFieldMetaData(UINT16 id, UINT8 size, bool array,
 			SerializableFieldType type, bool hasDynamicSize, bool terminator);
 
 		/** Decode meta field that was encoded using encodeFieldMetaData().*/
-		static void decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size, bool& array, 
+		static void decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size, bool& array,
 			SerializableFieldType& type, bool& hasDynamicSize, bool& terminator);
 
 		/**
@@ -176,7 +176,7 @@ namespace bs
 
 	// TODO - Potential improvements:
 	//  - I will probably want to extract a generalized Serializer class so we can re-use the code in text or other serializers
-	//  - Encode does a chunk-based encode so that we don't need to know the buffer size in advance, and don't have to use 
+	//  - Encode does a chunk-based encode so that we don't need to know the buffer size in advance, and don't have to use
 	//    a lot of memory for the buffer. Consider doing something similar for decode.
 	//  - Add a simple encode method that doesn't require a callback, instead it calls the callback internally and creates
 	//    the buffer internally.

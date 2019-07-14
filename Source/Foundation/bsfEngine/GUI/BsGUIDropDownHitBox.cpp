@@ -14,17 +14,17 @@ namespace bs
 
 	GUIDropDownHitBox* GUIDropDownHitBox::create(bool captureMouseOver, bool captureMousePresses)
 	{
-		return new (bs_alloc<GUIDropDownHitBox>()) 
+		return new (bs_alloc<GUIDropDownHitBox>())
 			GUIDropDownHitBox(captureMouseOver, captureMousePresses, GUIDimensions::create());
 	}
 
 	GUIDropDownHitBox* GUIDropDownHitBox::create(bool captureMouseOver, bool captureMousePresses, const GUIOptions& options)
 	{
-		return new (bs_alloc<GUIDropDownHitBox>()) 
+		return new (bs_alloc<GUIDropDownHitBox>())
 			GUIDropDownHitBox(captureMouseOver, captureMousePresses, GUIDimensions::create(options));
 	}
 
-	GUIDropDownHitBox::GUIDropDownHitBox(bool captureMouseOver, 
+	GUIDropDownHitBox::GUIDropDownHitBox(bool captureMouseOver,
 		bool captureMousePresses, const GUIDimensions& dimensions)
 		:GUIElementContainer(dimensions), mCaptureMouseOver(captureMouseOver),
 		mCaptureMousePresses(captureMousePresses)

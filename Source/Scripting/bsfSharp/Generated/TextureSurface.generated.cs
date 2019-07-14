@@ -27,7 +27,7 @@ namespace bs
 		/// <summary>Number of mip levels to reference. Must be greater than zero.</summary>
 		public int numMipLevels;
 		/// <summary>
-		/// First face to reference. Face can represent a single cubemap face, or a single array entry in a  texture array. If 
+		/// First face to reference. Face can represent a single cubemap face, or a single array entry in a  texture array. If
 		/// cubemaps are laid out in a texture array then every six sequential faces represent a single array entry.
 		/// </summary>
 		public int face;

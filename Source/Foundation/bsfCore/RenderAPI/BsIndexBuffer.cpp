@@ -6,7 +6,7 @@
 #include "RenderAPI/BsGpuBuffer.h"
 #include "Profiling/BsRenderStats.h"
 
-namespace bs 
+namespace bs
 {
 	UINT32 calcIndexSize(IndexType type)
 	{
@@ -112,7 +112,7 @@ namespace bs
 		BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_IndexBuffer);
 	}
 
-	void IndexBuffer::writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags, 
+	void IndexBuffer::writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags,
 		UINT32 queueIdx)
 	{
 		mBuffer->writeData(offset, length, source, writeFlags, queueIdx);
@@ -120,7 +120,7 @@ namespace bs
 		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_IndexBuffer);
 	}
 
-	void IndexBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
+	void IndexBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length,
 		bool discardWholeBuffer, const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto& srcIndexBuffer = static_cast<IndexBuffer&>(srcBuffer);
@@ -148,7 +148,7 @@ namespace bs
 		UINT32 elemSize = type == GBT_STANDARD ? bs::GpuBuffer::getFormatSize(format) : elementSize;
 		if((mBuffer->getSize() % elemSize) != 0)
 		{
-			BS_LOG(Error, RenderBackend, 
+			BS_LOG(Error, RenderBackend,
 				"Size of the buffer isn't divisible by individual element size provided for the buffer view.");
 			return nullptr;
 		}

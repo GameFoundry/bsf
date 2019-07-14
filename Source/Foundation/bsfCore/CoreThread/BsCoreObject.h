@@ -39,7 +39,7 @@ namespace bs
 		 * Frees all the data held by this object.
 		 * 			
 		 * @note	
-		 * If this object require initialization on core thread destruction is not done immediately, and is 
+		 * If this object require initialization on core thread destruction is not done immediately, and is
 		 * instead just scheduled on the core thread. Otherwise the object is destroyed immediately.
 		 */
 		virtual void destroy();
@@ -49,7 +49,7 @@ namespace bs
 		 * should call this from a factory method to avoid the issue where user forgets to call it.
 		 * 					
 		 * @note	
-		 * If this object require initialization on core thread initialization is not done immediately, and is instead just 
+		 * If this object require initialization on core thread initialization is not done immediately, and is instead just
 		 * scheduled on the core thread. Otherwise the object is initialized immediately.
 		 */
 		virtual void initialize();
@@ -85,7 +85,7 @@ namespace bs
 		/**
 		 * Ensures all dirty syncable data is send to the core thread counterpart of this object (if any).
 		 *
-		 * @note	Call this if you have modified the object and need to make sure core thread has an up to date version. 
+		 * @note	Call this if you have modified the object and need to make sure core thread has an up to date version.
 		 *			Normally this is done automatically at the end of a frame.
 		 * @note	This is an @ref asyncMethod "asynchronous method".
 		 */
@@ -119,7 +119,7 @@ namespace bs
 		/**
 		 * Constructs a new core object.
 		 *
-		 * @param[in]	requiresCoreInit	(optional) Determines if the ct::CoreObject counterpart of this object 
+		 * @param[in]	requiresCoreInit	(optional) Determines if the ct::CoreObject counterpart of this object
 		 *									(if it has any, see createCore()) requires initialization and destruction on the
 		 *									core thread.
 		 */
@@ -130,7 +130,7 @@ namespace bs
 		 * Queues a command to be executed on the core thread, without a return value.
 		 * 			
 		 * @note	
-		 * Requires a shared pointer to the object this function will be executed on, in order to make sure the object is 
+		 * Requires a shared pointer to the object this function will be executed on, in order to make sure the object is
 		 * not deleted before the command executes. Can be null if the function is static or global.
 		 */
 		static void queueGpuCommand(const SPtr<ct::CoreObject>& obj, std::function<void()> func);
@@ -141,7 +141,7 @@ namespace bs
 		 * @see		AsyncOp
 		 * 			
 		 * @note	
-		 * Requires a shared pointer to the object this function will be executed on, in order to make sure the object is 
+		 * Requires a shared pointer to the object this function will be executed on, in order to make sure the object is
 		 * not deleted before the command executes. Can be null if the function is static or global.
 		 */
 		static AsyncOp queueReturnGpuCommand(const SPtr<ct::CoreObject>& obj, std::function<void(AsyncOp&)> func);
@@ -157,13 +157,13 @@ namespace bs
 		std::weak_ptr<CoreObject> mThis;
 
 		/**
-		 * Queues object initialization command on the core thread. The command is added to the primary core thread queue 
+		 * Queues object initialization command on the core thread. The command is added to the primary core thread queue
 		 * and will be executed as soon as the core thread is ready.
 		 */
 		static void queueInitializeGpuCommand(const SPtr<ct::CoreObject>& obj);
 
 		/**
-		 * Queues object destruction command on the core thread. The command is added to the core thread queue of this 
+		 * Queues object destruction command on the core thread. The command is added to the core thread queue of this
 		 * thread and will be executed after qzeze commands are submitted and any previously queued commands are executed.
 		 *
 		 * @note	It is up to the caller to ensure no other threads attempt to use this object.
@@ -174,7 +174,7 @@ namespace bs
 		static void executeGpuCommand(const SPtr<ct::CoreObject>& obj, std::function<void()> func);
 
 		/**	Helper wrapper method used for queuing commands with a return value on the core thread. */
-		static void executeReturnGpuCommand(const SPtr<ct::CoreObject>& obj, std::function<void(AsyncOp&)> func, 
+		static void executeReturnGpuCommand(const SPtr<ct::CoreObject>& obj, std::function<void(AsyncOp&)> func,
 			AsyncOp& op);
 
 	protected:
@@ -183,16 +183,16 @@ namespace bs
 		/************************************************************************/
 
 		/**
-		 * Creates an object that contains core thread specific data and methods for this CoreObject. Can be null if such 
+		 * Creates an object that contains core thread specific data and methods for this CoreObject. Can be null if such
 		 * object is not required.
 		 */
 		virtual SPtr<ct::CoreObject> createCore() const { return nullptr; }
 
 		/**
-		 * Marks the core data as dirty. This causes the syncToCore() method to trigger the next time objects are synced 
+		 * Marks the core data as dirty. This causes the syncToCore() method to trigger the next time objects are synced
 		 * between core and sim threads.
 		 *
-		 * @param[in]	flags	(optional)	Flags in case you want to signal that only part of the internal data is dirty. 
+		 * @param[in]	flags	(optional)	Flags in case you want to signal that only part of the internal data is dirty.
 		 *									syncToCore() will be called regardless and it's up to the implementation to read
 		 *									the flags value if needed.
 		 */
@@ -203,13 +203,13 @@ namespace bs
 
 		/**
 		 * Notifies the core object manager that this object is dependant on some other CoreObject(s), and the dependencies
-		 * changed since the last call to this method. This will trigger a call to getCoreDependencies() to collect the 
+		 * changed since the last call to this method. This will trigger a call to getCoreDependencies() to collect the
 		 * new dependencies.
 		 */
 		void markDependenciesDirty();
 
 		/**
-		 * Checks is the core dirty flag set. This is used by external systems to know when internal data has changed and 
+		 * Checks is the core dirty flag set. This is used by external systems to know when internal data has changed and
 		 * core thread potentially needs to be notified.
 		 */
 		bool isCoreDirty() const { return mCoreDirtyFlags != 0; }
@@ -223,7 +223,7 @@ namespace bs
 		 * Copy internal dirty data to a memory buffer that will be used for updating core thread version of that data.
 		 *
 		 * @note	
-		 * This generally happens at the end of every sim thread frame. Synced data becomes available to the core thread 
+		 * This generally happens at the end of every sim thread frame. Synced data becomes available to the core thread
 		 * the start of the next core thread frame.
 		 */
 		virtual CoreSyncData syncToCore(FrameAlloc* allocator) { return CoreSyncData(); }
@@ -256,7 +256,7 @@ namespace bs
 	 * Creates a new core object using the specified allocators and returns a shared pointer to it.
 	 *
 	 * @note	
-	 * All core thread object shared pointers must be created using this method or its overloads and you should not create 
+	 * All core thread object shared pointers must be created using this method or its overloads and you should not create
 	 * them manually.
 	 */
 	template<class Type, class MainAlloc, class PtrDataAlloc, class... Args>
@@ -270,7 +270,7 @@ namespace bs
 	 * Creates a new core object using the specified allocator and returns a shared pointer to it.
 	 *
 	 * @note	
-	 * All core thread object shared pointers must be created using this method or its overloads and you should not create 
+	 * All core thread object shared pointers must be created using this method or its overloads and you should not create
 	 * them manually.
 	 */
 	template<class Type, class MainAlloc, class... Args>
@@ -284,7 +284,7 @@ namespace bs
 	 * Creates a new core object and returns a shared pointer to it.
 	 *
 	 * @note	
-	 * All core thread object shared pointers must be created using this method or its overloads and you should not create 
+	 * All core thread object shared pointers must be created using this method or its overloads and you should not create
 	 * them manually.
 	 */
 	template<class Type, class... Args>
@@ -298,13 +298,13 @@ namespace bs
 	 * Creates a core object shared pointer using a previously constructed object.
 	 *
 	 * @note	
-	 * All core thread object shared pointers must be created using this method or its overloads and you should not create 
+	 * All core thread object shared pointers must be created using this method or its overloads and you should not create
 	 * them manually.
 	 */
 	template<class Type, class MainAlloc = GenAlloc, class PtrDataAlloc = GenAlloc>
 	SPtr<Type> bs_core_ptr(Type* data)
 	{
-		return SPtr<Type>(data, &CoreObject::_delete<Type, MainAlloc>, StdAlloc<Type, PtrDataAlloc>());  
+		return SPtr<Type>(data, &CoreObject::_delete<Type, MainAlloc>, StdAlloc<Type, PtrDataAlloc>());
 	}
 
 	/** @} */

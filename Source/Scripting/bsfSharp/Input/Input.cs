@@ -64,13 +64,13 @@ namespace bs
     /// <summary>
     /// Pointer buttons. Generally these correspond to mouse buttons, but may be used in some form for touch input as well.
     /// </summary>
-    public enum PointerButton // Note: Must match C++ enum PointerEventButton 
+    public enum PointerButton // Note: Must match C++ enum PointerEventButton
 	{
 		Left, Middle, Right, Count
 	};
 
     /// <summary>
-    /// Event that gets sent out when user interacts with the screen in some way, usually by moving the mouse cursor or 
+    /// Event that gets sent out when user interacts with the screen in some way, usually by moving the mouse cursor or
     /// using touch input.
     /// </summary>
     public struct PointerEvent
@@ -91,12 +91,12 @@ namespace bs
         /// </summary>
         /// <param name="screenPos">Screen position where the input event occurred.</param>
         /// <param name="delta">Change in movement since last sent event.</param>
-        /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type. 
+        /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type.
         ///                      (for example move events don't correspond to a button.</param>
         /// <param name="shift">Is shift button on the keyboard being held down.</param>
         /// <param name="control">Is control button on the keyboard being held down.</param>
         /// <param name="alt">Is alt button on the keyboard being held down.</param>
-        /// <param name="mouseWheelScrollAmount">If mouse wheel is being scrolled, what is the amount. Only relevant for 
+        /// <param name="mouseWheelScrollAmount">If mouse wheel is being scrolled, what is the amount. Only relevant for
         ///                                      move events.</param>
         /// <param name="isUsed">Set to true if the event was handled previously by some internal system (like GUI).</param>
         internal PointerEvent(Vector2I screenPos, Vector2I delta, PointerButton button,
@@ -125,7 +125,7 @@ namespace bs
         public Vector2I Delta { get { return delta; } }
 
         /// <summary>
-        /// Button that triggered the pointer event. Might be irrelevant depending on event type. 
+        /// Button that triggered the pointer event. Might be irrelevant depending on event type.
         /// (for example move events don't correspond to a button.
         /// </summary>
         public PointerButton Button { get { return button; } }
@@ -157,7 +157,7 @@ namespace bs
     }
 
     /// <summary>
-    /// Event that gets sent out when user inputs some text. These events may be preceeded by normal button events if user 
+    /// Event that gets sent out when user inputs some text. These events may be preceeded by normal button events if user
     /// is typing on a keyboard.
     /// </summary>
     public struct TextInputEvent
@@ -232,11 +232,11 @@ namespace bs
         public static event PointerEventDelegate OnPointerDoubleClick;
 
         /// <summary>
-        /// Returns value of the specified input axis. 
+        /// Returns value of the specified input axis.
         /// </summary>
         /// <param name="axis">Type of axis to query.</param>
         /// <param name="deviceIdx">Index of the device in case more than one is hooked up (0 - primary).</param>
-        /// <returns>Value of the axis in range [-1.0, 1.0]. Canan be outside the range for devices with unbound axes 
+        /// <returns>Value of the axis in range [-1.0, 1.0]. Canan be outside the range for devices with unbound axes
         ///          (for example mouse).</returns>
         public static float GetAxisValue(InputAxis axis, int deviceIdx = 0)
         {
@@ -387,15 +387,15 @@ namespace bs
         /// </summary>
         /// <param name="screenPos">Screen position where the input event occurred.</param>
         /// <param name="delta">Change in movement since last sent event.</param>
-        /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type. 
+        /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type.
         ///                      (for example move events don't correspond to a button.</param>
         /// <param name="shift">Is shift button on the keyboard being held down.</param>
         /// <param name="ctrl">Is control button on the keyboard being held down.</param>
         /// <param name="alt">Is alt button on the keyboard being held down.</param>
-        /// <param name="scrollAmount">If mouse wheel is being scrolled, what is the amount. Only relevant for 
+        /// <param name="scrollAmount">If mouse wheel is being scrolled, what is the amount. Only relevant for
         ///                            move events.</param>
         /// <param name="isUsed">Set to true if the event was handled previously by some internal system (like GUI).</param>
-        private static void Internal_TriggerPointerMove(Vector2I screenPos, Vector2I delta, PointerButton button, bool shift, 
+        private static void Internal_TriggerPointerMove(Vector2I screenPos, Vector2I delta, PointerButton button, bool shift,
             bool ctrl, bool alt, float scrollAmount, bool isUsed)
         {
             PointerEvent ev = new PointerEvent(screenPos, delta, button, shift, ctrl, alt, scrollAmount, isUsed);
@@ -409,12 +409,12 @@ namespace bs
         /// </summary>
         /// <param name="screenPos">Screen position where the input event occurred.</param>
         /// <param name="delta">Change in movement since last sent event.</param>
-        /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type. 
+        /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type.
         ///                      (for example move events don't correspond to a button.</param>
         /// <param name="shift">Is shift button on the keyboard being held down.</param>
         /// <param name="ctrl">Is control button on the keyboard being held down.</param>
         /// <param name="alt">Is alt button on the keyboard being held down.</param>
-        /// <param name="scrollAmount">If mouse wheel is being scrolled, what is the amount. Only relevant for 
+        /// <param name="scrollAmount">If mouse wheel is being scrolled, what is the amount. Only relevant for
         ///                            move events.</param>
         /// <param name="isUsed">Set to true if the event was handled previously by some internal system (like GUI).</param>
         private static void Internal_TriggerPointerPressed(Vector2I screenPos, Vector2I delta, PointerButton button, bool shift,
@@ -431,12 +431,12 @@ namespace bs
         /// </summary>
         /// <param name="screenPos">Screen position where the input event occurred.</param>
         /// <param name="delta">Change in movement since last sent event.</param>
-        /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type. 
+        /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type.
         ///                      (for example move events don't correspond to a button.</param>
         /// <param name="shift">Is shift button on the keyboard being held down.</param>
         /// <param name="ctrl">Is control button on the keyboard being held down.</param>
         /// <param name="alt">Is alt button on the keyboard being held down.</param>
-        /// <param name="scrollAmount">If mouse wheel is being scrolled, what is the amount. Only relevant for 
+        /// <param name="scrollAmount">If mouse wheel is being scrolled, what is the amount. Only relevant for
         ///                            move events.</param>
         /// <param name="isUsed">Set to true if the event was handled previously by some internal system (like GUI).</param>
         private static void Internal_TriggerPointerReleased(Vector2I screenPos, Vector2I delta, PointerButton button, bool shift,
@@ -453,12 +453,12 @@ namespace bs
         /// </summary>
         /// <param name="screenPos">Screen position where the input event occurred.</param>
         /// <param name="delta">Change in movement since last sent event.</param>
-        /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type. 
+        /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type.
         ///                      (for example move events don't correspond to a button.</param>
         /// <param name="shift">Is shift button on the keyboard being held down.</param>
         /// <param name="ctrl">Is control button on the keyboard being held down.</param>
         /// <param name="alt">Is alt button on the keyboard being held down.</param>
-        /// <param name="scrollAmount">If mouse wheel is being scrolled, what is the amount. Only relevant for 
+        /// <param name="scrollAmount">If mouse wheel is being scrolled, what is the amount. Only relevant for
         ///                            move events.</param>
         /// <param name="isUsed">Set to true if the event was handled previously by some internal system (like GUI).</param>
         private static void Internal_TriggerPointerDoubleClick(Vector2I screenPos, Vector2I delta, PointerButton button, bool shift,
@@ -518,7 +518,7 @@ namespace bs
         Num8 = 0x09,
         Num9 = 0x0A,
         Num0 = 0x0B,
-        Minus = 0x0C, 
+        Minus = 0x0C,
         Equals = 0x0D,
         Back = 0x0E,
         Tab = 0x0F,
@@ -558,7 +558,7 @@ namespace bs
         N = 0x31,
         M = 0x32,
         Comma = 0x33,
-        Period = 0x34, 
+        Period = 0x34,
         Slash = 0x35,
         RightShift = 0x36,
         KeypadMultiply = 0x37,

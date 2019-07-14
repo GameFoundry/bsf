@@ -55,7 +55,7 @@ namespace bs
 
 		/**
 		 * Determines the error tolerance of the joint at which the joint becomes active. This value slightly extends the
-		 * lower and upper limit. 
+		 * lower and upper limit.
 		 */
 		virtual void setTolerance(float value) = 0;
 
@@ -63,9 +63,9 @@ namespace bs
 		virtual Spring getSpring() const = 0;
 
 		/**
-		 * Determines a spring that controls how the joint responds when a limit is reached. You must enable the spring 
-		 * flag on the joint in order for this to be recognized. 
-		 * 
+		 * Determines a spring that controls how the joint responds when a limit is reached. You must enable the spring
+		 * flag on the joint in order for this to be recognized.
+		 *
 		 * @see	Spring
 		 */
 		virtual void setSpring(const Spring& value) = 0;
@@ -76,9 +76,9 @@ namespace bs
 		/** Checks whether a certain joint flag is enabled. */
 		virtual bool hasFlag(DistanceJointFlag flag) const = 0;
 
-		/** 
-		 * Creates a new distance joint. 
-		 * 
+		/**
+		 * Creates a new distance joint.
+		 *
 		 * @param[in]	scene		Scene to which to add the joint.
 		 * @param[in]	desc		Settings describing the joint.
 		 */

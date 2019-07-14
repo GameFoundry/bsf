@@ -51,16 +51,16 @@ namespace bs
 		 * @note
 		 * Primitives are output in the form of a line list.
 		 */
-		static void pixelLine(const Vector2& a, const Vector2& b, const SPtr<MeshData>& meshData, UINT32 vertexOffset, 
+		static void pixelLine(const Vector2& a, const Vector2& b, const SPtr<MeshData>& meshData, UINT32 vertexOffset,
 			UINT32 indexOffset);
 
 		/**
-		 * Fills the mesh data with vertices representing a line of specific width as a quad. 
+		 * Fills the mesh data with vertices representing a line of specific width as a quad.
 		 *
 		 * @param[in]	a				Start point of the line.
 		 * @param[in]	b				End point of the line.
 		 * @param[in]	width			Width of the line.
-		 * @param[in]	border			Optional border that will increase the width and the length at both end-points. 
+		 * @param[in]	border			Optional border that will increase the width and the length at both end-points.
 		 *								Useful if you are using some kind of filtering for the line rendering, as the
 		 *								filtered pixels can belong to the border region.
 		 * @param[in]	color			Color of the line.
@@ -96,11 +96,11 @@ namespace bs
 		 * @note
 		 * Primitives are output in the form of a line list.
 		 */
-		static void pixelLineList(const Vector<Vector2>& linePoints, const SPtr<MeshData>& meshData, UINT32 vertexOffset, 
+		static void pixelLineList(const Vector<Vector2>& linePoints, const SPtr<MeshData>& meshData, UINT32 vertexOffset,
 			UINT32 indexOffset);
 
 		/**
-		 * Fills the mesh data with vertices representing a polyline of specific width as a set of quads. 
+		 * Fills the mesh data with vertices representing a polyline of specific width as a set of quads.
 		 *
 		 * @param[in]	linePoints		A list of start and end points for the lines.
 		 * @param[in]	width			Width of the line.
@@ -125,7 +125,7 @@ namespace bs
 			const Color& color, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
-		 * Fills the provided buffers with vertices representing a polyline of specific width as a set of quads 
+		 * Fills the provided buffers with vertices representing a polyline of specific width as a set of quads
 		 * (triangle list).
 		 *
 		 * @param[in]	linePoints		A list of start and end points for the lines.
@@ -162,7 +162,7 @@ namespace bs
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 
 		/**
-		 * Fills the provided buffers with position data and indices representing an inner 
+		 * Fills the provided buffers with position data and indices representing an inner
 		 *			area of a polygon (basically a normal non-antialiased polygon).
 		 *
 		 * @param[in]	points			Points defining the polygon. First point is assumed to be the start and end point.

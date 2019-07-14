@@ -191,7 +191,7 @@ namespace bs
 	{
 		clearSelectionVisuals();
 
-		showSelection(caretPos); 
+		showSelection(caretPos);
 		mSelectionDragAnchor = caretPos;
 	}
 

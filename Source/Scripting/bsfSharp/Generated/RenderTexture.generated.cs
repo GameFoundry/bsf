@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Render target specialization that allows you to render into one or multiple textures. Such textures can then be used 
+	/// Render target specialization that allows you to render into one or multiple textures. Such textures can then be used
 	/// in other operations as GPU program input.
 	/// </summary>
 	[ShowInInspector]
@@ -28,7 +28,7 @@ namespace bs
 		/// <param name="gammaCorrection">Determines should the pixels written on the texture be gamma corrected.</param>
 		/// <param name="createDepth">Should the render texture also contain a depth/stencil buffer.</param>
 		/// <param name="depthStencilFormat">
-		/// Format of the depth/stencil buffer, if <paramref name="createDepth"/> is enabled. Format must be a valid 
+		/// Format of the depth/stencil buffer, if <paramref name="createDepth"/> is enabled. Format must be a valid
 		/// depth/stencil format.
 		/// </param>
 		public RenderTexture(PixelFormat format, int width, int height, int numSamples = 1, bool gammaCorrection = false, bool createDepth = false, PixelFormat depthStencilFormat = PixelFormat.D32)

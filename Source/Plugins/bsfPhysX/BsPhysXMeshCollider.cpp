@@ -10,7 +10,7 @@ using namespace physx;
 
 namespace bs
 {
-	PhysXMeshCollider::PhysXMeshCollider(PxPhysics* physx, PxScene* scene, const Vector3& position, 
+	PhysXMeshCollider::PhysXMeshCollider(PxPhysics* physx, PxScene* scene, const Vector3& position,
 		const Quaternion& rotation)
 	{
 		PxSphereGeometry geometry(0.01f); // Dummy

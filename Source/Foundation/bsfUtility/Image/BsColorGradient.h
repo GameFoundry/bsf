@@ -6,7 +6,7 @@
 #include "Image/BsColor.h"
 #include "Allocators/BsPoolAlloc.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Image
 	 *  @{
@@ -24,7 +24,7 @@ namespace bs
 		float time = 0.0f;
 	};
 
-	/** 
+	/**
 	 * Represents a range of color values over some parameters, similar to a curve. Internally represented as a set of
 	 * keys that get interpolated between.
 	 */
@@ -64,7 +64,7 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		void setConstant(const Color& color);
 
-		/** 
+		/**
 		 * Returns the duration over which the gradient values are interpolated over. Corresponds to the time value of the
 		 * final keyframe.
 		 */

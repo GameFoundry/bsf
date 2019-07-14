@@ -273,17 +273,17 @@ namespace bs
 
 	bool Math::approxEquals(const Vector4& a, const Vector4& b, float tolerance)
 	{
-		return fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance && 
+		return fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance &&
 			fabs(b.w - a.w) <= tolerance;
 	}
 
 	bool Math::approxEquals(const Quaternion& a, const Quaternion& b, float tolerance)
 	{
-		return fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance && 
+		return fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance &&
 			fabs(b.w - a.w) <= tolerance;
 	}
 
-	Vector3 Math::calculateTriTangent(const Vector3& position1, const Vector3& position2, 
+	Vector3 Math::calculateTriTangent(const Vector3& position1, const Vector3& position2,
 		const Vector3& position3, float u1, float v1, float u2, float v2, float u3, float v3)
 	{
 		Vector3 side0 = position1 - position2;
@@ -293,7 +293,7 @@ namespace bs
 		Vector3 normal = side1.cross(side0);
 		normal.normalize();
 
-		// Now we use a formula to calculate the tangent. 
+		// Now we use a formula to calculate the tangent.
 		float deltaV0 = v1 - v2;
 		float deltaV1 = v3 - v1;
 		Vector3 tangent = deltaV1 * side0 - deltaV0 * side1;
@@ -305,10 +305,10 @@ namespace bs
 		Vector3 binormal = deltaU1 * side0 - deltaU0 * side1;
 		binormal.normalize();
 
-		// Now, we take the cross product of the tangents to get a vector which 
-		// should point in the same direction as our normal calculated above. 
-		// If it points in the opposite direction (the dot product between the normals is less than zero), 
-		// then we need to reverse the s and t tangents. 
+		// Now, we take the cross product of the tangents to get a vector which
+		// should point in the same direction as our normal calculated above.
+		// If it points in the opposite direction (the dot product between the normals is less than zero),
+		// then we need to reverse the s and t tangents.
 		// This is because the triangle has been mirrored when going from tangent space to object space.
 		// reverse tangents if necessary.
 		Vector3 tangentCross = tangent.cross(binormal);

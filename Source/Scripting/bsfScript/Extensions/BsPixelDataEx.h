@@ -25,7 +25,7 @@ namespace bs
 
 		/**
 		 * Returns a pixel at the specified location in the buffer.
-		 * 
+		 *
 		 * @param[in] x		X coordinate of the pixel.
 		 * @param[in] y		Y coordinate of the pixel.
 		 * @param[in] z		Z coordinate of the pixel.
@@ -36,7 +36,7 @@ namespace bs
 		
 		/**
 		 * Sets a pixel at the specified location in the buffer.
-		 * 
+		 *
 		 * @param[in] value		Color of the pixel to set.
 		 * @param[in] x			X coordinate of the pixel.
 		 * @param[in] y			Y coordinate of the pixel.
@@ -46,9 +46,9 @@ namespace bs
 		static void setPixel(const SPtr<PixelData>& thisPtr, const Color& value, int x, int y, int z = 0);
 		
 		/**
-		 * Returns values of all pixels. 
+		 * Returns values of all pixels.
 		 *
-		 * @return	All pixels in the buffer ordered consecutively. Pixels are stored as a succession of "depth" slices, 
+		 * @return	All pixels in the buffer ordered consecutively. Pixels are stored as a succession of "depth" slices,
 		 *			each containing "height" rows of "width" pixels.
 		 */
 		BS_SCRIPT_EXPORT(e:PixelData,n:GetPixels)
@@ -57,7 +57,7 @@ namespace bs
 		/**
 		 * Sets all pixels in the buffer.Caller must ensure that number of pixels match the extends of the buffer.
 		 *
-		 * @param value	All pixels in the buffer ordered consecutively. Pixels are stored as a succession of "depth" slices, 
+		 * @param value	All pixels in the buffer ordered consecutively. Pixels are stored as a succession of "depth" slices,
 		 *				each containing "height" rows of "width" pixels.
 		 */
 		BS_SCRIPT_EXPORT(e:PixelData,n:SetPixels)
@@ -66,7 +66,7 @@ namespace bs
 		/**
 		 * Returns all pixels in the buffer as raw bytes.
 		 *
-		 * @return	Raw pixel bytes. It is up to the caller to interpret the pixel format and account for potential 
+		 * @return	Raw pixel bytes. It is up to the caller to interpret the pixel format and account for potential
 		 *			row and slice pitch values.
 		 */
 		BS_SCRIPT_EXPORT(e:PixelData,n:GetRawPixels)
@@ -75,7 +75,7 @@ namespace bs
 		/**
 		 * Sets all pixels in the buffer as raw bytes.
 		 *
-		 * @param[in] value		Raw pixel bytes. It is up to the caller to interpret the pixel format and account for 
+		 * @param[in] value		Raw pixel bytes. It is up to the caller to interpret the pixel format and account for
 		 *						potential row and slice pitch values.
 		 */
 		BS_SCRIPT_EXPORT(e:PixelData,n:SetRawPixels)

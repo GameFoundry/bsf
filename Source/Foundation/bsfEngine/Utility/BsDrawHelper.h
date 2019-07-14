@@ -83,7 +83,7 @@ namespace bs
 		void frustum(const Vector3& position, float aspect, Degree FOV, float near, float far);
 
 		/**	Records a solid cone with the specified properties in the internal draw queue. */
-		void cone(const Vector3& base, const Vector3& normal, float height, float radius, 
+		void cone(const Vector3& base, const Vector3& normal, float height, float radius,
 			const Vector2& scale = Vector2::ONE, UINT32 quality = 10);
 
 		/**	Records a wire cone with the specified properties in the internal draw queue. */
@@ -97,11 +97,11 @@ namespace bs
 		void wireDisc(const Vector3& position, const Vector3& normal, float radius, UINT32 quality = 10);
 
 		/**	Records a solid arc with the specified properties in the internal draw queue. */
-		void arc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle, 
+		void arc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle,
 			UINT32 quality = 10);
 
 		/**	Records a wireframe arc with the specified properties in the internal draw queue. */
-		void wireArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle, 
+		void wireArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle,
 			UINT32 quality = 10);
 
 		/** Records a 3D mesh to be drawn as wireframe in the internal draw queue. */
@@ -111,7 +111,7 @@ namespace bs
 		void rectangle(const Rect3& area);
 
 		/**
-		 * Records a mesh representing 2D text with the specified properties in the internal draw queue. 
+		 * Records a mesh representing 2D text with the specified properties in the internal draw queue.
 		 *
 		 * @param[in]	position	Position to render the text at. Text will be centered around this point.
 		 * @param[in]	text		Text to draw.
@@ -124,7 +124,7 @@ namespace bs
 		void clear();
 
 		/**
-		 * Generates a set of meshes from all the recorded solid and wireframe shapes. The meshes can be accessed via 
+		 * Generates a set of meshes from all the recorded solid and wireframe shapes. The meshes can be accessed via
 		 * getMeshes() and released via clearMeshes().
 		 *
 		 * @param	sorting		(optional) Determines how (and if) should elements be sorted
@@ -134,7 +134,7 @@ namespace bs
 		 *						in the mesh. This bitfield will be ANDed with the layer specified when recording the shape.
 		 * @return				Generated mesh data.
 		 */
-		Vector<ShapeMeshData> buildMeshes(SortType sorting = SortType::None, 
+		Vector<ShapeMeshData> buildMeshes(SortType sorting = SortType::None,
 			const Camera* camera = nullptr, UINT64 layers = 0xFFFFFFFFFFFFFFFF);
 
 	private:

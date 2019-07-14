@@ -25,7 +25,7 @@ namespace bs
 	};
 
 	/**
-	 * Flag used for creating async operations signaling that we want to create an empty AsyncOp with no internal 
+	 * Flag used for creating async operations signaling that we want to create an empty AsyncOp with no internal
 	 * memory storage.
 	 */
 	struct BS_UTILITY_EXPORT AsyncOpEmpty {};
@@ -75,7 +75,7 @@ namespace bs
 		 * Blocks the caller thread until the AsyncOp completes.
 		 *
 		 * @note
-		 * Do not call this on the thread that is completing the async op, as it will cause a deadlock. Make sure the 
+		 * Do not call this on the thread that is completing the async op, as it will cause a deadlock. Make sure the
 		 * command you are waiting for is actually queued for execution because a deadlock will occur otherwise.
 		 */
 		void blockUntilComplete() const
@@ -91,9 +91,9 @@ namespace bs
 				mSyncData->mCondition.wait(lock);
 		}
 
-		/** 
-		* Retrieves the value returned by the async operation as a generic type. Only valid if hasCompleted() returns 
-		* true. 
+		/**
+		* Retrieves the value returned by the async operation as a generic type. Only valid if hasCompleted() returns
+		* true.
 		*/
 		Any getGenericReturnValue() const
 		{
@@ -111,9 +111,9 @@ namespace bs
 	};
 
 	/**
-	 * Object you may use to check on the results of an asynchronous operation. Contains uninitialized data until 
-	 * hasCompleted() returns true. 
-	 * 
+	 * Object you may use to check on the results of an asynchronous operation. Contains uninitialized data until
+	 * hasCompleted() returns true.
+	 *
 	 * @note	
 	 * You are allowed (and meant to) to copy this by value.
 	 */
@@ -138,8 +138,8 @@ namespace bs
 		{ }
 
 		/** Retrieves the value returned by the async operation. Only valid if hasCompleted() returns true. */
-		ReturnType getReturnValue() const 
-		{ 
+		ReturnType getReturnValue() const
+		{
 #if BS_DEBUG_MODE
 			if(!hasCompleted())
 				BS_LOG(Error, Generic, "Trying to get AsyncOp return value but the operation hasn't completed.");
@@ -149,7 +149,7 @@ namespace bs
 		}
 
 	public: // ***** INTERNAL ******
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 

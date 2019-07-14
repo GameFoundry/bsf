@@ -23,7 +23,7 @@ function(run_import_tool _PREFIX _FOLDER _ARGS _WORKING_DIR)
 endfunction()
 
 run_import_tool(
-	@RunAssetImport_PREFIX@ 
-	@RunAssetImport_INPUT_FOLDER@ 
+	@RunAssetImport_PREFIX@
+	@RunAssetImport_INPUT_FOLDER@
 	"@RunAssetImport_CMD_ARGS@"
 	@RunAssetImport_WORKING_DIR@)

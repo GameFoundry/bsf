@@ -30,7 +30,7 @@ namespace bs
 		 *  @{
 		 */
 
-		/** 
+		/**
 		 * Version of bs::AABox suitable for SIMD use. Takes up a bit more memory than standard AABox and is always 16-byte
 		 * aligned.
 		 */

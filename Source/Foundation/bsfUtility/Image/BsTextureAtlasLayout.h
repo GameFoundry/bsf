@@ -37,7 +37,7 @@ namespace bs
 		/**
 		 * Constructs a new texture atlas layout with the provided parameters.
 		 *
-		 * @param[in]	width 			Initial width of the atlas texture. 
+		 * @param[in]	width 			Initial width of the atlas texture.
 		 * @param[in]	height			Initial height of the atlas texture.
 		 * @param[in]	maxWidth		Maximum width the atlas texture is allowed to grow to, when elements don't fit.
 		 * @param[in]	maxHeight		Maximum height the atlas texture is allowed to grow to, when elements don't fit.
@@ -52,7 +52,7 @@ namespace bs
 		/**
 		 * Attempts to add a new element in the layout. Elements should be added to the atlas from largest to smallest,
 		 * otherwise a non-optimal layout is likely to be generated.
-		 * 
+		 *
 		 * @param[in]	width	Width of the new element, in pixels.
 		 * @param[in]	height	Height of the new element, in pixels.
 		 * @param[out]	x		Horizontal position of the new element within the atlas. Only valid if method returns true.
@@ -74,9 +74,9 @@ namespace bs
 		UINT32 getHeight() const { return mHeight; }
 
 	private:
-		/* 
-		 * Attempts to add a new element to the specified layout node. 
-		 * 
+		/*
+		 * Attempts to add a new element to the specified layout node.
+		 *
 		 * @param[in]	nodeIdx			Index of the node to which to add the element.
 		 * @param[in]	width			Width of the new element, in pixels.
 		 * @param[in]	height			Height of the new element, in pixels.
@@ -130,7 +130,7 @@ namespace bs
 		};
 
 		/**
-		 * Creates an optimal texture layout by packing texture elements in order to end up with as little empty space 
+		 * Creates an optimal texture layout by packing texture elements in order to end up with as little empty space
 		 * as possible. Algorithm will split elements over multiple textures if they don't fit in a single texture.
 		 *
 		 * @param[in]	elements	Elements to process. They need to have their input structures filled in,
@@ -140,10 +140,10 @@ namespace bs
 		 * @param[in]	maxWidth	Maximum width the atlas texture is allowed to grow to, when elements don't fit.
 		 * @param[in]	maxHeight	Maximum height the atlas texture is allowed to grow to, when elements don't fit.
 		 * @param[in]	pow2		When true the resulting atlas size will always be a power of two.
-		 * @return					One or more descriptors that determine the size of the final atlas textures. 
+		 * @return					One or more descriptors that determine the size of the final atlas textures.
 		 *							Texture elements will reference these pages with their output.page parameter.
 		 */
-		static Vector<Page> createAtlasLayout(Vector<Element>& elements, UINT32 width, UINT32 height, UINT32 maxWidth, 
+		static Vector<Page> createAtlasLayout(Vector<Element>& elements, UINT32 width, UINT32 height, UINT32 maxWidth,
 			UINT32 maxHeight, bool pow2 = false);
 	};
 

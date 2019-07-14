@@ -205,8 +205,8 @@ namespace bs
 		mFlags &= ~GUIElem_Dirty;
 	}
 
-	void GUIElementBase::_markLayoutAsDirty() 
-	{ 
+	void GUIElementBase::_markLayoutAsDirty()
+	{
 		if(!_isVisible())
 			return;
 
@@ -436,11 +436,11 @@ namespace bs
 		assert(mChildren.size() == 0);
 	}
 
-	void GUIElementBase::_setParent(GUIElementBase* parent) 
-	{ 
+	void GUIElementBase::_setParent(GUIElementBase* parent)
+	{
 		if(mParentElement != parent)
 		{
-			mParentElement = parent; 
+			mParentElement = parent;
 			_updateAUParents();
 
 			if (parent != nullptr)

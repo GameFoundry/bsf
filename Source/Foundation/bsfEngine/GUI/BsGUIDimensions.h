@@ -22,9 +22,9 @@ namespace bs
 	/**	Flags that identify the type of data stored in a GUIDimensions structure. */
 	enum GUIDimensionFlags
 	{
-		GUIDF_FixedWidth = 0x01, 
-		GUIDF_FixedHeight = 0x02, 
-		GUIDF_OverWidth = 0x04, 
+		GUIDF_FixedWidth = 0x01,
+		GUIDF_FixedHeight = 0x02,
+		GUIDF_OverWidth = 0x04,
 		GUIDF_OverHeight = 0x08
 	};
 

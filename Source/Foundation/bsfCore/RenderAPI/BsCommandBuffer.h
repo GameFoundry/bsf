@@ -14,8 +14,8 @@ namespace bs { namespace ct
 	class BS_CORE_EXPORT CommandSyncMask
 	{
 	public:
-		/** 
-		 * Registers a dependency on a command buffer. Use getMask() to get the new mask value after registering all 
+		/**
+		 * Registers a dependency on a command buffer. Use getMask() to get the new mask value after registering all
 		 * dependencies.
 		 */
 		void addDependency(const SPtr<CommandBuffer>& buffer);
@@ -36,7 +36,7 @@ namespace bs { namespace ct
 		UINT32 mMask = 0;
 	};
 
-	/** 
+	/**
 	 * Contains a list of render API commands that can be queued for execution on the GPU. User is allowed to populate the
 	 * command buffer from any thread, ensuring render API command generation can be multi-threaded. Command buffers
 	 * must always be created on the core thread. Same command buffer cannot be used on multiple threads simulateously
@@ -49,13 +49,13 @@ namespace bs { namespace ct
 
 		/**
 		 * Creates a new CommandBuffer.
-		 * 
+		 *
 		 * @param[in]	type		Determines what type of commands can be added to the command buffer.
 		 * @param[in]	deviceIdx	Index of the GPU the command buffer will be used to queue commands on. 0 is always
 		 *							the primary available GPU.
 		 * @param[in]	queueIdx	Index of the GPU queue the command buffer will be used on. Command buffers with
 		 *							the same index will execute sequentially, but command buffers with different queue
-		 *							indices may execute in parallel, for a potential performance improvement. 
+		 *							indices may execute in parallel, for a potential performance improvement.
 		 *							
 		 *							Caller must ensure to synchronize operations executing on different queues via
 		 *							sync masks. Command buffer dependant on another command buffer should provide a sync
@@ -64,7 +64,7 @@ namespace bs { namespace ct
 		 *							Queue indices are unique per buffer type (e.g. upload index 0 and graphics index 0 may
 		 *							map to different queues internally). Must be in range [0, 7].
 		 * @param[in]	secondary	If true the command buffer will not be allowed to execute on its own, but it can
-		 *							be appended to a primary command buffer. 
+		 *							be appended to a primary command buffer.
 		 * @return					New CommandBuffer instance.
 		 */
 		static SPtr<CommandBuffer> create(GpuQueueType type, UINT32 deviceIdx = 0, UINT32 queueIdx = 0,

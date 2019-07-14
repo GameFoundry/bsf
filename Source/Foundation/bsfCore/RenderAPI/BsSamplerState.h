@@ -9,7 +9,7 @@
 
 #include <cfloat>
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup RenderAPI
 	 *  @{
@@ -36,14 +36,14 @@ namespace bs
 		FilterOptions magFilter = FO_LINEAR;
 		
 		/** Filtering used to blend between the different mip levels. */
-		FilterOptions mipFilter = FO_LINEAR; 
+		FilterOptions mipFilter = FO_LINEAR;
 
 		/** Maximum number of samples if anisotropic filtering is enabled. Max is 16. */
 		UINT32 maxAniso = 0;
 
 		/**
 		 * Mipmap bias allows you to adjust the mipmap selection calculation. Negative values  force a larger mipmap to be
-		 * used, and positive values smaller. Units are in values of mip levels, so -1 means use a mipmap one level higher 
+		 * used, and positive values smaller. Units are in values of mip levels, so -1 means use a mipmap one level higher
 		 * than default.
 		 */
 		float mipmapBias = 0;
@@ -77,7 +77,7 @@ namespace bs
 		FilterOptions getTextureFiltering(FilterType ftpye) const;
 
 		/**
-		 * Gets the anisotropy level. Higher anisotropy means better filtering for textures displayed on an angled slope 
+		 * Gets the anisotropy level. Higher anisotropy means better filtering for textures displayed on an angled slope
 		 * relative to the viewer.
 		 */
 		unsigned int getTextureAnisotropy() const { return mData.maxAniso; }
@@ -87,7 +87,7 @@ namespace bs
 
 		/**
 		 * Mipmap bias allows you to adjust the mipmap selection calculation. Negative values  force a larger mipmap to be
-		 * used, and positive values smaller. Units are in values of mip levels, so -1 means use a mipmap one level higher 
+		 * used, and positive values smaller. Units are in values of mip levels, so -1 means use a mipmap one level higher
 		 * than default.
 		 */
 		float getTextureMipmapBias() const { return mData.mipmapBias; }
@@ -123,7 +123,7 @@ namespace bs
 	 * Class representing the state of a texture sampler.
 	 *	
 	 * @note	
-	 * Sampler units are used for retrieving and filtering data from textures set in a GPU program. Sampler states are 
+	 * Sampler units are used for retrieving and filtering data from textures set in a GPU program. Sampler states are
 	 * immutable.
 	 * @note
 	 * Sim thread.

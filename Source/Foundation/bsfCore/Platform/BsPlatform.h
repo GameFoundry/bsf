@@ -190,25 +190,25 @@ namespace bs
 		static void setIcon(const PixelData& pixelData);
 
 		/**
-		 * Sets custom caption non client areas for the specified window. Using custom client areas will override window 
+		 * Sets custom caption non client areas for the specified window. Using custom client areas will override window
 		 * move/drag operation and trigger when user interacts with the custom area.
 		 *
 		 * @note	
 		 * Thread safe.
 		 * @note
-		 * All provided areas are relative to the specified window. Mostly useful for frameless windows that don't have 
+		 * All provided areas are relative to the specified window. Mostly useful for frameless windows that don't have
 		 * typical caption bar.
 		 */
 		static void setCaptionNonClientAreas(const ct::RenderWindow& window, const Vector<Rect2I>& nonClientAreas);
 
 		/**
-		 * Sets custom non client areas for the specified window. Using custom client areas will override window resize 
+		 * Sets custom non client areas for the specified window. Using custom client areas will override window resize
 		 * operation and trigger when user interacts with the custom area.
 		 *
 		 * @note	
 		 * Thread safe.
 		 * @note
-		 * All provided areas are relative to the specified window. Mostly useful for frameless windows that don't have 
+		 * All provided areas are relative to the specified window. Mostly useful for frameless windows that don't have
 		 * typical border.
 		 */
 		static void setResizeNonClientAreas(const ct::RenderWindow& window, const Vector<NonClientResizeArea>& nonClientAreas);
@@ -220,7 +220,7 @@ namespace bs
 		 */
 		static void resetNonClientAreas(const ct::RenderWindow& window);
 
-		/** 
+		/**
 		 * Causes the current thread to pause execution for the specified amount of time.
 		 *
 		 * @param[in]	duration	Duration in milliseconds. Providing zero will give up the current time-slice.

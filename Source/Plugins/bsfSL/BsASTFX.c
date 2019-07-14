@@ -12,16 +12,16 @@ OptionInfo OPTION_LOOKUP[] =
 	{ OT_Priority, ODT_Int },
 	{ OT_Sort, ODT_Int },
 	{ OT_Transparent, ODT_Bool },
-	{ OT_Shader, ODT_Complex }, 
-	{ OT_SubShader, ODT_Complex }, 
+	{ OT_Shader, ODT_Complex },
+	{ OT_SubShader, ODT_Complex },
 	{ OT_Mixin, ODT_String },
 	{ OT_Raster, ODT_Complex },
 	{ OT_Depth, ODT_Complex },
 	{ OT_Stencil, ODT_Complex },
 	{ OT_Blend, ODT_Complex },
-	{ OT_FeatureSet, ODT_String }, 
-	{ OT_Pass, ODT_Complex }, 
-	{ OT_FillMode, ODT_Int }, 
+	{ OT_FeatureSet, ODT_String },
+	{ OT_Pass, ODT_Complex },
+	{ OT_FillMode, ODT_Int },
 	{ OT_CullMode, ODT_Int },
 	{ OT_DepthBias, ODT_Float },
 	{ OT_SDepthBias, ODT_Float },
@@ -225,7 +225,7 @@ void appendCodeBlock(ParseState* parseState, RawCodeType type, const char* value
 	if ((rawCode->size + size) > rawCode->capacity)
 	{
 		int newCapacity = rawCode->capacity;
-		do 
+		do
 		{
 			newCapacity *= 2;
 		} while ((rawCode->size + size) > newCapacity);

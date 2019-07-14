@@ -18,7 +18,7 @@ namespace bs { namespace ct
 		/**
 		 * Performs filtering on the cubemap, populating its mip-maps with filtered values that can be used for
 		 * evaluating specular reflections.
-		 * 
+		 *
 		 * @param[in, out]	cubemap		Cubemap to filter. Its mip level 0 will be read, filtered and written into
 		 *								other mip levels.
 		 * @param[in]		scratch		Temporary cubemap texture to use for the filtering process. Must match the size of
@@ -30,7 +30,7 @@ namespace bs { namespace ct
 		 * Performs filtering on the cubemap, populating the output cubemap with values that can be used for evaluating
 		 * irradiance for use in diffuse lighting. Uses order-5 SH (25 coefficients) and outputs the values in the form of
 		 * a cubemap.
-		 * 
+		 *
 		 * @param[in]		cubemap		Cubemap to filter. Its mip level 0 will be used as source.
 		 * @param[in]		output		Output cubemap to store the irradiance data in.
 		 */
@@ -40,13 +40,13 @@ namespace bs { namespace ct
 		 * Performs filtering on the cubemap, populating the output texture with values that can be used for evaluating
 		 * irradiance for use in diffuse lighting. Uses order-3 SH (9 coefficients) and outputs the values in the form of
 		 * SH coefficients.
-		 * 
+		 *
 		 * @param[in]		cubemap		Cubemap to filter. Its mip level 0 will be used as source.
-		 * @param[in]		output		Output texture in which to place the results. Must be allocated using 
+		 * @param[in]		output		Output texture in which to place the results. Must be allocated using
 		 *								IrradianceReduceMat::createOutputTexture();
 		 * @param[in]		outputIdx	Index in the output buffer at which to write the output coefficients to.
 		 */
-		virtual void filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output, 
+		virtual void filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output,
 			UINT32 outputIdx) const = 0;
 
 		/**
@@ -64,8 +64,8 @@ namespace bs { namespace ct
 		/** Returns the size of the texture required to store the provided number of SH coefficient sets. */
 		static Vector2I getSHCoeffTextureSize(UINT32 numCoeffSets, UINT32 shOrder);
 		
-		/** 
-		 * Determines the position of a set of coefficients in the coefficient texture, depending on the coefficient index. 
+		/**
+		 * Determines the position of a set of coefficients in the coefficient texture, depending on the coefficient index.
 		 */
 		static Vector2I getSHCoeffXYFromIdx(UINT32 idx, UINT32 shOrder);
 

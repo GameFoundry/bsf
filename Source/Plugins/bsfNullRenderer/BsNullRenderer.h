@@ -8,8 +8,8 @@
 #include "Renderer/BsRendererFactory.h"
 #include "Renderer/BsIBLUtility.h"
 
-namespace bs 
-{ 
+namespace bs
+{
 	/** Renderer factory implementation that creates and initializes the null renderer. Used by the RendererManager. */
 	class NullRendererFactory : public RendererFactory
 	{
@@ -43,7 +43,7 @@ namespace bs
 		void renderAll(PerFrameData perFrameData) override;
 
 		/** @copydoc Renderer::captureSceneCubeMap */
-		void captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position, 
+		void captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position,
 			const CaptureSettings& settings) override { }
 	};
 
@@ -58,7 +58,7 @@ namespace bs
 		void filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output) const override { }
 
 		/** @copydoc IBLUtility::filterCubemapForIrradiance(const SPtr<Texture>&, const SPtr<Texture>&, UINT32) const */
-		void filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output, 
+		void filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output,
 			UINT32 outputIdx) const override { }
 
 		/** @copydoc IBLUtility::scaleCubemap */

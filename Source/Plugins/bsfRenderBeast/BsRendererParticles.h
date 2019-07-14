@@ -14,11 +14,11 @@
 #include "BsRendererLight.h"
 #include "BsRendererReflectionProbe.h"
 
-namespace bs 
+namespace bs
 {
 	struct ParticleMeshRenderData;
 	struct ParticleBillboardRenderData;
-	struct ParticleRenderData; 
+	struct ParticleRenderData;
 }
 
 namespace bs { namespace ct
@@ -64,14 +64,14 @@ namespace bs { namespace ct
 		Standard
 	};
 
-	/** 
+	/**
 	 * Returns a specific particle rendering shader variation.
 	 *
 	 * @tparam ORIENT	Particle orientiation mode.
 	 * @tparam LOCK_Y	If true, billboard rotation will be locked around the Y axis, otherwise the rotation is free.
 	 * @tparam GPU		If true, the particle shader expects input from the GPU simulation instead of the CPU simulation.
-	 * @tparam IS_3D	If true, the particle shader will render meshes instead of billboards. 
-	 * @tparam FWD		Determines what form of forward lighting should the shader support. 
+	 * @tparam IS_3D	If true, the particle shader will render meshes instead of billboards.
+	 * @tparam FWD		Determines what form of forward lighting should the shader support.
 	 */
 	template<ParticleOrientation ORIENT, bool LOCK_Y, bool GPU, bool IS_3D, ParticleForwardLightingType FWD>
 	static const ShaderVariation& getParticleShaderVariation()
@@ -107,17 +107,17 @@ namespace bs { namespace ct
 
 	/**
 	 * Returns a particle material variation matching the provided parameters.
-	 * 
+	 *
 	 * @param[in]	orient				Determines in which direction are billboard particles oriented.
-	 * @param[in]	lockY				If true, billboard rotation will be locked around the Y axis, otherwise the 
+	 * @param[in]	lockY				If true, billboard rotation will be locked around the Y axis, otherwise the
 	 *									rotation is free.
 	 * @param[in]	gpu					If true, the particle shader expects input from the GPU simulation instead of the
 	 *									CPU simulation.
 	 * @param[in]	is3d				If true, the particle shader will render meshes instead of billboards.
 	 * @param[in]	forwardLighting		Form of forward lighting the shader should support.
-	 * @return							Object that can be used for looking up the variation technique in the material. 
+	 * @return							Object that can be used for looking up the variation technique in the material.
 	 */
-	const ShaderVariation& getParticleShaderVariation(ParticleOrientation orient, bool lockY, bool gpu, bool is3d, 
+	const ShaderVariation& getParticleShaderVariation(ParticleOrientation orient, bool lockY, bool gpu, bool is3d,
 		ParticleForwardLightingType forwardLighting);
 
 	/** Contains information required for rendering a single particle system. */
@@ -233,17 +233,17 @@ namespace bs { namespace ct
 		/** Information about the size over lifetime / frame index curve stored in the global curve texture. */
 		TextureRowAllocation sizeScaleFrameIdxCurveAlloc;
 
-		/** 
-		 * Binds all the GPU program inputs required for rendering a particle system that is being simulated by the CPU. 
-		 * 
-		 * @param[in]	renderData		Render data representing the state of a CPU simulated particle system. 
+		/**
+		 * Binds all the GPU program inputs required for rendering a particle system that is being simulated by the CPU.
+		 *
+		 * @param[in]	renderData		Render data representing the state of a CPU simulated particle system.
 		 * @param[in]	view			View the particle system is being rendered from.
 		 */
 		void bindCPUSimulatedInputs(const ParticleRenderData* renderData, const RendererView& view) const;
 
-		/** 
-		 * Binds all the GPU program inputs required for rendering a particle system that is being simulated by the GPU. 
-		 * 
+		/**
+		 * Binds all the GPU program inputs required for rendering a particle system that is being simulated by the GPU.
+		 *
 		 * @param[in]	gpuSimResources	Resources containing global data for all GPU simulated particle systems.
 		 * @param[in]	view			View the particle system is being rendered from.
 		 */
@@ -254,7 +254,7 @@ namespace bs { namespace ct
 	class DefaultParticlesMat : public RendererMaterial<DefaultParticlesMat> { RMAT_DEF("ParticlesUnlit.bsl"); };
 
 	/**
-	 * Contains a set of textures used for rendering a particle system using billboards. Each pixel in a texture represent 
+	 * Contains a set of textures used for rendering a particle system using billboards. Each pixel in a texture represent
 	 * properties of a single particle.
 	 */
 	struct ParticleBillboardTextures
@@ -266,7 +266,7 @@ namespace bs { namespace ct
 	};
 
 	/**
-	 * Contains a set of textures used for rendering a particle system using 3D meshes. Each pixel in a texture represent 
+	 * Contains a set of textures used for rendering a particle system using 3D meshes. Each pixel in a texture represent
 	 * properties of a single particle.
 	 */
 	struct ParticleMeshTextures
@@ -298,14 +298,14 @@ namespace bs { namespace ct
 	public:
 		~ParticleTexturePool();
 
-		/** 
-		 * Returns a set of textures used for particle billboard rendering. The textures will contain the pixel data from 
+		/**
+		 * Returns a set of textures used for particle billboard rendering. The textures will contain the pixel data from
 		 * the provided @p simulationData. Returned textures will remain in-use until the next call to clear().
 		 */
 		const ParticleBillboardTextures* alloc(const ParticleBillboardRenderData& simulationData);
 
-		/** 
-		 * Returns a set of textures used for particle mesh rendering. The textures will contain the pixel data from 
+		/**
+		 * Returns a set of textures used for particle mesh rendering. The textures will contain the pixel data from
 		 * the provided @p simulationData. Returned textures will remain in-use until the next call to clear().
 		 */
 		const ParticleMeshTextures* alloc(const ParticleMeshRenderData& simulationData);
@@ -335,7 +335,7 @@ namespace bs { namespace ct
 		ParticleRenderer();
 		~ParticleRenderer();
 
-		/** 
+		/**
 		 * Returns a texture pool object that can be used for allocating textures required for holding particle system
 		 * properties used for billboard particle rendering (position/color/etc).
 		 */
@@ -344,10 +344,10 @@ namespace bs { namespace ct
 		/** Draws @p count quads used for billboard rendering, using instanced drawing. */
 		void drawBillboards(UINT32 count);
 
-		/** 
+		/**
 		 * Updates the provided indices buffer so they particles are sorted from further to nearest with respect to
-		 * some reference point. 
-		 * 
+		 * some reference point.
+		 *
 		 * @param[in]	refPoint		Reference point respect to which to determine the distance of individual particles.
 		 *								Should be in the simulation space of the particle system.
 		 * @param[in]	positions		Buffer containing positions of individual particles.
@@ -356,7 +356,7 @@ namespace bs { namespace ct
 		 * @param[out]	indices			Index buffer that will be sorted according to the particle distance, in descending
 		 *								order.
 		 */
-		static void sortByDistance(const Vector3& refPoint, const PixelData& positions, UINT32 numParticles, 
+		static void sortByDistance(const Vector3& refPoint, const PixelData& positions, UINT32 numParticles,
 			UINT32 stride, Vector<UINT32>& indices);
 	private:
 		ParticleTexturePool mTexturePool;

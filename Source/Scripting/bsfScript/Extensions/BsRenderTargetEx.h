@@ -76,7 +76,7 @@ namespace bs
 		 * @param[in]	depthStencilSurface		Optional depth/stencil texture to render depth/stencil data to.
 		 */
 		BS_SCRIPT_EXPORT(ec:RenderTexture)
-		static SPtr<RenderTexture> create(BS_NORREF const HTexture& colorSurface, 
+		static SPtr<RenderTexture> create(BS_NORREF const HTexture& colorSurface,
 			BS_NORREF const HTexture& depthStencilSurface);
 
 		/**
@@ -94,7 +94,7 @@ namespace bs
 		 * @param[in]	depthStencilSurface		Optional depth/stencil texture to render depth/stencil data to.
 		 */
 		BS_SCRIPT_EXPORT(ec:RenderTexture)
-		static SPtr<RenderTexture> create(BS_NORREF const Vector<HTexture>& colorSurface, 
+		static SPtr<RenderTexture> create(BS_NORREF const Vector<HTexture>& colorSurface,
 			BS_NORREF const HTexture& depthStencilSurface);
 
 		/** Returns the primary color surface that contains rendered color data. */

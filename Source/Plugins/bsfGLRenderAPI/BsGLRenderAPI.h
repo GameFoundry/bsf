@@ -70,22 +70,22 @@ namespace bs { namespace ct
 			, UINT32 instanceCount = 0, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::dispatchCompute() */
-		void dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY = 1, UINT32 numGroupsZ = 1, 
+		void dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY = 1, UINT32 numGroupsZ = 1,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::swapBuffers() */
 		void swapBuffers(const SPtr<RenderTarget>& target, UINT32 syncMask = 0xFFFFFFFF) override;
 
 		/** @copydoc RenderAPI::setRenderTarget() */
-		void setRenderTarget(const SPtr<RenderTarget>& target, UINT32 readOnlyFlags = 0, 
+		void setRenderTarget(const SPtr<RenderTarget>& target, UINT32 readOnlyFlags = 0,
 			RenderSurfaceMask loadMask = RT_NONE, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::clearRenderTarget() */
-		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, 
+		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0,
 			UINT8 targetMask = 0xFF, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::clearViewport() */
-		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, 
+		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0,
 			UINT8 targetMask = 0xFF, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::addCommands() */
@@ -130,11 +130,11 @@ namespace bs { namespace ct
 		void endDraw();
 
 		/**	Clear a part of a render target. */
-		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, 
+		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0,
 			const Rect2I& clearArea = Rect2I::EMPTY, UINT8 targetMask = 0xFF);
 
-		/** 
-		 * Changes the currently active texture unit. Any texture related operations will then be performed on this unit. 
+		/**
+		 * Changes the currently active texture unit. Any texture related operations will then be performed on this unit.
 		 */
 		bool activateGLTextureUnit(UINT16 unit);
 
@@ -204,9 +204,9 @@ namespace bs { namespace ct
 		/**	Sets anisotropy value for the specified texture unit. */
 		void setTextureAnisotropy(UINT16 unit, UINT32 maxAnisotropy);
 		
-		/** 
-		 * Sets the compare mode to use when sampling the texture (anything but "always" implies the use of a shadow 
-		 * sampler. 
+		/**
+		 * Sets the compare mode to use when sampling the texture (anything but "always" implies the use of a shadow
+		 * sampler.
 		 */
 		void setTextureCompareMode(UINT16 unit, CompareFunction compare);
 
@@ -229,7 +229,7 @@ namespace bs { namespace ct
 		 *	
 		 * Final pixel value = (renderTargetPixel * sourceFactor) op (pixel * destFactor). (And the same for alpha)
 		 */
-		void setSceneBlending(UINT32 target, BlendFactor sourceFactor, BlendFactor destFactor, BlendFactor sourceFactorAlpha, 
+		void setSceneBlending(UINT32 target, BlendFactor sourceFactor, BlendFactor destFactor, BlendFactor sourceFactorAlpha,
 			BlendFactor destFactorAlpha, BlendOperation op, BlendOperation alphaOp);
 
 		/**
@@ -362,13 +362,13 @@ namespace bs { namespace ct
 		static const UINT32 MAX_VB_COUNT = 32;
 
 		Rect2 mViewportNorm = Rect2(0.0f, 0.0f, 1.0f, 1.0f);
-		UINT32 mScissorTop = 0; 
-		UINT32 mScissorBottom = 720; 
-		UINT32 mScissorLeft = 0; 
+		UINT32 mScissorTop = 0;
+		UINT32 mScissorBottom = 720;
+		UINT32 mScissorLeft = 0;
 		UINT32 mScissorRight = 1280;
-		UINT32 mViewportLeft = 0; 
-		UINT32 mViewportTop = 0; 
-		UINT32 mViewportWidth = 0; 
+		UINT32 mViewportLeft = 0;
+		UINT32 mViewportTop = 0;
+		UINT32 mViewportWidth = 0;
 		UINT32 mViewportHeight = 0;
 		bool mScissorEnabled = false;
 		bool mScissorRectDirty = false;

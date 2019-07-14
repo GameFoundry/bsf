@@ -14,7 +14,7 @@
 
 namespace bs { namespace ct
 {
-	D3D11Texture::D3D11Texture(const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData, 
+	D3D11Texture::D3D11Texture(const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData,
 		GpuDeviceFlags deviceMask)
 		: Texture(desc, initialData, deviceMask)
 	{
@@ -22,7 +22,7 @@ namespace bs { namespace ct
 	}
 
 	D3D11Texture::~D3D11Texture()
-	{ 
+	{
 		clearBufferViews();
 
 		SAFE_RELEASE(mTex);
@@ -58,7 +58,7 @@ namespace bs { namespace ct
 		Texture::initialize();
 	}
 
-	void D3D11Texture::copyImpl(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc, 
+	void D3D11Texture::copyImpl(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc,
 			const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [this](const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc)
@@ -74,8 +74,8 @@ namespace bs { namespace ct
 			bool srcHasMultisample = mProperties.getNumSamples() > 1;
 			bool destHasMultisample = target->getProperties().getNumSamples() > 1;
 
-			bool copyEntireSurface = desc.srcVolume.getWidth() == 0 || 
-				desc.srcVolume.getHeight() == 0 || 
+			bool copyEntireSurface = desc.srcVolume.getWidth() == 0 ||
+				desc.srcVolume.getHeight() == 0 ||
 				desc.srcVolume.getDepth() == 0;
 
 			if (srcHasMultisample && !destHasMultisample) // Resolving from MS to non-MS texture
@@ -332,7 +332,7 @@ namespace bs { namespace ct
 			desc.MipLevels		= 1;
 			desc.Format			= D3D11Mappings::getTypelessDepthStencilPF(closestFormat);
 
-			mDXGIColorFormat = D3D11Mappings::getShaderResourceDepthStencilPF(closestFormat); 
+			mDXGIColorFormat = D3D11Mappings::getShaderResourceDepthStencilPF(closestFormat);
 			mDXGIDepthStencilFormat = d3dPF;
 		}
 		else
@@ -698,12 +698,12 @@ namespace bs { namespace ct
 
 	void* D3D11Texture::mapstagingbuffer(D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch)
 	{
-		// Note: I am creating and destroying a staging resource every time a texture is read. 
+		// Note: I am creating and destroying a staging resource every time a texture is read.
 		// Consider offering a flag on init that will keep this active all the time (at the cost of double memory).
 		// Reading is slow operation anyway so I don't believe doing it as we are now will influence it much.
 
 		if(!mStagingBuffer)
-			createStagingBuffer(); 
+			createStagingBuffer();
 
 		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();

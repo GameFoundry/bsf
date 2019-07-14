@@ -8,7 +8,7 @@ using namespace std::placeholders;
 
 namespace bs
 {
-	HTexture TextureEx::create(PixelFormat format, UINT32 width, UINT32 height, UINT32 depth, TextureType texType, 
+	HTexture TextureEx::create(PixelFormat format, UINT32 width, UINT32 height, UINT32 depth, TextureType texType,
 		TextureUsage usage, UINT32 numSamples, bool hasMipmaps, bool gammaCorrection)
 	{
 		int numMips = 0;
@@ -106,7 +106,7 @@ namespace bs
 			return;
 		}		
 
-		SPtr<PixelData> pixelData = bs_shared_ptr_new<PixelData>(props.getWidth(), props.getHeight(), props.getDepth(), 
+		SPtr<PixelData> pixelData = bs_shared_ptr_new<PixelData>(props.getWidth(), props.getHeight(), props.getDepth(),
 			props.getFormat());
 		pixelData->allocateInternalBuffer();
 		pixelData->setColors(colors);

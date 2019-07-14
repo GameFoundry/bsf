@@ -5,7 +5,7 @@
 #include "Profiling/BsRenderStats.h"
 #include "RenderAPI/BsGpuBuffer.h"
 
-namespace bs 
+namespace bs
 {
 	void checkValidDesc(const VERTEX_BUFFER_DESC& desc)
 	{
@@ -101,7 +101,7 @@ namespace bs
 		BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_VertexBuffer);
 	}
 
-	void VertexBuffer::writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags, 
+	void VertexBuffer::writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags,
 		UINT32 queueIdx)
 	{
 		mBuffer->writeData(offset, length, source, writeFlags, queueIdx);
@@ -136,7 +136,7 @@ namespace bs
 		UINT32 elemSize = type == GBT_STANDARD ? bs::GpuBuffer::getFormatSize(format) : elementSize;
 		if((mBuffer->getSize() % elemSize) != 0)
 		{
-			BS_LOG(Error, RenderBackend, 
+			BS_LOG(Error, RenderBackend,
 				"Size of the buffer isn't divisible by individual element size provided for the buffer view.");
 			return nullptr;
 		}

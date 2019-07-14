@@ -12,15 +12,15 @@ namespace bs
 
     /// <summary>
     /// Contains data used for initializing a context menu used on GUI elements. When specifying menu items you must provide
-    /// a path. Path must be formated in a certain way. All path elements must be separated by /, for example 
+    /// a path. Path must be formated in a certain way. All path elements must be separated by /, for example
     /// "View/Toolbars/Find". "View" would be the top level path element, "Toolbars" a child in its menu that opens up its
     /// own submenu, and "Find" a child in the "Toolbars" sub-menu with an optional callback.
-    /// 
+    ///
     /// A context menu can either by provided to GUIElements, or opened manually by calling <see cref="Open"/>.
     /// </summary>
     public class ContextMenu : ScriptObject
     {
-        private List<Action> callbacks = new List<Action>(); 
+        private List<Action> callbacks = new List<Action>();
 
         /// <summary>
         /// Creates a new empty context menu data.

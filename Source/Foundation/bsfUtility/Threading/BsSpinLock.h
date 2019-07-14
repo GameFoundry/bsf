@@ -14,7 +14,7 @@ namespace bs
 	 * Synchronization primitive with low overhead.
 	 *
 	 * @note	
-	 * However it will actively block the thread waiting for the lock, not allowing any other work to be done, so it is 
+	 * However it will actively block the thread waiting for the lock, not allowing any other work to be done, so it is
 	 * best used for short locks.
 	 */
 	class SpinLock
@@ -43,7 +43,7 @@ namespace bs
 	};
 
 	/**
-	 * Provides a safer method for locking a spin lock as the lock will get automatically locked when this objected is 
+	 * Provides a safer method for locking a spin lock as the lock will get automatically locked when this objected is
 	 * created and unlocked as soon as it goes out of scope.
 	 */
 	class ScopedSpinLock

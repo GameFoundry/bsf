@@ -8,8 +8,8 @@
 #include "BsRendererView.h"
 #include "BsRendererScene.h"
 
-namespace bs 
-{ 
+namespace bs
+{
 	struct EvaluatedAnimationData;
 
 	namespace ct
@@ -79,7 +79,7 @@ namespace bs
 		void destroy() override;
 
 		/** @copydoc Renderer::captureSceneCubeMap */
-		void captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position, 
+		void captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position,
 			const CaptureSettings& settings) override;
 
 		/** @copydoc Renderer::getShaderExtensionPointInfo */
@@ -177,8 +177,8 @@ namespace bs
 
 		/**
 		 * Renders all views in the provided view group.
-		 * 
-		 * @note	Core thread only. 
+		 *
+		 * @note	Core thread only.
 		 */
 		void renderViews(RendererViewGroup& viewGroup, const FrameInfo& frameInfo);
 

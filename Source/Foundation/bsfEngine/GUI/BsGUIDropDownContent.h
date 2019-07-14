@@ -49,11 +49,11 @@ namespace bs
 		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default button style is used.
 		 */
-		static GUIDropDownContent* create(GUIDropDownMenu::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
+		static GUIDropDownContent* create(GUIDropDownMenu::DropDownSubMenu* parent, const GUIDropDownData& dropDownData,
 			const GUIOptions& options, const String& style = StringUtil::BLANK);
 
 		/**
-		 * Changes the range of the displayed elements. 
+		 * Changes the range of the displayed elements.
 		 *
 		 * @note	This must be called at least once after creation.
 		 */
@@ -72,7 +72,7 @@ namespace bs
 		static constexpr const char* ENTRY_EXP_STYLE_TYPE = "DropDownEntryExpBtn";
 		static constexpr const char* SEPARATOR_STYLE_TYPE = "DropDownSeparator";
 	protected:
-		GUIDropDownContent(GUIDropDownMenu::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
+		GUIDropDownContent(GUIDropDownMenu::DropDownSubMenu* parent, const GUIDropDownData& dropDownData,
 			const String& style, const GUIDimensions& dimensions);
 
 		/**	Get localized name of a menu item element with the specified index. */

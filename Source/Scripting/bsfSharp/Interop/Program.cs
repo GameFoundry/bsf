@@ -19,49 +19,49 @@ namespace bs
      *  Audio clips, 3D sound and music reproduction.
      */
 
-    /** @defgroup GUI_Engine GUI 
+    /** @defgroup GUI_Engine GUI
      *  Graphical user interface, including elements, styles and localization.
      */
 
-    /** @defgroup Input Input 
+    /** @defgroup Input Input
      *  %Input (mouse, keyboard, gamepad, etc.).
      */
 
     /** @cond INTEROP */
-    /** @defgroup Interop Interop 
+    /** @defgroup Interop Interop
      *  Glue types that are used for C++/C# interop.
      */
     /** @endcond */
 
-    /** @defgroup Math Math 
+    /** @defgroup Math Math
      *  Variety of general purpose math functionality.
      */
 
-    /** @defgroup Physics Physics 
+    /** @defgroup Physics Physics
      *  %Physics system: colliders, triggers, rigidbodies, joints, scene queries, etc.
      */
 
-    /** @defgroup Rendering Rendering 
+    /** @defgroup Rendering Rendering
      *  Materials, shaders, textures, meshes and components relating to rendering.
      */
 
-    /** @defgroup Particles Particles 
+    /** @defgroup Particles Particles
      *  Rendering and simulation of particle systems.
      */
 
-    /** @defgroup Resources Resources 
+    /** @defgroup Resources Resources
      *  Resource types and resource management functionality.
      */
 
-    /** @defgroup Scene Scene 
+    /** @defgroup Scene Scene
      *  Scene objects and components.
      */
 
-    /** @defgroup Serialization Serialization 
+    /** @defgroup Serialization Serialization
      *  Serialization and deserialization of native objects.
      */
 
-    /** @defgroup Utility Utility 
+    /** @defgroup Utility Utility
      *  Various utility functionality.
      */
 

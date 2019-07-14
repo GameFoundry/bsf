@@ -16,12 +16,12 @@ namespace bs
 	/** Flags that control how is a command submitted to the command queue. */
 	enum CoreThreadQueueFlag
 	{
-		/** 
+		/**
 		 * Default flag, meaning the commands will be added to the per-thread queue and only begin executing after
 		 * submit() has been called.
 		 */
 		CTQF_Default = 0,
-		/** 
+		/**
 		 * Specifies that the queued command should be executed on the internal queue. Internal queue doesn't require
 		 * a separate CoreThread::submit() call, and the queued command is instead immediately visible to the core thread.
 		 * The downside is that the queue requires additional synchronization and is slower than the normal queue.
@@ -51,7 +51,7 @@ namespace bs
 	 *      submitted.
 	 *    - Commands queued on the per-thread queues are submitted to the internal command queue by calling submit(), at
 	 *      which point they are made visible to the core thread, and will begin executing.
-	 * 	  - Commands can also be submitted directly to the internal command queue (via a special flag), but with a 
+	 * 	  - Commands can also be submitted directly to the internal command queue (via a special flag), but with a
 	 * 	    performance cost due to extra synchronization required.
 	 */
 	class BS_CORE_EXPORT CoreThread : public Module<CoreThread>
@@ -63,7 +63,7 @@ namespace bs
 			bool isMain;
 		};
 
-		/** Wrapper for the thread-local variable because MSVC can't deal with a thread-local variable marked with dllimport or dllexport,  
+		/** Wrapper for the thread-local variable because MSVC can't deal with a thread-local variable marked with dllimport or dllexport,
 		 *  and we cannot use per-member dllimport/dllexport specifiers because Module's members will then not be exported and its static
 		 *  members will not have external linkage. */
 		struct QueueData
@@ -100,7 +100,7 @@ namespace bs
 		AsyncOp queueReturnCommand(std::function<void(AsyncOp&)> commandCallback, CoreThreadQueueFlags flags = CTQF_Default);
 
 		/**
-		 * Queues a new command that will be added to the global command queue. 
+		 * Queues a new command that will be added to the global command queue.
 		 * 	
 		 * @param[in]	commandCallback		Command to queue.
 		 * @param[in]	flags				Flags that further control command submission.
@@ -113,20 +113,20 @@ namespace bs
 		/**
 		 * Called once every frame.
 		 * 			
-		 * @note	Must be called before sim thread schedules any core thread operations for the frame. 
+		 * @note	Must be called before sim thread schedules any core thread operations for the frame.
 		 */
 		void update();
 
 		/**
-		 * Returns a frame allocator that should be used for allocating temporary data being passed to the core thread. As the 
+		 * Returns a frame allocator that should be used for allocating temporary data being passed to the core thread. As the
 		 * name implies the data only lasts one frame, so you need to be careful not to use it for longer than that.
 		 * 			
 		 * @note	Sim thread only.
 		 */
 		FrameAlloc* getFrameAlloc() const;
 
-		/** 
-		 * @name Internal 
+		/**
+		 * @name Internal
 		 * @{
 		 */
 
@@ -137,7 +137,7 @@ namespace bs
 
 		/** @} */
 
-		/** 
+		/**
 		 * Returns number of buffers needed to sync data between core and sim thread. Currently the sim thread can be one frame
 		 * ahead of the core thread, meaning we need two buffers. If this situation changes increase this number.
 		 *
@@ -146,7 +146,7 @@ namespace bs
 		 *  - Core thread frame starts, it reads some data from buffer 0.
 		 *  - Sim thread frame finishes
 		 *  - New sim thread frame starts, it writes some data to buffer 1.
-		 *  - Core thread still working, reading from buffer 0. (If we were using just one buffer at this point core thread 
+		 *  - Core thread still working, reading from buffer 0. (If we were using just one buffer at this point core thread
 		 *	  would be reading wrong data).
 		 *  - Sim thread waiting for core thread (application defined that it cannot go ahead more than one frame)
 		 *  - Core thread frame finishes.
@@ -202,14 +202,14 @@ namespace bs
 		/** Creates or retrieves a queue for the calling thread. */
 		SPtr<CommandQueue<CommandQueueSync>> getQueue();
 
-		/** 
+		/**
 		 * Submits all the commands from the provided command queue to the internal command queue. Optionally blocks the
 		 * calling thread until all the submitted commands have done executing.
 		 */
 		void submitCommandQueue(CommandQueue<CommandQueueSync>& queue, bool blockUntilComplete);
 
 		/**
-		 * Blocks the calling thread until the command with the specified ID completes. Make sure that the specified ID 
+		 * Blocks the calling thread until the command with the specified ID completes. Make sure that the specified ID
 		 * actually exists, otherwise this will block forever.
 		 */
 		void blockUntilCommandCompleted(UINT32 commandId);
@@ -240,7 +240,7 @@ namespace bs
 #define THROW_IF_NOT_CORE_THREAD throwIfNotCoreThread();
 #define THROW_IF_CORE_THREAD throwIfCoreThread();
 #else
-#define THROW_IF_NOT_CORE_THREAD 
+#define THROW_IF_NOT_CORE_THREAD
 #define THROW_IF_CORE_THREAD
 #endif
 

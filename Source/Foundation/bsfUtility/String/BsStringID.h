@@ -16,7 +16,7 @@ namespace bs
 	 * comparing raw strings.
 	 *
 	 * @note	
-	 * Essentially a unique ID is generated for each string and then the ID is used for comparisons as if you were using 
+	 * Essentially a unique ID is generated for each string and then the ID is used for comparisons as if you were using
 	 * an integer or an enum.
 	 * @note
 	 * Thread safe.
@@ -116,7 +116,7 @@ namespace bs
 		UINT32 calcHash(T const& input);
 
 		/**
-		 * Allocates a new string entry and assigns it a unique ID. Optionally expands the chunks buffer if the new entry 
+		 * Allocates a new string entry and assigns it a unique ID. Optionally expands the chunks buffer if the new entry
 		 * doesn't fit.
 		 */
 		InternalData* allocEntry();

@@ -21,29 +21,29 @@ namespace bs
 		MESH_DESC() { }
 
 		/** Number of vertices in the mesh. */
-		UINT32 numVertices = 0; 
+		UINT32 numVertices = 0;
 
 		/** Number of indices in the mesh. */
-		UINT32 numIndices = 0; 
+		UINT32 numIndices = 0;
 
-		/** 
+		/**
 		 * Vertex description structure that describes how are vertices organized in the vertex buffer. When binding a mesh
 		 * to the pipeline you must ensure vertex description at least partially matches the input description of the
 		 * currently bound vertex GPU program.
 		 */
 		SPtr<VertexDataDesc> vertexDesc;
 
-		/** 
+		/**
 		 * Defines how are indices separated into sub-meshes, and how are those sub-meshes rendered. Sub-meshes may be
 		 * rendered independently.
 		 */
 		Vector<SubMesh> subMeshes;
 
 		/** Optimizes performance depending on planned usage of the mesh. */
-		INT32 usage = MU_STATIC; 
+		INT32 usage = MU_STATIC;
 
-		/** 
-		 * Size of indices, use smaller size for better performance, however be careful not to go over the number of 
+		/**
+		 * Size of indices, use smaller size for better performance, however be careful not to go over the number of
 		 * vertices limited by the size.
 		 */
 		IndexType indexType = IT_32BIT;
@@ -58,7 +58,7 @@ namespace bs
 	};
 
 	/**
-	 * Primary class for holding geometry. Stores data in the form of vertex buffers and optionally an index buffer, which 
+	 * Primary class for holding geometry. Stores data in the form of vertex buffers and optionally an index buffer, which
 	 * may be bound to the pipeline for drawing. May contain multiple sub-meshes.
 	 */
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering) Mesh : public MeshBase
@@ -104,12 +104,12 @@ namespace bs
 		SPtr<MeshData> allocBuffer() const;
 
 		/**
-		 * Returns mesh data cached in the system memory. If the mesh wasn't created with CPU cached usage flag this 
+		 * Returns mesh data cached in the system memory. If the mesh wasn't created with CPU cached usage flag this
 		 * method will not return any data. Caller should not modify the returned data.
 		 *
 		 * @note	
-		 * The data read is the cached mesh data. Any data written to the mesh from the GPU or core thread will not be 
-		 * reflected in this data. Use readData() if you require those changes. 
+		 * The data read is the cached mesh data. Any data written to the mesh from the GPU or core thread will not be
+		 * reflected in this data. Use readData() if you require those changes.
 		 */
 		SPtr<MeshData> getCachedData() const { return mCPUData; }
 
@@ -177,22 +177,22 @@ namespace bs
 		 * Creates a new empty mesh. Created mesh will have no sub-meshes.
 		 *
 		 * @param[in]	numVertices		Number of vertices in the mesh.
-		 * @param[in]	numIndices		Number of indices in the mesh. 
+		 * @param[in]	numIndices		Number of indices in the mesh.
 		 * @param[in]	vertexDesc		Vertex description structure that describes how are vertices organized in the
-		 *								vertex buffer. When binding a mesh to the pipeline you must ensure vertex 
+		 *								vertex buffer. When binding a mesh to the pipeline you must ensure vertex
 		 *								description at least partially matches the input description of the currently bound
 		 *								vertex GPU program.
 		 * @param[in]	usage			Optimizes performance depending on planned usage of the mesh.
-		 * @param[in]	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default 
+		 * @param[in]	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default
 		 *								option is a triangle list, where three indices represent a single triangle.
 		 * @param[in]	indexType		Size of indices, use smaller size for better performance, however be careful not to
 		 *								go over the number of vertices limited by the size.
 		 */
-		static HMesh create(UINT32 numVertices, UINT32 numIndices, const SPtr<VertexDataDesc>& vertexDesc, 
+		static HMesh create(UINT32 numVertices, UINT32 numIndices, const SPtr<VertexDataDesc>& vertexDesc,
 			int usage = MU_STATIC, DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexType indexType = IT_32BIT);
 
 		/**
-		 * Creates a new empty mesh. 
+		 * Creates a new empty mesh.
 		 *
 		 * @param[in]	desc	Descriptor containing the properties of the mesh to create.
 		 */
@@ -215,10 +215,10 @@ namespace bs
 		 *
 		 * @param[in]	initialData		Vertex and index data to initialize the mesh with.
 		 * @param[in]	usage			Optimizes performance depending on planned usage of the mesh.
-		 * @param[in]	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default 
+		 * @param[in]	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default
 		 *								option is a triangle strip, where three indices represent a single triangle.
 		 */
-		static HMesh create(const SPtr<MeshData>& initialData, int usage = MU_STATIC, 
+		static HMesh create(const SPtr<MeshData>& initialData, int usage = MU_STATIC,
 			DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/** @name Internal
@@ -299,15 +299,15 @@ namespace bs
 		 * Updates the current mesh with the provided data.
 		 *
 		 * @param[in]	data				Data to update the mesh with.
-		 * @param[in]	discardEntireBuffer When true the existing contents of the resource you are updating will be 
-		 *									discarded. This can make the operation faster. Resources with certain buffer 
-		 *									types might require this flag to be in a specific state otherwise the operation 
+		 * @param[in]	discardEntireBuffer When true the existing contents of the resource you are updating will be
+		 *									discarded. This can make the operation faster. Resources with certain buffer
+		 *									types might require this flag to be in a specific state otherwise the operation
 		 *									will fail.
-		 * @param[in]	updateBounds		If true the internal bounds of the mesh will be recalculated based on the 
+		 * @param[in]	updateBounds		If true the internal bounds of the mesh will be recalculated based on the
 		 *									provided data.
 		 * @param[in]	queueIdx			Device queue to perform the write operation on. See @ref queuesDoc.
 		 */
-		virtual void writeData(const MeshData& data, bool discardEntireBuffer, bool updateBounds = true, 
+		virtual void writeData(const MeshData& data, bool discardEntireBuffer, bool updateBounds = true,
 			UINT32 queueIdx = 0);
 
 		/**
@@ -326,10 +326,10 @@ namespace bs
 		 * Creates a new empty mesh. Created mesh will have no sub-meshes.
 		 *
 		 * @param[in]	numVertices		Number of vertices in the mesh.
-		 * @param[in]	numIndices		Number of indices in the mesh. 
+		 * @param[in]	numIndices		Number of indices in the mesh.
 		 * @param[in]	vertexDesc		Vertex description structure that describes how are vertices organized in the
-		 *								vertex buffer. When binding a mesh to the pipeline you must ensure vertex 
-		 *								description at least partially matches the input description of the currently 
+		 *								vertex buffer. When binding a mesh to the pipeline you must ensure vertex
+		 *								description at least partially matches the input description of the currently
 		 *								bound vertex GPU program.
 		 * @param[in]	usage			Optimizes performance depending on planned usage of the mesh.
 		 * @param[in]	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default
@@ -338,12 +338,12 @@ namespace bs
 		 *								go over the number of vertices limited by the size.
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		static SPtr<Mesh> create(UINT32 numVertices, UINT32 numIndices, const SPtr<VertexDataDesc>& vertexDesc, 
-			int usage = MU_STATIC, DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexType indexType = IT_32BIT, 
+		static SPtr<Mesh> create(UINT32 numVertices, UINT32 numIndices, const SPtr<VertexDataDesc>& vertexDesc,
+			int usage = MU_STATIC, DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexType indexType = IT_32BIT,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/**
-		 * Creates a new empty mesh. 
+		 * Creates a new empty mesh.
 		 *
 		 * @param[in]	desc			Descriptor containing the properties of the mesh to create.
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
@@ -352,7 +352,7 @@ namespace bs
 
 		/**
 		 * Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described
-		 * by the mesh data exactly. 
+		 * by the mesh data exactly.
 		 *
 		 * @param[in]	initialData		Vertex and index data to initialize the mesh with.
 		 * @param[in]	desc			Descriptor containing the properties of the mesh to create. Vertex and index count,
@@ -360,7 +360,7 @@ namespace bs
 		 *								mesh data instead.
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		static SPtr<Mesh> create(const SPtr<MeshData>& initialData, const MESH_DESC& desc, 
+		static SPtr<Mesh> create(const SPtr<MeshData>& initialData, const MESH_DESC& desc,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/**
@@ -369,7 +369,7 @@ namespace bs
 		 *
 		 * @param[in]	initialData		Vertex and index data to initialize the mesh with.
 		 * @param[in]	usage			Optimizes performance depending on planned usage of the mesh.
-		 * @param[in]	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default 
+		 * @param[in]	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default
 		 *								option is a triangle strip, where three indices represent a single triangle.
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */

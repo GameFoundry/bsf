@@ -73,7 +73,7 @@ namespace bs
 		bool additive;
 	};
 
-	/** 
+	/**
 	 * Contains local translation, rotation and scale values for each bone in a skeleton, after being evaluated at a
 	 * specific time of an animation.  All values are stored in the same order as the bones in the skeleton they were
 	 * created by.
@@ -104,7 +104,7 @@ namespace bs
 		UINT32 parent; /**< Index of the bone parent, or -1 if root (no parent). */
 	};
 
-	/** 
+	/**
 	 * @native
 	 * Contains information about bones required for skeletal animation. Allows caller to evaluate a set of animation
 	 * clips at a specific time and output the relevant skeleton pose.
@@ -118,7 +118,7 @@ namespace bs
 	public:
 		~Skeleton();
 
-		/** 
+		/**
 		 * Outputs a skeleton pose containing required transforms for transforming the skeleton to the values specified by
 		 * the provided animation clip evaluated at the specified time.
 		 *
@@ -134,10 +134,10 @@ namespace bs
 		 * @note	It is more efficient to use the other getPose overload as sequential calls can benefit from animation
 		 *			evaluator cache.
 		 */
-		void getPose(Matrix4* pose, LocalSkeletonPose& localPose, const SkeletonMask& mask, const AnimationClip& clip, 
+		void getPose(Matrix4* pose, LocalSkeletonPose& localPose, const SkeletonMask& mask, const AnimationClip& clip,
 			float time, bool loop = true);
 
-		/** 
+		/**
 		 * Outputs a skeleton pose containing required transforms for transforming the skeleton to the values specified by
 		 * the provided set of animation curves.
 		 *
@@ -149,7 +149,7 @@ namespace bs
 		 * @param[in]	layers		One or multiple layers, containing one or multiple animation states to evaluate.
 		 * @param[in]	numLayers	Number of layers in the @p layers array.
 		 */
-		void getPose(Matrix4* pose, LocalSkeletonPose& localPose, const SkeletonMask& mask, 
+		void getPose(Matrix4* pose, LocalSkeletonPose& localPose, const SkeletonMask& mask,
 			const AnimationStateLayer* layers, UINT32 numLayers);
 
 		/** Returns the total number of bones in the skeleton. */
@@ -168,8 +168,8 @@ namespace bs
 		/** Calculates the bind-pose transform of the bone at the specified index. */
 		Transform calcBoneTransform(UINT32 idx) const;
 
-		/** 
-		 * Creates a new Skeleton. 
+		/**
+		 * Creates a new Skeleton.
 		 *
 		 * @param[in]	bones		An array of bones to initialize the skeleton with. Data will be copied.
 		 * @param[in]	numBones	Number of bones in the @p bones array.
@@ -193,7 +193,7 @@ namespace bs
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 
-		/** 
+		/**
 		 * Creates a Skeleton with no data. You must populate its data manually.
 		 *
 		 * @note	For serialization use only.

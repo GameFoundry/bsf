@@ -28,8 +28,8 @@ namespace bs { namespace ct
 		/** Returns the unique index of the queue, for its type. */
 		UINT32 getIndex() const { return mIndex; }
 
-		/** 
-		 * Checks if anything is currently executing on this queue. 
+		/**
+		 * Checks if anything is currently executing on this queue.
 		 *
 		 * @note	This status is only updated after a VulkanCommandBufferManager::refreshStates() call.
 		 */
@@ -38,7 +38,7 @@ namespace bs { namespace ct
 		/** Submits the provided command buffer on the queue. */
 		void submit(VulkanCmdBuffer* cmdBuffer, VulkanSemaphore** waitSemaphores, UINT32 semaphoresCount);
 
-		/** 
+		/**
 		 * Stores information about a submit internally, but doesn't actually execute it. The intended use is to queue
 		 * multiple submits and execute them all at once using submitQueued(), ensuring better performance than queuing them
 		 * all individually.
@@ -48,8 +48,8 @@ namespace bs { namespace ct
 		/** Submits all previously queued commands buffers, as recorded by queueSubmit(). */
 		void submitQueued();
 
-		/** 
-		 * Presents the back buffer of the provided swap chain. 
+		/**
+		 * Presents the back buffer of the provided swap chain.
 		 *
 		 * @param[in]	swapChain			Swap chain whose back buffer to present.
 		 * @param[in]	waitSemaphores		Optional semaphores to wait on before presenting the queue.
@@ -61,10 +61,10 @@ namespace bs { namespace ct
 		/** Blocks the calling thread until all operations on the queue finish. */
 		void waitIdle() const;
 
-		/** 
-		 * Checks if any of the active command buffers finished executing on the queue and updates their states 
-		 * accordingly. 
-		 * 
+		/**
+		 * Checks if any of the active command buffers finished executing on the queue and updates their states
+		 * accordingly.
+		 *
 		 * @param[in]	forceWait	Set to true if the system should wait until all command buffers finish executing.
 		 * @param[in]	queueEmpty	Set to true if the caller guarantees the queue will be empty (e.g. on shutdown). This
 		 *							allows the system to free all needed resources.
@@ -75,16 +75,16 @@ namespace bs { namespace ct
 		VulkanCmdBuffer* getLastCommandBuffer() const { return mLastCommandBuffer; }
 
 	protected:
-		/** 
+		/**
 		 * Generates a submit-info structure that can be used for submitting the command buffer to the queue, but doesn't
 		 * perform the actual submit.
 		 */
 		void getSubmitInfo(VkCommandBuffer* cmdBuffer, VkSemaphore* signalSemaphores, UINT32 numSignalSemaphores,
 						   VkSemaphore* waitSemaphores, UINT32 numWaitSemaphores, VkSubmitInfo& submitInfo);
 
-		/** 
+		/**
 		 * Prepares a list of semaphores that can be provided to submit or present calls. *
-		 * 
+		 *
 		 * @param[in]		inSemaphores	External wait semaphores that need to be waited on.
 		 * @param[out]		outSemaphores	All semaphores (external ones, and possibly additional ones), as Vulkan handles.
 		 * @param[in, out]	semaphoresCount	Number of semaphores in @p inSemaphores when calling. When method returns this

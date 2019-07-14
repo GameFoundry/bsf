@@ -24,8 +24,8 @@ namespace bs
 		 * method of the class this object was retrieved from. Use invokeVirtual() if you need polymorphism.
 		 *
 		 * @param[in]	instance	Instance of the object to invoke the method on. Can be null for static methods.
-		 * @param[in]	params		Array of parameters to pass to the method. Caller must ensure they match method 
-		 *							parameter count and type. For value types parameters should be pointers to the 
+		 * @param[in]	params		Array of parameters to pass to the method. Caller must ensure they match method
+		 *							parameter count and type. For value types parameters should be pointers to the
 		 *							values and for reference types they should be pointers to MonoObject.
 		 * @return					A boxed return value, or null if method has no return value.
 		 */
@@ -36,8 +36,8 @@ namespace bs
 		 * called.
 		 *
 		 * @param[in]	instance	Instance of the object to invoke the method on.
-		 * @param[in]	params		Array of parameters to pass to the method. Caller must ensure they match method 
-		 *							parameter count and type. For value types parameters should be pointers to the 
+		 * @param[in]	params		Array of parameters to pass to the method. Caller must ensure they match method
+		 *							parameter count and type. For value types parameters should be pointers to the
 		 *							values and for reference types they should be pointers to MonoObject.
 		 * @return					A boxed return value, or null if method has no return value.
 		 */

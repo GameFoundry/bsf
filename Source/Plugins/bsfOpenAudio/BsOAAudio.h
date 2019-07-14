@@ -46,7 +46,7 @@ namespace bs
 		/** @copydoc Audio::getAllDevices */
 		const Vector<AudioDevice>& getAllDevices() const override { return mAllDevices; };
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 
@@ -71,13 +71,13 @@ namespace bs
 		/** Returns an OpenAL context assigned to the provided listener. */
 		ALCcontext* _getContext(const OAAudioListener* listener) const;
 
-		/** 
+		/**
 		 * Returns optimal format for the provided number of channels and bit depth. It is assumed the user has checked if
 		 * extensions providing these formats are actually available.
 		 */
 		INT32 _getOpenALBufferFormat(UINT32 numChannels, UINT32 bitDepth);
 
-		/** 
+		/**
 		 * Writes provided samples into the OpenAL buffer with the provided ID. If the provided format is not supported the
 		 * samples will first be converted into a valid format.
 		 */
@@ -112,7 +112,7 @@ namespace bs
 		/** @copydoc Audio::createSource */
 		SPtr<AudioSource> createSource() override;
 
-		/** 
+		/**
 		 * Delete all existing contexts and rebuild them according to the listener list. All audio sources will be rebuilt
 		 * as well.
 		 *

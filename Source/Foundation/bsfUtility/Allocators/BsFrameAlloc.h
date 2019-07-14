@@ -21,7 +21,7 @@ namespace bs
 	 */
 
 	/**
-	 * Frame allocator. Performs very fast allocations but can only free all of its memory at once. Perfect for allocations 
+	 * Frame allocator. Performs very fast allocations but can only free all of its memory at once. Perfect for allocations
 	 * that last just a single frame.
 	 * 			
 	 * @note	Not thread safe with an exception. alloc() and clear() methods need to be called from the same thread.
@@ -100,7 +100,7 @@ namespace bs
 		 * Deallocates a previously allocated block of memory.
 		 *
 		 * @note
-		 * No deallocation is actually done here. This method is only used for debug purposes so it is easier to track 
+		 * No deallocation is actually done here. This method is only used for debug purposes so it is easier to track
 		 * down memory leaks and corruption.
 		 * @note
 		 * Thread safe.
@@ -111,7 +111,7 @@ namespace bs
 		 * Deallocates and destructs a previously allocated object.
 		 *
 		 * @note	
-		 * No deallocation is actually done here. This method is only used to call the destructor and for debug purposes 
+		 * No deallocation is actually done here. This method is only used to call the destructor and for debug purposes
 		 * so it is easier to track down memory leaks and corruption.
 		 * @note
 		 * Thread safe.
@@ -129,7 +129,7 @@ namespace bs
 		void markFrame();
 
 		/**
-		 * Deallocates all allocated memory since the last call to markFrame() (or all the memory if there was no call 
+		 * Deallocates all allocated memory since the last call to markFrame() (or all the memory if there was no call
 		 * to markFrame()).
 		 * 			
 		 * @note	Not thread safe.
@@ -137,7 +137,7 @@ namespace bs
 		void clear();
 
 		/**
-		 * Changes the frame allocator owner thread. After the owner thread has changed only allocations from that thread 
+		 * Changes the frame allocator owner thread. After the owner thread has changed only allocations from that thread
 		 * can be made.
 		 */
 		void setOwnerThread(ThreadId thread);
@@ -155,7 +155,7 @@ namespace bs
 #endif
 
 		/**
-		 * Allocates a dynamic block of memory of the wanted size. The exact allocation size might be slightly higher in 
+		 * Allocates a dynamic block of memory of the wanted size. The exact allocation size might be slightly higher in
 		 * order to store block meta data.
 		 */
 		MemBlock* allocBlock(UINT32 wantedSize);
@@ -164,8 +164,8 @@ namespace bs
 		void deallocBlock(MemBlock* block);
 	};
 
-	/** 
-	 * Version of FrameAlloc that allows blocks size to be provided through the template argument instead of the 
+	/**
+	 * Version of FrameAlloc that allows blocks size to be provided through the template argument instead of the
 	 * constructor. */
 	template<int BlockSize>
 	class TFrameAlloc : public FrameAlloc
@@ -269,7 +269,7 @@ namespace bs
 	 */
 	BS_UTILITY_EXPORT UINT8* bs_frame_alloc(UINT32 numBytes);
 
-	/** 
+	/**
 	 * Allocates the specified number of bytes aligned to the provided boundary, using the global frame allocator. Boundary
 	 * is in bytes and must be a power of two.
 	 */
@@ -282,16 +282,16 @@ namespace bs
 	 */
 	BS_UTILITY_EXPORT void bs_frame_free(void* data);
 
-	/** 
-	 * Frees memory previously allocated with bs_frame_alloc_aligned(). 
+	/**
+	 * Frees memory previously allocated with bs_frame_alloc_aligned().
 	 *
 	 * @note	Must be called on the same thread the memory was allocated on.
 	 */
 	BS_UTILITY_EXPORT void bs_frame_free_aligned(void* data);
 
 	/**
-	 * Allocates enough memory to hold the object of specified type using the global frame allocator, but does not 
-	 * construct the object. 
+	 * Allocates enough memory to hold the object of specified type using the global frame allocator, but does not
+	 * construct the object.
 	 */
 	template<class T>
 	T* bs_frame_alloc()
@@ -300,8 +300,8 @@ namespace bs
 	}
 
 	/**
-	 * Allocates enough memory to hold N objects of specified type using the global frame allocator, but does not 
-	 * construct the object. 
+	 * Allocates enough memory to hold N objects of specified type using the global frame allocator, but does not
+	 * construct the object.
 	 */
 	template<class T>
 	T* bs_frame_alloc(UINT32 count)
@@ -310,7 +310,7 @@ namespace bs
 	}
 
 	/**
-	 * Allocates enough memory to hold the object(s) of specified type using the global frame allocator, 
+	 * Allocates enough memory to hold the object(s) of specified type using the global frame allocator,
 	 * and constructs them.
 	 */
 	template<class T>
@@ -417,7 +417,7 @@ namespace bs
 	extern BS_THREADLOCAL FrameAlloc* _GlobalFrameAlloc;
 
 	/**
-	 * Specialized memory allocator implementations that allows use of a global frame allocator in normal 
+	 * Specialized memory allocator implementations that allows use of a global frame allocator in normal
 	 * new/delete/free/dealloc operators.
 	 */
 	template<>

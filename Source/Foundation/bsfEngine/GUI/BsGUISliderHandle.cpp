@@ -33,13 +33,13 @@ namespace bs
 
 	GUISliderHandle* GUISliderHandle::create(GUISliderHandleFlags flags, const String& styleName)
 	{
-		return new (bs_alloc<GUISliderHandle>()) GUISliderHandle(flags, 
+		return new (bs_alloc<GUISliderHandle>()) GUISliderHandle(flags,
 			getStyleName<GUISliderHandle>(styleName), GUIDimensions::create());
 	}
 
 	GUISliderHandle* GUISliderHandle::create(GUISliderHandleFlags flags, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUISliderHandle>()) GUISliderHandle(flags, 
+		return new (bs_alloc<GUISliderHandle>()) GUISliderHandle(flags,
 			getStyleName<GUISliderHandle>(styleName), GUIDimensions::create(options));
 	}
 
@@ -380,7 +380,7 @@ namespace bs
 				else
 					mState = State::Normal;
 
-				if (!mHandleDragged) 
+				if (!mHandleDragged)
 				{
 					// If we clicked above or below the scroll handle, scroll by one page
 					INT32 handlePosPx = getHandlePosPx();

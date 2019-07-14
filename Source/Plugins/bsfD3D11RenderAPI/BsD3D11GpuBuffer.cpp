@@ -27,7 +27,7 @@ namespace bs { namespace ct
 	{ }
 
 	D3D11GpuBuffer::~D3D11GpuBuffer()
-	{ 
+	{
 		clearBufferViews();
 	}
 
@@ -74,11 +74,11 @@ namespace bs { namespace ct
 	}
 
 	ID3D11Buffer* D3D11GpuBuffer::getDX11Buffer() const
-	{ 
-		return static_cast<D3D11HardwareBuffer*>(mBuffer)->getD3DBuffer(); 
+	{
+		return static_cast<D3D11HardwareBuffer*>(mBuffer)->getD3DBuffer();
 	}
 
-	GpuBufferView* D3D11GpuBuffer::requestView(D3D11GpuBuffer* buffer, UINT32 firstElement, UINT32 numElements, 
+	GpuBufferView* D3D11GpuBuffer::requestView(D3D11GpuBuffer* buffer, UINT32 firstElement, UINT32 numElements,
 		GpuViewUsage usage)
 	{
 		const auto& props = buffer->getProperties();

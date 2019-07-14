@@ -44,6 +44,6 @@ namespace bs
 				return std::make_pair(true, nearestT);
 		}
 
-		return std::make_pair(false, 0.0f); 
+		return std::make_pair(false, 0.0f);
 	}
 }

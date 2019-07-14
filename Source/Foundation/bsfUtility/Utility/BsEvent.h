@@ -124,7 +124,7 @@ namespace bs
 		}
 
 		/**
-		 * Called when the event handle no longer keeps a reference to the connection data. This means we might be able to 
+		 * Called when the event handle no longer keeps a reference to the connection data. This means we might be able to
 		 * free (and reuse) its memory if the event is done with it too.
 		 */
 		void freeHandle(BaseConnectionData* conn)
@@ -221,7 +221,7 @@ namespace bs
 		* Allows direct conversion of a handle to bool.
 		*
 		* @note		
-		* Additional struct is needed because we can't directly convert to bool since then we can assign pointer to bool 
+		* Additional struct is needed because we can't directly convert to bool since then we can assign pointer to bool
 		* and that's wrong.
 		*/
 		operator int Bool_struct::*() const
@@ -260,7 +260,7 @@ namespace bs
 	 *
 	 * @note	Callback method return value is ignored.
 	 */
-	// Note: I could create a policy template argument that allows creation of 
+	// Note: I could create a policy template argument that allows creation of
 	// lockable and non-lockable events in the case mutex is causing too much overhead.
 	template <class RetType, class... Args>
 	class TEvent

@@ -171,7 +171,7 @@ namespace bs { namespace ct
 
 	GLenum GLPixelUtil::getGLInternalFormat(PixelFormat format, bool hwGamma)
 	{
-		switch (format) 
+		switch (format)
 		{
 		case PF_R8:
 			return GL_R8;

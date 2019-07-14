@@ -17,14 +17,14 @@ namespace bs { namespace ct
 	class VulkanBuffer : public VulkanResource
 	{
 	public:
-		/** 
+		/**
 		 * @param[in]	owner		Manager that takes care of tracking and releasing of this object.
 		 * @param[in]	buffer		Actual low-level Vulkan buffer handle.
 		 * @param[in]	allocation	Information about memory mapped to the buffer.
 		 * @param[in]	rowPitch	If buffer maps to an image sub-resource, length of a single row (in elements).
 		 * @param[in]	slicePitch	If buffer maps to an image sub-resource, size of a single 2D surface (in elements).
 		 */
-		VulkanBuffer(VulkanResourceManager* owner, VkBuffer buffer, VmaAllocation allocation, 
+		VulkanBuffer(VulkanResourceManager* owner, VkBuffer buffer, VmaAllocation allocation,
 			UINT32 rowPitch = 0, UINT32 slicePitch = 0);
 		~VulkanBuffer();
 
@@ -32,7 +32,7 @@ namespace bs { namespace ct
 		VkBuffer getHandle() const { return mBuffer; }
 
 		/**
-		 * If buffer represents an image sub-resource, this is the number of elements that separate one row of the 
+		 * If buffer represents an image sub-resource, this is the number of elements that separate one row of the
 		 * sub-resource from another (if no padding, it is equal to image width).
 		 */
 		UINT32 getRowPitch() const { return mRowPitch; }
@@ -43,7 +43,7 @@ namespace bs { namespace ct
 		 */
 		UINT32 getSliceHeight() const { return mSliceHeight; }
 
-		/** 
+		/**
 		 * Returns a pointer to internal buffer memory. Must be followed by unmap(). Caller must ensure the buffer was
 		 * created in CPU readable memory, and that buffer isn't currently being written to by the GPU.
 		 */
@@ -52,7 +52,7 @@ namespace bs { namespace ct
 		/** Unmaps a buffer previously mapped with map(). */
 		void unmap();
 
-		/** 
+		/**
 		 * Queues a command on the provided command buffer. The command copies the contents of the current buffer to
 		 * the destination buffer. Caller must ensure the provided offsets and length are within valid bounds of
 		 * both buffers.
@@ -60,14 +60,14 @@ namespace bs { namespace ct
 		void copy(VulkanCmdBuffer* cb, VulkanBuffer* destination, VkDeviceSize srcOffset, VkDeviceSize dstOffset,
 			VkDeviceSize length);
 
-		/** 
+		/**
 		 * Queues a command on the provided command buffer. The command copies the contents of the current buffer to
-		 * the destination image subresource. 
+		 * the destination image subresource.
 		 */
 		void copy(VulkanCmdBuffer* cb, VulkanImage* destination, const VkExtent3D& extent,
 			const VkImageSubresourceLayers& range, VkImageLayout layout);
 
-		/** 
+		/**
 		 * Queues a command on the provided command buffer. The command copies the contents of the provided memory location
 		 * the destination buffer. Caller must ensure the provided offset and length are within valid bounds of
 		 * both buffers. Caller must ensure the offset and size is a multiple of 4, and size is equal to or less then 65536.
@@ -80,14 +80,14 @@ namespace bs { namespace ct
 		/** @copydoc VulkanResource::notifyUnbound */
 		void notifyUnbound() override;
 
-		/** 
+		/**
 		 * Creates a new view of this buffer or returns an existing view if one of this format was already created. Views
 		 * must be freed by calling freeView() when doing using them. Only UNIFORM_TEXEL and STORAGE_TEXEL buffer types
-		 * support buffer views. 
+		 * support buffer views.
 		 */
 		VkBufferView getView(VkFormat format);
 
-		/** 
+		/**
 		 * Frees a previously allocated buffer view. Calling this is optional as all buffer views will be deallocated
 		 * when the buffer is destroyed.
 		 */
@@ -107,7 +107,7 @@ namespace bs { namespace ct
 			UINT32 useCount = 0;
 		};
 
-		/** 
+		/**
 		 * Destroys any buffer views are currently not being used. This must only be called after the buffer is done
 		 * being used on a command buffer.
 		 */
@@ -148,16 +148,16 @@ namespace bs { namespace ct
 		void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) override;
 
 		/** @copydoc HardwareBuffer::writeData */
-		void writeData(UINT32 offset, UINT32 length, const void* source, 
+		void writeData(UINT32 offset, UINT32 length, const void* source,
 			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
 
 		/** @copydoc HardwareBuffer::copyData */
-		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, 
+		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset,
 			UINT32 length, bool discardWholeBuffer = false, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
-		/** 
-		 * Gets the resource wrapping the buffer object, on the specified device. If hardware buffer device mask doesn't 
-		 * include the provided device, null is returned. 
+		/**
+		 * Gets the resource wrapping the buffer object, on the specified device. If hardware buffer device mask doesn't
+		 * include the provided device, null is returned.
 		 */
 		VulkanBuffer* getResource(UINT32 deviceIdx) const { return mBuffers[deviceIdx]; }
 

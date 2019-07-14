@@ -11,7 +11,7 @@ namespace bs
 	const Matrix4 Matrix4::ZERO{BS_ZERO()};
 	const Matrix4 Matrix4::IDENTITY{BS_IDENTITY()};
 
-	static float MINOR(const Matrix4& m, const UINT32 r0, const UINT32 r1, const UINT32 r2, 
+	static float MINOR(const Matrix4& m, const UINT32 r0, const UINT32 r1, const UINT32 r2,
 								const UINT32 c0, const UINT32 c1, const UINT32 c2)
 	{
 		return m[r0][c0] * (m[r1][c1] * m[r2][c2] - m[r2][c1] * m[r1][c2]) -
@@ -209,7 +209,7 @@ namespace bs
 
 		Matrix3 matQ;
 		Vector3 vecU;
-		m3x3.QDUDecomposition(matQ, scale, vecU); 
+		m3x3.QDUDecomposition(matQ, scale, vecU);
 
 		rotation = Quaternion(matQ);
 		position = Vector3(m[0][3], m[1][3], m[2][3]);

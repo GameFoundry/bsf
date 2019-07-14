@@ -11,8 +11,8 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Contains a set of morph channels used for morph target animation. Each morph channel contains one or multiple shapes 
-	/// which are blended together depending on frame animation. Each channel is then additively blended together depending on 
+	/// Contains a set of morph channels used for morph target animation. Each morph channel contains one or multiple shapes
+	/// which are blended together depending on frame animation. Each channel is then additively blended together depending on
 	/// some weight.
 	/// </summary>
 	[ShowInInspector]

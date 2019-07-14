@@ -15,27 +15,27 @@ namespace bs
 	/** Flags that control behavior of a Component. */
 	enum class ComponentFlag
 	{
-		/** 
-		 * Ensures that scene manager cannot pause or stop component callbacks from executing. Off by default. 
+		/**
+		 * Ensures that scene manager cannot pause or stop component callbacks from executing. Off by default.
 		 * Note that this flag must be specified on component creation, in its constructor and any later changes
 		 * to the flag could be ignored.
 		 */
-		AlwaysRun = 1 
+		AlwaysRun = 1
 	};
 
 	typedef Flags<ComponentFlag> ComponentFlags;
 	BS_FLAGS_OPERATORS(ComponentFlag)
 
-	/** 
-	 * Components represent primary logic elements in the scene. They are attached to scene objects. 
+	/**
+	 * Components represent primary logic elements in the scene. They are attached to scene objects.
 	 *
 	 * You should implement some or all of update/fixedUpdate/onCreated/onInitialized/onEnabled/onDisabled/
 	 * onTransformChanged/onDestroyed methods to implement the relevant component logic. Avoid putting logic in constructors
 	 * or destructors.
 	 *
 	 * Components can be in different states. These states control which of the events listed above trigger:
-	 *  - Running - Scene manager is sending out events.  
-	 *  - Paused - Scene manager is sending out all events except per-frame update(). 
+	 *  - Running - Scene manager is sending out events.
+	 *  - Paused - Scene manager is sending out all events except per-frame update().
 	 *	- Stopped - Scene manager is not sending out events except for onCreated/onDestroyed.
 	 *	
 	 * These states can be changed globally though SceneManager and affect all components. Individual components can
@@ -61,16 +61,16 @@ namespace bs
 		/** Called once per frame. Only called if the component is in Running state. */
 		virtual void update() { }
 
-		/** 
+		/**
 		 * Called at fixed time intervals (e.g. 60 times per frame). Generally any physics-related functionality should
-		 * go in this method in order to ensure stability of calculations. Only called if the component is in Running 
-		 * state. 
+		 * go in this method in order to ensure stability of calculations. Only called if the component is in Running
+		 * state.
 		 */
 		virtual void fixedUpdate() { }
 
 		/**
 		 * Calculates bounds of the visible contents represented by this component (for example a mesh for Renderable).
-		 * 
+		 *
 		 * @param[in]	bounds	Bounds of the contents in world space coordinates.	
 		 * @return				True if the component has bounds with non-zero volume, otherwise false.
 		 */
@@ -80,26 +80,26 @@ namespace bs
 		 * Checks if this and the provided component represent the same type.
 		 * 			
 		 * @note	
-		 * RTTI type cannot be checked directly since components can be further specialized internally for scripting 
+		 * RTTI type cannot be checked directly since components can be further specialized internally for scripting
 		 * purposes.
 		 */
 		virtual bool typeEquals(const Component& other);
 
 		/**
-		 * Removes the component from parent SceneObject and deletes it. All the references to this component will be 
+		 * Removes the component from parent SceneObject and deletes it. All the references to this component will be
 		 * marked as destroyed and you will get an exception if you try to use them.
 		 *
-		 * @param[in]	immediate	If true the destruction will be performed immediately, otherwise it will be delayed 
+		 * @param[in]	immediate	If true the destruction will be performed immediately, otherwise it will be delayed
 		 *							until the end of the current frame (preferred option).
 		 */
 		void destroy(bool immediate = false);
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 
 		/**
-		 * Construct any resources the component needs before use. Called when the parent scene object is instantiated. 
+		 * Construct any resources the component needs before use. Called when the parent scene object is instantiated.
 		 * A non-instantiated component shouldn't be used for any other purpose than serialization.
 		 */
 		virtual void _instantiate() {}
@@ -124,7 +124,7 @@ namespace bs
 
 		/**	
 		 * Called once when the component first leaves the Stopped state. This includes component creation if requirements
-		 * for leaving Stopped state are met, in which case it is called after onCreated. 
+		 * for leaving Stopped state are met, in which case it is called after onCreated.
 		 */
 		virtual void onInitialized() {}
 
@@ -134,18 +134,18 @@ namespace bs
 		/**	
 		 * Called every time a component is placed into the Stopped state. This includes component destruction if component
 		 * wasn't already in Stopped state during destruction. When called during destruction it is called before
-		 * onDestroyed. 
+		 * onDestroyed.
 		 */
 		virtual void onDisabled() {}
 
 		/**	
 		 * Called every time a component leaves the Stopped state. This includes component creation if requirements
-		 * for leaving the Stopped state are met. When called during creation it is called after onInitialized. 
+		 * for leaving the Stopped state are met. When called during creation it is called after onInitialized.
 		 */
 		virtual void onEnabled() {}
 
-		/** 
-		 * Called when the component's parent scene object has changed. Not called if the component is in Stopped state. 
+		/**
+		 * Called when the component's parent scene object has changed. Not called if the component is in Stopped state.
 		 * Also only called if necessary notify flags are set via _setNotifyFlags().
 		 */
 		virtual void onTransformChanged(TransformChangedFlags flags) { }
@@ -169,7 +169,7 @@ namespace bs
 		 * Destroys this component.
 		 *
 		 * @param[in]	handle		Game object handle this this object.
-		 * @param[in]	immediate	If true, the object will be deallocated and become unusable right away. Otherwise the 
+		 * @param[in]	immediate	If true, the object will be deallocated and become unusable right away. Otherwise the
 		 *							deallocation will be delayed to the end of frame (preferred method).
 		 *
 		 * @note	Unlike destroy(), does not remove the component from its parent.

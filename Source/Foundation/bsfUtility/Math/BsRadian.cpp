@@ -21,7 +21,7 @@ namespace bs
 
 	Radian& Radian::operator= (const Degree& d)
 	{
-		mRad = d.valueRadians(); 
+		mRad = d.valueRadians();
 		return *this;
 	}
 

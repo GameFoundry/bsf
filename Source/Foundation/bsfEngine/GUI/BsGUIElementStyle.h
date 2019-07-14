@@ -29,7 +29,7 @@ namespace bs
 	};
 
 	/**
-	 * GUI element style that determines the look of a GUI element, as well as the element's default layout options. 
+	 * GUI element style that determines the look of a GUI element, as well as the element's default layout options.
 	 * Different looks can be provided for different element states.
 	 */
 	struct BS_EXPORT BS_SCRIPT_EXPORT(m:GUI) GUIElementStyle : public IReflectable
@@ -55,34 +55,34 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		bool wordWrap = false; /**< Should the text word wrap if it doesn't fit. */
 
-		/** 
-		 * Style used when the element doesn't have focus nor is the user interacting with the element. Used when the 
+		/**
+		 * Style used when the element doesn't have focus nor is the user interacting with the element. Used when the
 		 * element is in the 'off' state.
 		 */
 		BS_SCRIPT_EXPORT()
 		GUIElementStateStyle normal;
 
-		/** 
+		/**
 		 * Style used when the user is hovering the pointer over the element, while the element doesn't have focus. Used
 		 * when the element is in the 'off' state.
 		 */
 		BS_SCRIPT_EXPORT()
 		GUIElementStateStyle hover;
 
-		/** 
+		/**
 		 * Style used when the user is actively interacting with the element. Used when the element is in the 'off' state.
 		 */
 		BS_SCRIPT_EXPORT()
 		GUIElementStateStyle active;
 
-		/** 
+		/**
 		 * Style used when the element has focus but the pointer is not hovering over the element. Used when the element is
 		 * in the 'off' state.
 		 */
 		BS_SCRIPT_EXPORT()
 		GUIElementStateStyle focused;
 
-		/** 
+		/**
 		 * Style used when the element has focus and the pointer is hovering over the element. Used when the element is
 		 * in the 'off' state.
 		 */

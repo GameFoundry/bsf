@@ -11,8 +11,8 @@
 
 namespace bs
 {
-	ScriptCCharacterController::onColliderHitThunkDef ScriptCCharacterController::onColliderHitThunk; 
-	ScriptCCharacterController::onControllerHitThunkDef ScriptCCharacterController::onControllerHitThunk; 
+	ScriptCCharacterController::onColliderHitThunkDef ScriptCCharacterController::onColliderHitThunk;
+	ScriptCCharacterController::onControllerHitThunkDef ScriptCCharacterController::onControllerHitThunk;
 
 	ScriptCCharacterController::ScriptCCharacterController(MonoObject* managedInstance, const GameObjectHandle<CCharacterController>& value)
 		:TScriptComponent(managedInstance, value)

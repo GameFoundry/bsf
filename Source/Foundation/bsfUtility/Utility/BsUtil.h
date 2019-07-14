@@ -77,7 +77,7 @@ namespace bs
 		return N;
 	}
 
-	/** 
+	/**
 	 * Erases the provided element from the container, but first swaps the element so its located at the end of the
 	 * container, making the erase operation cheaper at the cost of an extra move operation. Doesn't preserve ordering
 	 * within the element. Returns true if a swap occurred, or false if the element was already at the end of the container.

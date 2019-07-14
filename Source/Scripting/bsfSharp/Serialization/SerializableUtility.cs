@@ -26,7 +26,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Creates an empty instance of the specified type. 
+        /// Creates an empty instance of the specified type.
         /// </summary>
         /// <typeparam name="T">Type of the object to create. Must be serializable.</typeparam>
         /// <returns>New instance of the specified type, or null if the type is not serializable.</returns>
@@ -36,7 +36,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Creates an empty instance of the specified type. 
+        /// Creates an empty instance of the specified type.
         /// </summary>
         /// <param name="type">Type of the object to create. Must be serializable.</param>
         /// <returns>New instance of the specified type, or null if the type is not serializable.</returns>

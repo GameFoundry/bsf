@@ -36,8 +36,8 @@ namespace bs
 	public:
 		ShaderImportOptionsRTTI()
 		{
-			addPlainArrayField("mDefines", 0, &ShaderImportOptionsRTTI::getDefinePair, 
-				&ShaderImportOptionsRTTI::getNumDefines, &ShaderImportOptionsRTTI::setDefinePair, 
+			addPlainArrayField("mDefines", 0, &ShaderImportOptionsRTTI::getDefinePair,
+				&ShaderImportOptionsRTTI::getNumDefines, &ShaderImportOptionsRTTI::setDefinePair,
 				&ShaderImportOptionsRTTI::setNumDefines);
 		}
 

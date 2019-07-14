@@ -16,7 +16,7 @@ namespace bs
 
 	}
 
-	ManagedSerializableArray::ManagedSerializableArray(const ConstructPrivately& dummy, 
+	ManagedSerializableArray::ManagedSerializableArray(const ConstructPrivately& dummy,
 		const SPtr<ManagedSerializableTypeInfoArray>& typeInfo, MonoObject* managedInstance)
 		: mArrayTypeInfo(typeInfo)
 		
@@ -42,7 +42,7 @@ namespace bs
 		}
 	}
 
-	SPtr<ManagedSerializableArray> ManagedSerializableArray::createFromExisting(MonoObject* managedInstance, 
+	SPtr<ManagedSerializableArray> ManagedSerializableArray::createFromExisting(MonoObject* managedInstance,
 		const SPtr<ManagedSerializableTypeInfoArray>& typeInfo)
 	{
 		if(managedInstance == nullptr)

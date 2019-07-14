@@ -40,7 +40,7 @@ namespace bs { namespace ct
 	public:
 		VisibleReflProbeData() = default;
 
-		/** 
+		/**
 		 * Updates the internal buffers with a new set of refl. probes. Before calling make sure that probe visibility has
 		 * been calculated for the provided view group.
 		 */
@@ -90,8 +90,8 @@ namespace bs { namespace ct
 	/** Helper struct containing all parameters for binding image lighting related data to the GPU programs using them .*/
 	struct ImageBasedLightingParams
 	{
-		/** 
-		 * Initializes the parameters from the provided parameters. 
+		/**
+		 * Initializes the parameters from the provided parameters.
 		 *
 		 * @param[in]	params		GPU parameters object to look for the parameters in.
 		 * @param[in]	programType	Type of the GPU program to look up the parameters for.
@@ -99,7 +99,7 @@ namespace bs { namespace ct
 		 * @param[in]	gridIndices	Set to true if grid indices (used by light grid) parameter is required.
 		 * @param[in]	probeArray	True if the refl. probe data is to be provided in a structured buffer.
 		 */
-		void populate(const SPtr<GpuParams>& params, GpuProgramType programType, bool optional, bool gridIndices, 
+		void populate(const SPtr<GpuParams>& params, GpuProgramType programType, bool optional, bool gridIndices,
 			bool probeArray);
 
 		GpuParamTexture skyReflectionsTexParam;
@@ -123,7 +123,7 @@ namespace bs { namespace ct
 		ReflProbeParamBuffer();
 
 		/** Updates the parameter buffer contents with required refl. probe data. */
-		void populate(const Skybox* sky, UINT32 numProbes, const SPtr<Texture>& reflectionCubemaps, 
+		void populate(const Skybox* sky, UINT32 numProbes, const SPtr<Texture>& reflectionCubemaps,
 			bool capturingReflections);
 
 		SPtr<GpuParamBlockBuffer> buffer;

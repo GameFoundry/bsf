@@ -10,7 +10,7 @@ namespace bs
 	 *  @{
 	 */
 
-	/** 
+	/**
 	 * Holds cached information used for animation curve evaluation so that sequential evaluations can be sped up.
 	 * You should not use the same instance of this object for evaluating multiple different animation curves.
 	 */
@@ -21,22 +21,22 @@ namespace bs
 		friend class TAnimationCurve<T>;
 
 		/** Left-most key the curve was last evaluated at. -1 if no cached data. */
-		mutable UINT32 cachedKey = (UINT32)-1; 
+		mutable UINT32 cachedKey = (UINT32)-1;
 		
 		/** Time relative to the animation curve, at which the cached data starts. */
 		mutable float cachedCurveStart = std::numeric_limits<float>::infinity();
 
 		/** Time relative to the animation curve, at which the cached data end. */
-		mutable float cachedCurveEnd = 0.0f; 
+		mutable float cachedCurveEnd = 0.0f;
 
-		/** 
+		/**
 		 * Coefficients of the cubic hermite curve, in order [t^3, t^2, t, 1]. Coefficients assume unnormalized @p t, with
 		 * length of @p cachedCurveEnd - @p cachedCurveStart.
 		 */
-		mutable T cachedCubicCoefficients[4]{}; 
+		mutable T cachedCubicCoefficients[4]{};
 	};
 
-	/** 
+	/**
 	 * Holds cached information used for integrated animation curve evaluation. Evaluations with the cache provided are
 	 * significantly faster than non-cached evaluations.
 	 */
@@ -66,13 +66,13 @@ namespace bs
 			coeffs = (T(*)[4])(segmentSums + numKeys * 2);
 		}
 
-		/** 
+		/**
 		 * Contains a list of cumulative areas beneath the curve of each segment. A segment represents the part of the curve
 		 * between two keyframes.
 		 */
 		mutable T* segmentSums = nullptr;
 
-		/** 
+		/**
 		 * Contains a list of cumulative doubly integrated areas beneath the curve of each segment. A segment represents
 		 * the part of the curve between two keyframes.
 		 */

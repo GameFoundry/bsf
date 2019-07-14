@@ -47,7 +47,7 @@ namespace bs { namespace ct
 		GpuBufferView() = default;
 		virtual ~GpuBufferView();
 
-		/** 
+		/**
 		 * Initializes a new buffer view for the specified buffer. Descriptor structure defines which portion of the buffer,
 		 * and how will its contents be represented by the view.
 		 */
@@ -83,7 +83,7 @@ namespace bs { namespace ct
 	private:
 		/**
 		 * Creates a DX11 shader resource view that allows a buffer to be bound to a shader for reading (the most common
-		 * option). 
+		 * option).
 		 *
 		 * @param[in]	buffer			Buffer to create the view for.
 		 * @param[in]	firstElement	Index of the first element the view manages. Interpretation of this value depends on

@@ -64,7 +64,7 @@ namespace bs
 
 			// Prevent physics from completely hogging the CPU. If the framerate is low, the physics will want to run many
 			// iterations per frame, slowing down the game even further. Therefore we limit the number of physics updates
-			// to a certain number (at the cost of simulation stability). 
+			// to a certain number (at the cost of simulation stability).
 			
 			// However we don't use a fixed number per frame because performance spikes can cause some frames to take a very
 			// long time. These spikes can happen even in an otherwise well-performing application and will can wreak havoc

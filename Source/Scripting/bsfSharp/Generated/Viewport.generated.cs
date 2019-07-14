@@ -11,8 +11,8 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Viewport determines to which RenderTarget should rendering be performed. It allows you to render to a sub-region of 
-	/// the target by specifying the area rectangle, and allows you to set up color/depth/stencil clear values for that 
+	/// Viewport determines to which RenderTarget should rendering be performed. It allows you to render to a sub-region of
+	/// the target by specifying the area rectangle, and allows you to set up color/depth/stencil clear values for that
 	/// specific region.
 	/// </summary>
 	[ShowInInspector]

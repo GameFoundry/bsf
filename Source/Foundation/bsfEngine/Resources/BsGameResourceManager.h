@@ -12,7 +12,7 @@ namespace bs
 	 *  @{
 	 */
 
-	/** 
+	/**
 	 * Provides a way to map one resource path to another path. Useful if the resources are being referenced using a path
 	 * that is not the path to their physical location.
 	 */
@@ -91,7 +91,7 @@ namespace bs
 			return static_resource_cast<T>(load(filePath, flags, async));
 		}
 
-		/** 
+		/**
 		 * Sets an optional mapping that be applied to any path provided to load(). This allows you to reference files
 		 * using different names and/or folder structure than they are actually in.
 		 *

@@ -83,7 +83,7 @@ namespace bs { namespace ct
 
 	void RendererReflectionProbe::getParameters(ReflProbeData& output) const
 	{
-		output.type = probe->getType() == ReflectionProbeType::Sphere ? 0 
+		output.type = probe->getType() == ReflectionProbeType::Sphere ? 0
 			: probe->getType() == ReflectionProbeType::Box ? 1 : 2;
 		
 		const Transform& tfrm = probe->getTransform();
@@ -100,7 +100,7 @@ namespace bs { namespace ct
 		output.invBoxTransform.setInverseTRS(output.position, tfrm.getRotation(), output.boxExtents);
 	}
 
-	void ImageBasedLightingParams::populate(const SPtr<GpuParams>& params, GpuProgramType programType, bool optional, 
+	void ImageBasedLightingParams::populate(const SPtr<GpuParams>& params, GpuProgramType programType, bool optional,
 		bool gridIndices, bool probeArray)
 	{
 		// Sky
@@ -153,7 +153,7 @@ namespace bs { namespace ct
 		buffer = gReflProbeParamsParamDef.createBuffer();
 	}
 
-	void ReflProbeParamBuffer::populate(const Skybox* sky, UINT32 numProbes, const SPtr<Texture>& reflectionCubemaps, 
+	void ReflProbeParamBuffer::populate(const Skybox* sky, UINT32 numProbes, const SPtr<Texture>& reflectionCubemaps,
 		bool capturingReflections)
 	{
 		float brightness = 1.0f;

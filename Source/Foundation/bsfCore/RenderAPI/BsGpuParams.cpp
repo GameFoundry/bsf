@@ -270,7 +270,7 @@ namespace bs
 	}
 
 	template<bool Core>
-	template<class T> 
+	template<class T>
 	void TGpuParams<Core>::getParam(GpuProgramType type, const String& name, TGpuDataParam<T, Core>& output) const
 	{
 		const SPtr<GpuParamDesc>& paramDescs = mParamInfo->getParamDesc(type);
@@ -632,7 +632,7 @@ namespace bs
 		UINT32 bufferArraySize = numBuffers * sizeof(SPtr<ct::GpuBuffer>);
 		UINT32 samplerArraySize = numSamplers * sizeof(SPtr<ct::SamplerState>);
 
-		UINT32 totalSize = sampledSurfacesSize + loadStoreSurfacesSize + paramBufferSize + textureArraySize 
+		UINT32 totalSize = sampledSurfacesSize + loadStoreSurfacesSize + paramBufferSize + textureArraySize
 			+ loadStoreTextureArraySize + bufferArraySize + samplerArraySize;
 
 		UINT32 sampledSurfaceOffset = 0;
@@ -758,7 +758,7 @@ namespace bs
 		UINT32 bufferArraySize = numBuffers * sizeof(SPtr<GpuBuffer>);
 		UINT32 samplerArraySize = numSamplers * sizeof(SPtr<SamplerState>);
 
-		UINT32 totalSize = sampledSurfacesSize + loadStoreSurfacesSize + paramBufferSize + textureArraySize 
+		UINT32 totalSize = sampledSurfacesSize + loadStoreSurfacesSize + paramBufferSize + textureArraySize
 			+ loadStoreTextureArraySize + bufferArraySize + samplerArraySize;
 
 		UINT32 sampledSurfacesOffset = 0;

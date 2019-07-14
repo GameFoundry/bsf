@@ -10,7 +10,7 @@ namespace bs
      */
 
     /// <summary>
-    /// Base class for all components. Components represent primary logic elements in the scene. They are attached to 
+    /// Base class for all components. Components represent primary logic elements in the scene. They are attached to
     /// scene objects.
     /// </summary>
     public class Component : GameObject
@@ -64,7 +64,7 @@ namespace bs
         }
 
         /// <summary>
-        /// Calls a parameterless method with the specified name, on the component. 
+        /// Calls a parameterless method with the specified name, on the component.
         /// </summary>
         /// <param name="name">Name of the method to call.</param>
         protected internal virtual void Invoke(string name)
@@ -103,20 +103,20 @@ namespace bs
     ///
     /// Implementations of <see cref="ManagedComponent"/> can implement a set of callbacks that will be called by the
     /// runtime at specified occassions:
-    /// void OnCreate() - Called once when the component is instantiated. 
+    /// void OnCreate() - Called once when the component is instantiated.
     /// void OnInitialize() - Called once when the component is first enabled. In case this is during instantiation, it is
     ///                       called after OnCreate. Only called when the game is playing.
     /// void OnUpdate() - Called every frame while the game is running and the component is enabled.
-    /// void OnEnable() - Called whenever a component is enabled, or instantiated as enabled in which case it is called 
+    /// void OnEnable() - Called whenever a component is enabled, or instantiated as enabled in which case it is called
     ///                   after OnInitialize. Only called when the game is playing.
-    /// void OnDisable() - Called whenever a component is disabled. This includes destruction where it is called before 
+    /// void OnDisable() - Called whenever a component is disabled. This includes destruction where it is called before
     ///                    OnDestroy. Only called when the game is playing.
-    /// void OnDestroy() - Called before the component is destroyed. Destruction is usually delayed until the end of the 
-    ///                    current frame unless specified otherwise in a call to Destroy. 
+    /// void OnDestroy() - Called before the component is destroyed. Destruction is usually delayed until the end of the
+    ///                    current frame unless specified otherwise in a call to Destroy.
     /// void OnReset() - Called when script assemblies have been refreshed or when the component is initialized. During
     ///                  initialization it is called after OnInitialize but before OnEnable. Only relevant in editor.
     /// void OnTransformChanged(TransformChangedFlags) - Called when the transform of the owning scene object changes.
-    ///                                                  When and if this gets triggered depends on 
+    ///                                                  When and if this gets triggered depends on
     ///                                                  <see cref="Component.NotifyFlags"/>. Only called while game is
     ///                                                  playing.
     ///

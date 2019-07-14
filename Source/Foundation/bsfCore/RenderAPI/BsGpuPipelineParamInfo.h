@@ -121,9 +121,9 @@ namespace bs
 		 */
 		SPtr<ct::GpuPipelineParamInfo> getCore() const;
 
-		/** 
-		 * Constructs the object using the provided GPU parameter descriptors. 
-		 * 
+		/**
+		 * Constructs the object using the provided GPU parameter descriptors.
+		 *
 		 * @param[in]	desc	Object containing parameter descriptions for individual GPU program stages.
 		 */
 		static SPtr<GpuPipelineParamInfo> create(const GPU_PIPELINE_PARAMS_DESC& desc);
@@ -143,8 +143,8 @@ namespace bs
 	public:
 		virtual ~GpuPipelineParamInfo() = default;
 
-		/** 
-		 * @copydoc bs::GpuPipelineParamInfo::create 
+		/**
+		 * @copydoc bs::GpuPipelineParamInfo::create
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the buffer be created on.
 		 */
 		static SPtr<GpuPipelineParamInfo> create(const GPU_PIPELINE_PARAMS_DESC& desc,

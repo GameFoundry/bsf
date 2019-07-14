@@ -10,7 +10,7 @@ namespace bs
 	 *  @{
 	 */
 
-	/** 
+	/**
 	 * Contains a bitfield that determines which skeleton bones are enabled or disabled during skeletal animation. Use
 	 * SkeletonMaskBuilder to create a mask for a specific skeleton.
 	 */
@@ -20,9 +20,9 @@ namespace bs
 		SkeletonMask() = default;
 		SkeletonMask(UINT32 numBones);
 
-		/** 
+		/**
 		 * Checks is the bone at the specified index enabled. Caller is expected to know which skeleton is the skeleton
-		 * mask tied with, in order to determine the bone index. 
+		 * mask tied with, in order to determine the bone index.
 		 */
 		bool isEnabled(UINT32 boneIdx) const;
 

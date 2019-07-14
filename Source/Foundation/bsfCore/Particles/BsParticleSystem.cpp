@@ -162,7 +162,7 @@ namespace bs
 		if(settings.maxParticles < mSettings.maxParticles)
 			mParticleSet->clear(settings.maxParticles);
 
-		mSettings = settings; 
+		mSettings = settings;
 		_markCoreDirty();
 		markDependenciesDirty();
 	}
@@ -197,7 +197,7 @@ namespace bs
 	{
 		mEvolvers = evolvers;
 
-		std::sort(mEvolvers.begin(), mEvolvers.end(), 
+		std::sort(mEvolvers.begin(), mEvolvers.end(),
 			[](const SPtr<ParticleEvolver>& a, const SPtr<ParticleEvolver>& b)
 		{
 			INT32 priorityA = a ? a->getProperties().priority : 0;
@@ -295,7 +295,7 @@ namespace bs
 		mTime = newTime;
 	}
 
-	void ParticleSystem::preSimulate(const ParticleSystemState& state, UINT32 startIdx, UINT32 count, bool spacing, 
+	void ParticleSystem::preSimulate(const ParticleSystemState& state, UINT32 startIdx, UINT32 count, bool spacing,
 		float spacingOffset)
 	{
 		const ParticleSetData& particles = mParticleSet->getParticles();
@@ -349,7 +349,7 @@ namespace bs
 		}
 	}
 
-	void ParticleSystem::simulate(const ParticleSystemState& state, UINT32 startIdx, UINT32 count, bool spacing, 
+	void ParticleSystem::simulate(const ParticleSystemState& state, UINT32 startIdx, UINT32 count, bool spacing,
 		float spacingOffset)
 	{
 		const ParticleSetData& particles = mParticleSet->getParticles();
@@ -370,7 +370,7 @@ namespace bs
 		}
 	}
 
-	void ParticleSystem::postSimulate(const ParticleSystemState& state, UINT32 startIdx, UINT32 count, bool spacing, 
+	void ParticleSystem::postSimulate(const ParticleSystemState& state, UINT32 startIdx, UINT32 count, bool spacing,
 		float spacingOffset)
 	{
 		// Evolve post-simulation

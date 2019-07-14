@@ -5,14 +5,14 @@
 #include "BsCorePrerequisites.h"
 #include "Scene/BsComponent.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Components-Core
 	 *  @{
 	 */
 
 	/**
-	 * Component that maps animation for specific bone also be applied to the SceneObject this component is attached to. 
+	 * Component that maps animation for specific bone also be applied to the SceneObject this component is attached to.
 	 * The component will attach to the first found parent Animation component.
 	 */
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Animation,n:Bone) CBone : public Component

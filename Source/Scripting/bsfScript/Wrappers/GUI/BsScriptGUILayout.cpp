@@ -75,7 +75,7 @@ namespace bs
 
 	void ScriptGUILayout::removeChild(ScriptGUIElementBaseTBase* element)
 	{
-		auto iterFind = std::find_if(mChildren.begin(), mChildren.end(), 
+		auto iterFind = std::find_if(mChildren.begin(), mChildren.end(),
 			[&](const ChildInfo& x)
 		{
 			return x.element == element;

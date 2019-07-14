@@ -154,13 +154,13 @@ namespace bs
 	}
 
 	/** Helper for checking for existance of rttiEnumFields method on a class. */
-	template <class T>  
+	template <class T>
 	struct has_rttiEnumFields
 	{
 		struct dummy {};
 
 		template <typename C, typename P>
-		static auto test(P* p) -> decltype(std::declval<C>().rttiEnumFields(*p), std::true_type());  
+		static auto test(P* p) -> decltype(std::declval<C>().rttiEnumFields(*p), std::true_type());
 
 		template <typename, typename>
 		static std::false_type test(...);

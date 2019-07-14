@@ -7,7 +7,7 @@
 #include "Platform/BsPlatform.h"
 #include "Private/RTTI/BsRenderTargetRTTI.h"
 
-namespace bs 
+namespace bs
 {
 	RenderWindowProperties::RenderWindowProperties(const RENDER_WINDOW_DESC& desc)
 	{

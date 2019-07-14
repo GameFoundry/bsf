@@ -36,7 +36,7 @@ namespace bs
 		AutoTensors = 0x01,
 		/** Calculate mass distribution from child shapes (colliders). Only relevant when auto-tensors is on. */
 		AutoMass = 0x02,
-		/** 
+		/**
 		 * Enables continous collision detection. This can prevent fast moving bodies from tunneling through each other.
 		 * This must also be enabled globally in Physics otherwise the flag will be ignored.
 		 */
@@ -45,17 +45,17 @@ namespace bs
 
 	/**
 	 * Rigidbody is a dynamic physics object that can be moved using forces (or directly). It will interact with other
-	 * static and dynamic physics objects in the scene accordingly (it will push other non-kinematic rigidbodies, 
+	 * static and dynamic physics objects in the scene accordingly (it will push other non-kinematic rigidbodies,
 	 * and collide with static objects).
 	 *
-	 * The shape and mass of a rigidbody is governed by its colliders. You must attach at least one collider for the 
+	 * The shape and mass of a rigidbody is governed by its colliders. You must attach at least one collider for the
 	 * rigidbody to be valid.
 	 */
 	class BS_CORE_EXPORT Rigidbody
 	{
 	public:
-		/** 
-		 * Constructs a new rigidbody. 
+		/**
+		 * Constructs a new rigidbody.
 		 *
 		 * @param[in]	linkedSO	Scene object that owns this rigidbody. All physics updates applied to this object
 		 *							will be transfered to this scene object (the movement/rotation resulting from
@@ -64,14 +64,14 @@ namespace bs
 		Rigidbody(const HSceneObject& linkedSO);
 		virtual ~Rigidbody() = default;
 
-		/** 
+		/**
 		 * Moves the rigidbody to a specific position. This method will ensure physically correct movement, meaning the body
 		 * will collide with other objects along the way.
 		 */
 		virtual void move(const Vector3& position) = 0;
 
-		/** 
-		 * Rotates the rigidbody. This method will ensure physically correct rotation, meaning the body will collide with 
+		/**
+		 * Rotates the rigidbody. This method will ensure physically correct rotation, meaning the body will collide with
 		 * other objects along the way.
 		 */
 		virtual void rotate(const Quaternion& rotation) = 0;
@@ -82,15 +82,15 @@ namespace bs
 		/** Returns the current rotation of the rigidbody. */
 		virtual Quaternion getRotation() const = 0;
 
-		/** 
+		/**
 		 * Moves and rotates the rigidbody to a specific position. Unlike move() and rotate() this will not transform the
 		 * body in a physically correct manner, but will instead "teleport" it immediately to the specified position and
 		 * rotation.
 		 */
 		virtual void setTransform(const Vector3& pos, const Quaternion& rot) = 0;
 
-		/** 
-		 * Determines the mass of the object and all of its collider shapes. Only relevant if RigidbodyFlag::AutoMass or 
+		/**
+		 * Determines the mass of the object and all of its collider shapes. Only relevant if RigidbodyFlag::AutoMass or
 		 * RigidbodyFlag::AutoTensors is turned off. Value of zero means the object is immovable (but can be rotated).
 		 */
 		virtual void setMass(float mass) = 0;
@@ -98,7 +98,7 @@ namespace bs
 		/** @copydoc setMass() */
 		virtual float getMass() const = 0;
 
-		/** 
+		/**
 		 * Determines if the body is kinematic. Kinematic body will not move in response to external forces (for example
 		 * gravity, or another object pushing it), essentially behaving like collider. Unlike a collider though, you can
 		 * still move the object and have other dynamic objects respond correctly (meaning it will push other objects).
@@ -108,16 +108,16 @@ namespace bs
 		/** @copydoc setIsKinematic() */
 		virtual bool getIsKinematic() const = 0;
 
-		/** 
+		/**
 		 * Checks if the body is sleeping. Objects that aren't moved/rotated for a while are put to sleep to reduce load
-		 * on the physics system. 
+		 * on the physics system.
 		 */
 		virtual bool isSleeping() const = 0;
 
 		/** Forces the object to sleep. Useful if you know the object will not move in any significant way for a while. */
 		virtual void sleep() = 0;
 
-		/** 
+		/**
 		 * Wakes an object up. Useful if you modified properties of this object, and potentially surrounding objects which
 		 * might result in the object being moved by physics (although the physics system will automatically wake the
 		 * object up for majority of such cases).
@@ -160,9 +160,9 @@ namespace bs
 		/** @copydoc setAngularDrag() */
 		virtual float getAngularDrag() const = 0;
 
-		/** 
+		/**
 		 * Determines the inertia tensor in local mass space. Inertia tensor determines how difficult is to rotate the
-		 * object. Values of zero in the inertia tensor mean the object will be unable to rotate around a specific axis. 
+		 * object. Values of zero in the inertia tensor mean the object will be unable to rotate around a specific axis.
 		 * Only relevant if RigidbodyFlag::AutoTensors is turned off.
 		 */
 		virtual void setInertiaTensor(const Vector3& tensor) = 0;
@@ -180,7 +180,7 @@ namespace bs
 		 * Sets the rigidbody's center of mass transform. Only relevant if RigibodyFlag::AutoTensors is turned off.
 		 *
 		 * @param[in]	position	Position of the center of mass.
-		 * @param[in]	rotation	Rotation that determines orientation of the inertia tensor (rotation of the center of 
+		 * @param[in]	rotation	Rotation that determines orientation of the inertia tensor (rotation of the center of
 		 *							mass frame).
 		 */
 		virtual void setCenterOfMass(const Vector3& position, const Quaternion& rotation) = 0;
@@ -191,18 +191,18 @@ namespace bs
 		/** Returns the rotation of the inertia tensor. */
 		virtual Quaternion getCenterOfMassRotation() const = 0;
 
-		/** 
-		 * Determines the number of iterations to use when solving for position. Higher values can improve precision and 
-		 * numerical stability of the simulation. 
+		/**
+		 * Determines the number of iterations to use when solving for position. Higher values can improve precision and
+		 * numerical stability of the simulation.
 		 */
 		virtual void setPositionSolverCount(UINT32 count) = 0;
 
 		/** @copydoc setPositionSolverCount() */
 		virtual UINT32 getPositionSolverCount() const = 0;
 
-		/** 
-		 * Determines the number of iterations to use when solving for velocity. Higher values can improve precision and 
-		 * numerical stability of the simulation. 
+		/**
+		 * Determines the number of iterations to use when solving for velocity. Higher values can improve precision and
+		 * numerical stability of the simulation.
 		 */
 		virtual void setVelocitySolverCount(UINT32 count) = 0;
 
@@ -215,7 +215,7 @@ namespace bs
 		/** @copydoc setFlags() */
 		virtual RigidbodyFlag getFlags() const { return mFlags; }
 
-		/** 
+		/**
 		 * Applies a force to the center of the mass of the rigidbody. This will produce linear momentum.
 		 *
 		 * @param[in]	force		Force to apply.
@@ -223,7 +223,7 @@ namespace bs
 		 */
 		virtual void addForce(const Vector3& force, ForceMode mode = ForceMode::Force) = 0;
 
-		/** 
+		/**
 		 * Applies a torque to the rigidbody. This will produce angular momentum.
 		 *
 		 * @param[in]	torque		Torque to apply.
@@ -231,7 +231,7 @@ namespace bs
 		 */
 		virtual void addTorque(const Vector3& torque, ForceMode mode = ForceMode::Force) = 0;
 
-		/** 
+		/**
 		 * Applies a force to a specific point on the rigidbody. This will in most cases produce both linear and angular
 		 * momentum.
 		 *
@@ -239,11 +239,11 @@ namespace bs
 		 * @param[in]	position	World position to apply the force at.
 		 * @param[in]	mode		Determines what is the type of @p force.
 		 */
-		virtual void addForceAtPoint(const Vector3& force, const Vector3& position, 
+		virtual void addForceAtPoint(const Vector3& force, const Vector3& position,
 			PointForceMode mode = PointForceMode::Force) = 0;
 
-		/** 
-		 * Returns the total (linear + angular) velocity at a specific point. 
+		/**
+		 * Returns the total (linear + angular) velocity at a specific point.
 		 *
 		 * @param[in]	point	Point in world space.
 		 * @return				Total velocity of the point.
@@ -259,7 +259,7 @@ namespace bs
 		/** Removes all colliders from the child list of this rigidbody. */
 		virtual void removeColliders() = 0;
 
-		/** 
+		/**
 		 * Recalculates rigidbody's mass, inertia tensors and center of mass depending on the currently set child colliders.
 		 * This should be called whenever relevant child collider properties change (like mass or shape).
 		 *
@@ -268,8 +268,8 @@ namespace bs
 		 */
 		virtual void updateMassDistribution() { }
 
-		/** 
-		 * Creates a new rigidbody. 
+		/**
+		 * Creates a new rigidbody.
 		 *
 		 * @param[in]	linkedSO	Scene object that owns this rigidbody. All physics updates applied to this object
 		 *							will be transfered to this scene object (the movement/rotation resulting from
@@ -290,7 +290,7 @@ namespace bs
 		 *  @{
 		 */
 
-		/** 
+		/**
 		 * Sets the priority of the physics update. Bodies with a higher priority will be updated before the bodies with
 		 * lower priority. This allows you to control the order of updated in case rigidbodies are in some way dependant.
 		 */
@@ -299,19 +299,19 @@ namespace bs
 		/** Sets a unique ID of the rigidbody, so it can be recognized by the physics system. */
 		void _setPhysicsId(UINT32 id) { mPhysicsId = id; }
 
-		/** 
-		 * Applies new transform values retrieved from the most recent physics update (values resulting from physics 
-		 * simulation). 
+		/**
+		 * Applies new transform values retrieved from the most recent physics update (values resulting from physics
+		 * simulation).
 		 */
 		void _setTransform(const Vector3& position, const Quaternion& rotation);
 
-		/** 
+		/**
 		 * Sets the object that owns this physics object, if any. Used for high level systems so they can easily map their
 		 * high level physics objects from the low level ones returned by various queries and events.
 		 */
 		void _setOwner(PhysicsOwnerType type, void* owner) { mOwner.type = type; mOwner.ownerData = owner; }
 
-		/** 
+		/**
 		 * Gets the object that owns this physics object, if any. Used for high level systems so they can easily map their
 		 * high level physics objects from the low level ones returned by various queries and events.
 		 */

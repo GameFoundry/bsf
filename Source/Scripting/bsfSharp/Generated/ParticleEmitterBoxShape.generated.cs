@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Particle emitter shape that emits particles from an axis aligned box. Particles can be emitted from box volume, 
+	/// Particle emitter shape that emits particles from an axis aligned box. Particles can be emitted from box volume,
 	/// surface or edges. All particles have their normals set to positive Z direction.
 	/// </summary>
 	[ShowInInspector]

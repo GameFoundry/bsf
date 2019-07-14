@@ -40,7 +40,7 @@ namespace bs
 		void setPaused(bool paused) override { }
 
 		/** @copydoc Physics::_rayCast */
-		bool _rayCast(const Vector3& origin, const Vector3& unitDir, const Collider& collider, PhysicsQueryHit& hit, 
+		bool _rayCast(const Vector3& origin, const Vector3& unitDir, const Collider& collider, PhysicsQueryHit& hit,
 			float maxDist = FLT_MAX) const override { return false; }
 
 		/** Notifies the system that at physics scene is about to be destroyed. */
@@ -74,7 +74,7 @@ namespace bs
 		SPtr<PlaneCollider> createPlaneCollider(const Vector3& position, const Quaternion& rotation) override;
 
 		/** @copydoc PhysicsScene::createCapsuleCollider */
-		SPtr<CapsuleCollider> createCapsuleCollider(float radius, float halfHeight, const Vector3& position, 
+		SPtr<CapsuleCollider> createCapsuleCollider(float radius, float halfHeight, const Vector3& position,
 			const Quaternion& rotation) override;
 
 		/** @copydoc PhysicsScene::createMeshCollider */
@@ -166,7 +166,7 @@ namespace bs
 
 		/** @copydoc PhysicsScene::convexCastAll */
 		Vector<PhysicsQueryHit> convexCastAll(const HPhysicsMesh& mesh, const Vector3& position,
-			const Quaternion& rotation, const Vector3& unitDir, UINT64 layer = BS_ALL_LAYERS, 
+			const Quaternion& rotation, const Vector3& unitDir, UINT64 layer = BS_ALL_LAYERS,
 			float max = FLT_MAX) const override
 		{
 			return {};

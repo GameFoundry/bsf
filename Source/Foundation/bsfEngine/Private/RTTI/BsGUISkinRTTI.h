@@ -64,8 +64,8 @@ namespace bs
 	class BS_EXPORT GUISkinRTTI : public RTTIType <GUISkin, Resource, GUISkinRTTI>
 	{
 	private:
-		GUISkinEntry& getStyle(GUISkin* obj, UINT32 idx) 
-		{ 
+		GUISkinEntry& getStyle(GUISkin* obj, UINT32 idx)
+		{
 			return mStyles[idx];
 		}
 

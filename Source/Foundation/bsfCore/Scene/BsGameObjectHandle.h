@@ -39,7 +39,7 @@ namespace bs
 	};
 
 	/**
-	 * A handle that can point to various types of game objects. It primarily keeps track if the object is still alive, 
+	 * A handle that can point to various types of game objects. It primarily keeps track if the object is still alive,
 	 * so anything still referencing it doesn't accidentally use it.
 	 * 			
 	 * @note	
@@ -58,7 +58,7 @@ namespace bs
 		 * Returns true if the object the handle is pointing to has been destroyed.
 		 *
 		 * @param[in] checkQueued	Game objects can be queued for destruction but not actually destroyed yet, and still
-		 *							accessible. If this is false this method will return true only if the object is 
+		 *							accessible. If this is false this method will return true only if the object is
 		 *							completely inaccessible (fully destroyed). If this is true this method will return true
 		 *							if object is completely inaccessible or if it is just queued for destruction.
 		 */
@@ -72,11 +72,11 @@ namespace bs
 		 *
 		 * @note	Throws exception if the GameObject was destroyed.
 		 */
-		GameObject* get() const 
-		{ 
+		GameObject* get() const
+		{
 			throwIfDestroyed();
 
-			return mData->mPtr->object.get(); 
+			return mData->mPtr->object.get();
 		}
 
 		/**
@@ -209,11 +209,11 @@ namespace bs
 		 *
 		 * @note	Throws exception if the GameObject was destroyed.
 		 */
-		T* get() const 
-		{ 
+		T* get() const
+		{
 			throwIfDestroyed();
 
-			return reinterpret_cast<T*>(mData->mPtr->object.get()); 
+			return reinterpret_cast<T*>(mData->mPtr->object.get());
 		}
 
 		/**
@@ -257,7 +257,7 @@ namespace bs
 		 * Allows direct conversion of handle to bool.
 		 *
 		 * @note	
-		 * This is needed because we can't directly convert to bool since then we can assign pointer to bool and that's 
+		 * This is needed because we can't directly convert to bool since then we can assign pointer to bool and that's
 		 * weird.
 		 */
 		operator int Bool_struct<T>::*() const
@@ -297,7 +297,7 @@ namespace bs
 	template<class _Ty1, class _Ty2>
 	bool operator==(const GameObjectHandle<_Ty1>& _Left, const GameObjectHandle<_Ty2>& _Right)
 	{	
-		return (_Left.mData == nullptr && _Right.mData == nullptr) || 
+		return (_Left.mData == nullptr && _Right.mData == nullptr) ||
 			(_Left.mData != nullptr && _Right.mData != nullptr && _Left.getInstanceId() == _Right.getInstanceId());
 	}
 

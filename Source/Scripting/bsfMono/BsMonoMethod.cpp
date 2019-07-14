@@ -11,7 +11,7 @@
 namespace bs
 {
 	MonoMethod::MonoMethod(::MonoMethod* method)
-		:mMethod(method), mCachedReturnType(nullptr), mCachedParameters(nullptr), 
+		:mMethod(method), mCachedReturnType(nullptr), mCachedParameters(nullptr),
 		mCachedNumParameters(0), mIsStatic(false), mHasCachedSignature(false)
 	{
 

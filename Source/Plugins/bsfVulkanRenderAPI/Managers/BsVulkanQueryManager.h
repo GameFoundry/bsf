@@ -12,9 +12,9 @@ namespace bs { namespace ct
 	 *  @{
 	 */
 
-	/** 
-	 * Pool that allocates and distributes Vulkan queries. 
-	 * 
+	/**
+	 * Pool that allocates and distributes Vulkan queries.
+	 *
 	 * @note	Thread safe.
 	 */
 	class VulkanQueryPool
@@ -23,30 +23,30 @@ namespace bs { namespace ct
 		VulkanQueryPool(VulkanDevice& device);
 		~VulkanQueryPool();
 
-		/** 
-		 * Begins a timer query on the provided command buffer. 
-		 * 
+		/**
+		 * Begins a timer query on the provided command buffer.
+		 *
 		 * @param[in]	cb			Command buffer to begin the query on.
 		 * @return					Relevant query object that was queued. It must be released via releaseQuery() once the
 		 *							caller is done accessing it.
 		 */
 		VulkanQuery* beginTimerQuery(VulkanCmdBuffer* cb);
 
-		/** 
+		/**
 		 * Begins an occlusion query on the provided command buffer. Must be followed with a call to endOcclusionQuery
 		 * on the same command buffer, before the command buffer gets submitted.
-		 * 
+		 *
 		 * @param[in]	cb			Command buffer to begin the query on.
-		 * @param[in]	precise		When true the query will be able to return the precise number of processed samples, 
+		 * @param[in]	precise		When true the query will be able to return the precise number of processed samples,
 		 *							otherwise it just returns a boolean value if anything was drawn.
 		 * @return					Relevant query object that was queued. It must be released via releaseQuery() once the
 		 *							caller is done accessing it.
 		 */
 		VulkanQuery* beginOcclusionQuery(VulkanCmdBuffer* cb, bool precise);
 
-		/** 
-		 * End am occlusion query query on the provided command buffer. 
-		 * 
+		/**
+		 * End am occlusion query query on the provided command buffer.
+		 *
 		 * @param[in]	query		Query previously begun with beginOcclusionQuery().
 		 * @param[in]	cb			Command buffer to end the query on.
 		 */
@@ -107,10 +107,10 @@ namespace bs { namespace ct
 	public:
 		VulkanQuery(VulkanResourceManager* owner, VkQueryPool pool, UINT32 queryIdx);
 
-		/** 
+		/**
 		 * Attempts to retrieve the result from the query. The result is only valid if the query stopped executing on the
 		 * GPU (otherwise previous query results could be accessed, if the reset command hasn't executed yet).
-		 * 
+		 *
 		 * @param[out]	result	Value of the query, if the method return true. Undefined otherwise.
 		 * @return				True if the result is ready, false otherwise.
 		 */

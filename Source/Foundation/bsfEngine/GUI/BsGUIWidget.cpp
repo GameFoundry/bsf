@@ -82,7 +82,7 @@ namespace bs
 
 	void GUIWidget::setDepth(UINT8 depth)
 	{
-		mDepth = depth; 
+		mDepth = depth;
 		mWidgetIsDirty = true;
 
 		updateRootPanel();

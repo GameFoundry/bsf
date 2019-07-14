@@ -25,7 +25,7 @@ namespace bs
 
 	MonoObject* ScriptSerializableList::create(const ScriptSerializableProperty* native, MonoObject* managed)
 	{
-		SPtr<ManagedSerializableTypeInfoList> listTypeInfo = 
+		SPtr<ManagedSerializableTypeInfoList> listTypeInfo =
 			std::static_pointer_cast<ManagedSerializableTypeInfoList>(native->getTypeInfo());
 		MonoReflectionType* internalElementType = MonoUtil::getType(listTypeInfo->mElementType->getMonoClass());
 

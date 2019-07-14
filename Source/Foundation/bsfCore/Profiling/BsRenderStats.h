@@ -39,14 +39,14 @@ namespace bs
 
 		UINT64 numPipelineStateChanges = 0;
 
-		UINT64 numGpuParamBinds = 0; 
-		UINT64 numVertexBufferBinds = 0; 
+		UINT64 numGpuParamBinds = 0;
+		UINT64 numVertexBufferBinds = 0;
 		UINT64 numIndexBufferBinds = 0;
 
 		UINT64 numResourceWrites;
 		UINT64 numResourceReads;
 
-		UINT64 numObjectsCreated; 
+		UINT64 numObjectsCreated;
 		UINT64 numObjectsDestroyed;
 	};
 
@@ -70,9 +70,9 @@ namespace bs
 		/** Increments render target present counter indicating how many times did the buffer swap happen. */
 		void incNumPresents() { mData.numPresents++; }
 
-		/** 
-		 * Increments render target clear counter indicating how many times did the target the cleared, entirely or 
-		 * partially. 
+		/**
+		 * Increments render target clear counter indicating how many times did the target the cleared, entirely or
+		 * partially.
 		 */
 		void incNumClears() { mData.numClears++; }
 
@@ -95,11 +95,11 @@ namespace bs
 		void incNumIndexBufferBinds() { mData.numIndexBufferBinds++; }
 
 		/**
-		 * Increments created GPU resource counter. 
+		 * Increments created GPU resource counter.
 		 *
 		 * @param[in]	category	Category of the resource.
 		 */
-		void incResCreated(UINT32 category) 
+		void incResCreated(UINT32 category)
 		{
 			// TODO - I'm ignoring resourceType for now. Later I will want to
 			// count object creation/destruction/read/write per type. I will
@@ -113,21 +113,21 @@ namespace bs
 		}
 
 		/**
-		 * Increments destroyed GPU resource counter. 
+		 * Increments destroyed GPU resource counter.
 		 *
 		 * @param[in]	category	Category of the resource.
 		 */
 		void incResDestroyed(UINT32 category) { mData.numObjectsDestroyed++; }
 
 		/**
-		 * Increments GPU resource read counter. 
+		 * Increments GPU resource read counter.
 		 *
 		 * @param[in]	category	Category of the resource.
 		 */
 		void incResRead(UINT32 category) { mData.numResourceReads++; }
 
 		/**
-		 * Increments GPU resource write counter. 
+		 * Increments GPU resource write counter.
 		 *
 		 * @param[in]	category	Category of the resource.
 		 */

@@ -15,8 +15,8 @@ namespace bs
 	 * Interface implemented by classes that provide run time type information.
 	 * 			
 	 * @note	
-	 * Any class implementing this interface must implement the getRTTI() method, as well as a static getRTTIStatic() 
-	 * method, returning the same value as getRTTI(). Object returned by those methods is used for retrieving actual RTTI 
+	 * Any class implementing this interface must implement the getRTTI() method, as well as a static getRTTIStatic()
+	 * method, returning the same value as getRTTI(). Object returned by those methods is used for retrieving actual RTTI
 	 * data about the class.
 	 */
 	class BS_UTILITY_EXPORT IReflectable
@@ -28,7 +28,7 @@ namespace bs
 		 * Returns an interface you can use to access class' Run Time Type Information.
 		 *
 		 * @note	
-		 * You must derive your own version of RTTITypeBase, in which you may encapsulate all reflection specific operations. 
+		 * You must derive your own version of RTTITypeBase, in which you may encapsulate all reflection specific operations.
 		 */
 		virtual RTTITypeBase* getRTTI() const = 0;
 

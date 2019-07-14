@@ -35,7 +35,7 @@ namespace bs
         /// <param name="ray">Ray to transform.</param>
         /// <param name="t">How far along the ray to retrieve the point.</param>
         /// <returns>Point along the ray <paramref name="t"/> units away from the origin.</returns>
-        public static Vector3 operator*(Ray ray, float t) 
+        public static Vector3 operator*(Ray ray, float t)
         {
             return ray.origin + ray.direction * t;
         }

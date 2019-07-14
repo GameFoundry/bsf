@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/**
-	 * Controls GUI element layout options, possibly by overriding the default options specified in GUI element style. 
+	 * Controls GUI element layout options, possibly by overriding the default options specified in GUI element style.
 	 * These options control GUI element placement and size in a GUI layout.
 	 */
 	class BS_EXPORT GUIOption
@@ -36,7 +36,7 @@ namespace bs
 		static GUIOption position(INT32 x, INT32 y);
 
 		/**
-		 * Constructs a GUI option notifying the GUI layout that this element has a fixed width. This will override the 
+		 * Constructs a GUI option notifying the GUI layout that this element has a fixed width. This will override the
 		 * width property set in element style.
 		 */
 		static GUIOption fixedWidth(UINT32 value);
@@ -54,7 +54,7 @@ namespace bs
 		static GUIOption fixedHeight(UINT32 value);
 
 		/**
-		 * Constructs a GUI option notifying the GUI layout that this element has a flexible height with optional min/max 
+		 * Constructs a GUI option notifying the GUI layout that this element has a flexible height with optional min/max
 		 * constraints (value of 0 means no constraint). This will override the height property set in element style.
 		 */
 		static GUIOption flexibleHeight(UINT32 min = 0, UINT32 max = 0);
@@ -62,7 +62,7 @@ namespace bs
 	private:
 		friend struct GUIDimensions;
 
-		UINT32 min = 0; 
+		UINT32 min = 0;
 		UINT32 max = 0;
 		Type type = Type::FixedWidth;
 	};

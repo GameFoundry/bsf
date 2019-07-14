@@ -171,16 +171,16 @@ namespace bs { namespace ct
 	{
 		const TextureProperties& texProps = texture->getProperties();
 
-		bool match = texProps.getTextureType() == desc.type 
-			&& texProps.getFormat() == desc.format 
-			&& texProps.getWidth() == desc.width 
+		bool match = texProps.getTextureType() == desc.type
+			&& texProps.getFormat() == desc.format
+			&& texProps.getWidth() == desc.width
 			&& texProps.getHeight() == desc.height
 			&& (texProps.getUsage() & desc.flag) == desc.flag
 			&& (
-				(desc.type == TEX_TYPE_2D 
-					&& texProps.isHardwareGammaEnabled() == desc.hwGamma 
+				(desc.type == TEX_TYPE_2D
+					&& texProps.isHardwareGammaEnabled() == desc.hwGamma
 					&& texProps.getNumSamples() == desc.numSamples)
-				|| (desc.type == TEX_TYPE_3D 
+				|| (desc.type == TEX_TYPE_3D
 					&& texProps.getDepth() == desc.depth)
 				|| (desc.type == TEX_TYPE_CUBE_MAP)
 				)
@@ -228,7 +228,7 @@ namespace bs { namespace ct
 		return desc;
 	}
 
-	POOLED_RENDER_TEXTURE_DESC POOLED_RENDER_TEXTURE_DESC::create3D(PixelFormat format, UINT32 width, UINT32 height, 
+	POOLED_RENDER_TEXTURE_DESC POOLED_RENDER_TEXTURE_DESC::create3D(PixelFormat format, UINT32 width, UINT32 height,
 		UINT32 depth, INT32 usage)
 	{
 		POOLED_RENDER_TEXTURE_DESC desc;

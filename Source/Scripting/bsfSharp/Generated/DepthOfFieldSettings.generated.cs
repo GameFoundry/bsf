@@ -38,7 +38,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Range within which the objects remain fully in focus. This range is applied relative to the focal distance.  Only 
+		/// Range within which the objects remain fully in focus. This range is applied relative to the focal distance.  Only
 		/// relevant if Gaussian depth of field is used as other methods don&apos;t use a constant in-focus range.
 		/// </summary>
 		[ShowInInspector]
@@ -50,7 +50,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the size of the range within which objects transition from focused to fully unfocused, at the near  plane. 
+		/// Determines the size of the range within which objects transition from focused to fully unfocused, at the near  plane.
 		/// Only relevant for Gaussian depth of field.
 		/// </summary>
 		[ShowInInspector]
@@ -62,7 +62,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the size of the range within which objects transition from focused to fully unfocused, at the far  plane. 
+		/// Determines the size of the range within which objects transition from focused to fully unfocused, at the far  plane.
 		/// Only relevant for Gaussian depth of field.
 		/// </summary>
 		[ShowInInspector]
@@ -74,7 +74,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the amount of blur to apply to fully unfocused objects that are closer to camera than the in-focus zone. 
+		/// Determines the amount of blur to apply to fully unfocused objects that are closer to camera than the in-focus zone.
 		/// Set to zero to disable near-field blur. Only relevant for Gaussian depth of field.
 		/// </summary>
 		[ShowInInspector]
@@ -86,7 +86,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the amount of blur to apply to fully unfocused objects that are farther away from camera than the in-focus 
+		/// Determines the amount of blur to apply to fully unfocused objects that are farther away from camera than the in-focus
 		/// zone. Set to zero to disable far-field blur. Only relevant for Gaussian depth of field.
 		/// </summary>
 		[ShowInInspector]

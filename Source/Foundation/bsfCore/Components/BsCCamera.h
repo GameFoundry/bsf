@@ -6,7 +6,7 @@
 #include "Renderer/BsCamera.h"
 #include "Scene/BsComponent.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Components-Core
 	 *  @{
@@ -239,7 +239,7 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:Main,pr:getter)
 		bool isMain() const { return mInternal->isMain(); }
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 

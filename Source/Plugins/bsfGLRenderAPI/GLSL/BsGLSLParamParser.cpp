@@ -54,7 +54,7 @@ namespace bs { namespace ct
 				// Ignore built-in attributes
 				if(memcmp(attributeName, "gl_", 3) != 0)
 				{
-					BS_LOG(Warning, RenderBackend, "Cannot determine vertex input attribute type for attribute: {0}", 
+					BS_LOG(Warning, RenderBackend, "Cannot determine vertex input attribute type for attribute: {0}",
 						String(attributeName));
 				}
 			}
@@ -652,7 +652,7 @@ namespace bs { namespace ct
 
 				if (arrayIdx == (UINT32)firstArrayIndex) // Determine element size only using the first array element
 				{
-					structDesc.elementSize = std::max(structDesc.elementSize, gpuParam.cpuMemOffset + 
+					structDesc.elementSize = std::max(structDesc.elementSize, gpuParam.cpuMemOffset +
 						gpuParam.arrayElementStride * gpuParam.arraySize);
 
 					structDesc.gpuMemOffset = std::min(structDesc.gpuMemOffset, gpuParam.gpuMemOffset);

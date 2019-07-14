@@ -13,7 +13,7 @@ namespace bs
 		return name;
 	}
 
-	GUIRenderTexture::GUIRenderTexture(const String& styleName, const SPtr<RenderTexture>& texture, bool transparent, 
+	GUIRenderTexture::GUIRenderTexture(const String& styleName, const SPtr<RenderTexture>& texture, bool transparent,
 		const GUIDimensions& dimensions)
 		:GUITexture(styleName, HSpriteTexture(), TextureScaleMode::StretchToFit, false, dimensions), mTransparent(transparent)
 	{
@@ -31,7 +31,7 @@ namespace bs
 		return new (bs_alloc<GUIRenderTexture>()) GUIRenderTexture(styleName, texture, transparent, GUIDimensions::create());
 	}
 
-	GUIRenderTexture* GUIRenderTexture::create(const SPtr<RenderTexture>& texture, bool transparent, const GUIOptions& options, 
+	GUIRenderTexture* GUIRenderTexture::create(const SPtr<RenderTexture>& texture, bool transparent, const GUIOptions& options,
 		const String& styleName)
 	{
 		return new (bs_alloc<GUIRenderTexture>()) GUIRenderTexture(styleName, texture, transparent, GUIDimensions::create(options));

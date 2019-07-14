@@ -12,7 +12,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Contains a resource that was imported from a file that contains multiple resources (for example an animation from an 
+	/// Contains a resource that was imported from a file that contains multiple resources (for example an animation from an
 	/// FBX file).
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential), SerializeObject]

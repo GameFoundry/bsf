@@ -6,7 +6,7 @@
 
 namespace bs
 {
-	GUIElementContainer::GUIElementContainer(const GUIDimensions& dimensions, const String& style, 
+	GUIElementContainer::GUIElementContainer(const GUIDimensions& dimensions, const String& style,
 		GUIElementOptions options)
 		:GUIElement(style, dimensions, options)
 	{

@@ -78,9 +78,9 @@ namespace bs
 			numBytes = 1;
 		else if (input < 0x800)
 			numBytes = 2;
-		else if (input < 0x10000) 
+		else if (input < 0x10000)
 			numBytes = 3;
-		else // <= 0x0010FFFF 
+		else // <= 0x0010FFFF
 			numBytes = 4;
 
 		// Check if we have enough space
@@ -306,7 +306,7 @@ namespace bs
 		return output;
 	}
 
-	WString UTF8::toWide(const String& input) 
+	WString UTF8::toWide(const String& input)
 	{
 		WString output;
 		auto backInserter = std::back_inserter(output);
@@ -341,7 +341,7 @@ namespace bs
 		return output;
 	}
 
-	U16String UTF8::toUTF16(const String& input) 
+	U16String UTF8::toUTF16(const String& input)
 	{
 		U16String output;
 		auto backInserter = std::back_inserter(output);
@@ -376,7 +376,7 @@ namespace bs
 		return output;
 	}
 
-	U32String UTF8::toUTF32(const String& input) 
+	U32String UTF8::toUTF32(const String& input)
 	{
 		U32String output;
 

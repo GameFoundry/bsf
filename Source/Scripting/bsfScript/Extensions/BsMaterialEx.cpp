@@ -5,7 +5,7 @@
 
 namespace bs
 {
-	void MaterialEx::setTexture(const HMaterial& thisPtr, const String& name, const ResourceHandle<Texture>& value, 
+	void MaterialEx::setTexture(const HMaterial& thisPtr, const String& name, const ResourceHandle<Texture>& value,
 		UINT32 mipLevel, UINT32 numMipLevels, UINT32 arraySlice, UINT32 numArraySlices)
 	{
 		thisPtr->setTexture(name, value, TextureSurface(mipLevel, numMipLevels, arraySlice, numArraySlices));

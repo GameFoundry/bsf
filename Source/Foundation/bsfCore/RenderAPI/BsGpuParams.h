@@ -109,7 +109,7 @@ namespace bs
 		virtual ~TGpuParams();
 
 		/**
-		 * Returns a handle for the parameter with the specified name. Handle may then be stored and used for quickly 
+		 * Returns a handle for the parameter with the specified name. Handle may then be stored and used for quickly
 		 * setting or retrieving values to/from that parameter.
 		 *
 		 * Throws exception if parameter with that name and type doesn't exist.
@@ -172,7 +172,7 @@ namespace bs
 		void setParamBlockBuffer(const String& name, const ParamsBufferType& paramBlockBuffer);
 
 		/**
-		 * Sets the parameter buffer with the specified set/slot combination.Any following parameter reads or writes that are 
+		 * Sets the parameter buffer with the specified set/slot combination.Any following parameter reads or writes that are
 		 * referencing that buffer will use the new buffer. Set/slot information for a specific buffer can be extracted
 		 * from GPUProgram's GpuParamDesc structure.
 		 *
@@ -181,7 +181,7 @@ namespace bs
 		virtual void setParamBlockBuffer(UINT32 set, UINT32 slot, const ParamsBufferType& paramBlockBuffer);
 
 		/**	Sets a texture at the specified set/slot combination. */
-		virtual void setTexture(UINT32 set, UINT32 slot, const TextureType& texture, 
+		virtual void setTexture(UINT32 set, UINT32 slot, const TextureType& texture,
 								const TextureSurface& surface = TextureSurface::COMPLETE);
 
 		/**	Sets a load/store texture at the specified set/slot combination. */
@@ -266,9 +266,9 @@ namespace bs
 		/** @copydoc GpuParams::create(const SPtr<GraphicsPipelineState>&) */
 		static SPtr<GpuParams> create(const SPtr<ComputePipelineState>& pipelineState);
 
-		/** 
+		/**
 		 * Creates a new set of GPU parameters using an object describing the parameters for a pipeline.
-		 * 
+		 *
 		 * @param[in]	paramInfo	Description of GPU parameters for a specific GPU pipeline state.
 		 */
 		static SPtr<GpuParams> create(const SPtr<GpuPipelineParamInfo>& paramInfo);
@@ -329,21 +329,21 @@ namespace bs
 	public:
 		virtual ~GpuParams() { }
 
-		/** 
+		/**
 		 * @copydoc bs::GpuParams::create(const SPtr<GraphicsPipelineState>&)
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the buffer be created on.
 		 */
 		static SPtr<GpuParams> create(const SPtr<GraphicsPipelineState>& pipelineState,
 										  GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
-		/** 
-		 * @copydoc bs::GpuParams::create(const SPtr<ComputePipelineState>&) 
+		/**
+		 * @copydoc bs::GpuParams::create(const SPtr<ComputePipelineState>&)
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the buffer be created on.
 		 */
 		static SPtr<GpuParams> create(const SPtr<ComputePipelineState>& pipelineState,
 										  GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
-		/** 
+		/**
 		 * @copydoc bs::GpuParams::create(const SPtr<GpuPipelineParamInfo>&)
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the buffer be created on.
 		 */

@@ -67,7 +67,7 @@ namespace bs
         /// <summary>
         /// Changes the active cursor icon.
         /// </summary>
-        /// <param name="name">Name of the cursor icon, previously registered with 
+        /// <param name="name">Name of the cursor icon, previously registered with
         ///                    <see cref="SetCursorIcon(string,PixelData,Vector2I)"/></param>
         public static void SetCursor(string name)
         {

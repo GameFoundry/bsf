@@ -24,7 +24,7 @@ namespace bs
 
 	void ScriptComponentBase::destroy(bool assemblyRefresh)
 	{
-		// It's possible that managed component is destroyed but a reference to it is still kept during assembly refresh. 
+		// It's possible that managed component is destroyed but a reference to it is still kept during assembly refresh.
 		// Such components shouldn't be restored so we delete them.
 
 		HComponent component = getComponent();
@@ -45,7 +45,7 @@ namespace bs
 
 	ScriptComponent::ScriptComponent(MonoObject* instance)
 		:ScriptObject(instance)
-	{ 
+	{
 		assert(instance != nullptr);
 	}
 
@@ -88,7 +88,7 @@ namespace bs
 				return nullptr;
 
 			HComponent component = so->addComponent(info->typeId);
-			ScriptComponentBase* scriptComponent = 
+			ScriptComponentBase* scriptComponent =
 				ScriptGameObjectManager::instance().createBuiltinScriptComponent(component);
 
 			return scriptComponent->getManagedInstance();

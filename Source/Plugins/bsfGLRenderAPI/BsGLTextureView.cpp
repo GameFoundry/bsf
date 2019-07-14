@@ -69,13 +69,13 @@ namespace bs { namespace ct {
 		BS_CHECK_GL_ERROR();
 
 		glTextureView(
-			mViewID, 
-			target, 
-			originalTexture, 
-			texture->getGLFormat(), 
-			desc.mostDetailMip, 
+			mViewID,
+			target,
+			originalTexture,
+			texture->getGLFormat(),
+			desc.mostDetailMip,
 			desc.numMips,
-			desc.firstArraySlice, 
+			desc.firstArraySlice,
 			desc.numArraySlices);
 		BS_CHECK_GL_ERROR();
 #endif

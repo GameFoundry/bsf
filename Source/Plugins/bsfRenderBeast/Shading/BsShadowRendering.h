@@ -59,9 +59,9 @@ namespace bs { namespace ct
 		/** Sets a new buffer that determines per-object properties. */
 		void setPerObjectBuffer(const SPtr<GpuParamBlockBuffer>& perObjectParams);
 
-		/** 
-		 * Returns the material variation matching the provided parameters. 
-		 * 
+		/**
+		 * Returns the material variation matching the provided parameters.
+		 *
 		 * @param[in]	skinned		True if the shadow caster supports bone animation.
 		 * @param[in]	morph		True if the shadow caster supports morph shape animation.
 		 */
@@ -130,9 +130,9 @@ namespace bs { namespace ct
 		/** Sets a new buffer that determines per-object properties. */
 		void setPerObjectBuffer(const SPtr<GpuParamBlockBuffer>& perObjectParams);
 
-		/** 
-		 * Returns the material variation matching the provided parameters. 
-		 * 
+		/**
+		 * Returns the material variation matching the provided parameters.
+		 *
 		 * @param[in]	skinned		True if the shadow caster supports bone animation.
 		 * @param[in]	morph		True if the shadow caster supports morph shape animation.
 		 */
@@ -175,12 +175,12 @@ namespace bs { namespace ct
 		void bind(const SPtr<GpuParamBlockBuffer>& shadowParams, const SPtr<GpuParamBlockBuffer>& shadowCubeParams);
 
 		/** Sets a new buffer that determines per-object properties. */
-		void setPerObjectBuffer(const SPtr<GpuParamBlockBuffer>& perObjectParams, 
+		void setPerObjectBuffer(const SPtr<GpuParamBlockBuffer>& perObjectParams,
 			const SPtr<GpuParamBlockBuffer>& shadowCubeMasks);
 
-		/** 
-		 * Returns the material variation matching the provided parameters. 
-		 * 
+		/**
+		 * Returns the material variation matching the provided parameters.
+		 *
 		 * @param[in]	skinned		True if the shadow caster supports bone animation.
 		 * @param[in]	morph		True if the shadow caster supports morph shape animation.
 		 */
@@ -219,7 +219,7 @@ namespace bs { namespace ct
 		/** Returns the material variation matching the provided parameters.
 		 *
 		 * @param[in]	directional		Set to true if shadows from a directional light are being rendered.
-		 * @param[in]	useZFailStencil	If true the material will use z-fail operation to modify the stencil buffer. If 
+		 * @param[in]	useZFailStencil	If true the material will use z-fail operation to modify the stencil buffer. If
 		 *								false z-pass will be used instead. Z-pass is a more performant alternative as it
 		 *								doesn't disable hi-z optimization, but it cannot handle the case when the viewer is
 		 *								inside the drawn geometry.
@@ -388,10 +388,10 @@ namespace bs { namespace ct
 		UINT32 cascadeIdx; /**< Index of a cascade. Only relevant for CSM. */
 
 		/** View-projection matrix from the shadow casters point of view. */
-		Matrix4 shadowVPTransform; 
+		Matrix4 shadowVPTransform;
 
 		/** View-projection matrix for each cubemap face, used for omni-directional shadows. */
-		Matrix4 shadowVPTransforms[6]; 
+		Matrix4 shadowVPTransforms[6];
 
 		/** Bounds of the geometry the shadow is being applied on. */
 		Sphere subjectBounds;
@@ -400,16 +400,16 @@ namespace bs { namespace ct
 		SmallVector<float, 6> fadePerView;
 	};
 
-	/** 
+	/**
 	 * Contains a texture that serves as an atlas for one or multiple shadow maps. Provides methods for inserting new maps
-	 * in the atlas. 
+	 * in the atlas.
 	 */
 	class ShadowMapAtlas
 	{
 	public:
 		ShadowMapAtlas(UINT32 size);
 
-		/** 
+		/**
 		 * Registers a new map in the shadow map atlas. Returns true if the map fits in the atlas, or false otherwise.
 		 * Resets the last used counter to zero.
 		 */
@@ -421,7 +421,7 @@ namespace bs { namespace ct
 		/** Checks have any maps been added to the atlas. */
 		bool isEmpty() const;
 
-		/** 
+		/**
 		 * Returns the value of the last used counter. See addMap() and clear() for information on how the counter is
 		 * incremented/decremented.
 		 */
@@ -462,7 +462,7 @@ namespace bs { namespace ct
 		/** Returns true if the object is storing a valid shadow map. */
 		bool isUsed() const { return mIsUsed; }
 
-		/** 
+		/**
 		 * Returns the value of the last used counter. See incrementUseCounter() and markAsUsed() for information on how is
 		 * the counter incremented/decremented.
 		 */
@@ -538,7 +538,7 @@ namespace bs { namespace ct
 		/** For each visible shadow casting light, renders a shadow map from its point of view. */
 		void renderShadowMaps(RendererScene& scene, const RendererViewGroup& viewGroup, const FrameInfo& frameInfo);
 
-		/** 
+		/**
 		 * Renders shadow occlusion values for the specified light, through the provided view, into the currently bound
 		 * render target. The system uses shadow maps rendered by renderShadowMaps().
 		 */
@@ -548,7 +548,7 @@ namespace bs { namespace ct
 		void setShadowMapSize(UINT32 size);
 	private:
 		/** Renders cascaded shadow maps for the provided directional light viewed from the provided view. */
-		void renderCascadedShadowMaps(const RendererView& view, UINT32 lightIdx, RendererScene& scene, 
+		void renderCascadedShadowMaps(const RendererView& view, UINT32 lightIdx, RendererScene& scene,
 			const FrameInfo& frameInfo);
 
 		/** Renders shadow maps for the provided spot light. */
@@ -556,13 +556,13 @@ namespace bs { namespace ct
 			const FrameInfo& frameInfo);
 
 		/** Renders shadow maps for the provided radial light. */
-		void renderRadialShadowMap(const RendererLight& light, const ShadowMapOptions& options, RendererScene& scene, 
+		void renderRadialShadowMap(const RendererLight& light, const ShadowMapOptions& options, RendererScene& scene,
 			const FrameInfo& frameInfo);
 
-		/** 
+		/**
 		 * Calculates optimal shadow map size, taking into account all views in the scene. Also calculates a fade value
 		 * that can be used for fading out small shadow maps.
-		 * 
+		 *
 		 * @param[in]	light			Light for which to calculate the shadow map properties. Cannot be a directional light.
 		 * @param[in]	viewGroup		All the views the shadow will (potentially) be seen through.
 		 * @param[in]	border			Border to reduce the shadow map size by, in pixels.
@@ -571,21 +571,21 @@ namespace bs { namespace ct
 		 *								entry corresponds to a single view.
 		 * @param[out]	maxFadePercent	Maximum value in the @p fadePercents array.
 		 */
-		void calcShadowMapProperties(const RendererLight& light, const RendererViewGroup& viewGroup, UINT32 border, 
+		void calcShadowMapProperties(const RendererLight& light, const RendererViewGroup& viewGroup, UINT32 border,
 			UINT32& size, SmallVector<float, 6>& fadePercents, float& maxFadePercent) const;
 
 		/**
 		 * Draws a mesh representing near and far planes at the provided coordinates. The mesh is constructed using
 		 * normalized device coordinates and requires no perspective transform. Near plane will be drawn using front facing
 		 * triangles, and the far plane will be drawn using back facing triangles.
-		 * 
+		 *
 		 * @param[in]	near		Location of the near plane, in NDC.
 		 * @param[in]	far			Location of the far plane, in NDC.
 		 * @param[in]	drawNear	If disabled, only the far plane will be drawn.
 		 */
 		void drawNearFarPlanes(float near, float far, bool drawNear = true) const;
 
-		/** 
+		/**
 		 * Draws a frustum mesh using the provided vertices as its corners. Corners should be in the order specified
 		 * by AABox::Corner enum.
 		 */
@@ -599,7 +599,7 @@ namespace bs { namespace ct
 		/**
 		 * Generates a frustum for a single cascade of a cascaded shadow map. Also outputs spherical bounds of the
 		 * split view frustum.
-		 * 
+		 *
 		 * @param[in]	view		View whose frustum to split.
 		 * @param[in]	lightDir	Direction of the light for which we're generating the shadow map.
 		 * @param[in]	cascade		Index of the cascade to generate the frustum for.
@@ -607,13 +607,13 @@ namespace bs { namespace ct
 		 * @param[out]	outBounds	Spherical bounds of the split view frustum.
 		 * @return					Convex volume covering the area of the split view frustum visible from the light.
 		 */
-		static ConvexVolume getCSMSplitFrustum(const RendererView& view, const Vector3& lightDir, UINT32 cascade, 
+		static ConvexVolume getCSMSplitFrustum(const RendererView& view, const Vector3& lightDir, UINT32 cascade,
 			UINT32 numCascades, Sphere& outBounds);
 
 		/**
 		 * Finds the distance (along the view direction) of the frustum split for the specified index. Used for cascaded
 		 * shadow maps.
-		 * 
+		 *
 		 * @param[in]	view					View whose frustum to split.
 		 * @param[in]	index					Index of the split. 0 = near plane.
 		 * @param[in]	numCascades				Maximum number of cascades in the cascaded shadow map. Must be greater than
@@ -624,12 +624,12 @@ namespace bs { namespace ct
 
 		/**
 		 * Calculates a bias that can be applied when rendering shadow maps, in order to reduce shadow artifacts.
-		 * 
+		 *
 		 * @param[in]	light		Light to calculate the depth bias for.
 		 * @param[in]	radius		Radius of the light bounds.
 		 * @param[in]	depthRange	Range of depths (distance between near and far planes) covered by the shadow.
 		 * @param[in]	mapSize		Size of the shadow map, in pixels.
-		 * @return					Depth bias that can be passed to shadow depth rendering shader. 
+		 * @return					Depth bias that can be passed to shadow depth rendering shader.
 		 */
 		static float getDepthBias(const Light& light, float radius, float depthRange, UINT32 mapSize);
 

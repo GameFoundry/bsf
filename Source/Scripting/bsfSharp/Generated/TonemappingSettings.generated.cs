@@ -22,7 +22,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Controls the shoulder (upper non-linear) section of the filmic curve used for tonemapping. Mostly affects bright 
+		/// Controls the shoulder (upper non-linear) section of the filmic curve used for tonemapping. Mostly affects bright
 		/// areas of the image and allows you to reduce over-exposure.
 		/// </summary>
 		[ShowInInspector]
@@ -34,7 +34,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Controls the linear (middle) section of the filmic curve used for tonemapping. Mostly affects mid-range areas of the 
+		/// Controls the linear (middle) section of the filmic curve used for tonemapping. Mostly affects mid-range areas of the
 		/// image.
 		/// </summary>
 		[ShowInInspector]
@@ -46,7 +46,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Controls the linear (middle) section of the filmic curve used for tonemapping. Mostly affects mid-range areas of the 
+		/// Controls the linear (middle) section of the filmic curve used for tonemapping. Mostly affects mid-range areas of the
 		/// image and allows you to control how quickly does the curve climb.
 		/// </summary>
 		[ShowInInspector]
@@ -58,7 +58,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Controls the toe (lower non-linear) section of the filmic curve used for tonemapping. Mostly affects dark areas of 
+		/// Controls the toe (lower non-linear) section of the filmic curve used for tonemapping. Mostly affects dark areas of
 		/// the image and allows you to reduce under-exposure.
 		/// </summary>
 		[ShowInInspector]
