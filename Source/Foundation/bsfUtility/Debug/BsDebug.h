@@ -103,10 +103,12 @@ namespace bs
 	/** A simpler way of accessing the Debug module. */
 	BS_UTILITY_EXPORT Debug& gDebug();
 
-#if BS_DEBUG_MODE
-	#define BS_LOG_VERBOSITY LogVerbosity::Log
-#else
-	#define BS_LOG_VERBOSITY LogVerbosity::Warning
+#ifndef BS_LOG_VERBOSITY
+	#if BS_DEBUG_MODE
+		#define BS_LOG_VERBOSITY LogVerbosity::Log
+	#else
+		#define BS_LOG_VERBOSITY LogVerbosity::Warning
+	#endif
 #endif
 
 /** 
