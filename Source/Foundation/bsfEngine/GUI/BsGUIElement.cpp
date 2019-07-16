@@ -17,6 +17,14 @@ namespace bs
 		// is assigned to a parent (that's when the active GUI skin becomes known)
 	}
 
+	GUIElement::GUIElement(const char* styleName, const GUIDimensions& dimensions, GUIElementOptions options)
+		: GUIElementBase(dimensions), mOptionFlags(options), mStyle(&GUISkin::DefaultStyle)
+		, mStyleName(styleName ? styleName : StringUtil::BLANK)
+	{
+		// Style is set to default here, and the proper one is assigned once GUI element
+		// is assigned to a parent (that's when the active GUI skin becomes known)
+	}
+
 	void GUIElement::_updateRenderElements()
 	{
 		updateRenderElementsInternal();
