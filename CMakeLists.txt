@@ -23,3 +23,5 @@ set(SCRIPT_API "None" CACHE STRING "Which scripting API/language to use, if any.
 set_property(CACHE SCRIPT_API PROPERTY STRINGS "None" "C#")
 
 set(SCRIPT_BINDING_GENERATION OFF CACHE BOOL "If true, script binding generation will be supported through a specialized build target. Enable this if you plan on modifying the scripting API. Requires the SBGen tool dependency. Only relevant if you have selected a SCRIPT_API other than \"None\".")
+
+set(DYNLIB_EXTRA_SEARCH_DIRECTORY "" CACHE STRING "If non-empty DynLib loading additionally searches the specified directory for libraries")

@@ -116,6 +116,12 @@ else()
 	set(BS_SCRIPTING_ENABLED 0)
 endif()
 
+if(NOT DYNLIB_EXTRA_SEARCH_DIRECTORY STREQUAL "")
+	set(BS_DYNLIB_EXTRA_ENABLED 1)
+else()
+	set(BS_DYNLIB_EXTRA_ENABLED 0)
+endif()
+
 ## Generate config files
 configure_file("${BSF_SOURCE_DIR}/CMake/BsEngineConfig.h.in" "${PROJECT_BINARY_DIR}/Generated/bsfEngine/BsEngineConfig.h")
 configure_file("${BSF_SOURCE_DIR}/CMake/BsFrameworkConfig.h.in" "${PROJECT_BINARY_DIR}/Generated/bsfUtility/BsFrameworkConfig.h")

@@ -37,8 +37,15 @@ namespace bs
 
 		if (!mHandle)
 		{
-			BS_EXCEPT(InternalErrorException,
-				"Could not load dynamic library " + mName + ".  System Error: " + dynlibError());
+#if BS_DYNLIB_EXTRA_ENABLED == 1
+			mHandle = (DYNLIB_HANDLE)DYNLIB_LOAD(Path::combine(Path(BS_DYNLIB_EXTRA_SEARCH_DIRECTORY),
+					Path(mName)).toString().c_str());
+#endif // BS_DYNLIB_EXTRA_ENABLED
+			if (!mHandle)
+			{
+				BS_EXCEPT(InternalErrorException,
+					"Could not load dynamic library " + mName + ".	System Error: " + dynlibError());
+			}
 		}
 	}
 
