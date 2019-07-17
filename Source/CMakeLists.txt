@@ -16,7 +16,7 @@ set(PHYSICS_MODULE "PhysX" CACHE STRING "Physics backend to use.")
 set_property(CACHE PHYSICS_MODULE PROPERTY STRINGS "PhysX" "Null")
 
 # include imgui plugin will be default false.
-set(INCLUDE_IMGUI_PLUGIN OFF CACHE BOOL "Include BsfImgui submodule plugin")
+set(BSF_PLUGIN_IMGUI OFF CACHE BOOL "Include BsfImgui submodule plugin")
 
 if(WIN32)
 	set(RENDER_API_MODULE "DirectX 11" CACHE STRING "Render API to use.")
@@ -204,12 +204,8 @@ else() # Otherwise include only chosen ones
 	endif()
 endif()
 
-if (INCLUDE_IMGUI_PLUGIN)
-	# if true, then git clone the imgui plugin (with recursive submodules). it
-	# will be cloned into the build directory where it will be configured as
-	# bsfImgui target. other targets can then set bsfImgui as their dependency
-	# in their respective cmake files.
-	include(CMake/Plugins/BsImgui.cmake)
+if (BSF_PLUGIN_IMGUI)
+	include(CMake/Plugins/bsfImgui.cmake)
 endif()
 
 add_subdirectory(Plugins/bsfFBXImporter)
