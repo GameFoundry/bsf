@@ -28,6 +28,7 @@ namespace bs
 		m = bs_new<Pimpl>();
 		m->isModal = desc.modal;
 		m->isHidden = desc.hidden;
+		bool shouldFocus = true;
 
 		HMONITOR hMonitor = desc.monitor;
 		if (!desc.external)
@@ -248,6 +249,7 @@ namespace bs
 					// immediately deactivate it and make sure the modal windows stay on top.
 					if (!sModalWindowStack.empty())
 					{
+						shouldFocus = false;
 						windowsToDisable.push_back(m->hWnd);
 
 						for (auto window : sModalWindowStack)
@@ -264,7 +266,8 @@ namespace bs
 			for (auto& entry : windowsToBringToFront)
 				BringWindowToTop(entry);
 
-			SetFocus(m->hWnd);
+			if(shouldFocus)
+				SetFocus(m->hWnd);
 		}
 
 		bs_frame_clear();
