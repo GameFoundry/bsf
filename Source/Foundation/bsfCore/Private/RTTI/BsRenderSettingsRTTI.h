@@ -141,6 +141,13 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(farTransitionRange, 4)
 			BS_RTTI_MEMBER_PLAIN(nearBlurAmount, 5)
 			BS_RTTI_MEMBER_PLAIN(farBlurAmount, 6)
+			BS_RTTI_MEMBER_PLAIN(type, 7)
+			BS_RTTI_MEMBER_PLAIN(maxBokehSize, 8)
+			BS_RTTI_MEMBER_PLAIN(bokehShape, 9)
+			BS_RTTI_MEMBER_PLAIN(adaptiveColorThreshold, 10)
+			BS_RTTI_MEMBER_PLAIN(adaptiveRadiusThreshold, 11)
+			BS_RTTI_MEMBER_PLAIN(apertureScale, 12)
+			BS_RTTI_MEMBER_PLAIN(focalLength, 13)
 		BS_END_RTTI_MEMBERS
 
 	public:

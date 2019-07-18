@@ -120,6 +120,13 @@ namespace bs
 		p(farTransitionRange);
 		p(nearBlurAmount);
 		p(farBlurAmount);
+		p(type);
+		p(maxBokehSize);
+		p(bokehShape);
+		p(adaptiveColorThreshold);
+		p(adaptiveRadiusThreshold);
+		p(focalLength);
+		p(apertureScale);
 	}
 
 	RTTITypeBase* DepthOfFieldSettings::getRTTIStatic()

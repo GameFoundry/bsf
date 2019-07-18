@@ -1,0 +1,52 @@
+mixin DepthOfFieldCommon
+{
+	code
+	{
+		cbuffer DepthOfFieldParams
+		{
+			float gFocalPlaneDistance; // Distance to the in-focus plane, in world units
+			float gApertureSize; // Aperture size
+			float gFocalLength; // In meters, e.g. 75mm = 0.075m
+			float gInFocusRange; // Region totally in focus, starting at the in-focus plane (0 for physically based)
+			float gNearTransitionRegion; // Region before the in-focus plane used to transition from in-focus to out-of-focus (non-physically based)
+			float gFarTransitionRegion; // Region after the in-focus region used to transition from in-focus to out-of-focus (non-physically based)
+		}		
+
+		// Computes for how in-focus should an object at a specific distance be. Uses a commonly used physically based linear
+		// approximation using camera aperture size and focal length: https://developer.download.nvidia.com/books/HTML/gpugems/gpugems_ch23.html.
+		// Returns 0 for in-focus, and 1 for out-of-focus
+		float circleOfConfusionPhysical(float distance)
+		{
+			// Force a region after the in-focus plane to be completely in focus (non-physically based)
+			[flatten]
+			if(distance > gFocalPlaneDistance)
+				distance = gFocalPlaneDistance + max(0, distance - gFocalPlaneDistance - gInFocusRange);
+				
+			float radius = gApertureSize * gFocalLength * (gFocalPlaneDistance - distance) / (distance * (gFocalPlaneDistance - gFocalLength));
+
+			// TODO - Convert to mm?
+			return saturate(abs(radius));
+		}
+
+		// Has the same purpose as circleOfConfusionPhysical, but uses the explictly set near, far and in-focus regions for determining
+		// the circle of confusion, rather than using physically based camera parameters.
+		float circleOfConfusionArtistic(float distance)
+		{
+			// Force a region after the in-focus plane to be completely in focus
+			[flatten]
+			if(distance > gFocalPlaneDistance)
+				distance = gFocalPlaneDistance + max(0, distance - gFocalPlaneDistance - gInFocusRange);
+				
+			float transitionRegion = (distance < gFocalPlaneDistance) ? gNearTransitionRegion : gFarTransitionRegion;
+			return saturate(abs(distance - gFocalPlaneDistance) / transitionRegion);
+		}
+		
+		float2 computeLayerContributions(float depth)
+		{
+			float near = saturate((gFocalPlaneDistance - depth) / gNearTransitionRegion);
+			float far = saturate((depth - gFocalPlaneDistance - gInFocusRange) / gFarTransitionRegion);
+
+			return float2(near, far);
+		}
+	};
+};

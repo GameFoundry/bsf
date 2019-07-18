@@ -317,6 +317,23 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 	};
 
+	/** Types of available depth of field effects. */
+	enum class DepthOfFieldType
+	{
+		/** 
+		 * Fastest depth of field variant, uses gaussian blur to approximate depth of field on near and far objects, but
+		 * doesn't use any physically based methods for determining blur amount.
+		 */
+		Gaussian,
+		/**
+		 * Very expensive depth of field variant that allows you to use a bokeh texture, controlling the shape of the blur
+		 * (usually intended to mimic real world camera aperature shapes). Blur is varied according to actual object
+		 * distance and the effect is more physically based than gaussian blur (but not completely). Very expensive in
+		 * terms of performance.
+		 */
+		Bokeh
+	};
+
 	/** Settings that control the depth-of-field effect. */
 	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT() DepthOfFieldSettings : public IReflectable
 	{
@@ -327,29 +344,36 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		bool enabled = false;
 
-		/**
+		/** Type of depth of field effect to use. */
+		BS_SCRIPT_EXPORT()
+		DepthOfFieldType type = DepthOfFieldType::Gaussian;
+
+		/** 
 		 * Distance from the camera at which the focal plane is located in. Objects at this distance will be fully in focus.
+		 * In world units (meters).
 		 */
 		BS_SCRIPT_EXPORT()
 		float focalDistance = 0.75f;
 		
-		/**
+		/** 
 		 * Range within which the objects remain fully in focus. This range is applied relative to the focal distance.
-		 * Only relevant if Gaussian depth of field is used as other methods don't use a constant in-focus range.
+		 * This parameter should usually be non-zero when using the Gaussian depth of field effect. When using other types
+		 * of depth-of-field you can set this to zero for a more physically-based effect, or keep it non-zero for more
+		 * artistic control. In world units (meters).
 		 */
 		BS_SCRIPT_EXPORT()
 		float focalRange = 0.75f;
 
 		/**
-		 * Determines the size of the range within which objects transition from focused to fully unfocused, at the near
-		 * plane. Only relevant for Gaussian depth of field.
+		 * Determines the size of the range within which objects transition from focused to fully unfocused, at the near 
+		 * plane. Only relevant for Gaussian depth of field. In world units (meters).
 		 */
 		BS_SCRIPT_EXPORT()
 		float nearTransitionRange = 0.25f;
 
 		/**
-		 * Determines the size of the range within which objects transition from focused to fully unfocused, at the far
-		 * plane. Only relevant for Gaussian depth of field.
+		 * Determines the size of the range within which objects transition from focused to fully unfocused, at the far 
+		 * plane. Only relevant for Gaussian depth of field. In world units (meters).
 		 */
 		BS_SCRIPT_EXPORT()
 		float farTransitionRange = 0.25f;
@@ -367,6 +391,46 @@ namespace bs
 		 */
 		BS_SCRIPT_EXPORT()
 		float farBlurAmount = 0.02f;
+
+		/** 
+		 * Determines the maximum size of the blur kernel, in percent of view size. Larger values cost more performance. 
+		 * Only relevant when using Bokeh depth of field.
+		 */
+		BS_SCRIPT_EXPORT(range:[0,1])
+		float maxBokehSize = 0.15f;
+
+		/** Texture to use for the bokeh shape. Only relevant when using Bokeh depth of field. */
+		BS_SCRIPT_EXPORT()
+		HTexture bokehShape;
+
+		/** 
+		 * Determines the maximum color difference between surrounding pixels allowed (as a sum of all channels) before
+		 * higher fidelity sampling is triggered. Increasing this value can improve performance as less higher fidelity
+		 * samples will be required, but may decrease quality of the effect. Only relevant when using Bokeh depth of
+		 * field.
+		 */
+		BS_SCRIPT_EXPORT(range:[0,10.0])
+		float adaptiveColorThreshold = 1.0f;
+
+		/** 
+		 * Determines the minimum circle of confusion size before higher fidelity sampling is triggered. Small values
+		 * trigger high fidelity sampling because they can otherwise produce aliasing, and they are small enough so they
+		 * don't cost much. Increasing this value can improve performance as less higher fidelity samples will be required, 
+		 * but may decrease quality of the effect. Only relevant when using Bokeh depth of field.
+		 */
+		BS_SCRIPT_EXPORT(range:[0,1.0])
+		float adaptiveRadiusThreshold = 0.1f;
+
+		/**
+		 * Value used to scale the size of the camera's aperture (similar to camera aperture size in mm, but not 
+		 * physically based). Only relevant when using Bokeh depth of field.
+		 */
+		BS_SCRIPT_EXPORT(range:[0,2.0])
+		float apertureScale = 1.0f;
+
+		/** Focal length of the camera's lens (e.g. 75mm). */
+		BS_SCRIPT_EXPORT(range:[0, 200])
+		float focalLength = 50.0f;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -707,7 +771,7 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		ColorGradingSettings colorGrading;
 
-		/** Parameters used for customizing the depth of field effect. */
+		/** Parameters used for customizing the gaussian depth of field effect. */
 		BS_SCRIPT_EXPORT()
 		DepthOfFieldSettings depthOfField;
 
