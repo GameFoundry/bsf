@@ -78,9 +78,9 @@ namespace bs
 			{
 				MonoObject* attrib = fieldInfo->getAttribute(range);
 
-				ScriptRange::getMinRangeField()->get(attrib, &style->rangeMin);
-				ScriptRange::getMaxRangeField()->get(attrib, &style->rangeMax);
-				ScriptRange::getSliderField()->get(attrib, &style->displayAsSlider);
+				ScriptRange::getMinRangeField()->get(attrib, &interopStyle.rangeMin);
+				ScriptRange::getMaxRangeField()->get(attrib, &interopStyle.rangeMax);
+				ScriptRange::getSliderField()->get(attrib, &interopStyle.displayAsSlider);
 			}
 		}
 
@@ -90,7 +90,7 @@ namespace bs
 			if (step != nullptr)
 			{
 				MonoObject* attrib = fieldInfo->getAttribute(step);
-				ScriptStep::getStepField()->get(attrib, &style->stepIncrement);
+				ScriptStep::getStepField()->get(attrib, &interopStyle.stepIncrement);
 			}
 		}
 
@@ -100,7 +100,7 @@ namespace bs
 			if (category != nullptr)
 			{
 				MonoObject* attrib = fieldInfo->getAttribute(category);
-				ScriptCategory::getNameField()->get(attrib, &style->categoryName);
+				ScriptCategory::getNameField()->get(attrib, &interopStyle.categoryName);
 			}
 		}
 
@@ -110,11 +110,11 @@ namespace bs
 			if (order != nullptr)
 			{
 				MonoObject* attrib = fieldInfo->getAttribute(order);
-				ScriptOrder::getIndexField()->get(attrib, &style->order);
+				ScriptOrder::getIndexField()->get(attrib, &interopStyle.order);
 			}
 		}
 
-		MonoUtil::valueCopy(&style, &interopStyle, ScriptSerializableFieldStyle::getMetaData()->scriptClass->_getInternalClass());
+		MonoUtil::valueCopy(style, &interopStyle, ScriptSerializableFieldStyle::getMetaData()->scriptClass->_getInternalClass());
 	}
 
 	ScriptSerializableFieldStyle::ScriptSerializableFieldStyle(MonoObject* managedInstance)
