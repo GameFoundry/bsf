@@ -2,6 +2,7 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "BsRendererTextures.h"
 #include "Math/BsVector2.h"
+#include "Math/BsVector3.h"
 #include "Image/BsColor.h"
 #include "Math/BsMath.h"
 #include "Image/BsTexture.h"

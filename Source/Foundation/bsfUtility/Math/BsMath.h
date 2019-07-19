@@ -5,7 +5,6 @@
 #include "Prerequisites/BsPrerequisitesUtil.h"
 #include "Math/BsDegree.h"
 #include "Math/BsRadian.h"
-#include "Math/BsVector3.h"
 
 namespace bs
 {
