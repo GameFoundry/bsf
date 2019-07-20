@@ -69,21 +69,8 @@ namespace bs
 	SPtr<TAnimationCurve<Quaternion>> AnimationUtility::eulerToQuaternionCurve(
 		const SPtr<TAnimationCurve<Vector3>>& eulerCurve, EulerAngleOrder order)
 	{
-		// TODO: We calculate tangents by sampling which can introduce error in the tangents. The error can be exacerbated
-		// by the fact we constantly switch between the two representations, possibly losing precision every time. Instead
-		// there must be an analytical way to calculate tangents when converting a curve, or a better way of dealing with
-		// tangents.
-		// Consider:
-		//  - Sampling multiple points to calculate tangents to improve precision
-		//  - Store the original quaternion curve with the euler curve
-		//    - This way conversion from euler to quaternion can be done while individual keyframes are being modified
-		//      ensuring the conversion results are immediately visible, and that no accumulation error happens are curves
-		//		are converted between two formats back and forth.
-		//  - Don't store rotation tangents directly, instead store tangent parameters (TCB) which can be shared between
-		//    both curves, and used for tangent calculation.
-		//
-		// If we decide to keep tangents in the current form, then we should also enforce that all euler curve tangents are
-		// the same.
+		// TODO: We calculate tangents by sampling. There must be an analytical way to calculate tangents when converting
+		// a curve.
 		const float FIT_TIME = 0.001f;
 
 		auto eulerToQuaternion = [&](INT32 keyIdx, Vector3& angles, const Quaternion& lastQuat)
