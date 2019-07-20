@@ -213,7 +213,10 @@ namespace bs
 		const SPtr<ManagedSerializableFieldData>& oldData, const SPtr<ManagedSerializableFieldData>& newData,
 		UINT32 entryTypeId)
 	{
-		bool isPrimitive = entryTypeId == TID_SerializableTypeInfoPrimitive || entryTypeId == TID_SerializableTypeInfoRef;
+		bool isPrimitive = entryTypeId == TID_SerializableTypeInfoPrimitive ||
+			entryTypeId == TID_SerializableTypeInfoRef ||
+			entryTypeId == TID_SerializableTypeInfoEnum ||
+			entryTypeId == TID_SerializableTypeInfoRRef;
 
 		// It's possible the field data is null if the class structure changed (i.e. new field was added that is not present
 		// in serialized data). Check for this case first to ensure field data is valid for the remainder of the method.
