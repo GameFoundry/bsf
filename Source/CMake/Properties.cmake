@@ -29,7 +29,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 ## Remove /EHsc from CMAKE_CXX_FLAGS for MSVC to disable exceptions
-if (MSVC)
+if (MSVC AND NOT BSF_ENABLE_EXCEPTIONS)
 	if(CMAKE_CXX_FLAGS MATCHES "/EHsc")
 		string(REPLACE "/EHsc" "/EHs-c-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 	endif()
