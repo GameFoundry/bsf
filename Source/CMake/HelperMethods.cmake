@@ -502,7 +502,7 @@ function(copy_folder_on_build target srcDir dstDir name filter)
 endfunction()
 
 function(generate_csharp_project folder project_name namespace assembly refs projectRefs)
-	file(GLOB_RECURSE ALL_FILES RELATIVE ${folder} ${folder}/*.cs)
+	file(GLOB_RECURSE ALL_FILES ${folder} ${folder}/*.cs)
 		
 	set(BS_SHARP_FILE_LIST "")
 	foreach(CUR_FILE ${ALL_FILES})
@@ -528,7 +528,7 @@ function(generate_csharp_project folder project_name namespace assembly refs pro
 
 	configure_file(
 		${folder}/${project_name}.csproj.in
-		${folder}/${BS_SHARP_ASSEMBLY_NAME}.csproj)
+		${PROJECT_BINARY_DIR}/${BS_SHARP_ASSEMBLY_NAME}.csproj)
 endfunction()
 
 function(add_common_flags target)

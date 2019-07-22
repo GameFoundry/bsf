@@ -17,7 +17,7 @@ generate_csharp_project(${BSF_SOURCE_DIR}/Scripting/bsfSharp bsfSharp bs ${BS_CS
 set(BS_CS_PROJ "${BS_CS_ASSEMBLY_NAME}.csproj")
 
 if(MSVC)
-	include_external_msproject(${BS_CS_ASSEMBLY_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/${BS_CS_PROJ})
+	include_external_msproject(${BS_CS_ASSEMBLY_NAME} ${PROJECT_BINARY_DIR}/${BS_CS_PROJ})
 	set_property(TARGET ${BS_CS_ASSEMBLY_NAME} PROPERTY FOLDER Script)
 else()
 	find_package(mcs)
@@ -29,7 +29,7 @@ else()
 	endif()
 
 	add_custom_target(${BS_CS_ASSEMBLY_NAME}
-			COMMAND ${msbuild_EXECUTABLE} /p:Configuration=${CS_PROJ_CONFIG} ${CMAKE_CURRENT_SOURCE_DIR}/${BS_CS_PROJ}
+			COMMAND ${msbuild_EXECUTABLE} /p:Configuration=${CS_PROJ_CONFIG} ${PROJECT_BINARY_DIR}/${BS_CS_PROJ}
 			COMMENT "Building managed assembly \"${BS_CS_ASSEMBLY_NAME}\"")
 endif()
 
