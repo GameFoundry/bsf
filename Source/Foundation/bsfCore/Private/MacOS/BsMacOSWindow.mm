@@ -229,8 +229,8 @@ enum class MouseEventType
 	buttonStates.ctrl = (modifierFlags & NSEventModifierFlagControl) != 0;
 	buttonStates.shift = (modifierFlags & NSEventModifierFlagShift) != 0;
 	buttonStates.mouseButtons[0] = (pressedButtons & (1 << 0)) != 0;
-	buttonStates.mouseButtons[1] = (pressedButtons & (1 << 1)) != 0;
-	buttonStates.mouseButtons[2] = (pressedButtons & (1 << 2)) != 0;
+	buttonStates.mouseButtons[1] = (pressedButtons & (1 << 2)) != 0;
+	buttonStates.mouseButtons[2] = (pressedButtons & (1 << 1)) != 0;
 
 	NSWindow* window = [event window];
 	NSScreen* screen = window ? [window screen] : [NSScreen mainScreen];
