@@ -245,6 +245,11 @@ namespace bs
 	namespace ct { class TYPE; }						\
 	template<> struct CoreThreadType<TYPE> { typedef ct::TYPE Type; };
 
+#define CORE_OBJECT_FORWARD_DECLARE_STRUCT(TYPE)		\
+	struct TYPE;										\
+	namespace ct { struct TYPE; }						\
+	template<> struct CoreThreadType<TYPE> { typedef ct::TYPE Type; };
+
 	CORE_OBJECT_FORWARD_DECLARE(IndexBuffer)
 	CORE_OBJECT_FORWARD_DECLARE(VertexBuffer)
 	CORE_OBJECT_FORWARD_DECLARE(GpuBuffer)
@@ -279,6 +284,8 @@ namespace bs
 	CORE_OBJECT_FORWARD_DECLARE(VectorField)
 	CORE_OBJECT_FORWARD_DECLARE(Skybox)
 	CORE_OBJECT_FORWARD_DECLARE(Decal)
+	CORE_OBJECT_FORWARD_DECLARE_STRUCT(DepthOfFieldSettings)
+	CORE_OBJECT_FORWARD_DECLARE_STRUCT(RenderSettings)
 
 	class Collider;
 	class Rigidbody;

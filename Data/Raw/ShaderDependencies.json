@@ -367,6 +367,28 @@
             "Path": "ColorSpace.bslinc"
         }
     ],
+    "PPBokehDOF.bsl": [
+        {
+            "Path": "PerCameraData.bslinc"
+        },
+        {
+            "Path": "DepthOfFieldCommon.bslinc"
+        }
+    ],
+    "PPBokehDOFPrepare.bsl": [
+        {
+            "Path": "DepthInput.bslinc"
+        },
+        {
+            "Path": "PerCameraData.bslinc"
+        },
+        {
+            "Path": "PPBase.bslinc"
+        },
+        {
+            "Path": "DepthOfFieldCommon.bslinc"
+        }
+    ],
     "PPBuildHiZ.bsl": [
         {
             "Path": "PPBase.bslinc"

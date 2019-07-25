@@ -3,6 +3,7 @@
 #include "Renderer/BsRenderSettings.h"
 #include "Private/RTTI/BsRenderSettingsRTTI.h"
 #include "CoreThread/BsCoreObjectSync.h"
+#include "Image/BsTexture.h"
 
 namespace bs
 {
@@ -110,8 +111,9 @@ namespace bs
 		return getRTTIStatic();
 	}
 
+	template <bool Core>
 	template <class Processor>
-	void DepthOfFieldSettings::rttiEnumFields(Processor p)
+	void TDepthOfFieldSettings<Core>::rttiEnumFields(Processor p)
 	{
 		p(enabled);
 		p(focalDistance);
@@ -128,6 +130,9 @@ namespace bs
 		p(focalLength);
 		p(apertureScale);
 	}
+
+	template struct TDepthOfFieldSettings<false>;
+	template struct TDepthOfFieldSettings<true>;
 
 	RTTITypeBase* DepthOfFieldSettings::getRTTIStatic()
 	{
@@ -228,8 +233,9 @@ namespace bs
 		return getRTTIStatic();
 	}
 
+	template <bool Core>
 	template <class Processor>
-	void RenderSettings::rttiEnumFields(Processor p)
+	void TRenderSettings<Core>::rttiEnumFields(Processor p)
 	{
 		p(enableAutoExposure);
 		p(autoExposure);
@@ -254,9 +260,14 @@ namespace bs
 		p(cullDistance);
 	}
 
-	template void RenderSettings::rttiEnumFields(RttiCoreSyncSize);
-	template void RenderSettings::rttiEnumFields(RttiCoreSyncWriter);
-	template void RenderSettings::rttiEnumFields(RttiCoreSyncReader);
+	template struct TRenderSettings<false>;
+	template struct TRenderSettings<true>;
+
+	template void TRenderSettings<false>::rttiEnumFields(RttiCoreSyncSize);
+	template void TRenderSettings<false>::rttiEnumFields(RttiCoreSyncWriter);
+
+	template void TRenderSettings<true>::rttiEnumFields(RttiCoreSyncSize);
+	template void TRenderSettings<true>::rttiEnumFields(RttiCoreSyncReader);
 
 	RTTITypeBase* RenderSettings::getRTTIStatic()
 	{

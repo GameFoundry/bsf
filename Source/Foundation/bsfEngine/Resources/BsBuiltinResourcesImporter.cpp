@@ -300,6 +300,7 @@ namespace bs
 		json fontsJSON = dataListJSON["Fonts"];
 		json guiSkinJSON = dataListJSON["GUISkin"];
 		json splashScreenJSON = dataListJSON["SplashScreen"];
+		json texturesJSON = dataListJSON["Textures"];
 
 		const Path rawSkinFolder = sInputFolder + BuiltinResources::SKIN_FOLDER;
 		const Path rawAnimatedSpritesFolder = sInputFolder + BuiltinResources::ANIMATED_SPRITES_FOLDER;
@@ -308,6 +309,7 @@ namespace bs
 		const Path rawIcon3DFolder = sInputFolder + BuiltinResources::ICON3D_FOLDER;
 		const Path rawShaderFolder = sInputFolder + BuiltinResources::SHADER_FOLDER;
 		const Path rawShaderIncludeFolder = sInputFolder + BuiltinResources::SHADER_INCLUDE_FOLDER;
+		const Path rawTexturesFolder = sInputFolder + BuiltinResources::TEXTURE_FOLDER;
 
 		// Update DataList.json if needed
 		bool updatedDataLists = false;
@@ -368,6 +370,14 @@ namespace bs
 				skinJSON);
 		}
 
+		if(!texturesJSON.is_null())
+		{
+			updatedDataLists |= BuiltinResourcesHelper::updateJSON(
+				rawTexturesFolder,
+				BuiltinResourcesHelper::AssetType::Normal,
+				texturesJSON);
+		}
+
 		dataListStream->close();
 
 		if(updatedDataLists)
@@ -407,6 +417,9 @@ namespace bs
 			if(!splashScreenJSON.is_null())
 				dataListJSON["SplashScreen"] = splashScreenJSON;
 
+			if(!texturesJSON.is_null())
+				dataListJSON["Textures"] = texturesJSON;
+
 			String jsonString = dataListJSON.dump(4).c_str();
 			dataListStream = FileSystem::createAndOpenFile(dataListsFilePath);
 			dataListStream->writeString(jsonString);
@@ -420,6 +433,7 @@ namespace bs
 		const Path icon3DFolder = sOutputFolder + BuiltinResources::ICON3D_FOLDER;
 		const Path shaderFolder = sOutputFolder + BuiltinResources::SHADER_FOLDER;
 		const Path shaderIncludeFolder = sOutputFolder + BuiltinResources::SHADER_INCLUDE_FOLDER;
+		const Path texturesFolder = sOutputFolder + BuiltinResources::TEXTURE_FOLDER;
 		const Path shaderDependenciesFile = sInputFolder + DEPENDENCIES_JSON_NAME;
 
 		// If forcing import, clear all data folders since everything will be recreated anyway
@@ -654,6 +668,31 @@ namespace bs
 				animatedSpriteFolder,
 				sManifest,
 				BuiltinResourcesHelper::AssetType::Sprite);
+		}
+
+		// Import textures
+		if(!texturesJSON.is_null())
+		{
+			BuiltinResourcesHelper::updateManifest(
+				texturesFolder,
+				texturesJSON,
+				sManifest,
+				BuiltinResourcesHelper::AssetType::Normal);
+
+			Vector<bool> importFlags = BuiltinResourcesHelper::generateImportFlags(
+				texturesJSON,
+				rawTexturesFolder,
+				lastUpdateTime,
+				forceImport);
+
+			BuiltinResourcesHelper::importAssets(
+				texturesJSON,
+				importFlags,
+				rawTexturesFolder,
+				texturesFolder,
+				sManifest,
+				BuiltinResourcesHelper::AssetType::Normal,
+				nullptr, false, true);
 		}
 
 		// Update shader dependencies JSON

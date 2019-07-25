@@ -32,6 +32,12 @@ namespace bs
 		template<typename T> struct decay_sptr { using value = T; };
 		template<typename T> struct decay_sptr<SPtr<T>> { using value = typename SPtr<T>::element_type; };
 
+		// Checks if a specific template specialization exists
+		template <class T, std::size_t = sizeof(T)>
+		std::true_type is_complete_impl(T *);
+		std::false_type is_complete_impl(...);
+		template <class T> using is_complete = decltype(is_complete_impl(std::declval<T*>()));
+
 		template<typename T>
 		using decay_all_t = typename decay_sptr<typename decay_handle<std::decay_t<T>>::value>::value;
 

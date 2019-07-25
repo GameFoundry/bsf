@@ -143,7 +143,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(farBlurAmount, 6)
 			BS_RTTI_MEMBER_PLAIN(type, 7)
 			BS_RTTI_MEMBER_PLAIN(maxBokehSize, 8)
-			BS_RTTI_MEMBER_PLAIN(bokehShape, 9)
+			BS_RTTI_MEMBER_REFL(bokehShape, 9)
 			BS_RTTI_MEMBER_PLAIN(adaptiveColorThreshold, 10)
 			BS_RTTI_MEMBER_PLAIN(adaptiveRadiusThreshold, 11)
 			BS_RTTI_MEMBER_PLAIN(apertureScale, 12)

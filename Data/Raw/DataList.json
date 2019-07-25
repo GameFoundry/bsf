@@ -211,6 +211,10 @@
         {
             "Path": "PPGaussianBlurCommon.bslinc",
             "UUID": "5fcd03a8-489b-a141-a2b6-489b4995ad59"
+        },
+        {
+            "Path": "DepthOfFieldCommon.bslinc",
+            "UUID": "81ea09a7-4383-ed99-b180-4383a5ce4005"
         }
     ],
     "Shaders": [
@@ -541,6 +545,14 @@
         {
             "Path": "BicubicUpsample.bsl",
             "UUID": "b690e22c-45a1-6cda-3cb1-45a1a944984e"
+        },
+        {
+            "Path": "PPBokehDOF.bsl",
+            "UUID": "10a88b1c-4ed3-0a56-4386-4ed372eac135"
+        },
+        {
+            "Path": "PPBokehDOFPrepare.bsl",
+            "UUID": "dbeda0c8-4534-3191-899a-4534dd0ae316"
         }
     ],
     "Skin": [
@@ -912,5 +924,6 @@
     ],
     "SplashScreen": null,
     "SpriteIcons": null,
-    "SpriteIcons3D": null
+    "SpriteIcons3D": null,
+    "Textures": null
 }

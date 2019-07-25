@@ -6,7 +6,7 @@
 #include "Reflection/BsIReflectable.h"
 #include "Math/BsVector3.h"
 #include "Image/BsColor.h"
-#include <cfloat>
+#include "Image/BsTexture.h"
 
 namespace bs
 {
@@ -334,11 +334,10 @@ namespace bs
 		Bokeh
 	};
 
-	/** Settings that control the depth-of-field effect. */
-	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT() DepthOfFieldSettings : public IReflectable
+	/** Base class for both sim and core thread variants of DepthOfFieldSettings. */
+	struct BS_CORE_EXPORT DepthOfFieldSettingsBase
 	{
-		BS_SCRIPT_EXPORT()
-		DepthOfFieldSettings() = default;
+		DepthOfFieldSettingsBase() = default;
 
 		/** Enables or disables the depth of field effect. */
 		BS_SCRIPT_EXPORT()
@@ -366,14 +365,14 @@ namespace bs
 
 		/**
 		 * Determines the size of the range within which objects transition from focused to fully unfocused, at the near 
-		 * plane. Only relevant for Gaussian depth of field. In world units (meters).
+		 * plane. Only relevant for Gaussian and Bokeh depth of field. In world units (meters).
 		 */
 		BS_SCRIPT_EXPORT()
 		float nearTransitionRange = 0.25f;
 
 		/**
 		 * Determines the size of the range within which objects transition from focused to fully unfocused, at the far 
-		 * plane. Only relevant for Gaussian depth of field. In world units (meters).
+		 * plane. Only relevant for Gaussian and Bokeh depth of field. In world units (meters).
 		 */
 		BS_SCRIPT_EXPORT()
 		float farTransitionRange = 0.25f;
@@ -398,10 +397,6 @@ namespace bs
 		 */
 		BS_SCRIPT_EXPORT(range:[0,1])
 		float maxBokehSize = 0.15f;
-
-		/** Texture to use for the bokeh shape. Only relevant when using Bokeh depth of field. */
-		BS_SCRIPT_EXPORT()
-		HTexture bokehShape;
 
 		/** 
 		 * Determines the maximum color difference between surrounding pixels allowed (as a sum of all channels) before
@@ -432,6 +427,20 @@ namespace bs
 		BS_SCRIPT_EXPORT(range:[0, 200])
 		float focalLength = 50.0f;
 
+	protected:
+		~DepthOfFieldSettingsBase() = default;
+	};
+
+	/** Template version of DepthOfFieldSettings that can be specialized for either core or simulation thread. */
+	template<bool Core>
+	struct BS_CORE_EXPORT TDepthOfFieldSettings : DepthOfFieldSettingsBase
+	{
+		using TextureType = CoreVariantHandleType<Texture, Core>;
+
+		/** Texture to use for the bokeh shape. Only relevant when using Bokeh depth of field. */
+		BS_SCRIPT_EXPORT()
+		TextureType bokehShape;
+
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
@@ -439,11 +448,34 @@ namespace bs
 		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
 		template<class P>
 		void rttiEnumFields(P processor);
+
+	protected:
+		~TDepthOfFieldSettings() = default;
+	};
+
+	/** Settings that control the depth-of-field effect. */
+	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT() DepthOfFieldSettings : TDepthOfFieldSettings<false>, IReflectable
+	{
+		BS_SCRIPT_EXPORT()
+		DepthOfFieldSettings() = default;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
 	public:
 		friend class DepthOfFieldSettingsRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 	};
+
+	namespace ct
+	{
+		/** Core thread variant of DepthOfFieldSettings. */
+		struct BS_CORE_EXPORT BS_SCRIPT_EXPORT() DepthOfFieldSettings : TDepthOfFieldSettings<true>
+		{
+			DepthOfFieldSettings() = default;
+		};
+	}
 
 	/**
 	 * Settings that control the screen space reflections effect. Screen space reflections provide high quality mirror-like
@@ -712,13 +744,12 @@ namespace bs
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 	};
-	
-	/** Settings that control rendering for a specific camera (view). */
-	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering) RenderSettings : public IReflectable
+
+	/** Base class for both sim and core thread variants of RenderSettings. */
+	struct BS_CORE_EXPORT RenderSettingsBase
 	{
 		BS_SCRIPT_EXPORT()
-		RenderSettings() = default;
-		virtual ~RenderSettings() = default;
+		RenderSettingsBase() = default;
 
 		/**
 		 * Determines should automatic exposure be applied to the HDR image. When turned on the average scene brightness
@@ -770,10 +801,6 @@ namespace bs
 		/** Parameters used for customizing color grading. */
 		BS_SCRIPT_EXPORT()
 		ColorGradingSettings colorGrading;
-
-		/** Parameters used for customizing the gaussian depth of field effect. */
-		BS_SCRIPT_EXPORT()
-		DepthOfFieldSettings depthOfField;
 
 		/** Parameters used for customizing screen space ambient occlusion. */
 		BS_SCRIPT_EXPORT()
@@ -860,6 +887,18 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		float cullDistance = FLT_MAX;
 
+	protected:
+		~RenderSettingsBase() = default;
+	};
+
+	/** Template version of RenderSettings that can be specialized for either core or simulation thread. */
+	template<bool Core>
+	struct BS_CORE_EXPORT TRenderSettings : RenderSettingsBase
+	{
+		/** Parameters used for customizing the gaussian depth of field effect. */
+		BS_SCRIPT_EXPORT()
+		CoreVariantType<DepthOfFieldSettings, Core> depthOfField;
+
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
@@ -868,11 +907,36 @@ namespace bs
 		template<class P>
 		void rttiEnumFields(P processor);
 
+	protected:
+		~TRenderSettings() = default;
+	};
+	
+	/** Settings that control rendering for a specific camera (view). */
+	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering) RenderSettings : TRenderSettings<false>, IReflectable
+	{
+		BS_SCRIPT_EXPORT()
+		RenderSettings() = default;
+		virtual ~RenderSettings() = default;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+
 	public:
 		friend class RenderSettingsRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 	};
+
+	namespace ct
+	{
+		/** Core thread variant of RenderSettings. */
+		struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m :Rendering) RenderSettings : TRenderSettings<true>
+		{
+			RenderSettings() = default;
+			virtual ~RenderSettings() = default;
+		};
+	}
 
 	/** @} */
 }

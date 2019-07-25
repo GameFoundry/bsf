@@ -11,6 +11,7 @@
 #include "BsRendererView.h"
 #include "BsRenderBeast.h"
 #include "Utility/BsRendererTextures.h"
+#include "RenderAPI/BsVertexDataDesc.h"
 
 namespace bs { namespace ct
 {
@@ -1105,6 +1106,197 @@ namespace bs { namespace ct
 		}
 		else
 			return get(getVariation<false, true>());
+	}
+
+	DepthOfFieldCommonParamDef gDepthOfFieldCommonParamDef;
+	BokehDOFPrepareParamDef gBokehDOFPrepareParamDef;
+
+	BokehDOFPrepareMat::BokehDOFPrepareMat()
+	{
+		mParamBuffer = gBokehDOFPrepareParamDef.createBuffer();
+		mCommonParamBuffer = gDepthOfFieldCommonParamDef.createBuffer();
+
+		mParams->setParamBlockBuffer("Params", mParamBuffer);
+		mParams->setParamBlockBuffer("DepthOfFieldParams", mCommonParamBuffer);
+
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTexture);
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDepthBufferTex", mDepthTexture);
+	}
+
+	void BokehDOFPrepareMat::execute(const SPtr<Texture>& input, const SPtr<Texture>& depth, const RendererView& view,
+		const DepthOfFieldSettings& settings, const SPtr<RenderTarget>& output)
+	{
+		BS_RENMAT_PROFILE_BLOCK
+
+		const TextureProperties& srcProps = input->getProperties();
+
+		Vector2 invTexSize(1.0f / srcProps.getWidth(), 1.0f / srcProps.getHeight());
+		gBokehDOFPrepareParamDef.gInvInputSize.set(mParamBuffer, invTexSize);
+
+		BokehDOFMat::populateDOFCommonParams(mCommonParamBuffer, settings);
+
+		mInputTexture.set(input);
+		mDepthTexture.set(depth);
+
+		SPtr<GpuParamBlockBuffer> perView = view.getPerViewBuffer();
+		mParams->setParamBlockBuffer("PerCamera", perView);
+
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(output);
+
+		bind();
+		gRendererUtility().drawScreenQuad();
+	}
+
+	POOLED_RENDER_TEXTURE_DESC BokehDOFPrepareMat::getOutputDesc(const SPtr<Texture>& target)
+	{
+		const TextureProperties& rtProps = target->getProperties();
+
+		UINT32 width = std::max(1, Math::ceilToInt(rtProps.getWidth() * 0.5f));
+		UINT32 height = std::max(1, Math::ceilToInt(rtProps.getHeight() * 0.5f));
+
+		return POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, TU_RENDERTARGET);
+	}
+
+	BokehDOFParamDef gBokehDOFParamDef;
+
+	constexpr UINT32 BokehDOFMat::NEAR_FAR_PADDING;
+	constexpr UINT32 BokehDOFMat::QUADS_PER_TILE;
+
+	BokehDOFMat::BokehDOFMat()
+	{
+		mParamBuffer = gBokehDOFParamDef.createBuffer();
+		mCommonParamBuffer = gDepthOfFieldCommonParamDef.createBuffer();
+
+		mParams->setParamBlockBuffer("Params", mParamBuffer);
+		mParams->setParamBlockBuffer("DepthOfFieldParams", mCommonParamBuffer);
+		mParams->getTextureParam(GPT_VERTEX_PROGRAM, "gInputTex", mInputTexture);
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gBokehTex", mBokehTexture);
+
+		// Prepare vertex declaration for rendering tiles
+		SPtr<VertexDataDesc> tileVertexDesc = bs_shared_ptr_new<VertexDataDesc>();
+		tileVertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
+
+		mTileVertexDecl = VertexDeclaration::create(tileVertexDesc);
+
+		// Prepare vertex buffer for rendering tiles
+		VERTEX_BUFFER_DESC tileVertexBufferDesc;
+		tileVertexBufferDesc.numVerts = QUADS_PER_TILE * 4;
+		tileVertexBufferDesc.vertexSize = tileVertexDesc->getVertexStride();
+
+		mTileVertexBuffer = VertexBuffer::create(tileVertexBufferDesc);
+
+		auto* const vertexData = (Vector2*)mTileVertexBuffer->lock(GBL_WRITE_ONLY_DISCARD);
+		for (UINT32 i = 0; i < QUADS_PER_TILE; i++)
+		{
+			vertexData[i * 4 + 0] = Vector2(0.0f, 0.0f);
+			vertexData[i * 4 + 1] = Vector2(1.0f, 0.0f);
+			vertexData[i * 4 + 2] = Vector2(1.0f, 1.0f);
+			vertexData[i * 4 + 3] = Vector2(0.0f, 1.0f);
+		}
+
+		mTileVertexBuffer->unlock();
+
+		// Prepare indices for rendering tiles
+		INDEX_BUFFER_DESC tileIndexBufferDesc;
+		tileIndexBufferDesc.indexType = IT_16BIT;
+		tileIndexBufferDesc.numIndices = QUADS_PER_TILE * 6;
+
+		mTileIndexBuffer = IndexBuffer::create(tileIndexBufferDesc);
+
+		auto* const indices = (UINT16*)mTileIndexBuffer->lock(GBL_WRITE_ONLY_DISCARD);
+
+		const Conventions& rapiConventions = gCaps().conventions;
+		for (UINT32 i = 0; i < QUADS_PER_TILE; i++)
+		{
+			// If UV is flipped, then our tile will be upside down so we need to change index order so it doesn't
+			// get culled.
+			if (rapiConventions.uvYAxis == Conventions::Axis::Up)
+			{
+				indices[i * 6 + 0] = i * 4 + 2; indices[i * 6 + 1] = i * 4 + 1; indices[i * 6 + 2] = i * 4 + 0;
+				indices[i * 6 + 3] = i * 4 + 3; indices[i * 6 + 4] = i * 4 + 2; indices[i * 6 + 5] = i * 4 + 0;
+			}
+			else
+			{
+				indices[i * 6 + 0] = i * 4 + 0; indices[i * 6 + 1] = i * 4 + 1; indices[i * 6 + 2] = i * 4 + 2;
+				indices[i * 6 + 3] = i * 4 + 0; indices[i * 6 + 4] = i * 4 + 2; indices[i * 6 + 5] = i * 4 + 3;
+			}
+		}
+
+		mTileIndexBuffer->unlock();
+	}
+
+	void BokehDOFMat::_initDefines(ShaderDefines& defines)
+	{
+		defines.set("QUADS_PER_TILE", QUADS_PER_TILE);
+	}
+
+	void BokehDOFMat::execute(const SPtr<Texture>& input, const RendererView& view, const DepthOfFieldSettings& settings,
+		const SPtr<RenderTarget>& output)
+	{
+		BS_RENMAT_PROFILE_BLOCK
+
+		const TextureProperties& srcProps = input->getProperties();
+
+		Vector2 invTexSize(1.0f / srcProps.getWidth(), 1.0f / srcProps.getHeight());
+		gBokehDOFParamDef.gInvInputSize.set(mParamBuffer, invTexSize);
+		gBokehDOFParamDef.gAdaptiveThresholdCOC.set(mParamBuffer, settings.adaptiveRadiusThreshold);
+		gBokehDOFParamDef.gAdaptiveThresholdColor.set(mParamBuffer, settings.adaptiveColorThreshold);
+		gBokehDOFParamDef.gLayerPixelOffset.set(mParamBuffer, (INT32)srcProps.getHeight() + (INT32)NEAR_FAR_PADDING);
+
+		float bokehSize = settings.maxBokehSize * srcProps.getWidth();
+		gBokehDOFParamDef.gBokehSize.set(mParamBuffer, Vector2(bokehSize, bokehSize));
+
+		Vector2I imageSize(srcProps.getWidth(), srcProps.getHeight());
+
+		// TODO - Allow tile count to halve (i.e. half sampling rate)
+		Vector2I tileCount = imageSize / 1;
+		gBokehDOFParamDef.gTileCount.set(mParamBuffer, tileCount);
+
+		populateDOFCommonParams(mCommonParamBuffer, settings);
+
+		// TODO - The shader interpreting tile count might be wrong
+		mInputTexture.set(input);
+
+		// TODO - Use the default texture if there isn't a user-provided one
+		SPtr<Texture> bokehTexture = settings.bokehShape;
+		mBokehTexture.set(bokehTexture);
+
+		SPtr<GpuParamBlockBuffer> perView = view.getPerViewBuffer();
+		mParams->setParamBlockBuffer("PerCamera", perView);
+
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(output);
+		rapi.setVertexDeclaration(mTileVertexDecl);
+
+		SPtr<VertexBuffer> buffers[] = { mTileVertexBuffer };
+		rapi.setVertexBuffers(0, buffers, (UINT32)bs_size(buffers));
+		rapi.setIndexBuffer(mTileIndexBuffer);
+		rapi.setDrawOperation(DOT_TRIANGLE_LIST);
+
+		bind();
+		const UINT32 numInstances = Math::divideAndRoundUp((UINT32)(tileCount.x * tileCount.y), QUADS_PER_TILE);
+		rapi.drawIndexed(0, QUADS_PER_TILE * 6, 0, QUADS_PER_TILE * 4, numInstances);
+	}
+
+	POOLED_RENDER_TEXTURE_DESC BokehDOFMat::getOutputDesc(const SPtr<Texture>& target)
+	{
+		const TextureProperties& rtProps = target->getProperties();
+
+		UINT32 width = rtProps.getWidth();
+		UINT32 height = rtProps.getHeight() * 2 + NEAR_FAR_PADDING;
+
+		return POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, TU_RENDERTARGET);
+	}
+
+	void BokehDOFMat::populateDOFCommonParams(const SPtr<GpuParamBlockBuffer>& buffer, const DepthOfFieldSettings& settings)
+	{
+		gDepthOfFieldCommonParamDef.gFocalPlaneDistance.set(buffer, settings.focalDistance);
+		gDepthOfFieldCommonParamDef.gApertureSize.set(buffer, settings.apertureScale);
+		gDepthOfFieldCommonParamDef.gFocalLength.set(buffer, settings.focalLength);
+		gDepthOfFieldCommonParamDef.gInFocusRange.set(buffer, settings.focalRange);
+		gDepthOfFieldCommonParamDef.gNearTransitionRegion.set(buffer, settings.nearTransitionRange);
+		gDepthOfFieldCommonParamDef.gFarTransitionRegion.set(buffer, settings.farTransitionRange);
 	}
 
 	BuildHiZFParamDef gBuildHiZParamDef;

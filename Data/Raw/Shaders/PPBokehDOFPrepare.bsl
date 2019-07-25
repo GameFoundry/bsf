@@ -1,12 +1,14 @@
-#include "$ENGINE$\PPDepthOfFieldCommon.bslinc"
+#include "$ENGINE$\DepthOfFieldCommon.bslinc"
 #include "$ENGINE$\PPBase.bslinc"
 #include "$ENGINE$\DepthInput.bslinc"
+#include "$ENGINE$\PerCameraData.bslinc"
 
-shader PPBokehDepthOfFieldPrepare
+shader PPBokehDOFPrepare
 {
-	mixin PPDepthOfFieldCommon;
+	mixin DepthOfFieldCommon;
 	mixin PPBase;
 	mixin DepthInput;
+	mixin PerCameraData;
 	
 	code
 	{

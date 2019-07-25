@@ -22,8 +22,6 @@ namespace bs
 	CameraBase::CameraBase()
 		: mRecalcFrustum(true), mRecalcFrustumPlanes(true), mRecalcView(true)
 	{
-		mRenderSettings = bs_shared_ptr_new<RenderSettings>();
-
 		invalidateFrustum();
 	}
 
@@ -673,6 +671,12 @@ namespace bs
 	}
 
 	template <bool Core>
+	TCamera<Core>::TCamera()
+	{
+		mRenderSettings = bs_shared_ptr_new<RenderSettingsType>();
+	}
+
+	template <bool Core>
 	template <class P>
 	void TCamera<Core>::rttiEnumFields(P p)
 	{
@@ -691,6 +695,9 @@ namespace bs
 		p(mMain);
 		p(*mRenderSettings);
 	}
+
+	template class TCamera<false>;
+	template class TCamera<true>;
 
 	SPtr<ct::Camera> Camera::getCore() const
 	{

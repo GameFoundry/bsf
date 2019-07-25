@@ -218,16 +218,6 @@ namespace bs
 		UINT32 getMSAACount() const { return mMSAA; }
 
 		/**
-		 * Settings that control rendering for this view. They determine how will the renderer process this view, which
-		 * effects will be enabled, and what properties will those effects use.
-		 */
-		void setRenderSettings(const SPtr<RenderSettings>& settings)
-			{ mRenderSettings = settings; _markCoreDirty((ActorDirtyFlag)CameraDirtyFlag::RenderSettings); }
-
-		/** @copydoc setRenderSettings() */
-		const SPtr<RenderSettings>& getRenderSettings() const { return mRenderSettings; }
-
-		/**
 		 * Converts a point in world space to screen coordinates.
 		 *
 		 * @param[in]	worldPoint		3D point in world space.
@@ -418,8 +408,6 @@ namespace bs
 		bool mCustomProjMatrix = false; /**< Is custom projection matrix set. */
 		UINT8 mMSAA = 1; /**< Number of samples to render the scene with. */
 
-		SPtr<RenderSettings> mRenderSettings; /**< Settings used to control rendering for this camera. */
-
 		bool mFrustumExtentsManuallySet = false; /**< Are frustum extents manually set. */
 
 		mutable Matrix4 mProjMatrixRS = BsZero; /**< Cached render-system specific projection matrix. */
@@ -439,15 +427,27 @@ namespace bs
 
 	/** Templated common base class for both sim and core thread implementations of Camera. */
 	template<bool Core>
-	class TCamera : public CameraBase
+	class BS_CORE_EXPORT TCamera : public CameraBase
 	{
 		using ViewportType = CoreVariantType<Viewport, Core>;
+		using RenderSettingsType = CoreVariantType<RenderSettings, Core>;
 
 	public:
+		TCamera();
 		virtual ~TCamera() = default;
 
 		/**	Returns the viewport used by the camera. */	
 		SPtr<ViewportType> getViewport() const { return mViewport; }
+
+		/**
+		 * Settings that control rendering for this view. They determine how will the renderer process this view, which
+		 * effects will be enabled, and what properties will those effects use.
+		 */
+		void setRenderSettings(const SPtr<RenderSettingsType>& settings)
+			{ mRenderSettings = settings; _markCoreDirty((ActorDirtyFlag)CameraDirtyFlag::RenderSettings); }
+
+		/** @copydoc setRenderSettings() */
+		const SPtr<RenderSettingsType>& getRenderSettings() const { return mRenderSettings; }
 
 		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
 		template<class P>
@@ -456,6 +456,9 @@ namespace bs
 	protected:
 		/** Viewport that describes a 2D rendering surface. */
 		SPtr<ViewportType> mViewport;
+
+		/** Settings used to control rendering for this camera. */
+		SPtr<RenderSettingsType> mRenderSettings;
 	};
 
 	/** @} */
