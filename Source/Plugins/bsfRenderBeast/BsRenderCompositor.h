@@ -536,10 +536,10 @@ namespace ct
 	};
 
 	/** Renders the depth of field effect using Gaussian blurring. */
-	class RCNodeGaussianDOF : public RenderCompositorNode
+	class RCNodeDepthOfField : public RenderCompositorNode
 	{
 	public:
-		static StringID getNodeId() { return "GaussianDOF"; }
+		static StringID getNodeId() { return "DepthOfField"; }
 		static SmallVector<StringID, 4> getDependencies(const RendererView& view);
 	protected:
 		/** @copydoc RenderCompositorNode::render */
@@ -547,6 +547,12 @@ namespace ct
 
 		/** @copydoc RenderCompositorNode::clear */
 		void clear() override;
+
+		/** Renders the Gaussian depth-of-field effect. */
+		void renderGaussian(const RenderCompositorNodeInputs& inputs);
+
+		/** Renders the Bokeh depth-of-field effect. */
+		void renderBokeh(const RenderCompositorNodeInputs& inputs);
 	};
 
 	/** Renders FXAA. */

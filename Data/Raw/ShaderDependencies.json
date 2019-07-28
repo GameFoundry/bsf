@@ -375,6 +375,20 @@
             "Path": "DepthOfFieldCommon.bslinc"
         }
     ],
+    "PPBokehDOFCombine.bsl": [
+        {
+            "Path": "DepthInput.bslinc"
+        },
+        {
+            "Path": "PerCameraData.bslinc"
+        },
+        {
+            "Path": "PPBase.bslinc"
+        },
+        {
+            "Path": "DepthOfFieldCommon.bslinc"
+        }
+    ],
     "PPBokehDOFPrepare.bsl": [
         {
             "Path": "DepthInput.bslinc"

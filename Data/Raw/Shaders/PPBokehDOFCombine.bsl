@@ -17,8 +17,8 @@ shader PPBokehDOF
 			float2 gLayerUVScaleOffset;
 		};
 		
-		Texture2D gBlurredTex;
-		SamplerState gBlurredSampler;
+		Texture2D gUnfocusedTex;
+		SamplerState gUnfocusedSampler;
 		
 		Texture2D gFocusedTex;
 		SamplerState gFocusedSampler;
@@ -28,20 +28,20 @@ shader PPBokehDOF
 			float2 uv = input.uv0;
 			
 			float3 focusedColor = gFocusedTex.Sample(gFocusedSampler, uv).rgb;
-			float depth = -convertFromDeviceZ(gDepthBufferTex.SampleLevel(gDepthBufferSamp, uv, 0).r;
+			float depth = -convertFromDeviceZ(gDepthBufferTex.SampleLevel(gDepthBufferSamp, uv, 0).r);
 			
 			float2 halfUV = uv;
 			halfUV.y = halfUV.y * gLayerUVScaleOffset.x;
 			
-			float4 blurredFocusedAndFar = gBlurredTex.Sample(gBlurredSampler, halfUV);
-			float4 blurredNear = gBlurredTex.Sample(gBlurredSampler, halfUV + float2(0, gLayerUVScaleOffset.y));
+			float4 blurredFocusedAndFar = gUnfocusedTex.Sample(gUnfocusedSampler, halfUV);
+			float4 blurredNear = gUnfocusedTex.Sample(gUnfocusedSampler, halfUV + float2(0, gLayerUVScaleOffset.y));
 
 			float TWEAK_FACTOR_1 = 0.18f; // TODO: Expose to user code?
 			float TWEAK_FACTOR_2 = 5; // TODO: Expose to user code?
 			
-			float farMask = saturate(blurredFocusedAndFar.a * TWEAK_FACTOR);
+			float farMask = saturate(blurredFocusedAndFar.a * TWEAK_FACTOR_1);
 			float focusedMask = 1.0f - saturate(circleOfConfusionPhysical(depth) * TWEAK_FACTOR_2);
-			float nearMask = saturate(blurredNear.a * TWEAK_FACTOR);
+			float nearMask = saturate(blurredNear.a * TWEAK_FACTOR_1);
 
 			float4 combined = 0;
 

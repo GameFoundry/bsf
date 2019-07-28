@@ -1920,11 +1920,25 @@ namespace bs { namespace ct
 		return deps;
 	}
 
-	void RCNodeGaussianDOF::render(const RenderCompositorNodeInputs& inputs)
+	void RCNodeDepthOfField::render(const RenderCompositorNodeInputs& inputs)
 	{
-		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[1]);
-		RCNodePostProcess* postProcessNode = static_cast<RCNodePostProcess*>(inputs.inputNodes[2]);
+		const DepthOfFieldSettings& settings = inputs.view.getRenderSettings().depthOfField;
 
+		switch(settings.type)
+		{
+		case DepthOfFieldType::Gaussian: 
+			renderGaussian(inputs);
+			break;
+		case DepthOfFieldType::Bokeh: 
+			renderBokeh(inputs);
+			break;
+		default: 
+			break;
+		}
+	}
+
+	void RCNodeDepthOfField::renderGaussian(const RenderCompositorNodeInputs& inputs)
+	{
 		const DepthOfFieldSettings& settings = inputs.view.getRenderSettings().depthOfField;
 		bool near = settings.nearBlurAmount > 0.0f;
 		bool far = settings.farBlurAmount > 0.0f;
@@ -1932,6 +1946,9 @@ namespace bs { namespace ct
 		bool enabled = settings.enabled && (near || far);
 		if(!enabled)
 			return;
+
+		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[1]);
+		RCNodePostProcess* postProcessNode = static_cast<RCNodePostProcess*>(inputs.inputNodes[2]);
 
 		GaussianDOFSeparateMat* separateMat = GaussianDOFSeparateMat::getVariation(near, far);
 		GaussianDOFCombineMat* combineMat = GaussianDOFCombineMat::getVariation(near, far);
@@ -1993,12 +2010,50 @@ namespace bs { namespace ct
 		separateMat->release();
 	}
 
-	void RCNodeGaussianDOF::clear()
+	void RCNodeDepthOfField::renderBokeh(const RenderCompositorNodeInputs& inputs)
+	{
+		const DepthOfFieldSettings& settings = inputs.view.getRenderSettings().depthOfField;
+		if(!settings.enabled)
+			return;
+
+		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[1]);
+		RCNodePostProcess* postProcessNode = static_cast<RCNodePostProcess*>(inputs.inputNodes[2]);
+
+		BokehDOFPrepareMat* prepareMat = BokehDOFPrepareMat::get();
+		BokehDOFMat* renderMat = BokehDOFMat::get();
+		BokehDOFCombineMat* combineMat = BokehDOFCombineMat::get();
+
+		SPtr<Texture> lastFrame;
+		SPtr<RenderTexture> output;
+		postProcessNode->getAndSwitch(inputs.view, output, lastFrame);
+
+		SPtr<Texture> depth = sceneDepthNode->depthTex->texture;
+
+		// Downsample scene and store depth in .w
+		SPtr<PooledRenderTexture> halfResSceneAndDepth =
+			gGpuResourcePool().get(BokehDOFPrepareMat::getOutputDesc(lastFrame));
+
+		prepareMat->execute(lastFrame, depth, inputs.view, settings, halfResSceneAndDepth->renderTexture);
+
+		// Render Bokeh sprites and store output in separate near and far layers (in the same texture)
+		// TODO - Just use two textures?
+
+		SPtr<PooledRenderTexture> unfocusedTex =
+			gGpuResourcePool().get(BokehDOFMat::getOutputDesc(halfResSceneAndDepth->texture));
+		halfResSceneAndDepth = nullptr;
+
+		renderMat->execute(unfocusedTex->texture, inputs.view, settings, unfocusedTex->renderTexture);
+
+		// Combine the unfocused and focused textures to form the final image
+		combineMat->execute(unfocusedTex->texture, lastFrame, depth, inputs.view, settings, output);
+	}
+
+	void RCNodeDepthOfField::clear()
 	{
 		// Do nothing
 	}
 
-	SmallVector<StringID, 4> RCNodeGaussianDOF::getDependencies(const RendererView& view)
+	SmallVector<StringID, 4> RCNodeDepthOfField::getDependencies(const RendererView& view)
 	{
 		return { RCNodeTonemapping::getNodeId(), RCNodeSceneDepth::getNodeId(), RCNodePostProcess::getNodeId() };
 	}
@@ -2027,7 +2082,7 @@ namespace bs { namespace ct
 
 	SmallVector<StringID, 4> RCNodeFXAA::getDependencies(const RendererView& view)
 	{
-		return { RCNodeGaussianDOF::getNodeId(), RCNodePostProcess::getNodeId() };
+		return { RCNodeDepthOfField::getNodeId(), RCNodePostProcess::getNodeId() };
 	}
 
 	void RCNodeHalfSceneColor::render(const RenderCompositorNodeInputs& inputs)

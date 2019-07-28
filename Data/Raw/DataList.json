@@ -553,6 +553,10 @@
         {
             "Path": "PPBokehDOFPrepare.bsl",
             "UUID": "dbeda0c8-4534-3191-899a-4534dd0ae316"
+        },
+        {
+            "Path": "PPBokehDOFCombine.bsl",
+            "UUID": "6f8b9c77-42b5-bc49-b7ba-42b56fdbabf8"
         }
     ],
     "Skin": [

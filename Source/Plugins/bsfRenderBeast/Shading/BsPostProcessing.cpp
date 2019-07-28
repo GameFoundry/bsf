@@ -1152,8 +1152,8 @@ namespace bs { namespace ct
 	{
 		const TextureProperties& rtProps = target->getProperties();
 
-		UINT32 width = std::max(1, Math::ceilToInt(rtProps.getWidth() * 0.5f));
-		UINT32 height = std::max(1, Math::ceilToInt(rtProps.getHeight() * 0.5f));
+		UINT32 width = std::max(1U, Math::divideAndRoundUp(rtProps.getWidth(), 2U));
+		UINT32 height = std::max(1U, Math::divideAndRoundUp(rtProps.getHeight(), 2U));
 
 		return POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, TU_RENDERTARGET);
 	}
@@ -1298,6 +1298,54 @@ namespace bs { namespace ct
 		gDepthOfFieldCommonParamDef.gNearTransitionRegion.set(buffer, settings.nearTransitionRange);
 		gDepthOfFieldCommonParamDef.gFarTransitionRegion.set(buffer, settings.farTransitionRange);
 	}
+
+	BokehDOFCombineParamDef gBokehDOFCombineParamDef;
+
+	BokehDOFCombineMat::BokehDOFCombineMat()
+	{
+		mParamBuffer = gBokehDOFPrepareParamDef.createBuffer();
+		mCommonParamBuffer = gDepthOfFieldCommonParamDef.createBuffer();
+
+		mParams->setParamBlockBuffer("Params", mParamBuffer);
+		mParams->setParamBlockBuffer("DepthOfFieldParams", mCommonParamBuffer);
+
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gUnfocusedTex", mUnfocusedTexture);
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gFocusedTex", mFocusedTexture);
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDepthBufferTex", mDepthTexture);
+	}
+
+	void BokehDOFCombineMat::execute(const SPtr<Texture>& unfocused, const SPtr<Texture>& focused,
+		const SPtr<Texture>& depth, const RendererView& view, const DepthOfFieldSettings& settings,
+		const SPtr<RenderTarget>& output)
+	{
+		BS_RENMAT_PROFILE_BLOCK
+
+		const TextureProperties& focusedProps = focused->getProperties();
+		const TextureProperties& unfocusedProps = unfocused->getProperties();
+		UINT32 halfHeight = std::max(1U, Math::divideAndRoundUp(focusedProps.getHeight(), 2U));
+
+		float uvScale = halfHeight / (float)unfocusedProps.getHeight();
+		float uvOffset = (halfHeight + BokehDOFMat::NEAR_FAR_PADDING) / (float)unfocusedProps.getHeight();
+
+		Vector2 layerScaleOffset(uvScale, uvOffset);
+		gBokehDOFCombineParamDef.gLayerAndScaleOffset.set(mParamBuffer, layerScaleOffset);
+
+		BokehDOFMat::populateDOFCommonParams(mCommonParamBuffer, settings);
+
+		mUnfocusedTexture.set(unfocused);
+		mFocusedTexture.set(focused);
+		mDepthTexture.set(depth);
+
+		SPtr<GpuParamBlockBuffer> perView = view.getPerViewBuffer();
+		mParams->setParamBlockBuffer("PerCamera", perView);
+
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(output);
+
+		bind();
+		gRendererUtility().drawScreenQuad();
+	}
+
 
 	BuildHiZFParamDef gBuildHiZParamDef;
 

@@ -107,7 +107,7 @@ namespace bs { namespace ct
 		RenderCompositor::registerNodeType<RCNodeSkybox>();
 		RenderCompositor::registerNodeType<RCNodePostProcess>();
 		RenderCompositor::registerNodeType<RCNodeTonemapping>();
-		RenderCompositor::registerNodeType<RCNodeGaussianDOF>();
+		RenderCompositor::registerNodeType<RCNodeDepthOfField>();
 		RenderCompositor::registerNodeType<RCNodeFXAA>();
 		RenderCompositor::registerNodeType<RCNodeResolvedSceneDepth>();
 		RenderCompositor::registerNodeType<RCNodeHiZ>();
