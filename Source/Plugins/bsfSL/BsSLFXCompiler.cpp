@@ -465,6 +465,15 @@ namespace bs
 
 					desc.setParameterAttribute(ident, attribute);
 				}
+
+				if ((entry.flags & Xsc::Reflection::Uniform::Flags::HDR) != 0)
+				{
+					SHADER_PARAM_ATTRIBUTE attribute;
+					attribute.nextParamIdx = (UINT32)-1;
+					attribute.type = ShaderParamAttributeType::HDR;
+
+					desc.setParameterAttribute(ident, attribute);
+				}
 			};
 
 			switch(entry.type)

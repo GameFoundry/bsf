@@ -63,7 +63,8 @@ namespace bs
 		Category      = 1 << 11,
 		Order         = 1 << 12,
 		Inline        = 1 << 13,
-		LoadOnAssign  = 1 << 14
+		LoadOnAssign  = 1 << 14,
+		HDR           = 1 << 15,
 	};
 
 	typedef Flags<ScriptFieldFlag> ScriptFieldFlags;

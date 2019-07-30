@@ -194,6 +194,9 @@ namespace bs
 				if (field->hasAttribute(mBuiltin.loadOnAssignAttribute))
 					fieldInfo->mFlags |= ScriptFieldFlag::LoadOnAssign;
 
+				if(field->hasAttribute(mBuiltin.hdrAttribute))
+					fieldInfo->mFlags |= ScriptFieldFlag::HDR;
+
 				objInfo->mFieldNameToId[fieldInfo->mName] = fieldInfo->mFieldId;
 				objInfo->mFields[fieldInfo->mFieldId] = fieldInfo;
 			}
@@ -278,6 +281,9 @@ namespace bs
 
 					if (property->hasAttribute(mBuiltin.loadOnAssignAttribute))
 						propertyInfo->mFlags |= ScriptFieldFlag::LoadOnAssign;
+
+					if (property->hasAttribute(mBuiltin.hdrAttribute))
+						propertyInfo->mFlags |= ScriptFieldFlag::HDR;
 				}
 
 				objInfo->mFieldNameToId[propertyInfo->mName] = propertyInfo->mFieldId;
@@ -727,6 +733,10 @@ namespace bs
 		mBuiltin.loadOnAssignAttribute = engineAssembly->getClass(ENGINE_NS, "LoadOnAssign");
 		if (mBuiltin.loadOnAssignAttribute == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find LoadOnAssign managed class.");
+
+		mBuiltin.hdrAttribute = engineAssembly->getClass(ENGINE_NS, "HDR");
+		if (mBuiltin.hdrAttribute == nullptr)
+			BS_EXCEPT(InvalidStateException, "Cannot find HDR managed class.");
 
 		mBaseTypesInitialized = true;
 	}

@@ -140,7 +140,10 @@ namespace bs
 		Name,
 
 		/** Hides the parameter from the display in editor inspector. */
-		HideInInspector
+		HideInInspector,
+
+		/** Notifies the system the parameter is a HDR color. */
+		HDR
 	};
 
 	/** Optional attribute that can be applied to a shader parameter. */

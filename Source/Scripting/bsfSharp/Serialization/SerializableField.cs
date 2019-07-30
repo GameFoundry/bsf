@@ -94,7 +94,12 @@ namespace bs
         /// <summary>
         /// Signifies that a <see cref="RRef{T}"/> should be loaded when assigned to field through the inspector.
         /// </summary>
-        LoadOnAssign        = 1 << 14
+        LoadOnAssign        = 1 << 14,
+
+        /// <summary>
+        /// Field containing a color that supports high dynamic range.
+        /// </summary>
+        HDR                 = 1 << 15,
     }
 
     /// <summary>
