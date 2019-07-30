@@ -99,6 +99,10 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		ShadingLanguageFlags languages = ShadingLanguageFlag::All;
 
+		/** Creates a new import options object that allows you to customize how are meshes imported. */
+		BS_SCRIPT_EXPORT(ec:T)
+		static SPtr<ShaderImportOptions> create() { return bs_shared_ptr_new<ShaderImportOptions>(); }
+
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/
