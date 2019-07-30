@@ -59,6 +59,12 @@ namespace bs
 		 */
 		void getHSB(float* hue, float* saturation, float* brightness) const;
 
+		/** Converts the current color from gamma to linear space and returns the result. */
+		Color getLinear() const;
+
+		/** Converts the current color from linear to gamma space and returns the result. */
+		Color getGamma() const;
+
 		/** Clamps color value to the range [0, 1]. */
 		void saturate()
 		{

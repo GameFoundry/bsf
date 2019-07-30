@@ -292,12 +292,6 @@ namespace bs
 		 */
 		static void copy(const PixelData& src, PixelData& dst, UINT32 offsetX = 0, UINT32 offsetY = 0, UINT32 offsetZ = 0);
 
-		/** Converts a color in linear space to a color in sRGB space. Only converts the RGB components. */
-		static Color linearToSRGB(const Color& color);
-
-		/** Converts a color in sRGB space to a color in linear space. Only converts the RGB components. */
-		static Color SRGBToLinear(const Color& color);
-
 		/** Converts pixel data in linear space to one in sRGB space. Only converts the RGB components. */
 		static void linearToSRGB(PixelData& pixelData);
 

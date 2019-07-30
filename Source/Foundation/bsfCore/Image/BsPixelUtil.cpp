@@ -2405,48 +2405,6 @@ namespace bs
 		}
 	}
 
-	float linearToSRGB(float x)
-	{
-		if (x <= 0.0f)
-			return 0.0f;
-		else if (x >= 1.0f)
-			return 1.0f;
-		else if (x < 0.0031308f)
-			return x * 12.92f;
-		else
-			return std::pow(x, 1.0f / 2.4f) * 1.055f - 0.055f;
-	}
-
-	float SRGBToLinear(float x)
-	{
-		if (x <= 0.0f)
-			return 0.0f;
-		else if (x >= 1.0f)
-			return 1.0f;
-		else if (x < 0.04045f)
-			return x / 12.92f;
-		else
-			return std::pow((x + 0.055f) / 1.055f, 2.4f);
-	}
-
-	Color PixelUtil::linearToSRGB(const bs::Color& color)
-	{
-		return Color(
-				bs::linearToSRGB(color.r),
-				bs::linearToSRGB(color.g),
-				bs::linearToSRGB(color.b),
-				color.a);
-	}
-
-	Color PixelUtil::SRGBToLinear(const bs::Color& color)
-	{
-		return Color(
-				bs::SRGBToLinear(color.r),
-				bs::SRGBToLinear(color.g),
-				bs::SRGBToLinear(color.b),
-				color.a);
-	}
-
 	void PixelUtil::linearToSRGB(PixelData& pixelData)
 	{
 		UINT32 depth = pixelData.getDepth();
@@ -2472,7 +2430,7 @@ namespace bs
 					Color color;
 
 					PixelUtil::unpackColor(&color, pixelData.getFormat(), dest);
-					color = linearToSRGB(color);
+					color = color.getGamma();
 					PixelUtil::packColor(color, pixelData.getFormat(), dest);
 				}
 			}
@@ -2504,7 +2462,7 @@ namespace bs
 					Color color;
 
 					PixelUtil::unpackColor(&color, pixelData.getFormat(), dest);
-					color = SRGBToLinear(color);
+					color = color.getLinear();
 					PixelUtil::packColor(color, pixelData.getFormat(), dest);
 				}
 			}

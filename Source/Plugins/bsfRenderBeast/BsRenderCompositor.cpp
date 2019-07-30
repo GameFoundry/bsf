@@ -1546,7 +1546,7 @@ namespace bs { namespace ct
 		else
 		{
 			// Cancel out the linear->SRGB conversion
-			Color clearColor = PixelUtil::SRGBToLinear(inputs.view.getProperties().target.clearColor);
+			Color clearColor = inputs.view.getProperties().target.clearColor.getLinear();
 
 			SkyboxMat* material = SkyboxMat::getVariation(true);
 			material->bind(inputs.view.getPerViewBuffer(), nullptr, clearColor);

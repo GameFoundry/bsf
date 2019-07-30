@@ -156,6 +156,26 @@ namespace bs
         {
             return !(lhs == rhs);
         }
+        
+        /// <summary>
+        /// Converts the current color from gamma to linear space and returns the result.
+        /// </summary>
+        public Color Linear =>
+            new Color(
+                SRGBToLinear(r),
+                SRGBToLinear(g),
+                SRGBToLinear(b),
+                a);
+
+        /// <summary>
+        /// Converts the current color from linear to gamma space and returns the result.
+        /// </summary>
+        public Color Gamma =>
+            new Color(
+                LinearToSRGB(r),
+                LinearToSRGB(g),
+                LinearToSRGB(b),
+                a);
 
         /// <summary>
         /// Converts the provided RGB color into HSV color space.
@@ -301,6 +321,41 @@ namespace bs
         public override string ToString()
         {
             return "(" + r + ", " + g + ", " + b + ", " + a + ")";
+        }
+        
+        
+        /// <summary>
+        /// Converts a single color component from linear to SRGB (gamma) space.
+        /// </summary>
+        /// <param name="x">Component in linear space.</param>
+        /// <returns>Component in SRGB space.</returns>
+        private static float LinearToSRGB(float x)
+        {
+            if (x <= 0.0f)
+                return 0.0f;
+            else if (x >= 1.0f)
+                return 1.0f;
+            else if (x < 0.0031308f)
+                return x * 12.92f;
+            else
+                return MathEx.Pow(x, 1.0f / 2.4f) * 1.055f - 0.055f;
+        }
+
+        /// <summary>
+        /// Converts a single color component from SRGB (gamma) to linear space.
+        /// </summary>
+        /// <param name="x">Component in SRGB space.</param>
+        /// <returns>Component in linear space.</returns>
+        private static float SRGBToLinear(float x)
+        {
+            if (x <= 0.0f)
+                return 0.0f;
+            else if (x >= 1.0f)
+                return 1.0f;
+            else if (x < 0.04045f)
+                return x / 12.92f;
+            else
+                return MathEx.Pow((x + 0.055f) / 1.055f, 2.4f);
         }
     }
 

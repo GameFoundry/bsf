@@ -262,6 +262,48 @@ namespace bs
 		return val32;
 	}
 
+	float linearToSRGB(float x)
+	{
+		if (x <= 0.0f)
+			return 0.0f;
+		else if (x >= 1.0f)
+			return 1.0f;
+		else if (x < 0.0031308f)
+			return x * 12.92f;
+		else
+			return std::pow(x, 1.0f / 2.4f) * 1.055f - 0.055f;
+	}
+
+	float SRGBToLinear(float x)
+	{
+		if (x <= 0.0f)
+			return 0.0f;
+		else if (x >= 1.0f)
+			return 1.0f;
+		else if (x < 0.04045f)
+			return x / 12.92f;
+		else
+			return std::pow((x + 0.055f) / 1.055f, 2.4f);
+	}
+
+	Color Color::getGamma() const
+	{
+		return Color(
+				bs::linearToSRGB(r),
+				bs::linearToSRGB(g),
+				bs::linearToSRGB(b),
+				a);
+	}
+
+	Color Color::getLinear() const
+	{
+		return Color(
+				bs::SRGBToLinear(r),
+				bs::SRGBToLinear(g),
+				bs::SRGBToLinear(b),
+				a);
+	}
+
 	bool Color::operator==(const Color& rhs) const
 	{
 		return (r == rhs.r &&
