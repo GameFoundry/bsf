@@ -9,6 +9,7 @@
 #include "Math/BsBounds.h"
 #include "Math/BsAABox.h"
 #include "Scene/BsSceneActor.h"
+#include "Image/BsColor.h"
 
 namespace bs
 {
@@ -26,6 +27,13 @@ namespace bs
 		Morph,
 		SkinnedMorph,
 		Count // Keep at end
+	};
+
+	/**	Signals which portion of a Renderable is dirty. */
+	enum class RenderableDirtyFlag
+	{
+		// First few bits reserved by ActorDirtyFlag
+		Color = 1 << 4
 	};
 
 	/**
@@ -82,6 +90,11 @@ namespace bs
 		void setLayer(UINT64 layer);
 
 		/**
+		 * Determines the multiplicative base color used when shading the renderable.
+		 */
+		void setColor(Color color);
+
+		/**
 		 * Sets bounds that will be used when determining if object is visible. Only relevant if setUseOverrideBounds() is
 		 * set to true.
 		 *
@@ -103,6 +116,9 @@ namespace bs
 
 		/** @copydoc setLayer() */
 		UINT64 getLayer() const { return mLayer; }
+
+		/** @copydoc setColor() */
+		Color getColor() const { return mColor; }
 
 		/**	@copydoc setMesh() */
 		MeshType getMesh() const { return mMesh; }
@@ -133,9 +149,13 @@ namespace bs
 		/** Triggered whenever the renderable's mesh changes. */
 		virtual void onMeshChanged() { }
 
+		/** Check if no other flags than ActorDirtyFlag::Transform or RenderableDirtyFlag::Color are set in the given dirtyFlags. */
+		static bool isOnlyTransformOrColorDirty(UINT32 dirtyFlags);
+
 		MeshType mMesh;
 		Vector<MaterialType> mMaterials;
 		UINT64 mLayer = 1;
+		Color mColor = Color::White;
 		AABox mOverrideBounds;
 		bool mUseOverrideBounds = false;
 		float mCullDistanceFactor = 1.0f;

@@ -11,12 +11,13 @@ namespace bs { namespace ct
 	PerCallParamDef gPerCallParamDef;
 
 	void PerObjectBuffer::update(SPtr<GpuParamBlockBuffer>& buffer, const Matrix4& tfrm, const Matrix4& tfrmNoScale,
-		UINT32 layer)
+		UINT32 layer, Color color)
 	{
 		gPerObjectParamDef.gMatWorld.set(buffer, tfrm);
 		gPerObjectParamDef.gMatInvWorld.set(buffer, tfrm.inverseAffine());
 		gPerObjectParamDef.gMatWorldNoScale.set(buffer, tfrmNoScale);
 		gPerObjectParamDef.gMatInvWorldNoScale.set(buffer, tfrmNoScale.inverseAffine());
+		gPerObjectParamDef.gColor.set(buffer, color);
 		gPerObjectParamDef.gWorldDeterminantSign.set(buffer, tfrm.determinant3x3() >= 0.0f ? 1.0f : -1.0f);
 		gPerObjectParamDef.gLayer.set(buffer, (INT32)layer);
 	}
@@ -40,8 +41,9 @@ namespace bs { namespace ct
 		const Matrix4 worldTransform = renderable->getMatrix();
 		const Matrix4 worldNoScaleTransform = renderable->getMatrixNoScale();
 		const UINT32 layer = Bitwise::mostSignificantBit(renderable->getLayer());
+		const Color color = renderable->getColor();
 
-		PerObjectBuffer::update(perObjectParamBuffer, worldTransform, worldNoScaleTransform, layer);
+		PerObjectBuffer::update(perObjectParamBuffer, worldTransform, worldNoScaleTransform, layer, color);
 	}
 
 	void RendererRenderable::updatePerCallBuffer(const Matrix4& viewProj, bool flush)

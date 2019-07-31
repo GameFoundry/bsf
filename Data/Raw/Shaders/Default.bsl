@@ -17,7 +17,7 @@ shader Surface
 			out float OutGBufferD : SV_Target4)
 		{
 			SurfaceData surfaceData;
-			surfaceData.albedo = float4(0.05f, 0.05f, 0.05f, 1.0f);
+			surfaceData.albedo = float4(0.05f, 0.05f, 0.05f, 1.0f) * gColor;
 			surfaceData.worldNormal.xyz = input.tangentToWorldZ;
 			surfaceData.roughness = 1.0f;
 			surfaceData.metalness = 0.0f;

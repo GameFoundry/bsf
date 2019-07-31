@@ -621,14 +621,14 @@ namespace bs {	namespace ct
 		if(tfrmOnly)
 		{
 			SPtr<GpuParamBlockBuffer>& paramBuffer = rendererParticles.perObjectParamBuffer;
-			PerObjectBuffer::update(paramBuffer, rendererParticles.localToWorld, localToWorldNoScale, layer);
+			PerObjectBuffer::update(paramBuffer, rendererParticles.localToWorld, localToWorldNoScale, layer, Color::White);
 
 			return;
 		}
 
 		SPtr<GpuParamBlockBuffer> perObjectParamBuffer = gPerObjectParamDef.createBuffer();
 		SPtr<GpuParamBlockBuffer> particlesParamBuffer = gParticlesParamDef.createBuffer();
-		PerObjectBuffer::update(perObjectParamBuffer, rendererParticles.localToWorld, localToWorldNoScale, layer);
+		PerObjectBuffer::update(perObjectParamBuffer, rendererParticles.localToWorld, localToWorldNoScale, layer, Color::White);
 
 		Vector3 axisForward = settings.orientationPlaneNormal;
 

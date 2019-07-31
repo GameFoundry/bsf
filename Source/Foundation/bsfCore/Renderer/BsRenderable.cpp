@@ -121,7 +121,14 @@ namespace bs
 		mLayer = layer;
 		_markCoreDirty();
 	}	
-	
+
+	template<bool Core>
+	void TRenderable<Core>::setColor(Color color)
+	{
+		mColor = color;
+		_markCoreDirty((ActorDirtyFlag)RenderableDirtyFlag::Color);
+	}
+
 	template<bool Core>
 	void TRenderable<Core>::setOverrideBounds(const AABox& bounds)
 	{
@@ -147,6 +154,12 @@ namespace bs
 		mCullDistanceFactor = factor;
 
 		_markCoreDirty();
+	}
+
+	template<bool Core>
+	bool TRenderable<Core>::isOnlyTransformOrColorDirty(UINT32 dirtyFlags)
+	{
+		return (dirtyFlags & ~((UINT32)ActorDirtyFlag::Transform | (UINT32)RenderableDirtyFlag::Color)) == 0U;
 	}
 
 	template class TRenderable < false >;
@@ -311,10 +324,15 @@ namespace bs
 		UINT32 size = rttiGetElemSize(dirtyFlags);
 		SceneActor::rttiEnumFields(RttiCoreSyncSize(size), (ActorDirtyFlags)dirtyFlags);
 
+		if((dirtyFlags & (UINT32)RenderableDirtyFlag::Color) != 0U)
+		{
+			size += rttiGetElemSize(mColor);
+		}
+
 		// The most common case if only the transform changed, so we sync only transform related options
 		UINT32 numMaterials = 0;
 		UINT64 animationId = 0;
-		if(dirtyFlags != (UINT32)ActorDirtyFlag::Transform)
+		if(!isOnlyTransformOrColorDirty(dirtyFlags))
 		{
 			numMaterials = (UINT32)mMaterials.size();
 
@@ -342,7 +360,12 @@ namespace bs
 		dataPtr = rttiWriteElem(dirtyFlags, dataPtr);
 		SceneActor::rttiEnumFields(RttiCoreSyncWriter(&dataPtr), (ActorDirtyFlags)dirtyFlags);
 
-		if(dirtyFlags != (UINT32)ActorDirtyFlag::Transform)
+		if((dirtyFlags & (UINT32)RenderableDirtyFlag::Color) != 0U)
+		{
+			dataPtr = rttiWriteElem(mColor, dataPtr);
+		}
+
+		if(!isOnlyTransformOrColorDirty(dirtyFlags))
 		{
 			dataPtr = rttiWriteElem(mLayer, dataPtr);
 			dataPtr = rttiWriteElem(mOverrideBounds, dataPtr);
@@ -631,7 +654,12 @@ namespace bs
 		mTfrmMatrix = mTransform.getMatrix();
 		mTfrmMatrixNoScale = Matrix4::TRS(mTransform.getPosition(), mTransform.getRotation(), Vector3::ONE);
 
-		if(dirtyFlags != (UINT32)ActorDirtyFlag::Transform)
+		if((dirtyFlags & (UINT32)RenderableDirtyFlag::Color) != 0U)
+		{
+			dataPtr = rttiReadElem(mColor, dataPtr);
+		}
+
+		if(!isOnlyTransformOrColorDirty(dirtyFlags))
 		{
 			dataPtr = rttiReadElem(mLayer, dataPtr);
 			dataPtr = rttiReadElem(mOverrideBounds, dataPtr);
@@ -695,7 +723,7 @@ namespace bs
 				gRenderer()->notifyRenderableRemoved(this);
 				gRenderer()->notifyRenderableAdded(this);
 		}
-		else if ((dirtyFlags & (UINT32)ActorDirtyFlag::Transform) != 0)
+		else if((dirtyFlags & (UINT32)ActorDirtyFlag::Transform) != 0 || (dirtyFlags & (UINT32)RenderableDirtyFlag::Color) != 0)
 		{
 			if (mActive)
 				gRenderer()->notifyRenderableUpdated(this);

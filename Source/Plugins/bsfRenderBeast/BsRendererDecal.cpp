@@ -36,7 +36,7 @@ namespace bs { namespace ct
 		const Matrix4 worldTransform = decal->getMatrix() * scaleAndOffset;
 		const Matrix4 worldNoScaleTransform = decal->getMatrixNoScale() * scaleAndOffset;
 
-		PerObjectBuffer::update(perObjectParamBuffer, worldTransform, worldNoScaleTransform, 0);
+		PerObjectBuffer::update(perObjectParamBuffer, worldTransform, worldNoScaleTransform, 0, Color::White);
 
 		const Transform& tfrm = decal->getTransform();
 

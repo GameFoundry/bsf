@@ -44,7 +44,7 @@ struct VStoFS
 It must include the following mixins:
  - **VertexInput** (from `VertexInput.bslinc`) - Contains a set of helper methods useful for transforming vertex inputs into outputs.
  - **PerCameraData** (from `PerCameraData.bslinc`) - Provides a variety of camera parameters, including the view-projection matrix, view direction and origin. Check the contents of `PerCameraData.bslinc` to see all the provided properties.
- - **PerObjectData** (from `PerObjectData.bslinc`) - Provides a variety of per-object paramters, including the world transform, world-view-projection matrix and object layer. Check the contents of `PerObjectData.bslinc` to see all the provided properties.
+ - **PerObjectData** (from `PerObjectData.bslinc`) - Provides a variety of per-object paramters, including the world transform, world-view-projection matrix, object layer and object color. Check the contents of `PerObjectData.bslinc` to see all the provided properties.
 
 ~~~~~~~~~~~~~
 #include "$ENGINE$\PerCameraData.bslinc"
@@ -195,7 +195,7 @@ shader Surface
 			out float OutGBufferD : SV_Target4)
 		{
 			SurfaceData surfaceData;
-			surfaceData.albedo = gAlbedoTex.Sample(gAlbedoSamp, input.uv0);
+			surfaceData.albedo = gAlbedoTex.Sample(gAlbedoSamp, input.uv0) * gColor;
 			surfaceData.worldNormal.xyz = float3(0, 1, 0);
 			surfaceData.roughness = 1.0f;
 			surfaceData.metalness = 0.0f;
@@ -402,7 +402,7 @@ shader Surface
 		{
 			// For simplicity we only read the albedo from the texture, and assume other properties are constant
 			SurfaceData surfaceData;
-			surfaceData.albedo = gAlbedoTex.Sample(gAlbedoSamp, input.uv0);
+			surfaceData.albedo = gAlbedoTex.Sample(gAlbedoSamp, input.uv0) * gColor;
 			surfaceData.worldNormal.xyz = float3(0, 1, 0);
 			surfaceData.roughness = 1.0f;
 			surfaceData.metalness = 0.0f;

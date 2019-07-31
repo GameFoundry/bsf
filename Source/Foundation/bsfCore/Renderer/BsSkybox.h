@@ -21,7 +21,7 @@ namespace bs
 	/**	Signals which portion of a Skybox is dirty. */
 	enum class SkyboxDirtyFlag
 	{
-		// First few bits reserved by ActorDiryFlag
+		// First few bits reserved by ActorDirtyFlag
 		Texture = 1 << 4
 	};
 

@@ -65,6 +65,14 @@ namespace bs
 		BS_SCRIPT_EXPORT(n:Layers,pr:getter)
 		UINT64 getLayer() const { return mInternal->getLayer(); }
 
+		/** @copydoc Renderable::setColor */
+		BS_SCRIPT_EXPORT(n:Color, pr : setter)
+		void setColor(Color color) { mInternal->setColor(color); }
+
+		/** @copydoc Renderable::getColor */
+		BS_SCRIPT_EXPORT(n:Color, pr : getter)
+		Color getColor() const { return mInternal->getColor(); }
+
 		/**	Gets world bounds of the mesh rendered by this object. */
 		BS_SCRIPT_EXPORT(n:Bounds,pr:getter)
 		Bounds getBounds() const;

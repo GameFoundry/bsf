@@ -65,7 +65,7 @@ shader Surface
 			float3 worldNormal = calcWorldNormal(input, normal);
 		
 			SurfaceData surfaceData;
-			surfaceData.albedo = gAlbedoTex.Sample(gAlbedoSamp, uv);
+			surfaceData.albedo = gAlbedoTex.Sample(gAlbedoSamp, uv) * gColor;
 			surfaceData.worldNormal.xyz = worldNormal;
 			surfaceData.worldNormal.w = 1.0f;
 			surfaceData.roughness = gRoughnessTex.Sample(gRoughnessSamp, uv).x;
