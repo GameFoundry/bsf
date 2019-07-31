@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Represents a three dimensional field of vectors. It is represented by spatial bounds which are split into a grid of
+	/// Represents a three dimensional field of vectors. It is represented by spatial bounds which are split into a grid of 
 	/// values with user-defined density, where each grid cell is assigned a vector.
 	/// </summary>
 	[ShowInInspector]
@@ -23,7 +23,7 @@ namespace bs
 		/// <summary>Creates a new vector field.</summary>
 		/// <param name="desc">Description of the vector field to create.</param>
 		/// <param name="values">
-		/// Values to assign to the vector field. Number of entries must match  countX * countY * countZ.
+		/// Values to assign to the vector field. Number of entries must match countX * countY * countZ.
 		/// </param>
 		public VectorField(VectorFieldOptions desc, Vector3[] values)
 		{

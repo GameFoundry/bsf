@@ -22,9 +22,9 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines should automatic exposure be applied to the HDR image. When turned on the average scene brightness will be
-		/// calculated and used to automatically expose the image to the optimal range. Use the parameters provided by
-		/// autoExposure to customize the automatic exposure effect. You may also use exposureScale to manually adjust the
+		/// Determines should automatic exposure be applied to the HDR image. When turned on the average scene brightness will be 
+		/// calculated and used to automatically expose the image to the optimal range. Use the parameters provided by 
+		/// autoExposure to customize the automatic exposure effect. You may also use exposureScale to manually adjust the 
 		/// automatic exposure. When automatic exposure is turned off you can use exposureScale to manually set the exposure.
 		/// </summary>
 		[ShowInInspector]
@@ -47,10 +47,10 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines should the image be tonemapped. Tonemapping converts an HDR image into LDR image by applying a filmic
-		/// curve to the image, simulating the effect of film cameras. Filmic curve improves image quality by tapering off lows
-		/// and highs, preventing under- and over-exposure. This is useful if an image contains both very dark and very bright
-		/// areas, in which case the global exposure parameter would leave some areas either over- or under-exposed. Use
+		/// Determines should the image be tonemapped. Tonemapping converts an HDR image into LDR image by applying a filmic 
+		/// curve to the image, simulating the effect of film cameras. Filmic curve improves image quality by tapering off lows 
+		/// and highs, preventing under- and over-exposure. This is useful if an image contains both very dark and very bright 
+		/// areas, in which case the global exposure parameter would leave some areas either over- or under-exposed. Use 
 		/// #tonemapping to customize how tonemapping performed.
 		///
 		/// If this is disabled, then color grading and white balancing will not be enabled either. Only relevant for HDR images.
@@ -75,8 +75,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Parameters used for customizing white balancing. White balancing converts a scene illuminated by a light of the
-		/// specified temperature into a scene illuminated by a standard D65 illuminant (average midday light) in order to
+		/// Parameters used for customizing white balancing. White balancing converts a scene illuminated by a light of the 
+		/// specified temperature into a scene illuminated by a standard D65 illuminant (average midday light) in order to 
 		/// simulate the effects of chromatic adaptation of the human visual system.
 		/// </summary>
 		[ShowInInspector]
@@ -165,8 +165,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Log2 value to scale the eye adaptation by (for example 2^0 = 1). Smaller values yield darker image, while larger
-		/// yield brighter image. Allows you to customize exposure manually, applied on top of eye adaptation exposure (if
+		/// Log2 value to scale the eye adaptation by (for example 2^0 = 1). Smaller values yield darker image, while larger 
+		/// yield brighter image. Allows you to customize exposure manually, applied on top of eye adaptation exposure (if 
 		/// enabled). In range [-8, 8].
 		/// </summary>
 		[ShowInInspector]
@@ -179,8 +179,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Gamma value to adjust the image for. Larger values result in a brighter image. When tonemapping is turned on the best
-		/// gamma curve for the output device is chosen automatically and this value can by used to merely tweak that curve. If
+		/// Gamma value to adjust the image for. Larger values result in a brighter image. When tonemapping is turned on the best 
+		/// gamma curve for the output device is chosen automatically and this value can by used to merely tweak that curve. If 
 		/// tonemapping is turned off this is the exact value of the gamma curve that will be applied.
 		/// </summary>
 		[ShowInInspector]
@@ -193,8 +193,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// High dynamic range allows light intensity to be more correctly recorded when rendering by allowing for a larger range
-		/// of values. The stored light is then converted into visible color range using exposure and a tone mapping  operator.
+		/// High dynamic range allows light intensity to be more correctly recorded when rendering by allowing for a larger range 
+		/// of values. The stored light is then converted into visible color range using exposure and a tone mapping operator.
 		/// </summary>
 		[ShowInInspector]
 		[NativeWrapper]
@@ -205,7 +205,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines if scene objects will be lit by lights. If disabled everything will be rendered using their albedo texture
+		/// Determines if scene objects will be lit by lights. If disabled everything will be rendered using their albedo texture 
 		/// with no lighting applied.
 		/// </summary>
 		[ShowInInspector]
@@ -246,8 +246,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Signals the renderer to only render overlays (like GUI), and not scene objects. Such rendering doesn&apos;t require
-		/// depth buffer or multi-sampled render targets and will not render any scene objects. This can improve performance and
+		/// Signals the renderer to only render overlays (like GUI), and not scene objects. Such rendering doesn&apos;t require 
+		/// depth buffer or multi-sampled render targets and will not render any scene objects. This can improve performance and 
 		/// memory usage for overlay-only views.
 		/// </summary>
 		[ShowInInspector]
@@ -259,7 +259,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// If enabled the camera will use the skybox for rendering the background. A skybox has to be present in the scene. When
+		/// If enabled the camera will use the skybox for rendering the background. A skybox has to be present in the scene. When 
 		/// disabled the camera will use the clear color for rendering the background.
 		/// </summary>
 		[ShowInInspector]
@@ -271,7 +271,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// The absolute base cull-distance for objects rendered through this camera in world units. Objects will use this
+		/// The absolute base cull-distance for objects rendered through this camera in world units. Objects will use this 
 		/// distance and apply their own factor to it to determine whether they should be visible.
 		/// </summary>
 		[ShowInInspector]

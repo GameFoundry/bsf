@@ -30,7 +30,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Contrast to be applied during color grading. Larger values increase difference between light and dark areas of the
+		/// Contrast to be applied during color grading. Larger values increase difference between light and dark areas of the 
 		/// image. In range [0.0f, 2.0f].
 		/// </summary>
 		[ShowInInspector]

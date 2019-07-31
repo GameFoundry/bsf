@@ -57,7 +57,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the time period during which the system runs, in seconds. This effects evaluation of distributions with
+		/// Determines the time period during which the system runs, in seconds. This effects evaluation of distributions with 
 		/// curves using particle system time for evaluation.
 		/// </summary>
 		[ShowInInspector]
@@ -78,8 +78,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the maximum number of particles that can ever be active in this system. This number is ignored if GPU
-		/// simulation is enabled, and instead particle count is instead only limited by the size of the internal buffers (shared
+		/// Determines the maximum number of particles that can ever be active in this system. This number is ignored if GPU 
+		/// simulation is enabled, and instead particle count is instead only limited by the size of the internal buffers (shared 
 		/// between all particle systems).
 		/// </summary>
 		[ShowInInspector]
@@ -91,8 +91,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// If true the particle system will be simulated on the GPU. This allows much higher particle counts at lower
-		/// performance cost. GPU simulation ignores any provided evolvers and instead uses ParticleGpuSimulationSettings to
+		/// If true the particle system will be simulated on the GPU. This allows much higher particle counts at lower 
+		/// performance cost. GPU simulation ignores any provided evolvers and instead uses ParticleGpuSimulationSettings to 
 		/// customize the GPU simulation.
 		/// </summary>
 		[ShowInInspector]
@@ -116,7 +116,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines should the particles only be allowed to orient themselves around the Y axis, or freely. Ignored if using
+		/// Determines should the particles only be allowed to orient themselves around the Y axis, or freely. Ignored if using 
 		/// the Plane orientation mode.
 		/// </summary>
 		[ShowInInspector]
@@ -129,7 +129,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines a normal of the plane to orient particles towards. Only used if particle orientation mode is set to
+		/// Determines a normal of the plane to orient particles towards. Only used if particle orientation mode is set to 
 		/// ParticleOrientation::Plane.
 		/// </summary>
 		[ShowInInspector]
@@ -147,7 +147,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines how (and if) are particles sorted. Sorting controls in what order are particles rendered.  If GPU
+		/// Determines how (and if) are particles sorted. Sorting controls in what order are particles rendered. If GPU 
 		/// simulation is enabled only distance based sorting is supported.
 		/// </summary>
 		[ShowInInspector]
@@ -160,7 +160,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines should an automatic seed be used for the internal random number generator. This ensures the particle
+		/// Determines should an automatic seed be used for the internal random number generator. This ensures the particle 
 		/// system yields different results each time it is ran.
 		/// </summary>
 		[ShowInInspector]
@@ -173,7 +173,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the seed to use for the internal random number generator. Allows you to guarantee identical behaviour
+		/// Determines the seed to use for the internal random number generator. Allows you to guarantee identical behaviour 
 		/// between different runs. Only relevant if automatic seed is disabled.
 		/// </summary>
 		[ShowInInspector]
@@ -186,8 +186,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines should the particle system bounds be automatically calculated, or should the fixed value provided be used.
-		/// Bounds are used primarily for culling purposes. Note that automatic bounds are not supported when GPU simulation is
+		/// Determines should the particle system bounds be automatically calculated, or should the fixed value provided be used. 
+		/// Bounds are used primarily for culling purposes. Note that automatic bounds are not supported when GPU simulation is 
 		/// enabled.
 		/// </summary>
 		[ShowInInspector]
@@ -200,7 +200,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Custom bounds to use them <see cref="useAutomaticBounds"/> is disabled. The bounds are in the simulation space of the
+		/// Custom bounds to use them <see cref="useAutomaticBounds"/> is disabled. The bounds are in the simulation space of the 
 		/// particle system.
 		/// </summary>
 		[ShowInInspector]

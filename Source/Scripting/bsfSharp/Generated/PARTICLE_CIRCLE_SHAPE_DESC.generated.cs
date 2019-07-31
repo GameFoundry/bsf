@@ -29,8 +29,8 @@ namespace bs
 		/// <summary>Radius of the circle.</summary>
 		public float radius;
 		/// <summary>
-		/// Proportion of the surface that can emit particles. Thickness of 0 results in particles being emitted only from the
-		/// edge of the circle, while thickness of 1 results in particles being emitted from the entire surface.  In-between
+		/// Proportion of the surface that can emit particles. Thickness of 0 results in particles being emitted only from the 
+		/// edge of the circle, while thickness of 1 results in particles being emitted from the entire surface. In-between 
 		/// values will use a part of the surface.
 		/// </summary>
 		public float thickness;

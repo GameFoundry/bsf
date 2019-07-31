@@ -25,7 +25,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the minimum distance the bodies are allowed to be at, they will get no closer. You must enable min
+		/// Determines the minimum distance the bodies are allowed to be at, they will get no closer. You must enable min 
 		/// distance flag in order for this limit to be applied.
 		/// </summary>
 		[ShowInInspector]
@@ -37,7 +37,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the maximum distance the bodies are allowed to be at, they will get no further. You must enable max
+		/// Determines the maximum distance the bodies are allowed to be at, they will get no further. You must enable max 
 		/// distance flag in order for this limit to be applied.
 		/// </summary>
 		[ShowInInspector]
@@ -49,7 +49,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the error tolerance of the joint at which the joint becomes active. This value slightly extends the lower
+		/// Determines the error tolerance of the joint at which the joint becomes active. This value slightly extends the lower 
 		/// and upper limit.
 		/// </summary>
 		[ShowInInspector]
@@ -61,7 +61,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines a spring that controls how the joint responds when a limit is reached. You must enable the spring  flag on
+		/// Determines a spring that controls how the joint responds when a limit is reached. You must enable the spring flag on 
 		/// the joint in order for this to be recognized.
 		/// </summary>
 		[ShowInInspector]

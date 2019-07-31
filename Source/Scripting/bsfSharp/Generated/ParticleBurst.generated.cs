@@ -39,7 +39,7 @@ namespace bs
 		/// <summary>Number of particles to emit when the burst triggers.</summary>
 		public FloatDistribution count;
 		/// <summary>
-		/// Determines how many times to trigger the burst. If 0 the burst will trigger infinitely. Use <see cref="interval"/> to
+		/// Determines how many times to trigger the burst. If 0 the burst will trigger infinitely. Use <see cref="interval"/> to 
 		/// to control the time between each cycle.
 		/// </summary>
 		public int cycles;

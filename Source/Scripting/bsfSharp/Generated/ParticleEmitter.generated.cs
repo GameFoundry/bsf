@@ -63,7 +63,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Sets the initial speed of the particles, in meters/second. The speed is applied along the particle&apos;s velocity
+		/// Sets the initial speed of the particles, in meters/second. The speed is applied along the particle&apos;s velocity 
 		/// direction, which is determined by the emission shape and potentially other properties.
 		/// </summary>
 		[ShowInInspector]
@@ -77,7 +77,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the size of the particles when initially spawned. The size is applied uniformly in all dimensions. Only
+		/// Determines the size of the particles when initially spawned. The size is applied uniformly in all dimensions. Only 
 		/// used if 3D size is disabled.
 		/// </summary>
 		[ShowInInspector]
@@ -91,7 +91,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the size of the particles when initially spawned. Size can be specified for each dimension separately.
+		/// Determines the size of the particles when initially spawned. Size can be specified for each dimension separately. 
 		/// Only used if 3D size is enabled.
 		/// </summary>
 		[ShowInInspector]
@@ -105,7 +105,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines should the initial particle size be applied uniformly (if disabled), or evaluated separately for each
+		/// Determines should the initial particle size be applied uniformly (if disabled), or evaluated separately for each 
 		/// dimension (if enabled).
 		/// </summary>
 		[ShowInInspector]
@@ -117,7 +117,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the rotation of the particles when initially spawned, in degrees. The rotation is applied around the
+		/// Determines the rotation of the particles when initially spawned, in degrees. The rotation is applied around the 
 		/// particle&apos;s local Z axis. Only used if 3D rotation is disabled.
 		/// </summary>
 		[ShowInInspector]
@@ -144,7 +144,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines should the initial particle rotation be a single angle applied around a Z axis (if disabled), or a  set of
+		/// Determines should the initial particle rotation be a single angle applied around a Z axis (if disabled), or a set of 
 		/// Euler angles that allow you to rotate around every axis (if enabled).
 		/// </summary>
 		[ShowInInspector]
@@ -167,7 +167,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines a range of values determining a random offset to apply to particle position after it has been emitted.
+		/// Determines a range of values determining a random offset to apply to particle position after it has been emitted. 
 		/// Offset will be randomly selected in all three axes in range [-value, value].
 		/// </summary>
 		[ShowInInspector]
@@ -179,7 +179,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines should particle U texture coordinate be randomly flipped, mirroring the image. The value represents a
+		/// Determines should particle U texture coordinate be randomly flipped, mirroring the image. The value represents a 
 		/// percent of particles that should be flipped, in range [0, 1].
 		/// </summary>
 		[ShowInInspector]
@@ -191,7 +191,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines should particle V texture coordinate be randomly flipped, mirroring the image. The value represents a
+		/// Determines should particle V texture coordinate be randomly flipped, mirroring the image. The value represents a 
 		/// percent of particles that should be flipped, in range [0, 1].
 		/// </summary>
 		[ShowInInspector]

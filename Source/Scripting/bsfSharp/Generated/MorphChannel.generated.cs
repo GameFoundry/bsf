@@ -11,8 +11,8 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// A collection of morph shapes that are sequentially blended together. Each shape has a weight in range [0, 1] which
-	/// determines at what point is that shape blended. As the channel percent moves from 0 to 1, different shapes will be
+	/// A collection of morph shapes that are sequentially blended together. Each shape has a weight in range [0, 1] which 
+	/// determines at what point is that shape blended. As the channel percent moves from 0 to 1, different shapes will be 
 	/// blended with those before or after them, depending on their weight.
 	/// </summary>
 	[ShowInInspector]

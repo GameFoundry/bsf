@@ -17,7 +17,7 @@ namespace bs
 		/// <summary>Source is a single image that will be replicated on all cubemap faces.</summary>
 		Single = 0,
 		/// <summary>
-		/// Source is a list of 6 images, either sequentially next to each other or in a cross format. The system will
+		/// Source is a list of 6 images, either sequentially next to each other or in a cross format. The system will 
 		/// automatically guess the layout and orientation based on the aspect ratio.
 		/// </summary>
 		Faces = 1,

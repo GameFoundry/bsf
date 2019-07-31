@@ -31,7 +31,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the elasticity (bounciness) of the particle collision. Lower values make the collision less bouncy and
+		/// Determines the elasticity (bounciness) of the particle collision. Lower values make the collision less bouncy and 
 		/// higher values more.
 		/// </summary>
 		[ShowInInspector]
@@ -43,7 +43,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines how much velocity should a particle lose after a collision, in percent of its current velocity. In range
+		/// Determines how much velocity should a particle lose after a collision, in percent of its current velocity. In range 
 		/// [0, 1].
 		/// </summary>
 		[ShowInInspector]

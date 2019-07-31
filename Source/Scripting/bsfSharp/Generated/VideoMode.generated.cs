@@ -12,7 +12,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Video mode contains information about how a render window presents its information to an output device like a  monitor.
+	/// Video mode contains information about how a render window presents its information to an output device like a monitor.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential), SerializeObject]
 	public partial struct VideoMode
@@ -35,7 +35,7 @@ namespace bs
 		/// <param name="height">Height of the frame buffer in pixels.</param>
 		/// <param name="refreshRate">How often should the output device refresh the output image in hertz.</param>
 		/// <param name="outputIdx">
-		/// Output index of the output device. Normally this means output monitor. 0th index always represents the primary device
+		/// Output index of the output device. Normally this means output monitor. 0th index always represents the primary device 
 		/// while order of others is undefined.
 		/// </param>
 		public VideoMode(int width, int height, float refreshRate = 60f, int outputIdx = 0)
@@ -56,7 +56,7 @@ namespace bs
 		/// <summary>Index of the parent video output.</summary>
 		public int outputIdx;
 		/// <summary>
-		/// Determines was video mode user created or provided by the API/OS. API/OS created video modes can contain  additional
+		/// Determines was video mode user created or provided by the API/OS. API/OS created video modes can contain additional 
 		/// information that allows the video mode to be used more accurately and you should use them when possible.
 		/// </summary>
 		public bool isCustom;

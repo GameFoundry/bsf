@@ -50,7 +50,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the layer that controls whether a system is considered visible in a specific camera. Layer must match
+		/// Determines the layer that controls whether a system is considered visible in a specific camera. Layer must match 
 		/// camera layer bitfield in order for the camera to render the decal.
 		/// </summary>
 		[ShowInInspector]
@@ -62,8 +62,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Bitfield that allows you to mask on which objects will the decal be projected onto. Only objects with the  matching
-		/// layers will be projected onto. Note that decal layer mask only supports 32-bits and objects with layers in bits &gt;=
+		/// Bitfield that allows you to mask on which objects will the decal be projected onto. Only objects with the matching 
+		/// layers will be projected onto. Note that decal layer mask only supports 32-bits and objects with layers in bits &gt;= 
 		/// 32 will always be projected onto.
 		/// </summary>
 		[ShowInInspector]

@@ -26,7 +26,7 @@ namespace bs
 
 	MonoObject* ScriptHString::create(const SPtr<HString>& value)
 	{
-		if(value == nullptr) return nullptr;
+		if(value == nullptr) return nullptr; 
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };

@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Primary class for holding geometry. Stores data in the form of vertex buffers and optionally an index buffer, which
+	/// Primary class for holding geometry. Stores data in the form of vertex buffers and optionally an index buffer, which 
 	/// may be bound to the pipeline for drawing. May contain multiple sub-meshes.
 	/// </summary>
 	[ShowInInspector]
@@ -21,7 +21,7 @@ namespace bs
 		protected Mesh() { }
 
 		/// <summary>
-		/// Creates a new mesh with enough space to hold the a number of primitives using the specified layout. All indices will
+		/// Creates a new mesh with enough space to hold the a number of primitives using the specified layout. All indices will 
 		/// be part of a single sub-mesh.
 		/// </summary>
 		/// <param name="numVertices">Number of vertices in the mesh.</param>
@@ -29,13 +29,13 @@ namespace bs
 		/// Number of indices in the mesh. Must be a multiple of primitive size as specified by provided topology.
 		/// </param>
 		/// <param name="topology">
-		/// Determines how should the provided indices be interpreted by the pipeline. Default option is a triangle list, where
+		/// Determines how should the provided indices be interpreted by the pipeline. Default option is a triangle list, where 
 		/// three indices represent a single triangle.
 		/// </param>
 		/// <param name="usage">Optimizes performance depending on planned usage of the mesh.</param>
 		/// <param name="vertex">Controls how are vertices organized in the vertex buffer and what data they contain.</param>
 		/// <param name="index">
-		/// Size of indices, use smaller size for better performance, however be careful not to go over the number of vertices
+		/// Size of indices, use smaller size for better performance, however be careful not to go over the number of vertices 
 		/// limited by the data type size.
 		/// </param>
 		public Mesh(int numVertices, int numIndices, MeshTopology topology = MeshTopology.TriangleList, MeshUsage usage = MeshUsage.Static, VertexLayout vertex = VertexLayout.Position, IndexType index = IndexType.Index32)
@@ -44,7 +44,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Creates a new mesh with enough space to hold the a number of primitives using the specified layout. Indices can be
+		/// Creates a new mesh with enough space to hold the a number of primitives using the specified layout. Indices can be 
 		/// referenced by multiple sub-meshes.
 		/// </summary>
 		/// <param name="numVertices">Number of vertices in the mesh.</param>
@@ -52,13 +52,13 @@ namespace bs
 		/// Number of indices in the mesh. Must be a multiple of primitive size as specified by provided topology.
 		/// </param>
 		/// <param name="subMeshes">
-		/// Defines how are indices separated into sub-meshes, and how are those sub-meshes rendered. Sub-meshes may be rendered
+		/// Defines how are indices separated into sub-meshes, and how are those sub-meshes rendered. Sub-meshes may be rendered 
 		/// independently, each with a different material.
 		/// </param>
 		/// <param name="usage">Optimizes performance depending on planned usage of the mesh.</param>
 		/// <param name="vertex">Controls how are vertices organized in the vertex buffer and what data they contain.</param>
 		/// <param name="index">
-		/// Size of indices, use smaller size for better performance, however be careful not to go over the number of vertices
+		/// Size of indices, use smaller size for better performance, however be careful not to go over the number of vertices 
 		/// limited by the data type size.
 		/// </param>
 		public Mesh(int numVertices, int numIndices, SubMesh[] subMeshes, MeshUsage usage = MeshUsage.Static, VertexLayout vertex = VertexLayout.Position, IndexType index = IndexType.Index32)
@@ -67,12 +67,12 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described by the
+		/// Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described by the 
 		/// mesh data exactly. Mesh will have no sub-meshes.
 		/// </summary>
 		/// <param name="data">Vertex and index data to initialize the mesh with.</param>
 		/// <param name="topology">
-		/// Determines how should the provided indices be interpreted by the pipeline. Default option is a triangle list, where
+		/// Determines how should the provided indices be interpreted by the pipeline. Default option is a triangle list, where 
 		/// three indices represent a single triangle.
 		/// </param>
 		/// <param name="usage">Optimizes performance depending on planned usage of the mesh.</param>
@@ -82,12 +82,12 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Creates a new mesh with enough space to hold the a number of primitives using the specified layout. Indices can be
+		/// Creates a new mesh with enough space to hold the a number of primitives using the specified layout. Indices can be 
 		/// referenced by multiple sub-meshes.
 		/// </summary>
 		/// <param name="data">Vertex and index data to initialize the mesh with.</param>
 		/// <param name="subMeshes">
-		/// Defines how are indices separated into sub-meshes, and how are those sub-meshes rendered. Sub-meshes may be rendered
+		/// Defines how are indices separated into sub-meshes, and how are those sub-meshes rendered. Sub-meshes may be rendered 
 		/// independently, each with a different material.
 		/// </param>
 		/// <param name="usage">Optimizes performance depending on planned usage of the mesh.</param>
@@ -131,8 +131,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Accesses the vertex and index data of the mesh. If reading, mesh must have been created with the MeshUsage::CPUCached
-		/// flag. If writing the caller must ensure the data matches mesh&apos;s vertex/index counts, vertex layout and index
+		/// Accesses the vertex and index data of the mesh. If reading, mesh must have been created with the MeshUsage::CPUCached 
+		/// flag. If writing the caller must ensure the data matches mesh&apos;s vertex/index counts, vertex layout and index 
 		/// format.
 		/// </summary>
 		[ShowInInspector]

@@ -11,8 +11,8 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// A spherical joint removes all translational degrees of freedom but allows all rotational degrees of freedom.
-	/// Essentially this ensures that the anchor points of the two bodies are always coincident. Bodies are allowed to rotate
+	/// A spherical joint removes all translational degrees of freedom but allows all rotational degrees of freedom. 
+	/// Essentially this ensures that the anchor points of the two bodies are always coincident. Bodies are allowed to rotate 
 	/// around the anchor points, and their rotatation can be limited by an elliptical cone.
 	/// </summary>
 	[ShowInInspector]
@@ -22,7 +22,7 @@ namespace bs
 		protected SphericalJoint() { }
 
 		/// <summary>
-		/// Determines the limit of the joint. This clamps the rotation inside an eliptical angular cone. You must enable limit
+		/// Determines the limit of the joint. This clamps the rotation inside an eliptical angular cone. You must enable limit 
 		/// flag on the joint in order for this to be recognized.
 		/// </summary>
 		[ShowInInspector]

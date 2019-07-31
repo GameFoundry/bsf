@@ -37,7 +37,7 @@ namespace bs
 
 	MonoObject* ScriptTDistributionfloat::create(const SPtr<TDistribution<float>>& value)
 	{
-		if(value == nullptr) return nullptr;
+		if(value == nullptr) return nullptr; 
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };
@@ -197,7 +197,7 @@ namespace bs
 
 	MonoObject* ScriptTDistributionVector3::create(const SPtr<TDistribution<Vector3>>& value)
 	{
-		if(value == nullptr) return nullptr;
+		if(value == nullptr) return nullptr; 
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };
@@ -345,7 +345,7 @@ namespace bs
 
 	MonoObject* ScriptTDistributionVector2::create(const SPtr<TDistribution<Vector2>>& value)
 	{
-		if(value == nullptr) return nullptr;
+		if(value == nullptr) return nullptr; 
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };

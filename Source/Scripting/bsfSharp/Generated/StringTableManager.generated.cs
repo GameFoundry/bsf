@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Manages string tables used for localizing text. Allows you to add and remove different tables and change the active
+	/// Manages string tables used for localizing text. Allows you to add and remove different tables and change the active 
 	/// language.
 	/// </summary>
 	[ShowInInspector]

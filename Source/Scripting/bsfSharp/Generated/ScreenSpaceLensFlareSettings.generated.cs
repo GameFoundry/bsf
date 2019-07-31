@@ -31,8 +31,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines how many times to downsample the scene texture before using it for lens flare effect. Lower values  will
-		/// use higher resolution texture for calculating lens flare, at the cost of lower performance.  Valid range is [1, 6],
+		/// Determines how many times to downsample the scene texture before using it for lens flare effect. Lower values will 
+		/// use higher resolution texture for calculating lens flare, at the cost of lower performance. Valid range is [1, 6], 
 		/// default is 4.
 		/// </summary>
 		[ShowInInspector]
@@ -45,8 +45,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the minimal threshold of pixel luminance to be included in the lens flare calculations. Any pixel  with
-		/// luminance below this value will be ignored for the purposes of lens flare. Set to zero or negative to  disable the
+		/// Determines the minimal threshold of pixel luminance to be included in the lens flare calculations. Any pixel with 
+		/// luminance below this value will be ignored for the purposes of lens flare. Set to zero or negative to disable the 
 		/// threshold and include all pixels in the calculations.
 		/// </summary>
 		[ShowInInspector]
@@ -70,7 +70,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the distance between ghost features. Value is in normalized screen space, in range [0,1] where 1
+		/// Determines the distance between ghost features. Value is in normalized screen space, in range [0,1] where 1 
 		/// represents the full screen length.
 		/// </summary>
 		[ShowInInspector]
@@ -83,7 +83,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the brightness of the lens flare effect. Value of 1 means the lens flare will be displayed at the same
+		/// Determines the brightness of the lens flare effect. Value of 1 means the lens flare will be displayed at the same 
 		/// intensity as the scene it was derived from. In range [0, 1], default being 0.05.
 		/// </summary>
 		[ShowInInspector]
@@ -96,7 +96,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the size of the filter when blurring the lens flare features. Larger values yield a blurrier image and
+		/// Determines the size of the filter when blurring the lens flare features. Larger values yield a blurrier image and 
 		/// will require more performance.
 		/// </summary>
 		[ShowInInspector]
@@ -118,7 +118,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines how far away from the screen center does the halo appear, in normalized screen space (range [0,1]) where
+		/// Determines how far away from the screen center does the halo appear, in normalized screen space (range [0,1]) where 
 		/// 0.5 represents half screen length.
 		/// </summary>
 		[ShowInInspector]
@@ -141,7 +141,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the minimal threshold of pixel luminance to be included for halo generation. Any pixel with luminance
+		/// Determines the minimal threshold of pixel luminance to be included for halo generation. Any pixel with luminance 
 		/// below this value will be ignored for the purposes of halo generation.
 		/// </summary>
 		[ShowInInspector]
@@ -165,7 +165,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Enables or disables chromatic aberration of the lens flare and halo features. Chromatic aberration separates the
+		/// Enables or disables chromatic aberration of the lens flare and halo features. Chromatic aberration separates the 
 		/// values of red, green and blue channels according to a user provided offset.
 		/// </summary>
 		[ShowInInspector]
@@ -177,7 +177,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the distance between pixels within which to sample different channels. The value is in  UV coordinates,
+		/// Determines the distance between pixels within which to sample different channels. The value is in UV coordinates, 
 		/// range [0, 1].
 		/// </summary>
 		[ShowInInspector]
@@ -190,7 +190,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Uses a higher quality upscaling when blending the lens flare features with scene color. Results in less blocky
+		/// Uses a higher quality upscaling when blending the lens flare features with scene color. Results in less blocky 
 		/// artifacts at a cost to performance.
 		/// </summary>
 		[ShowInInspector]

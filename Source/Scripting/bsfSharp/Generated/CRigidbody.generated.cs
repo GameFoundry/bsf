@@ -11,11 +11,11 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Rigidbody is a dynamic physics object that can be moved using forces (or directly). It will interact with other static
-	/// and dynamic physics objects in the scene accordingly (it will push other non-kinematic rigidbodies,  and collide with
+	/// Rigidbody is a dynamic physics object that can be moved using forces (or directly). It will interact with other static 
+	/// and dynamic physics objects in the scene accordingly (it will push other non-kinematic rigidbodies, and collide with 
 	/// static objects).
 	///
-	/// The shape and mass of a rigidbody is governed by its colliders. You must attach at least one collider for the
+	/// The shape and mass of a rigidbody is governed by its colliders. You must attach at least one collider for the 
 	/// rigidbody to be valid.
 	/// </summary>
 	[ShowInInspector]
@@ -25,7 +25,7 @@ namespace bs
 		protected Rigidbody() { }
 
 		/// <summary>
-		/// Determines the mass of the object and all of its collider shapes. Only relevant if RigidbodyFlag::AutoMass or
+		/// Determines the mass of the object and all of its collider shapes. Only relevant if RigidbodyFlag::AutoMass or 
 		/// RigidbodyFlag::AutoTensors is turned off. Value of zero means the object is immovable (but can be rotated).
 		/// </summary>
 		[ShowInInspector]
@@ -37,8 +37,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines if the body is kinematic. Kinematic body will not move in response to external forces (for example
-		/// gravity, or another object pushing it), essentially behaving like collider. Unlike a collider though, you can still
+		/// Determines if the body is kinematic. Kinematic body will not move in response to external forces (for example 
+		/// gravity, or another object pushing it), essentially behaving like collider. Unlike a collider though, you can still 
 		/// move the object and have other dynamic objects respond correctly (meaning it will push other objects).
 		/// </summary>
 		[ShowInInspector]
@@ -50,7 +50,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Checks if the body is sleeping. Objects that aren&apos;t moved/rotated for a while are put to sleep to reduce load on
+		/// Checks if the body is sleeping. Objects that aren&apos;t moved/rotated for a while are put to sleep to reduce load on 
 		/// the physics system.
 		/// </summary>
 		[NativeWrapper]
@@ -127,8 +127,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the inertia tensor in local mass space. Inertia tensor determines how difficult is to rotate the object.
-		/// Values of zero in the inertia tensor mean the object will be unable to rotate around a specific axis.  Only relevant
+		/// Determines the inertia tensor in local mass space. Inertia tensor determines how difficult is to rotate the object. 
+		/// Values of zero in the inertia tensor mean the object will be unable to rotate around a specific axis. Only relevant 
 		/// if RigidbodyFlag::AutoTensors is turned off.
 		/// </summary>
 		[NativeWrapper]
@@ -182,7 +182,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the number of iterations to use when solving for position. Higher values can improve precision and
+		/// Determines the number of iterations to use when solving for position. Higher values can improve precision and 
 		/// numerical stability of the simulation.
 		/// </summary>
 		[NativeWrapper]
@@ -193,7 +193,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the number of iterations to use when solving for velocity. Higher values can improve precision and
+		/// Determines the number of iterations to use when solving for velocity. Higher values can improve precision and 
 		/// numerical stability of the simulation.
 		/// </summary>
 		[NativeWrapper]
@@ -230,7 +230,7 @@ namespace bs
 		public event Action<CollisionData> OnCollisionEnd;
 
 		/// <summary>
-		/// Moves the rigidbody to a specific position. This method will ensure physically correct movement, meaning the body
+		/// Moves the rigidbody to a specific position. This method will ensure physically correct movement, meaning the body 
 		/// will collide with other objects along the way.
 		/// </summary>
 		public void Move(Vector3 position)
@@ -239,7 +239,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Rotates the rigidbody. This method will ensure physically correct rotation, meaning the body will collide with  other
+		/// Rotates the rigidbody. This method will ensure physically correct rotation, meaning the body will collide with other 
 		/// objects along the way.
 		/// </summary>
 		public void Rotate(Quaternion rotation)
@@ -256,8 +256,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Wakes an object up. Useful if you modified properties of this object, and potentially surrounding objects which might
-		/// result in the object being moved by physics (although the physics system will automatically wake the object up for
+		/// Wakes an object up. Useful if you modified properties of this object, and potentially surrounding objects which might 
+		/// result in the object being moved by physics (although the physics system will automatically wake the object up for 
 		/// majority of such cases).
 		/// </summary>
 		public void WakeUp()
@@ -282,7 +282,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Applies a force to a specific point on the rigidbody. This will in most cases produce both linear and angular
+		/// Applies a force to a specific point on the rigidbody. This will in most cases produce both linear and angular 
 		/// momentum.
 		/// </summary>
 		/// <param name="force">Force to apply.</param>

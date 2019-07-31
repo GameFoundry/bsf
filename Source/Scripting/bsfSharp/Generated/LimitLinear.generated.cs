@@ -31,7 +31,7 @@ namespace bs
 		/// </summary>
 		/// <param name="extent">Distance at which the limit becomes active.</param>
 		/// <param name="contactDist">
-		/// Distance from the limit at which it becomes active. Allows the solver to activate earlier than the limit is reached
+		/// Distance from the limit at which it becomes active. Allows the solver to activate earlier than the limit is reached 
 		/// to avoid breaking the limit. Specify -1 for the default.
 		/// </param>
 		public LimitLinear(float extent, float contactDist = -1f)
@@ -43,7 +43,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Constructs a soft limit. Once the limit is reached the bodies will bounce back according to the resitution parameter
+		/// Constructs a soft limit. Once the limit is reached the bodies will bounce back according to the resitution parameter 
 		/// and will be pulled back towards the limit by the provided spring.
 		/// </summary>
 		/// <param name="extent">Distance at which the limit becomes active.</param>
@@ -51,7 +51,7 @@ namespace bs
 		/// Spring that controls how are the bodies pulled back towards the limit when they breach it.
 		/// </param>
 		/// <param name="restitution">
-		/// Controls how do objects react when the limit is reached, values closer to zero specify non-ellastic collision, while
+		/// Controls how do objects react when the limit is reached, values closer to zero specify non-ellastic collision, while 
 		/// those closer to one specify more ellastic (i.e bouncy) collision. Must be in [0, 1] range.
 		/// </param>
 		public LimitLinear(float extent, Spring spring, float restitution = 0f)
@@ -75,7 +75,7 @@ namespace bs
 		}
 
 		///<summary>
-		/// Assigns values to a subset of fields of this struct. This subset usually contains common field shared with
+		/// Assigns values to a subset of fields of this struct. This subset usually contains common field shared with 
 		/// another struct.
 		///</summary>
 		public void SetBase(LimitCommon value)
@@ -88,12 +88,12 @@ namespace bs
 		/// <summary>Distance at which the limit becomes active.</summary>
 		public float extent;
 		/// <summary>
-		/// Distance from the limit at which it becomes active. Allows the solver to activate earlier than the limit is reached
+		/// Distance from the limit at which it becomes active. Allows the solver to activate earlier than the limit is reached 
 		/// to avoid breaking the limit.
 		/// </summary>
 		public float contactDist;
 		/// <summary>
-		/// Controls how do objects react when the limit is reached, values closer to zero specify non-ellastic collision, while
+		/// Controls how do objects react when the limit is reached, values closer to zero specify non-ellastic collision, while 
 		/// those closer to one specify more ellastic (i.e bouncy) collision. Must be in [0, 1] range.
 		/// </summary>
 		public float restitution;

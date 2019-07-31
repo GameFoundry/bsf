@@ -7,9 +7,9 @@
 #include "../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
 #include "../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
 #include "../../../Foundation/bsfCore/Particles/BsParticleSystem.h"
-#include "../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
-#include "../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
 #include "Math/BsVector3.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
+#include "../../../Foundation/bsfCore/Particles/BsParticleDistribution.h"
 
 namespace bs
 {

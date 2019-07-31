@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// GUI element style that determines the look of a GUI element, as well as the element&apos;s default layout options.
+	/// GUI element style that determines the look of a GUI element, as well as the element&apos;s default layout options. 
 	/// Different looks can be provided for different element states.
 	/// </summary>
 	[ShowInInspector]
@@ -79,7 +79,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Style used when the element doesn&apos;t have focus nor is the user interacting with the element. Used when the
+		/// Style used when the element doesn&apos;t have focus nor is the user interacting with the element. Used when the 
 		/// element is in the &apos;off&apos; state.
 		/// </summary>
 		[ShowInInspector]
@@ -96,7 +96,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Style used when the user is hovering the pointer over the element, while the element doesn&apos;t have focus. Used
+		/// Style used when the user is hovering the pointer over the element, while the element doesn&apos;t have focus. Used 
 		/// when the element is in the &apos;off&apos; state.
 		/// </summary>
 		[ShowInInspector]
@@ -113,7 +113,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Style used when the user is actively interacting with the element. Used when the element is in the &apos;off&apos;
+		/// Style used when the user is actively interacting with the element. Used when the element is in the &apos;off&apos; 
 		/// state.
 		/// </summary>
 		[ShowInInspector]
@@ -130,7 +130,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Style used when the element has focus but the pointer is not hovering over the element. Used when the element is in
+		/// Style used when the element has focus but the pointer is not hovering over the element. Used when the element is in 
 		/// the &apos;off&apos; state.
 		/// </summary>
 		[ShowInInspector]
@@ -147,7 +147,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Style used when the element has focus and the pointer is hovering over the element. Used when the element is in the
+		/// Style used when the element has focus and the pointer is hovering over the element. Used when the element is in the 
 		/// &apos;off&apos; state.
 		/// </summary>
 		[ShowInInspector]

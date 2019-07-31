@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Base class for all Joint types. Joints constrain how two rigidbodies move relative to one another (for example a door
+	/// Base class for all Joint types. Joints constrain how two rigidbodies move relative to one another (for example a door 
 	/// hinge). One of the bodies in the joint must always be movable (non-kinematic).
 	/// </summary>
 	[ShowInInspector]
@@ -21,7 +21,7 @@ namespace bs
 		protected Joint() { }
 
 		/// <summary>
-		/// Determines the maximum force the joint can apply before breaking. Broken joints no longer participate in physics
+		/// Determines the maximum force the joint can apply before breaking. Broken joints no longer participate in physics 
 		/// simulation.
 		/// </summary>
 		[ShowInInspector]
@@ -33,7 +33,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the maximum torque the joint can apply before breaking. Broken joints no longer participate in physics
+		/// Determines the maximum torque the joint can apply before breaking. Broken joints no longer participate in physics 
 		/// simulation.
 		/// </summary>
 		[ShowInInspector]

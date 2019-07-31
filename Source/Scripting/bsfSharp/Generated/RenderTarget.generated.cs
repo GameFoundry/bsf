@@ -39,7 +39,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Controls in what order is the render target rendered to compared to other render targets. Targets with higher
+		/// Controls in what order is the render target rendered to compared to other render targets. Targets with higher 
 		/// priority will be rendered before ones with lower priority.
 		/// </summary>
 		[ShowInInspector]

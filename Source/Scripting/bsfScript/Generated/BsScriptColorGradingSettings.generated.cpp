@@ -28,7 +28,7 @@ namespace bs
 
 	MonoObject* ScriptColorGradingSettings::create(const SPtr<ColorGradingSettings>& value)
 	{
-		if(value == nullptr) return nullptr;
+		if(value == nullptr) return nullptr; 
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };

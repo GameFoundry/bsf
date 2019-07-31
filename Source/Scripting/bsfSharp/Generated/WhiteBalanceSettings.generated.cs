@@ -36,8 +36,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Additional tint to be applied during white balancing. Can be used to further tweak the white balancing effect by
-		/// modifying the tint of the light. The tint is chosen on the Planckian locus isothermal, depending on the light
+		/// Additional tint to be applied during white balancing. Can be used to further tweak the white balancing effect by 
+		/// modifying the tint of the light. The tint is chosen on the Planckian locus isothermal, depending on the light 
 		/// temperature specified by #temperature.
 		///
 		/// In range [-1.0f, 1.0f].

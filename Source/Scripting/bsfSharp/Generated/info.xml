@@ -154,7 +154,7 @@
 			<doc>Same as Info, but the message will only be logged to the log file and not any console output.</doc>
 		</enumentry>
 		<enumentry native="Verbose" script="Verbose">
-			<doc>Messages that can provide additional information and warnings, but are too spammy to be displayed under normal  circumstances.</doc>
+			<doc>Messages that can provide additional information and warnings, but are too spammy to be displayed under normal circumstances.</doc>
 		</enumentry>
 		<enumentry native="VeryVerbose" script="VeryVerbose">
 			<doc>Same as Verbose, but for even spammier messages.</doc>
@@ -222,27 +222,6 @@
 		<field name="time" type="float">
 		</field>
 	</struct>
-	<enum native="DrawOperationType" script="MeshTopology">
-		<doc>Describes operation that will be used for rendering a certain set of vertices.</doc>
-		<enumentry native="DOT_POINT_LIST" script="PointList">
-			<doc>Each vertex represents a point.</doc>
-		</enumentry>
-		<enumentry native="DOT_LINE_LIST" script="LineList">
-			<doc>Each sequential pair of vertices represent a line.</doc>
-		</enumentry>
-		<enumentry native="DOT_LINE_STRIP" script="LineStrip">
-			<doc>Each vertex (except the first) forms a line with the previous vertex.</doc>
-		</enumentry>
-		<enumentry native="DOT_TRIANGLE_LIST" script="TriangleList">
-			<doc>Each sequential 3-tuple of vertices represent a triangle.</doc>
-		</enumentry>
-		<enumentry native="DOT_TRIANGLE_STRIP" script="TriangleStrip">
-			<doc>Each vertex (except the first two) form a triangle with the previous two vertices.</doc>
-		</enumentry>
-		<enumentry native="DOT_TRIANGLE_FAN" script="TriangleFan">
-			<doc>Each vertex (except the first two) form a triangle with the first vertex and previous vertex.</doc>
-		</enumentry>
-	</enum>
 	<class native="ApplicationEx" script="Application">
 		<doc>Script-exported API for Application.</doc>
 		<method native="startUp" script="StartUp" static="true">
@@ -272,7 +251,7 @@
 		</enumentry>
 	</enum>
 	<class native="ColorGradient" script="ColorGradient">
-		<doc>Represents a range of color values over some parameters, similar to a curve. Internally represented as a set of keys that get interpolated between.</doc>
+		<doc>Represents a range of color values over some parameters, similar to a curve. Internally represented as a set of keys that get interpolated between. Stores colors as 32-bit integers, and is therefor unable to represent a color range outside of [0, 1] - see ColorGradientHDR for an alternative.</doc>
 		<ctor>
 		</ctor>
 		<ctor>
@@ -326,7 +305,7 @@
 			<doc>Radius of the circle.</doc>
 		</field>
 		<field name="thickness" type="float">
-			<doc>Proportion of the surface that can emit particles. Thickness of 0 results in particles being emitted only from the edge of the circle, while thickness of 1 results in particles being emitted from the entire surface.  In-between values will use a part of the surface.</doc>
+			<doc>Proportion of the surface that can emit particles. Thickness of 0 results in particles being emitted only from the edge of the circle, while thickness of 1 results in particles being emitted from the entire surface. In-between values will use a part of the surface.</doc>
 		</field>
 		<field name="arc" type="Degree">
 			<doc>Angular portion of the cone from which to emit particles from, in degrees.</doc>
@@ -337,10 +316,10 @@
 	</struct>
 	<class native="HString" script="LocString">
 		<doc>String handle. Provides a wrapper around an Unicode string, primarily for localization purposes.
-Actual value for this string is looked up in a global string table based on the provided identifier string and  currently active language. If such value doesn&apos;t exist then the identifier is used as is.
+Actual value for this string is looked up in a global string table based on the provided identifier string and currently active language. If such value doesn&apos;t exist then the identifier is used as is.
 Use {0}, {1}, etc. in the string value for values that might change dynamically.</doc>
 		<ctor>
-			<doc>Creates a new localized string with the specified identifier. If the identifier doesn&apos;t previously exist in the  string table, identifier value will also be used for initializing the default language version of the string.</doc>
+			<doc>Creates a new localized string with the specified identifier. If the identifier doesn&apos;t previously exist in the string table, identifier value will also be used for initializing the default language version of the string.</doc>
 			<param name="identifier" type="string">
 				<doc>String you can use for later referencing the localized string.</doc>
 			</param>
@@ -349,12 +328,12 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 			</param>
 		</ctor>
 		<ctor>
-			<doc>Creates a new localized string with the specified identifier and sets the default language version of the  string. If a string with that identifier already exists default language string will be updated.</doc>
+			<doc>Creates a new localized string with the specified identifier and sets the default language version of the string. If a string with that identifier already exists default language string will be updated.</doc>
 			<param name="identifier" type="string">
 				<doc>String you can use for later referencing the localized string.</doc>
 			</param>
 			<param name="defaultString" type="string">
-				<doc>Default string to assign to the specified identifier. Language to which it will be  assigned depends on the StringTable::DEFAULT_LANGUAGE value.</doc>
+				<doc>Default string to assign to the specified identifier. Language to which it will be assigned depends on the StringTable::DEFAULT_LANGUAGE value.</doc>
 			</param>
 			<param name="stringTableId" type="int">
 				<doc>Unique identifier of the string table to retrieve the string from.</doc>
@@ -370,7 +349,7 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 			<doc>Creates a new empty localized string.</doc>
 		</ctor>
 		<method native="setParameter" script="SetParameter" static="false">
-			<doc>Sets a value of a string parameter. Parameters are specified as bracketed values within the string itself  (for example {0}, {1}) etc. Use ^ as an escape character.</doc>
+			<doc>Sets a value of a string parameter. Parameters are specified as bracketed values within the string itself (for example {0}, {1}) etc. Use ^ as an escape character.</doc>
 			<param name="idx" type="int">
 			</param>
 			<param name="value" type="string">
@@ -455,7 +434,7 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 			</returns>
 		</method>
 		<method native="getPointInArcShell" script="GetPointInArcShell" static="false">
-			<doc>Returns a random point inside the specified range in an arc shell of unit radius, with the specified  length (angle) and thickness in range [0, 1]. Angle of 360 represents a circle shell. Thickness of 0 will generate points on the arc edge, while thickness of 1 will generate points on the entire arc &apos;slice&apos;.  Intermediate vlaues represent the shell, which is the surface between two concentric circles.</doc>
+			<doc>Returns a random point inside the specified range in an arc shell of unit radius, with the specified length (angle) and thickness in range [0, 1]. Angle of 360 represents a circle shell. Thickness of 0 will generate points on the arc edge, while thickness of 1 will generate points on the entire arc &apos;slice&apos;. Intermediate vlaues represent the shell, which is the surface between two concentric circles.</doc>
 			<param name="angle" type="Degree">
 			</param>
 			<param name="thickness" type="float">
@@ -468,6 +447,258 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 			<returns type="Vector3">
 			</returns>
 		</method>
+	</class>
+	<class native="MultiResource" script="MultiResource">
+		<doc>Contains a group of resources imported from a single source file.</doc>
+		<ctor>
+		</ctor>
+		<ctor>
+			<param name="entries" type="SubResource">
+			</param>
+		</ctor>
+		<property name="Entries" type="SubResource" getter="getentries" setter="setentries" static="false">
+		</property>
+	</class>
+	<class native="ColorGradientHDR" script="ColorGradientHDR">
+		<doc>Represents a range of color values over some parameters, similar to a curve. Internally represented as a set of keys that get interpolated between. Capable of representing HDR colors, unlike the normal ColorGradient.</doc>
+		<ctor>
+		</ctor>
+		<ctor>
+			<param name="color" type="Color">
+			</param>
+		</ctor>
+		<ctor>
+			<param name="keys" type="ColorGradientKey">
+			</param>
+		</ctor>
+		<method native="setKeys" script="SetKeys" static="false">
+			<doc>Keys that control the gradient, sorted by time from first to last. Key times should be in range [0, 1].</doc>
+			<param name="keys" type="ColorGradientKey">
+			</param>
+			<param name="duration" type="float">
+			</param>
+		</method>
+		<method native="getKeys" script="GetKeys" static="false">
+			<doc>Keys that control the gradient, sorted by time from first to last. Key times should be in range [0, 1].</doc>
+			<returns type="ColorGradientKey">
+			</returns>
+		</method>
+		<method native="getKey" script="GetKey" static="false">
+			<doc>Returns the color key at the specified index. If out of range an empty key is returned.</doc>
+			<param name="idx" type="int">
+			</param>
+			<returns type="ColorGradientKey">
+			</returns>
+		</method>
+		<method native="setConstant" script="SetConstant" static="false">
+			<doc>Specify a &quot;gradient&quot; that represents a single color value.</doc>
+			<param name="color" type="Color">
+			</param>
+		</method>
+		<method native="evaluate" script="Evaluate" static="false">
+			<doc>Evaluates a color at the specified <paramref name="t"/>.</doc>
+			<param name="t" type="float">
+			</param>
+			<returns type="Color">
+			</returns>
+		</method>
+		<property name="NumKeys" type="int" getter="getNumKeys" setter="" static="false">
+			<doc>Returns the number of color keys in the gradient.</doc>
+		</property>
+	</class>
+	<struct native="RENDER_WINDOW_DESC" script="RenderWindowDesc">
+		<doc>Structure that is used for initializing a render window.</doc>
+		<ctor>
+		</ctor>
+		<field name="videoMode" type="VideoMode">
+			<doc>Output monitor, frame buffer resize and refresh rate.</doc>
+		</field>
+		<field name="fullscreen" type="bool">
+			<doc>Should the window be opened in fullscreen mode.</doc>
+		</field>
+		<field name="vsync" type="bool">
+			<doc>Should the window wait for vertical sync before swapping buffers.</doc>
+		</field>
+		<field name="vsyncInterval" type="int">
+			<doc>Determines how many vsync intervals occur per frame. FPS = refreshRate/interval. Usually 1 when vsync active.</doc>
+		</field>
+		<field name="hidden" type="bool">
+			<doc>Should the window be hidden initially.</doc>
+		</field>
+		<field name="depthBuffer" type="bool">
+			<doc>Should the window be created with a depth/stencil buffer.</doc>
+		</field>
+		<field name="multisampleCount" type="int">
+			<doc>If higher than 1, texture containing multiple samples per pixel is created.</doc>
+		</field>
+		<field name="multisampleHint" type="string">
+			<doc>Hint about what kind of multisampling to use. Render system specific.</doc>
+		</field>
+		<field name="gamma" type="bool">
+			<doc>Should the written color pixels be gamma corrected before write.</doc>
+		</field>
+		<field name="left" type="int">
+			<doc>Window origin on X axis in pixels. -1 == screen center. Relative to monitor provided in videoMode.</doc>
+		</field>
+		<field name="top" type="int">
+			<doc>Window origin on Y axis in pixels. -1 == screen center. Relative to monitor provided in videoMode.</doc>
+		</field>
+		<field name="title" type="string">
+			<doc>Title of the window.</doc>
+		</field>
+		<field name="showTitleBar" type="bool">
+			<doc>Determines if the title-bar should be shown or not.</doc>
+		</field>
+		<field name="showBorder" type="bool">
+			<doc>Determines if the window border should be shown or not.</doc>
+		</field>
+		<field name="allowResize" type="bool">
+			<doc>Determines if the user can resize the window by dragging on the window edges.</doc>
+		</field>
+		<field name="toolWindow" type="bool">
+			<doc>Tool windows have no task bar entry and always remain on top of their parent window.</doc>
+		</field>
+		<field name="modal" type="bool">
+			<doc>When a modal window is open all other windows will be locked until modal window is closed.</doc>
+		</field>
+		<field name="hideUntilSwap" type="bool">
+			<doc>Window will be created as hidden and only be shown when the first framebuffer swap happens.</doc>
+		</field>
+	</struct>
+	<enum native="PropertyDistributionType" script="PropertyDistributionType">
+		<doc>Determines type of distribution used by distribution properties.</doc>
+		<enumentry native="PDT_Constant" script="Constant">
+			<doc>The distribution is a costant value.</doc>
+		</enumentry>
+		<enumentry native="PDT_RandomRange" script="RandomRange">
+			<doc>The distribution is a random value in a specified constant range.</doc>
+		</enumentry>
+		<enumentry native="PDT_Curve" script="Curve">
+			<doc>The distribution is a time-varying value.</doc>
+		</enumentry>
+		<enumentry native="PDT_RandomCurveRange" script="RandomCurveRange">
+			<doc>The distribution is a random value in a specified time-varying range.</doc>
+		</enumentry>
+	</enum>
+	<class native="TAnimationCurve&lt;float&gt;" script="AnimationCurve">
+		<doc>Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline can be evaluated at any time, and uses caching to speed up multiple sequential evaluations.</doc>
+		<ctor>
+			<doc>Creates a new animation curve.</doc>
+			<param name="keyframes" type="KeyFrame">
+				<doc>Keyframes to initialize the curve with. They must be sorted by time.</doc>
+			</param>
+		</ctor>
+		<method native="evaluate" script="Evaluate" static="false">
+			<doc>Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider using the cached version of evaluate() for better performance.</doc>
+			<param name="time" type="float">
+				<doc>%Time to evaluate the curve at.</doc>
+			</param>
+			<param name="loop" type="bool">
+				<doc>If true the curve will loop when it goes past the end or beggining. Otherwise the curve value will be clamped.</doc>
+			</param>
+			<returns type="float">
+				<doc>Interpolated value from the curve at provided time.</doc>
+			</returns>
+		</method>
+		<property name="KeyFrames" type="KeyFrame" getter="getKeyFrames" setter="" static="false">
+			<doc>Returns a list of all keyframes in the curve.</doc>
+		</property>
+	</class>
+	<class native="TAnimationCurve&lt;Vector3&gt;" script="Vector3Curve">
+		<doc>Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline can be evaluated at any time, and uses caching to speed up multiple sequential evaluations.</doc>
+		<ctor>
+			<doc>Creates a new animation curve.</doc>
+			<param name="keyframes" type="KeyFrameVec3">
+				<doc>Keyframes to initialize the curve with. They must be sorted by time.</doc>
+			</param>
+		</ctor>
+		<method native="evaluate" script="Evaluate" static="false">
+			<doc>Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider using the cached version of evaluate() for better performance.</doc>
+			<param name="time" type="float">
+				<doc>%Time to evaluate the curve at.</doc>
+			</param>
+			<param name="loop" type="bool">
+				<doc>If true the curve will loop when it goes past the end or beggining. Otherwise the curve value will be clamped.</doc>
+			</param>
+			<returns type="Vector3">
+				<doc>Interpolated value from the curve at provided time.</doc>
+			</returns>
+		</method>
+		<property name="KeyFrames" type="KeyFrameVec3" getter="getKeyFrames" setter="" static="false">
+			<doc>Returns a list of all keyframes in the curve.</doc>
+		</property>
+	</class>
+	<class native="TAnimationCurve&lt;Vector2&gt;" script="Vector2Curve">
+		<doc>Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline can be evaluated at any time, and uses caching to speed up multiple sequential evaluations.</doc>
+		<ctor>
+			<doc>Creates a new animation curve.</doc>
+			<param name="keyframes" type="KeyFrameVec2">
+				<doc>Keyframes to initialize the curve with. They must be sorted by time.</doc>
+			</param>
+		</ctor>
+		<method native="evaluate" script="Evaluate" static="false">
+			<doc>Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider using the cached version of evaluate() for better performance.</doc>
+			<param name="time" type="float">
+				<doc>%Time to evaluate the curve at.</doc>
+			</param>
+			<param name="loop" type="bool">
+				<doc>If true the curve will loop when it goes past the end or beggining. Otherwise the curve value will be clamped.</doc>
+			</param>
+			<returns type="Vector2">
+				<doc>Interpolated value from the curve at provided time.</doc>
+			</returns>
+		</method>
+		<property name="KeyFrames" type="KeyFrameVec2" getter="getKeyFrames" setter="" static="false">
+			<doc>Returns a list of all keyframes in the curve.</doc>
+		</property>
+	</class>
+	<class native="TAnimationCurve&lt;Quaternion&gt;" script="QuaternionCurve">
+		<doc>Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline can be evaluated at any time, and uses caching to speed up multiple sequential evaluations.</doc>
+		<ctor>
+			<doc>Creates a new animation curve.</doc>
+			<param name="keyframes" type="KeyFrameQuat">
+				<doc>Keyframes to initialize the curve with. They must be sorted by time.</doc>
+			</param>
+		</ctor>
+		<method native="evaluate" script="Evaluate" static="false">
+			<doc>Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider using the cached version of evaluate() for better performance.</doc>
+			<param name="time" type="float">
+				<doc>%Time to evaluate the curve at.</doc>
+			</param>
+			<param name="loop" type="bool">
+				<doc>If true the curve will loop when it goes past the end or beggining. Otherwise the curve value will be clamped.</doc>
+			</param>
+			<returns type="Quaternion">
+				<doc>Interpolated value from the curve at provided time.</doc>
+			</returns>
+		</method>
+		<property name="KeyFrames" type="KeyFrameQuat" getter="getKeyFrames" setter="" static="false">
+			<doc>Returns a list of all keyframes in the curve.</doc>
+		</property>
+	</class>
+	<class native="TAnimationCurve&lt;int32_t&gt;" script="IntegerCurve">
+		<doc>Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline can be evaluated at any time, and uses caching to speed up multiple sequential evaluations.</doc>
+		<ctor>
+			<doc>Creates a new animation curve.</doc>
+			<param name="keyframes" type="KeyFrameInt">
+				<doc>Keyframes to initialize the curve with. They must be sorted by time.</doc>
+			</param>
+		</ctor>
+		<method native="evaluate" script="Evaluate" static="false">
+			<doc>Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider using the cached version of evaluate() for better performance.</doc>
+			<param name="time" type="float">
+				<doc>%Time to evaluate the curve at.</doc>
+			</param>
+			<param name="loop" type="bool">
+				<doc>If true the curve will loop when it goes past the end or beggining. Otherwise the curve value will be clamped.</doc>
+			</param>
+			<returns type="int">
+				<doc>Interpolated value from the curve at provided time.</doc>
+			</returns>
+		</method>
+		<property name="KeyFrames" type="KeyFrameInt" getter="getKeyFrames" setter="" static="false">
+			<doc>Returns a list of all keyframes in the curve.</doc>
+		</property>
 	</class>
 	<class native="CCamera" script="Camera">
 		<doc>Camera determines how is world geometry projected onto a 2D surface. You may position and orient it in space, set options like aspect ratio and field or view and it outputs view and projection matrices required for rendering.</doc>
@@ -504,7 +735,7 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 				<doc>2D point on the render target attached to the camera&apos;s viewport, in pixels.</doc>
 			</param>
 			<param name="depth" type="float">
-				<doc>Depth to place the world point at, in world coordinates. The depth is applied to the  vector going from camera origin to the point on the near plane.</doc>
+				<doc>Depth to place the world point at, in world coordinates. The depth is applied to the vector going from camera origin to the point on the near plane.</doc>
 			</param>
 			<returns type="Vector3">
 				<doc>3D point in world space.</doc>
@@ -516,7 +747,7 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 				<doc>2D point on the render target attached to the camera&apos;s viewport, in pixels.</doc>
 			</param>
 			<param name="depth" type="float">
-				<doc>Depth to place the world point at, in device depth. The depth is applied to the  vector going from camera origin to the point on the near plane.</doc>
+				<doc>Depth to place the world point at, in device depth. The depth is applied to the vector going from camera origin to the point on the near plane.</doc>
 			</param>
 			<returns type="Vector3">
 				<doc>3D point relative to the camera&apos;s coordinate system.</doc>
@@ -528,7 +759,7 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 				<doc>2D point on the render target attached to the camera&apos;s viewport, in pixels.</doc>
 			</param>
 			<returns type="Vector2">
-				<doc>2D point in normalized device coordinates ([-1, 1] range), relative to  the camera&apos;s viewport.</doc>
+				<doc>2D point in normalized device coordinates ([-1, 1] range), relative to the camera&apos;s viewport.</doc>
 			</returns>
 		</method>
 		<method native="viewToWorldPoint" script="ViewToWorldPoint" static="false">
@@ -555,13 +786,13 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 				<doc>3D point relative to the camera&apos;s coordinate system.</doc>
 			</param>
 			<returns type="Vector2">
-				<doc>2D point in normalized device coordinates ([-1, 1] range), relative to  the camera&apos;s viewport.</doc>
+				<doc>2D point in normalized device coordinates ([-1, 1] range), relative to the camera&apos;s viewport.</doc>
 			</returns>
 		</method>
 		<method native="ndcToWorldPoint" script="NdcToWorldPoint" static="false">
 			<doc>Converts a point in normalized device coordinates to world space.</doc>
 			<param name="ndcPoint" type="Vector2">
-				<doc>2D point in normalized device coordinates ([-1, 1] range), relative to  the camera&apos;s viewport.</doc>
+				<doc>2D point in normalized device coordinates ([-1, 1] range), relative to the camera&apos;s viewport.</doc>
 			</param>
 			<param name="depth" type="float">
 				<doc>Depth to place the world point at. The depth is applied to the vector going from camera origin to the point on the near plane.</doc>
@@ -573,7 +804,7 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 		<method native="ndcToViewPoint" script="NdcToViewPoint" static="false">
 			<doc>Converts a point in normalized device coordinates to view space.</doc>
 			<param name="ndcPoint" type="Vector2">
-				<doc>2D point in normalized device coordinates ([-1, 1] range), relative to  the camera&apos;s viewport.</doc>
+				<doc>2D point in normalized device coordinates ([-1, 1] range), relative to the camera&apos;s viewport.</doc>
 			</param>
 			<param name="depth" type="float">
 				<doc>Depth to place the world point at. The depth is applied to the vector going from camera origin to the point on the near plane.</doc>
@@ -585,7 +816,7 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 		<method native="ndcToScreenPoint" script="NdcToScreenPoint" static="false">
 			<doc>Converts a point in normalized device coordinates to screen space.</doc>
 			<param name="ndcPoint" type="Vector2">
-				<doc>2D point in normalized device coordinates ([-1, 1] range), relative to  the camera&apos;s viewport.</doc>
+				<doc>2D point in normalized device coordinates ([-1, 1] range), relative to the camera&apos;s viewport.</doc>
 			</param>
 			<returns type="Vector2I">
 				<doc>2D point on the render target attached to the camera&apos;s viewport, in pixels.</doc>
@@ -606,13 +837,13 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 				<doc>3D point relative to the camera&apos;s coordinate system.</doc>
 			</param>
 			<returns type="Vector3">
-				<doc>3D point in normalized device coordinates ([-1, 1] range), relative to the  camera&apos;s viewport. Z value range depends on active render API.</doc>
+				<doc>3D point in normalized device coordinates ([-1, 1] range), relative to the camera&apos;s viewport. Z value range depends on active render API.</doc>
 			</returns>
 		</method>
 		<method native="unprojectPoint" script="UnprojectPoint" static="false">
 			<doc>Un-projects a point in normalized device space to view space.</doc>
 			<param name="point" type="Vector3">
-				<doc>3D point in normalized device coordinates ([-1, 1] range), relative to the  camera&apos;s viewport. Z value range depends on active render API.</doc>
+				<doc>3D point in normalized device coordinates ([-1, 1] range), relative to the camera&apos;s viewport. Z value range depends on active render API.</doc>
 			</param>
 			<returns type="Vector3">
 				<doc>3D point relative to the camera&apos;s coordinate system.</doc>
@@ -640,7 +871,7 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 			<doc>Gets the camera view matrix. Used for positioning/orienting the camera.</doc>
 		</property>
 		<property name="ProjectionType" type="ProjectionType" getter="getProjectionType" setter="setProjectionType" static="false">
-			<doc>Determines the type of projection used by the camera. Projection type controls how is 3D geometry projected onto a  2D plane.</doc>
+			<doc>Determines the type of projection used by the camera. Projection type controls how is 3D geometry projected onto a 2D plane.</doc>
 		</property>
 		<property name="OrthoHeight" type="float" getter="getOrthoWindowHeight" setter="setOrthoWindowHeight" static="false">
 			<doc>Determines the orthographic window height, for use with orthographic rendering only. The width of the window will be calculated from the aspect ratio. Value is specified in world units.</doc>
@@ -716,11 +947,32 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 		<field name="w" type="int">
 		</field>
 	</struct>
+	<enum native="DrawOperationType" script="MeshTopology">
+		<doc>Describes operation that will be used for rendering a certain set of vertices.</doc>
+		<enumentry native="DOT_POINT_LIST" script="PointList">
+			<doc>Each vertex represents a point.</doc>
+		</enumentry>
+		<enumentry native="DOT_LINE_LIST" script="LineList">
+			<doc>Each sequential pair of vertices represent a line.</doc>
+		</enumentry>
+		<enumentry native="DOT_LINE_STRIP" script="LineStrip">
+			<doc>Each vertex (except the first) forms a line with the previous vertex.</doc>
+		</enumentry>
+		<enumentry native="DOT_TRIANGLE_LIST" script="TriangleList">
+			<doc>Each sequential 3-tuple of vertices represent a triangle.</doc>
+		</enumentry>
+		<enumentry native="DOT_TRIANGLE_STRIP" script="TriangleStrip">
+			<doc>Each vertex (except the first two) form a triangle with the previous two vertices.</doc>
+		</enumentry>
+		<enumentry native="DOT_TRIANGLE_FAN" script="TriangleFan">
+			<doc>Each vertex (except the first two) form a triangle with the first vertex and previous vertex.</doc>
+		</enumentry>
+	</enum>
 	<class native="CAudioListener" script="AudioListener">
 		<doc>Represents a listener that hears audio sources. For spatial audio the volume and pitch of played audio is determined by the distance, orientation and velocity differences between the source and the listener.</doc>
 	</class>
 	<class native="Mesh" script="Mesh">
-		<doc>Primary class for holding geometry. Stores data in the form of vertex buffers and optionally an index buffer, which  may be bound to the pipeline for drawing. May contain multiple sub-meshes.</doc>
+		<doc>Primary class for holding geometry. Stores data in the form of vertex buffers and optionally an index buffer, which may be bound to the pipeline for drawing. May contain multiple sub-meshes.</doc>
 		<ctor>
 			<doc>Creates a new mesh with enough space to hold the a number of primitives using the specified layout. All indices will be part of a single sub-mesh.</doc>
 			<param name="numVertices" type="int">
@@ -901,7 +1153,7 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 	<enum native="PhysicsMeshType" script="PhysicsMeshType">
 		<doc>Valid types of a mesh used for physics.</doc>
 		<enumentry native="Triangle" script="Triangle">
-			<doc>A regular triangle mesh. Mesh can be of arbitrary size but cannot be used for triggers and non-kinematic  objects. Incurrs a significantly larger performance impact than convex meshes.</doc>
+			<doc>A regular triangle mesh. Mesh can be of arbitrary size but cannot be used for triggers and non-kinematic objects. Incurrs a significantly larger performance impact than convex meshes.</doc>
 		</enumentry>
 		<enumentry native="Convex" script="Convex">
 			<doc>Mesh representing a convex shape. Mesh will not have more than 256 vertices. Incurrs a significantly lower performance impact than triangle meshes.</doc>
@@ -922,7 +1174,7 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 			<doc>Source is a single image that will be replicated on all cubemap faces.</doc>
 		</enumentry>
 		<enumentry native="Faces" script="Faces">
-			<doc>Source is a list of 6 images, either sequentially next to each other or in a cross format. The system will  automatically guess the layout and orientation based on the aspect ratio.</doc>
+			<doc>Source is a list of 6 images, either sequentially next to each other or in a cross format. The system will automatically guess the layout and orientation based on the aspect ratio.</doc>
 		</enumentry>
 		<enumentry native="Spherical" script="Spherical">
 			<doc>Source is a single spherical panoramic image.</doc>
@@ -932,7 +1184,7 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 		</enumentry>
 	</enum>
 	<class native="ImportOptions" script="ImportOptions">
-		<doc>Base class for creating import options from. Import options are specific for each importer and control how is data  imported.</doc>
+		<doc>Base class for creating import options from. Import options are specific for each importer and control how is data imported.</doc>
 	</class>
 	<class native="ParticleEmitterStaticMeshShape" script="ParticleEmitterStaticMeshShape">
 		<doc>Particle emitter shape that emits particles from a surface of a static (non-animated) mesh. Particles can be emitted from mesh vertices, edges or triangles. If information about normals exists, particles will also inherit the normals.</doc>
@@ -1269,7 +1521,7 @@ Does not account for gravity, you must apply it manually.</doc>
 			<doc>Number of mip levels to reference. Must be greater than zero.</doc>
 		</field>
 		<field name="face" type="int">
-			<doc>First face to reference. Face can represent a single cubemap face, or a single array entry in a  texture array. If cubemaps are laid out in a texture array then every six sequential faces represent a single array entry.</doc>
+			<doc>First face to reference. Face can represent a single cubemap face, or a single array entry in a texture array. If cubemaps are laid out in a texture array then every six sequential faces represent a single array entry.</doc>
 		</field>
 		<field name="numFaces" type="int">
 			<doc>Number of faces to reference, if the texture has more than one.</doc>
@@ -1301,7 +1553,7 @@ Does not account for gravity, you must apply it manually.</doc>
 			<doc>Determines what happens to other animation clips when a new clip starts playing.</doc>
 		</field>
 		<field name="stopped" type="bool">
-			<doc>Determines should the time be advanced automatically. Certain type of animation clips don&apos;t involve playback  (e.g. for blending where animation weight controls the animation).</doc>
+			<doc>Determines should the time be advanced automatically. Certain type of animation clips don&apos;t involve playback (e.g. for blending where animation weight controls the animation).</doc>
 		</field>
 	</struct>
 	<struct native="Blend1DInfo" script="Blend1DInfo">
@@ -1424,211 +1676,6 @@ Does not account for gravity, you must apply it manually.</doc>
 			<doc>Position of the key along the animation spline.</doc>
 		</field>
 	</struct>
-	<class native="MultiResource" script="MultiResource">
-		<doc>Contains a group of resources imported from a single source file.</doc>
-		<ctor>
-		</ctor>
-		<ctor>
-			<param name="entries" type="SubResource">
-			</param>
-		</ctor>
-		<property name="Entries" type="SubResource" getter="getentries" setter="setentries" static="false">
-		</property>
-	</class>
-	<struct native="RENDER_WINDOW_DESC" script="RenderWindowDesc">
-		<doc>Structure that is used for initializing a render window.</doc>
-		<ctor>
-		</ctor>
-		<field name="videoMode" type="VideoMode">
-			<doc>Output monitor, frame buffer resize and refresh rate.</doc>
-		</field>
-		<field name="fullscreen" type="bool">
-			<doc>Should the window be opened in fullscreen mode.</doc>
-		</field>
-		<field name="vsync" type="bool">
-			<doc>Should the window wait for vertical sync before swapping buffers.</doc>
-		</field>
-		<field name="vsyncInterval" type="int">
-			<doc>Determines how many vsync intervals occur per frame. FPS = refreshRate/interval. Usually 1 when vsync active.</doc>
-		</field>
-		<field name="hidden" type="bool">
-			<doc>Should the window be hidden initially.</doc>
-		</field>
-		<field name="depthBuffer" type="bool">
-			<doc>Should the window be created with a depth/stencil buffer.</doc>
-		</field>
-		<field name="multisampleCount" type="int">
-			<doc>If higher than 1, texture containing multiple samples per pixel is created.</doc>
-		</field>
-		<field name="multisampleHint" type="string">
-			<doc>Hint about what kind of multisampling to use. Render system specific.</doc>
-		</field>
-		<field name="gamma" type="bool">
-			<doc>Should the written color pixels be gamma corrected before write.</doc>
-		</field>
-		<field name="left" type="int">
-			<doc>Window origin on X axis in pixels. -1 == screen center. Relative to monitor provided in videoMode.</doc>
-		</field>
-		<field name="top" type="int">
-			<doc>Window origin on Y axis in pixels. -1 == screen center. Relative to monitor provided in videoMode.</doc>
-		</field>
-		<field name="title" type="string">
-			<doc>Title of the window.</doc>
-		</field>
-		<field name="showTitleBar" type="bool">
-			<doc>Determines if the title-bar should be shown or not.</doc>
-		</field>
-		<field name="showBorder" type="bool">
-			<doc>Determines if the window border should be shown or not.</doc>
-		</field>
-		<field name="allowResize" type="bool">
-			<doc>Determines if the user can resize the window by dragging on the window edges.</doc>
-		</field>
-		<field name="toolWindow" type="bool">
-			<doc>Tool windows have no task bar entry and always remain on top of their parent window.</doc>
-		</field>
-		<field name="modal" type="bool">
-			<doc>When a modal window is open all other windows will be locked until modal window is closed.</doc>
-		</field>
-		<field name="hideUntilSwap" type="bool">
-			<doc>Window will be created as hidden and only be shown when the first framebuffer swap happens.</doc>
-		</field>
-	</struct>
-	<enum native="PropertyDistributionType" script="PropertyDistributionType">
-		<doc>Determines type of distribution used by distribution properties.</doc>
-		<enumentry native="PDT_Constant" script="Constant">
-			<doc>The distribution is a costant value.</doc>
-		</enumentry>
-		<enumentry native="PDT_RandomRange" script="RandomRange">
-			<doc>The distribution is a random value in a specified constant range.</doc>
-		</enumentry>
-		<enumentry native="PDT_Curve" script="Curve">
-			<doc>The distribution is a time-varying value.</doc>
-		</enumentry>
-		<enumentry native="PDT_RandomCurveRange" script="RandomCurveRange">
-			<doc>The distribution is a random value in a specified time-varying range.</doc>
-		</enumentry>
-	</enum>
-	<class native="TAnimationCurve&lt;float&gt;" script="AnimationCurve">
-		<doc>Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline can be evaluated at any time, and uses caching to speed up multiple sequential evaluations.</doc>
-		<ctor>
-			<doc>Creates a new animation curve.</doc>
-			<param name="keyframes" type="KeyFrame">
-				<doc>Keyframes to initialize the curve with. They must be sorted by time.</doc>
-			</param>
-		</ctor>
-		<method native="evaluate" script="Evaluate" static="false">
-			<doc>Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider using the cached version of evaluate() for better performance.</doc>
-			<param name="time" type="float">
-				<doc>%Time to evaluate the curve at.</doc>
-			</param>
-			<param name="loop" type="bool">
-				<doc>If true the curve will loop when it goes past the end or beggining. Otherwise the curve  value will be clamped.</doc>
-			</param>
-			<returns type="float">
-				<doc>Interpolated value from the curve at provided time.</doc>
-			</returns>
-		</method>
-		<property name="KeyFrames" type="KeyFrame" getter="getKeyFrames" setter="" static="false">
-			<doc>Returns a list of all keyframes in the curve.</doc>
-		</property>
-	</class>
-	<class native="TAnimationCurve&lt;Vector3&gt;" script="Vector3Curve">
-		<doc>Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline can be evaluated at any time, and uses caching to speed up multiple sequential evaluations.</doc>
-		<ctor>
-			<doc>Creates a new animation curve.</doc>
-			<param name="keyframes" type="KeyFrameVec3">
-				<doc>Keyframes to initialize the curve with. They must be sorted by time.</doc>
-			</param>
-		</ctor>
-		<method native="evaluate" script="Evaluate" static="false">
-			<doc>Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider using the cached version of evaluate() for better performance.</doc>
-			<param name="time" type="float">
-				<doc>%Time to evaluate the curve at.</doc>
-			</param>
-			<param name="loop" type="bool">
-				<doc>If true the curve will loop when it goes past the end or beggining. Otherwise the curve  value will be clamped.</doc>
-			</param>
-			<returns type="Vector3">
-				<doc>Interpolated value from the curve at provided time.</doc>
-			</returns>
-		</method>
-		<property name="KeyFrames" type="KeyFrameVec3" getter="getKeyFrames" setter="" static="false">
-			<doc>Returns a list of all keyframes in the curve.</doc>
-		</property>
-	</class>
-	<class native="TAnimationCurve&lt;Vector2&gt;" script="Vector2Curve">
-		<doc>Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline can be evaluated at any time, and uses caching to speed up multiple sequential evaluations.</doc>
-		<ctor>
-			<doc>Creates a new animation curve.</doc>
-			<param name="keyframes" type="KeyFrameVec2">
-				<doc>Keyframes to initialize the curve with. They must be sorted by time.</doc>
-			</param>
-		</ctor>
-		<method native="evaluate" script="Evaluate" static="false">
-			<doc>Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider using the cached version of evaluate() for better performance.</doc>
-			<param name="time" type="float">
-				<doc>%Time to evaluate the curve at.</doc>
-			</param>
-			<param name="loop" type="bool">
-				<doc>If true the curve will loop when it goes past the end or beggining. Otherwise the curve  value will be clamped.</doc>
-			</param>
-			<returns type="Vector2">
-				<doc>Interpolated value from the curve at provided time.</doc>
-			</returns>
-		</method>
-		<property name="KeyFrames" type="KeyFrameVec2" getter="getKeyFrames" setter="" static="false">
-			<doc>Returns a list of all keyframes in the curve.</doc>
-		</property>
-	</class>
-	<class native="TAnimationCurve&lt;Quaternion&gt;" script="QuaternionCurve">
-		<doc>Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline can be evaluated at any time, and uses caching to speed up multiple sequential evaluations.</doc>
-		<ctor>
-			<doc>Creates a new animation curve.</doc>
-			<param name="keyframes" type="KeyFrameQuat">
-				<doc>Keyframes to initialize the curve with. They must be sorted by time.</doc>
-			</param>
-		</ctor>
-		<method native="evaluate" script="Evaluate" static="false">
-			<doc>Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider using the cached version of evaluate() for better performance.</doc>
-			<param name="time" type="float">
-				<doc>%Time to evaluate the curve at.</doc>
-			</param>
-			<param name="loop" type="bool">
-				<doc>If true the curve will loop when it goes past the end or beggining. Otherwise the curve  value will be clamped.</doc>
-			</param>
-			<returns type="Quaternion">
-				<doc>Interpolated value from the curve at provided time.</doc>
-			</returns>
-		</method>
-		<property name="KeyFrames" type="KeyFrameQuat" getter="getKeyFrames" setter="" static="false">
-			<doc>Returns a list of all keyframes in the curve.</doc>
-		</property>
-	</class>
-	<class native="TAnimationCurve&lt;int32_t&gt;" script="IntegerCurve">
-		<doc>Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline can be evaluated at any time, and uses caching to speed up multiple sequential evaluations.</doc>
-		<ctor>
-			<doc>Creates a new animation curve.</doc>
-			<param name="keyframes" type="KeyFrameInt">
-				<doc>Keyframes to initialize the curve with. They must be sorted by time.</doc>
-			</param>
-		</ctor>
-		<method native="evaluate" script="Evaluate" static="false">
-			<doc>Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider using the cached version of evaluate() for better performance.</doc>
-			<param name="time" type="float">
-				<doc>%Time to evaluate the curve at.</doc>
-			</param>
-			<param name="loop" type="bool">
-				<doc>If true the curve will loop when it goes past the end or beggining. Otherwise the curve  value will be clamped.</doc>
-			</param>
-			<returns type="int">
-				<doc>Interpolated value from the curve at provided time.</doc>
-			</returns>
-		</method>
-		<property name="KeyFrames" type="KeyFrameInt" getter="getKeyFrames" setter="" static="false">
-			<doc>Returns a list of all keyframes in the curve.</doc>
-		</property>
-	</class>
 	<class native="VectorField" script="VectorField">
 		<doc>Represents a three dimensional field of vectors. It is represented by spatial bounds which are split into a grid of values with user-defined density, where each grid cell is assigned a vector.</doc>
 		<ctor>
@@ -1637,7 +1684,7 @@ Does not account for gravity, you must apply it manually.</doc>
 				<doc>Description of the vector field to create.</doc>
 			</param>
 			<param name="values" type="Vector3">
-				<doc>Values to assign to the vector field. Number of entries must match  countX * countY * countZ.</doc>
+				<doc>Values to assign to the vector field. Number of entries must match countX * countY * countZ.</doc>
 			</param>
 		</ctor>
 	</class>
@@ -1961,7 +2008,7 @@ Does not account for gravity, you must apply it manually.</doc>
 		</enumentry>
 	</enum>
 	<enum native="TangentModeBits" script="TangentMode">
-		<doc>Flags that are used for describing how are tangents calculated for a specific keyframe in an animation curve.  Modes for &quot;in&quot; and &quot;out&quot; tangents can be combined.</doc>
+		<doc>Flags that are used for describing how are tangents calculated for a specific keyframe in an animation curve. Modes for &quot;in&quot; and &quot;out&quot; tangents can be combined.</doc>
 		<enumentry native="OutStep" script="OutStep">
 			<doc>Tangent is infinite, ensuring there is a instantaneus jump between current and next keyframe value.</doc>
 		</enumentry>
@@ -2148,7 +2195,7 @@ Does not account for gravity, you must apply it manually.</doc>
 			<doc>Format storing RGB in half (16-bit) floating point format usable for HDR. 8 bits per pixel.</doc>
 		</enumentry>
 		<enumentry native="PF_BC7" script="BC7">
-			<doc>Format storing RGB with optional alpha channel. Similar to BC1/BC2/BC3 formats but with higher quality and  higher decompress overhead. 8 bits per pixel.</doc>
+			<doc>Format storing RGB with optional alpha channel. Similar to BC1/BC2/BC3 formats but with higher quality and higher decompress overhead. 8 bits per pixel.</doc>
 		</enumentry>
 		<enumentry native="PF_R16F" script="R16F">
 			<doc>16-bit 1-channel pixel format, signed float.</doc>
@@ -2275,7 +2322,7 @@ Does not account for gravity, you must apply it manually.</doc>
 		</enumentry>
 	</enum>
 	<class native="PixelData" script="PixelData">
-		<doc>A buffer describing a volume (3D), image (2D) or line (1D) of pixels in memory. Pixels are stored as a succession  of &quot;depth&quot; slices, each containing &quot;height&quot; rows of &quot;width&quot; pixels.</doc>
+		<doc>A buffer describing a volume (3D), image (2D) or line (1D) of pixels in memory. Pixels are stored as a succession of &quot;depth&quot; slices, each containing &quot;height&quot; rows of &quot;width&quot; pixels.</doc>
 		<ctor>
 			<param name="volume" type="PixelVolume">
 			</param>
@@ -2325,29 +2372,29 @@ Does not account for gravity, you must apply it manually.</doc>
 		<method native="getPixels" script="GetPixels" static="false">
 			<doc>Returns values of all pixels.</doc>
 			<returns type="Color">
-				<doc>All pixels in the buffer ordered consecutively. Pixels are stored as a succession of &quot;depth&quot; slices,  each containing &quot;height&quot; rows of &quot;width&quot; pixels.</doc>
+				<doc>All pixels in the buffer ordered consecutively. Pixels are stored as a succession of &quot;depth&quot; slices, each containing &quot;height&quot; rows of &quot;width&quot; pixels.</doc>
 			</returns>
 		</method>
 		<method native="setPixels" script="SetPixels" static="false">
 			<doc>Sets all pixels in the buffer.Caller must ensure that number of pixels match the extends of the buffer.</doc>
 			<param name="value" type="Color">
-				<doc>All pixels in the buffer ordered consecutively. Pixels are stored as a succession of &quot;depth&quot; slices,  each containing &quot;height&quot; rows of &quot;width&quot; pixels.</doc>
+				<doc>All pixels in the buffer ordered consecutively. Pixels are stored as a succession of &quot;depth&quot; slices, each containing &quot;height&quot; rows of &quot;width&quot; pixels.</doc>
 			</param>
 		</method>
 		<method native="getRawPixels" script="GetRawPixels" static="false">
 			<doc>Returns all pixels in the buffer as raw bytes.</doc>
 			<returns type="char">
-				<doc>Raw pixel bytes. It is up to the caller to interpret the pixel format and account for potential  row and slice pitch values.</doc>
+				<doc>Raw pixel bytes. It is up to the caller to interpret the pixel format and account for potential row and slice pitch values.</doc>
 			</returns>
 		</method>
 		<method native="setRawPixels" script="SetRawPixels" static="false">
 			<doc>Sets all pixels in the buffer as raw bytes.</doc>
 			<param name="value" type="char">
-				<doc>Raw pixel bytes. It is up to the caller to interpret the pixel format and account for  potential row and slice pitch values.</doc>
+				<doc>Raw pixel bytes. It is up to the caller to interpret the pixel format and account for potential row and slice pitch values.</doc>
 			</param>
 		</method>
 		<property name="RawRowPitch" type="int" getter="getRowPitch" setter="" static="false">
-			<doc>Returns the number of bytes that offsets one row from another. This can be exact number of bytes required  to hold &quot;width&quot; pixel, but doesn&apos;t have to be as some buffers require padding.</doc>
+			<doc>Returns the number of bytes that offsets one row from another. This can be exact number of bytes required to hold &quot;width&quot; pixel, but doesn&apos;t have to be as some buffers require padding.</doc>
 		</property>
 		<property name="RawSlicePitch" type="int" getter="getSlicePitch" setter="" static="false">
 			<doc>Returns the number of bytes that offsets one depth slice from another. This can be exact number of bytes required to hold &quot;width * height&quot; pixels, but doesn&apos;t have to be as some buffers require padding.</doc>
@@ -2414,14 +2461,14 @@ Does not account for gravity, you must apply it manually.</doc>
 			<doc>True if pixels written to the render target will be gamma corrected.</doc>
 		</property>
 		<property name="Priority" type="int" getter="getPriority" setter="setPriority" static="false">
-			<doc>Controls in what order is the render target rendered to compared to other render targets. Targets with higher  priority will be rendered before ones with lower priority.</doc>
+			<doc>Controls in what order is the render target rendered to compared to other render targets. Targets with higher priority will be rendered before ones with lower priority.</doc>
 		</property>
 		<property name="SampleCount" type="int" getter="getSampleCount" setter="" static="false">
 			<doc>Controls how many samples are used for multisampling. (0 or 1 if multisampling is not used).</doc>
 		</property>
 	</class>
 	<struct native="VideoMode" script="VideoMode">
-		<doc>Video mode contains information about how a render window presents its information to an output device like a  monitor.</doc>
+		<doc>Video mode contains information about how a render window presents its information to an output device like a monitor.</doc>
 		<ctor>
 		</ctor>
 		<ctor>
@@ -2452,7 +2499,7 @@ Does not account for gravity, you must apply it manually.</doc>
 			<doc>Index of the parent video output.</doc>
 		</field>
 		<field name="isCustom" type="bool">
-			<doc>Determines was video mode user created or provided by the API/OS. API/OS created video modes can contain  additional information that allows the video mode to be used more accurately and you should use them when possible.</doc>
+			<doc>Determines was video mode user created or provided by the API/OS. API/OS created video modes can contain additional information that allows the video mode to be used more accurately and you should use them when possible.</doc>
 		</field>
 	</struct>
 	<class native="CAnimation" script="Animation">
@@ -2515,7 +2562,7 @@ Does not account for gravity, you must apply it manually.</doc>
 			</param>
 		</method>
 		<method native="stop" script="Stop" static="false">
-			<doc>Stops playing all animations on the provided layer. Specify -1 to stop animation on the main layer  (non-additive animations).</doc>
+			<doc>Stops playing all animations on the provided layer. Specify -1 to stop animation on the main layer (non-additive animations).</doc>
 			<param name="layer" type="int">
 			</param>
 		</method>
@@ -2556,7 +2603,7 @@ Does not account for gravity, you must apply it manually.</doc>
 			<doc>Determines the default clip to play as soon as the component is enabled. If more control over playing clips is needed use the play(), blend() and crossFade() methods to queue clips for playback manually, and setState() method for modify their states individually.</doc>
 		</property>
 		<property name="WrapMode" type="AnimWrapMode" getter="getWrapMode" setter="setWrapMode" static="false">
-			<doc>Determines the wrap mode for all active animations. Wrap mode determines what happens when animation reaches the  first or last frame.</doc>
+			<doc>Determines the wrap mode for all active animations. Wrap mode determines what happens when animation reaches the first or last frame.</doc>
 		</property>
 		<property name="Speed" type="float" getter="getSpeed" setter="setSpeed" static="false">
 			<doc>Determines the speed for all animations. The default value is 1.0f. Use negative values to play-back in reverse.</doc>
@@ -2599,7 +2646,7 @@ Whether or not an audio source is spatial is controlled by the assigned AudioCli
 			<doc>Determines whether the audio clip should loop when it finishes playing.</doc>
 		</property>
 		<property name="Priority" type="int" getter="getPriority" setter="setPriority" static="false">
-			<doc>Determines the priority of the audio source. If more audio sources are playing than supported by the hardware,  some might get disabled. By setting a higher priority the audio source is guaranteed to be disabled after sources with lower priority.</doc>
+			<doc>Determines the priority of the audio source. If more audio sources are playing than supported by the hardware, some might get disabled. By setting a higher priority the audio source is guaranteed to be disabled after sources with lower priority.</doc>
 		</property>
 		<property name="MinDistance" type="float" getter="getMinDistance" setter="setMinDistance" static="false">
 			<doc>Minimum distance at which audio attenuation starts. When the listener is closer to the source than this value, audio is heard at full volume. Once farther away the audio starts attenuating.</doc>
@@ -2618,7 +2665,7 @@ Whether or not an audio source is spatial is controlled by the assigned AudioCli
 		</property>
 	</class>
 	<class native="CBone" script="Bone">
-		<doc>Component that maps animation for specific bone also be applied to the SceneObject this component is attached to.  The component will attach to the first found parent Animation component.</doc>
+		<doc>Component that maps animation for specific bone also be applied to the SceneObject this component is attached to. The component will attach to the first found parent Animation component.</doc>
 		<property name="Name" type="string" getter="getBoneName" setter="setBoneName" static="false">
 			<doc>Determines the name of the bone the component is referencing.</doc>
 		</property>
@@ -2697,10 +2744,10 @@ Whether or not an audio source is spatial is controlled by the assigned AudioCli
 			<doc>Enables or disables the lens flare effect.</doc>
 		</property>
 		<property name="DownsampleCount" type="int" getter="getdownsampleCount" setter="setdownsampleCount" static="false">
-			<doc>Determines how many times to downsample the scene texture before using it for lens flare effect. Lower values  will use higher resolution texture for calculating lens flare, at the cost of lower performance.  Valid range is [1, 6], default is 4.</doc>
+			<doc>Determines how many times to downsample the scene texture before using it for lens flare effect. Lower values will use higher resolution texture for calculating lens flare, at the cost of lower performance. Valid range is [1, 6], default is 4.</doc>
 		</property>
 		<property name="Threshold" type="float" getter="getthreshold" setter="setthreshold" static="false">
-			<doc>Determines the minimal threshold of pixel luminance to be included in the lens flare calculations. Any pixel  with luminance below this value will be ignored for the purposes of lens flare. Set to zero or negative to  disable the threshold and include all pixels in the calculations.</doc>
+			<doc>Determines the minimal threshold of pixel luminance to be included in the lens flare calculations. Any pixel with luminance below this value will be ignored for the purposes of lens flare. Set to zero or negative to disable the threshold and include all pixels in the calculations.</doc>
 		</property>
 		<property name="GhostCount" type="int" getter="getghostCount" setter="setghostCount" static="false">
 			<doc>Determines the number of ghost features to appear, shown as blurred blobs of bright areas of the scene.</doc>
@@ -2733,7 +2780,7 @@ Whether or not an audio source is spatial is controlled by the assigned AudioCli
 			<doc>Enables or disables chromatic aberration of the lens flare and halo features. Chromatic aberration separates the values of red, green and blue channels according to a user provided offset.</doc>
 		</property>
 		<property name="ChromaticAberrationOffset" type="float" getter="getchromaticAberrationOffset" setter="setchromaticAberrationOffset" static="false">
-			<doc>Determines the distance between pixels within which to sample different channels. The value is in  UV coordinates, range [0, 1].</doc>
+			<doc>Determines the distance between pixels within which to sample different channels. The value is in UV coordinates, range [0, 1].</doc>
 		</property>
 		<property name="BicubicUpsampling" type="bool" getter="getbicubicUpsampling" setter="setbicubicUpsampling" static="false">
 			<doc>Uses a higher quality upscaling when blending the lens flare features with scene color. Results in less blocky artifacts at a cost to performance.</doc>
@@ -2771,29 +2818,29 @@ Whether or not an audio source is spatial is controlled by the assigned AudioCli
 			<doc>Index of the triangle that was hit (only applicable when triangle meshes are hit).</doc>
 		</field>
 		<field name="unmappedTriangleIdx" type="int">
-			<doc>Unmapped index of the triangle that was hit (only applicable when triangle meshes are hit).  It represents an index into the original MeshData used to create the PhysicsMesh associated with <see cref="collider"/>. In contrast, <see cref="triangleIdx"/> is only a valid index for the MeshData directly obtained from #collider which can  differ from the original MeshData due to the internal implementation.</doc>
+			<doc>Unmapped index of the triangle that was hit (only applicable when triangle meshes are hit). It represents an index into the original MeshData used to create the PhysicsMesh associated with <see cref="collider"/>. In contrast, <see cref="triangleIdx"/> is only a valid index for the MeshData directly obtained from #collider which can differ from the original MeshData due to the internal implementation.</doc>
 		</field>
 		<field name="collider" type="Collider">
 			<doc>Component of the collider that was hit. This may be null if the hit collider has no owner component, in which case refer to #colliderRaw.</doc>
 		</field>
 	</struct>
 	<class native="CCollider" script="Collider">
-		<doc>Collider represents physics geometry that can be in multiple states: - Default: Static geometry that physics objects can collide with. - Trigger: Static geometry that can&apos;t be collided with but will report touch events. - Dynamic: Dynamic geometry that is a part of a Rigidbody. A set of colliders defines the shape of the parent  rigidbody.</doc>
+		<doc>Collider represents physics geometry that can be in multiple states: - Default: Static geometry that physics objects can collide with. - Trigger: Static geometry that can&apos;t be collided with but will report touch events. - Dynamic: Dynamic geometry that is a part of a Rigidbody. A set of colliders defines the shape of the parent rigidbody.</doc>
 		<property name="Trigger" type="bool" getter="getIsTrigger" setter="setIsTrigger" static="false">
-			<doc>Enables/disables a collider as a trigger. A trigger will not be used for collisions (objects will pass  through it), but collision events will still be reported.</doc>
+			<doc>Enables/disables a collider as a trigger. A trigger will not be used for collisions (objects will pass through it), but collision events will still be reported.</doc>
 		</property>
 		<property name="Mass" type="float" getter="getMass" setter="setMass" static="false">
 			<doc>Determines the mass of the collider. Only relevant if the collider is part of a rigidbody. Ultimately this will determine the total mass, center of mass and inertia tensors of the parent rigidbody (if they&apos;re being calculated automatically).</doc>
 		</property>
 		<property name="Material" type="RRef&lt;PhysicsMaterial&gt;" getter="getMaterial" setter="setMaterial" static="false">
-			<doc>Determines the physical material of the collider. The material determines how objects hitting the collider  behave.</doc>
+			<doc>Determines the physical material of the collider. The material determines how objects hitting the collider behave.</doc>
 		</property>
 		<property name="ContactOffset" type="float" getter="getContactOffset" setter="setContactOffset" static="false">
-			<doc>Determines how far apart do two shapes need to be away from each other before the physics runtime starts  generating repelling impulse for them. This distance will be the sum of contact offsets of the two interacting objects. If objects are moving fast you can increase this value to start generating the impulse earlier and  potentially prevent the objects from interpenetrating. This value is in meters. Must be positive and greater than rest offset.
+			<doc>Determines how far apart do two shapes need to be away from each other before the physics runtime starts generating repelling impulse for them. This distance will be the sum of contact offsets of the two interacting objects. If objects are moving fast you can increase this value to start generating the impulse earlier and potentially prevent the objects from interpenetrating. This value is in meters. Must be positive and greater than rest offset.
 Also see setRestOffset().</doc>
 		</property>
 		<property name="RestOffset" type="float" getter="getRestOffset" setter="setRestOffset" static="false">
-			<doc>Determines at what distance should two objects resting on one another come to an equilibrium. The value used in the runtime will be the sum of rest offsets for both interacting objects. This value is in meters. Cannot be  larger than contact offset.
+			<doc>Determines at what distance should two objects resting on one another come to an equilibrium. The value used in the runtime will be the sum of rest offsets for both interacting objects. This value is in meters. Cannot be larger than contact offset.
 Also see setContactOffset().</doc>
 		</property>
 		<property name="Layer" type="ulong" getter="getLayer" setter="setLayer" static="false">
@@ -2832,7 +2879,7 @@ Also see setContactOffset().</doc>
 			<doc>Percentage below which to ignore values in the eye adaptation histogram. The histogram is used for calculating the average brightness of the scene. Total luminance in the histogram will be summed up and multiplied by this value to calculate minimal luminance. Luminance values below the minimal luminance will be ignored and not used in scene brightness calculations. This allows you to remove outliers on the lower end of the histogram (for example a few very dark pixels in an otherwise bright image). In range [0.0f, 1.0f].</doc>
 		</property>
 		<property name="HistogramPctHigh" type="float" getter="gethistogramPctHigh" setter="sethistogramPctHigh" static="false">
-			<doc>Percentage above which to ignore values in the eye adaptation histogram. The histogram is used for calculating the average brightness of the scene. Total luminance in the histogram will be summed up and multiplied by this value to calculate maximum luminance. Luminance values above the maximum luminance will be ignored and not used in scene brightness calculations. This allows you to remove outliers on the high end of the histogram (for  example a few very bright pixels). In range [0.0f, 1.0f].</doc>
+			<doc>Percentage above which to ignore values in the eye adaptation histogram. The histogram is used for calculating the average brightness of the scene. Total luminance in the histogram will be summed up and multiplied by this value to calculate maximum luminance. Luminance values above the maximum luminance will be ignored and not used in scene brightness calculations. This allows you to remove outliers on the high end of the histogram (for example a few very bright pixels). In range [0.0f, 1.0f].</doc>
 		</property>
 		<property name="MinEyeAdaptation" type="float" getter="getminEyeAdaptation" setter="setminEyeAdaptation" static="false">
 			<doc>Clamps the minimum eye adaptation scale to this value. This allows you to limit eye adaptation so that exposure is never too high (for example when in a very dark room you probably do not want the exposure to be so high that everything is still visible). In range [0.0f, 10.0f].</doc>
@@ -2924,8 +2971,11 @@ In range [-1.0f, 1.0f].</doc>
 				<doc>Name of the define to unregister.</doc>
 			</param>
 		</method>
+		<ctor>
+			<doc>Creates a new import options object that allows you to customize how are meshes imported.</doc>
+		</ctor>
 		<property name="Languages" type="ShadingLanguageFlags" getter="getlanguages" setter="setlanguages" static="false">
-			<doc>Flags that control which shading languages should the BSL shader be converted into. This ultimately controls on  which render backends it will be able to run on.</doc>
+			<doc>Flags that control which shading languages should the BSL shader be converted into. This ultimately controls on which render backends it will be able to run on.</doc>
 		</property>
 	</class>
 	<class native="ColorGradingSettings" script="ColorGradingSettings">
@@ -2963,13 +3013,13 @@ In range [-1.0f, 1.0f].</doc>
 			<doc>Distance from the camera at which the focal plane is located in. Objects at this distance will be fully in focus.</doc>
 		</property>
 		<property name="FocalRange" type="float" getter="getfocalRange" setter="setfocalRange" static="false">
-			<doc>Range within which the objects remain fully in focus. This range is applied relative to the focal distance.  Only relevant if Gaussian depth of field is used as other methods don&apos;t use a constant in-focus range.</doc>
+			<doc>Range within which the objects remain fully in focus. This range is applied relative to the focal distance. Only relevant if Gaussian depth of field is used as other methods don&apos;t use a constant in-focus range.</doc>
 		</property>
 		<property name="NearTransitionRange" type="float" getter="getnearTransitionRange" setter="setnearTransitionRange" static="false">
-			<doc>Determines the size of the range within which objects transition from focused to fully unfocused, at the near  plane. Only relevant for Gaussian depth of field.</doc>
+			<doc>Determines the size of the range within which objects transition from focused to fully unfocused, at the near plane. Only relevant for Gaussian depth of field.</doc>
 		</property>
 		<property name="FarTransitionRange" type="float" getter="getfarTransitionRange" setter="setfarTransitionRange" static="false">
-			<doc>Determines the size of the range within which objects transition from focused to fully unfocused, at the far  plane. Only relevant for Gaussian depth of field.</doc>
+			<doc>Determines the size of the range within which objects transition from focused to fully unfocused, at the far plane. Only relevant for Gaussian depth of field.</doc>
 		</property>
 		<property name="NearBlurAmount" type="float" getter="getnearBlurAmount" setter="setnearBlurAmount" static="false">
 			<doc>Determines the amount of blur to apply to fully unfocused objects that are closer to camera than the in-focus zone. Set to zero to disable near-field blur. Only relevant for Gaussian depth of field.</doc>
@@ -3060,7 +3110,7 @@ If this is disabled, then color grading and white balancing will not be enabled 
 			<doc>Gamma value to adjust the image for. Larger values result in a brighter image. When tonemapping is turned on the best gamma curve for the output device is chosen automatically and this value can by used to merely tweak that curve. If tonemapping is turned off this is the exact value of the gamma curve that will be applied.</doc>
 		</property>
 		<property name="EnableHDR" type="bool" getter="getenableHDR" setter="setenableHDR" static="false">
-			<doc>High dynamic range allows light intensity to be more correctly recorded when rendering by allowing for a larger range of values. The stored light is then converted into visible color range using exposure and a tone mapping  operator.</doc>
+			<doc>High dynamic range allows light intensity to be more correctly recorded when rendering by allowing for a larger range of values. The stored light is then converted into visible color range using exposure and a tone mapping operator.</doc>
 		</property>
 		<property name="EnableLighting" type="bool" getter="getenableLighting" setter="setenableLighting" static="false">
 			<doc>Determines if scene objects will be lit by lights. If disabled everything will be rendered using their albedo texture with no lighting applied.</doc>
@@ -3081,7 +3131,7 @@ If this is disabled, then color grading and white balancing will not be enabled 
 			<doc>If enabled the camera will use the skybox for rendering the background. A skybox has to be present in the scene. When disabled the camera will use the clear color for rendering the background.</doc>
 		</property>
 		<property name="CullDistance" type="float" getter="getcullDistance" setter="setcullDistance" static="false">
-			<doc>The absolute base cull-distance for objects rendered through this camera in world units. Objects will use this  distance and apply their own factor to it to determine whether they should be visible.</doc>
+			<doc>The absolute base cull-distance for objects rendered through this camera in world units. Objects will use this distance and apply their own factor to it to determine whether they should be visible.</doc>
 		</property>
 	</class>
 	<class native="CCapsuleCollider" script="CapsuleCollider">
@@ -3093,7 +3143,7 @@ If this is disabled, then color grading and white balancing will not be enabled 
 			<doc>Determines the position of the capsule shape, relative to the component&apos;s scene object.</doc>
 		</property>
 		<property name="HalfHeight" type="float" getter="getHalfHeight" setter="setHalfHeight" static="false">
-			<doc>Determines the half height of the capsule, from the origin to one of the hemispherical centers, along the normal  vector.</doc>
+			<doc>Determines the half height of the capsule, from the origin to one of the hemispherical centers, along the normal vector.</doc>
 		</property>
 		<property name="Radius" type="float" getter="getRadius" setter="setRadius" static="false">
 			<doc>Determines the radius of the capsule.</doc>
@@ -3186,7 +3236,7 @@ If this is disabled, then color grading and white balancing will not be enabled 
 	<struct native="ControllerColliderCollision" script="ControllerColliderCollision">
 		<doc>Contains data about a collision of a character controller and a collider.</doc>
 		<field name="collider" type="Collider">
-			<doc>Component of the controller that was touched. Can be null if the controller has no component parent, in which  case check #colliderRaw.</doc>
+			<doc>Component of the controller that was touched. Can be null if the controller has no component parent, in which case check #colliderRaw.</doc>
 		</field>
 		<field name="triangleIndex" type="int">
 			<doc>Touched triangle index for mesh colliders.</doc>
@@ -3265,7 +3315,7 @@ If this is disabled, then color grading and white balancing will not be enabled 
 	<struct native="ControllerControllerCollision" script="ControllerControllerCollision">
 		<doc>Contains data about a collision between two character controllers.</doc>
 		<field name="controller" type="CharacterController">
-			<doc>Component of the controller that was touched. Can be null if the controller has no component parent, in which  case check #controllerRaw.</doc>
+			<doc>Component of the controller that was touched. Can be null if the controller has no component parent, in which case check #controllerRaw.</doc>
 		</field>
 		<field name="position" type="Vector3">
 			<doc>Contact position.</doc>
@@ -3297,7 +3347,7 @@ If this is disabled, then color grading and white balancing will not be enabled 
 		</enumentry>
 	</enum>
 	<struct native="Spring" script="Spring">
-		<doc>Controls spring parameters for a physics joint limits. If a limit is soft (body bounces back due to restition when  the limit is reached) the spring will pull the body back towards the limit using the specified parameters.</doc>
+		<doc>Controls spring parameters for a physics joint limits. If a limit is soft (body bounces back due to restition when the limit is reached) the spring will pull the body back towards the limit using the specified parameters.</doc>
 		<ctor>
 			<doc>Constructs a spring with no force.</doc>
 		</ctor>
@@ -3451,7 +3501,7 @@ If this is disabled, then color grading and white balancing will not be enabled 
 				<doc>Z angle of the cone. Movement is constrainted between 0 and this angle on the Z axis.</doc>
 			</param>
 			<param name="contactDist" type="float">
-				<doc>Distance from the limit at which it becomes active. Allows the solver to activate  earlier than the limit is reached to avoid breaking the limit. Specify -1 for the  default.</doc>
+				<doc>Distance from the limit at which it becomes active. Allows the solver to activate earlier than the limit is reached to avoid breaking the limit. Specify -1 for the default.</doc>
 			</param>
 		</ctor>
 		<ctor>
@@ -3548,10 +3598,10 @@ If this is disabled, then color grading and white balancing will not be enabled 
 			<doc>Linear movement on the Z axis using the linear drive model.</doc>
 		</enumentry>
 		<enumentry native="Swing" script="Swing">
-			<doc>Rotation around the Y axis using the twist/swing angular drive model. Should not be used together with  SLERP mode.</doc>
+			<doc>Rotation around the Y axis using the twist/swing angular drive model. Should not be used together with SLERP mode.</doc>
 		</enumentry>
 		<enumentry native="Twist" script="Twist">
-			<doc>Rotation around the Z axis using the twist/swing angular drive model. Should not be used together with  SLERP mode.</doc>
+			<doc>Rotation around the Z axis using the twist/swing angular drive model. Should not be used together with SLERP mode.</doc>
 		</enumentry>
 		<enumentry native="SLERP" script="SLERP">
 			<doc>Rotation using spherical linear interpolation. Uses the SLERP angular drive mode which performs rotation by interpolating the quaternion values directly over the shortest path (applies to all three axes, which they all must be unlocked).</doc>
@@ -3584,7 +3634,7 @@ If this is disabled, then color grading and white balancing will not be enabled 
 		</enumentry>
 	</enum>
 	<class native="CJoint" script="Joint">
-		<doc>Base class for all Joint types. Joints constrain how two rigidbodies move relative to one another (for example a door  hinge). One of the bodies in the joint must always be movable (non-kinematic).</doc>
+		<doc>Base class for all Joint types. Joints constrain how two rigidbodies move relative to one another (for example a door hinge). One of the bodies in the joint must always be movable (non-kinematic).</doc>
 		<method native="getBody" script="GetBody" static="false">
 			<doc>Determines a body managed by the joint. One of the bodies must be movable (non-kinematic).</doc>
 			<param name="body" type="JointBody">
@@ -3623,10 +3673,10 @@ If this is disabled, then color grading and white balancing will not be enabled 
 			</param>
 		</method>
 		<property name="BreakForce" type="float" getter="getBreakForce" setter="setBreakForce" static="false">
-			<doc>Determines the maximum force the joint can apply before breaking. Broken joints no longer participate in physics  simulation.</doc>
+			<doc>Determines the maximum force the joint can apply before breaking. Broken joints no longer participate in physics simulation.</doc>
 		</property>
 		<property name="BreakTorque" type="float" getter="getBreakTorque" setter="setBreakTorque" static="false">
-			<doc>Determines the maximum torque the joint can apply before breaking. Broken joints no longer participate in physics  simulation.</doc>
+			<doc>Determines the maximum torque the joint can apply before breaking. Broken joints no longer participate in physics simulation.</doc>
 		</property>
 		<property name="EnableCollision" type="bool" getter="getEnableCollision" setter="setEnableCollision" static="false">
 			<doc>Determines whether collision between the two bodies managed by the joint are enabled.</doc>
@@ -3650,7 +3700,7 @@ If this is disabled, then color grading and white balancing will not be enabled 
 		</property>
 	</class>
 	<class native="CD6Joint" script="D6Joint">
-		<doc>Represents the most customizable type of joint. This joint type can be used to create all other built-in joint  types, and to design your own custom ones, but is less intuitive to use. Allows a specification of a linear  constraint (for example for slider), twist constraint (rotating around X) and swing constraint (rotating around Y and Z). It also allows you to constrain limits to only specific axes or completely lock specific axes.</doc>
+		<doc>Represents the most customizable type of joint. This joint type can be used to create all other built-in joint types, and to design your own custom ones, but is less intuitive to use. Allows a specification of a linear constraint (for example for slider), twist constraint (rotating around X) and swing constraint (rotating around Y and Z). It also allows you to constrain limits to only specific axes or completely lock specific axes.</doc>
 		<method native="getMotion" script="GetMotion" static="false">
 			<doc>Returns motion constraint for the specified axis.</doc>
 			<param name="axis" type="D6JointAxis">
@@ -3661,7 +3711,7 @@ If this is disabled, then color grading and white balancing will not be enabled 
 		<method native="setMotion" script="SetMotion" static="false">
 			<doc>Allows you to constrain motion of the specified axis. Be aware that when setting drives for a specific axis you must also take care not to constrain its motion in a conflicting way (for example you cannot add a drive that moves the joint on X axis, and then lock the X axis).
 Unlocking translations degrees of freedom allows the bodies to move along the subset of the unlocked axes. (for example unlocking just one translational axis is the equivalent of a slider joint.)
-Angular degrees of freedom are partitioned as twist (around X axis) and swing (around Y and Z axes). Different effects can be achieves by unlocking their various combinations:  - If a single degree of angular freedom is unlocked it should be the twist degree as it has extra options for that case (for example for a hinge joint). - If both swing degrees are unlocked but twist is locked the result is a zero-twist joint.  - If one swing and one twist degree of freedom are unlocked the result is a zero-swing joint (for example an arm attached at the elbow) - If all angular degrees of freedom are unlocked the result is the same as the spherical joint.</doc>
+Angular degrees of freedom are partitioned as twist (around X axis) and swing (around Y and Z axes). Different effects can be achieves by unlocking their various combinations: - If a single degree of angular freedom is unlocked it should be the twist degree as it has extra options for that case (for example for a hinge joint). - If both swing degrees are unlocked but twist is locked the result is a zero-twist joint. - If one swing and one twist degree of freedom are unlocked the result is a zero-swing joint (for example an arm attached at the elbow) - If all angular degrees of freedom are unlocked the result is the same as the spherical joint.</doc>
 			<param name="axis" type="D6JointAxis">
 			</param>
 			<param name="motion" type="D6JointMotion">
@@ -3738,10 +3788,10 @@ Angular degrees of freedom are partitioned as twist (around X axis) and swing (a
 			<doc>Determines the maximum distance (from its origin) at which the decal is displayed.</doc>
 		</property>
 		<property name="Layer" type="ulong" getter="getLayer" setter="setLayer" static="false">
-			<doc>Determines the layer that controls whether a system is considered visible in a specific camera. Layer must match  camera layer bitfield in order for the camera to render the decal.</doc>
+			<doc>Determines the layer that controls whether a system is considered visible in a specific camera. Layer must match camera layer bitfield in order for the camera to render the decal.</doc>
 		</property>
 		<property name="LayerMask" type="int" getter="getLayerMask" setter="setLayerMask" static="false">
-			<doc>Bitfield that allows you to mask on which objects will the decal be projected onto. Only objects with the  matching layers will be projected onto. Note that decal layer mask only supports 32-bits and objects with layers in bits &gt;= 32 will always be projected onto.</doc>
+			<doc>Bitfield that allows you to mask on which objects will the decal be projected onto. Only objects with the matching layers will be projected onto. Note that decal layer mask only supports 32-bits and objects with layers in bits &gt;= 32 will always be projected onto.</doc>
 		</property>
 	</class>
 	<enum native="DistanceJointFlag" script="DistanceJointFlag">
@@ -3785,7 +3835,7 @@ Angular degrees of freedom are partitioned as twist (around X axis) and swing (a
 			<doc>Determines the error tolerance of the joint at which the joint becomes active. This value slightly extends the lower and upper limit.</doc>
 		</property>
 		<property name="Spring" type="Spring" getter="getSpring" setter="setSpring" static="false">
-			<doc>Determines a spring that controls how the joint responds when a limit is reached. You must enable the spring  flag on the joint in order for this to be recognized.</doc>
+			<doc>Determines a spring that controls how the joint responds when a limit is reached. You must enable the spring flag on the joint in order for this to be recognized.</doc>
 		</property>
 	</class>
 	<class native="CFixedJoint" script="FixedJoint">
@@ -3833,7 +3883,7 @@ Angular degrees of freedom are partitioned as twist (around X axis) and swing (a
 		</field>
 	</struct>
 	<class native="CHingeJoint" script="HingeJoint">
-		<doc>Hinge joint removes all but a single rotation degree of freedom from its two attached bodies (for example a door  hinge).</doc>
+		<doc>Hinge joint removes all but a single rotation degree of freedom from its two attached bodies (for example a door hinge).</doc>
 		<method native="setFlag" script="SetFlag" static="false">
 			<doc>Enables or disables a flag that controls joint behaviour.</doc>
 			<param name="flag" type="HingeJointFlag">
@@ -3858,7 +3908,7 @@ Angular degrees of freedom are partitioned as twist (around X axis) and swing (a
 			<doc>Determines the limit of the joint. Limit constrains the motion to the specified angle range. You must enable the limit flag on the joint in order for this to be recognized.</doc>
 		</property>
 		<property name="Drive" type="HingeJointDrive" getter="getDrive" setter="setDrive" static="false">
-			<doc>Determines the drive properties of the joint. It drives the joint&apos;s angular velocity towards a particular value.  You must enable the drive flag on the joint in order for the drive to be active.</doc>
+			<doc>Determines the drive properties of the joint. It drives the joint&apos;s angular velocity towards a particular value. You must enable the drive flag on the joint in order for the drive to be active.</doc>
 		</property>
 	</class>
 	<class native="CLight" script="Light">
@@ -3870,10 +3920,10 @@ Angular degrees of freedom are partitioned as twist (around X axis) and swing (a
 			<doc>Determines the color emitted by the light.</doc>
 		</property>
 		<property name="Intensity" type="float" getter="getIntensity" setter="setIntensity" static="false">
-			<doc>Determines the power of the light source. This will be luminous flux for radial &amp; spot lights,  luminance for directional lights with no area, and illuminance for directional lights with area (non-zero source radius).</doc>
+			<doc>Determines the power of the light source. This will be luminous flux for radial &amp; spot lights, luminance for directional lights with no area, and illuminance for directional lights with area (non-zero source radius).</doc>
 		</property>
 		<property name="UseAutoAttenuation" type="bool" getter="getUseAutoAttenuation" setter="setUseAutoAttenuation" static="false">
-			<doc>If enabled the attenuation radius will automatically be controlled in order to provide reasonable light radius,  depending on its intensity.</doc>
+			<doc>If enabled the attenuation radius will automatically be controlled in order to provide reasonable light radius, depending on its intensity.</doc>
 		</property>
 		<property name="AttenuationRadius" type="float" getter="getAttenuationRadius" setter="setAttenuationRadius" static="false">
 			<doc>Range at which the light contribution fades out to zero. Use setUseAutoAttenuation to provide a radius automatically dependant on light intensity. The radius will cut-off light contribution and therefore manually set very small radius can end up being very physically incorrect.</doc>
@@ -3885,13 +3935,13 @@ Angular degrees of freedom are partitioned as twist (around X axis) and swing (a
 			<doc>Determines the total angle covered by a spot light.</doc>
 		</property>
 		<property name="SpotAngleFalloff" type="Degree" getter="getSpotFalloffAngle" setter="setSpotFalloffAngle" static="false">
-			<doc>Determines the falloff angle covered by a spot light. Falloff angle determines at what point does light intensity  starts quadratically falling off as the angle approaches the total spot angle.</doc>
+			<doc>Determines the falloff angle covered by a spot light. Falloff angle determines at what point does light intensity starts quadratically falling off as the angle approaches the total spot angle.</doc>
 		</property>
 		<property name="CastsShadow" type="bool" getter="getCastsShadow" setter="setCastsShadow" static="false">
 			<doc>Determines does this light cast shadows when rendered.</doc>
 		</property>
 		<property name="ShadowBias" type="float" getter="getShadowBias" setter="setShadowBias" static="false">
-			<doc>Shadow bias determines offset at which the shadows are rendered from the shadow caster. Bias value of 0 means the shadow will be renderered exactly at the casters position. If your geometry has thin areas this will produce an artifact called shadow acne, in which case you can increase the shadow bias value to eliminate it.  Note that increasing the shadow bias will on the other hand make the shadow be offset from the caster and may make the caster appear as if floating (Peter Panning artifact). Neither is perfect, so it is preferable to ensure all your geometry has thickness and keep the bias at zero, or even at negative values.
+			<doc>Shadow bias determines offset at which the shadows are rendered from the shadow caster. Bias value of 0 means the shadow will be renderered exactly at the casters position. If your geometry has thin areas this will produce an artifact called shadow acne, in which case you can increase the shadow bias value to eliminate it. Note that increasing the shadow bias will on the other hand make the shadow be offset from the caster and may make the caster appear as if floating (Peter Panning artifact). Neither is perfect, so it is preferable to ensure all your geometry has thickness and keep the bias at zero, or even at negative values.
 Default value is 0.5. Should be in rough range [-1, 1].</doc>
 		</property>
 		<property name="Bounds" type="Sphere" getter="getBounds" setter="" static="false">
@@ -3977,10 +4027,10 @@ Resize will not change the positions of current light probes. If you wish to res
 	<class native="CMeshCollider" script="MeshCollider">
 		<doc>A collider represented by an arbitrary mesh.</doc>
 		<property name="Mesh" type="RRef&lt;PhysicsMesh&gt;" getter="getMesh" setter="setMesh" static="false">
-			<doc>Sets a mesh that represents the collider geometry. This can be a generic triangle mesh, or and convex mesh.  Triangle meshes are not supported as triggers, nor are they supported for colliders that are parts of a  non-kinematic rigidbody.</doc>
+			<doc>Sets a mesh that represents the collider geometry. This can be a generic triangle mesh, or and convex mesh. Triangle meshes are not supported as triggers, nor are they supported for colliders that are parts of a non-kinematic rigidbody.</doc>
 		</property>
 	</class>
-	<class native="ColorDistribution" script="ColorDistribution">
+	<class native="TColorDistribution&lt;ColorGradient&gt;" script="ColorDistribution">
 		<doc>Specifies a color as a distribution, which can include a constant color, random color range or a color gradient.</doc>
 		<ctor>
 			<doc>Creates a new empty distribution.</doc>
@@ -4010,7 +4060,7 @@ Resize will not change the positions of current light probes. If you wish to res
 			</param>
 		</ctor>
 		<method native="getMinConstant" script="GetMinConstant" static="false">
-			<doc>Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if  the distribution is represented by a gradient.</doc>
+			<doc>Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if the distribution is represented by a gradient.</doc>
 			<returns type="Color">
 			</returns>
 		</method>
@@ -4020,37 +4070,66 @@ Resize will not change the positions of current light probes. If you wish to res
 			</returns>
 		</method>
 		<method native="getMinGradient" script="GetMinGradient" static="false">
-			<doc>Returns the gradient representing the distribution, or the first gradient representing a gradient range.  Undefined if the distribution is represented by a constant or a non-gradient range.</doc>
+			<doc>Returns the gradient representing the distribution, or the first gradient representing a gradient range. Undefined if the distribution is represented by a constant or a non-gradient range.</doc>
 			<returns type="ColorGradient">
 			</returns>
 		</method>
 		<method native="getMaxGradient" script="GetMaxGradient" static="false">
-			<doc>Returns the curve representing the second gradient of a gradient range. Only defined if the distribution  represents a gradient range.</doc>
+			<doc>Returns the curve representing the second gradient of a gradient range. Only defined if the distribution represents a gradient range.</doc>
 			<returns type="ColorGradient">
 			</returns>
 		</method>
-		<method native="evaluate" script="Evaluate" static="false">
-			<doc>Evaluates the value of the distribution.</doc>
-			<param name="t" type="float">
-				<doc>Time at which to evaluate the distribution. This is only relevant if the distribution contains gradients.</doc>
+		<property name="DistributionType" type="PropertyDistributionType" getter="getType" setter="" static="false">
+			<doc>Returns the type of the represented distribution.</doc>
+		</property>
+	</class>
+	<class native="TColorDistribution&lt;ColorGradientHDR&gt;" script="ColorHDRDistribution">
+		<doc>Specifies a color as a distribution, which can include a constant color, random color range or a color gradient.</doc>
+		<ctor>
+			<doc>Creates a new empty distribution.</doc>
+		</ctor>
+		<ctor>
+			<doc>Creates a new distribution that returns a constant color.</doc>
+			<param name="color" type="Color">
 			</param>
-			<param name="factor" type="float">
-				<doc>Value in range [0, 1] that determines how to interpolate between min/max value, if the distribution represents a range. Value of 0 will return the minimum value, while value of 1 will return the maximum value, and interpolate the values in-between.</doc>
+		</ctor>
+		<ctor>
+			<doc>Creates a new distribution that returns a random color in the specified range.</doc>
+			<param name="minColor" type="Color">
 			</param>
+			<param name="maxColor" type="Color">
+			</param>
+		</ctor>
+		<ctor>
+			<doc>Creates a new distribution that evaluates a color gradient.</doc>
+			<param name="gradient" type="ColorGradientHDR">
+			</param>
+		</ctor>
+		<ctor>
+			<doc>Creates a new distribution that returns a random color in a range determined by two gradients.</doc>
+			<param name="minGradient" type="ColorGradientHDR">
+			</param>
+			<param name="maxGradient" type="ColorGradientHDR">
+			</param>
+		</ctor>
+		<method native="getMinConstant" script="GetMinConstant" static="false">
+			<doc>Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if the distribution is represented by a gradient.</doc>
 			<returns type="Color">
-				<doc>Evaluated color.</doc>
 			</returns>
 		</method>
-		<method native="evaluate" script="Evaluate" static="false">
-			<doc>Evaluates the value of the distribution.</doc>
-			<param name="t" type="float">
-				<doc>Time at which to evaluate the distribution. This is only relevant if the distribution contains gradients.</doc>
-			</param>
-			<param name="factor" type="Random">
-				<doc>Random number generator that determines the factor. Factor determines how to interpolate between min/max value, if the distribution represents a range.</doc>
-			</param>
+		<method native="getMaxConstant" script="GetMaxConstant" static="false">
+			<doc>Returns the maximum value of a constant range. Only defined if the distribution represents a non-gradient range.</doc>
 			<returns type="Color">
-				<doc>Evaluated color.</doc>
+			</returns>
+		</method>
+		<method native="getMinGradient" script="GetMinGradient" static="false">
+			<doc>Returns the gradient representing the distribution, or the first gradient representing a gradient range. Undefined if the distribution is represented by a constant or a non-gradient range.</doc>
+			<returns type="ColorGradientHDR">
+			</returns>
+		</method>
+		<method native="getMaxGradient" script="GetMaxGradient" static="false">
+			<doc>Returns the curve representing the second gradient of a gradient range. Only defined if the distribution represents a gradient range.</doc>
+			<returns type="ColorGradientHDR">
 			</returns>
 		</method>
 		<property name="DistributionType" type="PropertyDistributionType" getter="getType" setter="" static="false">
@@ -4087,7 +4166,7 @@ Resize will not change the positions of current light probes. If you wish to res
 			</param>
 		</ctor>
 		<method native="getMinConstant" script="GetMinConstant" static="false">
-			<doc>Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if  the distribution is represented by a curve.</doc>
+			<doc>Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if the distribution is represented by a curve.</doc>
 			<returns type="float">
 			</returns>
 		</method>
@@ -4164,7 +4243,7 @@ Resize will not change the positions of current light probes. If you wish to res
 			</param>
 		</ctor>
 		<method native="getMinConstant" script="GetMinConstant" static="false">
-			<doc>Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if  the distribution is represented by a curve.</doc>
+			<doc>Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if the distribution is represented by a curve.</doc>
 			<returns type="Vector3">
 			</returns>
 		</method>
@@ -4241,7 +4320,7 @@ Resize will not change the positions of current light probes. If you wish to res
 			</param>
 		</ctor>
 		<method native="getMinConstant" script="GetMinConstant" static="false">
-			<doc>Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if  the distribution is represented by a curve.</doc>
+			<doc>Returns the constant value of the distribution, or the minimal value of a constant range. Undefined if the distribution is represented by a curve.</doc>
 			<returns type="Vector2">
 			</returns>
 		</method>
@@ -4325,7 +4404,7 @@ Resize will not change the positions of current light probes. If you wish to res
 			<doc>Checks is the scene currently active. IF inactive the scene properties aside from the name are undefined.</doc>
 		</property>
 		<property name="Physics" type="PhysicsScene" getter="getPhysicsScene" setter="" static="false">
-			<doc>Physical representation of the scene, as assigned by the physics sub-system. Exact implementation depends on the  physics plugin used.</doc>
+			<doc>Physical representation of the scene, as assigned by the physics sub-system. Exact implementation depends on the physics plugin used.</doc>
 		</property>
 	</class>
 	<struct native="PARTICLE_ORBIT_DESC" script="ParticleOrbitOptions">
@@ -4336,7 +4415,7 @@ Resize will not change the positions of current light probes. If you wish to res
 			<doc>Position of the center around which to orbit. Evaluated over particle system lifetime.</doc>
 		</field>
 		<field name="velocity" type="Vector3Distribution">
-			<doc>Determines the speed of rotation around each axis. The speed is specified in &quot;turns&quot; where 0 = no rotation,  0.5 = 180 degree rotation and 1 = 360 degree rotation. Evaluated over particle lifetime.</doc>
+			<doc>Determines the speed of rotation around each axis. The speed is specified in &quot;turns&quot; where 0 = no rotation, 0.5 = 180 degree rotation and 1 = 360 degree rotation. Evaluated over particle lifetime.</doc>
 		</field>
 		<field name="radial" type="FloatDistribution">
 			<doc>Speed at which to push or pull the particles towards/away from the center. Evaluated over particle lifetime.</doc>
@@ -4437,13 +4516,13 @@ Resize will not change the positions of current light probes. If you wish to res
 		<ctor>
 		</ctor>
 		<field name="rotation" type="FloatDistribution">
-			<doc>Determines the rotation of the particles in degrees, applied around the particle&apos;s local Z axis. Only used if  3D rotation is disabled.</doc>
+			<doc>Determines the rotation of the particles in degrees, applied around the particle&apos;s local Z axis. Only used if 3D rotation is disabled.</doc>
 		</field>
 		<field name="rotation3D" type="Vector3Distribution">
 			<doc>Determines the rotation of the particles in degrees as Euler angles. Only used if 3D rotation is enabled.</doc>
 		</field>
 		<field name="use3DRotation" type="bool">
-			<doc>Determines should the particle rotation be a single angle applied around a Z axis (if disabled), or a  set of Euler angles that allow you to rotate around every axis (if enabled).</doc>
+			<doc>Determines should the particle rotation be a single angle applied around a Z axis (if disabled), or a set of Euler angles that allow you to rotate around every axis (if enabled).</doc>
 		</field>
 	</struct>
 	<class native="ParticleRotation" script="ParticleRotation">
@@ -4494,7 +4573,7 @@ Resize will not change the positions of current light probes. If you wish to res
 			<doc>Creates a new particle collision evolver.</doc>
 		</ctor>
 		<property name="Planes" type="Plane" getter="getPlanes" setter="setPlanes" static="false">
-			<doc>Determines a set of planes to use when using the Plane collision mode. Planes are expected to be in world  space.</doc>
+			<doc>Determines a set of planes to use when using the Plane collision mode. Planes are expected to be in world space.</doc>
 		</property>
 		<property name="PlaneObjects" type="SceneObject" getter="getPlaneObjects" setter="setPlaneObjects" static="false">
 			<doc>Determines a set of objects whose transforms to derive the collision planes from. Objects can move in the world and collision planes will be updated automatically. Object&apos;s negative Z axis is considered to be plane normal.</doc>
@@ -4544,10 +4623,10 @@ Resize will not change the positions of current light probes. If you wish to res
 			<doc>Type that determines general behaviour.</doc>
 		</field>
 		<field name="speed" type="float">
-			<doc>Speed along which particle generation should move around the shape, relevant for Loop and PingPing emission  modes.</doc>
+			<doc>Speed along which particle generation should move around the shape, relevant for Loop and PingPing emission modes.</doc>
 		</field>
 		<field name="interval" type="float">
-			<doc>Determines the minimum interval allowed between the generated particles. 0 specifies the particles can be  generated anywhere on the shape.</doc>
+			<doc>Determines the minimum interval allowed between the generated particles. 0 specifies the particles can be generated anywhere on the shape.</doc>
 		</field>
 	</struct>
 	<class native="ParticleEmitterShape" script="ParticleEmitterShape">
@@ -4664,7 +4743,7 @@ Resize will not change the positions of current light probes. If you wish to res
 		</field>
 	</struct>
 	<class native="CSphericalJoint" script="SphericalJoint">
-		<doc>A spherical joint removes all translational degrees of freedom but allows all rotational degrees of freedom.  Essentially this ensures that the anchor points of the two bodies are always coincident. Bodies are allowed to rotate around the anchor points, and their rotatation can be limited by an elliptical cone.</doc>
+		<doc>A spherical joint removes all translational degrees of freedom but allows all rotational degrees of freedom. Essentially this ensures that the anchor points of the two bodies are always coincident. Bodies are allowed to rotate around the anchor points, and their rotatation can be limited by an elliptical cone.</doc>
 		<method native="setFlag" script="SetFlag" static="false">
 			<doc>Enables or disables a flag that controls the joint&apos;s behaviour.</doc>
 			<param name="flag" type="SphericalJointFlag">
@@ -4727,7 +4806,7 @@ Resize will not change the positions of current light probes. If you wish to res
 		</field>
 	</struct>
 	<class native="ParticleEmitterHemisphereShape" script="ParticleEmitterHemisphereShape">
-		<doc>Particle emitter shape that emits particles from a hemisphere. Particles can be emitted from the hemisphere surface, the entire volume or a proportion of the volume depending on the thickness parameter. All particles will have  normals pointing outwards in a spherical direction.</doc>
+		<doc>Particle emitter shape that emits particles from a hemisphere. Particles can be emitted from the hemisphere surface, the entire volume or a proportion of the volume depending on the thickness parameter. All particles will have normals pointing outwards in a spherical direction.</doc>
 		<ctor>
 			<doc>Creates a new particle emitter sphere shape.</doc>
 			<param name="desc" type="ParticleHemisphereShapeOptions">
@@ -4741,7 +4820,7 @@ Resize will not change the positions of current light probes. If you wish to res
 		</property>
 	</class>
 	<class native="Shader" script="Shader">
-		<doc>Contains definitions of GPU programs used for rendering, as well as a set of global parameters to control those  programs.</doc>
+		<doc>Contains definitions of GPU programs used for rendering, as well as a set of global parameters to control those programs.</doc>
 		<property name="VariationParams" type="ShaderVariationParamInfo" getter="getVariationParams" setter="" static="false">
 			<doc>Returns the list of all variation parameters supported by this shader, possible values of each parameter and other meta-data.</doc>
 		</property>
@@ -4851,7 +4930,7 @@ Resize will not change the positions of current light probes. If you wish to res
 			<doc>Determines from which portion of the mesh are the particles emitted from.</doc>
 		</field>
 		<field name="sequential" type="bool">
-			<doc>When enabled the particles will be emitted sequentially from mesh vertices in the order they are defined.  Only relevant for the Vertex emit mode.</doc>
+			<doc>When enabled the particles will be emitted sequentially from mesh vertices in the order they are defined. Only relevant for the Vertex emit mode.</doc>
 		</field>
 		<field name="mesh" type="RRef&lt;Mesh&gt;">
 			<doc>Mesh to spawn particles on. Must at least contain per-vertex position data encoded as 3D float vectors. Can optionally contain per-vertex normals encoded as 3D float vectors or as 4-byte unsigned-normalized format.</doc>
@@ -4865,10 +4944,10 @@ Resize will not change the positions of current light probes. If you wish to res
 			<doc>Determines from which portion of the mesh are the particles emitted from.</doc>
 		</field>
 		<field name="sequential" type="bool">
-			<doc>When enabled the particles will be emitted sequentially from mesh vertices in the order they are defined.  Only relevant for the Vertex emit mode.</doc>
+			<doc>When enabled the particles will be emitted sequentially from mesh vertices in the order they are defined. Only relevant for the Vertex emit mode.</doc>
 		</field>
 		<field name="renderable" type="Renderable">
-			<doc>Renderable object containing a mesh to spawn particles on, as well as the attached Animation object resposible for performing skinned animation. Mesh must at least contain per-vertex position data encoded as 3D float vectors, blend indices encoded in 4-byte format, and blend weights encoded a 4D float vectors. Can optionally  contain per-vertex normals encoded as 3D float vectors or as 4-byte unsigned-normalized format.</doc>
+			<doc>Renderable object containing a mesh to spawn particles on, as well as the attached Animation object resposible for performing skinned animation. Mesh must at least contain per-vertex position data encoded as 3D float vectors, blend indices encoded in 4-byte format, and blend weights encoded a 4D float vectors. Can optionally contain per-vertex normals encoded as 3D float vectors or as 4-byte unsigned-normalized format.</doc>
 		</field>
 	</struct>
 	<class native="ParticleEmitterSkinnedMeshShape" script="ParticleEmitterSkinnedMeshShape">
@@ -4942,19 +5021,19 @@ Resize will not change the positions of current light probes. If you wish to res
 			<doc>Determines should the initial particle size be applied uniformly (if disabled), or evaluated separately for each dimension (if enabled).</doc>
 		</property>
 		<property name="InitialRotation" type="FloatDistribution" getter="getInitialRotation" setter="setInitialRotation" static="false">
-			<doc>Determines the rotation of the particles when initially spawned, in degrees. The rotation is applied around the  particle&apos;s local Z axis. Only used if 3D rotation is disabled.</doc>
+			<doc>Determines the rotation of the particles when initially spawned, in degrees. The rotation is applied around the particle&apos;s local Z axis. Only used if 3D rotation is disabled.</doc>
 		</property>
 		<property name="InitialRotation3D" type="Vector3Distribution" getter="getInitialRotation3D" setter="setInitialRotation3D" static="false">
 			<doc>Determines the rotation of the particles when initially spawned, in Euler angles. Only used if 3D rotation is enabled.</doc>
 		</property>
 		<property name="Use3DRotation" type="bool" getter="getUse3DRotation" setter="setUse3DRotation" static="false">
-			<doc>Determines should the initial particle rotation be a single angle applied around a Z axis (if disabled), or a  set of Euler angles that allow you to rotate around every axis (if enabled).</doc>
+			<doc>Determines should the initial particle rotation be a single angle applied around a Z axis (if disabled), or a set of Euler angles that allow you to rotate around every axis (if enabled).</doc>
 		</property>
 		<property name="InitialColor" type="ColorDistribution" getter="getInitialColor" setter="setInitialColor" static="false">
 			<doc>Determines the initial color (in RGB channels) and transparency (in A channel) of particles.</doc>
 		</property>
 		<property name="RandomOffset" type="float" getter="getRandomOffset" setter="setRandomOffset" static="false">
-			<doc>Determines a range of values determining a random offset to apply to particle position after it has been emitted.  Offset will be randomly selected in all three axes in range [-value, value].</doc>
+			<doc>Determines a range of values determining a random offset to apply to particle position after it has been emitted. Offset will be randomly selected in all three axes in range [-value, value].</doc>
 		</property>
 		<property name="FlipU" type="float" getter="getFlipU" setter="setFlipU" static="false">
 			<doc>Determines should particle U texture coordinate be randomly flipped, mirroring the image. The value represents a percent of particles that should be flipped, in range [0, 1].</doc>
@@ -5069,7 +5148,7 @@ Resize will not change the positions of current light probes. If you wish to res
 			<doc>Initial rotation of the vector field.</doc>
 		</property>
 		<property name="RotationRate" type="Vector3Distribution" getter="getrotationRate" setter="setrotationRate" static="false">
-			<doc>Determines the amount to rotate the vector field every second, in degrees, around XYZ axis respectively.  Evaluated over the particle system lifetime.</doc>
+			<doc>Determines the amount to rotate the vector field every second, in degrees, around XYZ axis respectively. Evaluated over the particle system lifetime.</doc>
 		</property>
 		<property name="TilingX" type="bool" getter="gettilingX" setter="settilingX" static="false">
 			<doc>Determines should the field influence particles outside of the field bounds. If true the field will be tiled infinitely in the X direction.</doc>
@@ -5114,10 +5193,10 @@ Resize will not change the positions of current light probes. If you wish to res
 			<doc>Determines should the particles only be allowed to orient themselves around the Y axis, or freely. Ignored if using the Plane orientation mode.</doc>
 		</property>
 		<property name="OrientationPlaneNormal" type="Vector3" getter="getorientationPlaneNormal" setter="setorientationPlaneNormal" static="false">
-			<doc>Determines a normal of the plane to orient particles towards. Only used if particle orientation mode is set to  ParticleOrientation::Plane.</doc>
+			<doc>Determines a normal of the plane to orient particles towards. Only used if particle orientation mode is set to ParticleOrientation::Plane.</doc>
 		</property>
 		<property name="SortMode" type="ParticleSortMode" getter="getsortMode" setter="setsortMode" static="false">
-			<doc>Determines how (and if) are particles sorted. Sorting controls in what order are particles rendered.  If GPU simulation is enabled only distance based sorting is supported.</doc>
+			<doc>Determines how (and if) are particles sorted. Sorting controls in what order are particles rendered. If GPU simulation is enabled only distance based sorting is supported.</doc>
 		</property>
 		<property name="UseAutomaticSeed" type="bool" getter="getuseAutomaticSeed" setter="setuseAutomaticSeed" static="false">
 			<doc>Determines should an automatic seed be used for the internal random number generator. This ensures the particle system yields different results each time it is ran.</doc>
@@ -5156,7 +5235,7 @@ Resize will not change the positions of current light probes. If you wish to res
 		<doc>Controls spawning, evolution and rendering of particles. Particles can be 2D or 3D, with a variety of rendering options. Particle system should be used for rendering objects that cannot properly be represented using static or animated meshes, like liquids, smoke or flames.
 The particle system requires you to specify at least one ParticleEmitter, which controls how are new particles generated. You will also want to specify one or more ParticleEvolver%s, which change particle properties over time.</doc>
 		<method native="_togglePreviewMode" script="TogglePreviewMode" static="false">
-			<doc>Enables or disabled preview mode. Preview mode allows the particle system to play while the game is not running,  primarily for preview purposes in the editor. Returns true if the preview mode was enabled, false if it was disabled or enabling preview failed.</doc>
+			<doc>Enables or disabled preview mode. Preview mode allows the particle system to play while the game is not running, primarily for preview purposes in the editor. Returns true if the preview mode was enabled, false if it was disabled or enabling preview failed.</doc>
 			<param name="enabled" type="bool">
 			</param>
 			<returns type="bool">
@@ -5175,7 +5254,7 @@ The particle system requires you to specify at least one ParticleEmitter, which 
 			<doc>Set of objects that determine how particle properties change during their lifetime. Evolvers only affect CPU simulated particles.</doc>
 		</property>
 		<property name="Layer" type="ulong" getter="getLayer" setter="setLayer" static="false">
-			<doc>Determines the layer bitfield that controls whether a system is considered visible in a specific camera.  Layer must match camera layer in order for the camera to render the component.</doc>
+			<doc>Determines the layer bitfield that controls whether a system is considered visible in a specific camera. Layer must match camera layer in order for the camera to render the component.</doc>
 		</property>
 	</class>
 	<class native="CPlaneCollider" script="PlaneCollider">
@@ -5190,7 +5269,7 @@ The particle system requires you to specify at least one ParticleEmitter, which 
 	<enum native="ReflectionProbeType" script="ReflectionProbeType">
 		<doc>Probe type that determines the shape of the probe and how is it interpreted by the renderer.</doc>
 		<enumentry native="Box" script="Box">
-			<doc>Reflection probe cubemap is generated, and box extents are used for calculating influence ranges and box  geometry.</doc>
+			<doc>Reflection probe cubemap is generated, and box extents are used for calculating influence ranges and box geometry.</doc>
 		</enumentry>
 		<enumentry native="Sphere" script="Sphere">
 			<doc>Reflection probe cubemap is generated, but sphere is used for calculating the influence radius and proxy geometry.</doc>
@@ -5227,7 +5306,7 @@ The particle system requires you to specify at least one ParticleEmitter, which 
 			<doc>Factor to be applied to the cull distance set in the camera&apos;s render settings.</doc>
 		</property>
 		<property name="Layers" type="ulong" getter="getLayer" setter="setLayer" static="false">
-			<doc>Determines the layer bitfield that controls whether a renderable is considered visible in a specific camera.  Renderable layer must match camera layer in order for the camera to render the component.</doc>
+			<doc>Determines the layer bitfield that controls whether a renderable is considered visible in a specific camera. Renderable layer must match camera layer in order for the camera to render the component.</doc>
 		</property>
 		<property name="Bounds" type="Bounds" getter="getBounds" setter="" static="false">
 			<doc>Gets world bounds of the mesh rendered by this object.</doc>
@@ -5249,15 +5328,15 @@ The particle system requires you to specify at least one ParticleEmitter, which 
 		</enumentry>
 	</enum>
 	<class native="CRigidbody" script="Rigidbody">
-		<doc>Rigidbody is a dynamic physics object that can be moved using forces (or directly). It will interact with other static and dynamic physics objects in the scene accordingly (it will push other non-kinematic rigidbodies,  and collide with static objects).
-The shape and mass of a rigidbody is governed by its colliders. You must attach at least one collider for the  rigidbody to be valid.</doc>
+		<doc>Rigidbody is a dynamic physics object that can be moved using forces (or directly). It will interact with other static and dynamic physics objects in the scene accordingly (it will push other non-kinematic rigidbodies, and collide with static objects).
+The shape and mass of a rigidbody is governed by its colliders. You must attach at least one collider for the rigidbody to be valid.</doc>
 		<method native="move" script="Move" static="false">
 			<doc>Moves the rigidbody to a specific position. This method will ensure physically correct movement, meaning the body will collide with other objects along the way.</doc>
 			<param name="position" type="Vector3">
 			</param>
 		</method>
 		<method native="rotate" script="Rotate" static="false">
-			<doc>Rotates the rigidbody. This method will ensure physically correct rotation, meaning the body will collide with  other objects along the way.</doc>
+			<doc>Rotates the rigidbody. This method will ensure physically correct rotation, meaning the body will collide with other objects along the way.</doc>
 			<param name="rotation" type="Quaternion">
 			</param>
 		</method>
@@ -5307,7 +5386,7 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 			</returns>
 		</method>
 		<property name="Mass" type="float" getter="getMass" setter="setMass" static="false">
-			<doc>Determines the mass of the object and all of its collider shapes. Only relevant if RigidbodyFlag::AutoMass or  RigidbodyFlag::AutoTensors is turned off. Value of zero means the object is immovable (but can be rotated).</doc>
+			<doc>Determines the mass of the object and all of its collider shapes. Only relevant if RigidbodyFlag::AutoMass or RigidbodyFlag::AutoTensors is turned off. Value of zero means the object is immovable (but can be rotated).</doc>
 		</property>
 		<property name="IsKinematic" type="bool" getter="getIsKinematic" setter="setIsKinematic" static="false">
 			<doc>Determines if the body is kinematic. Kinematic body will not move in response to external forces (for example gravity, or another object pushing it), essentially behaving like collider. Unlike a collider though, you can still move the object and have other dynamic objects respond correctly (meaning it will push other objects).</doc>
@@ -5334,7 +5413,7 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 			<doc>Determines the angular drag of the body. Higher drag values means the object resists angular movement more.</doc>
 		</property>
 		<property name="InertiaTensor" type="Vector3" getter="getInertiaTensor" setter="setInertiaTensor" static="false">
-			<doc>Determines the inertia tensor in local mass space. Inertia tensor determines how difficult is to rotate the object. Values of zero in the inertia tensor mean the object will be unable to rotate around a specific axis.  Only relevant if RigidbodyFlag::AutoTensors is turned off.</doc>
+			<doc>Determines the inertia tensor in local mass space. Inertia tensor determines how difficult is to rotate the object. Values of zero in the inertia tensor mean the object will be unable to rotate around a specific axis. Only relevant if RigidbodyFlag::AutoTensors is turned off.</doc>
 		</property>
 		<property name="MaxAngularVelocity" type="float" getter="getMaxAngularVelocity" setter="setMaxAngularVelocity" static="false">
 			<doc>Determines the maximum angular velocity of the rigidbody. Velocity will be clamped to this value.</doc>
@@ -5346,10 +5425,10 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 			<doc>Determines the rigidbody&apos;s center of mass rotation. Only relevant if RigibodyFlag::AutoTensors is turned off.</doc>
 		</property>
 		<property name="PositionSolverCount" type="int" getter="getPositionSolverCount" setter="setPositionSolverCount" static="false">
-			<doc>Determines the number of iterations to use when solving for position. Higher values can improve precision and  numerical stability of the simulation.</doc>
+			<doc>Determines the number of iterations to use when solving for position. Higher values can improve precision and numerical stability of the simulation.</doc>
 		</property>
 		<property name="VelocitySolverCount" type="int" getter="getVelocitySolverCount" setter="setVelocitySolverCount" static="false">
-			<doc>Determines the number of iterations to use when solving for velocity. Higher values can improve precision and  numerical stability of the simulation.</doc>
+			<doc>Determines the number of iterations to use when solving for velocity. Higher values can improve precision and numerical stability of the simulation.</doc>
 		</property>
 		<property name="CollisionReportMode" type="CollisionReportMode" getter="getCollisionReportMode" setter="setCollisionReportMode" static="false">
 			<doc>Sets a value that determines which (if any) collision events are reported.</doc>
@@ -5451,7 +5530,7 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 		</enumentry>
 	</enum>
 	<struct native="SpriteSheetGridAnimation" script="SpriteSheetGridAnimation">
-		<doc>Descriptor that describes a simple sprite sheet animation. The parent texture is split into a grid of  <see cref="numRows"/> x <see cref="numColumns"/>, each representing one frame of the animation. Every frame is of equal size. Frames are sequentially evaluated starting from the top-most row, iterating over all columns in a row and then moving to next row, up to <see cref="count"/> frames. Frames in rows/colums past <see cref="count"/>. <see cref="fps"/> frames are evaluated every second, allowing you to control animation speed.</doc>
+		<doc>Descriptor that describes a simple sprite sheet animation. The parent texture is split into a grid of <see cref="numRows"/> x <see cref="numColumns"/>, each representing one frame of the animation. Every frame is of equal size. Frames are sequentially evaluated starting from the top-most row, iterating over all columns in a row and then moving to next row, up to <see cref="count"/> frames. Frames in rows/colums past <see cref="count"/>. <see cref="fps"/> frames are evaluated every second, allowing you to control animation speed.</doc>
 		<ctor>
 		</ctor>
 		<ctor>
@@ -5465,10 +5544,10 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 			</param>
 		</ctor>
 		<field name="numRows" type="int">
-			<doc>Number of rows to divide the parent&apos;s texture area. Determines height of the individual frame (depends on  parent texture size).</doc>
+			<doc>Number of rows to divide the parent&apos;s texture area. Determines height of the individual frame (depends on parent texture size).</doc>
 		</field>
 		<field name="numColumns" type="int">
-			<doc>Number of columns to divide the parent&apos;s texture area. Determines column of the individual frame (depends on  parent texture size).</doc>
+			<doc>Number of columns to divide the parent&apos;s texture area. Determines column of the individual frame (depends on parent texture size).</doc>
 		</field>
 		<field name="count" type="int">
 			<doc>Number of frames in the animation. Must be less or equal than <see cref="numRows"/> * <see cref="numColumns"/>.</doc>
@@ -5610,7 +5689,7 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 			<doc>Returns the depth of the texture (only applicable for 3D textures).</doc>
 		</property>
 		<property name="GammaSpace" type="bool" getter="getGammaCorrection" setter="" static="false">
-			<doc>Determines does the texture contain gamma corrected data. If true then the GPU will automatically convert the  pixels to linear space before reading from the texture, and convert them to gamma space when writing to the texture.</doc>
+			<doc>Determines does the texture contain gamma corrected data. If true then the GPU will automatically convert the pixels to linear space before reading from the texture, and convert them to gamma space when writing to the texture.</doc>
 		</property>
 		<property name="SampleCount" type="int" getter="getSampleCount" setter="" static="false">
 			<doc>Gets the number of samples used for multisampling (0 or 1 if multisampling is not used).</doc>
@@ -5636,7 +5715,7 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 				<doc>Pathname of the input file.</doc>
 			</param>
 			<param name="importOptions" type="ImportOptions">
-				<doc>(optional) Options for controlling the import. Caller must ensure import options  actually match the type of the importer used for the file type.</doc>
+				<doc>(optional) Options for controlling the import. Caller must ensure import options actually match the type of the importer used for the file type.</doc>
 			</param>
 			<param name="UUID" type="UUID">
 				<doc>Specific UUID to assign to the resource. If not specified a randomly generated UUID will be assigned.</doc>
@@ -5662,7 +5741,7 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 				<doc>Pathname of the input file.</doc>
 			</param>
 			<param name="importOptions" type="ImportOptions">
-				<doc>(optional) Options for controlling the import. Caller must ensure import options  actually match the type of the importer used for the file type.</doc>
+				<doc>(optional) Options for controlling the import. Caller must ensure import options actually match the type of the importer used for the file type.</doc>
 			</param>
 			<returns type="MultiResource">
 				<doc>A list of all imported resources. The primary resource is always the first returned resource.</doc>
@@ -5691,7 +5770,7 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 				<doc>Pathname of the input file.</doc>
 			</param>
 			<param name="importOptions" type="ImportOptions">
-				<doc>(optional) Options for controlling the import. Caller must ensure import options  actually match the type of the importer used for the file type.</doc>
+				<doc>(optional) Options for controlling the import. Caller must ensure import options actually match the type of the importer used for the file type.</doc>
 			</param>
 			<param name="UUID" type="UUID">
 			</param>
@@ -5845,7 +5924,7 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 			<doc>Enables or disables keyframe reduction. Keyframe reduction will reduce the number of key-frames in an animation clip by removing identical keyframes, and therefore reducing the size of the clip.</doc>
 		</property>
 		<property name="ImportRootMotion" type="bool" getter="getimportRootMotion" setter="setimportRootMotion" static="false">
-			<doc>Enables or disables import of root motion curves. When enabled, any animation curves in imported animations  affecting the root bone will be available through a set of separate curves in AnimationClip, and they won&apos;t be evaluated through normal animation process. Instead it is expected that the user evaluates the curves manually and applies them as required.</doc>
+			<doc>Enables or disables import of root motion curves. When enabled, any animation curves in imported animations affecting the root bone will be available through a set of separate curves in AnimationClip, and they won&apos;t be evaluated through normal animation process. Instead it is expected that the user evaluates the curves manually and applies them as required.</doc>
 		</property>
 		<property name="ImportScale" type="float" getter="getimportScale" setter="setimportScale" static="false">
 			<doc>Uniformly scales the imported mesh by the specified value.</doc>
@@ -5854,7 +5933,7 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 			<doc>Determines what type (if any) of collision mesh should be imported. If enabled the collision mesh will be available as a sub-resource returned by the importer (along with the normal mesh).</doc>
 		</property>
 		<property name="AnimationSplits" type="AnimationSplitInfo" getter="getanimationSplits" setter="setanimationSplits" static="false">
-			<doc>Animation split infos that determine how will the source animation clip be split. If no splits are present the  data will be imported as one clip, but if splits are present the data will be split according to the split infos. Split infos only affect the primary animation clip, other clips will not be split.</doc>
+			<doc>Animation split infos that determine how will the source animation clip be split. If no splits are present the data will be imported as one clip, but if splits are present the data will be split according to the split infos. Split infos only affect the primary animation clip, other clips will not be split.</doc>
 		</property>
 		<property name="AnimationEvents" type="ImportedAnimationEvents" getter="getanimationEvents" setter="setanimationEvents" static="false">
 			<doc>Set of events that will be added to the animation clip, if animation import is enabled.</doc>
@@ -5933,7 +6012,7 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 				<doc>Full pathname of the file to save the manifest in.</doc>
 			</param>
 			<param name="relativePath" type="string">
-				<doc>If not empty, all pathnames in the manifest will be stored as if relative to this  path.</doc>
+				<doc>If not empty, all pathnames in the manifest will be stored as if relative to this path.</doc>
 			</param>
 		</method>
 		<method native="load" script="Load" static="true">
@@ -5974,7 +6053,7 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 			<doc>Determines whether the texture data is also stored in main memory, available for fast CPU access.</doc>
 		</property>
 		<property name="SRGB" type="bool" getter="getsRGB" setter="setsRGB" static="false">
-			<doc>Determines whether the texture data should be treated as if its in sRGB (gamma) space. Such texture will be  converted by hardware to linear space before use on the GPU.</doc>
+			<doc>Determines whether the texture data should be treated as if its in sRGB (gamma) space. Such texture will be converted by hardware to linear space before use on the GPU.</doc>
 		</property>
 		<property name="Cubemap" type="bool" getter="getcubemap" setter="setcubemap" static="false">
 			<doc>Determines should the texture be imported as a cubemap. See setCubemapSource to choose how will the source texture be converted to a cubemap.</doc>
@@ -6403,7 +6482,7 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 		</property>
 	</class>
 	<class native="StringTableManager" script="StringTables">
-		<doc>Manages string tables used for localizing text. Allows you to add and remove different tables and change the active  language.</doc>
+		<doc>Manages string tables used for localizing text. Allows you to add and remove different tables and change the active language.</doc>
 		<method native="getTable" script="GetTable" static="false">
 			<doc>Returns the string table with the specified id. If the table doesn&apos;t exist new one is created.</doc>
 			<param name="id" type="int">
@@ -6441,7 +6520,7 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 			<doc>Specify for a mesh that is often updated from the CPU.</doc>
 		</enumentry>
 		<enumentry native="MU_CPUCACHED" script="CPUCached">
-			<doc>All mesh data will also be cached in CPU memory, making it available for fast read access from the CPU. Can be  combined with other usage flags.</doc>
+			<doc>All mesh data will also be cached in CPU memory, making it available for fast read access from the CPU. Can be combined with other usage flags.</doc>
 		</enumentry>
 	</enum>
 	<class native="ShaderVariation" script="ShaderVariation">
@@ -6449,7 +6528,7 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 		<ctor>
 		</ctor>
 		<method native="getInt" script="GetInt" static="false">
-			<doc>Returns the value of a signed integer parameter with the specified name. Returns 0 if the parameter cannot be  found.</doc>
+			<doc>Returns the value of a signed integer parameter with the specified name. Returns 0 if the parameter cannot be found.</doc>
 			<param name="name" type="string">
 			</param>
 			<returns type="int">
@@ -6470,35 +6549,35 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 			</returns>
 		</method>
 		<method native="getBool" script="GetBool" static="false">
-			<doc>Returns the value of a boolean parameter with the specified name. Returns false if the parameter cannot be  found.</doc>
+			<doc>Returns the value of a boolean parameter with the specified name. Returns false if the parameter cannot be found.</doc>
 			<param name="name" type="string">
 			</param>
 			<returns type="bool">
 			</returns>
 		</method>
 		<method native="setInt" script="SetInt" static="false">
-			<doc>Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name  will be overwritten.</doc>
+			<doc>Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name will be overwritten.</doc>
 			<param name="name" type="string">
 			</param>
 			<param name="value" type="int">
 			</param>
 		</method>
 		<method native="setUInt" script="SetUInt" static="false">
-			<doc>Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name  will be overwritten.</doc>
+			<doc>Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name will be overwritten.</doc>
 			<param name="name" type="string">
 			</param>
 			<param name="value" type="int">
 			</param>
 		</method>
 		<method native="setFloat" script="SetFloat" static="false">
-			<doc>Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name  will be overwritten.</doc>
+			<doc>Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name will be overwritten.</doc>
 			<param name="name" type="string">
 			</param>
 			<param name="value" type="float">
 			</param>
 		</method>
 		<method native="setBool" script="SetBool" static="false">
-			<doc>Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name  will be overwritten.</doc>
+			<doc>Sets the value of the parameter for the provided name. Any previous value for a parameter with the same name will be overwritten.</doc>
 			<param name="name" type="string">
 			</param>
 			<param name="value" type="bool">
@@ -6556,7 +6635,7 @@ Optionally if the parameter is an array you may provide an array index to assign
 Optionally if the parameter is an array you may provide an array index to assign the value to.</doc>
 			<param name="name" type="string">
 			</param>
-			<param name="value" type="ColorGradient">
+			<param name="value" type="ColorGradientHDR">
 			</param>
 			<param name="arrayIdx" type="int">
 			</param>
@@ -6648,7 +6727,7 @@ Optionally if the parameter is an array you may provide an array index you which
 			</param>
 			<param name="arrayIdx" type="int">
 			</param>
-			<returns type="ColorGradient">
+			<returns type="ColorGradientHDR">
 			</returns>
 		</method>
 		<method native="getVec2" script="GetVector2" static="false">
@@ -6702,7 +6781,7 @@ Optionally if the parameter is an array you may provide an array index you which
 			</returns>
 		</method>
 		<method native="isAnimated" script="IsAnimated" static="false">
-			<doc>Checks does the data parameter with the specified name currently contains animated data. This could be  an animation curve or a color gradient.</doc>
+			<doc>Checks does the data parameter with the specified name currently contains animated data. This could be an animation curve or a color gradient.</doc>
 			<param name="name" type="string">
 			</param>
 			<param name="arrayIdx" type="int">
@@ -6722,7 +6801,7 @@ Optionally if the parameter is an array you may provide an array index you which
 			<doc>Sets a shader that will be used by the material. Material will be initialized using all compatible techniques from the shader. Shader must be set before doing any other operations with the material.</doc>
 		</property>
 		<property name="Variation" type="ShaderVariation" getter="getVariation" setter="setVariation" static="false">
-			<doc>Set of parameters that determine which subset of techniques in the assigned shader should be used. Only the  techniques that have the provided parameters with the provided values will match. This will control which  technique is considered the default technique and which subset of techniques are searched during a call to  findTechnique().</doc>
+			<doc>Set of parameters that determine which subset of techniques in the assigned shader should be used. Only the techniques that have the provided parameters with the provided values will match. This will control which technique is considered the default technique and which subset of techniques are searched during a call to findTechnique().</doc>
 		</property>
 	</class>
 	<struct native="ShaderVariationParamValue" script="ShaderVariationParamValue">
@@ -7302,13 +7381,13 @@ Optionally if the parameter is an array you may provide an array index you which
 			</param>
 		</ctor>
 		<property name="StaticFriction" type="float" getter="getStaticFriction" setter="setStaticFriction" static="false">
-			<doc>Controls friction when two in-contact objects are not moving lateral to each other (for example how difficult  it is to get an object moving from a static state while it is in contact with other object(s)).</doc>
+			<doc>Controls friction when two in-contact objects are not moving lateral to each other (for example how difficult it is to get an object moving from a static state while it is in contact with other object(s)).</doc>
 		</property>
 		<property name="DynamicFriction" type="float" getter="getDynamicFriction" setter="setDynamicFriction" static="false">
 			<doc>Controls friction when two in-contact objects are moving lateral to each other (for example how quickly does an object slow down when sliding along another object).</doc>
 		</property>
 		<property name="Restitution" type="float" getter="getRestitutionCoefficient" setter="setRestitutionCoefficient" static="false">
-			<doc>Controls &quot;bounciness&quot; of an object during a collision. Value of 1 means the collision is elastic, and value of 0  means the value is inelastic. Must be in [0, 1] range.</doc>
+			<doc>Controls &quot;bounciness&quot; of an object during a collision. Value of 1 means the collision is elastic, and value of 0 means the value is inelastic. Must be in [0, 1] range.</doc>
 		</property>
 	</class>
 	<enum native="ResourceLoadFlag" script="ResourceLoadFlag">
@@ -7332,9 +7411,9 @@ Optionally if the parameter is an array you may provide an array index you which
 	<class native="Resources" script="Resources">
 		<doc>Manager for dealing with all engine resources. It allows you to save new resources and load existing ones.</doc>
 		<method native="load" script="Load" static="false">
-			<doc>Loads the resource from a given path. Returns an empty handle if resource can&apos;t be loaded. Resource is loaded  synchronously.</doc>
+			<doc>Loads the resource from a given path. Returns an empty handle if resource can&apos;t be loaded. Resource is loaded synchronously.</doc>
 			<param name="filePath" type="string">
-				<doc>File path to the resource to load. This can be absolute or relative to the working  folder.</doc>
+				<doc>File path to the resource to load. This can be absolute or relative to the working folder.</doc>
 			</param>
 			<param name="loadFlags" type="ResourceLoadFlag">
 				<doc>Flags used to control the load process.</doc>
@@ -7343,7 +7422,7 @@ Optionally if the parameter is an array you may provide an array index you which
 			</returns>
 		</method>
 		<method native="loadAsync" script="LoadAsync" static="false">
-			<doc>Loads the resource asynchronously. Initially returned resource handle will be invalid until resource loading is  done. Use ResourceHandle&lt;T&gt;::isLoaded to check if resource has been loaded, or  ResourceHandle&lt;T&gt;::blockUntilLoaded to wait until load completes.</doc>
+			<doc>Loads the resource asynchronously. Initially returned resource handle will be invalid until resource loading is done. Use ResourceHandle&lt;T&gt;::isLoaded to check if resource has been loaded, or ResourceHandle&lt;T&gt;::blockUntilLoaded to wait until load completes.</doc>
 			<param name="filePath" type="string">
 				<doc>Full pathname of the file.</doc>
 			</param>
@@ -7368,8 +7447,8 @@ Optionally if the parameter is an array you may provide an array index you which
 			</returns>
 		</method>
 		<method native="release" script="Release" static="false">
-			<doc>Releases an internal reference to the resource held by the resources system. This allows the resource to be  unloaded when it goes out of scope, if the resource was loaded with <see cref="keepInternalReference"/> parameter.
-Alternatively you can also skip manually calling release() and call unloadAllUnused() which will unload all  resources that do not have any external references, but you lose the fine grained control of what will be  unloaded.</doc>
+			<doc>Releases an internal reference to the resource held by the resources system. This allows the resource to be unloaded when it goes out of scope, if the resource was loaded with <see cref="keepInternalReference"/> parameter.
+Alternatively you can also skip manually calling release() and call unloadAllUnused() which will unload all resources that do not have any external references, but you lose the fine grained control of what will be unloaded.</doc>
 			<param name="resource" type="RRefBase">
 				<doc>Handle of the resource to release.</doc>
 			</param>
@@ -7405,7 +7484,7 @@ Alternatively you can also skip manually calling release() and call unloadAllUnu
 			</param>
 		</method>
 		<method native="getDependencies" script="GetDependencies" static="false">
-			<doc>Returns a list of dependencies from the resources at the specified path. Resource will not be loaded or parsed,  but instead the saved list of dependencies will be read from the file and returned.</doc>
+			<doc>Returns a list of dependencies from the resources at the specified path. Resource will not be loaded or parsed, but instead the saved list of dependencies will be read from the file and returned.</doc>
 			<param name="filePath" type="string">
 				<doc>Full path to the resource to get dependencies for.</doc>
 			</param>
@@ -7419,7 +7498,7 @@ Alternatively you can also skip manually calling release() and call unloadAllUnu
 				<doc>UUID of the resource to check.</doc>
 			</param>
 			<param name="checkInProgress" type="bool">
-				<doc>Should this method also check resources that are in progress of being  asynchronously loaded.</doc>
+				<doc>Should this method also check resources that are in progress of being asynchronously loaded.</doc>
 			</param>
 			<returns type="bool">
 				<doc>True if loaded or loading in progress, false otherwise.</doc>
@@ -7438,7 +7517,7 @@ Alternatively you can also skip manually calling release() and call unloadAllUnu
 			</returns>
 		</method>
 		<method native="registerResourceManifest" script="RegisterResourceManifest" static="false">
-			<doc>Allows you to set a resource manifest containing UUID &lt;-&gt; file path mapping that is used when resolving  resource references.</doc>
+			<doc>Allows you to set a resource manifest containing UUID &lt;-&gt; file path mapping that is used when resolving resource references.</doc>
 			<param name="manifest" type="ResourceManifest">
 			</param>
 		</method>
@@ -7448,7 +7527,7 @@ Alternatively you can also skip manually calling release() and call unloadAllUnu
 			</param>
 		</method>
 		<method native="getResourceManifest" script="GetResourceManifest" static="false">
-			<doc>Allows you to retrieve resource manifest containing UUID &lt;-&gt; file path mapping that is used when resolving  resource references.</doc>
+			<doc>Allows you to retrieve resource manifest containing UUID &lt;-&gt; file path mapping that is used when resolving resource references.</doc>
 			<param name="name" type="string">
 			</param>
 			<returns type="ResourceManifest">
@@ -7538,7 +7617,7 @@ Alternatively you can also skip manually calling release() and call unloadAllUnu
 		</field>
 	</struct>
 	<class native="Font" script="Font">
-		<doc>Font resource containing data about textual characters and how to render text. Contains one or multiple font  bitmaps, each for a specific size.</doc>
+		<doc>Font resource containing data about textual characters and how to render text. Contains one or multiple font bitmaps, each for a specific size.</doc>
 		<method native="getBitmap" script="GetBitmap" static="false">
 			<doc>Returns font bitmap for a specific font size.</doc>
 			<param name="size" type="int">
@@ -7649,7 +7728,7 @@ Alternatively you can also skip manually calling release() and call unloadAllUnu
 		</enumentry>
 	</enum>
 	<struct native="GUIContent" script="GUIContent">
-		<doc>Holds data used for displaying content in a GUIElement. Content can consist of a string, image, a tooltip or none  of those.</doc>
+		<doc>Holds data used for displaying content in a GUIElement. Content can consist of a string, image, a tooltip or none of those.</doc>
 		<ctor>
 			<doc>Constructs an empty content.</doc>
 		</ctor>
@@ -7708,7 +7787,7 @@ Alternatively you can also skip manually calling release() and call unloadAllUnu
 		</enumentry>
 	</enum>
 	<class native="GUIElementStyle" script="GUIElementStyle">
-		<doc>GUI element style that determines the look of a GUI element, as well as the element&apos;s default layout options.  Different looks can be provided for different element states.</doc>
+		<doc>GUI element style that determines the look of a GUI element, as well as the element&apos;s default layout options. Different looks can be provided for different element states.</doc>
 		<ctor>
 		</ctor>
 		<method native="addSubStyle" script="AddSubStyle" static="false">
@@ -7739,7 +7818,7 @@ Alternatively you can also skip manually calling release() and call unloadAllUnu
 			<doc>Should the text word wrap if it doesn&apos;t fit.</doc>
 		</property>
 		<property name="Normal" type="GUIElementStateStyle" getter="getnormal" setter="setnormal" static="false">
-			<doc>Style used when the element doesn&apos;t have focus nor is the user interacting with the element. Used when the  element is in the &apos;off&apos; state.</doc>
+			<doc>Style used when the element doesn&apos;t have focus nor is the user interacting with the element. Used when the element is in the &apos;off&apos; state.</doc>
 		</property>
 		<property name="Hover" type="GUIElementStateStyle" getter="gethover" setter="sethover" static="false">
 			<doc>Style used when the user is hovering the pointer over the element, while the element doesn&apos;t have focus. Used when the element is in the &apos;off&apos; state.</doc>
@@ -7854,7 +7933,7 @@ Alternatively you can also skip manually calling release() and call unloadAllUnu
 			<doc>Special shader used for rendering particles without any lighting, with support for transparency.</doc>
 		</enumentry>
 		<enumentry native="ParticlesLit" script="ParticlesLit">
-			<doc>Special shader used for rendering particles with lighting using the forward rendering pipeline (supports  transparency).</doc>
+			<doc>Special shader used for rendering particles with lighting using the forward rendering pipeline (supports transparency).</doc>
 		</enumentry>
 		<enumentry native="ParticlesLitOpaque" script="ParticlesLitOpaque">
 			<doc>Special shader used for rendering particles with lighting using the deferred rendering pipeline (no support for transparency).</doc>

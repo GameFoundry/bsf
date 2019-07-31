@@ -80,9 +80,9 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns a random point inside the specified range in a sphere shell of unit radius, with the specified thickness, in
-		/// range [0, 1]. Thickness of 0 will generate points on the sphere surface, while thickness of 1 will generate points
-		/// within the entire sphere volume. Intermediate values represent the shell, which is a volume between two concentric
+		/// Returns a random point inside the specified range in a sphere shell of unit radius, with the specified thickness, in 
+		/// range [0, 1]. Thickness of 0 will generate points on the sphere surface, while thickness of 1 will generate points 
+		/// within the entire sphere volume. Intermediate values represent the shell, which is a volume between two concentric 
 		/// spheres.
 		/// </summary>
 		public Vector3 GetPointInSphereShell(float thickness)
@@ -101,9 +101,9 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns a random point inside the specified range in a circle shell of unit radius, with the specified thickness, in
-		/// range [0, 1]. Thickness of 0 will generate points on the circle edge, while thickness of 1 will generate points
-		/// within the entire circle surface. Intermediate values represent the shell, which is the surface between two
+		/// Returns a random point inside the specified range in a circle shell of unit radius, with the specified thickness, in 
+		/// range [0, 1]. Thickness of 0 will generate points on the circle edge, while thickness of 1 will generate points 
+		/// within the entire circle surface. Intermediate values represent the shell, which is the surface between two 
 		/// concentric circles.
 		/// </summary>
 		public Vector2 GetPointInCircleShell(float thickness)
@@ -124,9 +124,9 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns a random point inside the specified range in an arc shell of unit radius, with the specified  length (angle)
-		/// and thickness in range [0, 1]. Angle of 360 represents a circle shell. Thickness of 0 will generate points on the arc
-		/// edge, while thickness of 1 will generate points on the entire arc &apos;slice&apos;.  Intermediate vlaues represent
+		/// Returns a random point inside the specified range in an arc shell of unit radius, with the specified length (angle) 
+		/// and thickness in range [0, 1]. Angle of 360 represents a circle shell. Thickness of 0 will generate points on the arc 
+		/// edge, while thickness of 1 will generate points on the entire arc &apos;slice&apos;. Intermediate vlaues represent 
 		/// the shell, which is the surface between two concentric circles.
 		/// </summary>
 		public Vector2 GetPointInArcShell(Degree angle, float thickness)

@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// A set of all languages that localized strings can be translated to. Loosely based on ISO 639-1 two letter language
+	/// A set of all languages that localized strings can be translated to. Loosely based on ISO 639-1 two letter language 
 	/// codes.
 	/// </summary>
 	public enum Language

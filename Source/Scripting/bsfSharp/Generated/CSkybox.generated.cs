@@ -18,7 +18,7 @@ namespace bs
 		protected Skybox() { }
 
 		/// <summary>
-		/// Determines an environment map to use for sampling skybox radiance. Must be a cube-map texture, and should ideally
+		/// Determines an environment map to use for sampling skybox radiance. Must be a cube-map texture, and should ideally 
 		/// contain HDR data.
 		/// </summary>
 		[ShowInInspector]
@@ -30,7 +30,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Brightness multiplier that will be applied to skybox values before they&apos;re being used. Allows you to make the
+		/// Brightness multiplier that will be applied to skybox values before they&apos;re being used. Allows you to make the 
 		/// skybox more or less bright. Equal to one by default.
 		/// </summary>
 		[ShowInInspector]

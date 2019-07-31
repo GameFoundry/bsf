@@ -12,7 +12,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Base class for creating import options from. Import options are specific for each importer and control how is data
+	/// Base class for creating import options from. Import options are specific for each importer and control how is data 
 	/// imported.
 	/// </summary>
 	[ShowInInspector]

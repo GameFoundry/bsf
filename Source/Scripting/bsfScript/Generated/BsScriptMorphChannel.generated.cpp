@@ -22,7 +22,7 @@ namespace bs
 
 	MonoObject* ScriptMorphChannel::create(const SPtr<MorphChannel>& value)
 	{
-		if(value == nullptr) return nullptr;
+		if(value == nullptr) return nullptr; 
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };

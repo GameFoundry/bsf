@@ -26,7 +26,7 @@ namespace bs
 		/// <summary>Same as Info, but the message will only be logged to the log file and not any console output.</summary>
 		Log = 4,
 		/// <summary>
-		/// Messages that can provide additional information and warnings, but are too spammy to be displayed under normal
+		/// Messages that can provide additional information and warnings, but are too spammy to be displayed under normal 
 		/// circumstances.
 		/// </summary>
 		Verbose = 5,

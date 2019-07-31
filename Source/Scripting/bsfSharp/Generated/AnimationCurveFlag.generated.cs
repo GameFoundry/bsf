@@ -10,8 +10,8 @@ namespace bs
 	public enum AnimationCurveFlags
 	{
 		/// <summary>
-		/// If enabled, the curve was imported from an external file and not created within the engine. This will affect how are
-		/// animation results applied to scene objects (with imported animations it is assumed the curve is animating bones and
+		/// If enabled, the curve was imported from an external file and not created within the engine. This will affect how are 
+		/// animation results applied to scene objects (with imported animations it is assumed the curve is animating bones and 
 		/// with in-engine curves it is assumed the curve is animating scene objects).
 		/// </summary>
 		ImportedCurve = 1,

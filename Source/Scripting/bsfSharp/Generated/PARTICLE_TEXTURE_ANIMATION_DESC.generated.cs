@@ -25,7 +25,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Randomly pick a row to use for animation when the particle is first spawned. This implies that only a single row of
+		/// Randomly pick a row to use for animation when the particle is first spawned. This implies that only a single row of 
 		/// the grid will be used for individual particle&apos;s animation.
 		/// </summary>
 		public bool randomizeRow;

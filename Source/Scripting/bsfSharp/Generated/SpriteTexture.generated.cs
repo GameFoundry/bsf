@@ -11,9 +11,9 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Texture that references a part of a larger texture by specifying an UV subset. When the sprite texture is rendererd
-	/// only the portion of the texture specified by the UV subset will be rendered. This allows you to use the same texture
-	/// for multiple sprites (texture atlasing). Sprite textures also allow you to specify sprite sheet animation by varying
+	/// Texture that references a part of a larger texture by specifying an UV subset. When the sprite texture is rendererd 
+	/// only the portion of the texture specified by the UV subset will be rendered. This allows you to use the same texture 
+	/// for multiple sprites (texture atlasing). Sprite textures also allow you to specify sprite sheet animation by varying 
 	/// which portion of the UV is selected over time.
 	/// </summary>
 	[ShowInInspector]
@@ -64,7 +64,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns width of a single animation frame sprite texture in pixels. If the texture has no animation this is the same
+		/// Returns width of a single animation frame sprite texture in pixels. If the texture has no animation this is the same 
 		/// as getWidth().
 		/// </summary>
 		[NativeWrapper]
@@ -74,7 +74,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns height of a single animation frame sprite texture in pixels. If the texture has no animation this is the same
+		/// Returns height of a single animation frame sprite texture in pixels. If the texture has no animation this is the same 
 		/// as getHeight().
 		/// </summary>
 		[NativeWrapper]
@@ -84,7 +84,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the offset into the referenced texture where the sprite starts. The offset is in UV coordinates, in range
+		/// Determines the offset into the referenced texture where the sprite starts. The offset is in UV coordinates, in range 
 		/// [0, 1].
 		/// </summary>
 		[ShowInInspector]
@@ -117,7 +117,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Sets properties describing sprite animation. The animation splits the sprite area into a grid of sub-images which can
+		/// Sets properties describing sprite animation. The animation splits the sprite area into a grid of sub-images which can 
 		/// be evaluated over time. In order to view the animation you must also enable playback through setAnimationPlayback().
 		/// </summary>
 		[ShowInInspector]

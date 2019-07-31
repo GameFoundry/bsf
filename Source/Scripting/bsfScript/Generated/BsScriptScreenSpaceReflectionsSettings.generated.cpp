@@ -28,7 +28,7 @@ namespace bs
 
 	MonoObject* ScriptScreenSpaceReflectionsSettings::create(const SPtr<ScreenSpaceReflectionsSettings>& value)
 	{
-		if(value == nullptr) return nullptr;
+		if(value == nullptr) return nullptr; 
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };

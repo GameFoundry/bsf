@@ -29,12 +29,12 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Distance from the limit at which it becomes active. Allows the solver to activate earlier than the limit is reached
+		/// Distance from the limit at which it becomes active. Allows the solver to activate earlier than the limit is reached 
 		/// to avoid breaking the limit.
 		/// </summary>
 		public float contactDist;
 		/// <summary>
-		/// Controls how do objects react when the limit is reached, values closer to zero specify non-ellastic collision, while
+		/// Controls how do objects react when the limit is reached, values closer to zero specify non-ellastic collision, while 
 		/// those closer to one specify more ellastic (i.e bouncy) collision. Must be in [0, 1] range.
 		/// </summary>
 		public float restitution;

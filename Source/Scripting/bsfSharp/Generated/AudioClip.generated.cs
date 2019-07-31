@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Audio clip stores audio data in a compressed or uncompressed format. Clips can be provided to audio sources or other
+	/// Audio clip stores audio data in a compressed or uncompressed format. Clips can be provided to audio sources or other 
 	/// audio methods to be played.
 	/// </summary>
 	[ShowInInspector]

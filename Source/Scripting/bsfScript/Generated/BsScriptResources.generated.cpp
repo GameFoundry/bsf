@@ -13,9 +13,9 @@
 namespace bs
 {
 #if !BS_IS_BANSHEE3D
-	ScriptResources::onResourceLoadedThunkDef ScriptResources::onResourceLoadedThunk;
-	ScriptResources::onResourceDestroyedThunkDef ScriptResources::onResourceDestroyedThunk;
-	ScriptResources::onResourceModifiedThunkDef ScriptResources::onResourceModifiedThunk;
+	ScriptResources::onResourceLoadedThunkDef ScriptResources::onResourceLoadedThunk; 
+	ScriptResources::onResourceDestroyedThunkDef ScriptResources::onResourceDestroyedThunk; 
+	ScriptResources::onResourceModifiedThunkDef ScriptResources::onResourceModifiedThunk; 
 
 	HEvent ScriptResources::onResourceLoadedConn;
 	HEvent ScriptResources::onResourceDestroyedConn;

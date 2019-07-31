@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline
+	/// Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline 
 	/// can be evaluated at any time, and uses caching to speed up multiple sequential evaluations.
 	/// </summary>
 	[ShowInInspector]
@@ -35,12 +35,12 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider
+		/// Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider 
 		/// using the cached version of evaluate() for better performance.
 		/// </summary>
 		/// <param name="time">%Time to evaluate the curve at.</param>
 		/// <param name="loop">
-		/// If true the curve will loop when it goes past the end or beggining. Otherwise the curve  value will be clamped.
+		/// If true the curve will loop when it goes past the end or beggining. Otherwise the curve value will be clamped.
 		/// </param>
 		/// <returns>Interpolated value from the curve at provided time.</returns>
 		public float Evaluate(float time, bool loop = true)
@@ -63,7 +63,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline
+	/// Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline 
 	/// can be evaluated at any time, and uses caching to speed up multiple sequential evaluations.
 	/// </summary>
 	[ShowInInspector]
@@ -87,12 +87,12 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider
+		/// Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider 
 		/// using the cached version of evaluate() for better performance.
 		/// </summary>
 		/// <param name="time">%Time to evaluate the curve at.</param>
 		/// <param name="loop">
-		/// If true the curve will loop when it goes past the end or beggining. Otherwise the curve  value will be clamped.
+		/// If true the curve will loop when it goes past the end or beggining. Otherwise the curve value will be clamped.
 		/// </param>
 		/// <returns>Interpolated value from the curve at provided time.</returns>
 		public Vector3 Evaluate(float time, bool loop = true)
@@ -117,7 +117,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline
+	/// Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline 
 	/// can be evaluated at any time, and uses caching to speed up multiple sequential evaluations.
 	/// </summary>
 	[ShowInInspector]
@@ -141,12 +141,12 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider
+		/// Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider 
 		/// using the cached version of evaluate() for better performance.
 		/// </summary>
 		/// <param name="time">%Time to evaluate the curve at.</param>
 		/// <param name="loop">
-		/// If true the curve will loop when it goes past the end or beggining. Otherwise the curve  value will be clamped.
+		/// If true the curve will loop when it goes past the end or beggining. Otherwise the curve value will be clamped.
 		/// </param>
 		/// <returns>Interpolated value from the curve at provided time.</returns>
 		public Vector2 Evaluate(float time, bool loop = true)
@@ -171,7 +171,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline
+	/// Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline 
 	/// can be evaluated at any time, and uses caching to speed up multiple sequential evaluations.
 	/// </summary>
 	[ShowInInspector]
@@ -195,12 +195,12 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider
+		/// Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider 
 		/// using the cached version of evaluate() for better performance.
 		/// </summary>
 		/// <param name="time">%Time to evaluate the curve at.</param>
 		/// <param name="loop">
-		/// If true the curve will loop when it goes past the end or beggining. Otherwise the curve  value will be clamped.
+		/// If true the curve will loop when it goes past the end or beggining. Otherwise the curve value will be clamped.
 		/// </param>
 		/// <returns>Interpolated value from the curve at provided time.</returns>
 		public Quaternion Evaluate(float time, bool loop = true)
@@ -225,7 +225,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline
+	/// Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline 
 	/// can be evaluated at any time, and uses caching to speed up multiple sequential evaluations.
 	/// </summary>
 	[ShowInInspector]
@@ -249,12 +249,12 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider
+		/// Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider 
 		/// using the cached version of evaluate() for better performance.
 		/// </summary>
 		/// <param name="time">%Time to evaluate the curve at.</param>
 		/// <param name="loop">
-		/// If true the curve will loop when it goes past the end or beggining. Otherwise the curve  value will be clamped.
+		/// If true the curve will loop when it goes past the end or beggining. Otherwise the curve value will be clamped.
 		/// </param>
 		/// <returns>Interpolated value from the curve at provided time.</returns>
 		public int Evaluate(float time, bool loop = true)

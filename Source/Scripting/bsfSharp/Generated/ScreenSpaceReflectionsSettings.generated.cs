@@ -11,11 +11,11 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Settings that control the screen space reflections effect. Screen space reflections provide high quality mirror-like
-	/// reflections at low performance cost. They should be used together with reflection probes as the effects complement
-	/// each other. As the name implies, the reflections are only limited to geometry drawn on the screen and the system will
-	/// fall back to refl. probes when screen space data is unavailable. Similarly the system will fall back to refl. probes
-	/// for rougher (more glossy rather than mirror-like) surfaces. Those surfaces require a higher number of samples to
+	/// Settings that control the screen space reflections effect. Screen space reflections provide high quality mirror-like 
+	/// reflections at low performance cost. They should be used together with reflection probes as the effects complement 
+	/// each other. As the name implies, the reflections are only limited to geometry drawn on the screen and the system will 
+	/// fall back to refl. probes when screen space data is unavailable. Similarly the system will fall back to refl. probes 
+	/// for rougher (more glossy rather than mirror-like) surfaces. Those surfaces require a higher number of samples to 
 	/// achieve the glossy look, so we instead fall back to refl. probes which are pre-filtered and can be quickly sampled.
 	/// </summary>
 	[ShowInInspector]
@@ -38,8 +38,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Quality of the SSR effect. Higher values cast more sample rays, and march those rays are lower increments for better
-		/// precision. This results in higher quality, as well as a higher performance requirement. Valid range is [0, 4],
+		/// Quality of the SSR effect. Higher values cast more sample rays, and march those rays are lower increments for better 
+		/// precision. This results in higher quality, as well as a higher performance requirement. Valid range is [0, 4], 
 		/// default is 2.
 		/// </summary>
 		[ShowInInspector]
@@ -62,7 +62,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Roughness at which screen space reflections start fading out and become replaced with refl. probes. Valid range is
+		/// Roughness at which screen space reflections start fading out and become replaced with refl. probes. Valid range is 
 		/// [0, 1]. Default is 0.8.
 		/// </summary>
 		[ShowInInspector]

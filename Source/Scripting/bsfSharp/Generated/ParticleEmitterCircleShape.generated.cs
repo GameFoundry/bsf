@@ -11,8 +11,8 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Particle emitter shape that emits particles from a circle. Using the thickness parameter you can control whether to
-	/// emit only from circle edge, the entire surface or just a part of the surface. Using the arc parameter you can emit
+	/// Particle emitter shape that emits particles from a circle. Using the thickness parameter you can control whether to 
+	/// emit only from circle edge, the entire surface or just a part of the surface. Using the arc parameter you can emit 
 	/// from a specific angular portion of the circle.
 	/// </summary>
 	[ShowInInspector]

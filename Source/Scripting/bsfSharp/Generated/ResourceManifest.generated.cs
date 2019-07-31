@@ -44,7 +44,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Attempts to find a resource with the provided UUID and outputs the path to the resource if found. Returns true if
+		/// Attempts to find a resource with the provided UUID and outputs the path to the resource if found. Returns true if 
 		/// UUID was found, false otherwise.
 		/// </summary>
 		public bool UuidToFilePath(UUID uuid, out string filePath)
@@ -53,7 +53,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Attempts to find a resource with the provided path and outputs the UUID to the resource if found. Returns true if
+		/// Attempts to find a resource with the provided path and outputs the UUID to the resource if found. Returns true if 
 		/// path was found, false otherwise.
 		/// </summary>
 		public bool FilePathToUUID(string filePath, out UUID outUUID)
@@ -77,7 +77,7 @@ namespace bs
 		/// <param name="manifest">Manifest to save.</param>
 		/// <param name="path">Full pathname of the file to save the manifest in.</param>
 		/// <param name="relativePath">
-		/// If not empty, all pathnames in the manifest will be stored as if relative to this  path.
+		/// If not empty, all pathnames in the manifest will be stored as if relative to this path.
 		/// </param>
 		public static void Save(ResourceManifest manifest, string path, string relativePath)
 		{

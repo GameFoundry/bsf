@@ -34,7 +34,7 @@ namespace bs
 		/// </summary>
 		public Vector3Distribution size3D;
 		/// <summary>
-		/// Determines should the size be evaluated uniformly for all dimensions, or evaluate each dimension with its own
+		/// Determines should the size be evaluated uniformly for all dimensions, or evaluate each dimension with its own 
 		/// distribution.
 		/// </summary>
 		public bool use3DSize;

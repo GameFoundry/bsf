@@ -61,7 +61,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// An array of all vertex texture coordinates in the UV0 channel. Only valid if the vertex layout contains UV0
+		/// An array of all vertex texture coordinates in the UV0 channel. Only valid if the vertex layout contains UV0 
 		/// coordinates.
 		/// </summary>
 		[ShowInInspector]
@@ -73,7 +73,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// An array of all vertex texture coordinates in the UV1 channel. Only valid if the vertex layout contains UV1
+		/// An array of all vertex texture coordinates in the UV1 channel. Only valid if the vertex layout contains UV1 
 		/// coordinates.
 		/// </summary>
 		[ShowInInspector]

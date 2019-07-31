@@ -22,7 +22,7 @@ namespace bs
 		/// <summary>Calculate mass distribution from child shapes (colliders). Only relevant when auto-tensors is on.</summary>
 		AutoMass = 2,
 		/// <summary>
-		/// Enables continous collision detection. This can prevent fast moving bodies from tunneling through each other. This
+		/// Enables continous collision detection. This can prevent fast moving bodies from tunneling through each other. This 
 		/// must also be enabled globally in Physics otherwise the flag will be ignored.
 		/// </summary>
 		CCD = 4

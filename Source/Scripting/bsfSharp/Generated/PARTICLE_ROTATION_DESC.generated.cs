@@ -26,8 +26,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the rotation of the particles in degrees, applied around the particle&apos;s local Z axis. Only used if
-		/// 3D rotation is disabled.
+		/// Determines the rotation of the particles in degrees, applied around the particle&apos;s local Z axis. Only used if 3D 
+		/// rotation is disabled.
 		/// </summary>
 		public FloatDistribution rotation;
 		/// <summary>
@@ -35,7 +35,7 @@ namespace bs
 		/// </summary>
 		public Vector3Distribution rotation3D;
 		/// <summary>
-		/// Determines should the particle rotation be a single angle applied around a Z axis (if disabled), or a  set of Euler
+		/// Determines should the particle rotation be a single angle applied around a Z axis (if disabled), or a set of Euler 
 		/// angles that allow you to rotate around every axis (if enabled).
 		/// </summary>
 		public bool use3DRotation;

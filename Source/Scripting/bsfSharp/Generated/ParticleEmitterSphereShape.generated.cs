@@ -11,8 +11,8 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Particle emitter shape that emits particles from a sphere. Particles can be emitted from sphere surface, the entire
-	/// volume or a proportion of the volume depending on the thickness parameter. All particles will have normals pointing
+	/// Particle emitter shape that emits particles from a sphere. Particles can be emitted from sphere surface, the entire 
+	/// volume or a proportion of the volume depending on the thickness parameter. All particles will have normals pointing 
 	/// outwards in a spherical direction.
 	/// </summary>
 	[ShowInInspector]

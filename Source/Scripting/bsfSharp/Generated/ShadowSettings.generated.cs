@@ -22,8 +22,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Maximum distance that directional light shadows are allowed to render at. Decreasing the distance can yield higher
-		/// quality shadows nearer to the viewer, as the shadow map resolution isn&apos;t being used up on far away portions of
+		/// Maximum distance that directional light shadows are allowed to render at. Decreasing the distance can yield higher 
+		/// quality shadows nearer to the viewer, as the shadow map resolution isn&apos;t being used up on far away portions of 
 		/// the scene. In world units (meters).
 		/// </summary>
 		[ShowInInspector]
@@ -35,8 +35,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Number of cascades to use for directional shadows. Higher number of cascades increases shadow quality as each
-		/// individual cascade has less area to cover, but can significantly increase performance cost, as well as a minor
+		/// Number of cascades to use for directional shadows. Higher number of cascades increases shadow quality as each 
+		/// individual cascade has less area to cover, but can significantly increase performance cost, as well as a minor 
 		/// increase in memory cost. Valid range is roughly [1, 6].
 		/// </summary>
 		[ShowInInspector]
@@ -49,10 +49,10 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Allows you to control how are directional shadow cascades distributed. Value of 1 means the cascades will be linearly
-		/// split, each cascade taking up the same amount of space. Value of 2 means each subsequent split will be twice the size
-		/// of the previous one (meaning cascades closer to the viewer cover a smaller area, and therefore yield higher
-		/// resolution shadows). Higher values increase the size disparity between near and far cascades at an exponential rate.
+		/// Allows you to control how are directional shadow cascades distributed. Value of 1 means the cascades will be linearly 
+		/// split, each cascade taking up the same amount of space. Value of 2 means each subsequent split will be twice the size 
+		/// of the previous one (meaning cascades closer to the viewer cover a smaller area, and therefore yield higher 
+		/// resolution shadows). Higher values increase the size disparity between near and far cascades at an exponential rate. 
 		/// Valid range is roughly [1, 4].
 		/// </summary>
 		[ShowInInspector]
@@ -65,7 +65,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the number of samples used for percentage closer shadow map filtering. Higher values yield higher quality
+		/// Determines the number of samples used for percentage closer shadow map filtering. Higher values yield higher quality 
 		/// shadows, at the cost of performance. Valid range is [1, 4].
 		/// </summary>
 		[ShowInInspector]

@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Flags that are used for describing how are tangents calculated for a specific keyframe in an animation curve.  Modes
+	/// Flags that are used for describing how are tangents calculated for a specific keyframe in an animation curve. Modes 
 	/// for &quot;in&quot; and &quot;out&quot; tangents can be combined.
 	/// </summary>
 	public enum TangentMode

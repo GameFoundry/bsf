@@ -41,7 +41,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the power of the light source. This will be luminous flux for radial &amp; spot lights,  luminance for
+		/// Determines the power of the light source. This will be luminous flux for radial &amp; spot lights, luminance for 
 		/// directional lights with no area, and illuminance for directional lights with area (non-zero source radius).
 		/// </summary>
 		[ShowInInspector]
@@ -53,7 +53,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// If enabled the attenuation radius will automatically be controlled in order to provide reasonable light radius,
+		/// If enabled the attenuation radius will automatically be controlled in order to provide reasonable light radius, 
 		/// depending on its intensity.
 		/// </summary>
 		[ShowInInspector]
@@ -65,8 +65,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Range at which the light contribution fades out to zero. Use setUseAutoAttenuation to provide a radius automatically
-		/// dependant on light intensity. The radius will cut-off light contribution and therefore manually set very small radius
+		/// Range at which the light contribution fades out to zero. Use setUseAutoAttenuation to provide a radius automatically 
+		/// dependant on light intensity. The radius will cut-off light contribution and therefore manually set very small radius 
 		/// can end up being very physically incorrect.
 		/// </summary>
 		[ShowInInspector]
@@ -78,12 +78,12 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Radius of the light source. If non-zero then this light represents an area light, otherwise it is a punctual light.
-		/// Area lights have different attenuation then punctual lights, and their appearance in specular reflections is
-		/// realistic. Shape of the area light depends on light type: - For directional light the shape is a disc projected on
-		/// the hemisphere on the sky. This parameter represents angular radius (in degrees) of the disk and should be very small
-		/// (think of how much space the Sun takes on the sky - roughly 0.25 degree radius). - For radial light the shape is a
-		/// sphere and the source radius is the radius of the sphere. - For spot lights the shape is a disc oriented in the
+		/// Radius of the light source. If non-zero then this light represents an area light, otherwise it is a punctual light. 
+		/// Area lights have different attenuation then punctual lights, and their appearance in specular reflections is 
+		/// realistic. Shape of the area light depends on light type: - For directional light the shape is a disc projected on 
+		/// the hemisphere on the sky. This parameter represents angular radius (in degrees) of the disk and should be very small 
+		/// (think of how much space the Sun takes on the sky - roughly 0.25 degree radius). - For radial light the shape is a 
+		/// sphere and the source radius is the radius of the sphere. - For spot lights the shape is a disc oriented in the 
 		/// direction of the spot light and the source radius is the radius of the disc.
 		/// </summary>
 		[ShowInInspector]
@@ -110,7 +110,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the falloff angle covered by a spot light. Falloff angle determines at what point does light intensity
+		/// Determines the falloff angle covered by a spot light. Falloff angle determines at what point does light intensity 
 		/// starts quadratically falling off as the angle approaches the total spot angle.
 		/// </summary>
 		[ShowInInspector]
@@ -137,11 +137,11 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Shadow bias determines offset at which the shadows are rendered from the shadow caster. Bias value of 0 means the
-		/// shadow will be renderered exactly at the casters position. If your geometry has thin areas this will produce an
-		/// artifact called shadow acne, in which case you can increase the shadow bias value to eliminate it.  Note that
-		/// increasing the shadow bias will on the other hand make the shadow be offset from the caster and may make the caster
-		/// appear as if floating (Peter Panning artifact). Neither is perfect, so it is preferable to ensure all your geometry
+		/// Shadow bias determines offset at which the shadows are rendered from the shadow caster. Bias value of 0 means the 
+		/// shadow will be renderered exactly at the casters position. If your geometry has thin areas this will produce an 
+		/// artifact called shadow acne, in which case you can increase the shadow bias value to eliminate it. Note that 
+		/// increasing the shadow bias will on the other hand make the shadow be offset from the caster and may make the caster 
+		/// appear as if floating (Peter Panning artifact). Neither is perfect, so it is preferable to ensure all your geometry 
 		/// has thickness and keep the bias at zero, or even at negative values.
 		///
 		/// Default value is 0.5. Should be in rough range [-1, 1].

@@ -11,9 +11,9 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Handles animation playback. Takes one or multiple animation clips as input and evaluates them every animation update
-	/// tick depending on set properties. The evaluated data is used by the core thread for skeletal animation, by the sim
-	/// thread for updating attached scene objects and bones (if skeleton is attached), or the data is made available for
+	/// Handles animation playback. Takes one or multiple animation clips as input and evaluates them every animation update 
+	/// tick depending on set properties. The evaluated data is used by the core thread for skeletal animation, by the sim 
+	/// thread for updating attached scene objects and bones (if skeleton is attached), or the data is made available for 
 	/// manual queries in the case of generic animation.
 	/// </summary>
 	[ShowInInspector]
@@ -23,8 +23,8 @@ namespace bs
 		protected Animation() { }
 
 		/// <summary>
-		/// Determines the default clip to play as soon as the component is enabled. If more control over playing clips is needed
-		/// use the play(), blend() and crossFade() methods to queue clips for playback manually, and setState() method for
+		/// Determines the default clip to play as soon as the component is enabled. If more control over playing clips is needed 
+		/// use the play(), blend() and crossFade() methods to queue clips for playback manually, and setState() method for 
 		/// modify their states individually.
 		/// </summary>
 		[ShowInInspector]
@@ -36,7 +36,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the wrap mode for all active animations. Wrap mode determines what happens when animation reaches the
+		/// Determines the wrap mode for all active animations. Wrap mode determines what happens when animation reaches the 
 		/// first or last frame.
 		/// </summary>
 		[ShowInInspector]
@@ -82,7 +82,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines should animation bounds be used for visibility determination (culling). If false the bounds of the mesh
+		/// Determines should animation bounds be used for visibility determination (culling). If false the bounds of the mesh 
 		/// attached to the relevant CRenderable component will be used instead.
 		/// </summary>
 		[ShowInInspector]
@@ -125,8 +125,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Plays the specified animation clip on top of the animation currently playing in the main layer. Multiple such clips
-		/// can be playing at once, as long as you ensure each is given its own layer. Each animation can also have a weight that
+		/// Plays the specified animation clip on top of the animation currently playing in the main layer. Multiple such clips 
+		/// can be playing at once, as long as you ensure each is given its own layer. Each animation can also have a weight that 
 		/// determines how much it influences the main animation.
 		/// </summary>
 		/// <param name="clip">Clip to additively blend. Must contain additive animation curves.</param>
@@ -134,11 +134,11 @@ namespace bs
 		/// Determines how much of an effect will the blended animation have on the final output. In range [0, 1].
 		/// </param>
 		/// <param name="fadeLength">
-		/// Applies the blend over a specified time period, increasing the weight as the time passes. Set to zero to blend
+		/// Applies the blend over a specified time period, increasing the weight as the time passes. Set to zero to blend 
 		/// immediately. In seconds.
 		/// </param>
 		/// <param name="layer">
-		/// Layer to play the clip in. Multiple additive clips can be playing at once in separate layers and each layer has its
+		/// Layer to play the clip in. Multiple additive clips can be playing at once in separate layers and each layer has its 
 		/// own weight.
 		/// </param>
 		public void BlendAdditive(RRef<AnimationClip> clip, float weight, float fadeLength = 0f, int layer = 0)
@@ -147,8 +147,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Blend multiple animation clips between each other using linear interpolation. Unlike normal animations these
-		/// animations are not advanced with the progress of time, and is instead expected the user manually changes the
+		/// Blend multiple animation clips between each other using linear interpolation. Unlike normal animations these 
+		/// animations are not advanced with the progress of time, and is instead expected the user manually changes the 
 		/// <paramref name="t"/> parameter.
 		/// </summary>
 		/// <param name="info">
@@ -163,14 +163,14 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Blend four animation clips between each other using bilinear interpolation. Unlike normal animations these animations
-		/// are not advanced with the progress of time, and is instead expected the user manually changes the <paramref
+		/// Blend four animation clips between each other using bilinear interpolation. Unlike normal animations these animations 
+		/// are not advanced with the progress of time, and is instead expected the user manually changes the <paramref 
 		/// name="t"/> parameter.
 		/// </summary>
 		/// <param name="info">Information about the clips to blend.</param>
 		/// <param name="t">
-		/// Parameter that controls the blending, in range [(0, 0), (1, 1)]. t = (0, 0) means top left animation has full
-		/// influence, t = (1, 0) means top right animation has full influence, t = (0, 1) means bottom left animation has full
+		/// Parameter that controls the blending, in range [(0, 0), (1, 1)]. t = (0, 0) means top left animation has full 
+		/// influence, t = (1, 0) means top right animation has full influence, t = (0, 1) means bottom left animation has full 
 		/// influence, t = (1, 1) means bottom right animation has full influence.
 		/// </param>
 		public void Blend2D(Blend2DInfo info, Vector2 t)
@@ -199,7 +199,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Stops playing all animations on the provided layer. Specify -1 to stop animation on the main layer  (non-additive
+		/// Stops playing all animations on the provided layer. Specify -1 to stop animation on the main layer (non-additive 
 		/// animations).
 		/// </summary>
 		public void Stop(int layer)
@@ -225,7 +225,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Changes the state of a playing animation clip. If animation clip is not currently playing the playback is started for
+		/// Changes the state of a playing animation clip. If animation clip is not currently playing the playback is started for 
 		/// the clip.
 		/// </summary>
 		/// <param name="clip">Clip to change the state for.</param>

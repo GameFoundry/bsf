@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Contains definitions of GPU programs used for rendering, as well as a set of global parameters to control those
+	/// Contains definitions of GPU programs used for rendering, as well as a set of global parameters to control those 
 	/// programs.
 	/// </summary>
 	[ShowInInspector]
@@ -27,7 +27,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns the list of all variation parameters supported by this shader, possible values of each parameter and other
+		/// Returns the list of all variation parameters supported by this shader, possible values of each parameter and other 
 		/// meta-data.
 		/// </summary>
 		[NativeWrapper]

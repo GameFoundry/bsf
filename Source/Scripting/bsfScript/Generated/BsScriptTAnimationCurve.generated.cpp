@@ -30,7 +30,7 @@ namespace bs
 
 	MonoObject* ScriptTAnimationCurvefloat::create(const SPtr<TAnimationCurve<float>>& value)
 	{
-		if(value == nullptr) return nullptr;
+		if(value == nullptr) return nullptr; 
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };
@@ -98,7 +98,7 @@ namespace bs
 
 	MonoObject* ScriptTAnimationCurveVector3::create(const SPtr<TAnimationCurve<Vector3>>& value)
 	{
-		if(value == nullptr) return nullptr;
+		if(value == nullptr) return nullptr; 
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };
@@ -163,7 +163,7 @@ namespace bs
 
 	MonoObject* ScriptTAnimationCurveVector2::create(const SPtr<TAnimationCurve<Vector2>>& value)
 	{
-		if(value == nullptr) return nullptr;
+		if(value == nullptr) return nullptr; 
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };
@@ -228,7 +228,7 @@ namespace bs
 
 	MonoObject* ScriptTAnimationCurveQuaternion::create(const SPtr<TAnimationCurve<Quaternion>>& value)
 	{
-		if(value == nullptr) return nullptr;
+		if(value == nullptr) return nullptr; 
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };
@@ -293,7 +293,7 @@ namespace bs
 
 	MonoObject* ScriptTAnimationCurveint32_t::create(const SPtr<TAnimationCurve<int32_t>>& value)
 	{
-		if(value == nullptr) return nullptr;
+		if(value == nullptr) return nullptr; 
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };

@@ -46,7 +46,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the half height of the capsule, from the origin to one of the hemispherical centers, along the normal
+		/// Determines the half height of the capsule, from the origin to one of the hemispherical centers, along the normal 
 		/// vector.
 		/// </summary>
 		[ShowInInspector]

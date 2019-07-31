@@ -14,7 +14,7 @@ namespace bs
 	public enum ReflectionProbeType
 	{
 		/// <summary>
-		/// Reflection probe cubemap is generated, and box extents are used for calculating influence ranges and box  geometry.
+		/// Reflection probe cubemap is generated, and box extents are used for calculating influence ranges and box geometry.
 		/// </summary>
 		Box = 0,
 		/// <summary>

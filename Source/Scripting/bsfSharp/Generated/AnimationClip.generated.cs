@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Contains animation curves for translation/rotation/scale of scene objects/skeleton bones, as well as curves for
+	/// Contains animation curves for translation/rotation/scale of scene objects/skeleton bones, as well as curves for 
 	/// generic property animation.
 	/// </summary>
 	[ShowInInspector]
@@ -31,15 +31,15 @@ namespace bs
 		/// <summary>Creates an animation clip with specified curves.</summary>
 		/// <param name="curves">Curves to initialize the animation with.</param>
 		/// <param name="isAdditive">
-		/// Determines does the clip contain additive curve data. This will change the behaviour how is the clip blended with
+		/// Determines does the clip contain additive curve data. This will change the behaviour how is the clip blended with 
 		/// other animations.
 		/// </param>
 		/// <param name="sampleRate">
-		/// If animation uses evenly spaced keyframes, number of samples per second. Not relevant if keyframes are unevenly
+		/// If animation uses evenly spaced keyframes, number of samples per second. Not relevant if keyframes are unevenly 
 		/// spaced.
 		/// </param>
 		/// <param name="rootMotion">
-		/// Optional set of curves that can be used for animating the root bone. Not used by the animation system directly but is
+		/// Optional set of curves that can be used for animating the root bone. Not used by the animation system directly but is 
 		/// instead provided to the user for manual evaluation.
 		/// </param>
 		public AnimationClip(AnimationCurves curves, bool isAdditive = false, int sampleRate = 1, RootMotion rootMotion = null)
@@ -54,7 +54,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// A set of all curves stored in the animation. Returned value will not be updated if the animation clip curves are
+		/// A set of all curves stored in the animation. Returned value will not be updated if the animation clip curves are 
 		/// added or removed, as it is a copy of clip&apos;s internal values.
 		/// </summary>
 		[ShowInInspector]
@@ -75,8 +75,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns a set of curves containing motion of the root bone. This allows the user to evaluate the root bone animation
-		/// curves manually, instead of through the normal animation process. This property is only available if animation clip
+		/// Returns a set of curves containing motion of the root bone. This allows the user to evaluate the root bone animation 
+		/// curves manually, instead of through the normal animation process. This property is only available if animation clip 
 		/// was imported with root motion import enabled.
 		/// </summary>
 		[NativeWrapper]
@@ -93,7 +93,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Checks are the curves contained within the clip additive. Additive clips are intended to be added on top of other
+		/// Checks are the curves contained within the clip additive. Additive clips are intended to be added on top of other 
 		/// clips.
 		/// </summary>
 		[NativeWrapper]
@@ -110,8 +110,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Number of samples per second the animation clip curves were sampled at. This value is not used by the animation clip
-		/// or curves directly since unevenly spaced keyframes are supported. But it can be of value when determining the
+		/// Number of samples per second the animation clip curves were sampled at. This value is not used by the animation clip 
+		/// or curves directly since unevenly spaced keyframes are supported. But it can be of value when determining the 
 		/// original sample rate of an imported animation or similar.
 		/// </summary>
 		[ShowInInspector]

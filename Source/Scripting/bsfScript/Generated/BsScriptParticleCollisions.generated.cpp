@@ -33,7 +33,7 @@ namespace bs
 
 	MonoObject* ScriptParticleCollisions::create(const SPtr<ParticleCollisions>& value)
 	{
-		if(value == nullptr) return nullptr;
+		if(value == nullptr) return nullptr; 
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };

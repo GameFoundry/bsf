@@ -16,7 +16,7 @@ namespace bs
 		:ScriptComponentBase(managedInstance)
 	 { }
 
-	ScriptCJoint::onJointBreakThunkDef ScriptCJoint::onJointBreakThunk;
+	ScriptCJoint::onJointBreakThunkDef ScriptCJoint::onJointBreakThunk; 
 
 	ScriptCJoint::ScriptCJoint(MonoObject* managedInstance, const GameObjectHandle<CJoint>& value)
 		:TScriptComponent(managedInstance, value)

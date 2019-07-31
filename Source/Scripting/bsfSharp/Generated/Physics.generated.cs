@@ -25,7 +25,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Enables or disables collision between two layers. Each physics object can be assigned a specific layer, and here you
+		/// Enables or disables collision between two layers. Each physics object can be assigned a specific layer, and here you 
 		/// can determine which layers can interact with each other.
 		/// </summary>
 		public static void ToggleCollision(ulong groupA, ulong groupB, bool enabled)

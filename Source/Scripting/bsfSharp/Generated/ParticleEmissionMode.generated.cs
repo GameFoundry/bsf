@@ -28,11 +28,11 @@ namespace bs
 		/// <summary>Type that determines general behaviour.</summary>
 		public ParticleEmissionModeType type;
 		/// <summary>
-		/// Speed along which particle generation should move around the shape, relevant for Loop and PingPing emission  modes.
+		/// Speed along which particle generation should move around the shape, relevant for Loop and PingPing emission modes.
 		/// </summary>
 		public float speed;
 		/// <summary>
-		/// Determines the minimum interval allowed between the generated particles. 0 specifies the particles can be  generated
+		/// Determines the minimum interval allowed between the generated particles. 0 specifies the particles can be generated 
 		/// anywhere on the shape.
 		/// </summary>
 		public float interval;

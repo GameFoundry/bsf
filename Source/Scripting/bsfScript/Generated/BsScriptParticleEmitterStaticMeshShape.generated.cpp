@@ -26,7 +26,7 @@ namespace bs
 
 	MonoObject* ScriptParticleEmitterStaticMeshShape::create(const SPtr<ParticleEmitterStaticMeshShape>& value)
 	{
-		if(value == nullptr) return nullptr;
+		if(value == nullptr) return nullptr; 
 
 		bool dummy = false;
 		void* ctorParams[1] = { &dummy };

@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 namespace bs
 {
 	/// <summary>
-	/// A buffer describing a volume (3D), image (2D) or line (1D) of pixels in memory. Pixels are stored as a succession  of
+	/// A buffer describing a volume (3D), image (2D) or line (1D) of pixels in memory. Pixels are stored as a succession of 
 	/// &quot;depth&quot; slices, each containing &quot;height&quot; rows of &quot;width&quot; pixels.
 	/// </summary>
 	[ShowInInspector]
@@ -27,7 +27,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns the number of bytes that offsets one row from another. This can be exact number of bytes required  to hold
+		/// Returns the number of bytes that offsets one row from another. This can be exact number of bytes required to hold 
 		/// &quot;width&quot; pixel, but doesn&apos;t have to be as some buffers require padding.
 		/// </summary>
 		[NativeWrapper]
@@ -37,7 +37,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Returns the number of bytes that offsets one depth slice from another. This can be exact number of bytes required to
+		/// Returns the number of bytes that offsets one depth slice from another. This can be exact number of bytes required to 
 		/// hold &quot;width * height&quot; pixels, but doesn&apos;t have to be as some buffers require padding.
 		/// </summary>
 		[NativeWrapper]
@@ -105,7 +105,7 @@ namespace bs
 
 		/// <summary>Returns values of all pixels.</summary>
 		/// <returns>
-		/// All pixels in the buffer ordered consecutively. Pixels are stored as a succession of &quot;depth&quot; slices,  each
+		/// All pixels in the buffer ordered consecutively. Pixels are stored as a succession of &quot;depth&quot; slices, each 
 		/// containing &quot;height&quot; rows of &quot;width&quot; pixels.
 		/// </returns>
 		public Color[] GetPixels()
@@ -117,7 +117,7 @@ namespace bs
 		/// Sets all pixels in the buffer.Caller must ensure that number of pixels match the extends of the buffer.
 		/// </summary>
 		/// <param name="value">
-		/// All pixels in the buffer ordered consecutively. Pixels are stored as a succession of &quot;depth&quot; slices,  each
+		/// All pixels in the buffer ordered consecutively. Pixels are stored as a succession of &quot;depth&quot; slices, each 
 		/// containing &quot;height&quot; rows of &quot;width&quot; pixels.
 		/// </param>
 		public void SetPixels(Color[] value)
@@ -127,7 +127,7 @@ namespace bs
 
 		/// <summary>Returns all pixels in the buffer as raw bytes.</summary>
 		/// <returns>
-		/// Raw pixel bytes. It is up to the caller to interpret the pixel format and account for potential  row and slice pitch
+		/// Raw pixel bytes. It is up to the caller to interpret the pixel format and account for potential row and slice pitch 
 		/// values.
 		/// </returns>
 		public char[] GetRawPixels()
@@ -137,7 +137,7 @@ namespace bs
 
 		/// <summary>Sets all pixels in the buffer as raw bytes.</summary>
 		/// <param name="value">
-		/// Raw pixel bytes. It is up to the caller to interpret the pixel format and account for  potential row and slice pitch
+		/// Raw pixel bytes. It is up to the caller to interpret the pixel format and account for potential row and slice pitch 
 		/// values.
 		/// </param>
 		public void SetRawPixels(char[] value)

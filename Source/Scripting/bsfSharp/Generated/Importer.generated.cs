@@ -21,12 +21,12 @@ namespace bs
 		protected Importer() { }
 
 		/// <summary>
-		/// Imports a resource at the specified location, and returns the loaded data. If file contains more than one resource
+		/// Imports a resource at the specified location, and returns the loaded data. If file contains more than one resource 
 		/// only the primary resource is imported (for example an FBX a mesh would be imported, but animations ignored).
 		/// </summary>
 		/// <param name="inputFilePath">Pathname of the input file.</param>
 		/// <param name="importOptions">
-		/// (optional) Options for controlling the import. Caller must ensure import options  actually match the type of the
+		/// (optional) Options for controlling the import. Caller must ensure import options actually match the type of the 
 		/// importer used for the file type.
 		/// </param>
 		/// <param name="UUID">
@@ -39,7 +39,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Same as import(), except it imports a resource without blocking the main thread. The resulting resource will be
+		/// Same as import(), except it imports a resource without blocking the main thread. The resulting resource will be 
 		/// placed in the returned AsyncOp object when the import ends.
 		/// </summary>
 		public static AsyncOp<RRefBase> ImportAsync(string inputFilePath, ImportOptions importOptions, UUID UUID)
@@ -48,13 +48,13 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Imports a resource at the specified location, and returns the loaded data. This method returns all imported
-		/// resources, which is relevant for files that can contain multiple resources (for example an FBX which may contain both
+		/// Imports a resource at the specified location, and returns the loaded data. This method returns all imported 
+		/// resources, which is relevant for files that can contain multiple resources (for example an FBX which may contain both 
 		/// a mesh and animations).
 		/// </summary>
 		/// <param name="inputFilePath">Pathname of the input file.</param>
 		/// <param name="importOptions">
-		/// (optional) Options for controlling the import. Caller must ensure import options  actually match the type of the
+		/// (optional) Options for controlling the import. Caller must ensure import options actually match the type of the 
 		/// importer used for the file type.
 		/// </param>
 		/// <returns>A list of all imported resources. The primary resource is always the first returned resource.</returns>
@@ -64,7 +64,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Same as importAll(), except it imports a resource without blocking the main thread. The returned AsyncOp will contain
+		/// Same as importAll(), except it imports a resource without blocking the main thread. The returned AsyncOp will contain 
 		/// a list of the imported resources, after the import ends.
 		/// </summary>
 		public static AsyncOp<MultiResource> ImportAllAsync(string inputFilePath, ImportOptions importOptions)
@@ -80,12 +80,12 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Imports a resource at the specified location, and returns the loaded data. If file contains more than one resource
+		/// Imports a resource at the specified location, and returns the loaded data. If file contains more than one resource 
 		/// only the primary resource is imported (for example an FBX a mesh would be imported, but animations ignored).
 		/// </summary>
 		/// <param name="inputFilePath">Pathname of the input file.</param>
 		/// <param name="importOptions">
-		/// (optional) Options for controlling the import. Caller must ensure import options  actually match the type of the
+		/// (optional) Options for controlling the import. Caller must ensure import options actually match the type of the 
 		/// importer used for the file type.
 		/// </param>
 		/// <returns>Imported resource.</returns>
@@ -96,7 +96,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Imports a resource at the specified location, and returns the loaded data. If file contains more than one resource
+		/// Imports a resource at the specified location, and returns the loaded data. If file contains more than one resource 
 		/// only the primary resource is imported (for example an FBX a mesh would be imported, but animations ignored).
 		/// </summary>
 		/// <param name="inputFilePath">Pathname of the input file.</param>
@@ -109,7 +109,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Same as import(), except it imports a resource without blocking the main thread. The resulting resource will be
+		/// Same as import(), except it imports a resource without blocking the main thread. The resulting resource will be 
 		/// placed in the returned AsyncOp object when the import ends.
 		/// </summary>
 		public static AsyncOp<RRefBase> ImportAsync(string inputFilePath, ImportOptions importOptions)
@@ -119,7 +119,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Same as import(), except it imports a resource without blocking the main thread. The resulting resource will be
+		/// Same as import(), except it imports a resource without blocking the main thread. The resulting resource will be 
 		/// placed in the returned AsyncOp object when the import ends.
 		/// </summary>
 		public static AsyncOp<RRefBase> ImportAsync(string inputFilePath)
@@ -130,8 +130,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Imports a resource at the specified location, and returns the loaded data. This method returns all imported
-		/// resources, which is relevant for files that can contain multiple resources (for example an FBX which may contain both
+		/// Imports a resource at the specified location, and returns the loaded data. This method returns all imported 
+		/// resources, which is relevant for files that can contain multiple resources (for example an FBX which may contain both 
 		/// a mesh and animations).
 		/// </summary>
 		/// <param name="inputFilePath">Pathname of the input file.</param>
@@ -143,7 +143,7 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Same as importAll(), except it imports a resource without blocking the main thread. The returned AsyncOp will contain
+		/// Same as importAll(), except it imports a resource without blocking the main thread. The returned AsyncOp will contain 
 		/// a list of the imported resources, after the import ends.
 		/// </summary>
 		public static AsyncOp<MultiResource> ImportAllAsync(string inputFilePath)

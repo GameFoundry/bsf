@@ -11,7 +11,7 @@ namespace bs
 	 */
 
 	/// <summary>
-	/// Particle emitter shape that emits particles from a surface of a static (non-animated) mesh. Particles can be emitted
+	/// Particle emitter shape that emits particles from a surface of a static (non-animated) mesh. Particles can be emitted 
 	/// from mesh vertices, edges or triangles. If information about normals exists, particles will also inherit the normals.
 	/// </summary>
 	[ShowInInspector]

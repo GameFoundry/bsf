@@ -16,9 +16,9 @@ namespace bs
 		:ScriptComponentBase(managedInstance)
 	 { }
 
-	ScriptCCollider::onCollisionBeginThunkDef ScriptCCollider::onCollisionBeginThunk;
-	ScriptCCollider::onCollisionStayThunkDef ScriptCCollider::onCollisionStayThunk;
-	ScriptCCollider::onCollisionEndThunkDef ScriptCCollider::onCollisionEndThunk;
+	ScriptCCollider::onCollisionBeginThunkDef ScriptCCollider::onCollisionBeginThunk; 
+	ScriptCCollider::onCollisionStayThunkDef ScriptCCollider::onCollisionStayThunk; 
+	ScriptCCollider::onCollisionEndThunkDef ScriptCCollider::onCollisionEndThunk; 
 
 	ScriptCCollider::ScriptCCollider(MonoObject* managedInstance, const GameObjectHandle<CCollider>& value)
 		:TScriptComponent(managedInstance, value)
