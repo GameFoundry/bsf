@@ -2372,7 +2372,7 @@ cleanup:
 					hlslPassData.code = regex_replace(hlslPassData.code, attrRegex, "");
 
 					static const std::regex attr2Regex(
-						R"(\[\s*hideInInspector\s*\]|\[\s*name\s*\(".*"\)\s*\])");
+						R"(\[\s*hideInInspector\s*\]|\[\s*name\s*\(".*"\)\s*\]|\[\s*hdr\s*\])");
 					hlslPassData.code = regex_replace(hlslPassData.code, attr2Regex, "");
 
 					static const std::regex initializerRegex(
