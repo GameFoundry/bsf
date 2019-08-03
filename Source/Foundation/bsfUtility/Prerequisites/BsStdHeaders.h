@@ -44,6 +44,9 @@
 #include <iomanip>
 #include <sstream>
 
+// C limits
+#include <float.h>
+
 extern "C" {
 
 #   include <sys/types.h>
