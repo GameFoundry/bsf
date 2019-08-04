@@ -14,8 +14,8 @@ namespace bs
 	 * You can use this class as a storage for reading and writing from/to various GPU resources. It is meant to be created
 	 * on sim thread and used on the core thread. This class is abstract and specific resource types need to implement their
 	 * own type of GpuResourceData.
-	 * 			
-	 * @note	
+	 *
+	 * @note
 	 * Normal use of this class involves requesting an instance of GpuResourceData from a Resource, then scheduling a read
 	 * or write on that resource using the provided instance. Instance will be locked while it is used by the core thread
 	 * and sim thread will be allowed to access it when the operation ends. Caller can track AsyncOp%s regarding the
@@ -36,6 +36,13 @@ namespace bs
 
 		/** Returns pointer to the internal buffer. */
 		UINT8* getData() const;
+
+		/**
+		 * Sets the internal pointer to point at provided data. GpuResourceData takes ownership of provided memory.
+		 *
+		 * @note If any internal data is allocated, it is freed.
+		 */
+		void setData(UPtr<UINT8[]> &data);
 
 		/**
 		 * Allocates an internal buffer of a certain size. If there is another buffer already allocated, it will be freed
