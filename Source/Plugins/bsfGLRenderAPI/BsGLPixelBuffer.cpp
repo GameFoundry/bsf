@@ -43,7 +43,7 @@ namespace bs { namespace ct
 	void* GLPixelBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options)
 	{
 		assert(!mIsLocked && "Cannot lock this buffer, it is already locked!");
-		assert(offset == 0 && length == mSizeInBytes && "Cannot lock memory region, most lock box or entire buffer");
+		assert(offset == 0 && length == mSizeInBytes && "Cannot lock memory region, must lock box or entire buffer");
 
 		PixelVolume volume(0, 0, 0, mWidth, mHeight, mDepth);
 		const PixelData& lockedData = lock(volume, options);
@@ -117,21 +117,21 @@ namespace bs { namespace ct
 		, mLevel(level), mMultisampleCount(multisampleCount), mHwGamma(hwGamma)
 	{
 		GLint value = 0;
-	
+
 		glBindTexture(mTarget, mTextureID);
 		BS_CHECK_GL_ERROR();
-	
+
 		// Get face identifier
 		mFaceTarget = mTarget;
 		if(mTarget == GL_TEXTURE_CUBE_MAP)
 			mFaceTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X + (face % 6);
-	
+
 		// Get width
 		glGetTexLevelParameteriv(mFaceTarget, level, GL_TEXTURE_WIDTH, &value);
 		BS_CHECK_GL_ERROR();
 
 		mWidth = value;
-	
+
 		// Get height
 		if(target == GL_TEXTURE_1D)
 			value = 1;	// Height always 1 for 1D textures
@@ -142,7 +142,7 @@ namespace bs { namespace ct
 		}
 
 		mHeight = value;
-	
+
 		// Get depth
 		if(target != GL_TEXTURE_3D)
 			value = 1; // Depth always 1 for non-3D textures
@@ -156,7 +156,7 @@ namespace bs { namespace ct
 
 		// Default
 		mSizeInBytes = PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
-	
+
 		// Set up pixel box
 		mBuffer = PixelData(mWidth, mHeight, mDepth, mFormat);
 	}
@@ -220,7 +220,7 @@ namespace bs { namespace ct
 				default:
 					break;
 			}
-		
+
 		}
 		else
 		{
@@ -282,7 +282,7 @@ namespace bs { namespace ct
 						data.getData());
 					BS_CHECK_GL_ERROR();
 					break;
-			}	
+			}
 		}
 
 		// Restore defaults
@@ -535,7 +535,7 @@ namespace bs { namespace ct
 					mTextureID, mTarget, mLevel, dstBox.left, dstBox.top, mFace, srcBox.getWidth(), srcBox.getHeight(), 1);
 				BS_CHECK_GL_ERROR();
 			}
-		}		
+		}
 #endif
 	}
 }}

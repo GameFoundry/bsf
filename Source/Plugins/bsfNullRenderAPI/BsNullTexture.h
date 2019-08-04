@@ -19,7 +19,7 @@ namespace bs
 		/** @copydoc TextureManager::getNativeFormat */
 		PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma) override;
 
-	protected:		
+	protected:
 		/** @copydoc TextureManager::createRenderTextureImpl */
 		SPtr<RenderTexture> createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc) override;
 	};
@@ -65,6 +65,10 @@ namespace bs
 			/** @copydoc Texture::writeData */
 			void writeDataImpl(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false,
 				UINT32 queueIdx = 0) override { }
+
+			/** @copydoc Texture::writeSubData */
+			void writeSubDataImpl(const PixelData& src, Vector3I dstPosition, UINT32 mipLevel = 0, UINT32 face = 0,
+							   UINT32 queueIdx = 0) override {}
 
 		protected:
 			PixelData* mMappedBuffer = nullptr;

@@ -287,7 +287,7 @@ namespace bs { namespace ct
 					if(height > 1)
 						height = height/2;
 
-					if(depth > 1)	
+					if(depth > 1)
 						depth = depth/2;
 				}
 			}
@@ -449,6 +449,35 @@ namespace bs { namespace ct
 			getBuffer(face, mipLevel)->upload(src, src.getExtents());
 	}
 
+	void GLTexture::writeSubDataImpl(const PixelData& src,Vector3I dst, UINT32 mipLevel, UINT32 face,
+								  UINT32 queueIdx)
+	{
+		if (mProperties.getNumSamples() > 1)
+		{
+			BS_LOG(Error, RenderBackend, "Multisampled textures cannot be accessed from the CPU directly.");
+			return;
+		}
+
+		PixelVolume src_vol = src.getExtents();
+		PixelVolume target_vol(
+					dst.x,dst.y,dst.z,
+					dst.x+src_vol.getWidth(),dst.y+src_vol.getHeight(),dst.z+src_vol.getDepth()
+					);
+		if (src.getFormat() != mInternalFormat)
+		{
+			PixelData temp(src.getExtents(), mInternalFormat);
+			temp.allocateInternalBuffer();
+
+			PixelUtil::bulkPixelConversion(src, temp);
+			getBuffer(face, mipLevel)->upload(temp, target_vol);
+		}
+		else
+		{
+
+			getBuffer(face, mipLevel)->upload(src, target_vol);
+		}
+	}
+
 	void GLTexture::copyImpl(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
@@ -503,7 +532,7 @@ namespace bs { namespace ct
 	void GLTexture::createSurfaceList()
 	{
 		mSurfaceList.clear();
-		
+
 		for (UINT32 face = 0; face < mProperties.getNumFaces(); face++)
 		{
 			for (UINT32 mip = 0; mip <= mProperties.getNumMipmaps(); mip++)
@@ -523,7 +552,7 @@ namespace bs { namespace ct
 			}
 		}
 	}
-	
+
 	SPtr<GLPixelBuffer> GLTexture::getBuffer(UINT32 face, UINT32 mipmap)
 	{
 		THROW_IF_NOT_CORE_THREAD;

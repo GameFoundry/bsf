@@ -75,7 +75,7 @@ namespace bs { namespace ct
 		 *							attachment flags are set on the view.
 		 */
 		VkImageView getView(const TextureSurface& surface, bool framebuffer) const;
-		
+
 		/**
 		 * Returns an image view with a specific format.
 		 *
@@ -241,6 +241,10 @@ namespace bs { namespace ct
 		/** @copydoc Texture::writeData */
 		void writeDataImpl(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false,
 					   UINT32 queueIdx = 0) override;
+
+		/** @copydoc Texture::writeSubData */
+		void writeSubDataImpl(const PixelData& src, Vector3I dstPosition, UINT32 mipLevel = 0, UINT32 face = 0,
+						   UINT32 queueIdx = 0) override;
 
 	private:
 		/** Creates a new image for the specified device, matching the current properties. */
