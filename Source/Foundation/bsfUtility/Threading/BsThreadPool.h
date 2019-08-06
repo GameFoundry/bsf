@@ -92,6 +92,11 @@ namespace bs
 		/** Primary worker method that is ran when the thread is first initialized. */
 		void run();
 
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+		void runFunctionHelper(const std::function<void()>& function) const;
+#endif
+
+
 	protected:
 		std::function<void()> mWorkerMethod;
 		String mName;

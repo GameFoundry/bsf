@@ -110,14 +110,7 @@ namespace bs
 			}
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
-			__try
-			{
-				worker();
-			}
-			__except (gCrashHandler().reportCrash(GetExceptionInformation()))
-			{
-				PlatformUtility::terminate(true);
-			}
+			runFunctionHelper(worker);
 #else
 			worker();
 #endif
@@ -134,6 +127,17 @@ namespace bs
 			}
 		}
 	}
+
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+	void PooledThread::runFunctionHelper(const std::function<void()>& function) const
+	{
+		__try {
+			function();
+		} __except(gCrashHandler().reportCrash(GetExceptionInformation())) {
+			PlatformUtility::terminate(true);
+		}
+	}
+#endif
 
 	void PooledThread::destroy()
 	{

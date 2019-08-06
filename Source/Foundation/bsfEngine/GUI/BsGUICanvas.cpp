@@ -633,8 +633,5 @@ namespace bs
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Cannot find requested GUI render element.");
-
-		static CanvasElement dummyElement;
-		return dummyElement;
 	}
 }
