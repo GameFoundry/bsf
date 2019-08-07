@@ -128,7 +128,8 @@ namespace bs
 		p(adaptiveColorThreshold);
 		p(adaptiveRadiusThreshold);
 		p(focalLength);
-		p(apertureScale);
+		p(apertureSize);
+		p(sensorSize);
 	}
 
 	template struct TDepthOfFieldSettings<false>;

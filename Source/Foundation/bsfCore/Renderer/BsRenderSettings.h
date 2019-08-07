@@ -318,7 +318,7 @@ namespace bs
 	};
 
 	/** Types of available depth of field effects. */
-	enum class DepthOfFieldType
+	enum class BS_SCRIPT_EXPORT(m:Rendering) DepthOfFieldType
 	{
 		/** 
 		 * Fastest depth of field variant, uses gaussian blur to approximate depth of field on near and far objects, but
@@ -396,7 +396,7 @@ namespace bs
 		 * Only relevant when using Bokeh depth of field.
 		 */
 		BS_SCRIPT_EXPORT(range:[0,1])
-		float maxBokehSize = 0.15f;
+		float maxBokehSize = 0.025f;
 
 		/** 
 		 * Determines the maximum color difference between surrounding pixels allowed (as a sum of all channels) before
@@ -416,16 +416,20 @@ namespace bs
 		BS_SCRIPT_EXPORT(range:[0,1.0])
 		float adaptiveRadiusThreshold = 0.1f;
 
-		/**
-		 * Value used to scale the size of the camera's aperture (similar to camera aperture size in mm, but not 
-		 * physically based). Only relevant when using Bokeh depth of field.
-		 */
-		BS_SCRIPT_EXPORT(range:[0,2.0])
-		float apertureScale = 1.0f;
+		/** Camera aperture size in mm. Only relevant when using Bokeh depth of field. */
+		BS_SCRIPT_EXPORT(range:[1,200])
+		float apertureSize = 50.0f;
 
-		/** Focal length of the camera's lens (e.g. 75mm). */
-		BS_SCRIPT_EXPORT(range:[0, 200])
+		/** Focal length of the camera's lens (e.g. 75mm). Only relevant when using Bokeh depth of field. */
+		BS_SCRIPT_EXPORT(range:[1,500])
 		float focalLength = 50.0f;
+
+		/** 
+		 * Camera sensor width and height, in mm. Used for controlling the size of the circle of confusion. Only relevant 
+		 * when using Bokeh depth of field. 
+		 */
+		BS_SCRIPT_EXPORT()
+		Vector2 sensorSize = Vector2(22.2f, 14.8f);
 
 	protected:
 		~DepthOfFieldSettingsBase() = default;

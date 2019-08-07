@@ -1133,7 +1133,7 @@ namespace bs { namespace ct
 		Vector2 invTexSize(1.0f / srcProps.getWidth(), 1.0f / srcProps.getHeight());
 		gBokehDOFPrepareParamDef.gInvInputSize.set(mParamBuffer, invTexSize);
 
-		BokehDOFMat::populateDOFCommonParams(mCommonParamBuffer, settings);
+		BokehDOFMat::populateDOFCommonParams(mCommonParamBuffer, settings, view);
 
 		mInputTexture.set(input);
 		mDepthTexture.set(depth);
@@ -1191,8 +1191,8 @@ namespace bs { namespace ct
 		{
 			vertexData[i * 4 + 0] = Vector2(0.0f, 0.0f);
 			vertexData[i * 4 + 1] = Vector2(1.0f, 0.0f);
-			vertexData[i * 4 + 2] = Vector2(1.0f, 1.0f);
-			vertexData[i * 4 + 3] = Vector2(0.0f, 1.0f);
+			vertexData[i * 4 + 2] = Vector2(0.0f, 1.0f);
+			vertexData[i * 4 + 3] = Vector2(1.0f, 1.0f);
 		}
 
 		mTileVertexBuffer->unlock();
@@ -1214,12 +1214,12 @@ namespace bs { namespace ct
 			if (rapiConventions.uvYAxis == Conventions::Axis::Up)
 			{
 				indices[i * 6 + 0] = i * 4 + 2; indices[i * 6 + 1] = i * 4 + 1; indices[i * 6 + 2] = i * 4 + 0;
-				indices[i * 6 + 3] = i * 4 + 3; indices[i * 6 + 4] = i * 4 + 2; indices[i * 6 + 5] = i * 4 + 0;
+				indices[i * 6 + 3] = i * 4 + 2; indices[i * 6 + 4] = i * 4 + 3; indices[i * 6 + 5] = i * 4 + 1;
 			}
 			else
 			{
 				indices[i * 6 + 0] = i * 4 + 0; indices[i * 6 + 1] = i * 4 + 1; indices[i * 6 + 2] = i * 4 + 2;
-				indices[i * 6 + 3] = i * 4 + 0; indices[i * 6 + 4] = i * 4 + 2; indices[i * 6 + 5] = i * 4 + 3;
+				indices[i * 6 + 3] = i * 4 + 1; indices[i * 6 + 4] = i * 4 + 3; indices[i * 6 + 5] = i * 4 + 2;
 			}
 		}
 
@@ -1237,9 +1237,12 @@ namespace bs { namespace ct
 		BS_RENMAT_PROFILE_BLOCK
 
 		const TextureProperties& srcProps = input->getProperties();
+		const RenderTargetProperties& dstProps = output->getProperties();
 
-		Vector2 invTexSize(1.0f / srcProps.getWidth(), 1.0f / srcProps.getHeight());
-		gBokehDOFParamDef.gInvInputSize.set(mParamBuffer, invTexSize);
+		Vector2 inputInvTexSize(1.0f / srcProps.getWidth(), 1.0f / srcProps.getHeight());
+		Vector2 outputInvTexSize(1.0f / dstProps.width, 1.0f / dstProps.height);
+		gBokehDOFParamDef.gInvInputSize.set(mParamBuffer, inputInvTexSize);
+		gBokehDOFParamDef.gInvOutputSize.set(mParamBuffer, outputInvTexSize);
 		gBokehDOFParamDef.gAdaptiveThresholdCOC.set(mParamBuffer, settings.adaptiveRadiusThreshold);
 		gBokehDOFParamDef.gAdaptiveThresholdColor.set(mParamBuffer, settings.adaptiveColorThreshold);
 		gBokehDOFParamDef.gLayerPixelOffset.set(mParamBuffer, (INT32)srcProps.getHeight() + (INT32)NEAR_FAR_PADDING);
@@ -1253,9 +1256,7 @@ namespace bs { namespace ct
 		Vector2I tileCount = imageSize / 1;
 		gBokehDOFParamDef.gTileCount.set(mParamBuffer, tileCount);
 
-		populateDOFCommonParams(mCommonParamBuffer, settings);
-
-		// TODO - The shader interpreting tile count might be wrong
+		populateDOFCommonParams(mCommonParamBuffer, settings, view);
 		mInputTexture.set(input);
 
 		SPtr<Texture> bokehTexture = settings.bokehShape;
@@ -1269,6 +1270,7 @@ namespace bs { namespace ct
 
 		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setRenderTarget(output);
+		rapi.clearRenderTarget(FBT_COLOR);
 		rapi.setVertexDeclaration(mTileVertexDecl);
 
 		SPtr<VertexBuffer> buffers[] = { mTileVertexBuffer };
@@ -1291,14 +1293,31 @@ namespace bs { namespace ct
 		return POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, height, TU_RENDERTARGET);
 	}
 
-	void BokehDOFMat::populateDOFCommonParams(const SPtr<GpuParamBlockBuffer>& buffer, const DepthOfFieldSettings& settings)
+	void BokehDOFMat::populateDOFCommonParams(const SPtr<GpuParamBlockBuffer>& buffer, const DepthOfFieldSettings& settings,
+		const RendererView& view)
 	{
 		gDepthOfFieldCommonParamDef.gFocalPlaneDistance.set(buffer, settings.focalDistance);
-		gDepthOfFieldCommonParamDef.gApertureSize.set(buffer, settings.apertureScale);
-		gDepthOfFieldCommonParamDef.gFocalLength.set(buffer, settings.focalLength);
+		gDepthOfFieldCommonParamDef.gApertureSize.set(buffer, settings.apertureSize * 0.001f); // mm to m
+		gDepthOfFieldCommonParamDef.gFocalLength.set(buffer, settings.focalLength * 0.001); // mm to m
 		gDepthOfFieldCommonParamDef.gInFocusRange.set(buffer, settings.focalRange);
 		gDepthOfFieldCommonParamDef.gNearTransitionRegion.set(buffer, settings.nearTransitionRange);
 		gDepthOfFieldCommonParamDef.gFarTransitionRegion.set(buffer, settings.farTransitionRange);
+
+		float sensorSize, imageSize;
+		if(settings.sensorSize.x < settings.sensorSize.y)
+		{
+			sensorSize = settings.sensorSize.x;
+			imageSize = (float)view.getProperties().target.targetWidth;
+		}
+		else
+		{
+			sensorSize = settings.sensorSize.y;
+			imageSize = (float)view.getProperties().target.targetHeight;
+		}
+
+		gDepthOfFieldCommonParamDef.gSensorSize.set(buffer, sensorSize);
+		gDepthOfFieldCommonParamDef.gImageSize.set(buffer, imageSize);
+		gDepthOfFieldCommonParamDef.gMaxBokehSize.set(buffer, Math::clamp01(settings.maxBokehSize) * imageSize);
 	}
 
 	BokehDOFCombineParamDef gBokehDOFCombineParamDef;
@@ -1332,7 +1351,7 @@ namespace bs { namespace ct
 		Vector2 layerScaleOffset(uvScale, uvOffset);
 		gBokehDOFCombineParamDef.gLayerAndScaleOffset.set(mParamBuffer, layerScaleOffset);
 
-		BokehDOFMat::populateDOFCommonParams(mCommonParamBuffer, settings);
+		BokehDOFMat::populateDOFCommonParams(mCommonParamBuffer, settings, view);
 
 		mUnfocusedTexture.set(unfocused);
 		mFocusedTexture.set(focused);

@@ -17,6 +17,15 @@ namespace bs
 			Internal_DepthOfFieldSettings(this);
 		}
 
+		/// <summary>Texture to use for the bokeh shape. Only relevant when using Bokeh depth of field.</summary>
+		[ShowInInspector]
+		[NativeWrapper]
+		public RRef<Texture> BokehShape
+		{
+			get { return Internal_getbokehShape(mCachedPtr); }
+			set { Internal_setbokehShape(mCachedPtr, value); }
+		}
+
 		/// <summary>Enables or disables the depth of field effect.</summary>
 		[ShowInInspector]
 		[NativeWrapper]
@@ -26,8 +35,18 @@ namespace bs
 			set { Internal_setenabled(mCachedPtr, value); }
 		}
 
+		/// <summary>Type of depth of field effect to use.</summary>
+		[ShowInInspector]
+		[NativeWrapper]
+		public DepthOfFieldType Type
+		{
+			get { return Internal_gettype(mCachedPtr); }
+			set { Internal_settype(mCachedPtr, value); }
+		}
+
 		/// <summary>
-		/// Distance from the camera at which the focal plane is located in. Objects at this distance will be fully in focus.
+		/// Distance from the camera at which the focal plane is located in. Objects at this distance will be fully in focus. In 
+		/// world units (meters).
 		/// </summary>
 		[ShowInInspector]
 		[NativeWrapper]
@@ -38,8 +57,10 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Range within which the objects remain fully in focus. This range is applied relative to the focal distance. Only 
-		/// relevant if Gaussian depth of field is used as other methods don&apos;t use a constant in-focus range.
+		/// Range within which the objects remain fully in focus. This range is applied relative to the focal distance. This 
+		/// parameter should usually be non-zero when using the Gaussian depth of field effect. When using other types of 
+		/// depth-of-field you can set this to zero for a more physically-based effect, or keep it non-zero for more artistic 
+		/// control. In world units (meters).
 		/// </summary>
 		[ShowInInspector]
 		[NativeWrapper]
@@ -50,8 +71,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the size of the range within which objects transition from focused to fully unfocused, at the near plane. 
-		/// Only relevant for Gaussian depth of field.
+		/// Determines the size of the range within which objects transition from focused to fully unfocused, at the near  plane. 
+		/// Only relevant for Gaussian and Bokeh depth of field. In world units (meters).
 		/// </summary>
 		[ShowInInspector]
 		[NativeWrapper]
@@ -62,8 +83,8 @@ namespace bs
 		}
 
 		/// <summary>
-		/// Determines the size of the range within which objects transition from focused to fully unfocused, at the far plane. 
-		/// Only relevant for Gaussian depth of field.
+		/// Determines the size of the range within which objects transition from focused to fully unfocused, at the far  plane. 
+		/// Only relevant for Gaussian and Bokeh depth of field. In world units (meters).
 		/// </summary>
 		[ShowInInspector]
 		[NativeWrapper]
@@ -97,12 +118,99 @@ namespace bs
 			set { Internal_setfarBlurAmount(mCachedPtr, value); }
 		}
 
+		/// <summary>
+		/// Determines the maximum size of the blur kernel, in percent of view size. Larger values cost more performance.  Only 
+		/// relevant when using Bokeh depth of field.
+		/// </summary>
+		[ShowInInspector]
+		[Range(0f, 1f, false)]
+		[NativeWrapper]
+		public float MaxBokehSize
+		{
+			get { return Internal_getmaxBokehSize(mCachedPtr); }
+			set { Internal_setmaxBokehSize(mCachedPtr, value); }
+		}
+
+		/// <summary>
+		/// Determines the maximum color difference between surrounding pixels allowed (as a sum of all channels) before higher 
+		/// fidelity sampling is triggered. Increasing this value can improve performance as less higher fidelity samples will be 
+		/// required, but may decrease quality of the effect. Only relevant when using Bokeh depth of field.
+		/// </summary>
+		[ShowInInspector]
+		[Range(0f, 10f, false)]
+		[NativeWrapper]
+		public float AdaptiveColorThreshold
+		{
+			get { return Internal_getadaptiveColorThreshold(mCachedPtr); }
+			set { Internal_setadaptiveColorThreshold(mCachedPtr, value); }
+		}
+
+		/// <summary>
+		/// Determines the minimum circle of confusion size before higher fidelity sampling is triggered. Small values trigger 
+		/// high fidelity sampling because they can otherwise produce aliasing, and they are small enough so they don&apos;t cost 
+		/// much. Increasing this value can improve performance as less higher fidelity samples will be required,  but may 
+		/// decrease quality of the effect. Only relevant when using Bokeh depth of field.
+		/// </summary>
+		[ShowInInspector]
+		[Range(0f, 1f, false)]
+		[NativeWrapper]
+		public float AdaptiveRadiusThreshold
+		{
+			get { return Internal_getadaptiveRadiusThreshold(mCachedPtr); }
+			set { Internal_setadaptiveRadiusThreshold(mCachedPtr, value); }
+		}
+
+		/// <summary>Camera aperture size in mm. Only relevant when using Bokeh depth of field.</summary>
+		[ShowInInspector]
+		[Range(1f, 200f, false)]
+		[NativeWrapper]
+		public float ApertureSize
+		{
+			get { return Internal_getapertureSize(mCachedPtr); }
+			set { Internal_setapertureSize(mCachedPtr, value); }
+		}
+
+		/// <summary>Focal length of the camera&apos;s lens (e.g. 75mm). Only relevant when using Bokeh depth of field.</summary>
+		[ShowInInspector]
+		[Range(1f, 500f, false)]
+		[NativeWrapper]
+		public float FocalLength
+		{
+			get { return Internal_getfocalLength(mCachedPtr); }
+			set { Internal_setfocalLength(mCachedPtr, value); }
+		}
+
+		/// <summary>
+		/// Camera sensor width and height, in mm. Used for controlling the size of the circle of confusion. Only relevant  when 
+		/// using Bokeh depth of field.
+		/// </summary>
+		[ShowInInspector]
+		[NativeWrapper]
+		public Vector2 SensorSize
+		{
+			get
+			{
+				Vector2 temp;
+				Internal_getsensorSize(mCachedPtr, out temp);
+				return temp;
+			}
+			set { Internal_setsensorSize(mCachedPtr, ref value); }
+		}
+
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern void Internal_DepthOfFieldSettings(DepthOfFieldSettings managedInstance);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern RRef<Texture> Internal_getbokehShape(IntPtr thisPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern void Internal_setbokehShape(IntPtr thisPtr, RRef<Texture> value);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern bool Internal_getenabled(IntPtr thisPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern void Internal_setenabled(IntPtr thisPtr, bool value);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern DepthOfFieldType Internal_gettype(IntPtr thisPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern void Internal_settype(IntPtr thisPtr, DepthOfFieldType value);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern float Internal_getfocalDistance(IntPtr thisPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
@@ -127,5 +235,29 @@ namespace bs
 		private static extern float Internal_getfarBlurAmount(IntPtr thisPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern void Internal_setfarBlurAmount(IntPtr thisPtr, float value);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern float Internal_getmaxBokehSize(IntPtr thisPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern void Internal_setmaxBokehSize(IntPtr thisPtr, float value);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern float Internal_getadaptiveColorThreshold(IntPtr thisPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern void Internal_setadaptiveColorThreshold(IntPtr thisPtr, float value);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern float Internal_getadaptiveRadiusThreshold(IntPtr thisPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern void Internal_setadaptiveRadiusThreshold(IntPtr thisPtr, float value);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern float Internal_getapertureSize(IntPtr thisPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern void Internal_setapertureSize(IntPtr thisPtr, float value);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern float Internal_getfocalLength(IntPtr thisPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern void Internal_setfocalLength(IntPtr thisPtr, float value);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern void Internal_getsensorSize(IntPtr thisPtr, out Vector2 __output);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern void Internal_setsensorSize(IntPtr thisPtr, ref Vector2 value);
 	}
 }

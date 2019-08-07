@@ -4,12 +4,12 @@
 #include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
+#include "BsScriptDepthOfFieldSettings.generated.h"
 #include "BsScriptAutoExposureSettings.generated.h"
 #include "BsScriptTonemappingSettings.generated.h"
 #include "BsScriptScreenSpaceReflectionsSettings.generated.h"
 #include "BsScriptWhiteBalanceSettings.generated.h"
 #include "BsScriptColorGradingSettings.generated.h"
-#include "BsScriptDepthOfFieldSettings.generated.h"
 #include "BsScriptBloomSettings.generated.h"
 #include "BsScriptAmbientOcclusionSettings.generated.h"
 #include "BsScriptScreenSpaceLensFlareSettings.generated.h"
@@ -25,6 +25,9 @@ namespace bs
 	void ScriptRenderSettings::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_RenderSettings", (void*)&ScriptRenderSettings::Internal_RenderSettings);
+		metaData.scriptClass->addInternalCall("Internal_RenderSettings0", (void*)&ScriptRenderSettings::Internal_RenderSettings0);
+		metaData.scriptClass->addInternalCall("Internal_getdepthOfField", (void*)&ScriptRenderSettings::Internal_getdepthOfField);
+		metaData.scriptClass->addInternalCall("Internal_setdepthOfField", (void*)&ScriptRenderSettings::Internal_setdepthOfField);
 		metaData.scriptClass->addInternalCall("Internal_getenableAutoExposure", (void*)&ScriptRenderSettings::Internal_getenableAutoExposure);
 		metaData.scriptClass->addInternalCall("Internal_setenableAutoExposure", (void*)&ScriptRenderSettings::Internal_setenableAutoExposure);
 		metaData.scriptClass->addInternalCall("Internal_getautoExposure", (void*)&ScriptRenderSettings::Internal_getautoExposure);
@@ -37,8 +40,6 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_setwhiteBalance", (void*)&ScriptRenderSettings::Internal_setwhiteBalance);
 		metaData.scriptClass->addInternalCall("Internal_getcolorGrading", (void*)&ScriptRenderSettings::Internal_getcolorGrading);
 		metaData.scriptClass->addInternalCall("Internal_setcolorGrading", (void*)&ScriptRenderSettings::Internal_setcolorGrading);
-		metaData.scriptClass->addInternalCall("Internal_getdepthOfField", (void*)&ScriptRenderSettings::Internal_getdepthOfField);
-		metaData.scriptClass->addInternalCall("Internal_setdepthOfField", (void*)&ScriptRenderSettings::Internal_setdepthOfField);
 		metaData.scriptClass->addInternalCall("Internal_getambientOcclusion", (void*)&ScriptRenderSettings::Internal_getambientOcclusion);
 		metaData.scriptClass->addInternalCall("Internal_setambientOcclusion", (void*)&ScriptRenderSettings::Internal_setambientOcclusion);
 		metaData.scriptClass->addInternalCall("Internal_getscreenSpaceReflections", (void*)&ScriptRenderSettings::Internal_getscreenSpaceReflections);
@@ -87,6 +88,33 @@ namespace bs
 	{
 		SPtr<RenderSettings> instance = bs_shared_ptr_new<RenderSettings>();
 		new (bs_alloc<ScriptRenderSettings>())ScriptRenderSettings(managedInstance, instance);
+	}
+
+	void ScriptRenderSettings::Internal_RenderSettings0(MonoObject* managedInstance)
+	{
+		SPtr<RenderSettings> instance = bs_shared_ptr_new<RenderSettings>();
+		new (bs_alloc<ScriptRenderSettings>())ScriptRenderSettings(managedInstance, instance);
+	}
+
+	MonoObject* ScriptRenderSettings::Internal_getdepthOfField(ScriptRenderSettings* thisPtr)
+	{
+		SPtr<DepthOfFieldSettings> tmp__output = bs_shared_ptr_new<DepthOfFieldSettings>();
+		*tmp__output = thisPtr->getInternal()->depthOfField;
+
+		MonoObject* __output;
+		__output = ScriptDepthOfFieldSettings::create(tmp__output);
+
+		return __output;
+	}
+
+	void ScriptRenderSettings::Internal_setdepthOfField(ScriptRenderSettings* thisPtr, MonoObject* value)
+	{
+		SPtr<DepthOfFieldSettings> tmpvalue;
+		ScriptDepthOfFieldSettings* scriptvalue;
+		scriptvalue = ScriptDepthOfFieldSettings::toNative(value);
+		if(scriptvalue != nullptr)
+			tmpvalue = scriptvalue->getInternal();
+		thisPtr->getInternal()->depthOfField = *tmpvalue;
 	}
 
 	bool ScriptRenderSettings::Internal_getenableAutoExposure(ScriptRenderSettings* thisPtr)
@@ -203,27 +231,6 @@ namespace bs
 		if(scriptvalue != nullptr)
 			tmpvalue = scriptvalue->getInternal();
 		thisPtr->getInternal()->colorGrading = *tmpvalue;
-	}
-
-	MonoObject* ScriptRenderSettings::Internal_getdepthOfField(ScriptRenderSettings* thisPtr)
-	{
-		SPtr<DepthOfFieldSettings> tmp__output = bs_shared_ptr_new<DepthOfFieldSettings>();
-		*tmp__output = thisPtr->getInternal()->depthOfField;
-
-		MonoObject* __output;
-		__output = ScriptDepthOfFieldSettings::create(tmp__output);
-
-		return __output;
-	}
-
-	void ScriptRenderSettings::Internal_setdepthOfField(ScriptRenderSettings* thisPtr, MonoObject* value)
-	{
-		SPtr<DepthOfFieldSettings> tmpvalue;
-		ScriptDepthOfFieldSettings* scriptvalue;
-		scriptvalue = ScriptDepthOfFieldSettings::toNative(value);
-		if(scriptvalue != nullptr)
-			tmpvalue = scriptvalue->getInternal();
-		thisPtr->getInternal()->depthOfField = *tmpvalue;
 	}
 
 	MonoObject* ScriptRenderSettings::Internal_getambientOcclusion(ScriptRenderSettings* thisPtr)

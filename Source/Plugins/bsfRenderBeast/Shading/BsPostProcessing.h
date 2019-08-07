@@ -683,6 +683,9 @@ namespace bs { namespace ct
 		BS_PARAM_BLOCK_ENTRY(float, gApertureSize)
 		BS_PARAM_BLOCK_ENTRY(float, gFocalLength)
 		BS_PARAM_BLOCK_ENTRY(float, gInFocusRange)
+		BS_PARAM_BLOCK_ENTRY(float, gSensorSize)
+		BS_PARAM_BLOCK_ENTRY(float, gImageSize)
+		BS_PARAM_BLOCK_ENTRY(float, gMaxBokehSize)
 		BS_PARAM_BLOCK_ENTRY(float, gNearTransitionRegion)
 		BS_PARAM_BLOCK_ENTRY(float, gFarTransitionRegion)
 	BS_PARAM_BLOCK_END
@@ -726,6 +729,7 @@ namespace bs { namespace ct
 	BS_PARAM_BLOCK_BEGIN(BokehDOFParamDef)
 		BS_PARAM_BLOCK_ENTRY(Vector2I, gTileCount)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gInvInputSize)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gInvOutputSize)
 		BS_PARAM_BLOCK_ENTRY(float, gAdaptiveThresholdColor)
 		BS_PARAM_BLOCK_ENTRY(float, gAdaptiveThresholdCOC)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gBokehSize)
@@ -741,7 +745,7 @@ namespace bs { namespace ct
 		RMAT_DEF_CUSTOMIZED("PPBokehDOF.bsl");
 
 	public:
-		static constexpr UINT32 NEAR_FAR_PADDING = 32;
+		static constexpr UINT32 NEAR_FAR_PADDING = 128;
 		static constexpr UINT32 QUADS_PER_TILE = 8;
 
 		BokehDOFMat();
@@ -761,7 +765,8 @@ namespace bs { namespace ct
 		static POOLED_RENDER_TEXTURE_DESC getOutputDesc(const SPtr<Texture>& target);
 
 		/** Populates the common depth of field parameter buffers with values from the provided settings object. */
-		static void populateDOFCommonParams(const SPtr<GpuParamBlockBuffer>& buffer, const DepthOfFieldSettings& settings);
+		static void populateDOFCommonParams(const SPtr<GpuParamBlockBuffer>& buffer, const DepthOfFieldSettings& settings,
+			const RendererView& view);
 	private:
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		SPtr<GpuParamBlockBuffer> mCommonParamBuffer;

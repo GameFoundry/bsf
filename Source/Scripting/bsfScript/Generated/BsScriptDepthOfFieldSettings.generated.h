@@ -5,6 +5,8 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "Wrappers/BsScriptReflectable.h"
 #include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
+#include "../../../Foundation/bsfCore/Renderer/BsRenderSettings.h"
+#include "Math/BsVector2.h"
 
 namespace bs
 {
@@ -21,8 +23,12 @@ namespace bs
 
 	private:
 		static void Internal_DepthOfFieldSettings(MonoObject* managedInstance);
+		static MonoObject* Internal_getbokehShape(ScriptDepthOfFieldSettings* thisPtr);
+		static void Internal_setbokehShape(ScriptDepthOfFieldSettings* thisPtr, MonoObject* value);
 		static bool Internal_getenabled(ScriptDepthOfFieldSettings* thisPtr);
 		static void Internal_setenabled(ScriptDepthOfFieldSettings* thisPtr, bool value);
+		static DepthOfFieldType Internal_gettype(ScriptDepthOfFieldSettings* thisPtr);
+		static void Internal_settype(ScriptDepthOfFieldSettings* thisPtr, DepthOfFieldType value);
 		static float Internal_getfocalDistance(ScriptDepthOfFieldSettings* thisPtr);
 		static void Internal_setfocalDistance(ScriptDepthOfFieldSettings* thisPtr, float value);
 		static float Internal_getfocalRange(ScriptDepthOfFieldSettings* thisPtr);
@@ -35,5 +41,17 @@ namespace bs
 		static void Internal_setnearBlurAmount(ScriptDepthOfFieldSettings* thisPtr, float value);
 		static float Internal_getfarBlurAmount(ScriptDepthOfFieldSettings* thisPtr);
 		static void Internal_setfarBlurAmount(ScriptDepthOfFieldSettings* thisPtr, float value);
+		static float Internal_getmaxBokehSize(ScriptDepthOfFieldSettings* thisPtr);
+		static void Internal_setmaxBokehSize(ScriptDepthOfFieldSettings* thisPtr, float value);
+		static float Internal_getadaptiveColorThreshold(ScriptDepthOfFieldSettings* thisPtr);
+		static void Internal_setadaptiveColorThreshold(ScriptDepthOfFieldSettings* thisPtr, float value);
+		static float Internal_getadaptiveRadiusThreshold(ScriptDepthOfFieldSettings* thisPtr);
+		static void Internal_setadaptiveRadiusThreshold(ScriptDepthOfFieldSettings* thisPtr, float value);
+		static float Internal_getapertureSize(ScriptDepthOfFieldSettings* thisPtr);
+		static void Internal_setapertureSize(ScriptDepthOfFieldSettings* thisPtr, float value);
+		static float Internal_getfocalLength(ScriptDepthOfFieldSettings* thisPtr);
+		static void Internal_setfocalLength(ScriptDepthOfFieldSettings* thisPtr, float value);
+		static void Internal_getsensorSize(ScriptDepthOfFieldSettings* thisPtr, Vector2* __output);
+		static void Internal_setsensorSize(ScriptDepthOfFieldSettings* thisPtr, Vector2* value);
 	};
 }

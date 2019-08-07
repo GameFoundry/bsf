@@ -31,6 +31,9 @@ namespace bs
 
 	private:
 		static void Internal_RenderSettings(MonoObject* managedInstance);
+		static void Internal_RenderSettings0(MonoObject* managedInstance);
+		static MonoObject* Internal_getdepthOfField(ScriptRenderSettings* thisPtr);
+		static void Internal_setdepthOfField(ScriptRenderSettings* thisPtr, MonoObject* value);
 		static bool Internal_getenableAutoExposure(ScriptRenderSettings* thisPtr);
 		static void Internal_setenableAutoExposure(ScriptRenderSettings* thisPtr, bool value);
 		static MonoObject* Internal_getautoExposure(ScriptRenderSettings* thisPtr);
@@ -43,8 +46,6 @@ namespace bs
 		static void Internal_setwhiteBalance(ScriptRenderSettings* thisPtr, MonoObject* value);
 		static MonoObject* Internal_getcolorGrading(ScriptRenderSettings* thisPtr);
 		static void Internal_setcolorGrading(ScriptRenderSettings* thisPtr, MonoObject* value);
-		static MonoObject* Internal_getdepthOfField(ScriptRenderSettings* thisPtr);
-		static void Internal_setdepthOfField(ScriptRenderSettings* thisPtr, MonoObject* value);
 		static MonoObject* Internal_getambientOcclusion(ScriptRenderSettings* thisPtr);
 		static void Internal_setambientOcclusion(ScriptRenderSettings* thisPtr, MonoObject* value);
 		static MonoObject* Internal_getscreenSpaceReflections(ScriptRenderSettings* thisPtr);

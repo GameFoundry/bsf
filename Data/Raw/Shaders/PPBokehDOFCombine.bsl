@@ -18,7 +18,12 @@ shader PPBokehDOF
 		};
 		
 		Texture2D gUnfocusedTex;
-		SamplerState gUnfocusedSampler;
+		SamplerState gUnfocusedSampler
+		{
+			AddressU = CLAMP;
+			AddressV = CLAMP;
+			AddressW = CLAMP;
+		};
 		
 		Texture2D gFocusedTex;
 		SamplerState gFocusedSampler;

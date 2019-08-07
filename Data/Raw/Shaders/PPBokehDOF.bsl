@@ -18,6 +18,7 @@ shader PPBokehDOF
 		{
 			enabled = true;
 			color = { one, one, add };
+			alpha = { one, one, add };
 		};
 	};
 
@@ -27,6 +28,7 @@ shader PPBokehDOF
 		{
 			uint2 gTileCount;
 			float2 gInvInputSize;
+			float2 gInvOutputSize;
 			float gAdaptiveThresholdColor;
 			float gAdaptiveThresholdCOC;
 			float2 gBokehSize;
@@ -34,7 +36,12 @@ shader PPBokehDOF
 		};
 		
 		Texture2D gInputTex;
-		SamplerState gInputSampler;
+		SamplerState gInputSampler
+		{
+			AddressU = CLAMP;
+			AddressV = CLAMP;
+			AddressW = CLAMP;
+		};
 	
 		struct VStoFS
 		{
@@ -66,8 +73,9 @@ shader PPBokehDOF
 			
 			// TODO - Since the way we're sampling below, should this be the block center?
 			// - Then again maybe not, because the offset we apply to blockPos below seems similar?
+			uint blocksInRow = gTileCount.x / (blocksPerTile * 2);
 			float2 blockPos = 
-				float2(iid % gTileCount.x, iid / gTileCount.x)
+				float2(iid % blocksInRow, iid / blocksInRow)
 				* uint2(blocksPerTile * 2, 2) // Each tile is 2 pixels (quads) high, with N blocks with 2 pixels (quads) wide
 				+ uint2((quadIdxInTile/4) * 2, 0); // Each block has N quads laid out in a row, and each block is 2 quads wide
 			
@@ -100,7 +108,7 @@ shader PPBokehDOF
 
 			// Don't skip small quads
 			float avgDepth = (minSamples.a + maxSamples.a) * 0.5f;
-			float avgCOC = circleOfConfusionPhysical(avgDepth);  // TODO - coc needs to be divided by 100?
+			float avgCOC = circleOfConfusionPhysical(avgDepth);
 			if(avgCOC < gAdaptiveThresholdCOC)
 				needSeparateQuads = true;
 			
@@ -114,12 +122,12 @@ shader PPBokehDOF
 				colorAndDepth = (samples[0] + samples[1] + samples[2] + samples[3]) * 0.25f;
 
 			float sceneDepth = colorAndDepth.a;
-			float coc = circleOfConfusionPhysical(sceneDepth); // TODO - coc needs to be divided by 100?
+			float coc = circleOfConfusionPhysical(sceneDepth);
 
-			// +2 an arbitrary bias to ensure some minimum size
-			float2 cocPixelSize = coc * gBokehSize.xy + 2.0f;
+			// 2 pixel minimum size
+			float2 cocPixelSize = max(coc * gBokehSize.xy, 2.0f);
 
-			float4 color = float4(colorAndDepth.rgb, 1) / coc;
+			float4 color = float4(colorAndDepth.rgb, 1);
 			float2 layer = computeLayerContributions(sceneDepth);
 
 			color *= (sceneDepth < gFocalPlaneDistance) ? layer.r : layer.g;
@@ -141,16 +149,12 @@ shader PPBokehDOF
 			float2 localPos = float2(vertexIdxInQuad % 2, vertexIdxInQuad / 2);
 			
 			// TODO - UV needs flip on OpenGL?
-			float2 ndcPos = UVToNDC((blockPos + (localPos - 0.5f) * cocPixelSize + float2(0, vertOffset)) * gInvInputSize);
+			float2 ndcPos = UVToNDC((blockPos + (localPos - 0.5f) * cocPixelSize + float2(0, vertOffset)) * gInvOutputSize);
 			
 			VStoFS output;			
 			output.position = float4(ndcPos, 0, 1);
 			output.uv0 = input.uv0;
 			output.color = color;
-			
-			// TODO - Add a setup pass with downsampling and depth output
-			// TODO - Add a low-quality version
-			// TODO - Add a recombine step
 
 			return output;
 		}			
@@ -160,7 +164,7 @@ shader PPBokehDOF
 		
 		float4 fsmain(VStoFS input) : SV_Target0
 		{
-			return gBokehTex.Sample(gBokehSampler, input.uv0) * input.color;
+			return gBokehTex.Sample(gBokehSampler, input.uv0).r * input.color;
 		}	
 	};
 };

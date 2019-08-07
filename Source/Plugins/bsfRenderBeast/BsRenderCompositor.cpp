@@ -1825,9 +1825,9 @@ namespace bs { namespace ct
 		const RenderSettings& settings = inputs.view.getRenderSettings();
 
 		auto* eyeAdaptationNode = static_cast<RCNodeEyeAdaptation*>(inputs.inputNodes[0]);
-		auto* sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[1]);
+		auto* sceneColorNode = static_cast<RCNodeLightAccumulation*>(inputs.inputNodes[1]);
 		auto* postProcessNode = static_cast<RCNodePostProcess*>(inputs.inputNodes[3]);
-		const SPtr<Texture>& sceneColor = sceneColorNode->sceneColorTex->texture;
+		const SPtr<Texture>& sceneColor = sceneColorNode->lightAccumulationTex->texture;
 
 		const bool hdr = settings.enableHDR;
 		const bool msaa = viewProps.target.numSamples > 1;
@@ -1905,8 +1905,8 @@ namespace bs { namespace ct
 	{
 		SmallVector<StringID, 4> deps = {
 			RCNodeEyeAdaptation::getNodeId(),
-			RCNodeSceneColor::getNodeId(),
-			RCNodeClusteredForward::getNodeId(),
+			RCNodeLightAccumulation::getNodeId(),
+			RCNodeDepthOfField::getNodeId(),
 			RCNodePostProcess::getNodeId(),
 			RCNodeHalfSceneColor::getNodeId()
 		};
@@ -2016,36 +2016,33 @@ namespace bs { namespace ct
 		if(!settings.enabled)
 			return;
 
-		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[1]);
-		RCNodePostProcess* postProcessNode = static_cast<RCNodePostProcess*>(inputs.inputNodes[2]);
+		// TODO - Need to handle MSAA
+		RCNodeSceneColor* sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[1]);
+		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[2]);
+		RCNodeLightAccumulation* lightAccumNode = static_cast<RCNodeLightAccumulation*>(inputs.inputNodes[3]);
 
 		BokehDOFPrepareMat* prepareMat = BokehDOFPrepareMat::get();
 		BokehDOFMat* renderMat = BokehDOFMat::get();
 		BokehDOFCombineMat* combineMat = BokehDOFCombineMat::get();
 
-		SPtr<Texture> lastFrame;
-		SPtr<RenderTexture> output;
-		postProcessNode->getAndSwitch(inputs.view, output, lastFrame);
-
 		SPtr<Texture> depth = sceneDepthNode->depthTex->texture;
 
 		// Downsample scene and store depth in .w
 		SPtr<PooledRenderTexture> halfResSceneAndDepth =
-			gGpuResourcePool().get(BokehDOFPrepareMat::getOutputDesc(lastFrame));
+			gGpuResourcePool().get(BokehDOFPrepareMat::getOutputDesc(sceneColorNode->sceneColorTex->texture));
 
-		prepareMat->execute(lastFrame, depth, inputs.view, settings, halfResSceneAndDepth->renderTexture);
-
-		// Render Bokeh sprites and store output in separate near and far layers (in the same texture)
-		// TODO - Just use two textures?
+		prepareMat->execute(sceneColorNode->sceneColorTex->texture, depth, inputs.view, settings,
+			halfResSceneAndDepth->renderTexture);
 
 		SPtr<PooledRenderTexture> unfocusedTex =
 			gGpuResourcePool().get(BokehDOFMat::getOutputDesc(halfResSceneAndDepth->texture));
+
+		renderMat->execute(halfResSceneAndDepth->texture, inputs.view, settings, unfocusedTex->renderTexture);
 		halfResSceneAndDepth = nullptr;
 
-		renderMat->execute(unfocusedTex->texture, inputs.view, settings, unfocusedTex->renderTexture);
-
 		// Combine the unfocused and focused textures to form the final image
-		combineMat->execute(unfocusedTex->texture, lastFrame, depth, inputs.view, settings, output);
+		combineMat->execute(unfocusedTex->texture, sceneColorNode->sceneColorTex->texture, depth, inputs.view, settings,
+			lightAccumNode->lightAccumulationTex->renderTexture);
 	}
 
 	void RCNodeDepthOfField::clear()
@@ -2055,7 +2052,13 @@ namespace bs { namespace ct
 
 	SmallVector<StringID, 4> RCNodeDepthOfField::getDependencies(const RendererView& view)
 	{
-		return { RCNodeTonemapping::getNodeId(), RCNodeSceneDepth::getNodeId(), RCNodePostProcess::getNodeId() };
+		return 
+		{ 
+			RCNodeClusteredForward::getNodeId(), 
+			RCNodeSceneColor::getNodeId(), 
+			RCNodeSceneDepth::getNodeId(), 
+			RCNodeLightAccumulation::getNodeId() 
+		};
 	}
 
 	void RCNodeFXAA::render(const RenderCompositorNodeInputs& inputs)
@@ -2082,7 +2085,7 @@ namespace bs { namespace ct
 
 	SmallVector<StringID, 4> RCNodeFXAA::getDependencies(const RendererView& view)
 	{
-		return { RCNodeDepthOfField::getNodeId(), RCNodePostProcess::getNodeId() };
+		return { RCNodeTonemapping::getNodeId(), RCNodePostProcess::getNodeId() };
 	}
 
 	void RCNodeHalfSceneColor::render(const RenderCompositorNodeInputs& inputs)

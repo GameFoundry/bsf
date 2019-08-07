@@ -21,6 +21,22 @@ namespace bs
 			Internal_RenderSettings(this);
 		}
 
+		public RenderSettings()
+		{
+			Internal_RenderSettings0(this);
+		}
+
+		/// <summary>Parameters used for customizing the gaussian depth of field effect.</summary>
+		[ShowInInspector]
+		[NotNull]
+		[PassByCopy]
+		[NativeWrapper]
+		public DepthOfFieldSettings DepthOfField
+		{
+			get { return Internal_getdepthOfField(mCachedPtr); }
+			set { Internal_setdepthOfField(mCachedPtr, value); }
+		}
+
 		/// <summary>
 		/// Determines should automatic exposure be applied to the HDR image. When turned on the average scene brightness will be 
 		/// calculated and used to automatically expose the image to the optimal range. Use the parameters provided by 
@@ -98,17 +114,6 @@ namespace bs
 		{
 			get { return Internal_getcolorGrading(mCachedPtr); }
 			set { Internal_setcolorGrading(mCachedPtr, value); }
-		}
-
-		/// <summary>Parameters used for customizing the depth of field effect.</summary>
-		[ShowInInspector]
-		[NotNull]
-		[PassByCopy]
-		[NativeWrapper]
-		public DepthOfFieldSettings DepthOfField
-		{
-			get { return Internal_getdepthOfField(mCachedPtr); }
-			set { Internal_setdepthOfField(mCachedPtr, value); }
 		}
 
 		/// <summary>Parameters used for customizing screen space ambient occlusion.</summary>
@@ -285,6 +290,12 @@ namespace bs
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern void Internal_RenderSettings(RenderSettings managedInstance);
 		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern void Internal_RenderSettings0(RenderSettings managedInstance);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern DepthOfFieldSettings Internal_getdepthOfField(IntPtr thisPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern void Internal_setdepthOfField(IntPtr thisPtr, DepthOfFieldSettings value);
+		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern bool Internal_getenableAutoExposure(IntPtr thisPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern void Internal_setenableAutoExposure(IntPtr thisPtr, bool value);
@@ -308,10 +319,6 @@ namespace bs
 		private static extern ColorGradingSettings Internal_getcolorGrading(IntPtr thisPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern void Internal_setcolorGrading(IntPtr thisPtr, ColorGradingSettings value);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		private static extern DepthOfFieldSettings Internal_getdepthOfField(IntPtr thisPtr);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		private static extern void Internal_setdepthOfField(IntPtr thisPtr, DepthOfFieldSettings value);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern AmbientOcclusionSettings Internal_getambientOcclusion(IntPtr thisPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]

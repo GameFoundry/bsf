@@ -2865,6 +2865,158 @@ Also see setContactOffset().</doc>
 			</param>
 		</event>
 	</class>
+	<struct native="SpriteSheetGridAnimation" script="SpriteSheetGridAnimation">
+		<doc>Descriptor that describes a simple sprite sheet animation. The parent texture is split into a grid of <see cref="numRows"/> x <see cref="numColumns"/>, each representing one frame of the animation. Every frame is of equal size. Frames are sequentially evaluated starting from the top-most row, iterating over all columns in a row and then moving to next row, up to <see cref="count"/> frames. Frames in rows/colums past <see cref="count"/>. <see cref="fps"/> frames are evaluated every second, allowing you to control animation speed.</doc>
+		<ctor>
+		</ctor>
+		<ctor>
+			<param name="numRows" type="int">
+			</param>
+			<param name="numColumns" type="int">
+			</param>
+			<param name="count" type="int">
+			</param>
+			<param name="fps" type="int">
+			</param>
+		</ctor>
+		<field name="numRows" type="int">
+			<doc>Number of rows to divide the parent&apos;s texture area. Determines height of the individual frame (depends on parent texture size).</doc>
+		</field>
+		<field name="numColumns" type="int">
+			<doc>Number of columns to divide the parent&apos;s texture area. Determines column of the individual frame (depends on parent texture size).</doc>
+		</field>
+		<field name="count" type="int">
+			<doc>Number of frames in the animation. Must be less or equal than <see cref="numRows"/> * <see cref="numColumns"/>.</doc>
+		</field>
+		<field name="fps" type="int">
+			<doc>How many frames to evaluate each second. Determines the animation speed.</doc>
+		</field>
+	</struct>
+	<enum native="TextureUsage" script="TextureUsage">
+		<doc>Flags that describe how is a texture used.</doc>
+		<enumentry native="TU_STATIC" script="Default">
+			<doc>A regular texture that is not often or ever updated from the CPU.</doc>
+		</enumentry>
+		<enumentry native="TU_DYNAMIC" script="Dynamic">
+			<doc>A regular texture that is often updated by the CPU.</doc>
+		</enumentry>
+		<enumentry native="TU_RENDERTARGET" script="Render">
+			<doc>Texture that can be rendered to by the GPU.</doc>
+		</enumentry>
+		<enumentry native="TU_DEPTHSTENCIL" script="DepthStencil">
+			<doc>Texture used as a depth/stencil buffer by the GPU.</doc>
+		</enumentry>
+		<enumentry native="TU_LOADSTORE" script="LoadStore">
+			<doc>Texture that allows load/store operations from the GPU program.</doc>
+		</enumentry>
+		<enumentry native="TU_CPUCACHED" script="CPUCached">
+			<doc>All mesh data will also be cached in CPU memory, making it available for fast read access from the CPU.</doc>
+		</enumentry>
+		<enumentry native="TU_CPUREADABLE" script="CPUReadable">
+			<doc>Allows the CPU to directly read the texture data buffers from the GPU.</doc>
+		</enumentry>
+		<enumentry native="TU_MUTABLEFORMAT" script="MutableFormat">
+			<doc>Allows you to retrieve views of the texture using a format different from one specified on creation.</doc>
+		</enumentry>
+	</enum>
+	<class native="Texture" script="Texture">
+		<doc>Abstract class representing a texture. Specific render systems have their own Texture implementations. Internally represented as one or more surfaces with pixels in a certain number of dimensions, backed by a hardware buffer.</doc>
+		<method native="readData" script="GetGPUPixels" static="false">
+			<doc>Reads internal texture data into a newly allocated buffer.</doc>
+			<param name="face" type="int">
+				<doc>Texture face to read from.</doc>
+			</param>
+			<param name="mipLevel" type="int">
+				<doc>Mipmap level to read from.</doc>
+			</param>
+			<returns type="AsyncOp&lt;PixelData&gt;">
+				<doc>Async operation object that will contain the buffer with the data once the operation completes.</doc>
+			</returns>
+		</method>
+		<ctor>
+			<param name="format" type="PixelFormat">
+			</param>
+			<param name="width" type="int">
+			</param>
+			<param name="height" type="int">
+			</param>
+			<param name="depth" type="int">
+			</param>
+			<param name="texType" type="TextureType">
+			</param>
+			<param name="usage" type="TextureUsage">
+			</param>
+			<param name="numSamples" type="int">
+			</param>
+			<param name="hasMipmaps" type="bool">
+			</param>
+			<param name="gammaCorrection" type="bool">
+			</param>
+		</ctor>
+		<method native="getPixels" script="GetPixels" static="false">
+			<doc>Returns pixels for the specified mip level &amp; face. Pixels will be read from system memory, which means the texture has to be created with TextureUsage.CPUCached. If the texture was updated from the GPU the pixels retrieved from this method will not reflect that, and you should use GetGPUPixels instead.</doc>
+			<param name="face" type="int">
+				<doc>Face to read the pixels from. Cubemap textures have six faces whose face indices are as specified in the CubeFace enum. Array textures can have an arbitrary number of faces (if it&apos;s a cubemap array it has to be a multiple of 6).</doc>
+			</param>
+			<param name="mipLevel" type="int">
+				<doc>Mip level to retrieve pixels for. Top level (0) is the highest quality.</doc>
+			</param>
+			<returns type="PixelData">
+				<doc>A set of pixels for the specified mip level.</doc>
+			</returns>
+		</method>
+		<method native="setPixels" script="SetPixels" static="false">
+			<doc>Sets pixels for the specified mip level and face.</doc>
+			<param name="data" type="PixelData">
+				<doc>Pixels to assign to the specified mip level. Pixel data must match the mip level size and texture pixel format.</doc>
+			</param>
+			<param name="face" type="int">
+				<doc>Face to write the pixels to. Cubemap textures have six faces whose face indices are as specified in the CubeFace enum. Array textures can have an arbitrary number of faces (if it&apos;s a cubemap array it has to be a multiple of 6).</doc>
+			</param>
+			<param name="mipLevel" type="int">
+				<doc>Mip level to set pixels for. Top level (0) is the highest quality.</doc>
+			</param>
+		</method>
+		<method native="setPixelsArray" script="SetPixels" static="false">
+			<doc>Sets pixels for the specified mip level and face.</doc>
+			<param name="colors" type="Color">
+				<doc>Pixels to assign to the specified mip level. Size of the array must match the mip level dimensions. Data is expected to be laid out row by row. Pixels will be automatically converted to the valid pixel format.</doc>
+			</param>
+			<param name="face" type="int">
+				<doc>Face to write the pixels to. Cubemap textures have six faces whose face indices are as specified in the CubeFace enum. Array textures can have an arbitrary number of faces (if it&apos;s a cubemap array it has to be a multiple of 6).</doc>
+			</param>
+			<param name="mipLevel" type="int">
+				<doc>Mip level to set pixels for. Top level (0) is the highest quality.</doc>
+			</param>
+		</method>
+		<property name="PixelFormat" type="PixelFormat" getter="getPixelFormat" setter="" static="false">
+			<doc>Returns the pixel format for the texture surface.</doc>
+		</property>
+		<property name="Usage" type="TextureUsage" getter="getUsage" setter="" static="false">
+			<doc>Returns a value that signals the engine in what way is the texture expected to be used.</doc>
+		</property>
+		<property name="Type" type="TextureType" getter="getType" setter="" static="false">
+			<doc>Gets the type of texture.</doc>
+		</property>
+		<property name="Width" type="int" getter="getWidth" setter="" static="false">
+			<doc>Returns the width of the texture.</doc>
+		</property>
+		<property name="Height" type="int" getter="getHeight" setter="" static="false">
+			<doc>Returns the height of the texture.</doc>
+		</property>
+		<property name="Depth" type="int" getter="getDepth" setter="" static="false">
+			<doc>Returns the depth of the texture (only applicable for 3D textures).</doc>
+		</property>
+		<property name="GammaSpace" type="bool" getter="getGammaCorrection" setter="" static="false">
+			<doc>Determines does the texture contain gamma corrected data. If true then the GPU will automatically convert the pixels to linear space before reading from the texture, and convert them to gamma space when writing to the texture.</doc>
+		</property>
+		<property name="SampleCount" type="int" getter="getSampleCount" setter="" static="false">
+			<doc>Gets the number of samples used for multisampling (0 or 1 if multisampling is not used).</doc>
+		</property>
+		<property name="MipMapCount" type="int" getter="getMipmapCount" setter="" static="false">
+			<doc>Gets the number of mipmaps to be used for this texture. This number excludes the top level map (which is always assumed to be present).</doc>
+		</property>
+	</class>
 	<class native="AutoExposureSettings" script="AutoExposureSettings">
 		<doc>Settings that control automatic exposure (eye adaptation) post-process.</doc>
 		<ctor>
@@ -2993,6 +3145,15 @@ In range [-1.0f, 1.0f].</doc>
 			<doc>Gain to be applied during color grading. Simply offsets all color values by an equal amount. In range [-1.0f, 1.0f].</doc>
 		</property>
 	</class>
+	<enum native="DepthOfFieldType" script="DepthOfFieldType">
+		<doc>Types of available depth of field effects.</doc>
+		<enumentry native="Gaussian" script="Gaussian">
+			<doc>Fastest depth of field variant, uses gaussian blur to approximate depth of field on near and far objects, but doesn&apos;t use any physically based methods for determining blur amount.</doc>
+		</enumentry>
+		<enumentry native="Bokeh" script="Bokeh">
+			<doc>Very expensive depth of field variant that allows you to use a bokeh texture, controlling the shape of the blur (usually intended to mimic real world camera aperature shapes). Blur is varied according to actual object distance and the effect is more physically based than gaussian blur (but not completely). Very expensive in terms of performance.</doc>
+		</enumentry>
+	</enum>
 	<class native="ScriptCodeImportOptions" script="ScriptCodeImportOptions">
 		<doc>Contains import options you may use to control how is a file containing script source code importer.</doc>
 		<ctor>
@@ -3006,26 +3167,50 @@ In range [-1.0f, 1.0f].</doc>
 		<doc>Settings that control the depth-of-field effect.</doc>
 		<ctor>
 		</ctor>
+		<property name="BokehShape" type="RRef&lt;Texture&gt;" getter="getbokehShape" setter="setbokehShape" static="false">
+			<doc>Texture to use for the bokeh shape. Only relevant when using Bokeh depth of field.</doc>
+		</property>
 		<property name="Enabled" type="bool" getter="getenabled" setter="setenabled" static="false">
 			<doc>Enables or disables the depth of field effect.</doc>
 		</property>
+		<property name="Type" type="DepthOfFieldType" getter="gettype" setter="settype" static="false">
+			<doc>Type of depth of field effect to use.</doc>
+		</property>
 		<property name="FocalDistance" type="float" getter="getfocalDistance" setter="setfocalDistance" static="false">
-			<doc>Distance from the camera at which the focal plane is located in. Objects at this distance will be fully in focus.</doc>
+			<doc>Distance from the camera at which the focal plane is located in. Objects at this distance will be fully in focus. In world units (meters).</doc>
 		</property>
 		<property name="FocalRange" type="float" getter="getfocalRange" setter="setfocalRange" static="false">
-			<doc>Range within which the objects remain fully in focus. This range is applied relative to the focal distance. Only relevant if Gaussian depth of field is used as other methods don&apos;t use a constant in-focus range.</doc>
+			<doc>Range within which the objects remain fully in focus. This range is applied relative to the focal distance. This parameter should usually be non-zero when using the Gaussian depth of field effect. When using other types of depth-of-field you can set this to zero for a more physically-based effect, or keep it non-zero for more artistic control. In world units (meters).</doc>
 		</property>
 		<property name="NearTransitionRange" type="float" getter="getnearTransitionRange" setter="setnearTransitionRange" static="false">
-			<doc>Determines the size of the range within which objects transition from focused to fully unfocused, at the near plane. Only relevant for Gaussian depth of field.</doc>
+			<doc>Determines the size of the range within which objects transition from focused to fully unfocused, at the near  plane. Only relevant for Gaussian and Bokeh depth of field. In world units (meters).</doc>
 		</property>
 		<property name="FarTransitionRange" type="float" getter="getfarTransitionRange" setter="setfarTransitionRange" static="false">
-			<doc>Determines the size of the range within which objects transition from focused to fully unfocused, at the far plane. Only relevant for Gaussian depth of field.</doc>
+			<doc>Determines the size of the range within which objects transition from focused to fully unfocused, at the far  plane. Only relevant for Gaussian and Bokeh depth of field. In world units (meters).</doc>
 		</property>
 		<property name="NearBlurAmount" type="float" getter="getnearBlurAmount" setter="setnearBlurAmount" static="false">
 			<doc>Determines the amount of blur to apply to fully unfocused objects that are closer to camera than the in-focus zone. Set to zero to disable near-field blur. Only relevant for Gaussian depth of field.</doc>
 		</property>
 		<property name="FarBlurAmount" type="float" getter="getfarBlurAmount" setter="setfarBlurAmount" static="false">
 			<doc>Determines the amount of blur to apply to fully unfocused objects that are farther away from camera than the in-focus zone. Set to zero to disable far-field blur. Only relevant for Gaussian depth of field.</doc>
+		</property>
+		<property name="MaxBokehSize" type="float" getter="getmaxBokehSize" setter="setmaxBokehSize" static="false">
+			<doc>Determines the maximum size of the blur kernel, in percent of view size. Larger values cost more performance.  Only relevant when using Bokeh depth of field.</doc>
+		</property>
+		<property name="AdaptiveColorThreshold" type="float" getter="getadaptiveColorThreshold" setter="setadaptiveColorThreshold" static="false">
+			<doc>Determines the maximum color difference between surrounding pixels allowed (as a sum of all channels) before higher fidelity sampling is triggered. Increasing this value can improve performance as less higher fidelity samples will be required, but may decrease quality of the effect. Only relevant when using Bokeh depth of field.</doc>
+		</property>
+		<property name="AdaptiveRadiusThreshold" type="float" getter="getadaptiveRadiusThreshold" setter="setadaptiveRadiusThreshold" static="false">
+			<doc>Determines the minimum circle of confusion size before higher fidelity sampling is triggered. Small values trigger high fidelity sampling because they can otherwise produce aliasing, and they are small enough so they don&apos;t cost much. Increasing this value can improve performance as less higher fidelity samples will be required,  but may decrease quality of the effect. Only relevant when using Bokeh depth of field.</doc>
+		</property>
+		<property name="ApertureSize" type="float" getter="getapertureSize" setter="setapertureSize" static="false">
+			<doc>Camera aperture size in mm. Only relevant when using Bokeh depth of field.</doc>
+		</property>
+		<property name="FocalLength" type="float" getter="getfocalLength" setter="setfocalLength" static="false">
+			<doc>Focal length of the camera&apos;s lens (e.g. 75mm). Only relevant when using Bokeh depth of field.</doc>
+		</property>
+		<property name="SensorSize" type="Vector2" getter="getsensorSize" setter="setsensorSize" static="false">
+			<doc>Camera sensor width and height, in mm. Used for controlling the size of the circle of confusion. Only relevant  when using Bokeh depth of field.</doc>
 		</property>
 	</class>
 	<class native="ScreenSpaceReflectionsSettings" script="ScreenSpaceReflectionsSettings">
@@ -3066,6 +3251,11 @@ In range [-1.0f, 1.0f].</doc>
 		<doc>Settings that control rendering for a specific camera (view).</doc>
 		<ctor>
 		</ctor>
+		<ctor>
+		</ctor>
+		<property name="DepthOfField" type="DepthOfFieldSettings" getter="getdepthOfField" setter="setdepthOfField" static="false">
+			<doc>Parameters used for customizing the gaussian depth of field effect.</doc>
+		</property>
 		<property name="EnableAutoExposure" type="bool" getter="getenableAutoExposure" setter="setenableAutoExposure" static="false">
 			<doc>Determines should automatic exposure be applied to the HDR image. When turned on the average scene brightness will be calculated and used to automatically expose the image to the optimal range. Use the parameters provided by autoExposure to customize the automatic exposure effect. You may also use exposureScale to manually adjust the automatic exposure. When automatic exposure is turned off you can use exposureScale to manually set the exposure.</doc>
 		</property>
@@ -3084,9 +3274,6 @@ If this is disabled, then color grading and white balancing will not be enabled 
 		</property>
 		<property name="ColorGrading" type="ColorGradingSettings" getter="getcolorGrading" setter="setcolorGrading" static="false">
 			<doc>Parameters used for customizing color grading.</doc>
-		</property>
-		<property name="DepthOfField" type="DepthOfFieldSettings" getter="getdepthOfField" setter="setdepthOfField" static="false">
-			<doc>Parameters used for customizing the depth of field effect.</doc>
 		</property>
 		<property name="AmbientOcclusion" type="AmbientOcclusionSettings" getter="getambientOcclusion" setter="setambientOcclusion" static="false">
 			<doc>Parameters used for customizing screen space ambient occlusion.</doc>
@@ -5502,60 +5689,6 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 			<doc>Determines position of the sphere shape, relative to the component&apos;s scene object.</doc>
 		</property>
 	</class>
-	<enum native="TextureUsage" script="TextureUsage">
-		<doc>Flags that describe how is a texture used.</doc>
-		<enumentry native="TU_STATIC" script="Default">
-			<doc>A regular texture that is not often or ever updated from the CPU.</doc>
-		</enumentry>
-		<enumentry native="TU_DYNAMIC" script="Dynamic">
-			<doc>A regular texture that is often updated by the CPU.</doc>
-		</enumentry>
-		<enumentry native="TU_RENDERTARGET" script="Render">
-			<doc>Texture that can be rendered to by the GPU.</doc>
-		</enumentry>
-		<enumentry native="TU_DEPTHSTENCIL" script="DepthStencil">
-			<doc>Texture used as a depth/stencil buffer by the GPU.</doc>
-		</enumentry>
-		<enumentry native="TU_LOADSTORE" script="LoadStore">
-			<doc>Texture that allows load/store operations from the GPU program.</doc>
-		</enumentry>
-		<enumentry native="TU_CPUCACHED" script="CPUCached">
-			<doc>All mesh data will also be cached in CPU memory, making it available for fast read access from the CPU.</doc>
-		</enumentry>
-		<enumentry native="TU_CPUREADABLE" script="CPUReadable">
-			<doc>Allows the CPU to directly read the texture data buffers from the GPU.</doc>
-		</enumentry>
-		<enumentry native="TU_MUTABLEFORMAT" script="MutableFormat">
-			<doc>Allows you to retrieve views of the texture using a format different from one specified on creation.</doc>
-		</enumentry>
-	</enum>
-	<struct native="SpriteSheetGridAnimation" script="SpriteSheetGridAnimation">
-		<doc>Descriptor that describes a simple sprite sheet animation. The parent texture is split into a grid of <see cref="numRows"/> x <see cref="numColumns"/>, each representing one frame of the animation. Every frame is of equal size. Frames are sequentially evaluated starting from the top-most row, iterating over all columns in a row and then moving to next row, up to <see cref="count"/> frames. Frames in rows/colums past <see cref="count"/>. <see cref="fps"/> frames are evaluated every second, allowing you to control animation speed.</doc>
-		<ctor>
-		</ctor>
-		<ctor>
-			<param name="numRows" type="int">
-			</param>
-			<param name="numColumns" type="int">
-			</param>
-			<param name="count" type="int">
-			</param>
-			<param name="fps" type="int">
-			</param>
-		</ctor>
-		<field name="numRows" type="int">
-			<doc>Number of rows to divide the parent&apos;s texture area. Determines height of the individual frame (depends on parent texture size).</doc>
-		</field>
-		<field name="numColumns" type="int">
-			<doc>Number of columns to divide the parent&apos;s texture area. Determines column of the individual frame (depends on parent texture size).</doc>
-		</field>
-		<field name="count" type="int">
-			<doc>Number of frames in the animation. Must be less or equal than <see cref="numRows"/> * <see cref="numColumns"/>.</doc>
-		</field>
-		<field name="fps" type="int">
-			<doc>How many frames to evaluate each second. Determines the animation speed.</doc>
-		</field>
-	</struct>
 	<class native="SpriteTexture" script="SpriteTexture">
 		<doc>Texture that references a part of a larger texture by specifying an UV subset. When the sprite texture is rendererd only the portion of the texture specified by the UV subset will be rendered. This allows you to use the same texture for multiple sprites (texture atlasing). Sprite textures also allow you to specify sprite sheet animation by varying which portion of the UV is selected over time.</doc>
 		<ctor>
@@ -5598,104 +5731,6 @@ The shape and mass of a rigidbody is governed by its colliders. You must attach 
 		</property>
 		<property name="AnimationPlayback" type="SpriteAnimationPlayback" getter="getAnimationPlayback" setter="setAnimationPlayback" static="false">
 			<doc>Determines if and how should the sprite animation play.</doc>
-		</property>
-	</class>
-	<class native="Texture" script="Texture">
-		<doc>Abstract class representing a texture. Specific render systems have their own Texture implementations. Internally represented as one or more surfaces with pixels in a certain number of dimensions, backed by a hardware buffer.</doc>
-		<method native="readData" script="GetGPUPixels" static="false">
-			<doc>Reads internal texture data into a newly allocated buffer.</doc>
-			<param name="face" type="int">
-				<doc>Texture face to read from.</doc>
-			</param>
-			<param name="mipLevel" type="int">
-				<doc>Mipmap level to read from.</doc>
-			</param>
-			<returns type="AsyncOp&lt;PixelData&gt;">
-				<doc>Async operation object that will contain the buffer with the data once the operation completes.</doc>
-			</returns>
-		</method>
-		<ctor>
-			<param name="format" type="PixelFormat">
-			</param>
-			<param name="width" type="int">
-			</param>
-			<param name="height" type="int">
-			</param>
-			<param name="depth" type="int">
-			</param>
-			<param name="texType" type="TextureType">
-			</param>
-			<param name="usage" type="TextureUsage">
-			</param>
-			<param name="numSamples" type="int">
-			</param>
-			<param name="hasMipmaps" type="bool">
-			</param>
-			<param name="gammaCorrection" type="bool">
-			</param>
-		</ctor>
-		<method native="getPixels" script="GetPixels" static="false">
-			<doc>Returns pixels for the specified mip level &amp; face. Pixels will be read from system memory, which means the texture has to be created with TextureUsage.CPUCached. If the texture was updated from the GPU the pixels retrieved from this method will not reflect that, and you should use GetGPUPixels instead.</doc>
-			<param name="face" type="int">
-				<doc>Face to read the pixels from. Cubemap textures have six faces whose face indices are as specified in the CubeFace enum. Array textures can have an arbitrary number of faces (if it&apos;s a cubemap array it has to be a multiple of 6).</doc>
-			</param>
-			<param name="mipLevel" type="int">
-				<doc>Mip level to retrieve pixels for. Top level (0) is the highest quality.</doc>
-			</param>
-			<returns type="PixelData">
-				<doc>A set of pixels for the specified mip level.</doc>
-			</returns>
-		</method>
-		<method native="setPixels" script="SetPixels" static="false">
-			<doc>Sets pixels for the specified mip level and face.</doc>
-			<param name="data" type="PixelData">
-				<doc>Pixels to assign to the specified mip level. Pixel data must match the mip level size and texture pixel format.</doc>
-			</param>
-			<param name="face" type="int">
-				<doc>Face to write the pixels to. Cubemap textures have six faces whose face indices are as specified in the CubeFace enum. Array textures can have an arbitrary number of faces (if it&apos;s a cubemap array it has to be a multiple of 6).</doc>
-			</param>
-			<param name="mipLevel" type="int">
-				<doc>Mip level to set pixels for. Top level (0) is the highest quality.</doc>
-			</param>
-		</method>
-		<method native="setPixelsArray" script="SetPixels" static="false">
-			<doc>Sets pixels for the specified mip level and face.</doc>
-			<param name="colors" type="Color">
-				<doc>Pixels to assign to the specified mip level. Size of the array must match the mip level dimensions. Data is expected to be laid out row by row. Pixels will be automatically converted to the valid pixel format.</doc>
-			</param>
-			<param name="face" type="int">
-				<doc>Face to write the pixels to. Cubemap textures have six faces whose face indices are as specified in the CubeFace enum. Array textures can have an arbitrary number of faces (if it&apos;s a cubemap array it has to be a multiple of 6).</doc>
-			</param>
-			<param name="mipLevel" type="int">
-				<doc>Mip level to set pixels for. Top level (0) is the highest quality.</doc>
-			</param>
-		</method>
-		<property name="PixelFormat" type="PixelFormat" getter="getPixelFormat" setter="" static="false">
-			<doc>Returns the pixel format for the texture surface.</doc>
-		</property>
-		<property name="Usage" type="TextureUsage" getter="getUsage" setter="" static="false">
-			<doc>Returns a value that signals the engine in what way is the texture expected to be used.</doc>
-		</property>
-		<property name="Type" type="TextureType" getter="getType" setter="" static="false">
-			<doc>Gets the type of texture.</doc>
-		</property>
-		<property name="Width" type="int" getter="getWidth" setter="" static="false">
-			<doc>Returns the width of the texture.</doc>
-		</property>
-		<property name="Height" type="int" getter="getHeight" setter="" static="false">
-			<doc>Returns the height of the texture.</doc>
-		</property>
-		<property name="Depth" type="int" getter="getDepth" setter="" static="false">
-			<doc>Returns the depth of the texture (only applicable for 3D textures).</doc>
-		</property>
-		<property name="GammaSpace" type="bool" getter="getGammaCorrection" setter="" static="false">
-			<doc>Determines does the texture contain gamma corrected data. If true then the GPU will automatically convert the pixels to linear space before reading from the texture, and convert them to gamma space when writing to the texture.</doc>
-		</property>
-		<property name="SampleCount" type="int" getter="getSampleCount" setter="" static="false">
-			<doc>Gets the number of samples used for multisampling (0 or 1 if multisampling is not used).</doc>
-		</property>
-		<property name="MipMapCount" type="int" getter="getMipmapCount" setter="" static="false">
-			<doc>Gets the number of mipmaps to be used for this texture. This number excludes the top level map (which is always assumed to be present).</doc>
 		</property>
 	</class>
 	<struct native="SubResource" script="SubResource">

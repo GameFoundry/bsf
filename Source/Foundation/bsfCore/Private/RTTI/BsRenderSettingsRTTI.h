@@ -146,8 +146,9 @@ namespace bs
 			BS_RTTI_MEMBER_REFL(bokehShape, 9)
 			BS_RTTI_MEMBER_PLAIN(adaptiveColorThreshold, 10)
 			BS_RTTI_MEMBER_PLAIN(adaptiveRadiusThreshold, 11)
-			BS_RTTI_MEMBER_PLAIN(apertureScale, 12)
+			BS_RTTI_MEMBER_PLAIN(apertureSize, 12)
 			BS_RTTI_MEMBER_PLAIN(focalLength, 13)
+			BS_RTTI_MEMBER_PLAIN(sensorSize, 14)
 		BS_END_RTTI_MEMBERS
 
 	public:
