@@ -539,11 +539,11 @@ namespace ct
 		UINT64 mTonemapLastUpdateHash = -1;
 	};
 
-	/** Renders the depth of field effect using Gaussian blurring. */
-	class RCNodeDepthOfField : public RenderCompositorNode
+	/** Renders the depth of field effect with a Bokeh flare simulating camera aperture shape. */
+	class RCNodeBokehDOF : public RenderCompositorNode
 	{
 	public:
-		static StringID getNodeId() { return "DepthOfField"; }
+		static StringID getNodeId() { return "BokehDOF"; }
 		static SmallVector<StringID, 4> getDependencies(const RendererView& view);
 	protected:
 		/** @copydoc RenderCompositorNode::render */
@@ -551,12 +551,20 @@ namespace ct
 
 		/** @copydoc RenderCompositorNode::clear */
 		void clear() override;
+	};
 
-		/** Renders the Gaussian depth-of-field effect. */
-		void renderGaussian(const RenderCompositorNodeInputs& inputs);
+	/** Renders the depth of field effect using Gaussian blurring. */
+	class RCNodeGaussianDOF : public RenderCompositorNode
+	{
+	public:
+		static StringID getNodeId() { return "GaussianDOF"; }
+		static SmallVector<StringID, 4> getDependencies(const RendererView& view);
+	protected:
+		/** @copydoc RenderCompositorNode::render */
+		void render(const RenderCompositorNodeInputs& inputs) override;
 
-		/** Renders the Bokeh depth-of-field effect. */
-		void renderBokeh(const RenderCompositorNodeInputs& inputs);
+		/** @copydoc RenderCompositorNode::clear */
+		void clear() override;
 	};
 
 	/** Renders FXAA. */
