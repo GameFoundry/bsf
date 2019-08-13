@@ -49,8 +49,8 @@ shader PPBokehDOFPrepare
 				? float4(layers[0].x, layers[1].x, layers[2].x, layers[3].x) 
 				: float4(layers[0].y, layers[1].y, layers[2].y, layers[3].y);
 
-			float maskSum = dot(mask, 1);
-
+			float maskSum = dot(mask, float4(1.0f, 1.0f, 1.0f, 1.0f));
+			
 			[flatten]
 			if(maskSum > 0.001f)
 				return (samples[0] * mask.x + samples[1] * mask.y + samples[2] * mask.z + samples[3] * mask.w) / maskSum;

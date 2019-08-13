@@ -1270,7 +1270,7 @@ namespace bs { namespace ct
 
 		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setRenderTarget(output);
-		rapi.clearRenderTarget(FBT_COLOR);
+		rapi.clearRenderTarget(FBT_COLOR, Color::ZERO);
 		rapi.setVertexDeclaration(mTileVertexDecl);
 
 		SPtr<VertexBuffer> buffers[] = { mTileVertexBuffer };
@@ -1298,7 +1298,7 @@ namespace bs { namespace ct
 	{
 		gDepthOfFieldCommonParamDef.gFocalPlaneDistance.set(buffer, settings.focalDistance);
 		gDepthOfFieldCommonParamDef.gApertureSize.set(buffer, settings.apertureSize * 0.001f); // mm to m
-		gDepthOfFieldCommonParamDef.gFocalLength.set(buffer, settings.focalLength * 0.001); // mm to m
+		gDepthOfFieldCommonParamDef.gFocalLength.set(buffer, settings.focalLength * 0.001f); // mm to m
 		gDepthOfFieldCommonParamDef.gInFocusRange.set(buffer, settings.focalRange);
 		gDepthOfFieldCommonParamDef.gNearTransitionRegion.set(buffer, settings.nearTransitionRange);
 		gDepthOfFieldCommonParamDef.gFarTransitionRegion.set(buffer, settings.farTransitionRange);

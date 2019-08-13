@@ -362,7 +362,7 @@ namespace bs { namespace ct
 		/**
 		 * Inserts all visible renderable elements into render queues. Assumes visibility has been calculated beforehand
 		 * by calling determineVisible(). After the call render elements can be retrieved from the queues using
-		 * getOpqueQueue or getTransparentQueue() calls.
+		 * getOpaqueQueue or getTransparentQueue() calls.
 		 */
 		void queueRenderElements(const SceneInfo& sceneInfo);
 

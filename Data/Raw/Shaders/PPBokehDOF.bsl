@@ -143,13 +143,13 @@ shader PPBokehDOF
 
 			// Offset so we render both near and far fields in the same texture but with an offset
 			float vertOffset = sceneDepth < gFocalPlaneDistance ? gLayerPixelOffset : 0;
-
+			
 			// Determine location of the vertex within the current quad
 			uint vertexIdxInQuad = vid % 4;				
 			float2 localPos = float2(vertexIdxInQuad % 2, vertexIdxInQuad / 2);
 			
-			// TODO - UV needs flip on OpenGL?
-			float2 ndcPos = UVToNDC((blockPos + (localPos - 0.5f) * cocPixelSize + float2(0, vertOffset)) * gInvOutputSize);
+			float2 uvPos = (blockPos + (localPos - 0.5f) * cocPixelSize + float2(0, vertOffset)) * gInvOutputSize;			
+			float2 ndcPos = UVToNDC(uvPos);
 			
 			VStoFS output;			
 			output.position = float4(ndcPos, 0, 1);

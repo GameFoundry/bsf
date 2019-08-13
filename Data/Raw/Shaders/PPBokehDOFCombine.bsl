@@ -40,13 +40,12 @@ shader PPBokehDOF
 			
 			float4 blurredFocusedAndFar = gUnfocusedTex.Sample(gUnfocusedSampler, halfUV);
 			float4 blurredNear = gUnfocusedTex.Sample(gUnfocusedSampler, halfUV + float2(0, gLayerUVScaleOffset.y));
-
-			float TWEAK_FACTOR_1 = 0.18f; // TODO: Expose to user code?
-			float TWEAK_FACTOR_2 = 5; // TODO: Expose to user code?
 			
-			float farMask = saturate(blurredFocusedAndFar.a * TWEAK_FACTOR_1);
-			float focusedMask = 1.0f - saturate(circleOfConfusionPhysical(depth) * TWEAK_FACTOR_2);
-			float nearMask = saturate(blurredNear.a * TWEAK_FACTOR_1);
+			float2 layer = computeLayerContributions(depth);
+			
+			float farMask = layer.g;
+			float focusedMask = 1.0f - saturate(circleOfConfusionPhysical(depth));
+			float nearMask = layer.r;
 
 			float4 combined = 0;
 
