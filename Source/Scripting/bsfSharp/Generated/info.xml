@@ -3251,8 +3251,6 @@ In range [-1.0f, 1.0f].</doc>
 		<doc>Settings that control rendering for a specific camera (view).</doc>
 		<ctor>
 		</ctor>
-		<ctor>
-		</ctor>
 		<property name="DepthOfField" type="DepthOfFieldSettings" getter="getdepthOfField" setter="setdepthOfField" static="false">
 			<doc>Parameters used for customizing the gaussian depth of field effect.</doc>
 		</property>

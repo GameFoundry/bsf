@@ -31,7 +31,6 @@ namespace bs
 
 	private:
 		static void Internal_RenderSettings(MonoObject* managedInstance);
-		static void Internal_RenderSettings0(MonoObject* managedInstance);
 		static MonoObject* Internal_getdepthOfField(ScriptRenderSettings* thisPtr);
 		static void Internal_setdepthOfField(ScriptRenderSettings* thisPtr, MonoObject* value);
 		static bool Internal_getenableAutoExposure(ScriptRenderSettings* thisPtr);

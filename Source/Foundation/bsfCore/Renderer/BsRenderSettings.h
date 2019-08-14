@@ -752,7 +752,6 @@ namespace bs
 	/** Base class for both sim and core thread variants of RenderSettings. */
 	struct BS_CORE_EXPORT RenderSettingsBase
 	{
-		BS_SCRIPT_EXPORT()
 		RenderSettingsBase() = default;
 
 		/**

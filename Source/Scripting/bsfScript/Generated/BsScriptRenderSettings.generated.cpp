@@ -25,7 +25,6 @@ namespace bs
 	void ScriptRenderSettings::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_RenderSettings", (void*)&ScriptRenderSettings::Internal_RenderSettings);
-		metaData.scriptClass->addInternalCall("Internal_RenderSettings0", (void*)&ScriptRenderSettings::Internal_RenderSettings0);
 		metaData.scriptClass->addInternalCall("Internal_getdepthOfField", (void*)&ScriptRenderSettings::Internal_getdepthOfField);
 		metaData.scriptClass->addInternalCall("Internal_setdepthOfField", (void*)&ScriptRenderSettings::Internal_setdepthOfField);
 		metaData.scriptClass->addInternalCall("Internal_getenableAutoExposure", (void*)&ScriptRenderSettings::Internal_getenableAutoExposure);
@@ -85,12 +84,6 @@ namespace bs
 		return managedInstance;
 	}
 	void ScriptRenderSettings::Internal_RenderSettings(MonoObject* managedInstance)
-	{
-		SPtr<RenderSettings> instance = bs_shared_ptr_new<RenderSettings>();
-		new (bs_alloc<ScriptRenderSettings>())ScriptRenderSettings(managedInstance, instance);
-	}
-
-	void ScriptRenderSettings::Internal_RenderSettings0(MonoObject* managedInstance)
 	{
 		SPtr<RenderSettings> instance = bs_shared_ptr_new<RenderSettings>();
 		new (bs_alloc<ScriptRenderSettings>())ScriptRenderSettings(managedInstance, instance);

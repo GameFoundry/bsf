@@ -21,11 +21,6 @@ namespace bs
 			Internal_RenderSettings(this);
 		}
 
-		public RenderSettings()
-		{
-			Internal_RenderSettings0(this);
-		}
-
 		/// <summary>Parameters used for customizing the gaussian depth of field effect.</summary>
 		[ShowInInspector]
 		[NotNull]
@@ -289,8 +284,6 @@ namespace bs
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern void Internal_RenderSettings(RenderSettings managedInstance);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		private static extern void Internal_RenderSettings0(RenderSettings managedInstance);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		private static extern DepthOfFieldSettings Internal_getdepthOfField(IntPtr thisPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
