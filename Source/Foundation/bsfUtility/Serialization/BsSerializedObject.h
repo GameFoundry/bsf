@@ -75,10 +75,10 @@ namespace bs
 	enum class SerializedObjectEncodeFlag
 	{
 		/** Pointers to other IReflectable objects will not be followed and they will not be serialized. */
-		Shallow,
+		Shallow = 1 << 0,
 		
 		/** Only fields with the Replicable RTTI flag will be serialized. */
-		ReplicableOnly
+		ReplicableOnly = 1 << 1
 	};
 
 	using SerializedObjectEncodeFlags = Flags<SerializedObjectEncodeFlag>;

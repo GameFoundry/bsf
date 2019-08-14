@@ -495,8 +495,8 @@ namespace bs
 
 		static UINT32 getDynamicSize(const Path& data)
 		{
-			UINT64 dataSize = rttiGetElemSize(data.mDevice) + rttiGetElemSize(data.mNode) + rttiGetElemSize(data.mFilename) +
-				rttiGetElemSize(data.mIsAbsolute) + rttiGetElemSize(data.mDirectories) + sizeof(UINT32);
+			UINT64 dataSize = (UINT64)rttiGetElemSize(data.mDevice) + (UINT64)rttiGetElemSize(data.mNode) + (UINT64)rttiGetElemSize(data.mFilename) +
+				(UINT64)rttiGetElemSize(data.mIsAbsolute) + (UINT64)rttiGetElemSize(data.mDirectories) + sizeof(UINT32);
 
 #if BS_DEBUG_MODE
 			if (dataSize > std::numeric_limits<UINT32>::max())
