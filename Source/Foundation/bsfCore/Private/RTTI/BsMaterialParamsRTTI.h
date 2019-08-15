@@ -109,6 +109,9 @@ namespace bs
 			if(paramIdx == (UINT32)-1)
 				paramIdx = mNextParamIdx++;
 
+			if (obj->mParams.size() <= (size_t)paramIdx)
+				obj->mParams.resize((size_t)paramIdx + 1);
+			
 			obj->mParams[paramIdx] = param.data;
 			obj->mParamLookup[param.name] = paramIdx;
 		}
