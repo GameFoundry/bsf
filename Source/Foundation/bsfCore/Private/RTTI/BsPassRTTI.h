@@ -5,6 +5,7 @@
 #include "BsCorePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
 #include "Private/RTTI/BsGpuProgramRTTI.h"
+#include "Private/RTTI/BsBlendStateRTTI.h"
 #include "Material/BsPass.h"
 
 namespace bs

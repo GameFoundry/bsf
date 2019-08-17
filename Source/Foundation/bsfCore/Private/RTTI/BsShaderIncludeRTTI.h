@@ -4,6 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
+#include "RTTI/BsStringRTTI.h"
 #include "Material/BsShaderInclude.h"
 
 namespace bs

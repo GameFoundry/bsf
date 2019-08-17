@@ -4,6 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
+#include "RTTI/BsStdRTTI.h"
 #include "Serialization/BsManagedSerializableDiff.h"
 
 namespace bs

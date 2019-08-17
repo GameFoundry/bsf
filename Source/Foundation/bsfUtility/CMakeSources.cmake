@@ -127,9 +127,16 @@ set(BS_UTILITY_SRC_DEBUG
 )
 
 set(BS_UTILITY_INC_RTTI
-	"bsfUtility/Private/RTTI/BsSerializedObjectRTTI.h"
-	"bsfUtility/Private/RTTI/BsIReflectableRTTI.h"
-	"bsfUtility/Private/RTTI/BsColorGradientRTTI.h"
+	"bsfUtility/RTTI/BsSerializedObjectRTTI.h"
+	"bsfUtility/RTTI/BsIReflectableRTTI.h"
+	"bsfUtility/RTTI/BsColorGradientRTTI.h"
+	"bsfUtility/RTTI/BsStringRTTI.h"
+	"bsfUtility/RTTI/BsSmallVectorRTTI.h"
+	"bsfUtility/RTTI/BsFlagsRTTI.h"
+	"bsfUtility/RTTI/BsStdRTTI.h"
+	"bsfUtility/RTTI/BsPathRTTI.h"
+	"bsfUtility/RTTI/BsStringIDRTTI.h"
+	"bsfUtility/RTTI/BsDataBlobRTTI.h"
 )
 
 set(BS_UTILITY_INC_ALLOCATORS

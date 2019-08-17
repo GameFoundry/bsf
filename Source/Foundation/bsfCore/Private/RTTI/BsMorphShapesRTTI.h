@@ -4,6 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
+#include "RTTI/BsStringRTTI.h"
 #include "Animation/BsMorphShapes.h"
 
 namespace bs

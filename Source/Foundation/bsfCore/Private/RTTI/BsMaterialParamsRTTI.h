@@ -4,13 +4,14 @@
 
 #include "BsCorePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
+#include "RTTI/BsStringRTTI.h"
+#include "RTTI/BsColorGradientRTTI.h"
+#include "Private/RTTI/BsAnimationCurveRTTI.h"
 #include "Material/BsMaterialParams.h"
 #include "RenderAPI/BsSamplerState.h"
 #include "FileSystem/BsDataStream.h"
 #include "Animation/BsAnimationCurve.h"
 #include "Image/BsColorGradient.h"
-#include "Private/RTTI/BsAnimationCurveRTTI.h"
-#include "Private/RTTI/BsColorGradientRTTI.h"
 
 namespace bs
 {

@@ -4,6 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
+#include "RTTI/BsStringRTTI.h"
 #include "Scene/BsGameObject.h"
 #include "Scene/BsSceneObject.h"
 #include "Scene/BsGameObjectManager.h"

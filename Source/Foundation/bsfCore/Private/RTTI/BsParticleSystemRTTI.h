@@ -6,7 +6,7 @@
 #include "Reflection/BsRTTIType.h"
 #include "Particles/BsParticleSystem.h"
 #include "Particles/BsParticleEvolver.h"
-#include "Private/RTTI/BsColorGradientRTTI.h"
+#include "RTTI/BsColorGradientRTTI.h"
 #include "Private/RTTI/BsParticleDistributionRTTI.h"
 
 namespace bs

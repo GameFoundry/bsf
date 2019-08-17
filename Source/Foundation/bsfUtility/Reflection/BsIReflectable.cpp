@@ -3,7 +3,7 @@
 #include "Reflection/BsIReflectable.h"
 #include "Reflection/BsRTTIType.h"
 #include "Error/BsException.h"
-#include "Private/RTTI/BsIReflectableRTTI.h"
+#include "RTTI/BsIReflectableRTTI.h"
 
 namespace bs
 {

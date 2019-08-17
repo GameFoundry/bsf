@@ -388,6 +388,7 @@ set(BS_CORE_INC_RTTI
 	"bsfCore/Private/RTTI/BsDecalRTTI.h"
 	"bsfCore/Private/RTTI/BsCDecalRTTI.h"
 	"bsfCore/Private/RTTI/BsRenderTargetRTTI.h"
+	"bsfCore/Private/RTTI/BsCharDescRTTI.h"
 )
 
 set(BS_CORE_SRC_RENDERER

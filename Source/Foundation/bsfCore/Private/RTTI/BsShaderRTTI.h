@@ -4,6 +4,11 @@
 
 #include "BsCorePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
+#include "RTTI/BsStringIDRTTI.h"
+#include "RTTI/BsStringRTTI.h"
+#include "RTTI/BsStdRTTI.h"
+#include "RTTI/BsSmallVectorRTTI.h"
+#include "RTTI/BsFlagsRTTI.h"
 #include "Material/BsShader.h"
 #include "Material/BsMaterial.h"
 

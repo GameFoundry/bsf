@@ -4,6 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
+#include "RTTI/BsStdRTTI.h"
 #include "Renderer/BsLightProbeVolume.h"
 #include "Renderer/BsRenderer.h"
 #include "CoreThread/BsCoreThread.h"

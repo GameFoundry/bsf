@@ -5,7 +5,6 @@
 #include "Prerequisites/BsPlatformDefines.h"
 #include "String/BsString.h"
 #include "Prerequisites/BsTypes.h"
-#include "Prerequisites/BsRTTIPrerequisites.h"
 #include "Utility/BsUtil.h"
 
 namespace bs
