@@ -3,8 +3,9 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "Image/BsPixelData.h"
 #include "Reflection/BsRTTIType.h"
+#include "Prerequisites/BsRTTIPrerequisites.h"
+#include "Image/BsPixelData.h"
 #include "FileSystem/BsDataStream.h"
 
 namespace bs

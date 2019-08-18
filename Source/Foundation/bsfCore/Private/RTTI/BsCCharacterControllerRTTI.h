@@ -4,8 +4,10 @@
 
 #include "BsCorePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
+#include "Prerequisites/BsRTTIPrerequisites.h"
 #include "Components/BsCCharacterController.h"
 #include "Private/RTTI/BsGameObjectRTTI.h"
+#include "RTTI/BsMathRTTI.h"
 
 namespace bs
 {

@@ -6,6 +6,7 @@
 #include "Reflection/BsRTTIType.h"
 #include "RTTI/BsStringRTTI.h"
 #include "RTTI/BsColorGradientRTTI.h"
+#include "Private/RTTI/BsTextureRTTI.h"
 #include "Private/RTTI/BsAnimationCurveRTTI.h"
 #include "Material/BsMaterialParams.h"
 #include "RenderAPI/BsSamplerState.h"

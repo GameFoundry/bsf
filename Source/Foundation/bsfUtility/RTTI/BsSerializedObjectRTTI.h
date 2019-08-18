@@ -4,6 +4,7 @@
 
 #include "Prerequisites/BsPrerequisitesUtil.h"
 #include "Reflection/BsRTTIType.h"
+#include "Prerequisites/BsRTTIPrerequisites.h"
 #include "Serialization/BsSerializedObject.h"
 #include "FileSystem/BsDataStream.h"
 

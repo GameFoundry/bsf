@@ -91,7 +91,5 @@ namespace bs
 		float d = 0.0f;
 	};
 
-	BS_ALLOW_MEMCPY_SERIALIZATION(Plane)
-
 	/** @} */
 }

@@ -4,6 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
+#include "Prerequisites/BsRTTIPrerequisites.h"
 #include "RenderAPI/BsDepthStencilState.h"
 #include "Managers/BsRenderStateManager.h"
 
@@ -13,6 +14,8 @@ namespace bs
 	/** @addtogroup RTTI-Impl-Core
 	 *  @{
 	 */
+
+	BS_ALLOW_MEMCPY_SERIALIZATION(DEPTH_STENCIL_STATE_DESC);
 
 	class BS_CORE_EXPORT DepthStencilStateRTTI : public RTTIType<DepthStencilState, IReflectable, DepthStencilStateRTTI>
 	{

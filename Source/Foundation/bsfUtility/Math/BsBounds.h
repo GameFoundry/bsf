@@ -66,6 +66,4 @@ namespace bs
 	};
 
 	/** @} */
-
-	BS_ALLOW_MEMCPY_SERIALIZATION(Bounds)
 }

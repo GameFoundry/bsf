@@ -69,8 +69,6 @@ namespace bs
 		UINT32 mData[4] = {0, 0, 0, 0};
 	};
 
-	BS_ALLOW_MEMCPY_SERIALIZATION(UUID)
-
 	/**
 	 * Utility class for generating universally unique identifiers.
 	 *

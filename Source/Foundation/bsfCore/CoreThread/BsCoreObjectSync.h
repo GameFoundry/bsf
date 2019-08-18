@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
+#include "Prerequisites/BsRTTIPrerequisites.h"
 
 namespace bs
 {

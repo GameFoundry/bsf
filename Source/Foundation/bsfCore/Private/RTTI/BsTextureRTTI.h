@@ -4,6 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
+#include "Prerequisites/BsRTTIPrerequisites.h"
 #include "Image/BsTexture.h"
 #include "Math/BsMath.h"
 #include "CoreThread/BsCoreThread.h"
@@ -17,6 +18,8 @@ namespace bs
 	/** @addtogroup RTTI-Impl-Core
 	 *  @{
 	 */
+
+	BS_ALLOW_MEMCPY_SERIALIZATION(TextureSurface);
 
 	class BS_CORE_EXPORT TextureRTTI : public RTTIType<Texture, Resource, TextureRTTI>
 	{

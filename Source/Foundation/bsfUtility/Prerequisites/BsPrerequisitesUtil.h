@@ -218,9 +218,6 @@
 // Forward declarations
 #include "Prerequisites/BsFwdDeclUtil.h"
 
-// RTTI
-#include "Prerequisites/BsRTTIPrerequisites.h"
-
 #include "String/BsString.h"
 #include "Utility/BsMessageHandlerFwd.h"
 #include "Utility/BsFlags.h"

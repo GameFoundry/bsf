@@ -673,9 +673,5 @@ namespace bs
 		UINT32 size;
 	};
 
-	/** @cond SPECIALIZATIONS */
-	BS_ALLOW_MEMCPY_SERIALIZATION(TextureSurface);
-	/** @endcond */
-
 	/** @} */
 }

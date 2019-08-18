@@ -424,10 +424,6 @@ namespace bs
 	};
 
 	/** @} */
-
-	/** @cond SPECIALIZATIONS */
-	BS_ALLOW_MEMCPY_SERIALIZATION(Vector3);
-	/** @endcond */
 }
 
 /** @cond SPECIALIZATIONS */

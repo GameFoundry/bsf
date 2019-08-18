@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
+#include "Prerequisites/BsRTTIPrerequisites.h"
 #include "Reflection/BsRTTIType.h"
 #include "Audio/BsAudioClip.h"
 #include "FileSystem/BsDataStream.h"

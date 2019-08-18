@@ -4,6 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
+#include "Prerequisites/BsRTTIPrerequisites.h"
 #include "RenderAPI/BsVertexBuffer.h"
 #include "Managers/BsHardwareBufferManager.h"
 #include "RenderAPI/BsVertexDataDesc.h"
@@ -15,6 +16,8 @@ namespace bs
 	 *  @{
 	 */
 
+	BS_ALLOW_MEMCPY_SERIALIZATION(VertexElement);
+	
 	class VertexDeclarationRTTI : public RTTIType<VertexDeclaration, IReflectable, VertexDeclarationRTTI>
 	{
 	private:

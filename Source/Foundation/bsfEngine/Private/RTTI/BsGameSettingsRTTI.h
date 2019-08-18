@@ -5,6 +5,7 @@
 #include "BsPrerequisites.h"
 #include "Reflection/BsRTTIType.h"
 #include "RTTI/BsStringRTTI.h"
+#include "RTTI/BsUUIDRTTI.h"
 #include "Utility/BsGameSettings.h"
 
 namespace bs

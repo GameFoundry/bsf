@@ -4,7 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
-#include "BsCoreApplication.h"
+#include "Prerequisites/BsRTTIPrerequisites.h"
 #include "Mesh/BsMeshBase.h"
 #include "Error/BsException.h"
 

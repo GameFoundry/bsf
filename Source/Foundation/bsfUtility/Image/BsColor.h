@@ -259,10 +259,6 @@ namespace bs
 		float r, g, b, a;
 	};
 
-	/** @cond SPECIALIZATIONS */
-	BS_ALLOW_MEMCPY_SERIALIZATION(Color);
-	/** @endcond */
-
 	/** @} */
 }
 

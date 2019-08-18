@@ -215,8 +215,6 @@ namespace bs
 
 	/** @} */
 	}
-
-	BS_ALLOW_MEMCPY_SERIALIZATION(RASTERIZER_STATE_DESC);
 }
 
 /** @cond STDLIB */

@@ -3,6 +3,8 @@
 #pragma once
 
 #include "Prerequisites/BsPrerequisitesUtil.h"
+#include "Prerequisites/BsRTTIPrerequisites.h"
+#include "RTTI/BsColorRTTI.h"
 #include "Image/BsColorGradient.h"
 #include "Error/BsException.h"
 #include "Debug/BsDebug.h"

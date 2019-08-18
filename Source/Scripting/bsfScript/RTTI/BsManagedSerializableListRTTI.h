@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
+#include "Prerequisites/BsRTTIPrerequisites.h"
 #include "Reflection/BsRTTIType.h"
 #include "Serialization/BsManagedSerializableList.h"
 

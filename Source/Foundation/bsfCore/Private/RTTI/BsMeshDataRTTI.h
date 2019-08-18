@@ -4,6 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
+#include "Prerequisites/BsRTTIPrerequisites.h"
 #include "Mesh/BsMeshData.h"
 #include "RenderAPI/BsVertexDeclaration.h"
 #include "FileSystem/BsDataStream.h"

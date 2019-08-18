@@ -137,6 +137,10 @@ set(BS_UTILITY_INC_RTTI
 	"bsfUtility/RTTI/BsPathRTTI.h"
 	"bsfUtility/RTTI/BsStringIDRTTI.h"
 	"bsfUtility/RTTI/BsDataBlobRTTI.h"
+	"bsfUtility/RTTI/BsMathRTTI.h"
+	"bsfUtility/RTTI/BsRectOffsetRTTI.h"
+	"bsfUtility/RTTI/BsColorRTTI.h"
+	"bsfUtility/RTTI/BsUUIDRTTI.h"
 )
 
 set(BS_UTILITY_INC_ALLOCATORS

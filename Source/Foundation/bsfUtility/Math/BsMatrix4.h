@@ -498,8 +498,4 @@ namespace bs
 	};
 
 	/** @} */
-
-	/** @cond SPECIALIZATIONS */
-	BS_ALLOW_MEMCPY_SERIALIZATION(Matrix4);
-	/** @endcond */
 }

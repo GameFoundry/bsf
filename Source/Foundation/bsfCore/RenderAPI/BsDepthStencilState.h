@@ -80,10 +80,6 @@ namespace bs
 		CompareFunction backStencilComparisonFunc = CMPF_ALWAYS_PASS;
 	};
 
-	/** @cond SPECIALIZATIONS */
-	BS_ALLOW_MEMCPY_SERIALIZATION(DEPTH_STENCIL_STATE_DESC);
-	/** @endcond */
-
 	/** Properties of DepthStencilState. Shared between sim and core thread versions of DepthStencilState. */
 	class BS_CORE_EXPORT DepthStencilProperties
 	{

@@ -121,10 +121,6 @@ namespace bs
 		UINT32 mInstanceStepRate;
 	};
 
-	/** @cond SPECIALIZATIONS */
-	BS_ALLOW_MEMCPY_SERIALIZATION(VertexElement);
-	/** @endcond */
-
 	/**	Contains information about a vertex declaration. */
 	class BS_CORE_EXPORT VertexDeclarationProperties
 	{
