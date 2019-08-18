@@ -5,6 +5,7 @@
 #include "Allocators/BsMemoryAllocator.h"
 #include "Prerequisites/BsFwdDeclUtil.h"      // For TIDs
 #include "Prerequisites/BsTypes.h"            // For UINT32
+#include "Utility/BsBitstream.h"
 
 #include <limits>
 #include <type_traits>          // For std::is_pod
@@ -47,20 +48,16 @@ namespace bs
 		enum { id = 0 /**< Unique id for the serializable type. */ };
 		enum { hasDynamicSize = 0 /**< 0 (Object has static size less than 255 bytes, for example int) or 1 (Dynamic size with no size restriction, for example string) */ };
 
-		/** Serializes the provided object into the provided pre-allocated memory buffer. */
-		static void toMemory(const T& data, char* memory)
+		/** Serializes the provided object into the provided stream and advances the stream cursor. Returns the number of bytes written. */
+		static uint32_t toMemory(const T& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
-			memcpy(memory, &data, sizeof(T));
+			return stream.writeBytes(data);
 		}
 
-		/**
-		 *  Deserializes a previously allocated object from the provided memory buffer. Return the number of bytes read
-		 *  from the memory buffer.
-		 */
-		static UINT32 fromMemory(T& data, char* memory)
+		/** Deserializes a previously allocated object from the provided stream and advances the stream cursor. Return the number of bytes read. */
+		static uint32_t fromMemory(T& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
-			memcpy(&data, memory, sizeof(T));
-			return sizeof(T);
+			return stream.readBytes(data);
 		}
 
 		/** Returns the size of the provided object. (Works for both static and dynamic size types) */
@@ -88,69 +85,23 @@ namespace bs
 	}
 
 	/**
-	 * Helper method when serializing known data types that have valid
-	 * RTTIPlainType specialization.
-	 *
-	 * Writes the specified data into memory, advances the memory pointer by the
-	 * bytes written and returns pointer to new memory.
+	 * Helper method when serializing known data types that have valid RTTIPlainType specialization. The data will be
+	 * written to the provided stream and its write cursor advanced.
 	 */
 	template<class ElemType>
-	char* rttiWriteElem(const ElemType& data, char* memory)
+	uint32_t rttiWriteElem(const ElemType& data, Bitstream& stream)
 	{
-		RTTIPlainType<ElemType>::toMemory(data, memory);
-
-		return memory + rttiGetElemSize(data);
+		return RTTIPlainType<ElemType>::toMemory(data, stream, RTTIFieldInfo());
 	}
 
 	/**
-	 * Helper method when serializing known data types that have valid
-	 * RTTIPlainType specialization.
-	 *
-	 * Writes the specified data into memory, advances the memory pointer by the
-	 * bytes written and returns pointer to new memory. Also increases the size
-	 * value by the size of the written element.
+	 * Helper method when serializing known data types that have valid RTTIPlainType specialization. The data will be
+	 * read from the provided stream and its read cursor advanced.
 	 */
 	template<class ElemType>
-	char* rttiWriteElem(const ElemType& data, char* memory, UINT32& size)
+	char* rttiReadElem(ElemType& data, Bitstream& stream)
 	{
-		RTTIPlainType<ElemType>::toMemory(data, memory);
-
-		UINT32 elemSize = rttiGetElemSize(data);
-		size += elemSize;
-
-		return memory + elemSize;
-	}
-
-	/**
-	 * Helper method when serializing known data types that have valid
-	 * RTTIPlainType specialization.
-	 *
-	 * Reads the specified data into memory, advances the memory pointer by the
-	 * bytes read and returns pointer to new memory.
-	 */
-	template<class ElemType>
-	char* rttiReadElem(ElemType& data, char* memory)
-	{
-		UINT32 size = RTTIPlainType<ElemType>::fromMemory(data, memory);
-
-		return memory + size;
-	}
-
-	/**
-	 * Helper method when serializing known data types that have valid
-	 * RTTIPlainType specialization.
-	 *
-	 * Reads the specified data into memory, advances the memory pointer by the
-	 * bytes read and returns pointer to new memory. Also increases the size
-	 * value by the size of the read element.
-	 */
-	template<class ElemType>
-	char* rttiReadElem(ElemType& data, char* memory, UINT32& size)
-	{
-		UINT32 elemSize = RTTIPlainType<ElemType>::fromMemory(data, memory);
-
-		size += elemSize;
-		return memory + elemSize;
+		return RTTIPlainType<ElemType>::fromMemory(data, stream, RTTIFieldInfo());
 	}
 
 	/** Helper for checking for existance of rttiEnumFields method on a class. */
@@ -176,17 +127,17 @@ namespace bs
 	 *
 	 * @see		RTTIPlainType<T>
 	 */
-#define BS_ALLOW_MEMCPY_SERIALIZATION(type)								\
-	static_assert (std::is_trivially_copyable<type>()==true,			\
-						#type " is not trivially copyable");			\
-	template<> struct RTTIPlainType<type>								\
-	{	enum { id=0 }; enum { hasDynamicSize = 0 };						\
-		static void toMemory(const type& data, char* memory)			\
-		{ memcpy(memory, &data, sizeof(type)); }						\
-		static UINT32 fromMemory(type& data, char* memory)				\
-		{ memcpy(&data, memory, sizeof(type)); return sizeof(type); }	\
-		static UINT32 getDynamicSize(const type& data)					\
-		{ return sizeof(type); }										\
+#define BS_ALLOW_MEMCPY_SERIALIZATION(type)																\
+	static_assert (std::is_trivially_copyable<type>()==true,											\
+						#type " is not trivially copyable");											\
+	template<> struct RTTIPlainType<type>																\
+	{	enum { id=0 }; enum { hasDynamicSize = 0 };														\
+		static uint32_t toMemory(const type& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)	\
+		{ return stream.writeBytes(data); }																\
+		static uint32_t fromMemory(type& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)		\
+		{ return stream.readBytes(data); }																\
+		static UINT32 getDynamicSize(const type& data)													\
+		{ return sizeof(type); }																		\
 	};
 
 	/** @} */

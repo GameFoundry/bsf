@@ -18,24 +18,24 @@ namespace bs
 		enum { id = TID_Flags }; enum { hasDynamicSize = 0 };
 
 		/** @copydoc RTTIPlainType::toMemory */
-		static void toMemory(const Flags<Enum, Storage>& data, char* memory)
+		static uint32_t toMemory(const Flags<Enum, Storage>& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			Storage storageData = (Storage)data;
-			RTTIPlainType<Storage>::toMemory(storageData, memory);
+			return RTTIPlainType<Storage>::toMemory(storageData, stream, fieldInfo);
 		}
 
 		/** @copydoc RTTIPlainType::fromMemory */
-		static UINT32 fromMemory(Flags<Enum, Storage>& data, char* memory)
+		static uint32_t fromMemory(Flags<Enum, Storage>& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			Storage storageData;
-			RTTIPlainType<Storage>::fromMemory(storageData, memory);
+			RTTIPlainType<Storage>::fromMemory(storageData, stream, fieldInfo);
 
 			data = Flags<Enum, Storage>(storageData);
 			return sizeof(Flags<Enum, Storage>);
 		}
 
 		/** @copydoc RTTIPlainType::getDynamicSize */
-		static UINT32 getDynamicSize(const Flags<Enum, Storage>& data)
+		static uint32_t getDynamicSize(const Flags<Enum, Storage>& data)
 		{
 			assert(false);
 			return sizeof(Flags<Enum, Storage>);

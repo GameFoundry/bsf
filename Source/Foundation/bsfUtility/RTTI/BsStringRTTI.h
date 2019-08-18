@@ -16,94 +16,87 @@ namespace bs
 	{
 		enum { id = 20 }; enum { hasDynamicSize = 1 };
 
-		static void toMemory(const String& data, char* memory)
+		static uint32_t toMemory(const String& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
-			UINT32 size = getDynamicSize(data);
-
-			memcpy(memory, &size, sizeof(UINT32));
-			memory += sizeof(UINT32);
-			size -= sizeof(UINT32);
-			memcpy(memory, data.data(), size);
-		}
-
-		static UINT32 fromMemory(String& data, char* memory)
-		{
-			UINT32 size;
-			memcpy(&size, memory, sizeof(UINT32));
-			memory += sizeof(UINT32);
-
-			UINT32 stringSize = size - sizeof(UINT32);
-			char* buffer = (char*)bs_alloc(stringSize + 1);
-			memcpy(buffer, memory, stringSize);
-			buffer[stringSize] = '\0';
-			data = String(buffer);
-
-			bs_free(buffer);
+			uint32_t stringBytes = data.size() * sizeof(String::value_type) + sizeof(uint32_t);
+			uint32_t size = stream.writeBytes(stringBytes) + stringBytes;
+			stream.writeBits((uint8_t*)data.data(), stringBytes * 8);
 
 			return size;
 		}
 
-		static UINT32 getDynamicSize(const String& data)
+		static uint32_t fromMemory(String& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
-			UINT64 dataSize = data.size() * sizeof(String::value_type) + sizeof(UINT32);
+			uint32_t size;
+			stream.readBytes(size);
+
+			uint32_t stringSize = size - sizeof(size);
+			uint8_t* buffer = (uint8_t*)bs_stack_alloc(stringSize + 1);
+
+			stream.readBits(buffer, stringSize * 8);
+			buffer[stringSize] = '\0';
+			data = String((String::value_type*)buffer);
+
+			bs_stack_free(buffer);
+			return size;
+		}
+
+		static uint32_t getDynamicSize(const String& data)
+		{
+			uint64_t dataSize = data.size() * sizeof(String::value_type) + sizeof(uint32_t);
 
 #if BS_DEBUG_MODE
-			if (dataSize > std::numeric_limits<UINT32>::max())
+			if (dataSize > std::numeric_limits<uint32_t>::max())
 			{
 				__string_throwDataOverflowException();
 			}
 #endif
 
-			return (UINT32)dataSize;
+			return (uint32_t)dataSize;
 		}
 	};
-
+	
 	template<> struct RTTIPlainType<WString>
 	{
 		enum { id = TID_WString }; enum { hasDynamicSize = 1 };
 
-		static void toMemory(const WString& data, char* memory)
+		static uint32_t toMemory(const WString& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
-			UINT32 size = getDynamicSize(data);
-
-			memcpy(memory, &size, sizeof(UINT32));
-			memory += sizeof(UINT32);
-			size -= sizeof(UINT32);
-			memcpy(memory, data.data(), size);
-		}
-
-		static UINT32 fromMemory(WString& data, char* memory)
-		{
-			UINT32 size;
-			memcpy(&size, memory, sizeof(UINT32));
-			memory += sizeof(UINT32);
-
-			UINT32 stringSize = size - sizeof(UINT32);
-			WString::value_type* buffer = (WString::value_type*)bs_alloc(stringSize + sizeof(WString::value_type));
-			memcpy(buffer, memory, stringSize);
-
-			UINT32 numChars = stringSize / sizeof(WString::value_type);
-			buffer[numChars] = L'\0';
-
-			data = WString(buffer);
-
-			bs_free(buffer);
+			uint32_t stringBytes = data.size() * sizeof(WString::value_type) + sizeof(uint32_t);
+			uint32_t size = stream.writeBytes(stringBytes) + stringBytes;
+			stream.writeBits((uint8_t*)data.data(), stringBytes * 8);
 
 			return size;
 		}
 
-		static UINT32 getDynamicSize(const WString& data)
+		static uint32_t fromMemory(WString& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
-			UINT64 dataSize = data.size() * sizeof(WString::value_type) + sizeof(UINT32);
+			uint32_t size;
+			stream.readBytes(size);
+
+			uint32_t stringSize = size - sizeof(size);
+			uint8_t* buffer = (uint8_t*)bs_stack_alloc(stringSize + 1);
+
+			stream.readBits(buffer, stringSize * 8);
+			buffer[stringSize] = '\0';
+			data = WString((WString::value_type*)buffer);
+
+			bs_stack_free(buffer);
+			return size;
+		}
+
+		static uint32_t getDynamicSize(const WString& data)
+		{
+			uint64_t dataSize = data.size() * sizeof(WString::value_type) + sizeof(uint32_t);
 
 #if BS_DEBUG_MODE
-			if (dataSize > std::numeric_limits<UINT32>::max())
+			if (dataSize > std::numeric_limits<uint32_t>::max())
 			{
 				__string_throwDataOverflowException();
 			}
 #endif
 
-			return (UINT32)dataSize;
+			return (uint32_t)dataSize;
 		}
 	};
 
