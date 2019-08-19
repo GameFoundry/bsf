@@ -42,6 +42,7 @@ namespace bs
 	 */
 	class BS_CORE_EXPORT CoreApplication : public Module<CoreApplication>
 	{
+        friend class EmbeddableApplication;
 	public:
 		CoreApplication(START_UP_DESC desc);
 		virtual ~CoreApplication();
@@ -111,7 +112,6 @@ namespace bs
 		/**	Returns a handler that is used for resolving shader include file paths. */
 		virtual SPtr<IShaderIncludeHandler> getShaderIncludeHandler() const;
 
-	private:
 		/**	Called when the frame finishes rendering. */
 		void frameRenderingFinishedCallback();
 
