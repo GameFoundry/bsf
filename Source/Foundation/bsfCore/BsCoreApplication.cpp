@@ -199,9 +199,9 @@ namespace bs
 
 	void CoreApplication::runMainLoop()
 	{
-		mRunMainLoop = true;
+		beginMainLoop();
 
-		while(mRunMainLoop)
+		while(isMainLoopRunning())
 		{
 			// Limit FPS if needed
 			if (mFrameStep > 0)
@@ -231,108 +231,129 @@ namespace bs
 				mLastFrameTime = currentTime;
 			}
 
-			gProfilerCPU().beginThread("Sim");
-
-			Platform::_update();
-			DeferredCallManager::instance()._update();
-			gTime()._update();
-			gInput()._update();
-			// RenderWindowManager::update needs to happen after Input::update and before Input::_triggerCallbacks,
-			// so that all input is properly captured in case there is a focus change, and so that
-			// focus change is registered before input events are sent out (mouse press can result in code
-			// checking if a window is in focus, so it has to be up to date)
-			RenderWindowManager::instance()._update();
-			gInput()._triggerCallbacks();
-			gDebug()._triggerCallbacks();
-
-			preUpdate();
-
-			// Trigger fixed updates if required
-			{
-				UINT64 step;
-				const UINT32 numIterations = gTime()._getFixedUpdateStep(step);
-
-				const float stepSeconds = step / 1000000.0f;
-				for (UINT32 i = 0; i < numIterations; i++)
-				{
-					fixedUpdate();
-					PROFILE_CALL(gSceneManager()._fixedUpdate(), "Scene fixed update");
-					PROFILE_CALL(gPhysics().fixedUpdate(stepSeconds), "Physics simulation");
-
-					gTime()._advanceFixedUpdate(step);
-				}
-			}
-
-			PROFILE_CALL(gSceneManager()._update(), "Scene update");
-			gAudio()._update();
-			gPhysics().update();
-
-			// Update plugins
-			for (auto& pluginUpdateFunc : mPluginUpdateFunctions)
-				pluginUpdateFunc.second();
-
-			postUpdate();
-
-			PerFrameData perFrameData;
-
-			// Evaluate animation after scene and plugin updates because the renderer will just now be displaying the
-			// animation we sent on the previous frame, and we want the scene information to match to what is displayed.
-			perFrameData.animation = AnimationManager::instance().update();
-			perFrameData.particles = ParticleManager::instance().update(*perFrameData.animation);
-
-			// Send out resource events in case any were loaded/destroyed/modified
-			ResourceListenerManager::instance().update();
-
-			// Trigger any renderer task callbacks (should be done before scene object update, or core sync, so objects have
-			// a chance to respond to the callback).
-			RendererManager::instance().getActive()->update();
-
-			gSceneManager()._updateCoreObjectTransforms();
-			PROFILE_CALL(RendererManager::instance().getActive()->renderAll(perFrameData), "Render");
-
-			// Core and sim thread run in lockstep. This will result in a larger input latency than if I was
-			// running just a single thread. Latency becomes worse if the core thread takes longer than sim
-			// thread, in which case sim thread needs to wait. Optimal solution would be to get an average
-			// difference between sim/core thread and start the sim thread a bit later so they finish at nearly the same time.
-			{
-				Lock lock(mFrameRenderingFinishedMutex);
-
-				while(!mIsFrameRenderingFinished)
-				{
-					TaskScheduler::instance().addWorker();
-					mFrameRenderingFinishedCondition.wait(lock);
-					TaskScheduler::instance().removeWorker();
-				}
-
-				mIsFrameRenderingFinished = false;
-			}
-
-			gCoreThread().queueCommand(std::bind(&CoreApplication::beginCoreProfiling, this), CTQF_InternalQueue);
-			gCoreThread().queueCommand(&Platform::_coreUpdate, CTQF_InternalQueue);
-			gCoreThread().queueCommand(std::bind(&ct::RenderWindowManager::_update, ct::RenderWindowManager::instancePtr()), CTQF_InternalQueue);
-
-			gCoreThread().update();
-			gCoreThread().submitAll();
-
-			gCoreThread().queueCommand(std::bind(&CoreApplication::frameRenderingFinishedCallback, this), CTQF_InternalQueue);
-
-			gCoreThread().queueCommand(std::bind(&ct::QueryManager::_update, ct::QueryManager::instancePtr()), CTQF_InternalQueue);
-			gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this), CTQF_InternalQueue);
-
-			gProfilerCPU().endThread();
-			gProfiler()._update();
+			runMainLoopFrame();
 		}
 
 		// Wait until last core frame is finished before exiting
+		waitUntilFrameFinished();
+	}
+
+	void CoreApplication::beginMainLoop()
+	{
+		mRunMainLoop = true;
+	}
+
+	void CoreApplication::endMainLoop()
+	{
+		// One more frame needs to be rendered here to not crash if the outer main loop has done stuff since the last frame.
+		runMainLoopFrame();
+
+		waitUntilFrameFinished();
+	}
+
+	void CoreApplication::runMainLoopFrame()
+	{
+		gProfilerCPU().beginThread("Sim");
+
+		Platform::_update();
+		DeferredCallManager::instance()._update();
+		gTime()._update();
+		gInput()._update();
+		// RenderWindowManager::update needs to happen after Input::update and before Input::_triggerCallbacks,
+		// so that all input is properly captured in case there is a focus change, and so that
+		// focus change is registered before input events are sent out (mouse press can result in code
+		// checking if a window is in focus, so it has to be up to date)
+		RenderWindowManager::instance()._update();
+		gInput()._triggerCallbacks();
+		gDebug()._triggerCallbacks();
+
+		preUpdate();
+
+		// Trigger fixed updates if required
+		{
+			UINT64 step;
+			const UINT32 numIterations = gTime()._getFixedUpdateStep(step);
+
+			const float stepSeconds = step / 1000000.0f;
+			for (UINT32 i = 0; i < numIterations; i++)
+			{
+				fixedUpdate();
+				PROFILE_CALL(gSceneManager()._fixedUpdate(), "Scene fixed update");
+				PROFILE_CALL(gPhysics().fixedUpdate(stepSeconds), "Physics simulation");
+
+				gTime()._advanceFixedUpdate(step);
+			}
+		}
+
+		PROFILE_CALL(gSceneManager()._update(), "Scene update");
+		gAudio()._update();
+		gPhysics().update();
+
+		// Update plugins
+		for (auto& pluginUpdateFunc : mPluginUpdateFunctions)
+			pluginUpdateFunc.second();
+
+		postUpdate();
+
+		PerFrameData perFrameData;
+
+		// Evaluate animation after scene and plugin updates because the renderer will just now be displaying the
+		// animation we sent on the previous frame, and we want the scene information to match to what is displayed.
+		perFrameData.animation = AnimationManager::instance().update();
+		perFrameData.particles = ParticleManager::instance().update(*perFrameData.animation);
+
+		// Send out resource events in case any were loaded/destroyed/modified
+		ResourceListenerManager::instance().update();
+
+		// Trigger any renderer task callbacks (should be done before scene object update, or core sync, so objects have
+		// a chance to respond to the callback).
+		RendererManager::instance().getActive()->update();
+
+		gSceneManager()._updateCoreObjectTransforms();
+		PROFILE_CALL(RendererManager::instance().getActive()->renderAll(perFrameData), "Render");
+
+		// Core and sim thread run in lockstep. This will result in a larger input latency than if I was
+		// running just a single thread. Latency becomes worse if the core thread takes longer than sim
+		// thread, in which case sim thread needs to wait. Optimal solution would be to get an average
+		// difference between sim/core thread and start the sim thread a bit later so they finish at nearly the same time.
 		{
 			Lock lock(mFrameRenderingFinishedMutex);
 
-			while (!mIsFrameRenderingFinished)
+			while(!mIsFrameRenderingFinished)
 			{
 				TaskScheduler::instance().addWorker();
 				mFrameRenderingFinishedCondition.wait(lock);
 				TaskScheduler::instance().removeWorker();
 			}
+
+			mIsFrameRenderingFinished = false;
+		}
+
+		gCoreThread().queueCommand(std::bind(&CoreApplication::beginCoreProfiling, this), CTQF_InternalQueue);
+		gCoreThread().queueCommand(&Platform::_coreUpdate, CTQF_InternalQueue);
+		gCoreThread().queueCommand(std::bind(&ct::RenderWindowManager::_update, ct::RenderWindowManager::instancePtr()), CTQF_InternalQueue);
+
+		gCoreThread().update();
+		gCoreThread().submitAll();
+
+		gCoreThread().queueCommand(std::bind(&CoreApplication::frameRenderingFinishedCallback, this), CTQF_InternalQueue);
+
+		gCoreThread().queueCommand(std::bind(&ct::QueryManager::_update, ct::QueryManager::instancePtr()), CTQF_InternalQueue);
+		gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this), CTQF_InternalQueue);
+
+		gProfilerCPU().endThread();
+		gProfiler()._update();
+	}
+
+	void CoreApplication::waitUntilFrameFinished()
+	{
+		Lock lock(mFrameRenderingFinishedMutex);
+
+		while (!mIsFrameRenderingFinished)
+		{
+			TaskScheduler::instance().addWorker();
+			mFrameRenderingFinishedCondition.wait(lock);
+			TaskScheduler::instance().removeWorker();
 		}
 	}
 

@@ -140,7 +140,6 @@ set(BS_ENGINE_INC_RTTI
 
 set(BS_ENGINE_INC_NOFILTER
 	"bsfEngine/BsApplication.h"
-	"bsfEngine/BsEmbeddableApplication.h"
 	"bsfEngine/BsPrerequisites.h"
 	"bsfEngine/BsEntry.h"
 )
@@ -253,7 +252,6 @@ set(BS_ENGINE_INC_GUI
 
 set(BS_ENGINE_SRC_NOFILTER
 	"bsfEngine/BsApplication.cpp"
-	"bsfEngine/BsEmbeddableApplication.cpp"
 )
 
 set(BS_ENGINE_SRC_PLATFORM
