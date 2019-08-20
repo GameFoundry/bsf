@@ -42,7 +42,6 @@ namespace bs
 	 */
 	class BS_CORE_EXPORT CoreApplication : public Module<CoreApplication>
 	{
-        friend class EmbeddableApplication;
 	public:
 		CoreApplication(START_UP_DESC desc);
 		virtual ~CoreApplication();
@@ -58,6 +57,8 @@ namespace bs
 		/**	Stops the (infinite) main loop from running. The loop will complete its current cycle before stopping. */
 		void stopMainLoop();
 
+		bool isMainLoopRunning() const { return mRunMainLoop; }
+
 		/** Changes the maximum FPS the application is allowed to run in. Zero means unlimited. */
 		void setFPSLimit(UINT32 limit);
 
@@ -66,6 +67,18 @@ namespace bs
 		 * circumstances and the implementation.
 		 */
 		virtual void quitRequested();
+
+		/** Call before the first time runMainLoopFrame is called */
+		virtual void beginMainLoop();
+
+		/** Call after the last time runMainLoopFrame is called */
+		virtual void endMainLoop();
+
+		/** Alternative to runMainLoop, processes one step at a time */
+		void runMainLoopFrame();
+
+		/** Waits until previous frame is complete */
+		void waitUntilFrameFinished();
 
 		/**	Returns the main window that was created on application start-up. */
 		SPtr<RenderWindow> getPrimaryWindow() const { return mPrimaryWindow; }
