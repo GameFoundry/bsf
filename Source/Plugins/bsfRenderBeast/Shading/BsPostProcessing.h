@@ -858,6 +858,35 @@ namespace bs { namespace ct
 		GpuParamTexture mDepthTexture;
 	};
 
+	BS_PARAM_BLOCK_BEGIN(MotionBlurParamDef)
+		BS_PARAM_BLOCK_ENTRY(UINT32, gHalfNumSamples)
+	BS_PARAM_BLOCK_END
+
+	/** Shader that blurs the scene depending on camera and/or object movement. */
+	class MotionBlurMat : public RendererMaterial<MotionBlurMat>
+	{
+		RMAT_DEF("PPMotionBlur.bsl");
+
+	public:
+		MotionBlurMat();
+
+		/**
+		 * Renders the post-process effect with the provided parameters.
+		 *
+		 * @param[in]	input		Input texture to blur.
+		 * @param[in]	depth		Input depth buffer texture that will be used for determining pixel depth.
+		 * @param[in]	view		View through which the depth of field effect is viewed.
+		 * @param[in]	settings	Settings used to control the motion blur effect.
+		 * @param[in]	output		Texture to output the results to.
+		 */
+		void execute(const SPtr<Texture>& input, const SPtr<Texture>& depth, const RendererView& view,
+			const MotionBlurSettings& settings, const SPtr<RenderTarget>& output);
+	private:
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
+		GpuParamTexture mInputTexture;
+		GpuParamTexture mDepthTexture;
+	};
+
 	BS_PARAM_BLOCK_BEGIN(BuildHiZFParamDef)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gHalfPixelOffset)
 		BS_PARAM_BLOCK_ENTRY(int, gMipLevel)

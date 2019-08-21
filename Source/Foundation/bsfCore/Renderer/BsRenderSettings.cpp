@@ -218,6 +218,26 @@ namespace bs
 	}
 
 	template <class Processor>
+	void MotionBlurSettings::rttiEnumFields(Processor p)
+	{
+		p(enabled);
+		p(domain);
+		p(filter);
+		p(quality);
+		p(maximumRadius);
+	}
+
+	RTTITypeBase* MotionBlurSettings::getRTTIStatic()
+	{
+		return MotionBlurSettingsRTTI::instance();
+	}
+
+	RTTITypeBase* MotionBlurSettings::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
+	template <class Processor>
 	void ShadowSettings::rttiEnumFields(Processor p)
 	{
 		p(directionalShadowDistance);
@@ -261,6 +281,7 @@ namespace bs
 		p(overlayOnly);
 		p(enableSkybox);
 		p(cullDistance);
+		p(motionBlur);
 	}
 
 	template struct TRenderSettings<false>;

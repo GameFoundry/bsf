@@ -1407,6 +1407,62 @@ namespace bs { namespace ct
 		}
 	}
 
+	MotionBlurParamDef gMotionBlurParamDef;
+
+	MotionBlurMat::MotionBlurMat()
+	{
+		mParamBuffer = gBokehDOFPrepareParamDef.createBuffer();
+
+		mParams->setParamBlockBuffer("Params", mParamBuffer);
+
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTexture);
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDepthBufferTex", mDepthTexture);
+
+		SAMPLER_STATE_DESC pointSampDesc;
+		pointSampDesc.minFilter = FO_POINT;
+		pointSampDesc.magFilter = FO_POINT;
+		pointSampDesc.mipFilter = FO_POINT;
+		pointSampDesc.addressMode.u = TAM_CLAMP;
+		pointSampDesc.addressMode.v = TAM_CLAMP;
+		pointSampDesc.addressMode.w = TAM_CLAMP;
+
+		SPtr<SamplerState> pointSampState = SamplerState::create(pointSampDesc);
+
+		if (mParams->hasSamplerState(GPT_FRAGMENT_PROGRAM, "gDepthBufferSamp"))
+			mParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gDepthBufferSamp", pointSampState);
+	}
+
+	void MotionBlurMat::execute(const SPtr<Texture>& input, const SPtr<Texture>& depth, const RendererView& view,
+		const MotionBlurSettings& settings, const SPtr<RenderTarget>& output)
+	{
+		BS_RENMAT_PROFILE_BLOCK
+
+		UINT32 numSamples;
+		switch(settings.quality)
+		{
+		default:
+		case MotionBlurQuality::VeryLow: numSamples = 4; break;
+		case MotionBlurQuality::Low: numSamples = 6; break;
+		case MotionBlurQuality::Medium: numSamples = 8; break;
+		case MotionBlurQuality::High: numSamples = 12;  break;
+		case MotionBlurQuality::Ultra: numSamples = 16;  break;
+		}
+		
+		gMotionBlurParamDef.gHalfNumSamples.set(mParamBuffer, numSamples / 2);
+
+		mInputTexture.set(input);
+		mDepthTexture.set(depth);
+
+		SPtr<GpuParamBlockBuffer> perView = view.getPerViewBuffer();
+		mParams->setParamBlockBuffer("PerCamera", perView);
+
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(output);
+
+		bind();
+		gRendererUtility().drawScreenQuad();
+	}
+
 	BuildHiZFParamDef gBuildHiZParamDef;
 
 	BuildHiZMat::BuildHiZMat()

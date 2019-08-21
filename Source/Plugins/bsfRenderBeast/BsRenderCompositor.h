@@ -553,6 +553,24 @@ namespace ct
 		void clear() override;
 	};
 
+	/**
+	 * Renders the motion blur effect simulating light accumulation due to object and/or camera
+	 * movement during a single frame. (In another words, it simulates blur due to exposure time
+	 * as if on a real-world camera, i.e. depending on how long is the camera shutter open).
+	 */
+	class RCNodeMotionBlur : public RenderCompositorNode
+	{
+	public:
+		static StringID getNodeId() { return "MotionBlur"; }
+		static SmallVector<StringID, 4> getDependencies(const RendererView & view);
+	protected:
+		/** @copydoc RenderCompositorNode::render */
+		void render(const RenderCompositorNodeInputs& inputs) override;
+
+		/** @copydoc RenderCompositorNode::clear */
+		void clear() override;
+	};
+
 	/** Renders the depth of field effect using Gaussian blurring. */
 	class RCNodeGaussianDOF : public RenderCompositorNode
 	{

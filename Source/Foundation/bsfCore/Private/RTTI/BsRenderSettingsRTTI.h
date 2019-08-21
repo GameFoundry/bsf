@@ -203,6 +203,35 @@ namespace bs
 			return bs_shared_ptr_new<AmbientOcclusionSettings>();
 		}
 	};
+	
+	class BS_CORE_EXPORT MotionBlurSettingsRTTI : public RTTIType <MotionBlurSettings, IReflectable, MotionBlurSettingsRTTI>
+	{
+	private:
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_PLAIN(enabled, 0)
+			BS_RTTI_MEMBER_PLAIN(domain, 1)
+			BS_RTTI_MEMBER_PLAIN(filter, 2)
+			BS_RTTI_MEMBER_PLAIN(quality, 3)
+			BS_RTTI_MEMBER_PLAIN(maximumRadius, 4)
+		BS_END_RTTI_MEMBERS
+
+	public:
+		const String& getRTTIName() override
+		{
+			static String name = "MotionBlurSettings";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_MotionBlurSettings;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			return bs_shared_ptr_new<MotionBlurSettings>();
+		}
+	};
 
 	class BS_CORE_EXPORT ScreenSpaceReflectionsSettingsRTTI : public RTTIType <ScreenSpaceReflectionsSettings, IReflectable, ScreenSpaceReflectionsSettingsRTTI>
 	{
@@ -355,6 +384,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(enableSkybox, 18)
 			BS_RTTI_MEMBER_REFL(bloom, 19)
 			BS_RTTI_MEMBER_REFL(screenSpaceLensFlare, 20)
+			BS_RTTI_MEMBER_REFL(motionBlur, 21)
 		BS_END_RTTI_MEMBERS
 
 	public:

@@ -557,6 +557,10 @@
         {
             "Path": "PPBokehDOFPrepare.bsl",
             "UUID": "0a6293a4-465b-7b01-e8ae-465be083fc8e"
+        },
+        {
+            "Path": "PPMotionBlur.bsl",
+            "UUID": "041e3400-4192-d889-a781-41923dbdd11a"
         }
     ],
     "Skin": [

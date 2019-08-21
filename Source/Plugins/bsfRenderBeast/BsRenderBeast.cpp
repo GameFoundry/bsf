@@ -129,6 +129,7 @@ namespace bs { namespace ct
 		RenderCompositor::registerNodeType<RCNodeEyeAdaptation>();
 		RenderCompositor::registerNodeType<RCNodeScreenSpaceLensFlare>();
 		RenderCompositor::registerNodeType<RCNodeSceneColorDownsamples>();
+		RenderCompositor::registerNodeType<RCNodeMotionBlur>();
 	}
 
 	void RenderBeast::destroyCore()

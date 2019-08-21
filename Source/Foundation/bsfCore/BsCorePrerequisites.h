@@ -672,6 +672,7 @@ namespace bs
 		TID_AmbientOcclusionSettings = 30021,
 		TID_ScreenSpaceReflectionsSettings = 30022,
 		TID_ShadowSettings = 30023,
+		TID_MotionBlurSettings = 30024
 	};
 }
 

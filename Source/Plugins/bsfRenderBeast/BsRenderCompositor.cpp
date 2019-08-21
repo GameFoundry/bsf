@@ -1913,7 +1913,7 @@ namespace bs { namespace ct
 		SmallVector<StringID, 4> deps = {
 			RCNodeEyeAdaptation::getNodeId(),
 			RCNodeSceneColor::getNodeId(),
-			RCNodeBokehDOF::getNodeId(),
+			RCNodeMotionBlur::getNodeId(),
 			RCNodePostProcess::getNodeId(),
 			RCNodeHalfSceneColor::getNodeId()
 		};
@@ -1979,6 +1979,46 @@ namespace bs { namespace ct
 			RCNodeSceneColor::getNodeId(), 
 			RCNodeSceneDepth::getNodeId(), 
 			RCNodeLightAccumulation::getNodeId() 
+		};
+	}
+
+
+	void RCNodeMotionBlur::render(const RenderCompositorNodeInputs& inputs)
+	{
+		const MotionBlurSettings& settings = inputs.view.getRenderSettings().motionBlur;
+		if (!settings.enabled)
+			return;
+
+		// TODO - Account for settings such as filter type and domain by grabbing correct shader variations
+
+		const RendererViewProperties& viewProps = inputs.view.getProperties();
+
+		RCNodeSceneColor* sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[1]);
+		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[2]);
+		RCNodeLightAccumulation* lightAccumNode = static_cast<RCNodeLightAccumulation*>(inputs.inputNodes[3]);
+
+		MotionBlurMat* motionBlurMat = MotionBlurMat::get();
+
+		SPtr<Texture> depth = sceneDepthNode->depthTex->texture;
+		motionBlurMat->execute(sceneColorNode->sceneColorTex->texture, depth, inputs.view, settings,
+			lightAccumNode->lightAccumulationTex->renderTexture);
+
+		sceneColorNode->swap(lightAccumNode);
+	}
+
+	void RCNodeMotionBlur::clear()
+	{
+		// Do nothing
+	}
+
+	SmallVector<StringID, 4> RCNodeMotionBlur::getDependencies(const RendererView & view)
+	{
+		return
+		{
+			RCNodeBokehDOF::getNodeId(),
+			RCNodeSceneColor::getNodeId(),
+			RCNodeSceneDepth::getNodeId(),
+			RCNodeLightAccumulation::getNodeId()
 		};
 	}
 
