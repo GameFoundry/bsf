@@ -1162,6 +1162,11 @@ namespace bs
 			{
 				state = clipInfo.state;
 
+				if (state.layer == (UINT32)-1)
+					state.layer = 0;
+				else
+					state.layer += 1;
+
 				// Internally we store unclamped time, so clamp/loop it
 				float clipLength = 0.0f;
 				if (clip.isLoaded())
