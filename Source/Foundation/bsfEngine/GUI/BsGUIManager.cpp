@@ -72,10 +72,6 @@ namespace bs
 	const float GUIManager::TOOLTIP_HOVER_TIME = 1.0f;
 
 	GUIManager::GUIManager()
-		: mCoreDirty(false), mActiveMouseButton(GUIMouseButton::Left), mShowTooltip(false), mTooltipElementHoverStart(0.0f)
-		, mInputCaret(nullptr), mInputSelection(nullptr), mSeparateMeshesByWidget(true), mDragState(DragState::NoDrag)
-		, mCaretColor(1.0f, 0.6588f, 0.0f), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mIsCaretOn(false)
-		, mActiveCursor(CursorType::Arrow), mTextSelectionColor(0.0f, 114/255.0f, 188/255.0f)
 	{
 		// Note: Hidden dependency. GUI must receive input events before other systems, in order so it can mark them as used
 		// if required. e.g. clicking on a context menu should mark the event as used so that other non-GUI systems know
@@ -188,6 +184,15 @@ namespace bs
 				entry.widget = nullptr;
 		}
 
+		for(auto& elementsPerWindow : mSavedFocusElements)
+		{
+			for(auto& entry : elementsPerWindow.second)
+			{
+				if (entry.widget == widget)
+					entry.widget = nullptr;
+			}
+		}
+
 		for (auto& entry : mElementsUnderPointer)
 		{
 			if (entry.widget == widget)
@@ -289,6 +294,18 @@ namespace bs
 			}
 
 			mElementsInFocus.swap(mNewElementsInFocus);
+
+			for (auto& elementsPerWindow : mSavedFocusElements)
+			{
+				mNewElementsInFocus.clear();
+				for (auto& entry : elementsPerWindow.second)
+				{
+					if (!entry.element->_isDestroyed())
+						mNewElementsInFocus.push_back(entry);
+				}
+
+				elementsPerWindow.second.swap(mNewElementsInFocus);
+			}
 
 			if(mForcedClearFocus)
 			{
@@ -1509,6 +1526,61 @@ namespace bs
 			if(getWidgetWindow(*widget) == &win)
 				widget->ownerWindowFocusChanged();
 		}
+
+		auto iterFind = mSavedFocusElements.find(&win);
+		if(iterFind != mSavedFocusElements.end())
+		{
+			Vector<ElementFocusInfo>& savedFocusedElements = iterFind->second;
+			
+			mNewElementsInFocus.clear();
+			for(auto& focusedElement : mElementsInFocus)
+			{
+				if (focusedElement.element->_isDestroyed())
+					continue;
+
+				auto iterFind2 = std::find_if(savedFocusedElements.begin(), savedFocusedElements.end(),
+					[&focusedElement](const ElementFocusInfo& x)
+					{
+						return x.element == focusedElement.element;
+					});
+
+				if(iterFind2 == savedFocusedElements.end())
+				{
+					mCommandEvent = GUICommandEvent();
+					mCommandEvent.setType(GUICommandEventType::FocusLost);
+
+					sendCommandEvent(focusedElement.element, mCommandEvent);
+					savedFocusedElements.push_back(focusedElement);
+				}
+				else
+					mNewElementsInFocus.push_back(focusedElement);
+			}
+
+			mElementsInFocus.swap(mNewElementsInFocus);
+
+			for(auto& entry : savedFocusedElements)
+			{
+				if (entry.element->_isDestroyed())
+					continue;
+
+				auto iterFind2 = std::find_if(mElementsInFocus.begin(), mElementsInFocus.end(),
+					[&entry](const ElementFocusInfo& x)
+					{
+						return x.element == entry.element;
+					});
+
+				if (iterFind2 == mElementsInFocus.end())
+				{
+					mCommandEvent = GUICommandEvent();
+					mCommandEvent.setType(GUICommandEventType::FocusGained);
+
+					sendCommandEvent(entry.element, mCommandEvent);
+					mElementsInFocus.push_back(entry);
+				}
+			}
+
+			mSavedFocusElements.erase(iterFind);
+		}
 	}
 
 	void GUIManager::onWindowFocusLost(RenderWindow& win)
@@ -1520,6 +1592,9 @@ namespace bs
 				widget->ownerWindowFocusChanged();
 		}
 
+		Vector<ElementFocusInfo>& savedFocusedElements = mSavedFocusElements[&win];
+		savedFocusedElements.clear();
+		
 		mNewElementsInFocus.clear();
 		for(auto& focusedElement : mElementsInFocus)
 		{
@@ -1532,6 +1607,7 @@ namespace bs
 				mCommandEvent.setType(GUICommandEventType::FocusLost);
 
 				sendCommandEvent(focusedElement.element, mCommandEvent);
+				savedFocusedElements.push_back(focusedElement);
 			}
 			else
 				mNewElementsInFocus.push_back(focusedElement);

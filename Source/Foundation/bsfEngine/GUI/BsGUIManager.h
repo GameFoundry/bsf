@@ -370,7 +370,7 @@ namespace bs
 		UnorderedMap<const Viewport*, GUIRenderData> mCachedGUIData;
 
 		SPtr<ct::GUIRenderer> mRenderer;
-		bool mCoreDirty;
+		bool mCoreDirty = false;
 
 		SPtr<VertexDataDesc> mTriangleVertexDesc;
 		SPtr<VertexDataDesc> mLineVertexDesc;
@@ -382,28 +382,29 @@ namespace bs
 		Vector<ElementInfoUnderPointer> mNewElementsUnderPointer;
 
 		// Element and widget that's being clicked on
-		GUIMouseButton mActiveMouseButton;
+		GUIMouseButton mActiveMouseButton = GUIMouseButton::Left;
 		Vector<ElementInfo> mActiveElements;
 		Vector<ElementInfo> mNewActiveElements;
 
 		// Element and widget that currently have the keyboard focus
 		Vector<ElementFocusInfo> mElementsInFocus;
 		Vector<ElementFocusInfo> mNewElementsInFocus;
+		UnorderedMap<RenderWindow*, Vector<ElementFocusInfo>> mSavedFocusElements;
 
 		bool mForcedClearFocus = false;
 		Vector<ElementForcedFocusInfo> mForcedFocusElements;
 
 		// Tooltip
-		bool mShowTooltip;
-		float mTooltipElementHoverStart;
+		bool mShowTooltip = false;
+		float mTooltipElementHoverStart = 0.0f;
 
-		GUIInputCaret* mInputCaret;
-		GUIInputSelection* mInputSelection;
+		GUIInputCaret* mInputCaret = nullptr;
+		GUIInputSelection* mInputSelection = nullptr;
 
-		bool mSeparateMeshesByWidget;
+		bool mSeparateMeshesByWidget = true;
 		Vector2I mLastPointerScreenPos;
 
-		DragState mDragState;
+		DragState mDragState = DragState::NoDrag;
 		Vector2I mLastPointerClickPos;
 		Vector2I mDragStartPos;
 
@@ -413,14 +414,14 @@ namespace bs
 		GUIVirtualButtonEvent mVirtualButtonEvent;
 
 		HSpriteTexture mCaretTexture;
-		Color mCaretColor;
-		float mCaretBlinkInterval;
-		float mCaretLastBlinkTime;
-		bool mIsCaretOn;
-		CursorType mActiveCursor;
+		Color mCaretColor { 1.0f, 0.6588f, 0.0f };
+		float mCaretBlinkInterval = 0.5f;
+		float mCaretLastBlinkTime = 0.0f;
+		bool mIsCaretOn = false;
+		CursorType mActiveCursor = CursorType::Arrow;
 
 		HSpriteTexture mTextSelectionTexture;
-		Color mTextSelectionColor;
+		Color mTextSelectionColor { 0.0f, 114 / 255.0f, 188 / 255.0f };
 
 		Map<const RenderTexture*, const GUIElement*> mInputBridge;
 
