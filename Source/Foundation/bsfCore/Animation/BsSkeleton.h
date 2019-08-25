@@ -43,6 +43,7 @@ namespace bs
 	struct AnimationState
 	{
 		SPtr<AnimationCurves> curves; /**< All curves in the animation clip. */
+		float length; /**< Total length of the animation clip in seconds (same as the length of the longest animation curve). */
 		AnimationCurveMapping* boneToCurveMapping; /**< Mapping of bone indices to curve indices for quick lookup .*/
 		AnimationCurveMapping* soToCurveMapping; /**< Mapping of scene object indices to curve indices for quick lookup. */
 

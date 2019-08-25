@@ -113,6 +113,7 @@ namespace bs
 
 			AnimationState state;
 			state.curves = clip.getCurves();
+			state.length = clip.getLength();
 			state.boneToCurveMapping = boneToCurveMapping.data();
 			state.loop = loop;
 			state.weight = 1.0f;
@@ -199,7 +200,7 @@ namespace bs
 					if (curveIdx != (UINT32)-1)
 					{
 						const TAnimationCurve<Vector3>& curve = state.curves->position[curveIdx].curve;
-						localPose.positions[k] += curve.evaluate(state.time, state.positionCaches[curveIdx], state.loop) * normWeight;
+						localPose.positions[k] += curve.evaluate(state.time, state.positionCaches[curveIdx], false) * normWeight;
 
 						localPose.hasOverride[k] = false;
 						hasAnimCurve[k] = true;
@@ -209,7 +210,7 @@ namespace bs
 					if (curveIdx != (UINT32)-1)
 					{
 						const TAnimationCurve<Vector3>& curve = state.curves->scale[curveIdx].curve;
-						localPose.scales[k] *= curve.evaluate(state.time, state.scaleCaches[curveIdx], state.loop) * normWeight;
+						localPose.scales[k] *= curve.evaluate(state.time, state.scaleCaches[curveIdx], false) * normWeight;
 
 						localPose.hasOverride[k] = false;
 						hasAnimCurve[k] = true;
@@ -226,7 +227,7 @@ namespace bs
 
 							const TAnimationCurve<Quaternion>& curve = state.curves->rotation[curveIdx].curve;
 
-							Quaternion value = curve.evaluate(state.time, state.rotationCaches[curveIdx], state.loop);
+							Quaternion value = curve.evaluate(state.time, state.rotationCaches[curveIdx], false);
 							value = Quaternion::lerp(normWeight, Quaternion::IDENTITY, value);
 
 							localPose.rotations[k] *= value;
@@ -240,7 +241,7 @@ namespace bs
 						if (curveIdx != (UINT32)-1)
 						{
 							const TAnimationCurve<Quaternion>& curve = state.curves->rotation[curveIdx].curve;
-							Quaternion value = curve.evaluate(state.time, state.rotationCaches[curveIdx], state.loop) * normWeight;
+							Quaternion value = curve.evaluate(state.time, state.rotationCaches[curveIdx], false) * normWeight;
 
 							if (value.dot(localPose.rotations[k]) < 0.0f)
 								value = -value;
