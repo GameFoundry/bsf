@@ -32,6 +32,15 @@ namespace bs
 		RENDER_WINDOW_DESC primaryWindowDesc; /**< Describes the window to create during start-up. */
 
 		Vector<String> importers; /**< A list of importer plugins to load. */
+
+		/**
+		 *If specified Log will call this function whenever a new log message is added. If this returns true then
+		 * the default action of the log will be skipped.
+		 */
+		std::function<bool(const String& message, LogVerbosity verbosity, UINT32 category)> logCallback;
+
+		/** Crash handling customization */
+		CrashHandlerSettings crashHandling;
 	};
 
 	/**
