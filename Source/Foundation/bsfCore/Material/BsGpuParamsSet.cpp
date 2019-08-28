@@ -915,7 +915,12 @@ namespace bs
 			if(materialParamInfo->dataType != GPDT_STRUCT)
 			{
 				const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[(int)materialParamInfo->dataType];
-				UINT32 paramSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
+
+				UINT32 paramSize;
+				if(materialParamInfo->dataType != GPDT_COLOR)
+					paramSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
+				else
+					paramSize = paramInfo.arrayStride * typeInfo.baseTypeSize;
 
 				UINT8* data = params->getData(materialParamInfo->index);
 				if (!isAnimated)
