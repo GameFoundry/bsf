@@ -73,7 +73,9 @@ namespace bs
 		, mSimThreadId(BS_THREAD_CURRENT_ID), mRunMainLoop(false)
 	{
 		// Ensure all errors are reported properly
-		CrashHandler::startUp();
+		CrashHandler::startUp(desc.crashHandling);
+		if(desc.logCallback)
+			gDebug().getLog().setLogCallback(desc.logCallback);
 	}
 
 	CoreApplication::~CoreApplication()
