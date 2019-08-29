@@ -65,7 +65,7 @@ namespace bs
 		static uint32_t fromMemory(BLEND_STATE_DESC& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 			stream.readBytes(data);
 
 			return size;

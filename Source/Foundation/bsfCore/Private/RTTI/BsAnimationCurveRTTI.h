@@ -22,10 +22,10 @@ namespace bs
 		/** @copydoc RTTIPlainType::toMemory */
 		static uint32_t toMemory(const TKeyframe<T>& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
-			rttiWriteElem(data.value, stream);
-			rttiWriteElem(data.inTangent, stream);
-			rttiWriteElem(data.outTangent, stream);
-			rttiWriteElem(data.time, stream);
+			rtti_write(data.value, stream);
+			rtti_write(data.inTangent, stream);
+			rtti_write(data.outTangent, stream);
+			rtti_write(data.time, stream);
 
 			return sizeof(TKeyframe<T>);
 		}
@@ -33,10 +33,10 @@ namespace bs
 		/** @copydoc RTTIPlainType::fromMemory */
 		static uint32_t fromMemory(TKeyframe<T>& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
-			rttiReadElem(data.value, stream);
-			rttiReadElem(data.inTangent, stream);
-			rttiReadElem(data.outTangent, stream);
-			rttiReadElem(data.time, stream);
+			rtti_read(data.value, stream);
+			rtti_read(data.inTangent, stream);
+			rtti_read(data.outTangent, stream);
+			rtti_read(data.time, stream);
 			
 			return sizeof(TKeyframe<T>);
 		}
@@ -61,11 +61,11 @@ namespace bs
 				constexpr uint32_t VERSION = 0; // In case the data structure changes
 
 				uint32_t size = 0;
-				size += rttiWriteElem(VERSION, stream);
-				size += rttiWriteElem(data.mStart, stream);
-				size += rttiWriteElem(data.mEnd, stream);
-				size += rttiWriteElem(data.mLength, stream);
-				size += rttiWriteElem(data.mKeyframes, stream);
+				size += rtti_write(VERSION, stream);
+				size += rtti_write(data.mStart, stream);
+				size += rtti_write(data.mEnd, stream);
+				size += rtti_write(data.mLength, stream);
+				size += rtti_write(data.mKeyframes, stream);
 
 				return size;
 			});
@@ -75,15 +75,15 @@ namespace bs
 		static uint32_t fromMemory(TAnimationCurve<T>& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t version;
-			rttiReadElem(version, stream);
+			rtti_read(version, stream);
 
-			rttiReadElem(data.mStart, stream);
-			rttiReadElem(data.mEnd, stream);
-			rttiReadElem(data.mLength, stream);
-			rttiReadElem(data.mKeyframes, stream);
+			rtti_read(data.mStart, stream);
+			rtti_read(data.mEnd, stream);
+			rtti_read(data.mLength, stream);
+			rtti_read(data.mKeyframes, stream);
 
 			return size;
 		}
@@ -92,10 +92,10 @@ namespace bs
 		static uint32_t getDynamicSize(const TAnimationCurve<T>& data)
 		{
 			uint64_t dataSize = sizeof(uint32_t) + sizeof(uint32_t);
-			dataSize += rttiGetElemSize(data.mStart);
-			dataSize += rttiGetElemSize(data.mEnd);
-			dataSize += rttiGetElemSize(data.mLength);
-			dataSize += rttiGetElemSize(data.mKeyframes);
+			dataSize += rtti_size(data.mStart);
+			dataSize += rtti_size(data.mEnd);
+			dataSize += rtti_size(data.mLength);
+			dataSize += rtti_size(data.mKeyframes);
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
 
@@ -113,9 +113,9 @@ namespace bs
 			return rtti_write_with_size_header(stream, [&data, &stream]()
 			{
 				uint32_t size = 0;
-				size += rttiWriteElem(data.name, stream);
-				size += rttiWriteElem(data.flags, stream);
-				size += rttiWriteElem(data.curve, stream);
+				size += rtti_write(data.name, stream);
+				size += rtti_write(data.flags, stream);
+				size += rtti_write(data.curve, stream);
 
 				return size;
 			});
@@ -125,11 +125,11 @@ namespace bs
 		static uint32_t fromMemory(TNamedAnimationCurve<T>& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			UINT32 size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
-			rttiReadElem(data.name, stream);
-			rttiReadElem(data.flags, stream);
-			rttiReadElem(data.curve, stream);
+			rtti_read(data.name, stream);
+			rtti_read(data.flags, stream);
+			rtti_read(data.curve, stream);
 
 			return size;
 		}
@@ -138,9 +138,9 @@ namespace bs
 		static uint32_t getDynamicSize(const TNamedAnimationCurve<T>& data)
 		{
 			uint64_t dataSize = sizeof(uint32_t);
-			dataSize += rttiGetElemSize(data.name);
-			dataSize += rttiGetElemSize(data.flags);
-			dataSize += rttiGetElemSize(data.curve);
+			dataSize += rtti_size(data.name);
+			dataSize += rtti_size(data.flags);
+			dataSize += rtti_size(data.curve);
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
 

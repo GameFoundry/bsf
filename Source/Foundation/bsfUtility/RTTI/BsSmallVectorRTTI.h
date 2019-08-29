@@ -25,10 +25,10 @@ namespace bs
 				uint32_t size = 0;
 
 				auto numElements = (uint32_t)data.size();
-				size += rttiWriteElem(numElements, stream);
+				size += rtti_write(numElements, stream);
 
 				for (const auto& item : data)
-					size += rttiWriteElem(item, stream);
+					size += rtti_write(item, stream);
 
 				return size;
 			});
@@ -38,16 +38,16 @@ namespace bs
 		static uint32_t fromMemory(SmallVector<T, N>& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t numElements;
-			rttiReadElem(numElements, stream);
+			rtti_read(numElements, stream);
 
 			data.clear();
 			for (uint32_t i = 0; i < numElements; i++)
 			{
 				T element;
-				rttiReadElem(element, stream);
+				rtti_read(element, stream);
 
 				data.add(element);
 			}
@@ -61,7 +61,7 @@ namespace bs
 			uint64_t dataSize = sizeof(uint32_t) * 2;
 
 			for (const auto& item : data)
-				dataSize += rttiGetElemSize(item);
+				dataSize += rtti_size(item);
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
 

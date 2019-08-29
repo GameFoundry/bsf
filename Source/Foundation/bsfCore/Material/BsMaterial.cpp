@@ -683,7 +683,7 @@ namespace bs
 		UINT8* buffer = allocator->alloc(size);
 		Bitstream stream(buffer, size);
 
-		rttiWriteElem(syncAllParams, stream);
+		rtti_write(syncAllParams, stream);
 		
 		SPtr<ct::Shader>* shader = new (stream.cursor())SPtr<ct::Shader>();
 		if (mShader.isLoaded(false))
@@ -692,7 +692,7 @@ namespace bs
 			*shader = nullptr;
 
 		stream.skipBytes(sizeof(SPtr<ct::Shader>));
-		rttiWriteElem(numTechniques, stream);
+		rtti_write(numTechniques, stream);
 
 		for(UINT32 i = 0; i < numTechniques; i++)
 		{
@@ -702,7 +702,7 @@ namespace bs
 			stream.skipBytes(sizeof(SPtr<ct::Technique>));
 		}
 
-		rttiWriteElem(paramsSize, stream);
+		rtti_write(paramsSize, stream);
 		if (mParams != nullptr)
 			mParams->getSyncData(stream.cursor(), paramsSize, syncAllParams);
 
@@ -1058,7 +1058,7 @@ namespace bs
 		Bitstream stream(data.getBuffer(), data.getBufferSize());
 
 		bool syncAllParams;
-		rttiReadElem(syncAllParams, stream);
+		rtti_read(syncAllParams, stream);
 
 		UINT64 initialParamVersion = mParams != nullptr ? mParams->getParamVersion() : 1;
 		if(syncAllParams)
@@ -1071,7 +1071,7 @@ namespace bs
 		stream.skipBytes(sizeof(SPtr<Shader>));
 
 		UINT32 numTechniques;
-		rttiReadElem(numTechniques, stream);
+		rtti_read(numTechniques, stream);
 
 		mTechniques.resize(numTechniques);
 		for(UINT32 i = 0; i < numTechniques; i++)
@@ -1083,7 +1083,7 @@ namespace bs
 		}
 
 		UINT32 paramsSize = 0;
-		rttiReadElem(paramsSize, stream);
+		rtti_read(paramsSize, stream);
 		if (mParams == nullptr && mShader != nullptr)
 			mParams = bs_shared_ptr_new<MaterialParams>(mShader, initialParamVersion);
 

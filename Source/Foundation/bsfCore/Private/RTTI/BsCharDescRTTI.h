@@ -22,19 +22,19 @@ namespace bs
 			return rtti_write_with_size_header(stream, [&data, &stream]()
 			{
 				uint32_t size = 0;
-				size += rttiWriteElem(data.charId, stream);
-				size += rttiWriteElem(data.page, stream);
-				size += rttiWriteElem(data.uvX, stream);
-				size += rttiWriteElem(data.uvY, stream);
-				size += rttiWriteElem(data.uvWidth, stream);
-				size += rttiWriteElem(data.uvHeight, stream);
-				size += rttiWriteElem(data.width, stream);
-				size += rttiWriteElem(data.height, stream);
-				size += rttiWriteElem(data.xOffset, stream);
-				size += rttiWriteElem(data.yOffset, stream);
-				size += rttiWriteElem(data.xAdvance, stream);
-				size += rttiWriteElem(data.yAdvance, stream);
-				size += rttiWriteElem(data.kerningPairs, stream);
+				size += rtti_write(data.charId, stream);
+				size += rtti_write(data.page, stream);
+				size += rtti_write(data.uvX, stream);
+				size += rtti_write(data.uvY, stream);
+				size += rtti_write(data.uvWidth, stream);
+				size += rtti_write(data.uvHeight, stream);
+				size += rtti_write(data.width, stream);
+				size += rtti_write(data.height, stream);
+				size += rtti_write(data.xOffset, stream);
+				size += rtti_write(data.yOffset, stream);
+				size += rtti_write(data.xAdvance, stream);
+				size += rtti_write(data.yAdvance, stream);
+				size += rtti_write(data.kerningPairs, stream);
 
 				return size;
 			});
@@ -43,20 +43,20 @@ namespace bs
 		static uint32_t fromMemory(CharDesc& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size;
-			rttiReadElem(size, stream);
-			rttiReadElem(data.charId, stream);
-			rttiReadElem(data.page, stream);
-			rttiReadElem(data.uvX, stream);
-			rttiReadElem(data.uvY, stream);
-			rttiReadElem(data.uvWidth, stream);
-			rttiReadElem(data.uvHeight, stream);
-			rttiReadElem(data.width, stream);
-			rttiReadElem(data.height, stream);
-			rttiReadElem(data.xOffset, stream);
-			rttiReadElem(data.yOffset, stream);
-			rttiReadElem(data.xAdvance, stream);
-			rttiReadElem(data.yAdvance, stream);
-			rttiReadElem(data.kerningPairs, stream);
+			rtti_read(size, stream);
+			rtti_read(data.charId, stream);
+			rtti_read(data.page, stream);
+			rtti_read(data.uvX, stream);
+			rtti_read(data.uvY, stream);
+			rtti_read(data.uvWidth, stream);
+			rtti_read(data.uvHeight, stream);
+			rtti_read(data.width, stream);
+			rtti_read(data.height, stream);
+			rtti_read(data.xOffset, stream);
+			rtti_read(data.yOffset, stream);
+			rtti_read(data.xAdvance, stream);
+			rtti_read(data.yAdvance, stream);
+			rtti_read(data.kerningPairs, stream);
 
 			return size;
 		}

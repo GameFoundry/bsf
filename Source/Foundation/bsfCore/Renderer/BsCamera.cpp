@@ -764,7 +764,7 @@ namespace bs
 	{
 		UINT32 dirtyFlag = getCoreDirtyFlags();
 
-		UINT32 size = rttiGetElemSize(dirtyFlag);
+		UINT32 size = rtti_size(dirtyFlag);
 		size += coreSyncGetElemSize((SceneActor&)*this);
 
 		if (dirtyFlag != (UINT32)ActorDirtyFlag::Transform)
@@ -773,7 +773,7 @@ namespace bs
 		UINT8* buffer = allocator->alloc(size);
 		Bitstream stream(buffer, size);
 
-		rttiWriteElem(dirtyFlag, stream);
+		rtti_write(dirtyFlag, stream);
 		coreSyncWriteElem((SceneActor&)*this, stream);
 
 		if (dirtyFlag != (UINT32)ActorDirtyFlag::Transform)
@@ -838,7 +838,7 @@ namespace bs
 		Bitstream stream(data.getBuffer(), data.getBufferSize());
 
 		UINT32 dirtyFlag;
-		rttiReadElem(dirtyFlag, stream);
+		rtti_read(dirtyFlag, stream);
 		coreSyncReadElem((SceneActor&)*this, stream);
 
 		if (dirtyFlag != (UINT32)ActorDirtyFlag::Transform)

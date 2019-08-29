@@ -198,14 +198,14 @@ namespace bs
 	CoreSyncData ReflectionProbe::syncToCore(FrameAlloc* allocator)
 	{
 		UINT32 size = 0;
-		size += rttiGetElemSize(getCoreDirtyFlags());
+		size += rtti_size(getCoreDirtyFlags());
 		size += coreSyncGetElemSize((SceneActor&)*this);
 		size += coreSyncGetElemSize(*this);
 
 		UINT8* buffer = allocator->alloc(size);
 
 		Bitstream stream(buffer, size);
-		rttiWriteElem(getCoreDirtyFlags(), stream);
+		rtti_write(getCoreDirtyFlags(), stream);
 		coreSyncWriteElem((SceneActor&)*this, stream);
 		coreSyncWriteElem(*this, stream);
 
@@ -260,7 +260,7 @@ namespace bs
 		bool oldIsActive = mActive;
 		ReflectionProbeType oldType = mType;
 
-		rttiReadElem(dirtyFlags, stream);
+		rtti_read(dirtyFlags, stream);
 		coreSyncReadElem((SceneActor&)*this, stream);
 		coreSyncReadElem(*this, stream);
 

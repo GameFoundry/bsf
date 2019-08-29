@@ -23,11 +23,11 @@ namespace bs
 			return rtti_write_with_size_header(stream, [&data, &stream]()
 			{
 				uint32_t size = 0;
-				size += rttiWriteElem(data.mDevice, stream);
-				size += rttiWriteElem(data.mNode, stream);
-				size += rttiWriteElem(data.mFilename, stream);
-				size += rttiWriteElem(data.mIsAbsolute, stream);
-				size += rttiWriteElem(data.mDirectories, stream);
+				size += rtti_write(data.mDevice, stream);
+				size += rtti_write(data.mNode, stream);
+				size += rtti_write(data.mFilename, stream);
+				size += rtti_write(data.mIsAbsolute, stream);
+				size += rtti_write(data.mDirectories, stream);
 
 				return size;
 			});
@@ -36,20 +36,20 @@ namespace bs
 		static uint32_t fromMemory(Path& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size;
-			rttiReadElem(size, stream);
-			rttiReadElem(data.mDevice, stream);
-			rttiReadElem(data.mNode, stream);
-			rttiReadElem(data.mFilename, stream);
-			rttiReadElem(data.mIsAbsolute, stream);
-			rttiReadElem(data.mDirectories, stream);
+			rtti_read(size, stream);
+			rtti_read(data.mDevice, stream);
+			rtti_read(data.mNode, stream);
+			rtti_read(data.mFilename, stream);
+			rtti_read(data.mIsAbsolute, stream);
+			rtti_read(data.mDirectories, stream);
 
 			return size;
 		}
 
 		static uint32_t getDynamicSize(const Path& data)
 		{
-			uint64_t dataSize = (uint64_t)rttiGetElemSize(data.mDevice) + (uint64_t)rttiGetElemSize(data.mNode) + (uint64_t)rttiGetElemSize(data.mFilename) +
-				(uint64_t)rttiGetElemSize(data.mIsAbsolute) + (uint64_t)rttiGetElemSize(data.mDirectories) + sizeof(uint32_t);
+			uint64_t dataSize = (uint64_t)rtti_size(data.mDevice) + (uint64_t)rtti_size(data.mNode) + (uint64_t)rtti_size(data.mFilename) +
+				(uint64_t)rtti_size(data.mIsAbsolute) + (uint64_t)rtti_size(data.mDirectories) + sizeof(uint32_t);
 
 #if BS_DEBUG_MODE
 			if (dataSize > std::numeric_limits<uint32_t>::max())

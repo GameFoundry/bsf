@@ -28,10 +28,10 @@ namespace bs
 			return rtti_write_with_size_header(stream, [&data, &stream]()
 			{
 				uint32_t size = 0;
-				size += rttiWriteElem(VERSION, stream);
-				size += rttiWriteElem(data.name, stream);
-				size += rttiWriteElem(data.type, stream);
-				size += rttiWriteElem(data.i, stream);
+				size += rtti_write(VERSION, stream);
+				size += rtti_write(data.name, stream);
+				size += rtti_write(data.type, stream);
+				size += rtti_write(data.i, stream);
 
 				return size;
 			});
@@ -41,15 +41,15 @@ namespace bs
 		static uint32_t fromMemory(ShaderVariation::Param& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint8_t version;
-			rttiReadElem(version, stream);
+			rtti_read(version, stream);
 			assert(version == 0);
 
-			rttiReadElem(data.name, stream);
-			rttiReadElem(data.type, stream);
-			rttiReadElem(data.i, stream);
+			rtti_read(data.name, stream);
+			rtti_read(data.type, stream);
+			rtti_read(data.i, stream);
 
 			return size;
 		}
@@ -58,9 +58,9 @@ namespace bs
 		static uint32_t getDynamicSize(const ShaderVariation::Param& data)
 		{
 			uint64_t dataSize = sizeof(uint8_t) + sizeof(uint32_t);
-			dataSize += rttiGetElemSize(data.name);
-			dataSize += rttiGetElemSize(data.type);
-			dataSize += rttiGetElemSize(data.i);
+			dataSize += rtti_size(data.name);
+			dataSize += rtti_size(data.type);
+			dataSize += rtti_size(data.i);
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
 

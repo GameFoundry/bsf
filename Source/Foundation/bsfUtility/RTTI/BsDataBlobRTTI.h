@@ -28,7 +28,7 @@ namespace bs
 		static uint32_t fromMemory(DataBlob& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			if (data.data != nullptr)
 				bs_free(data.data);

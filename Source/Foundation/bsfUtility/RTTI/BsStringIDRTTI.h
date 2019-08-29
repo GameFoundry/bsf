@@ -24,7 +24,7 @@ namespace bs
 				uint32_t size = 0;
 
 				bool isEmpty = data.empty();
-				size += rttiWriteElem(isEmpty, stream);
+				size += rtti_write(isEmpty, stream);
 
 				if (!isEmpty)
 				{
@@ -39,10 +39,10 @@ namespace bs
 		static uint32_t fromMemory(StringID& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			bool empty = false;
-			rttiReadElem(empty, stream);
+			rtti_read(empty, stream);
 
 			if (!empty)
 			{

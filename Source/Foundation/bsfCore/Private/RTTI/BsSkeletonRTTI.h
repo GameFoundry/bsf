@@ -89,8 +89,8 @@ namespace bs
 			return rtti_write_with_size_header(stream, [&data, &stream]()
 			{
 				uint32_t size = 0;
-				size += rttiWriteElem(data.name, stream);
-				size += rttiWriteElem(data.parent, stream);
+				size += rtti_write(data.name, stream);
+				size += rtti_write(data.parent, stream);
 
 				return size;
 			});
@@ -100,9 +100,9 @@ namespace bs
 		static uint32_t fromMemory(SkeletonBoneInfo& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
-			rttiReadElem(data.name, stream);
-			rttiReadElem(data.parent, stream);
+			rtti_read(size, stream);
+			rtti_read(data.name, stream);
+			rtti_read(data.parent, stream);
 
 			return size;
 		}
@@ -111,8 +111,8 @@ namespace bs
 		static uint32_t getDynamicSize(const SkeletonBoneInfo& data)
 		{
 			uint64_t dataSize = sizeof(uint32_t);
-			dataSize += rttiGetElemSize(data.name);
-			dataSize += rttiGetElemSize(data.parent);
+			dataSize += rtti_size(data.name);
+			dataSize += rtti_size(data.parent);
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
 

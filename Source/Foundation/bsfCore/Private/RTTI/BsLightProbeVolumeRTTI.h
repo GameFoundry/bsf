@@ -40,9 +40,9 @@ namespace bs
 				uint32_t size = 0;
 
 				uint32_t version;
-				size += rttiWriteElem(version, stream);
-				size += rttiWriteElem(data.positions, stream);
-				size += rttiWriteElem(data.coefficients, stream);
+				size += rtti_write(version, stream);
+				size += rtti_write(data.positions, stream);
+				size += rtti_write(data.coefficients, stream);
 
 				return size;
 			});
@@ -51,16 +51,16 @@ namespace bs
 		static uint32_t fromMemory(SavedLightProbeInfo& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t version;
-			rttiReadElem(version, stream);
+			rtti_read(version, stream);
 
 			switch(version)
 			{
 			case 0:
-				rttiReadElem(data.positions, stream);
-				rttiReadElem(data.coefficients, stream);
+				rtti_read(data.positions, stream);
+				rtti_read(data.coefficients, stream);
 				break;
 			default:
 				BS_LOG(Error, RTTI, "Unknown version of SavedLightProbeInfo data. Unable to deserialize.");
@@ -72,7 +72,7 @@ namespace bs
 
 		static uint32_t getDynamicSize(const SavedLightProbeInfo& data)
 		{
-			uint64_t dataSize = rttiGetElemSize(data.positions) + rttiGetElemSize(data.coefficients) + sizeof(uint32_t) * 2;
+			uint64_t dataSize = rtti_size(data.positions) + rtti_size(data.coefficients) + sizeof(uint32_t) * 2;
 
 #if BS_DEBUG_MODE
 			if(dataSize > std::numeric_limits<uint32_t>::max())

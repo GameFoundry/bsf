@@ -30,9 +30,9 @@ namespace bs
 					constexpr uint8_t VERSION = 0;
 
 					uint32_t size = 0;
-					size += rttiWriteElem(VERSION, stream);
-					size += rttiWriteElem(data.time, stream);
-					size += rttiWriteElem(data.name, stream);
+					size += rtti_write(VERSION, stream);
+					size += rtti_write(data.time, stream);
+					size += rtti_write(data.name, stream);
 
 					return size;
 				});
@@ -42,14 +42,14 @@ namespace bs
 		static uint32_t fromMemory(AnimationEvent& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 			
 			uint8_t version;
-			rttiReadElem(version, stream);
+			rtti_read(version, stream);
 			assert(version == 0);
 
-			rttiReadElem(data.time, stream);
-			rttiReadElem(data.name, stream);
+			rtti_read(data.time, stream);
+			rtti_read(data.name, stream);
 
 			return size;
 		}
@@ -58,8 +58,8 @@ namespace bs
 		static uint32_t getDynamicSize(const AnimationEvent& data)
 		{
 			uint64_t dataSize = sizeof(uint8_t) + sizeof(uint32_t);
-			dataSize += rttiGetElemSize(data.time);
-			dataSize += rttiGetElemSize(data.name);
+			dataSize += rtti_size(data.time);
+			dataSize += rtti_size(data.name);
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
 

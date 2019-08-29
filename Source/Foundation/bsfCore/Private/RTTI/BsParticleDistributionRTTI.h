@@ -25,10 +25,10 @@ namespace bs
 			return rtti_write_with_size_header(stream, [&data, &stream]()
 			{
 				uint32_t size = 0;
-				size += rttiWriteElem(VERSION, stream);
-				size += rttiWriteElem(data.mType, stream);
-				size += rttiWriteElem(data.mMinGradient, stream);
-				size += rttiWriteElem(data.mMaxGradient, stream);
+				size += rtti_write(VERSION, stream);
+				size += rtti_write(data.mType, stream);
+				size += rtti_write(data.mMinGradient, stream);
+				size += rtti_write(data.mMaxGradient, stream);
 
 				return size;
 			});
@@ -38,17 +38,17 @@ namespace bs
 		static uint32_t fromMemory(ColorDistribution& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t version;
-			rttiReadElem(version, stream);
+			rtti_read(version, stream);
 
 			switch(version)
 			{
 			case 0:
-				rttiReadElem(data.mType, stream);
-				rttiReadElem(data.mMinGradient, stream);
-				rttiReadElem(data.mMaxGradient, stream);
+				rtti_read(data.mType, stream);
+				rtti_read(data.mMinGradient, stream);
+				rtti_read(data.mMaxGradient, stream);
 				break;
 			default:
 				BS_LOG(Error, RTTI, "Unknown version of TDistribution<T> data. Unable to deserialize.");
@@ -62,9 +62,9 @@ namespace bs
 		static uint32_t getDynamicSize(const ColorDistribution& data)
 		{
 			uint64_t dataSize = sizeof(uint32_t) + sizeof(uint32_t);
-			dataSize += rttiGetElemSize(data.mType);
-			dataSize += rttiGetElemSize(data.mMinGradient);
-			dataSize += rttiGetElemSize(data.mMaxGradient);
+			dataSize += rtti_size(data.mType);
+			dataSize += rtti_size(data.mMinGradient);
+			dataSize += rtti_size(data.mMaxGradient);
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
 
@@ -84,10 +84,10 @@ namespace bs
 			return rtti_write_with_size_header(stream, [&data, &stream]()
 			{
 				uint32_t size = 0;
-				size += rttiWriteElem(VERSION, stream);
-				size += rttiWriteElem(data.mType, stream);
-				size += rttiWriteElem(data.mMinCurve, stream);
-				size += rttiWriteElem(data.mMaxCurve, stream);
+				size += rtti_write(VERSION, stream);
+				size += rtti_write(data.mType, stream);
+				size += rtti_write(data.mMinCurve, stream);
+				size += rtti_write(data.mMaxCurve, stream);
 
 				return size;
 			});
@@ -97,17 +97,17 @@ namespace bs
 		static uint32_t fromMemory(TDistribution<T>& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t version;
-			rttiReadElem(version, stream);
+			rtti_read(version, stream);
 
 			switch(version)
 			{
 			case 0:
-				rttiReadElem(data.mType, stream);
-				rttiReadElem(data.mMinCurve, stream);
-				rttiReadElem(data.mMaxCurve, stream);
+				rtti_read(data.mType, stream);
+				rtti_read(data.mMinCurve, stream);
+				rtti_read(data.mMaxCurve, stream);
 				break;
 			default:
 				BS_LOG(Error, RTTI, "Unknown version of TDistribution<T> data. Unable to deserialize.");
@@ -121,9 +121,9 @@ namespace bs
 		static uint32_t getDynamicSize(const TDistribution<T>& data)
 		{
 			uint64_t dataSize = sizeof(uint32_t) + sizeof(uint32_t);
-			dataSize += rttiGetElemSize(data.mType);
-			dataSize += rttiGetElemSize(data.mMinCurve);
-			dataSize += rttiGetElemSize(data.mMaxCurve);
+			dataSize += rtti_size(data.mType);
+			dataSize += rtti_size(data.mMinCurve);
+			dataSize += rtti_size(data.mMaxCurve);
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
 

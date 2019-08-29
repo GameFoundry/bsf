@@ -443,19 +443,19 @@ namespace bs
 
 	CoreSyncData ParticleSystem::syncToCore(FrameAlloc* allocator)
 	{
-		UINT32 size = rttiGetElemSize(getCoreDirtyFlags());
+		UINT32 size = rtti_size(getCoreDirtyFlags());
 		size += coreSyncGetElemSize((SceneActor&)*this);
 		size += coreSyncGetElemSize(mSettings);
 		size += coreSyncGetElemSize(mGpuSimulationSettings);
-		size += rttiGetElemSize(mLayer);
+		size += rtti_size(mLayer);
 
 		UINT8* data = allocator->alloc(size);
 		Bitstream stream(data, size);
-		rttiWriteElem(getCoreDirtyFlags(), stream);
+		rtti_write(getCoreDirtyFlags(), stream);
 		coreSyncWriteElem((SceneActor&)*this, stream);
 		coreSyncWriteElem(mSettings, stream);
 		coreSyncWriteElem(mGpuSimulationSettings, stream);
-		rttiWriteElem(mLayer, stream);
+		rtti_write(mLayer, stream);
 
 		return CoreSyncData(data, size);
 	}
@@ -530,11 +530,11 @@ namespace bs
 			UINT32 dirtyFlags = 0;
 			const bool oldIsActive = mActive;
 
-			rttiReadElem(dirtyFlags, stream);
+			rtti_read(dirtyFlags, stream);
 			coreSyncReadElem((SceneActor&)*this, stream);
 			coreSyncReadElem(mSettings, stream);
 			coreSyncReadElem(mGpuSimulationSettings, stream);
-			rttiReadElem(mLayer, stream);
+			rtti_read(mLayer, stream);
 			
 			constexpr UINT32 updateEverythingFlag = (UINT32)ActorDirtyFlag::Everything
 				| (UINT32)ActorDirtyFlag::Active

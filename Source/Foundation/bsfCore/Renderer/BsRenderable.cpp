@@ -309,7 +309,7 @@ namespace bs
 	CoreSyncData Renderable::syncToCore(FrameAlloc* allocator)
 	{
 		const UINT32 dirtyFlags = getCoreDirtyFlags();
-		UINT32 size = rttiGetElemSize(dirtyFlags);
+		UINT32 size = rtti_size(dirtyFlags);
 		SceneActor::rttiEnumFields(RttiCoreSyncSize(size), (ActorDirtyFlags)dirtyFlags);
 
 		// The most common case if only the transform changed, so we sync only transform related options
@@ -325,13 +325,13 @@ namespace bs
 				animationId = (UINT64)-1;
 
 			size +=
-				rttiGetElemSize(mLayer) +
-				rttiGetElemSize(mOverrideBounds) +
-				rttiGetElemSize(mUseOverrideBounds) +
-				rttiGetElemSize(numMaterials) +
-				rttiGetElemSize(animationId) +
-				rttiGetElemSize(mAnimType) +
-				rttiGetElemSize(mCullDistanceFactor) +
+				rtti_size(mLayer) +
+				rtti_size(mOverrideBounds) +
+				rtti_size(mUseOverrideBounds) +
+				rtti_size(numMaterials) +
+				rtti_size(animationId) +
+				rtti_size(mAnimType) +
+				rtti_size(mCullDistanceFactor) +
 				sizeof(SPtr<ct::Mesh>) +
 				numMaterials * sizeof(SPtr<ct::Material>);
 		}
@@ -340,18 +340,18 @@ namespace bs
 		UINT8* data = allocator->alloc(size);
 		Bitstream stream(data, size);
 
-		rttiWriteElem(dirtyFlags, stream);
+		rtti_write(dirtyFlags, stream);
 		SceneActor::rttiEnumFields(RttiCoreSyncWriter(stream), (ActorDirtyFlags)dirtyFlags);
 
 		if(dirtyFlags != (UINT32)ActorDirtyFlag::Transform)
 		{
-			rttiWriteElem(mLayer, stream);
-			rttiWriteElem(mOverrideBounds, stream);
-			rttiWriteElem(mUseOverrideBounds, stream);
-			rttiWriteElem(numMaterials, stream);
-			rttiWriteElem(animationId, stream);
-			rttiWriteElem(mAnimType, stream);
-			rttiWriteElem(mCullDistanceFactor, stream);
+			rtti_write(mLayer, stream);
+			rtti_write(mOverrideBounds, stream);
+			rtti_write(mUseOverrideBounds, stream);
+			rtti_write(numMaterials, stream);
+			rtti_write(animationId, stream);
+			rtti_write(mAnimType, stream);
+			rtti_write(mCullDistanceFactor, stream);
 
 			SPtr<ct::Mesh>* mesh = new (stream.cursor()) SPtr<ct::Mesh>();
 			if (mMesh.isLoaded())
@@ -626,7 +626,7 @@ namespace bs
 		UINT32 dirtyFlags = 0;
 		bool oldIsActive = mActive;
 
-		rttiReadElem(dirtyFlags, stream);
+		rtti_read(dirtyFlags, stream);
 		SceneActor::rttiEnumFields(RttiCoreSyncReader(stream), (ActorDirtyFlags)dirtyFlags);
 
 		mTfrmMatrix = mTransform.getMatrix();
@@ -634,13 +634,13 @@ namespace bs
 
 		if(dirtyFlags != (UINT32)ActorDirtyFlag::Transform)
 		{
-			rttiReadElem(mLayer, stream);
-			rttiReadElem(mOverrideBounds, stream);
-			rttiReadElem(mUseOverrideBounds, stream);
-			rttiReadElem(numMaterials, stream);
-			rttiReadElem(mAnimationId, stream);
-			rttiReadElem(mAnimType, stream);
-			rttiReadElem(mCullDistanceFactor, stream);
+			rtti_read(mLayer, stream);
+			rtti_read(mOverrideBounds, stream);
+			rtti_read(mUseOverrideBounds, stream);
+			rtti_read(numMaterials, stream);
+			rtti_read(mAnimationId, stream);
+			rtti_read(mAnimType, stream);
+			rtti_read(mCullDistanceFactor, stream);
 
 			SPtr<Mesh>* mesh = (SPtr<Mesh>*)stream.cursor();
 			mMesh = *mesh;

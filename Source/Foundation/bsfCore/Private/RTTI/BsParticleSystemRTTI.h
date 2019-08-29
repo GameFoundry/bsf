@@ -285,11 +285,11 @@ namespace bs
 			return rtti_write_with_size_header(stream, [&data, &stream]()
 			{
 				uint32_t size = 0;
-				size += rttiWriteElem(VERSION, stream);
-				size += rttiWriteElem(data.time, stream);
-				size += rttiWriteElem(data.cycles, stream);
-				size += rttiWriteElem(data.count, stream);
-				size += rttiWriteElem(data.interval, stream);
+				size += rtti_write(VERSION, stream);
+				size += rtti_write(data.time, stream);
+				size += rtti_write(data.cycles, stream);
+				size += rtti_write(data.count, stream);
+				size += rtti_write(data.interval, stream);
 
 				return size;
 			});
@@ -299,18 +299,18 @@ namespace bs
 		static uint32_t fromMemory(ParticleBurst& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t version;
-			rttiReadElem(version, stream);
+			rtti_read(version, stream);
 
 			switch(version)
 			{
 			case 0:
-				rttiReadElem(data.time, stream);
-				rttiReadElem(data.cycles, stream);
-				rttiReadElem(data.count, stream);
-				rttiReadElem(data.interval, stream);
+				rtti_read(data.time, stream);
+				rtti_read(data.cycles, stream);
+				rtti_read(data.count, stream);
+				rtti_read(data.interval, stream);
 				break;
 			default:
 				BS_LOG(Error, RTTI, "Unknown version of ParticleBurst data. Unable to deserialize.");
@@ -324,10 +324,10 @@ namespace bs
 		static uint32_t getDynamicSize(const ParticleBurst& data)
 		{
 			uint64_t dataSize = sizeof(uint32_t) + sizeof(uint32_t);
-			dataSize += rttiGetElemSize(data.time);
-			dataSize += rttiGetElemSize(data.cycles);
-			dataSize += rttiGetElemSize(data.count);
-			dataSize += rttiGetElemSize(data.interval);
+			dataSize += rtti_size(data.time);
+			dataSize += rtti_size(data.cycles);
+			dataSize += rtti_size(data.count);
+			dataSize += rtti_size(data.interval);
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
 

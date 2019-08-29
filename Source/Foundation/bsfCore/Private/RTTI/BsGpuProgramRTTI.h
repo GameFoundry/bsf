@@ -130,18 +130,18 @@ namespace bs
 			return rtti_write_with_size_header(stream, [&data, &stream]()
 			{
 				uint32_t size = 0;
-				size += rttiWriteElem(VERSION, stream);
+				size += rtti_write(VERSION, stream);
 
-				size += rttiWriteElem(data.name, stream);
-				size += rttiWriteElem(data.elementSize, stream);
-				size += rttiWriteElem(data.arraySize, stream);
-				size += rttiWriteElem(data.arrayElementStride, stream);
-				size += rttiWriteElem(data.type, stream);
+				size += rtti_write(data.name, stream);
+				size += rtti_write(data.elementSize, stream);
+				size += rtti_write(data.arraySize, stream);
+				size += rtti_write(data.arrayElementStride, stream);
+				size += rtti_write(data.type, stream);
 
-				size += rttiWriteElem(data.paramBlockSlot, stream);
-				size += rttiWriteElem(data.paramBlockSet, stream);
-				size += rttiWriteElem(data.gpuMemOffset, stream);
-				size += rttiWriteElem(data.cpuMemOffset, stream);
+				size += rtti_write(data.paramBlockSlot, stream);
+				size += rtti_write(data.paramBlockSet, stream);
+				size += rtti_write(data.gpuMemOffset, stream);
+				size += rtti_write(data.cpuMemOffset, stream);
 
 				return size;
 			});
@@ -150,32 +150,32 @@ namespace bs
 		static uint32_t fromMemory(GpuParamDataDesc& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t version = 0;
-			rttiReadElem(version, stream);
+			rtti_read(version, stream);
 			assert(version == VERSION);
 
-			rttiReadElem(data.name, stream);
-			rttiReadElem(data.elementSize, stream);
-			rttiReadElem(data.arraySize, stream);
-			rttiReadElem(data.arrayElementStride, stream);
-			rttiReadElem(data.type, stream);
+			rtti_read(data.name, stream);
+			rtti_read(data.elementSize, stream);
+			rtti_read(data.arraySize, stream);
+			rtti_read(data.arrayElementStride, stream);
+			rtti_read(data.type, stream);
 
-			rttiReadElem(data.paramBlockSlot, stream);
-			rttiReadElem(data.paramBlockSet, stream);
-			rttiReadElem(data.gpuMemOffset, stream);
-			rttiReadElem(data.cpuMemOffset, stream);
+			rtti_read(data.paramBlockSlot, stream);
+			rtti_read(data.paramBlockSet, stream);
+			rtti_read(data.gpuMemOffset, stream);
+			rtti_read(data.cpuMemOffset, stream);
 
 			return size;
 		}
 
 		static uint32_t getDynamicSize(const GpuParamDataDesc& data)
 		{
-			uint32_t dataSize = rttiGetElemSize(VERSION) + rttiGetElemSize(data.name) + rttiGetElemSize(data.elementSize) +
-				rttiGetElemSize(data.arraySize) + rttiGetElemSize(data.arrayElementStride) + rttiGetElemSize(data.type) +
-				rttiGetElemSize(data.paramBlockSlot) + rttiGetElemSize(data.paramBlockSet) +
-				rttiGetElemSize(data.gpuMemOffset) + rttiGetElemSize(data.cpuMemOffset) + sizeof(uint32_t);
+			uint32_t dataSize = rtti_size(VERSION) + rtti_size(data.name) + rtti_size(data.elementSize) +
+				rtti_size(data.arraySize) + rtti_size(data.arrayElementStride) + rtti_size(data.type) +
+				rtti_size(data.paramBlockSlot) + rtti_size(data.paramBlockSet) +
+				rtti_size(data.gpuMemOffset) + rtti_size(data.cpuMemOffset) + sizeof(uint32_t);
 
 			return dataSize;
 		}
@@ -191,12 +191,12 @@ namespace bs
 			return rtti_write_with_size_header(stream, [&data, &stream]
 			{
 				uint32_t size = 0;
-				size += rttiWriteElem(VERSION, stream);
-				size += rttiWriteElem(data.name, stream);
-				size += rttiWriteElem(data.type, stream);
-				size += rttiWriteElem(data.slot, stream);
-				size += rttiWriteElem(data.set, stream);
-				size += rttiWriteElem(data.elementType, stream);
+				size += rtti_write(VERSION, stream);
+				size += rtti_write(data.name, stream);
+				size += rtti_write(data.type, stream);
+				size += rtti_write(data.slot, stream);
+				size += rtti_write(data.set, stream);
+				size += rtti_write(data.elementType, stream);
 
 				return size;
 			});
@@ -205,26 +205,26 @@ namespace bs
 		static uint32_t fromMemory(GpuParamObjectDesc& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t version = 0;
-			rttiReadElem(version, stream);
+			rtti_read(version, stream);
 
-			rttiReadElem(data.name, stream);
-			rttiReadElem(data.type, stream);
-			rttiReadElem(data.slot, stream);
-			rttiReadElem(data.set, stream);
+			rtti_read(data.name, stream);
+			rtti_read(data.type, stream);
+			rtti_read(data.slot, stream);
+			rtti_read(data.set, stream);
 
 			if (version > 1)
-				rttiReadElem(data.elementType, stream);
+				rtti_read(data.elementType, stream);
 
 			return size;
 		}
 
 		static uint32_t getDynamicSize(const GpuParamObjectDesc& data)
 		{
-			uint32_t dataSize = rttiGetElemSize(VERSION) + rttiGetElemSize(data.name) + rttiGetElemSize(data.type) +
-				rttiGetElemSize(data.slot) + rttiGetElemSize(data.set) + rttiGetElemSize(data.elementType) + sizeof(uint32_t);
+			uint32_t dataSize = rtti_size(VERSION) + rtti_size(data.name) + rtti_size(data.type) +
+				rtti_size(data.slot) + rtti_size(data.set) + rtti_size(data.elementType) + sizeof(uint32_t);
 
 			return dataSize;
 		}
@@ -240,12 +240,12 @@ namespace bs
 			return rtti_write_with_size_header(stream, [&data, &stream]
 			{
 				uint32_t size = 0;
-				size += rttiWriteElem(VERSION, stream);
-				size += rttiWriteElem(data.name, stream);
-				size += rttiWriteElem(data.set, stream);
-				size += rttiWriteElem(data.slot, stream);
-				size += rttiWriteElem(data.blockSize, stream);
-				size += rttiWriteElem(data.isShareable, stream);
+				size += rtti_write(VERSION, stream);
+				size += rtti_write(data.name, stream);
+				size += rtti_write(data.set, stream);
+				size += rtti_write(data.slot, stream);
+				size += rtti_write(data.blockSize, stream);
+				size += rtti_write(data.isShareable, stream);
 
 				return size;
 			});
@@ -254,25 +254,25 @@ namespace bs
 		static uint32_t fromMemory(GpuParamBlockDesc& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t version = 0;
-			rttiReadElem(version, stream);
+			rtti_read(version, stream);
 			assert(version == VERSION);
 
-			rttiReadElem(data.name, stream);
-			rttiReadElem(data.set, stream);
-			rttiReadElem(data.slot, stream);
-			rttiReadElem(data.blockSize, stream);
-			rttiReadElem(data.isShareable, stream);
+			rtti_read(data.name, stream);
+			rtti_read(data.set, stream);
+			rtti_read(data.slot, stream);
+			rtti_read(data.blockSize, stream);
+			rtti_read(data.isShareable, stream);
 
 			return size;
 		}
 
 		static uint32_t getDynamicSize(const GpuParamBlockDesc& data)
 		{
-			uint32_t dataSize = rttiGetElemSize(VERSION) + rttiGetElemSize(data.name) + rttiGetElemSize(data.set) +
-				rttiGetElemSize(data.slot) + rttiGetElemSize(data.blockSize) + rttiGetElemSize(data.isShareable) +
+			uint32_t dataSize = rtti_size(VERSION) + rtti_size(data.name) + rtti_size(data.set) +
+				rtti_size(data.slot) + rtti_size(data.blockSize) + rtti_size(data.isShareable) +
 				sizeof(uint32_t);
 
 			return dataSize;

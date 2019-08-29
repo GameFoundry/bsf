@@ -61,11 +61,11 @@ namespace bs
 			return rtti_write_with_size_header(stream, [&data, &stream]()
 			{
 				uint32_t size = 0;
-				size += rttiWriteElem(VERSION, stream);
-				size += rttiWriteElem(data.numRows, stream);
-				size += rttiWriteElem(data.numColumns, stream);
-				size += rttiWriteElem(data.count, stream);
-				size += rttiWriteElem(data.fps, stream);
+				size += rtti_write(VERSION, stream);
+				size += rtti_write(data.numRows, stream);
+				size += rtti_write(data.numColumns, stream);
+				size += rtti_write(data.count, stream);
+				size += rtti_write(data.fps, stream);
 
 				return size;
 			});
@@ -74,19 +74,19 @@ namespace bs
 		static uint32_t fromMemory(SpriteSheetGridAnimation& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t version = 0;
-			rttiReadElem(version, stream);
+			rtti_read(version, stream);
 
 			switch(version)
 			{
 			case 0:
 			{
-				rttiReadElem(data.numRows, stream);
-				rttiReadElem(data.numColumns, stream);
-				rttiReadElem(data.count, stream);
-				rttiReadElem(data.fps, stream);
+				rtti_read(data.numRows, stream);
+				rtti_read(data.numColumns, stream);
+				rtti_read(data.count, stream);
+				rtti_read(data.fps, stream);
 			}
 				break;
 			default:
@@ -99,8 +99,8 @@ namespace bs
 
 		static uint32_t getDynamicSize(const SpriteSheetGridAnimation& data)
 		{
-			uint32_t size = sizeof(uint32_t) * 2 + rttiGetElemSize(data.numRows) + rttiGetElemSize(data.numColumns) +
-				rttiGetElemSize(data.count) + rttiGetElemSize(data.fps);
+			uint32_t size = sizeof(uint32_t) * 2 + rtti_size(data.numRows) + rtti_size(data.numColumns) +
+				rtti_size(data.count) + rtti_size(data.fps);
 			return size;
 		}	
 	};

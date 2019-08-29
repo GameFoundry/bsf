@@ -79,12 +79,12 @@ namespace bs
 				uint32_t size = 0;
 
 				auto numElements = (uint32_t)data.strings.size();
-				size += rttiWriteElem(numElements, stream);
+				size += rtti_write(numElements, stream);
 
 				for (auto& entry : data.strings)
 				{
-					size += rttiWriteElem(entry.first, stream);
-					size += rttiWriteElem(*entry.second, stream);
+					size += rtti_write(entry.first, stream);
+					size += rtti_write(*entry.second, stream);
 				}
 
 				return size;
@@ -95,19 +95,19 @@ namespace bs
 		static uint32_t fromMemory(LanguageData& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t numElements = 0;
-			rttiReadElem(numElements, stream);
+			rtti_read(numElements, stream);
 
 			data.strings.clear();
 			for (uint32_t i = 0; i < numElements; i++)
 			{
 				String identifier;
-				rttiReadElem(identifier, stream);
+				rtti_read(identifier, stream);
 
 				SPtr<LocalizedStringData> entryData = bs_shared_ptr_new<LocalizedStringData>();
-				rttiReadElem(*entryData, stream);
+				rtti_read(*entryData, stream);
 
 				data.strings[identifier] = entryData;
 			}
@@ -122,8 +122,8 @@ namespace bs
 
 			for (auto& entry : data.strings)
 			{
-				dataSize += rttiGetElemSize(entry.first);
-				dataSize += rttiGetElemSize(*entry.second);
+				dataSize += rtti_size(entry.first);
+				dataSize += rtti_size(*entry.second);
 			}
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
@@ -149,11 +149,11 @@ namespace bs
 			{
 				uint32_t size = 0;
 
-				size += rttiWriteElem(data.string, stream);
-				size += rttiWriteElem(data.numParameters, stream);
+				size += rtti_write(data.string, stream);
+				size += rtti_write(data.numParameters, stream);
 
 				for (uint32_t i = 0; i < data.numParameters; i++)
-					size += rttiWriteElem(data.parameterOffsets[i], stream);
+					size += rtti_write(data.parameterOffsets[i], stream);
 
 				return size;
 			});
@@ -166,14 +166,14 @@ namespace bs
 				bs_deleteN(data.parameterOffsets, data.numParameters);
 
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
-			rttiReadElem(data.string, stream);
-			rttiReadElem(data.numParameters, stream);
+			rtti_read(data.string, stream);
+			rtti_read(data.numParameters, stream);
 
 			data.parameterOffsets = bs_newN<LocalizedStringData::ParamOffset>(data.numParameters);
 			for (uint32_t i = 0; i < data.numParameters; i++)
-				rttiReadElem(data.parameterOffsets[i], stream);
+				rtti_read(data.parameterOffsets[i], stream);
 
 			return size;
 		}
@@ -183,11 +183,11 @@ namespace bs
 		{
 			uint64_t dataSize = sizeof(uint32_t);
 
-			dataSize += rttiGetElemSize(data.string);
-			dataSize += rttiGetElemSize(data.numParameters);
+			dataSize += rtti_size(data.string);
+			dataSize += rtti_size(data.numParameters);
 
 			for (uint32_t i = 0; i < data.numParameters; i++)
-				dataSize = rttiGetElemSize(data.parameterOffsets[i]);
+				dataSize = rtti_size(data.parameterOffsets[i]);
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
 

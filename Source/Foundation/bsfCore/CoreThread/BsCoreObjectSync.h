@@ -152,7 +152,7 @@ namespace bs
 		void writeInternal(T&& value, std::enable_if_t<
 			!detail::is_shared_ptr<std::decay_t<T>>::value>* = 0)
 		{
-			rttiWriteElem(value, mStream);
+			rtti_write(value, mStream);
 		}
 
 		template<class T>
@@ -204,7 +204,7 @@ namespace bs
 		void readInternal(T&& value, std::enable_if_t<
 			!detail::is_shared_ptr<std::decay_t<T>>::value>* = 0)
 		{
-			rttiReadElem(value, mStream);
+			rtti_read(value, mStream);
 		}
 
 		template<class T>
@@ -259,7 +259,7 @@ namespace bs
 		void getSizeInternal(T&& value, std::enable_if_t<
 			!detail::is_shared_ptr<std::decay_t<T>>::value>* = 0)
 		{
-			mSize += rttiGetElemSize(value);
+			mSize += rtti_size(value);
 		}
 
 		template<class T>

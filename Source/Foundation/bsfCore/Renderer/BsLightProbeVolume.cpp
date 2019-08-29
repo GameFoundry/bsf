@@ -325,8 +325,8 @@ namespace bs
 			UINT32 numRemovedProbes = (UINT32)removedProbes.size();
 
 			size += coreSyncGetElemSize((SceneActor&)*this);
-			size += rttiGetElemSize(numDirtyProbes);
-			size += rttiGetElemSize(numRemovedProbes);
+			size += rtti_size(numDirtyProbes);
+			size += rtti_size(numRemovedProbes);
 			size += (sizeof(UINT32) + sizeof(Vector3) + sizeof(LightProbeFlags)) * numDirtyProbes;
 			size += sizeof(UINT32) * numRemovedProbes;
 
@@ -334,18 +334,18 @@ namespace bs
 			Bitstream stream(buffer, size);
 
 			coreSyncWriteElem((SceneActor&)*this, stream);
-			rttiWriteElem(numDirtyProbes, stream);
-			rttiWriteElem(numRemovedProbes, stream);
+			rtti_write(numDirtyProbes, stream);
+			rtti_write(numRemovedProbes, stream);
 
 			for (auto& entry : dirtyProbes)
 			{
-				rttiWriteElem(entry.first, stream);
-				rttiWriteElem(entry.second.position, stream);
-				rttiWriteElem(entry.second.flags, stream);
+				rtti_write(entry.first, stream);
+				rtti_write(entry.second.position, stream);
+				rtti_write(entry.second.flags, stream);
 			}
 
 			for(auto& entry : removedProbes)
-				rttiWriteElem(entry, stream);
+				rtti_write(entry, stream);
 		}
 		bs_frame_clear();
 
@@ -494,19 +494,19 @@ namespace bs
 		coreSyncReadElem((SceneActor&)*this, stream);
 
 		UINT32 numDirtyProbes, numRemovedProbes;
-		rttiReadElem(numDirtyProbes, stream);
-		rttiReadElem(numRemovedProbes, stream);
+		rtti_read(numDirtyProbes, stream);
+		rtti_read(numRemovedProbes, stream);
 
 		for (UINT32 i = 0; i < numDirtyProbes; ++i)
 		{
 			UINT32 handle;
-			rttiReadElem(handle, stream);
+			rtti_read(handle, stream);
 
 			Vector3 position;
-			rttiReadElem(position, stream);
+			rtti_read(position, stream);
 
 			LightProbeFlags flags;
-			rttiReadElem(flags, stream);
+			rtti_read(flags, stream);
 
 			auto iterFind = mProbeMap.find(handle);
 			if(iterFind != mProbeMap.end())
@@ -567,7 +567,7 @@ namespace bs
 		for (UINT32 i = 0; i < numRemovedProbes; ++i)
 		{
 			UINT32 idx;
-			rttiReadElem(idx, stream);
+			rtti_read(idx, stream);
 
 			auto iterFind = mProbeMap.find(idx);
 			if(iterFind != mProbeMap.end())

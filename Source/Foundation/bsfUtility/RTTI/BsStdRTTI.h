@@ -31,10 +31,10 @@ namespace bs
 				uint32_t size = 0;
 
 				auto numElements = (uint32_t)data.size();
-				size += rttiWriteElem(numElements, stream);
+				size += rtti_write(numElements, stream);
 
 				for (const auto& item : data)
-					size += rttiWriteElem(item, stream);
+					size += rtti_write(item, stream);
 
 				return size;
 			});
@@ -44,16 +44,16 @@ namespace bs
 		static uint32_t fromMemory(std::vector<T, StdAlloc<T>>& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t numElements;
-			rttiReadElem(numElements, stream);
+			rtti_read(numElements, stream);
 
 			data.clear();
 			for (uint32_t i = 0; i < numElements; i++)
 			{
 				T element;
-				rttiReadElem(element, stream);
+				rtti_read(element, stream);
 
 				data.push_back(element);
 			}
@@ -67,7 +67,7 @@ namespace bs
 			uint64_t dataSize = sizeof(uint32_t) * 2;
 
 			for (const auto& item : data)
-				dataSize += rttiGetElemSize(item);
+				dataSize += rtti_size(item);
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
 
@@ -92,10 +92,10 @@ namespace bs
 				uint32_t size = 0;
 
 				auto numElements = (uint32_t)data.size();
-				size += rttiWriteElem(numElements, stream);
+				size += rtti_write(numElements, stream);
 
 				for (const auto& item : data)
-					size += rttiWriteElem(item, stream);
+					size += rtti_write(item, stream);
 
 				return size;
 			});
@@ -105,15 +105,15 @@ namespace bs
 		static uint32_t fromMemory(std::list<T, StdAlloc<T>>& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t numElements;
-			rttiReadElem(numElements, stream);
+			rtti_read(numElements, stream);
 
 			for (uint32_t i = 0; i < numElements; i++)
 			{
 				T element;
-				rttiReadElem(element, stream);
+				rtti_read(element, stream);
 
 				data.push_back(element);
 			}
@@ -127,7 +127,7 @@ namespace bs
 			uint64_t dataSize = sizeof(uint32_t) * 2;
 
 			for (const auto& item : data)
-				dataSize += rttiGetElemSize(item);
+				dataSize += rtti_size(item);
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
 
@@ -152,10 +152,10 @@ namespace bs
 				uint32_t size = 0;
 
 				auto numElements = (uint32_t)data.size();
-				size += rttiWriteElem(numElements, stream);
+				size += rtti_write(numElements, stream);
 
 				for (const auto& item : data)
-					size += rttiWriteElem(item, stream);
+					size += rtti_write(item, stream);
 
 				return size;
 			});
@@ -165,15 +165,15 @@ namespace bs
 		static uint32_t fromMemory(std::set<T, std::less<T>, StdAlloc<T>>& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t numElements;
-			rttiReadElem(numElements, stream);
+			rtti_read(numElements, stream);
 
 			for (uint32_t i = 0; i < numElements; i++)
 			{
 				T element;
-				rttiReadElem(element, stream);
+				rtti_read(element, stream);
 				data.insert(element);
 			}
 
@@ -186,7 +186,7 @@ namespace bs
 			uint64_t dataSize = sizeof(uint32_t) * 2;
 
 			for (const auto& item : data)
-				dataSize += rttiGetElemSize(item);
+				dataSize += rtti_size(item);
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
 
@@ -211,12 +211,12 @@ namespace bs
 				uint32_t size = 0;
 
 				auto numElements = (uint32_t)data.size();
-				size += rttiWriteElem(numElements, stream);
+				size += rtti_write(numElements, stream);
 
 				for (const auto& item : data)
 				{
-					size += rttiWriteElem(item.first, stream);
-					size += rttiWriteElem(item.second, stream);
+					size += rtti_write(item.first, stream);
+					size += rtti_write(item.second, stream);
 				}
 
 				return size;
@@ -227,18 +227,18 @@ namespace bs
 		static uint32_t fromMemory(std::map<Key, Value, std::less<Key>, StdAlloc<std::pair<const Key, Value>>>& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t numElements;
-			rttiReadElem(numElements, stream);
+			rtti_read(numElements, stream);
 
 			for (uint32_t i = 0; i < numElements; i++)
 			{
 				Key key;
-				rttiReadElem(key, stream);
+				rtti_read(key, stream);
 
 				Value value;
-				rttiReadElem(value, stream);
+				rtti_read(value, stream);
 
 				data[key] = value;
 			}
@@ -253,8 +253,8 @@ namespace bs
 
 			for (const auto& item : data)
 			{
-				dataSize += rttiGetElemSize(item.first);
-				dataSize += rttiGetElemSize(item.second);
+				dataSize += rtti_size(item.first);
+				dataSize += rtti_size(item.second);
 			}
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
@@ -283,12 +283,12 @@ namespace bs
 				uint32_t size = 0;
 
 				auto numElements = (uint32_t)data.size();
-				size += rttiWriteElem(numElements, stream);
+				size += rtti_write(numElements, stream);
 
 				for (const auto& item : data)
 				{
-					size += rttiWriteElem(item.first, stream);
-					size += rttiWriteElem(item.second, stream);
+					size += rtti_write(item.first, stream);
+					size += rtti_write(item.second, stream);
 				}
 
 				return size;
@@ -299,18 +299,18 @@ namespace bs
 		static uint32_t fromMemory(MapType& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t numElements;
-			rttiReadElem(numElements, stream);
+			rtti_read(numElements, stream);
 
 			for (uint32_t i = 0; i < numElements; i++)
 			{
 				Key key;
-				rttiReadElem(key, stream);
+				rtti_read(key, stream);
 
 				Value value;
-				rttiReadElem(value, stream);
+				rtti_read(value, stream);
 
 				data[key] = value;
 			}
@@ -355,10 +355,10 @@ namespace bs
 				uint32_t size = 0;
 
 				auto numElements = (uint32_t)data.size();
-				size += rttiWriteElem(numElements, stream);
+				size += rtti_write(numElements, stream);
 
 				for (const auto& item : data)
-					size += rttiWriteElem(item, stream);
+					size += rtti_write(item, stream);
 
 				return size;
 			});
@@ -368,15 +368,15 @@ namespace bs
 		static uint32_t fromMemory(MapType& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
+			rtti_read(size, stream);
 
 			uint32_t numElements;
-			rttiReadElem(numElements, stream);
+			rtti_read(numElements, stream);
 
 			for (uint32_t i = 0; i < numElements; i++)
 			{
 				Key key;
-				rttiReadElem(key, stream);
+				rtti_read(key, stream);
 
 				data.insert(key);
 			}
@@ -391,7 +391,7 @@ namespace bs
 
 			for (const auto& item : data)
 			{
-				dataSize += rttiGetElemSize(item);
+				dataSize += rtti_size(item);
 			}
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
@@ -415,8 +415,8 @@ namespace bs
 			return rtti_write_with_size_header(stream, [&data, &stream]()
 			{
 				uint32_t size = 0;
-				size += rttiWriteElem(data.first, stream);
-				size += rttiWriteElem(data.second, stream);
+				size += rtti_write(data.first, stream);
+				size += rtti_write(data.second, stream);
 
 				return size;
 			});
@@ -426,9 +426,9 @@ namespace bs
 		static uint32_t fromMemory(std::pair<A, B>& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
 		{
 			uint32_t size = 0;
-			rttiReadElem(size, stream);
-			rttiReadElem(data.first, stream);
-			rttiReadElem(data.second, stream);
+			rtti_read(size, stream);
+			rtti_read(data.first, stream);
+			rtti_read(data.second, stream);
 
 			return size;
 		}
@@ -437,8 +437,8 @@ namespace bs
 		static uint32_t getDynamicSize(const std::pair<A, B>& data)
 		{
 			uint64_t dataSize = sizeof(uint32_t);
-			dataSize += rttiGetElemSize(data.first);
-			dataSize += rttiGetElemSize(data.second);
+			dataSize += rtti_size(data.first);
+			dataSize += rtti_size(data.second);
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());
 
