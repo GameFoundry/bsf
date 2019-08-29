@@ -47,6 +47,13 @@ namespace bs
 
 	void Debug::log(const String& message, LogVerbosity verbosity, UINT32 category)
 	{
+		if(mCustomLogCallback)
+		{
+			// Run the custom callback and if it returns true skip the default action
+			if(mCustomLogCallback(message, verbosity, category))
+				return;
+		}
+
 		mLog.logMsg(message, verbosity, category);
 
 		if(verbosity != LogVerbosity::Log)

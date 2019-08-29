@@ -117,11 +117,6 @@ namespace bs
 		 * checking for changes by external systems.
 		 */
 		UINT64 getHash() const { return mHash; }
-
-		void setLogCallback(std::function<bool(const String& message, LogVerbosity verbosity, UINT32 category)> callback)
-		{
-			customLogCallback = callback;
-		}
 		
 		/**
 		 * Checks if the category with the specified ID exists.
@@ -171,9 +166,6 @@ namespace bs
 		UINT64 mHash = 0;
 		
 		mutable RecursiveMutex mMutex;
-
-	   /** @copydoc START_UP_DESC::logCallback */
-	   std::function<bool(const String& message, LogVerbosity verbosity, UINT32 category)> customLogCallback;
 
 		static UnorderedMap<UINT32, String> sCategories;
 	};

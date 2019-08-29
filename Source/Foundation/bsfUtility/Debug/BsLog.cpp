@@ -16,13 +16,6 @@ namespace bs
 	{
 		RecursiveLock lock(mMutex);
 
-		if(customLogCallback)
-		{
-			// Run the custom callback and if it returns true skip the default action
-			if(customLogCallback(message, verbosity, category))
-				return;
-		}
-
 		mUnreadEntries.push(LogEntry(message, verbosity, category));
 	}
 
