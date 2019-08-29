@@ -75,7 +75,7 @@ namespace bs
 		// Ensure all errors are reported properly
 		CrashHandler::startUp(desc.crashHandling);
 		if(desc.logCallback)
-			gDebug().getLog().setLogCallback(desc.logCallback);
+			gDebug().setLogCallback(desc.logCallback);
 	}
 
 	CoreApplication::~CoreApplication()

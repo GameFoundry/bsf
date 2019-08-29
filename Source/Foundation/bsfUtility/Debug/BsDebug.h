@@ -82,6 +82,13 @@ namespace bs
 		 */
 		Event<void()> onLogModified;
 
+		/** This allows setting a log callback that can override the default action in log */
+		void setLogCallback(
+			std::function<bool(const String& message, LogVerbosity verbosity, UINT32 category)> callback)
+		{
+			mCustomLogCallback = callback;
+		}
+
 	public: // ***** INTERNAL ******
 		/** @name Internal
 		 *  @{
@@ -98,6 +105,8 @@ namespace bs
 	private:
 		UINT64 mLogHash = 0;
 		Log mLog;
+		/** @copydoc START_UP_DESC::logCallback */
+		std::function<bool(const String& message, LogVerbosity verbosity, UINT32 category)> mCustomLogCallback;
 	};
 
 	/** A simpler way of accessing the Debug module. */
