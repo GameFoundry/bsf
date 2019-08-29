@@ -176,29 +176,59 @@ namespace bs
 		/**	Called when the parent window gained or lost focus. */
 		virtual void ownerWindowFocusChanged();
 	private:
+		struct GUIGroupElement
+		{
+			GUIGroupElement() = default;
+			GUIGroupElement(GUIElement* element, UINT32 renderElement)
+				:element(element), renderElement(renderElement)
+			{ }
+
+			GUIElement* element = nullptr;
+			UINT32 renderElement = 0;
+		};
+
+		/** Holds information about a set of GUI elements that can be drawn together. */
+		struct GUIDrawGroup
+		{
+			UINT32 id = 0;
+			UINT32 depthRange = 0;
+			UINT32 minDepth = 0;
+			Rect2I bounds;
+			Vector<GUIGroupElement> cachedElements;
+			Vector<GUIGroupElement> nonCachedElements;
+		};
+		
 		/**	Calculates widget bounds using the bounds of all child elements. */
 		void updateBounds() const;
 
 		/**	Updates the size of the primary GUI panel based on the viewport. */
 		void updateRootPanel();
 
+		/** Splits the provided draw group at the specified depth. Returns the second half of the group. */
+		GUIDrawGroup& splitDrawGroup(UINT32 groupIdx, UINT32 depth);
+
+		/** Fully rebuilds the bounds of the specified draw group. */
+		void updateDrawGroupBounds(GUIDrawGroup& group);
+
 		SPtr<Camera> mCamera;
 		Vector<GUIElement*> mElements;
-		GUIPanel* mPanel;
-		UINT8 mDepth;
-		bool mIsActive;
+		Vector<GUIDrawGroup> mDrawGroups;
+		GUIPanel* mPanel = nullptr;
+		UINT8 mDepth = 128;
+		bool mIsActive = true;
 		SPtr<GUINavGroup> mDefaultNavGroup;
 
-		Vector3 mPosition;
-		Quaternion mRotation;
-		Vector3 mScale;
-		Matrix4 mTransform;
+		Vector3 mPosition = BsZero;
+		Quaternion mRotation = BsIdentity;
+		Vector3 mScale = Vector3::ONE;
+		Matrix4 mTransform = BsIdentity;
 
 		Set<GUIElement*> mDirtyContents;
 		Set<GUIElement*> mDirtyContentsTemp;
 
-		mutable UINT64 mCachedRTId;
-		mutable bool mWidgetIsDirty;
+		mutable UINT64 mCachedRTId = 0;
+		mutable INT32 mNextDrawGroupId = 0;
+		mutable bool mWidgetIsDirty = false;
 		mutable Rect2I mBounds;
 
 		HGUISkin mSkin;

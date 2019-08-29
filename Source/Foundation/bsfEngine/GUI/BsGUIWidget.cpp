@@ -15,15 +15,13 @@
 namespace bs
 {
 	GUIWidget::GUIWidget(const SPtr<Camera>& camera)
-		: mCamera(camera), mPanel(nullptr), mDepth(128), mIsActive(true), mPosition(BsZero), mRotation(BsIdentity)
-		, mScale(Vector3::ONE), mTransform(BsIdentity), mCachedRTId(0), mWidgetIsDirty(false)
+		: mCamera(camera)
 	{
 		construct(camera);
 	}
 
 	GUIWidget::GUIWidget(const HCamera& camera)
-		: mCamera(camera->_getCamera()), mPanel(nullptr), mDepth(128), mIsActive(true), mPosition(BsZero)
-		, mRotation(BsIdentity), mScale(Vector3::ONE), mTransform(BsIdentity), mCachedRTId(0), mWidgetIsDirty(false)
+		: mCamera(camera->_getCamera())
 	{
 		construct(mCamera);
 	}
@@ -45,6 +43,13 @@ namespace bs
 		mPanel = GUIPanel::create();
 		mPanel->_changeParentWidget(this);
 		updateRootPanel();
+
+		GUIDrawGroup mainDrawGroup;
+		mainDrawGroup.minDepth = 0;
+		mainDrawGroup.depthRange = std::numeric_limits<UINT32>::max();
+		mainDrawGroup.id = mNextDrawGroupId++;
+		
+		mDrawGroups.push_back(mainDrawGroup);
 	}
 
 	GUIWidget::~GUIWidget()
@@ -260,6 +265,52 @@ namespace bs
 		bs_frame_clear();
 	}
 
+	GUIWidget::GUIDrawGroup& GUIWidget::splitDrawGroup(UINT32 groupIdx, UINT32 depth)
+	{
+		GUIDrawGroup& group = mDrawGroups[groupIdx];
+		assert(depth > group.minDepth);
+		
+		UINT32 maxDepth = group.minDepth + group.depthRange;
+		group.depthRange = depth - group.minDepth;
+
+		GUIDrawGroup newSplitGroup;
+		newSplitGroup.minDepth = depth;
+		newSplitGroup.depthRange = maxDepth - newSplitGroup.minDepth + 1;
+		newSplitGroup.id = mNextDrawGroupId++;
+
+		auto it = std::partition(group.cachedElements.begin(), group.cachedElements.end(),
+			[depth](const GUIGroupElement& x)
+		{
+				UINT32 elemDepth = x.element->_getRenderElementDepth(x.renderElement);
+				return elemDepth < depth;
+		});
+
+		std::move(it, group.cachedElements.end(), std::back_inserter(newSplitGroup.cachedElements));
+		group.cachedElements.erase(it, group.cachedElements.end());
+
+		for (auto& entry : newSplitGroup.cachedElements)
+			entry.element->_setDrawGroupId(newSplitGroup.id);
+
+		updateDrawGroupBounds(group);
+		updateDrawGroupBounds(newSplitGroup);
+
+		mDrawGroups.insert(mDrawGroups.begin() + groupIdx, std::move(newSplitGroup));
+		return mDrawGroups[groupIdx + 1];
+	}
+
+	void GUIWidget::updateDrawGroupBounds(GUIDrawGroup& group)
+	{
+		group.bounds = Rect2I();
+
+		for(auto& entry : group.cachedElements)
+		{
+			Rect2I tfrmedBounds = entry.element->_getClippedBounds();
+			tfrmedBounds.transform(getWorldTfrm());
+			
+			group.bounds.encapsulate(tfrmedBounds);
+		}
+	}
+
 	void GUIWidget::_registerElement(GUIElementBase* elem)
 	{
 		assert(elem != nullptr && !elem->_isDestroyed());
@@ -268,6 +319,55 @@ namespace bs
 		{
 			mElements.push_back(static_cast<GUIElement*>(elem));
 			mWidgetIsDirty = true;
+
+			// Find a draw group
+			auto guiElem = static_cast<GUIElement*>(elem);
+			UINT32 numRenderElems = guiElem->_getNumRenderElements();
+
+			for(UINT32 i = 0; i < numRenderElems; i++)
+			{
+				UINT32 elemDepth = guiElem->_getRenderElementDepth(i);
+
+				Rect2I tfrmedBounds = guiElem->_getClippedBounds();
+				tfrmedBounds.transform(getWorldTfrm());
+
+				SpriteMaterial* spriteMaterial = nullptr;
+				guiElem->_getMaterial(i, &spriteMaterial);
+				assert(spriteMaterial != nullptr);
+
+				// Groups are expected to be sorted by minDepth
+				for(UINT32 j = 0; j < (UINT32)mDrawGroups.size(); j++)
+				{
+					GUIDrawGroup& group = mDrawGroups[j];
+					if (elemDepth < group.minDepth)
+						continue;
+
+					if (spriteMaterial->allowBatching())
+					{
+						group.cachedElements.push_back(GUIGroupElement(guiElem, i));
+						group.bounds.encapsulate(tfrmedBounds);
+						guiElem->_setDrawGroupId(group.id);
+					}
+					else
+					{
+						bool needsSplit = elemDepth != group.minDepth;
+						if(needsSplit)
+						{
+							GUIDrawGroup& newGroup = splitDrawGroup(j, elemDepth);
+
+							newGroup.nonCachedElements.push_back(GUIGroupElement(guiElem, i));
+							guiElem->_setDrawGroupId(newGroup.id);
+						}
+						else
+						{
+							group.nonCachedElements.push_back(GUIGroupElement(guiElem, i));
+							guiElem->_setDrawGroupId(group.id);
+						}
+					}
+					
+					break;
+				}
+			}
 		}
 	}
 
@@ -284,7 +384,45 @@ namespace bs
 		}
 
 		if (elem->_getType() == GUIElementBase::Type::Element)
+		{
 			mDirtyContents.erase(static_cast<GUIElement*>(elem));
+
+			auto guiElem = static_cast<GUIElement*>(elem);
+			UINT32 drawGroupId = guiElem->_getDrawGroupId();
+			auto iterFind2 = std::find_if(mDrawGroups.begin(), mDrawGroups.end(),
+				[drawGroupId](const GUIDrawGroup& group) { return group.id == drawGroupId; });
+
+			assert(iterFind2 != mDrawGroups.end());
+			if(iterFind2 != mDrawGroups.end())
+			{
+				GUIDrawGroup& group = *iterFind2;
+
+				group.cachedElements.erase(std::remove_if(group.cachedElements.begin(), group.cachedElements.end(),
+					[guiElem](const GUIGroupElement& x) { return x.element == guiElem; }), group.cachedElements.end());
+				
+				group.nonCachedElements.erase(std::remove_if(group.nonCachedElements.begin(), group.nonCachedElements.end(),
+					[guiElem](const GUIGroupElement& x) { return x.element == guiElem; }), group.nonCachedElements.end());
+
+				// Attempt to merge with previous group
+				if(group.nonCachedElements.empty() && group.minDepth > 0)
+				{
+					assert(iterFind2 != mDrawGroups.begin());
+
+					auto prevGroupIter = iterFind2 - 1;
+					GUIDrawGroup& prevGroup = *prevGroupIter;
+
+					prevGroup.depthRange += group.depthRange;
+
+					for (auto& entry : group.cachedElements)
+						entry.element->_setDrawGroupId(prevGroup.id);
+					
+					std::move(group.cachedElements.begin(), group.cachedElements.end(), std::back_inserter(prevGroup.cachedElements));
+					updateDrawGroupBounds(prevGroup);
+
+					mDrawGroups.erase(iterFind2);
+				}
+			}
+		}
 	}
 
 	void GUIWidget::_markMeshDirty(GUIElementBase* elem)
