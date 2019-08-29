@@ -50,6 +50,7 @@ set(BS_UTILITY_SRC_UTILITY
 	"bsfUtility/Utility/BsTriangulation.cpp"
 	"bsfUtility/Utility/BsUUID.cpp"
 	"bsfUtility/Utility/BsLookupTable.cpp"
+	"bsfUtility/Utility/BsBitstream.cpp"
 )
 
 set(BS_UTILITY_INC_DEBUG
