@@ -8,11 +8,89 @@
 #include "Math/BsQuaternion.h"
 #include "Math/BsMatrix4.h"
 #include "Utility/BsEvent.h"
+#include "2D/BsSpriteMaterial.h"
 
 namespace bs
 {
 	class GUINavGroup;
 
+	/** @addtogroup Implementation
+	 *  @{
+	 */
+
+	/**
+	 * Organizes elements within a GUIWidget into groups that can be drawn together, as well as cached into the same
+	 * output texture.
+	 **/
+	class BS_EXPORT GUIDrawGroups
+	{
+	public:
+		GUIDrawGroups();
+		
+		/** Registers a new element in the set of draw groups. */
+		void add(GUIElement* element);
+
+		/** Removes an element from the set of draw groups. */
+		void remove(GUIElement* element);
+
+		/** Rebuilds any dirty internal data. */
+		void rebuildDirty();
+		
+	private:
+		/** Single element in a GUIDrawGroup */
+		struct GUIGroupElement
+		{
+			GUIGroupElement() = default;
+			GUIGroupElement(GUIElement* element, UINT32 renderElement)
+				:element(element), renderElement(renderElement)
+			{ }
+
+			GUIElement* element = nullptr;
+			UINT32 renderElement = 0;
+		};
+
+		/** Data required for rendering a single GUI mesh. */
+		struct GUIMesh
+		{
+			UINT32 indexOffset = 0;
+			UINT32 indexCount = 0;
+			SpriteMaterial* material;
+			SpriteMaterialInfo matInfo;
+			bool isLine;
+		};
+
+		/** Holds information about a set of GUI elements that can be drawn together. */
+		struct GUIDrawGroup
+		{
+			UINT32 id = 0;
+			UINT32 depthRange = 0;
+			UINT32 minDepth = 0;
+			bool dirtyBounds = true;
+			bool needsRedraw = true;
+			Rect2I bounds;
+			Vector<GUIGroupElement> cachedElements;
+			Vector<GUIGroupElement> nonCachedElements;
+			Vector<GUIMesh> meshes;
+			SPtr<Texture> outputTexture;
+		};
+
+		/** Splits the provided draw group at the specified depth. Returns the second half of the group. */
+		GUIDrawGroup& split(UINT32 groupIdx, UINT32 depth);
+
+		/** Fully rebuilds the bounds of the specified draw group. */
+		void updateBounds(GUIDrawGroup& group);
+
+		/** Rebuilds the GUI element meshes. */
+		void rebuildMeshes();
+
+		Vector<GUIDrawGroup> mEntries;
+		SPtr<Mesh> mTriangleMesh;
+		SPtr<Mesh> mLineMesh;
+		mutable INT32 mNextDrawGroupId = 0;
+	};
+	
+	/** @} */
+	
 	/** @addtogroup GUI
 	 *  @{
 	 */
@@ -204,15 +282,9 @@ namespace bs
 		/**	Updates the size of the primary GUI panel based on the viewport. */
 		void updateRootPanel();
 
-		/** Splits the provided draw group at the specified depth. Returns the second half of the group. */
-		GUIDrawGroup& splitDrawGroup(UINT32 groupIdx, UINT32 depth);
-
-		/** Fully rebuilds the bounds of the specified draw group. */
-		void updateDrawGroupBounds(GUIDrawGroup& group);
-
 		SPtr<Camera> mCamera;
 		Vector<GUIElement*> mElements;
-		Vector<GUIDrawGroup> mDrawGroups;
+		GUIDrawGroups mDrawGroups;
 		GUIPanel* mPanel = nullptr;
 		UINT8 mDepth = 128;
 		bool mIsActive = true;
@@ -227,7 +299,6 @@ namespace bs
 		Set<GUIElement*> mDirtyContentsTemp;
 
 		mutable UINT64 mCachedRTId = 0;
-		mutable INT32 mNextDrawGroupId = 0;
 		mutable bool mWidgetIsDirty = false;
 		mutable Rect2I mBounds;
 

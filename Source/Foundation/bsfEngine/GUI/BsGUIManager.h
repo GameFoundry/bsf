@@ -67,8 +67,6 @@ namespace bs
 				:isDirty(true)
 			{ }
 
-			SPtr<Mesh> triangleMesh;
-			SPtr<Mesh> lineMesh;
 			Vector<GUIMeshData> cachedMeshes;
 			Vector<GUIWidget*> widgets;
 			bool isDirty;
@@ -401,7 +399,6 @@ namespace bs
 		GUIInputCaret* mInputCaret = nullptr;
 		GUIInputSelection* mInputSelection = nullptr;
 
-		bool mSeparateMeshesByWidget = true;
 		Vector2I mLastPointerScreenPos;
 
 		DragState mDragState = DragState::NoDrag;
