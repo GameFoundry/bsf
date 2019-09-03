@@ -127,25 +127,6 @@ namespace bs
 			_markContentAsDirty();
 	}
 
-	UINT32 GUITexture::_getNumRenderElements() const
-	{
-		return mImageSprite->getNumRenderElements();
-	}
-
-	const SpriteMaterialInfo& GUITexture::_getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const
-	{
-		*material = mImageSprite->getMaterial(renderElementIdx);
-		return mImageSprite->getMaterialInfo(renderElementIdx);
-	}
-
-	void GUITexture::_getMeshInfo(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices, GUIMeshType& type) const
-	{
-		UINT32 numQuads = mImageSprite->getNumQuads(renderElementIdx);
-		numVertices = numQuads * 4;
-		numIndices = numQuads * 6;
-		type = GUIMeshType::Triangle;
-	}
-
 	void GUITexture::updateRenderElementsInternal()
 	{
 		Vector2I textureSize;
@@ -202,6 +183,12 @@ namespace bs
 			mDesc.uvScale = Vector2::ONE;
 		
 		mImageSprite->update(mDesc, (UINT64)_getParentWidget());
+
+		// Populate GUI render elements from the sprites
+		{
+			using T = impl::GUIRenderElementHelper;
+			T::populate({ T::SpriteInfo(mImageSprite) }, mRenderElements);
+		}
 		
 		GUIElement::updateRenderElementsInternal();
 	}

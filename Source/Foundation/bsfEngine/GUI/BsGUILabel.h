@@ -79,18 +79,6 @@ namespace bs
 	protected:
 		~GUILabel();
 
-		/** @copydoc GUIElement::_getNumRenderElements */
-		UINT32 _getNumRenderElements() const override;
-
-		/** @copydoc GUIElement::_getMaterial */
-		const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const override;
-
-		/** @copydoc GUIElement::_getMeshInfo() */
-		void _getMeshInfo(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices, GUIMeshType& type) const override;
-
-		/** @copydoc GUIElement::_getRenderElementDepth */
-		UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const override;
-
 		/** @copydoc GUIElement::_getRenderElementDepthRange */
 		UINT32 _getRenderElementDepthRange() const override;
 

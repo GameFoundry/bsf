@@ -29,15 +29,25 @@ namespace bs
 	};
 
 	/** Contains information about a single sprite render element, including its geometry and material. */
-	struct SpriteRenderElement
+	struct SpriteRenderElementData
 	{
-		SpriteRenderElement() = default;
+		SpriteRenderElementData() = default;
 
 		Vector2* vertices = nullptr;
 		Vector2* uvs = nullptr;
 		UINT32* indexes = nullptr;
 		UINT32 numQuads = 0;
 		SpriteMaterialInfo matInfo;
+		SpriteMaterial* material = nullptr;
+	};
+
+	/** Contains information about a single sprite render elements mesh and material */
+	struct SpriteRenderElement
+	{
+		UINT32 numIndices = 0;
+		UINT32 numVertices = 0;
+
+		SpriteMaterialInfo* matInfo = nullptr;
 		SpriteMaterial* material = nullptr;
 	};
 
@@ -65,35 +75,19 @@ namespace bs
 		 * 			
 		 * @return	The number render elements.
 		 */
-		UINT32 getNumRenderElements() const;
+		UINT32 getNumRenderElements() const { return (UINT32)mCachedRenderElements.size(); }
 
 		/**
-		 * Gets material information required for rendering the element at the specified index.
+		 * Returns information about the number of vertices and indices the required render element requires, as well
+		 * as information about the material that it should be rendered with. Vertex/index counts are required
+		 * when creating the buffers before calling fillBuffer().
 		 *
-		 * @see		getNumRenderElements()
-		 */
-		const SpriteMaterialInfo& getMaterialInfo(UINT32 renderElementIdx) const;
-
-		/**
-		 * Gets the material that will be used for rendering the element at the specified index.
+		 * Returned data is valid until the next call to update() or until the sprite is destroyed.
 		 *
-		 * @see		getNumRenderElements()
+		 * @param[in]		idx			Index of the render element to return the information for.
+		 * @param[out]		info		Information about the render element.
 		 */
-		SpriteMaterial* getMaterial(UINT32 renderElementIdx) const;
-
-		/**
-		 * Returns the number of quads that the specified render element will use. You will need this value when creating
-		 * the buffers before calling fillBuffer().
-		 * 			
-		 * @return	Number of quads for the specified render element.
-		 *	
-		 * @note	Number of vertices = Number of quads * 4
-		 *			Number of indices = Number of quads * 6
-		 *			
-		 * @see		getNumRenderElements()
-		 * @see		fillBuffer()
-		 */
-		UINT32 getNumQuads(UINT32 renderElementIdx) const;
+		void getRenderElementInfo(UINT32 idx, SpriteRenderElement& info) const;
 
 		/**
 		 * Fill the pre-allocated vertex, uv and index buffers with the mesh data for the specified render element.
@@ -159,8 +153,18 @@ namespace bs
 		void updateBounds() const;
 
 		mutable Rect2I mBounds;
-		mutable Vector<SpriteRenderElement> mCachedRenderElements;
+		mutable Vector<SpriteRenderElementData> mCachedRenderElements;
 	};
+
+	inline void Sprite::getRenderElementInfo(UINT32 idx, SpriteRenderElement& info) const
+	{
+		SpriteRenderElementData& renderElement = mCachedRenderElements[idx];
+		
+		info.numVertices = renderElement.numQuads * 4;
+		info.numIndices = renderElement.numQuads * 6;
+		info.matInfo = &renderElement.matInfo;
+		info.material = renderElement.material;
+	}
 
 	/** @} */
 }

@@ -86,6 +86,12 @@ namespace bs
 
 		mImageSprite->update(mDesc, (UINT64)_getParentWidget());
 
+		// Populate GUI render elements from the sprites
+		{
+			using T = impl::GUIRenderElementHelper;
+			T::populate({ T::SpriteInfo(mImageSprite) }, mRenderElements);
+		}
+
 		GUIElement::updateRenderElementsInternal();
 	}
 }

@@ -23,57 +23,6 @@ namespace bs
 			bs_delete(mImageSprite);
 	}
 
-	UINT32 GUILabel::_getNumRenderElements() const
-	{
-		UINT32 numElements = mTextSprite->getNumRenderElements();
-
-		if(mImageSprite != nullptr)
-			numElements += mImageSprite->getNumRenderElements();
-
-		return numElements;
-	}
-
-	const SpriteMaterialInfo& GUILabel::_getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const
-	{
-		UINT32 imageSpriteIdx = mTextSprite->getNumRenderElements();
-
-		if(renderElementIdx >= imageSpriteIdx)
-		{
-			*material = mImageSprite->getMaterial(imageSpriteIdx - renderElementIdx);
-			return mImageSprite->getMaterialInfo(imageSpriteIdx - renderElementIdx);
-		}
-		else
-		{
-			*material = mTextSprite->getMaterial(renderElementIdx);
-			return mTextSprite->getMaterialInfo(renderElementIdx);
-		}
-	}
-
-	void GUILabel::_getMeshInfo(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices, GUIMeshType& type) const
-	{
-		UINT32 imageSpriteIdx = mTextSprite->getNumRenderElements();
-
-		UINT32 numQuads;
-		if (renderElementIdx >= imageSpriteIdx)
-			numQuads = mImageSprite->getNumQuads(imageSpriteIdx - renderElementIdx);
-		else
-			numQuads = mTextSprite->getNumQuads(renderElementIdx);
-
-		numVertices = numQuads * 4;
-		numIndices = numQuads * 6;
-		type = GUIMeshType::Triangle;
-	}
-
-	UINT32 GUILabel::_getRenderElementDepth(UINT32 renderElementIdx) const
-	{
-		UINT32 imageSpriteIdx = mTextSprite->getNumRenderElements();
-
-		if (renderElementIdx >= imageSpriteIdx)
-			return _getDepth() + 1;
-		else
-			return _getDepth();
-	}
-
 	UINT32 GUILabel::_getRenderElementDepthRange() const
 	{
 		return 2;
@@ -125,6 +74,12 @@ namespace bs
 		mDesc.color = getTint() * _getStyle()->normal.textColor;;
 
 		mTextSprite->update(mDesc, (UINT64)_getParentWidget());
+
+		// Populate GUI render elements from the sprites
+		{
+			using T = impl::GUIRenderElementHelper;
+			T::populate({ T::SpriteInfo(mTextSprite), T::SpriteInfo(mImageSprite, 1) }, mRenderElements);
+		}
 
 		GUIElement::updateRenderElementsInternal();
 	}

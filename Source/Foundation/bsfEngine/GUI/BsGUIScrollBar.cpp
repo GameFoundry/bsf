@@ -89,26 +89,6 @@ namespace bs
 		GUIElement::destroy(mHandleBtn);
 	}
 
-	UINT32 GUIScrollBar::_getNumRenderElements() const
-	{
-		return mImageSprite->getNumRenderElements();
-	}
-
-	const SpriteMaterialInfo& GUIScrollBar::_getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const
-	{
-		*material = mImageSprite->getMaterial(renderElementIdx);
-		return mImageSprite->getMaterialInfo(renderElementIdx);
-	}
-
-	void GUIScrollBar::_getMeshInfo(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices, GUIMeshType& type) const
-	{
-		UINT32 numQuads = mImageSprite->getNumQuads(renderElementIdx);
-
-		numVertices = numQuads * 4;
-		numIndices = numQuads * 6;
-		type = GUIMeshType::Triangle;
-	}
-
 	void GUIScrollBar::updateRenderElementsInternal()
 	{
 		IMAGE_SPRITE_DESC desc;
@@ -122,6 +102,12 @@ namespace bs
 
 		mImageSprite->update(desc, (UINT64)_getParentWidget());
 
+		// Populate GUI render elements from the sprites
+		{
+			using T = impl::GUIRenderElementHelper;
+			T::populate({ T::SpriteInfo(mImageSprite, 2) }, mRenderElements); // +2 depth because child buttons use +1
+		}
+
 		GUIElement::updateRenderElementsInternal();
 	}
 
@@ -133,11 +119,6 @@ namespace bs
 	Vector2I GUIScrollBar::_getOptimalSize() const
 	{
 		return mLayout->_getOptimalSize();
-	}
-
-	UINT32 GUIScrollBar::_getRenderElementDepth(UINT32 renderElementIdx) const
-	{
-		return _getDepth() + 2; // + 2 depth because child buttons use +1
 	}
 
 	UINT32 GUIScrollBar::_getRenderElementDepthRange() const

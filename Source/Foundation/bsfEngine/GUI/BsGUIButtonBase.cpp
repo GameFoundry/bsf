@@ -63,57 +63,6 @@ namespace bs
 		return ((INT32)mActiveState & (INT32)GUIElementState::OnFlag) != 0;
 	}
 
-	UINT32 GUIButtonBase::_getNumRenderElements() const
-	{
-		UINT32 numElements = mImageSprite->getNumRenderElements();
-		numElements += mTextSprite->getNumRenderElements();
-
-		if(mContentImageSprite != nullptr)
-			numElements += mContentImageSprite->getNumRenderElements();
-
-		return numElements;
-	}
-
-	const SpriteMaterialInfo& GUIButtonBase::_getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const
-	{
-		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
-		UINT32 contentImgSpriteIdx = textSpriteIdx + mTextSprite->getNumRenderElements();
-
-		if (renderElementIdx >= contentImgSpriteIdx)
-		{
-			*material = mContentImageSprite->getMaterial(contentImgSpriteIdx - renderElementIdx);
-			return mContentImageSprite->getMaterialInfo(contentImgSpriteIdx - renderElementIdx);
-		}
-		else if (renderElementIdx >= textSpriteIdx)
-		{
-			*material = mTextSprite->getMaterial(textSpriteIdx - renderElementIdx);
-			return mTextSprite->getMaterialInfo(textSpriteIdx - renderElementIdx);
-		}
-		else
-		{
-			*material = mImageSprite->getMaterial(renderElementIdx);
-			return mImageSprite->getMaterialInfo(renderElementIdx);
-		}
-	}
-
-	void GUIButtonBase::_getMeshInfo(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices, GUIMeshType& type) const
-	{
-		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
-		UINT32 contentImgSpriteIdx = textSpriteIdx + mTextSprite->getNumRenderElements();
-
-		UINT32 numQuads = 0;
-		if(renderElementIdx >= contentImgSpriteIdx)
-			numQuads = mContentImageSprite->getNumQuads(contentImgSpriteIdx - renderElementIdx);
-		else if(renderElementIdx >= textSpriteIdx)
-			numQuads = mTextSprite->getNumQuads(textSpriteIdx - renderElementIdx);
-		else
-			numQuads = mImageSprite->getNumQuads(renderElementIdx);
-
-		numVertices = numQuads * 4;
-		numIndices = numQuads * 6;
-		type = GUIMeshType::Triangle;
-	}
-
 	void GUIButtonBase::updateRenderElementsInternal()
 	{		
 		mImageDesc.width = mLayoutData.area.width;
@@ -132,7 +81,6 @@ namespace bs
 		mImageDesc.color = getTint();
 
 		mImageSprite->update(mImageDesc, (UINT64)_getParentWidget());
-
 		mTextSprite->update(getTextDesc(), (UINT64)_getParentWidget());
 
 		if(mContentImageSprite != nullptr)
@@ -170,6 +118,12 @@ namespace bs
 			mContentImageSprite->update(contentImgDesc, (UINT64)_getParentWidget());
 		}
 
+		// Populate GUI render elements from the sprites
+		{
+			using T = impl::GUIRenderElementHelper;
+			T::populate({ T::SpriteInfo(mImageSprite, 1), T::SpriteInfo(mTextSprite), T::SpriteInfo(mContentImageSprite) }, mRenderElements);
+		}
+
 		GUIElement::updateRenderElementsInternal();
 	}
 
@@ -190,19 +144,6 @@ namespace bs
 		UINT32 contentHeight = std::max(imageHeight, (UINT32)contentSize.y);
 
 		return Vector2I(contentWidth, contentHeight);
-	}
-
-	UINT32 GUIButtonBase::_getRenderElementDepth(UINT32 renderElementIdx) const
-	{
-		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
-		UINT32 contentImgSpriteIdx = textSpriteIdx + mTextSprite->getNumRenderElements();
-
-		if(renderElementIdx >= contentImgSpriteIdx)
-			return _getDepth();
-		else if(renderElementIdx >= textSpriteIdx)
-			return _getDepth();
-		else
-			return _getDepth() + 1;
 	}
 
 	UINT32 GUIButtonBase::_getRenderElementDepthRange() const

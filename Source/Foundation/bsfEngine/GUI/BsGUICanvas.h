@@ -207,21 +207,9 @@ namespace bs
 		GUICanvas(const String& styleName, const GUIDimensions& dimensions);
 		virtual ~GUICanvas();
 
-		/** @copydoc GUIElement::_getNumRenderElements */
-		UINT32 _getNumRenderElements() const override;
-
-		/** @copydoc GUIElement::_getMaterial */
-		const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const override;
-
-		/** @copydoc GUIElement::_getMeshInfo() */
-		void _getMeshInfo(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices, GUIMeshType& type) const override;
-
 		/** @copydoc GUIElement::_fillBuffer */
 		void _fillBuffer(UINT8* vertices, UINT32* indices, UINT32 vertexOffset, UINT32 indexOffset,
 			UINT32 maxNumVerts, UINT32 maxNumIndices, UINT32 renderElementIdx) const override;
-
-		/** @copydoc GUIElement::_getRenderElementDepth */
-		UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const override;
 
 		/** @copydoc GUIElement::updateRenderElementsInternal */
 		void updateRenderElementsInternal() override;
@@ -245,8 +233,7 @@ namespace bs
 		const CanvasElement& findElement(UINT32 renderElementIdx) const;
 
 		Vector<CanvasElement> mElements;
-		UINT32 mNumRenderElements;
-		UINT8 mDepthRange;
+		UINT8 mDepthRange = 1;
 
 		Vector<ImageElementData> mImageData;
 		Vector<TextElementData> mTextData;
@@ -255,9 +242,9 @@ namespace bs
 
 		mutable Vector<Vector2> mClippedVertices;
 		mutable Vector<Vector2> mClippedLineVertices;
-		mutable Vector2 mLastOffset;
+		mutable Vector2 mLastOffset = BsZero;
 		mutable Rect2I mLastClipRect;
-		mutable bool mForceTriangleBuild;
+		mutable bool mForceTriangleBuild = false;
 
 		static const float LINE_SMOOTH_BORDER_WIDTH;
 	};

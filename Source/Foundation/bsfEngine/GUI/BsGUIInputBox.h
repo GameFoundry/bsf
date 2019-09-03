@@ -55,7 +55,6 @@ namespace bs
 		 */
 		static GUIInputBox* create(bool multiline, const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
-
 		/**
 		 * Creates a new single-line input box.
 		 *
@@ -100,15 +99,6 @@ namespace bs
 		GUIInputBox(const String& styleName, const GUIDimensions& dimensions, bool multiline);
 		virtual ~GUIInputBox();
 
-		/** @copydoc GUIElement::_getNumRenderElements() */
-		UINT32 _getNumRenderElements() const override;
-
-		/** @copydoc GUIElement::_getMaterial() */
-		const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const override;
-
-		/** @copydoc GUIElement::_getMeshInfo() */
-		void _getMeshInfo(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices, GUIMeshType& type) const override;
-
 		/** @copydoc GUIElement::_fillBuffer() */
 		void _fillBuffer(UINT8* vertices, UINT32* indices, UINT32 vertexOffset, UINT32 indexOffset,
 			UINT32 maxNumVerts, UINT32 maxNumIndices, UINT32 renderElementIdx) const override;
@@ -142,9 +132,6 @@ namespace bs
 
 		/** Returns rectangle in which the text can be displayed, in local coordinates (text will start at 0, 0). */
 		Rect2I _getTextInputRect() const override;
-
-		/** @copydoc GUIElement::_getRenderElementDepth */
-		UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const override;
 
 		/** @copydoc GUIElement::_getRenderElementDepthRange */
 		UINT32 _getRenderElementDepthRange() const override;

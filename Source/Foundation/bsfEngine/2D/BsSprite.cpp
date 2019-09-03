@@ -20,26 +20,6 @@ namespace bs
 		return bounds;
 	}
 
-	UINT32 Sprite::getNumRenderElements() const
-	{
-		return (UINT32)mCachedRenderElements.size();
-	}
-
-	const SpriteMaterialInfo& Sprite::getMaterialInfo(UINT32 renderElementIdx) const
-	{
-		return mCachedRenderElements.at(renderElementIdx).matInfo;
-	}
-
-	SpriteMaterial* Sprite::getMaterial(UINT32 renderElementIdx) const
-	{
-		return mCachedRenderElements.at(renderElementIdx).material;
-	}
-
-	UINT32 Sprite::getNumQuads(UINT32 renderElementIdx) const
-	{
-		return mCachedRenderElements.at(renderElementIdx).numQuads;
-	}
-
 	UINT32 Sprite::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 vertexOffset, UINT32 indexOffset,
 		UINT32 maxNumVerts, UINT32 maxNumIndices, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx,
 		const Vector2I& offset, const Rect2I& clipRect, bool clip) const

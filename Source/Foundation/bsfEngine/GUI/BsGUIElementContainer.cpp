@@ -20,25 +20,6 @@ namespace bs
 		mOptionFlags.set(GUIElementOption::ClickThrough);
 	}
 
-	UINT32 GUIElementContainer::_getNumRenderElements() const
-	{
-		return 0;
-	}
-
-	const SpriteMaterialInfo& GUIElementContainer::_getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const
-	{
-		BS_EXCEPT(InvalidStateException, "Trying to retrieve a material from an element with no render elements.");
-		static SpriteMaterialInfo dummy;
-		return dummy;
-	}
-
-	void GUIElementContainer::_getMeshInfo(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices, GUIMeshType& type) const
-	{
-		numVertices = 0;
-		numIndices = 0;
-		type = GUIMeshType::Triangle;
-	}
-
 	void GUIElementContainer::_fillBuffer(UINT8* vertices, UINT32* indices, UINT32 vertexOffset, UINT32 indexOffset,
 		UINT32 maxNumVerts, UINT32 maxNumIndices, UINT32 renderElementIdx) const
 	{ }

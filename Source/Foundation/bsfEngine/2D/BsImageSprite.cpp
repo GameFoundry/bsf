@@ -31,7 +31,7 @@ namespace bs
 		if(useScale9Grid)
 			numQuads = 9;
 
-		SpriteRenderElement& renderElem = mCachedRenderElements[0];
+		SpriteRenderElementData& renderElem = mCachedRenderElements[0];
 		{
 			UINT32 newNumQuads = numQuads;
 			if(newNumQuads != renderElem.numQuads)

@@ -103,46 +103,6 @@ namespace bs
 		}
 	}
 
-	UINT32 GUIInputBox::_getNumRenderElements() const
-	{
-		UINT32 numElements = mImageSprite->getNumRenderElements();
-		numElements += mTextSprite->getNumRenderElements();
-
-		if(mCaretShown && gGUIManager().getCaretBlinkState())
-			numElements += gGUIManager().getInputCaretTool()->getSprite()->getNumRenderElements();
-
-		if(mSelectionShown)
-		{
-			const Vector<ImageSprite*>& sprites = gGUIManager().getInputSelectionTool()->getSprites();
-			for(auto& selectionSprite : sprites)
-			{
-				numElements += selectionSprite->getNumRenderElements();
-			}
-		}
-
-		return numElements;
-	}
-
-	const SpriteMaterialInfo& GUIInputBox::_getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const
-	{
-		UINT32 localRenderElementIdx;
-		Sprite* sprite = renderElemToSprite(renderElementIdx, localRenderElementIdx);
-
-		*material = sprite->getMaterial(localRenderElementIdx);
-		return sprite->getMaterialInfo(localRenderElementIdx);
-	}
-
-	void GUIInputBox::_getMeshInfo(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices, GUIMeshType& type) const
-	{
-		UINT32 localRenderElementIdx;
-		Sprite* sprite = renderElemToSprite(renderElementIdx, localRenderElementIdx);
-
-		UINT32 numQuads = sprite->getNumQuads(localRenderElementIdx);
-		numVertices = numQuads * 4;
-		numIndices = numQuads * 6;
-		type = GUIMeshType::Triangle;
-	}
-
 	void GUIInputBox::updateRenderElementsInternal()
 	{		
 		mImageDesc.width = mLayoutData.area.width;
@@ -162,10 +122,13 @@ namespace bs
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 		mTextSprite->update(textDesc, (UINT64)_getParentWidget());
 
+		ImageSprite* caretSprite = nullptr;
 		if(mCaretShown && gGUIManager().getCaretBlinkState())
 		{
 			gGUIManager().getInputCaretTool()->updateText(this, textDesc); // TODO - These shouldn't be here. Only call this when one of these parameters changes.
 			gGUIManager().getInputCaretTool()->updateSprite();
+
+			caretSprite = gGUIManager().getInputCaretTool()->getSprite();
 		}
 
 		if(mSelectionShown)
@@ -178,6 +141,30 @@ namespace bs
 		// input box isn't filled with mostly empty space.
 		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
 		clampScrollToBounds(mTextSprite->getBounds(offset, Rect2I()));
+
+		// Populate GUI render elements from the sprites
+		{
+			using T = impl::GUIRenderElementHelper;
+			T::populate({ T::SpriteInfo(mTextSprite, 1), T::SpriteInfo(mImageSprite, 3), T::SpriteInfo(caretSprite) }, mRenderElements);
+
+			if (mSelectionShown)
+			{
+				const Vector<ImageSprite*>& sprites = gGUIManager().getInputSelectionTool()->getSprites();
+				for (auto& entry : sprites)
+				{
+					for (UINT32 i = 0; i < entry->getNumRenderElements(); i++)
+					{
+						mRenderElements.add(GUIRenderElement());
+						GUIRenderElement& renderElement = mRenderElements.back();
+
+						entry->getRenderElementInfo(i, renderElement);
+
+						renderElement.depth = 2;
+						renderElement.type = GUIMeshType::Triangle;
+					}
+				}
+			}
+		}
 
 		GUIElement::updateRenderElementsInternal();
 	}
@@ -354,21 +341,6 @@ namespace bs
 		textBounds.y -= mLayoutData.area.y;
 
 		return textBounds;
-	}
-
-	UINT32 GUIInputBox::_getRenderElementDepth(UINT32 renderElementIdx) const
-	{
-		UINT32 localRenderElementIdx;
-		Sprite* sprite = renderElemToSprite(renderElementIdx, localRenderElementIdx);
-
-		if(sprite == mImageSprite)
-			return _getDepth() + 3;
-		else if(sprite == mTextSprite)
-			return _getDepth() + 1;
-		else if(sprite == gGUIManager().getInputCaretTool()->getSprite())
-			return _getDepth();
-		else // Selection sprites
-			return _getDepth() + 2;
 	}
 
 	UINT32 GUIInputBox::_getRenderElementDepthRange() const

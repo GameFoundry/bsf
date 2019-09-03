@@ -22,11 +22,8 @@ namespace bs
 	}
 
 	GUICanvas::GUICanvas(const String& styleName, const GUIDimensions& dimensions)
-		: GUIElement(styleName, dimensions), mNumRenderElements(0), mDepthRange(1), mLastOffset(BsZero)
-		, mForceTriangleBuild(false)
-	{
-
-	}
+		: GUIElement(styleName, dimensions)
+	{ }
 
 	GUICanvas::~GUICanvas()
 	{
@@ -210,7 +207,7 @@ namespace bs
 		}
 
 		mElements.clear();
-		mNumRenderElements = 0;
+		mRenderElements.clear();
 		mDepthRange = 1;
 
 		mVertexData.clear();
@@ -222,122 +219,90 @@ namespace bs
 		mForceTriangleBuild = false;
 	}
 
-	UINT32 GUICanvas::_getNumRenderElements() const
-	{
-		return mNumRenderElements;
-	}
-
-	UINT32 GUICanvas::_getRenderElementDepth(UINT32 renderElementIdx) const
-	{
-		const CanvasElement& element = findElement(renderElementIdx);
-		return _getDepth() + element.depth;
-	}
-
-	const SpriteMaterialInfo& GUICanvas::_getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const
-	{
-		static const SpriteMaterialInfo defaultMatInfo;
-
-		Vector2 offset((float)mLayoutData.area.x, (float)mLayoutData.area.y);
-		Rect2I clipRect = mLayoutData.getLocalClipRect();
-		buildAllTriangleElementsIfDirty(offset, clipRect);
-
-		const CanvasElement& element = findElement(renderElementIdx);
-		renderElementIdx -= element.renderElemStart;
-
-		switch (element.type)
-		{
-		case CanvasElementType::Line:
-			*material = SpriteManager::instance().getLineMaterial();
-			return mTriangleElementData[element.dataId].matInfo;
-		case CanvasElementType::Image:
-			*material = element.imageSprite->getMaterial(0);
-			return element.imageSprite->getMaterialInfo(0);
-		case CanvasElementType::Text:
-			*material = element.imageSprite->getMaterial(renderElementIdx);
-			return element.textSprite->getMaterialInfo(renderElementIdx);
-		case CanvasElementType::Triangle:
-			*material = SpriteManager::instance().getImageMaterial(true);
-			return mTriangleElementData[element.dataId].matInfo;
-		default:
-			*material = nullptr;
-			return defaultMatInfo;
-		}
-	}
-
-	void GUICanvas::_getMeshInfo(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices, GUIMeshType& type) const
-	{
-		Vector2 offset((float)mLayoutData.area.x, (float)mLayoutData.area.y);
-		Rect2I clipRect = mLayoutData.getLocalClipRect();
-		buildAllTriangleElementsIfDirty(offset, clipRect);
-
-		const CanvasElement& element = findElement(renderElementIdx);
-		renderElementIdx -= element.renderElemStart;
-
-		switch (element.type)
-		{
-		case CanvasElementType::Image:
-		{
-			UINT32 numQuads = element.imageSprite->getNumQuads(renderElementIdx);
-			numVertices = numQuads * 4;
-			numIndices = numQuads * 6;
-			type = GUIMeshType::Triangle;
-			break;
-		}
-		case CanvasElementType::Text:
-		{
-			UINT32 numQuads = element.textSprite->getNumQuads(renderElementIdx);
-			numVertices = numQuads * 4;
-			numIndices = numQuads * 6;
-			type = GUIMeshType::Triangle;
-			break;
-		}
-		case CanvasElementType::Line:
-			numVertices = element.clippedNumVertices;
-			numIndices = element.clippedNumVertices;
-			type = GUIMeshType::Line;
-			break;
-		case CanvasElementType::Triangle:
-			numVertices = element.clippedNumVertices;
-			numIndices = element.clippedNumVertices;
-			type = GUIMeshType::Triangle;
-			break;
-		default:
-			numVertices = 0;
-			numIndices = 0;
-			type = GUIMeshType::Triangle;
-			break;
-		}
-	}
-
 	void GUICanvas::updateRenderElementsInternal()
 	{
-		mNumRenderElements = 0;
+		Vector2 offset((float)mLayoutData.area.x, (float)mLayoutData.area.y);
+		Rect2I clipRect = mLayoutData.getLocalClipRect();
+		buildAllTriangleElementsIfDirty(offset, clipRect);
+
+		mRenderElements.clear();
 		for(auto& element : mElements)
 		{
+			element.renderElemStart = mRenderElements.size();
+			
 			switch(element.type)
 			{
 			case CanvasElementType::Image:
 				buildImageElement(element);
-				element.renderElemStart = mNumRenderElements;
-				element.renderElemEnd = element.renderElemStart + element.imageSprite->getNumRenderElements();
+
+				for(UINT32 i = 0; i < element.imageSprite->getNumRenderElements(); i++)
+				{
+					mRenderElements.add(GUIRenderElement());
+					GUIRenderElement& renderElement = mRenderElements.back();
+
+					element.imageSprite->getRenderElementInfo(i, renderElement);
+
+					renderElement.depth = element.depth;
+					renderElement.type = GUIMeshType::Triangle;
+				}
+				
 				break;
 			case CanvasElementType::Text:
 				buildTextElement(element);
-				element.renderElemStart = mNumRenderElements;
-				element.renderElemEnd = element.renderElemStart + element.textSprite->getNumRenderElements();
+
+				for(UINT32 i = 0; i < element.textSprite->getNumRenderElements(); i++)
+				{
+					mRenderElements.add(GUIRenderElement());
+					GUIRenderElement& renderElement = mRenderElements.back();
+
+					element.textSprite->getRenderElementInfo(i, renderElement);
+
+					renderElement.depth = element.depth;
+					renderElement.type = GUIMeshType::Triangle;
+				}
 				break;
 			case CanvasElementType::Line:
+				{
+					mRenderElements.add(GUIRenderElement());
+					GUIRenderElement& renderElement = mRenderElements.back();
+
+					renderElement.numVertices = element.clippedNumVertices;
+					renderElement.numIndices = element.clippedNumVertices;
+
+					renderElement.material = SpriteManager::instance().getLineMaterial();
+					renderElement.matInfo = &mTriangleElementData[element.dataId].matInfo;
+					
+					renderElement.depth = element.depth;
+					renderElement.type = GUIMeshType::Line;
+
+					mTriangleElementData[element.dataId].matInfo.groupId = (UINT64)_getParentWidget();
+
+					// Actual mesh build happens when reading from it, because the mesh size varies due to clipping rectangle/offset
+					break;
+				}
+
 			case CanvasElementType::Triangle:
-				element.renderElemStart = mNumRenderElements;
-				element.renderElemEnd = element.renderElemStart + 1;
+				{
+					mRenderElements.add(GUIRenderElement());
+					GUIRenderElement& renderElement = mRenderElements.back();
 
-				mTriangleElementData[element.dataId].matInfo.groupId = (UINT64)_getParentWidget();
+					renderElement.numVertices = element.clippedNumVertices;
+					renderElement.numIndices = element.clippedNumVertices;
 
-				// Actual mesh build happens when reading from it, because the mesh size varies due to clipping rectangle/offset
-				break;
+					renderElement.material = SpriteManager::instance().getImageMaterial(true);
+					renderElement.matInfo = &mTriangleElementData[element.dataId].matInfo;
+
+					renderElement.depth = element.depth;
+					renderElement.type = GUIMeshType::Triangle;
+
+					mTriangleElementData[element.dataId].matInfo.groupId = (UINT64)_getParentWidget();
+
+					// Actual mesh build happens when reading from it, because the mesh size varies due to clipping rectangle/offset
+					break;
+				}
 			}
 
-			mNumRenderElements = element.renderElemEnd;
+			element.renderElemEnd = mRenderElements.size();
 		}
 
 		GUIElement::updateRenderElementsInternal();

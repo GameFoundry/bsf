@@ -29,7 +29,7 @@ namespace bs
 	/** Contains information for initializing a sprite material. */
 	struct SpriteMaterialInfo
 	{
-		SpriteMaterialInfo() { }
+		SpriteMaterialInfo() = default;
 
 		/**
 		 * Creates a new deep copy of the object. This is different from standard copy constructor which will just reference
@@ -54,7 +54,7 @@ namespace bs
 		HTexture texture;
 		HSpriteTexture spriteTexture;
 		Color tint;
-		float animationStartTime;
+		float animationStartTime = 0.0f;
 		SPtr<SpriteMaterialExtraInfo> additionalData;
 	};
 

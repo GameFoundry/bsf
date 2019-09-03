@@ -75,7 +75,7 @@ namespace bs
 		virtual ~GUIRenderTexture();
 
 		/** @copydoc GUIElement::updateRenderElementsInternal */
-		virtual void updateRenderElementsInternal() override;
+		void updateRenderElementsInternal() override;
 
 		SPtr<RenderTexture> mSourceTexture;
 		bool mTransparent;

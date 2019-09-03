@@ -80,25 +80,6 @@ namespace bs
 		return getMaxSize() - getHandleSize();
 	}
 
-	UINT32 GUISliderHandle::_getNumRenderElements() const
-	{
-		return mImageSprite->getNumRenderElements();
-	}
-
-	const SpriteMaterialInfo& GUISliderHandle::_getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const
-	{
-		*material = mImageSprite->getMaterial(renderElementIdx);
-		return mImageSprite->getMaterialInfo(renderElementIdx);
-	}
-
-	void GUISliderHandle::_getMeshInfo(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices, GUIMeshType& type) const
-	{
-		UINT32 numQuads = mImageSprite->getNumQuads(renderElementIdx);
-		numVertices = numQuads * 4;
-		numIndices = numQuads * 6;
-		type = GUIMeshType::Triangle;
-	}
-
 	void GUISliderHandle::updateRenderElementsInternal()
 	{		
 		IMAGE_SPRITE_DESC desc;
@@ -138,6 +119,12 @@ namespace bs
 		desc.color = getTint();
 		mImageSprite->update(desc, (UINT64)_getParentWidget());
 		
+		// Populate GUI render elements from the sprites
+		{
+			using T = impl::GUIRenderElementHelper;
+			T::populate({ T::SpriteInfo(mImageSprite) }, mRenderElements);
+		}
+
 		GUIElement::updateRenderElementsInternal();
 	}
 
