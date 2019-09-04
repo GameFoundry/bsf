@@ -679,7 +679,9 @@ namespace bs
 				output = ((exponent + 112) << 23) | (mantissa << 18);
 			}
 
-			return *(float*)&output;
+			float result;
+			std::memcpy(&result, &output, sizeof(float));
+			return result;
 		}
 
 		/** Converts a 11-bit float to a 32-bit float according to OpenGL packed_float extension. */
@@ -719,7 +721,9 @@ namespace bs
 				output = ((exponent + 112) << 23) | (mantissa << 17);
 			}
 
-			return *(float*)&output;
+			float result;
+			std::memcpy(&result, &output, sizeof(float));
+			return result;
 		}
 
 		/**
