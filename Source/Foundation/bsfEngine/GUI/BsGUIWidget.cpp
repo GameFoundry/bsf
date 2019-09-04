@@ -109,7 +109,6 @@ namespace bs
 			group.bounds.encapsulate(bounds);
 			group.needsRedraw = true;
 
-			//renderElement.drawGroupId = group.id;
 			groupElement.groups[renderElementIdx] = group.id;
 		}
 		else
@@ -121,7 +120,6 @@ namespace bs
 
 				group.nonCachedElements.push_back(GUIGroupRenderElement(element, renderElementIdx));
 
-				//renderElement.drawGroupId = newGroup.id;
 				groupElement.groups[renderElementIdx] = newGroup.id;
 				newGroup.needsRedraw = true;
 			}
@@ -129,7 +127,6 @@ namespace bs
 			{
 				group.nonCachedElements.push_back(GUIGroupRenderElement(element, renderElementIdx));
 
-				//renderElement.drawGroupId = group.id;
 				groupElement.groups[renderElementIdx] = group.id;
 				group.needsRedraw = true;
 			}
@@ -208,8 +205,6 @@ namespace bs
 			{
 				const GUIRenderElement& renderElemToMerge = entry.element->_getRenderElements()[entry.renderElementIdx];
 
-				//renderElemToMerge.drawGroupId = prevGroup.id;
-
 				auto iterFind = mElements.find(entry.element);
 				assert(iterFind != mElements.end());
 				if (iterFind != mElements.end())
@@ -227,6 +222,115 @@ namespace bs
 
 	void GUIDrawGroups::rebuildDirty()
 	{
+		// Update dirty draw groups and mark them for redraw
+		for(auto& entry : mDirtyElements)
+		{
+			GUIElement* element = entry.first;
+			
+			auto iterFind = mElements.find(element);
+			assert(iterFind != mElements.end());
+			if (iterFind == mElements.end())
+				continue;
+
+			const SmallVector<GUIRenderElement, 4> & renderElements = element->_getRenderElements();
+			GUIGroupElement& groupElement = iterFind->second;
+
+			bool dirtyBounds = false;
+			if ((entry.second & DirtyContent) != 0)
+			{
+				bool renderElementsDirty = groupElement.groups.size() != renderElements.size();
+
+				// If render element count changed, do a full rebuild of the draw group
+				if (renderElementsDirty)
+				{
+					remove(element);
+					add(element);
+
+					continue;
+				}
+
+				// If bounds changed, rebuild the bounds of the draw groups
+				Rect2I bounds = element->_getClippedBounds();
+				if (groupElement.bounds != bounds)
+				{
+					dirtyBounds = true;
+					groupElement.bounds = bounds;
+				}
+			}
+				
+			for (UINT32 i = 0; i < renderElements.size(); i++)
+			{
+				const GUIRenderElement& renderElement = renderElements[i];
+				INT32 drawGroupId = groupElement.groups[i];
+
+				// All render elements draw group IDs should be assigned at this point
+				assert(drawGroupId != -1);
+
+				auto iterFind2 = std::find_if(mDrawGroups.begin(), mDrawGroups.end(),
+					[drawGroupId](const GUIDrawGroup& group) { return group.id == drawGroupId; });
+
+				assert(iterFind2 != mDrawGroups.end());
+				if (iterFind2 != mDrawGroups.end())
+				{
+					GUIDrawGroup& group = *iterFind2;
+
+					if (dirtyBounds)
+						group.dirtyBounds = dirtyBounds;
+
+					bool needsGroupChange = false;
+					if((entry.second & DirtyMesh) != 0)
+					{
+						UINT32 depth = element->_getDepth() + renderElement.depth;
+
+						// If same as min-depth, no group change is necessary in any case
+						if (depth != group.minDepth)
+						{
+							// If less than min-depth, group change is always necessary
+							if (depth < group.minDepth)
+								needsGroupChange = true;
+							// Non-batching elements must be at min-depth, so group change is necessary
+							else if (!renderElement.material->allowBatching())
+								needsGroupChange = true;
+							// Batching but outside of the group's depth range, group change is necessary
+							else if (depth >= (group.minDepth + group.depthRange))
+								needsGroupChange = true;
+						}
+					}
+
+					if (!needsGroupChange && (entry.second & DirtyContent) != 0)
+					{
+						// Check if the material changed
+						if (renderElement.material->allowBatching())
+						{
+							auto iterFind3 = std::find_if(group.cachedElements.begin(), group.cachedElements.end(), [element, i](auto& x)
+								{ return x.element == element && x.renderElementIdx == i; });
+							if (iterFind3 == group.cachedElements.end())
+								needsGroupChange = true;
+						}
+						else
+						{
+							auto iterFind3 = std::find_if(group.nonCachedElements.begin(), group.nonCachedElements.end(), [element, i](auto& x)
+								{ return x.element == element && x.renderElementIdx == i; });
+							if (iterFind3 == group.nonCachedElements.end())
+								needsGroupChange = true;
+						}
+					}
+
+					if(needsGroupChange)
+					{
+						UINT32 groupIdx = (UINT32)(iterFind2 - mDrawGroups.begin());
+						remove(groupElement, i, groupIdx);
+						add(groupElement, i);
+					}
+
+					group.needsRedraw = true;
+				}
+			}
+		}
+
+		mDirtyElements.clear();
+		
+		// Update dirty bounds and textures
 		for(auto& entry : mDrawGroups)
 		{
 			if(entry.dirtyBounds)
@@ -261,99 +365,13 @@ namespace bs
 
 	void GUIDrawGroups::notifyContentDirty(GUIElement* element)
 	{
-		// TODO - Dirty elements should be cached, then only cause a rebuild when its needed. This is esp. needed because both
-		// mesh and content might get dirtied when content is dirtied
-
-		// We're looking for sprite material changes and bound changes, any other changes should not affect the draw group
-		auto iterFind = mElements.find(element);
-		assert(iterFind != mElements.end());
-		if (iterFind == mElements.end())
-			return;
-
-		const SmallVector<GUIRenderElement, 4>& renderElements = element->_getRenderElements();
-		GUIGroupElement& groupElement = iterFind->second;
-
-		bool renderElementsDirty = groupElement.groups.size() != renderElements.size();
-		//if(!renderElementsDirty)
-		//{
-		//	for(UINT32 i = 0; i < renderElements.size(); i++)
-		//	{
-		//		if(groupElement.groups[i] != renderElements[i].drawGroupId)
-		//		{
-		//			renderElementsDirty = true;
-		//			break;
-		//		}
-		//	}
-		//}
-
-		// If render element count changed, do a full rebuild of the draw group
-		if(renderElementsDirty)
-		{
-			remove(element);
-			add(element);
-
-			return;
-		}
-
-		// If bounds changed, rebuild the bounds of the draw groups
-		Rect2I bounds = element->_getClippedBounds();
-		bool dirtyBounds = false;
-		if(groupElement.bounds != bounds)
-		{
-			dirtyBounds = true;
-			groupElement.bounds = bounds;
-		}
-		
-		for (UINT32 i = 0; i < renderElements.size(); i++)
-		{
-			const GUIRenderElement& renderElement = renderElements[i];
-			INT32 drawGroupId = groupElement.groups[i];
-
-			// All render elements draw group IDs should be assigned at this point
-			assert(drawGroupId != -1);
-
-			auto iterFind2 = std::find_if(mDrawGroups.begin(), mDrawGroups.end(),
-				[drawGroupId](const GUIDrawGroup& group) { return group.id == drawGroupId; });
-
-			assert(iterFind2 != mDrawGroups.end());
-			if (iterFind2 != mDrawGroups.end())
-			{
-				GUIDrawGroup& group = *iterFind2;
-
-				if (dirtyBounds)
-					group.dirtyBounds = dirtyBounds;
-
-				bool materialChanged = false;
-
-				if(renderElement.material->allowBatching())
-				{
-					auto iterFind3 = std::find_if(group.cachedElements.begin(), group.cachedElements.end(), [element, i](auto& x)
-						{ return x.element == element && x.renderElementIdx == i; });
-					if (iterFind3 == group.cachedElements.end())
-						materialChanged = true;
-				}
-				else
-				{
-					auto iterFind3 = std::find_if(group.nonCachedElements.begin(), group.nonCachedElements.end(), [element, i](auto& x)
-						{ return x.element == element && x.renderElementIdx == i; });
-					if (iterFind3 == group.nonCachedElements.end())
-						materialChanged = true;
-				}
-
-				if(materialChanged)
-				{
-					UINT32 groupIdx = (UINT32)(iterFind2 - mDrawGroups.begin());
-					remove(groupElement, i, groupIdx);
-					add(groupElement, i);
-				}
-
-				group.needsRedraw = true;
-			}
-		}
+		mDirtyElements[element] |= DirtyContent;
 	}
 
 	void GUIDrawGroups::notifyMeshDirty(GUIElement* element)
 	{
+		mDirtyElements[element] |= DirtyMesh;
+		
 		// TODO - Dirty elements should be cached, then only cause a rebuild when its needed. This is esp. needed because both
 		// mesh and content might get dirtied when content is dirtied
 

@@ -24,6 +24,12 @@ namespace bs
 	 **/
 	class BS_EXPORT GUIDrawGroups
 	{
+		/** Flags signaling which part of a GUIElement is dirty. */
+		enum DirtyFlags
+		{
+			DirtyMesh = 1 << 0,
+			DirtyContent = 1 << 1
+		};
 	public:
 		GUIDrawGroups();
 		
@@ -117,6 +123,7 @@ namespace bs
 
 		Vector<GUIDrawGroup> mDrawGroups;
 		UnorderedMap<GUIElement*, GUIGroupElement> mElements;
+		UnorderedMap<GUIElement*, UINT32> mDirtyElements;
 		
 		SPtr<Mesh> mTriangleMesh;
 		SPtr<Mesh> mLineMesh;
