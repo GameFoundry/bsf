@@ -18,6 +18,7 @@ namespace bs
 	 *  @{
 	 */
 
+	/** Contains options that change GUIElement behaviour. */
 	enum class GUIElementOption
 	{
 		/** 
@@ -41,6 +42,8 @@ namespace bs
 	{
 		GUIMeshType type = GUIMeshType::Triangle;
 		UINT32 depth = 0;
+
+		mutable INT32 drawGroupId = -1;
 	};
 
 	/**
@@ -264,12 +267,6 @@ namespace bs
 
 		/**	Returns a clip rectangle relative to the element, used for clipping	the input text. */
 		virtual Rect2I _getTextInputRect() const { return Rect2I(); }
-
-		/** Represents an ID that identifies the draw group this element will render in, in its current parent widget. */
-		void _setDrawGroupId(INT32 id) { mDrawGroupId = id; }
-
-		/** @copydoc _setDrawGroupId */
-		INT32 _getDrawGroupId() const { return mDrawGroupId; }
 		
 		/** @} */
 
@@ -324,7 +321,6 @@ namespace bs
 		GUIElementOptions mOptionFlags;
 		Rect2I mClippedBounds;
 		SmallVector<GUIRenderElement, 4> mRenderElements;
-		INT32 mDrawGroupId = -1;
 		
 	private:
 		static const Color DISABLED_COLOR;

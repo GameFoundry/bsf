@@ -27,11 +27,17 @@ namespace bs
 	public:
 		GUIDrawGroups();
 		
-		/** Registers a new element in the set of draw groups. */
+		/** Iterates over all the render elements in the GUI elements and adds them to suitable draw groups. */
 		void add(GUIElement* element);
 
-		/** Removes an element from the set of draw groups. */
+		/** Adds a specific render element of a GUI element and adds it to a suitable draw group. */
+		void add(GUIElement* element, UINT32 renderElementIdx);
+
+		/** Removes all render elements in the provided GUI element from their current set of draw groups. */
 		void remove(GUIElement* element);
+
+		/** Removes a specific render element in the provided GUI element from their current draw group. */
+		void remove(GUIElement* element, UINT32 renderElementIdx);
 
 		/** Rebuilds any dirty internal data. */
 		void rebuildDirty();
@@ -43,16 +49,16 @@ namespace bs
 		void notifyMeshDirty(GUIElement* element);
 		
 	private:
-		/** Single element in a GUIDrawGroup */
-		struct GUIGroupElement
+		/** Single render element in a GUIDrawGroup */
+		struct GUIGroupRenderElement
 		{
-			GUIGroupElement() = default;
-			GUIGroupElement(GUIElement* element, UINT32 renderElement)
-				:element(element), renderElement(renderElement)
+			GUIGroupRenderElement() = default;
+			GUIGroupRenderElement(GUIElement* element, UINT32 renderElementIdx)
+				:element(element), renderElementIdx(renderElementIdx)
 			{ }
 
 			GUIElement* element = nullptr;
-			UINT32 renderElement = 0;
+			UINT32 renderElementIdx = 0;
 		};
 
 		/** Data required for rendering a single GUI mesh. */
@@ -68,14 +74,14 @@ namespace bs
 		/** Holds information about a set of GUI elements that can be drawn together. */
 		struct GUIDrawGroup
 		{
-			UINT32 id = 0;
+			INT32 id = 0;
 			UINT32 depthRange = 0;
 			UINT32 minDepth = 0;
 			bool dirtyBounds = true;
 			bool needsRedraw = true;
 			Rect2I bounds;
-			Vector<GUIGroupElement> cachedElements;
-			Vector<GUIGroupElement> nonCachedElements;
+			Vector<GUIGroupRenderElement> cachedElements;
+			Vector<GUIGroupRenderElement> nonCachedElements;
 			Vector<GUIMesh> meshes;
 			SPtr<Texture> outputTexture;
 		};
@@ -86,10 +92,24 @@ namespace bs
 		/** Rebuilds the GUI element meshes. */
 		void rebuildMeshes();
 
+		/**
+		 * Adds a specific render element of a GUI element to the specified draw group. Caller is responsible for
+		 * ensuring the element is a valid match for the group.
+		 */
+		void add(GUIElement* element, UINT32 renderElementIdx, UINT32 groupIdx);
+
+		/**
+		 * Removes a specific render element in the provided GUI element from the provided draw group. Caller is
+		 * responsible for ensuring the provided draw group is the element's current draw group.
+		 */
+		void remove(GUIElement* element, UINT32 renderElementIdx, UINT32 groupIdx);
+		
 		/** Calculates the bounds of all visible elements in the draw group. */
 		static Rect2I calculateBounds(GUIDrawGroup& group);
 
 		Vector<GUIDrawGroup> mEntries;
+
+		
 		SPtr<Mesh> mTriangleMesh;
 		SPtr<Mesh> mLineMesh;
 		mutable INT32 mNextDrawGroupId = 0;

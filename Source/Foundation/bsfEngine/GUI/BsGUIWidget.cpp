@@ -46,6 +46,7 @@ namespace bs
 			
 		}
 	}
+
 	
 	GUIDrawGroups::GUIDrawGroups()
 	{
@@ -62,93 +63,135 @@ namespace bs
 		const SmallVector<GUIRenderElement, 4> & renderElements = element->_getRenderElements();
 
 		for (UINT32 i = 0; i < renderElements.size(); i++)
+			add(element, i);
+	}
+
+	void GUIDrawGroups::add(GUIElement* element, UINT32 renderElementIdx)
+	{
+		const SmallVector<GUIRenderElement, 4> & renderElements = element->_getRenderElements();
+
+		const GUIRenderElement& renderElement = renderElements[renderElementIdx];
+		UINT32 elemDepth = element->_getDepth() + renderElement.depth;
+
+		// Groups are expected to be sorted by minDepth
+		for (UINT32 j = 0; j < (UINT32)mEntries.size(); j++)
 		{
-			const GUIRenderElement& renderElement = renderElements[i];
-			UINT32 elemDepth = element->_getDepth() + renderElement.depth;
+			if (elemDepth < mEntries[j].minDepth)
+				continue;
 
-			SpriteMaterial* spriteMaterial = renderElement.material;
-			assert(spriteMaterial != nullptr);
+			add(element, renderElementIdx, j);
+			break;
+		}
+	}
 
-			// Groups are expected to be sorted by minDepth
-			for (UINT32 j = 0; j < (UINT32)mEntries.size(); j++)
+	void GUIDrawGroups::add(GUIElement* element, UINT32 renderElementIdx, UINT32 groupIdx)
+	{
+		const SmallVector<GUIRenderElement, 4> & renderElements = element->_getRenderElements();
+
+		const GUIRenderElement& renderElement = renderElements[renderElementIdx];
+		UINT32 elemDepth = element->_getDepth() + renderElement.depth;
+
+		SpriteMaterial* spriteMaterial = renderElement.material;
+		assert(spriteMaterial != nullptr);
+
+		GUIDrawGroup& group = mEntries[groupIdx];
+		if (spriteMaterial->allowBatching())
+		{
+			group.cachedElements.push_back(GUIGroupElement(element, renderElementIdx));
+
+			Rect2I bounds = element->_getClippedBounds();
+			group.bounds.encapsulate(bounds);
+			group.needsRedraw = true;
+
+			renderElement.drawGroupId = group.id;
+		}
+		else
+		{
+			bool needsSplit = elemDepth != group.minDepth;
+			if (needsSplit)
 			{
-				GUIDrawGroup& group = mEntries[j];
-				if (elemDepth < group.minDepth)
-					continue;
+				GUIDrawGroup& newGroup = split(groupIdx, elemDepth);
 
-				if (spriteMaterial->allowBatching())
-				{
-					group.cachedElements.push_back(GUIGroupElement(element, i));
-
-					Rect2I bounds = element->_getClippedBounds();
-					group.bounds.encapsulate(bounds);
-
-					// TODO - Technically, different render elements can end up in different draw groups, so this won't work
-					element->_setDrawGroupId(group.id);
-				}
-				else
-				{
-					bool needsSplit = elemDepth != group.minDepth;
-					if (needsSplit)
-					{
-						GUIDrawGroup& newGroup = split(j, elemDepth);
-
-						newGroup.nonCachedElements.push_back(GUIGroupElement(element, i));
-						element->_setDrawGroupId(newGroup.id);
-					}
-					else
-					{
-						group.nonCachedElements.push_back(GUIGroupElement(element, i));
-						element->_setDrawGroupId(group.id);
-					}
-				}
-
-				break;
+				newGroup.nonCachedElements.push_back(GUIGroupElement(element, renderElementIdx));
+				renderElement.drawGroupId = newGroup.id;
+				newGroup.needsRedraw = true;
+			}
+			else
+			{
+				group.nonCachedElements.push_back(GUIGroupElement(element, renderElementIdx));
+				renderElement.drawGroupId = group.id;
+				group.needsRedraw = true;
 			}
 		}
 	}
 
 	void GUIDrawGroups::remove(GUIElement* element)
 	{
-		UINT32 drawGroupId = element->_getDrawGroupId();
-		auto iterFind2 = std::find_if(mEntries.begin(), mEntries.end(),
-			[drawGroupId](const GUIDrawGroup& group) { return group.id == drawGroupId; });
+		const SmallVector<GUIRenderElement, 4>& renderElements = element->_getRenderElements();
+		for (UINT32 i = 0; i < renderElements.size(); i++)
+			remove(element, i);
+	}
 
-		assert(iterFind2 != mEntries.end());
-		if(iterFind2 != mEntries.end())
+	void GUIDrawGroups::remove(GUIElement* element, UINT32 renderElementIdx)
+	{
+		const SmallVector<GUIRenderElement, 4>& renderElements = element->_getRenderElements();
+
+		auto iterFind = std::find_if(mEntries.begin(), mEntries.end(),
+			[drawGroupId = renderElements[renderElementIdx].drawGroupId](const GUIDrawGroup& group) { return group.id == drawGroupId; });
+
+		assert(iterFind != mEntries.end());
+		if (iterFind != mEntries.end())
 		{
-			GUIDrawGroup& group = *iterFind2;
+			UINT32 idx = (UINT32)(iterFind - mEntries.begin());
+			if(mEntries[idx].id == renderElements[renderElementIdx].drawGroupId)
+				remove(element, renderElementIdx, idx);
+		}
+	}
 
-			group.cachedElements.erase(std::remove_if(group.cachedElements.begin(), group.cachedElements.end(),
-				[element](const GUIGroupElement& x) { return x.element == element; }), group.cachedElements.end());
-			
-			group.nonCachedElements.erase(std::remove_if(group.nonCachedElements.begin(), group.nonCachedElements.end(),
-				[element](const GUIGroupElement& x) { return x.element == element; }), group.nonCachedElements.end());
+	void GUIDrawGroups::remove(GUIElement* element, UINT32 renderElementIdx, UINT32 groupIdx)
+	{
+		const SmallVector<GUIRenderElement, 4>& renderElements = element->_getRenderElements();
+		GUIDrawGroup& group = mEntries[groupIdx];
 
-			if (element->_isVisible())
-				group.dirtyBounds = true;
-
-			// Attempt to merge with previous group
-			if(group.nonCachedElements.empty() && group.minDepth > 0)
+		for(auto iter = group.cachedElements.begin(); iter != group.cachedElements.end();)
+		{
+			if (iter->element == element && iter->renderElement == renderElementIdx)
 			{
-				assert(iterFind2 != mEntries.begin());
-
-				auto prevGroupIter = iterFind2 - 1;
-				GUIDrawGroup& prevGroup = *prevGroupIter;
-
-				prevGroup.depthRange += group.depthRange;
-
-				for (auto& entry : group.cachedElements)
-				{
-					entry.element->_setDrawGroupId(prevGroup.id);
-
-					if(entry.element->_isVisible())
-						prevGroup.dirtyBounds = true;
-				}
-				
-				std::move(group.cachedElements.begin(), group.cachedElements.end(), std::back_inserter(prevGroup.cachedElements));
-				mEntries.erase(iterFind2);
+				group.dirtyBounds = true;
+				iter = group.cachedElements.erase(iter);
 			}
+			else
+				++iter;
+		}
+		
+		group.nonCachedElements.erase(std::remove_if(group.nonCachedElements.begin(), group.nonCachedElements.end(),
+			[element, renderElementIdx](const GUIGroupElement& x) { return x.element == element && x.renderElement == renderElementIdx; }),
+			group.nonCachedElements.end());
+
+		group.needsRedraw = true;
+
+		// Attempt to merge with previous group
+		if(group.nonCachedElements.empty() && group.minDepth > 0)
+		{
+			assert(groupIdx > 0);
+
+			UINT32 prevGroupIdx = groupIdx - 1;
+			GUIDrawGroup& prevGroup = mEntries[prevGroupIdx];
+
+			prevGroup.depthRange += group.depthRange;
+
+			for (auto& entry : group.cachedElements)
+			{
+				const GUIRenderElement& renderElemToMerge = entry.element->_getRenderElements()[entry.renderElement];
+				renderElemToMerge.drawGroupId = prevGroup.id;
+
+				prevGroup.dirtyBounds = true;
+			}
+			
+			std::move(group.cachedElements.begin(), group.cachedElements.end(), std::back_inserter(prevGroup.cachedElements));
+			prevGroup.needsRedraw = true;
+			
+			mEntries.erase(mEntries.begin() + groupIdx);
 		}
 	}
 
@@ -188,12 +231,109 @@ namespace bs
 
 	void GUIDrawGroups::notifyContentDirty(GUIElement* element)
 	{
-		// TODO
+		// TODO - Dirty elements should be cached, then only cause a rebuild when its needed. This is esp. needed because both
+		// mesh and content might get dirtied when content is dirtied
+
+		// TODO - How to handle the case when render elements are removed from a GUI element? They will remain the the draw
+		// group permanently
+		//  - Likely need to cache render elements and their draw groups
+		
+		
+		// We're looking for sprite material changes and bound changes, any other changes should not affect the draw group
+		const SmallVector<GUIRenderElement, 4>& renderElements = element->_getRenderElements();
+		for (UINT32 i = 0; i < renderElements.size(); i++)
+		{
+			const GUIRenderElement& renderElement = renderElements[i];
+
+			// All render elements draw group IDs should be assigned at this point
+			assert(renderElement.drawGroupId != -1);
+
+			auto iterFind = std::find_if(mEntries.begin(), mEntries.end(),
+				[drawGroupId = renderElement.drawGroupId](const GUIDrawGroup& group) { return group.id == drawGroupId; });
+
+			assert(iterFind != mEntries.end());
+			if (iterFind != mEntries.end())
+			{
+				GUIDrawGroup& group = *iterFind;
+				UINT32 depth = element->_getDepth() + renderElement.depth;
+
+				// If same as min-depth, no group change is necessary in any case
+				if (depth != group.minDepth)
+				{
+					bool needsGroupChange = false;
+					// If less than min-depth, group change is always necessary
+					if (depth < group.minDepth)
+						needsGroupChange = true;
+					// Non-batching elements must be at min-depth, so group change is necessary
+					else if (!renderElement.material->allowBatching())
+						needsGroupChange = true;
+					// Batching but outside of the group's depth range, group change is necessary
+					else if (depth >= (group.minDepth + group.depthRange))
+						needsGroupChange = true;
+
+					if (needsGroupChange)
+					{
+						UINT32 groupIdx = (UINT32)(iterFind - mEntries.begin());
+						remove(element, i, groupIdx);
+						add(element, i);
+					}
+				}
+
+				group.needsRedraw = true;
+			}
+		}
+		
+		// TODO - Check for material changes
 	}
 
 	void GUIDrawGroups::notifyMeshDirty(GUIElement* element)
 	{
-		// TODO
+		// TODO - Dirty elements should be cached, then only cause a rebuild when its needed. This is esp. needed because both
+		// mesh and content might get dirtied when content is dirtied
+
+		// Mesh should only be dirtied when element depth or active state changes, so we check for those states
+		const SmallVector<GUIRenderElement, 4>& renderElements = element->_getRenderElements();
+		for(UINT32 i = 0; i < renderElements.size(); i++)
+		{
+			const GUIRenderElement& renderElement = renderElements[i];
+			
+			// All render elements draw group IDs should be assigned at this point
+			assert(renderElement.drawGroupId != -1);
+
+			auto iterFind = std::find_if(mEntries.begin(), mEntries.end(),
+				[drawGroupId = renderElement.drawGroupId](const GUIDrawGroup& group) { return group.id == drawGroupId; });
+
+			assert(iterFind != mEntries.end());
+			if (iterFind != mEntries.end())
+			{
+				GUIDrawGroup& group = *iterFind;
+				UINT32 depth = element->_getDepth() + renderElement.depth;
+
+				// If same as min-depth, no group change is necessary in any case
+				if(depth != group.minDepth)
+				{
+					bool needsGroupChange = false;
+					// If less than min-depth, group change is always necessary
+					if (depth < group.minDepth)
+						needsGroupChange = true;
+					// Non-batching elements must be at min-depth, so group change is necessary
+					else if (!renderElement.material->allowBatching())
+						needsGroupChange = true;
+					// Batching but outside of the group's depth range, group change is necessary
+					else if (depth >= (group.minDepth + group.depthRange))
+						needsGroupChange = true;
+
+					if(needsGroupChange)
+					{
+						UINT32 groupIdx = (UINT32)(iterFind - mEntries.begin());
+						remove(element, i, groupIdx);
+						add(element, i);
+					}
+				}
+
+				group.needsRedraw = true;
+			}
+		}
 	}
 
 	void GUIDrawGroups::rebuildMeshes()
@@ -485,11 +625,6 @@ namespace bs
 		bs_frame_clear();
 	}
 
-
-
-	// TODO - Need to handle the case when element depth, reneder element count or material change - Update the draw groups
-	// TODO - Need to handle the case where element size changes - Update the draw group bounds
-
 	GUIDrawGroups::GUIDrawGroup& GUIDrawGroups::split(UINT32 groupIdx, UINT32 depth)
 	{
 		GUIDrawGroup& group = mEntries[groupIdx];
@@ -514,9 +649,10 @@ namespace bs
 		group.cachedElements.erase(it, group.cachedElements.end());
 
 		for (auto& entry : newSplitGroup.cachedElements)
-			entry.element->_setDrawGroupId(newSplitGroup.id);
+			entry.element->_getRenderElements()[entry.renderElement].drawGroupId = newSplitGroup.id;
 
 		group.dirtyBounds = true;
+		group.needsRedraw = true;
 		newSplitGroup.dirtyBounds = true;
 
 		mEntries.insert(mEntries.begin() + groupIdx, std::move(newSplitGroup));
