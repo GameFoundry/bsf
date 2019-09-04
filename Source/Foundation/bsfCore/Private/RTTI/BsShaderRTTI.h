@@ -103,16 +103,19 @@ namespace bs
 		{
 			static constexpr uint32_t VERSION = 1;
 
-			uint32_t size = 0;
-			size += rtti_write(data.rendererSemantic, stream);
-			size += rtti_write(data.type, stream);
-			size += rtti_write(data.name, stream);
-			size += rtti_write(data.gpuVariableNames, stream);
-			size += rtti_write(data.defaultValueIdx, stream);
-			size += rtti_write(VERSION, stream);
-			size += rtti_write(data.attribIdx, stream);
+			return rtti_write_with_size_header(stream, [&data, &stream]()
+			{
+				uint32_t size = 0;
+				size += rtti_write(data.rendererSemantic, stream);
+				size += rtti_write(data.type, stream);
+				size += rtti_write(data.name, stream);
+				size += rtti_write(data.gpuVariableNames, stream);
+				size += rtti_write(data.defaultValueIdx, stream);
+				size += rtti_write(VERSION, stream);
+				size += rtti_write(data.attribIdx, stream);
 
-			return size;
+				return size;
+			});
 		}
 
 		static uint32_t fromMemory(SHADER_OBJECT_PARAM_DESC& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo, bool compress)
@@ -328,7 +331,7 @@ namespace bs
 
 			return rtti_write_with_size_header(stream, [&data, &stream]()
 			{
-				uint32_t size = sizeof(uint32_t);
+				uint32_t size = 0;
 				size += rtti_write(VERSION, stream);
 				size += rtti_write(data.name, stream);
 				size += rtti_write(data.identifier, stream);
