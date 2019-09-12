@@ -54,19 +54,7 @@ namespace bs
 			this->getter = getter;
 			this->setter = setter;
 
-			init(std::move(name), uniqueId, false, SerializableFT_DataBlock, info);
-		}
-
-		/** @copydoc RTTIField::getTypeSize */
-		UINT32 getTypeSize() override
-		{
-			return 0; // Data block types don't store size the conventional way
-		}
-
-		/** @copydoc RTTIField::hasDynamicSize */
-		bool hasDynamicSize() override
-		{
-			return true;
+			init(std::move(name), RTTIFieldSchema(uniqueId, false, true, 0, SerializableFT_DataBlock, info));
 		}
 
 		/** @copydoc RTTIField::getArraySize */

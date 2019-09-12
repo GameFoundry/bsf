@@ -44,7 +44,6 @@ namespace bs
 		/** @copydoc RTTIPlainType::getDynamicSize */
 		static uint32_t getDynamicSize(const TKeyframe<T>& data)
 		{
-			assert(false);
 			return sizeof(TKeyframe<T>);
 		}
 	};

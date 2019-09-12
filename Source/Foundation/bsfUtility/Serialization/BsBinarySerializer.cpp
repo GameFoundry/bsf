@@ -237,13 +237,12 @@ namespace bs
 				if (writeMeta)
 				{
 					// Copy field ID & other meta-data like field size and type
-					int metaData = encodeFieldMetaData(curGenericField->mUniqueId, curGenericField->getTypeSize(),
-						curGenericField->mIsVectorType, curGenericField->mType, curGenericField->hasDynamicSize(), false);
+					int metaData = encodeFieldMetaData(curGenericField->schema, false);
 
 					stream.writeBytes(metaData);
 				}
 
-				if(curGenericField->mIsVectorType)
+				if(curGenericField->schema.isArray)
 				{
 					UINT32 arrayNumElems = curGenericField->getArraySize(rttiInstance, object);
 
@@ -253,7 +252,7 @@ namespace bs
 					else
 						stream.writeBytes(arrayNumElems);
 
-					switch(curGenericField->mType)
+					switch(curGenericField->schema.type)
 					{
 					case SerializableFT_ReflectablePtr:
 						{
@@ -304,12 +303,12 @@ namespace bs
 					default:
 						BS_LOG(Error, Serialization,
 							"Error encoding data. Encountered a type I don't know how to encode. Type: {0}, Is array: {1}",
-							curGenericField->mType, curGenericField->mIsVectorType);
+							curGenericField->schema.type, curGenericField->schema.isArray);
 					}
 				}
 				else
 				{
-					switch(curGenericField->mType)
+					switch(curGenericField->schema.type)
 					{
 					case SerializableFT_ReflectablePtr:
 						{
@@ -373,7 +372,7 @@ namespace bs
 					default:
 						BS_LOG(Error, Serialization,
 							"Error encoding data. Encountered a type I don't know how to encode. Type: {0}, Is array: {1}",
-							curGenericField->mType, curGenericField->mIsVectorType);
+							curGenericField->schema.type, curGenericField->schema.isArray);
 					}
 				}
 
@@ -531,23 +530,23 @@ namespace bs
 
 			if (curGenericField != nullptr)
 			{
-				if (!hasDynamicSize && curGenericField->getTypeSize() != fieldSize)
+				if (!hasDynamicSize && curGenericField->schema.size != fieldSize)
 				{
 					BS_EXCEPT(InternalErrorException,
 						"Data type mismatch. Type size stored in file and actual type size don't match. ("
-						+ toString(curGenericField->getTypeSize()) + " vs. " + toString(fieldSize) + ")");
+						+ toString(curGenericField->schema.size) + " vs. " + toString(fieldSize) + ")");
 				}
 
-				if (curGenericField->mIsVectorType != isArray)
+				if (curGenericField->schema.isArray != isArray)
 				{
 					BS_EXCEPT(InternalErrorException,
 						"Data type mismatch. One is array, other is a single type.");
 				}
 
-				if (curGenericField->mType != fieldType)
+				if (curGenericField->schema.type != fieldType)
 				{
 					BS_EXCEPT(InternalErrorException,
-						"Data type mismatch. Field types don't match. " + toString(UINT32(curGenericField->mType)) + " vs. " + toString(UINT32(fieldType)));
+						"Data type mismatch. Field types don't match. " + toString(UINT32(curGenericField->schema.type)) + " vs. " + toString(UINT32(fieldType)));
 				}
 			}
 
@@ -594,7 +593,7 @@ namespace bs
 							{
 								ObjectToDecode& objToDecode = findObj->second;
 
-								const bool needsDecoding = !curField->getInfo().flags.isSet(RTTIFieldFlag::WeakRef) && !objToDecode.isDecoded;
+								const bool needsDecoding = !curField->schema.info.flags.isSet(RTTIFieldFlag::WeakRef) && !objToDecode.isDecoded;
 								// TODO - Create objToDecode.object instance here, if not already created
 								if (needsDecoding)
 								{
@@ -717,7 +716,7 @@ namespace bs
 						{
 							ObjectToDecode& objToDecode = findObj->second;
 
-							const bool needsDecoding = !curField->getInfo().flags.isSet(RTTIFieldFlag::WeakRef) && !objToDecode.isDecoded;
+							const bool needsDecoding = !curField->schema.info.flags.isSet(RTTIFieldFlag::WeakRef) && !objToDecode.isDecoded;
 							// TODO - Create objToDecode.object instance here, if not already created
 							if (needsDecoding)
 							{
@@ -883,7 +882,7 @@ namespace bs
 				}
 				else
 				{
-					int metaData = encodeFieldMetaData(0, 0, false, SerializableFT_Plain, false, true);
+					int metaData = encodeFieldMetaData(RTTIFieldSchema(), true);
 					stream.writeBytes(metaData);
 				}
 			}
@@ -892,8 +891,7 @@ namespace bs
 		return true;
 	}
 
-	UINT32 BinarySerializer::encodeFieldMetaData(UINT16 id, UINT8 size, bool array, SerializableFieldType type,
-		bool hasDynamicSize, bool terminator)
+	UINT32 BinarySerializer::encodeFieldMetaData(const RTTIFieldSchema& schema, bool terminator)
 	{
 		// If O == 0 - Meta contains field information (Encoded using this method)
 		//// Encoding: IIII IIII IIII IIII SSSS SSSS xTYP DCAO
@@ -907,12 +905,12 @@ namespace bs
 		//// Y - Plain field has dynamic size
 		//// T - Terminator (last field in an object)
 
-		return (id << 16 | size << 8 |
-			(array ? 0x02 : 0) |
-			((type == SerializableFT_DataBlock) ? 0x04 : 0) |
-			((type == SerializableFT_Reflectable) ? 0x08 : 0) |
-			((type == SerializableFT_ReflectablePtr) ? 0x10 : 0) |
-			(hasDynamicSize ? 0x20 : 0) |
+		return (schema.id << 16 | schema.size << 8 |
+			(schema.isArray ? 0x02 : 0) |
+			((schema.type == SerializableFT_DataBlock) ? 0x04 : 0) |
+			((schema.type == SerializableFT_Reflectable) ? 0x08 : 0) |
+			((schema.type == SerializableFT_ReflectablePtr) ? 0x10 : 0) |
+			(schema.hasDynamicSize ? 0x20 : 0) |
 			(terminator ? 0x40 : 0)); // TODO - Low priority. Technically I could encode this much more tightly, and use var-ints for ID
 	}
 

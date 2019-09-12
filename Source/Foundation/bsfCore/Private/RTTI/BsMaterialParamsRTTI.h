@@ -326,8 +326,7 @@ namespace bs
 
 		static uint32_t getDynamicSize(const MaterialParamsBase::ParamData& data)
 		{
-			assert(false);
-			return 0;
+			return sizeof(MaterialParamsBase::ParamData);
 		}
 	};
 

@@ -69,7 +69,7 @@ namespace bs
 				fieldId.field = field;
 				fieldId.arrayIdx = -1;
 
-				if (field->isArray())
+				if (field->schema.isArray)
 				{
 					const UINT32 numElements = field->getArraySize(rttiInstance, object);
 
@@ -77,7 +77,7 @@ namespace bs
 					{
 						fieldId.arrayIdx = j;
 
-						if (field->mType == SerializableFT_ReflectablePtr)
+						if (field->schema.type == SerializableFT_ReflectablePtr)
 						{
 							auto* curField = static_cast<RTTIReflectablePtrFieldBase*>(field);
 							SPtr<IReflectable> childObj = curField->getArrayValue(rttiInstance, object, j);
@@ -97,7 +97,7 @@ namespace bs
 								reference.object = childObj;
 							}
 						}
-						else if (field->mType == SerializableFT_Reflectable)
+						else if (field->schema.type == SerializableFT_Reflectable)
 						{
 							auto* curField = static_cast<RTTIReflectableFieldBase*>(field);
 							IReflectable* childObj = &curField->getArrayValue(rttiInstance, object, j);
@@ -119,7 +119,7 @@ namespace bs
 				}
 				else
 				{
-					if (field->mType == SerializableFT_ReflectablePtr)
+					if (field->schema.type == SerializableFT_ReflectablePtr)
 					{
 						auto* curField = static_cast<RTTIReflectablePtrFieldBase*>(field);
 						SPtr<IReflectable> childObj = curField->getValue(rttiInstance, object);
@@ -139,7 +139,7 @@ namespace bs
 							reference.object = childObj;
 						}
 					}
-					else if (field->mType == SerializableFT_Reflectable)
+					else if (field->schema.type == SerializableFT_Reflectable)
 					{
 						auto* curField = static_cast<RTTIReflectableFieldBase*>(field);
 						IReflectable* childObj = &curField->getValue(rttiInstance, object);
@@ -189,7 +189,7 @@ namespace bs
 				{
 					auto* curField = static_cast<RTTIReflectablePtrFieldBase*>(reference.fieldId.field);
 
-					if (curField->isArray())
+					if (curField->schema.isArray)
 						curField->setArrayValue(rttiInstance, object, reference.fieldId.arrayIdx, reference.object);
 					else
 						curField->setValue(rttiInstance, object, reference.object);
@@ -212,7 +212,7 @@ namespace bs
 					auto* curField = static_cast<RTTIReflectableFieldBase*>(childObjectData.fieldId.field);
 
 					IReflectable* childObj = nullptr;
-					if (curField->isArray())
+					if (curField->schema.isArray)
 						childObj = &curField->getArrayValue(rttiInstance, object, childObjectData.fieldId.arrayIdx);
 					else
 						childObj = &curField->getValue(rttiInstance, object);

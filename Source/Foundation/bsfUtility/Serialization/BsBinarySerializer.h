@@ -164,8 +164,7 @@ namespace bs
 		static UINT32 readObjectMetaData(BufferedBitstreamReader& stream, BinarySerializerFlags flags, UINT32& objId, UINT32& objTypeId, bool& isBaseType);
 		
 		/** Encodes data required for representing a serialized field, into 4 bytes. */
-		static UINT32 encodeFieldMetaData(UINT16 id, UINT8 size, bool array,
-			SerializableFieldType type, bool hasDynamicSize, bool terminator);
+		static UINT32 encodeFieldMetaData(const RTTIFieldSchema& fieldSchema, bool terminator);
 
 		/** Decode meta field that was encoded using encodeFieldMetaData().*/
 		static void decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size, bool& array,

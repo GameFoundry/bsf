@@ -122,19 +122,19 @@ namespace bs
 				{
 					RTTIField* curGenericField = rtti->getField(fieldIdx);
 
-					auto iterFindFieldData = subObject.entries.find(curGenericField->mUniqueId);
+					auto iterFindFieldData = subObject.entries.find(curGenericField->schema.id);
 					if (iterFindFieldData == subObject.entries.end())
 						continue;
 
 					SPtr<SerializedInstance> entryData = iterFindFieldData->second.serialized;
-					if (curGenericField->isArray())
+					if (curGenericField->schema.isArray)
 					{
 						SPtr<SerializedArray> arrayData = std::static_pointer_cast<SerializedArray>(entryData);
 
 						UINT32 arrayNumElems = (UINT32)arrayData->numElements;
 						curGenericField->setArraySize(rttiInstance, object.get(), arrayNumElems);
 
-						switch (curGenericField->mType)
+						switch (curGenericField->schema.type)
 						{
 						case SerializableFT_ReflectablePtr:
 						{
@@ -160,7 +160,7 @@ namespace bs
 
 									ObjectToDecode& objToDecode = findObj->second;
 
-									bool needsDecoding = !curField->getInfo().flags.isSet(RTTIFieldFlag::WeakRef) && !objToDecode.isDecoded;
+									bool needsDecoding = !curField->schema.info.flags.isSet(RTTIFieldFlag::WeakRef) && !objToDecode.isDecoded;
 									if (needsDecoding)
 									{
 										if (objToDecode.decodeInProgress)
@@ -232,7 +232,7 @@ namespace bs
 					}
 					else
 					{
-						switch (curGenericField->mType)
+						switch (curGenericField->schema.type)
 						{
 						case SerializableFT_ReflectablePtr:
 						{
@@ -256,7 +256,7 @@ namespace bs
 
 								ObjectToDecode& objToDecode = findObj->second;
 
-								bool needsDecoding = !curField->getInfo().flags.isSet(RTTIFieldFlag::WeakRef) && !objToDecode.isDecoded;
+								bool needsDecoding = !curField->schema.info.flags.isSet(RTTIFieldFlag::WeakRef) && !objToDecode.isDecoded;
 								if (needsDecoding)
 								{
 									if (objToDecode.decodeInProgress)
@@ -384,11 +384,11 @@ namespace bs
 
 					if(replicableOnly)
 					{
-						if(!curGenericField->getInfo().flags.isSet(RTTIFieldFlag::Replicate))
+						if(!curGenericField->schema.info.flags.isSet(RTTIFieldFlag::Replicate))
 							continue;
 					}
 
-					if (curGenericField->mIsVectorType)
+					if (curGenericField->schema.isArray)
 					{
 						const UINT32 arrayNumElems = curGenericField->getArraySize(rttiInstance, object);
 
@@ -397,7 +397,7 @@ namespace bs
 
 						serializedEntry = serializedArray;
 
-						switch (curGenericField->mType)
+						switch (curGenericField->schema.type)
 						{
 						case SerializableFT_ReflectablePtr:
 						{
@@ -450,10 +450,10 @@ namespace bs
 							for (UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
 							{
 								UINT32 typeSize = 0;
-								if (curField->hasDynamicSize())
+								if (curField->schema.hasDynamicSize)
 									typeSize = curField->getArrayElemDynamicSize(rttiInstance, object, arrIdx);
 								else
-									typeSize = curField->getTypeSize();
+									typeSize = curField->schema.size;
 
 								const auto serializedField = bs_shared_ptr_new<SerializedField>();
 								serializedField->value = (UINT8*)bs_alloc(typeSize);
@@ -474,13 +474,13 @@ namespace bs
 						}
 						default:
 							BS_EXCEPT(InternalErrorException,
-								"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) +
-								", Is array: " + toString(curGenericField->mIsVectorType));
+								"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->schema.type)) +
+								", Is array: " + toString(curGenericField->schema.isArray));
 						}
 					}
 					else
 					{
-						switch (curGenericField->mType)
+						switch (curGenericField->schema.type)
 						{
 						case SerializableFT_ReflectablePtr:
 						{
@@ -510,10 +510,10 @@ namespace bs
 							auto curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
 
 							UINT32 typeSize = 0;
-							if (curField->hasDynamicSize())
+							if (curField->schema.hasDynamicSize)
 								typeSize = curField->getDynamicSize(rttiInstance, object);
 							else
-								typeSize = curField->getTypeSize();
+								typeSize = curField->schema.size;
 
 							const auto serializedField = bs_shared_ptr_new<SerializedField>();
 							serializedField->value = (UINT8*)bs_alloc(typeSize);
@@ -548,16 +548,16 @@ namespace bs
 						}
 						default:
 							BS_EXCEPT(InternalErrorException,
-								"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) +
-								", Is array: " + toString(curGenericField->mIsVectorType));
+								"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->schema.type)) +
+								", Is array: " + toString(curGenericField->schema.isArray));
 						}
 					}
 
 					SerializedEntry entry;
-					entry.fieldId = curGenericField->mUniqueId;
+					entry.fieldId = curGenericField->schema.id;
 					entry.serialized = serializedEntry;
 
-					subObject.entries.insert(std::make_pair(curGenericField->mUniqueId, entry));
+					subObject.entries.insert(std::make_pair(curGenericField->schema.id, entry));
 				}
 
 				rtti = rtti->getBaseClass();

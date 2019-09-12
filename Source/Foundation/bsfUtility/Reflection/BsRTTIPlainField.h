@@ -48,12 +48,6 @@ namespace bs
 			return 0;
 		}
 
-		/** @copydoc RTTIField::hasDynamicSize */
-		bool hasDynamicSize() override
-		{
-			return false;
-		}
-
 		/** Gets the dynamic size of the object. If object has no dynamic size, static size of the object is returned. */
 		virtual UINT32 getDynamicSize(RTTITypeBase* rtti, void* object)
 		{
@@ -134,7 +128,8 @@ namespace bs
 			this->getter = getter;
 			this->setter = setter;
 
-			init(std::move(name), uniqueId, false, SerializableFT_Plain, info);
+			init(std::move(name), RTTIFieldSchema(uniqueId, false, RTTIPlainType<DataType>::hasDynamicSize,
+				RTTIPlainType<DataType>::getDynamicSize(), SerializableFT_Plain, info));
 		}
 
 		/**
@@ -164,25 +159,14 @@ namespace bs
 			arrayGetSize = getSize;
 			arraySetSize = setSize;
 
-			init(std::move(name), uniqueId, true, SerializableFT_Plain, info);
-		}
-
-		/** @copydoc RTTIField::getTypeSize */
-		UINT32 getTypeSize() override
-		{
-			return sizeof(DataType);
+			init(std::move(name), RTTIFieldSchema(uniqueId, true, RTTIPlainType<DataType>::hasDynamicSize,
+				RTTIPlainType<DataType>::getDynamicSize(), SerializableFT_Plain, info));
 		}
 
 		/** @copydoc RTTIPlainFieldBase::getTypeId */
 		UINT32 getTypeId() override
 		{
 			return RTTIPlainType<DataType>::id;
-		}
-
-		/** @copydoc RTTIPlainFieldBase::hasDynamicSize */
-		bool hasDynamicSize() override
-		{
-			return RTTIPlainType<DataType>::hasDynamicSize != 0;
 		}
 
 		/** @copydoc RTTIPlainFieldBase::getDynamicSize */
@@ -228,7 +212,7 @@ namespace bs
 
 			if(!arraySetSize)
 			{
-				BS_EXCEPT(InternalErrorException, "Specified field (" + mName + ") has no array size setter.");
+				BS_EXCEPT(InternalErrorException, "Specified field (" + name + ") has no array size setter.");
 			}
 
 			InterfaceType* rttiObject = static_cast<InterfaceType*>(rtti);
@@ -246,7 +230,7 @@ namespace bs
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 			DataType value = (rttiObject->*getter)(castObject);
 
-			RTTIPlainType<DataType>::toMemory(value, stream, getInfo(), compress);
+			RTTIPlainType<DataType>::toMemory(value, stream, schema.info, compress);
 		}
 
 		/** @copydoc RTTIPlainFieldBase::arrayElemToBuffer */
@@ -259,7 +243,7 @@ namespace bs
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 			DataType value = (rttiObject->*arrayGetter)(castObject, index);
 
-			RTTIPlainType<DataType>::toMemory(value, stream, getInfo(), compress);
+			RTTIPlainType<DataType>::toMemory(value, stream, schema.info, compress);
 		}
 
 		/** @copydoc RTTIPlainFieldBase::fromBuffer */
@@ -272,12 +256,12 @@ namespace bs
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
 			DataType value;
-			RTTIPlainType<DataType>::fromMemory(value, stream, getInfo(), compress);
+			RTTIPlainType<DataType>::fromMemory(value, stream, schema.info, compress);
 
 			if(!setter)
 			{
 				BS_EXCEPT(InternalErrorException,
-					"Specified field (" + mName + ") has no setter.");
+					"Specified field (" + name + ") has no setter.");
 			}
 
 			(rttiObject->*setter)(castObject, value);
@@ -293,12 +277,12 @@ namespace bs
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
 			DataType value;
-			RTTIPlainType<DataType>::fromMemory(value, stream, getInfo(), compress);
+			RTTIPlainType<DataType>::fromMemory(value, stream, schema.info, compress);
 
 			if(!arraySetter)
 			{
 				BS_EXCEPT(InternalErrorException,
-					"Specified field (" + mName + ") has no setter.");
+					"Specified field (" + name + ") has no setter.");
 			}
 
 			(rttiObject->*arraySetter)(castObject, index, value);

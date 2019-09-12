@@ -65,10 +65,10 @@ namespace bs
 			{
 				RTTIField* myField = myType->getField(i);
 
-				if (!myField->isReflectablePtrType())
+				if (myField->schema.type != SerializableFT_ReflectablePtr)
 					continue;
 
-				RTTIReflectablePtrFieldBase* myReflectablePtrField = static_cast<RTTIReflectablePtrFieldBase*>(myField);
+				auto* myReflectablePtrField = static_cast<RTTIReflectablePtrFieldBase*>(myField);
 				
 				RTTITypeBase* otherType = myReflectablePtrField->getType();
 				UINT32 otherNumFields = otherType->getNumFields();
@@ -76,14 +76,14 @@ namespace bs
 				{
 					RTTIField* otherField = otherType->getField(j);
 
-					if (!otherField->isReflectablePtrType())
+					if (otherField->schema.type != SerializableFT_ReflectablePtr)
 						continue;
 
-					RTTIReflectablePtrFieldBase* otherReflectablePtrField = static_cast<RTTIReflectablePtrFieldBase*>(otherField);
+					auto* otherReflectablePtrField = static_cast<RTTIReflectablePtrFieldBase*>(otherField);
 
 					if (myType->getRTTIId() == otherReflectablePtrField->getType()->getRTTIId() &&
-						(!myReflectablePtrField->getInfo().flags.isSet(RTTIFieldFlag::WeakRef) &&
-						!otherReflectablePtrField->getInfo().flags.isSet(RTTIFieldFlag::WeakRef)))
+						(!myReflectablePtrField->schema.info.flags.isSet(RTTIFieldFlag::WeakRef) &&
+						!otherReflectablePtrField->schema.info.flags.isSet(RTTIFieldFlag::WeakRef)))
 					{
 						BS_EXCEPT(InternalErrorException, "Found circular reference on RTTI type: " + myType->getRTTIName()
 							+ " to type: " + otherType->getRTTIName() + ". Either remove one of the references or mark it"

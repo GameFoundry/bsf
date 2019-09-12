@@ -37,7 +37,6 @@ namespace bs
 		/** @copydoc RTTIPlainType::getDynamicSize */
 		static uint32_t getDynamicSize(const Flags<Enum, Storage>& data)
 		{
-			assert(false);
 			return sizeof(Flags<Enum, Storage>);
 		}
 	};

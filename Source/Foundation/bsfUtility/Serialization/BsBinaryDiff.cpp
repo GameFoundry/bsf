@@ -292,12 +292,12 @@ namespace bs
 	{
 		if (newData != nullptr && oldData != nullptr)
 		{
-			modification = IDiff::generateDiff(rtti, field->mType, oldData, newData, objectMap);
+			modification = IDiff::generateDiff(rtti, field->schema.type, oldData, newData, objectMap);
 			return modification != nullptr;
 		}
 		else if (newData == nullptr)
 		{
-			switch (field->mType)
+			switch (field->schema.type)
 			{
 			case SerializableFT_Plain:
 				modification = bs_shared_ptr_new<SerializedField>();
@@ -359,7 +359,7 @@ namespace bs
 
 				SPtr<SerializedInstance> modification;
 				bool hasModification = false;
-				if (genericField->isArray())
+				if (genericField->schema.isArray)
 				{
 					SPtr<SerializedArray> orgArrayData = std::static_pointer_cast<SerializedArray>(orgEntryData);
 					SPtr<SerializedArray> newArrayData = std::static_pointer_cast<SerializedArray>(newEntryData);
@@ -433,9 +433,9 @@ namespace bs
 					}
 
 					SerializedEntry modificationEntry;
-					modificationEntry.fieldId = genericField->mUniqueId;
+					modificationEntry.fieldId = genericField->schema.id;
 					modificationEntry.serialized = modification;
-					diffSubObject->entries[genericField->mUniqueId] = modificationEntry;
+					diffSubObject->entries[genericField->schema.id] = modificationEntry;
 				}
 			}
 		}
@@ -483,7 +483,7 @@ namespace bs
 
 				SPtr<SerializedInstance> diffData = diffEntry.second.serialized;
 
-				if (genericField->isArray())
+				if (genericField->schema.isArray)
 				{
 					SPtr<SerializedArray> diffArray = std::static_pointer_cast<SerializedArray>(diffData);
 
@@ -496,7 +496,7 @@ namespace bs
 
 					commands.push_back(arraySizeCommand);
 
-					switch (genericField->mType)
+					switch (genericField->schema.type)
 					{
 					case SerializableFT_ReflectablePtr:
 					{
@@ -636,7 +636,7 @@ namespace bs
 				}
 				else
 				{
-					switch (genericField->mType)
+					switch (genericField->schema.type)
 					{
 					case SerializableFT_ReflectablePtr:
 					{

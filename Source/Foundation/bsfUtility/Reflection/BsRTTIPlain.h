@@ -142,10 +142,7 @@ namespace bs
 	template<class ElemType>
 	uint32_t rtti_size(const ElemType& data)
 	{
-		if(RTTIPlainType<ElemType>::hasDynamicSize == 1)
-			return RTTIPlainType<ElemType>::getDynamicSize(data);
-		else
-			return sizeof(ElemType);
+		return RTTIPlainType<ElemType>::getDynamicSize(data);
 	}
 
 	/**

@@ -256,6 +256,18 @@ namespace bs
 																								\
 	META_InitAllMembers mInitMembers{this};
 
+	/** Contains serializable meta-data about a RTTIType. */
+	struct RTTISchema : IReflectable
+	{
+		UINT32 typeId = 0;
+
+		SPtr<RTTISchema> baseTypeSchema;
+		Vector<RTTIFieldSchema> fieldSchemas;
+
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
+
 	/** @} */
 
 	/** @addtogroup Internal-Utility
@@ -373,6 +385,9 @@ namespace bs
 		 */
 		RTTIField* findField(int uniqueFieldId);
 
+		/** Returns a set of serializable meta-data describing the RTTI type. */
+		const SPtr<RTTISchema>& getSchema() const { return mSchema; }
+		
 		/** @name Internal
 		 *  @{
 		 */
@@ -387,6 +402,9 @@ namespace bs
 		 */
 		virtual RTTITypeBase* _clone(FrameAlloc& alloc) = 0;
 
+		/** Initializes the type schema. Should be called once after construction. */
+		void _initSchema();
+		
 		/** @} */
 
 	protected:
@@ -397,6 +415,8 @@ namespace bs
 		 * @param[in]	field	Field, must be non-null.
 		 */
 		void addNewField(RTTIField* field);
+
+		SPtr<RTTISchema> mSchema;
 
 	private:
 		Vector<RTTIField*> mFields;
@@ -409,8 +429,11 @@ namespace bs
 	public:
 		InitRTTIOnStart()
 		{
-			IReflectable::_registerRTTIType(Type::getRTTIStatic());
-			BaseType::getRTTIStatic()->_registerDerivedClass(Type::getRTTIStatic());
+			RTTITypeBase* rttiType = Type::getRTTIStatic();
+			rttiType->_initSchema();
+			
+			IReflectable::_registerRTTIType(rttiType);
+			BaseType::getRTTIStatic()->_registerDerivedClass(rttiType);
 		}
 
 		void makeSureIAmInstantiated() { }
@@ -423,7 +446,10 @@ namespace bs
 	public:
 		InitRTTIOnStart()
 		{
-			IReflectable::_registerRTTIType(Type::getRTTIStatic());
+			RTTITypeBase* rttiType = Type::getRTTIStatic();
+			rttiType->_initSchema();
+
+			IReflectable::_registerRTTIType(rttiType);
 		}
 
 		void makeSureIAmInstantiated() { }

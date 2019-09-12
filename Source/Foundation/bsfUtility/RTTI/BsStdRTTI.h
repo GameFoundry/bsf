@@ -325,8 +325,8 @@ namespace bs
 
 			for (const auto& item : data)
 			{
-				dataSize += RTTIPlainType<Key>::getDynamicSize(item.first);
-				dataSize += RTTIPlainType<Value>::getDynamicSize(item.second);
+				dataSize += rtti_size(item.first);
+				dataSize += rtti_size(item.second);
 			}
 
 			assert(dataSize <= std::numeric_limits<uint32_t>::max());

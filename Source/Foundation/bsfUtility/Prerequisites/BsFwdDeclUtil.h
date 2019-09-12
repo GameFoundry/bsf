@@ -197,5 +197,7 @@ namespace bs
 		TID_List = 73,
 		TID_SmallVector = 74,
 		TID_ColorGradientHDR = 75,
+		TID_RTTISchema = 76,
+		TID_RTTIFieldSchema = 77,
 	};
 }

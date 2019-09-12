@@ -143,6 +143,7 @@ set(BS_UTILITY_INC_RTTI
 	"bsfUtility/RTTI/BsRectOffsetRTTI.h"
 	"bsfUtility/RTTI/BsColorRTTI.h"
 	"bsfUtility/RTTI/BsUUIDRTTI.h"
+	"bsfUtility/RTTI/BsRTTISchemaRTTI.h"
 )
 
 set(BS_UTILITY_INC_ALLOCATORS
