@@ -1,0 +1,93 @@
+#ifndef ANIMATED
+	#define ANIMATED 0
+#endif
+
+#ifndef TRANSPARENCY
+	#define TRANSPARENCY 0
+#endif
+
+#ifndef UV
+	#define UV 0
+#endif
+
+mixin SpriteCommon
+{
+	#if TRANSPARENCY
+	blend
+	{
+		target	
+		{
+			enabled = true;
+			#if TRANSPARENCY == 1
+			color = { srcA, srcIA, add };
+			#else
+			color = { one, srcIA, add };
+			#endif
+			
+			#if ALPHA
+			writemask = A;
+			#else
+			writemask = RGB;
+			#endif
+		};
+	};	
+	#endif
+	
+	#if ALPHA
+	stencil
+	{
+		enabled = true;
+		readmask = 0x1;
+		writemask = 0x1;
+		
+		front = { keep, keep, inc, eq };
+		reference = 0x0;
+	};
+	#endif
+
+	depth
+	{
+		read = false;
+		write = false;
+	};
+	
+	code
+	{
+		cbuffer GUIParams
+		{
+			float4x4 gWorldTransform;
+			float gInvViewportWidth;
+			float gInvViewportHeight;
+			float gViewportYFlip;
+			float4 gTint;
+			float4 gUVSizeOffset;
+		}	
+
+		void vsmain(
+			in float3 inPos : POSITION
+			#if UV
+			, in float2 uv : TEXCOORD0
+			#endif
+			, out float4 oPosition : SV_Position
+			#if UV
+			, out float2 oUv : TEXCOORD0
+			#endif
+			)
+		{
+			float4 tfrmdPos = mul(gWorldTransform, float4(inPos.xy, 0, 1));
+
+			float tfrmdX = -1.0f + (tfrmdPos.x * gInvViewportWidth);
+			float tfrmdY = (1.0f - (tfrmdPos.y * gInvViewportHeight)) * gViewportYFlip;
+
+			oPosition = float4(tfrmdX, tfrmdY, 0, 1);
+			
+			#if UV
+			#if ANIMATED
+			oUv = uv * gUVSizeOffset.xy + gUVSizeOffset.zw;
+			#else
+			oUv = uv;
+			#endif
+			#endif
+		}
+	};
+};

@@ -18,10 +18,12 @@ namespace bs
 		/** Types of sprite materials accessible by default. */
 		enum class BuiltinSpriteMaterialType
 		{
-			ImageTransparent,
 			ImageOpaque,
-			ImageTransparentAnimated,
+			ImageTransparentAlpha,
+			ImageTransparentPremultiplied,
 			ImageOpaqueAnimated,
+			ImageTransparentAlphaAnimated,
+			ImageTransparentPremultipliedAnimated,
 			Text,
 			Line,
 			Count // Keep at end
@@ -33,25 +35,37 @@ namespace bs
 
 		/** Returns the material used for rendering image sprites.
 		 *
-		 * @param[in]	transparent		True if the material should be able to render transparecy.
+		 * @param[in]	transparency	Transparency mode the material should support.
 		 * @param[in]	animation		True if the material should be able to perform sprite sheet animation.
 		 * @return						Requested sprite material.
 		 */
-		SpriteMaterial* getImageMaterial(bool transparent, bool animation = false) const
+		SpriteMaterial* getImageMaterial(SpriteMaterialTransparency transparency, bool animation = false) const
 		{
 			if(!animation)
 			{
-				if(transparent)
-					return getMaterial(builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageTransparent]);
-
-				return getMaterial(builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageOpaque]);
+				switch(transparency)
+				{
+				default:
+				case SpriteMaterialTransparency::Opaque:
+					return getMaterial(builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageOpaque]);
+				case SpriteMaterialTransparency::Alpha: 
+					return getMaterial(builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageTransparentAlpha]);
+				case SpriteMaterialTransparency::Premultiplied:
+					return getMaterial(builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageTransparentPremultiplied]);
+				}
 			}
 			else
 			{
-				if(transparent)
-					return getMaterial(builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageTransparentAnimated]);
-
-				return getMaterial(builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageOpaqueAnimated]);
+				switch(transparency)
+				{
+				default:
+				case SpriteMaterialTransparency::Opaque:
+					return getMaterial(builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageOpaqueAnimated]);
+				case SpriteMaterialTransparency::Alpha: 
+					return getMaterial(builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageTransparentAlphaAnimated]);
+				case SpriteMaterialTransparency::Premultiplied:
+					return getMaterial(builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageTransparentPremultipliedAnimated]);
+				}
 			}
 		}
 
@@ -92,7 +106,7 @@ namespace bs
 		}
 	private:
 		UnorderedMap<UINT32, SpriteMaterial*> mMaterials;
-		UINT32 builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::Count];
+		UINT32 builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::Count]{};
 	};
 
 	/** @} */

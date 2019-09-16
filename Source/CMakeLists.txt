@@ -242,7 +242,7 @@ endif()
 add_executable(bsfImportTool
 	Foundation/bsfEngine/Resources/BsBuiltinResourcesImporter.cpp)
 add_common_flags(bsfImportTool)
-target_compile_definitions(bsfImportTool PRIVATE -DBS_IS_ASSET_TOOL)
+target_compile_definitions(bsfImportTool PUBLIC -DBS_IS_ASSET_TOOL)
 
 target_link_libraries(bsfImportTool bsf)
 	

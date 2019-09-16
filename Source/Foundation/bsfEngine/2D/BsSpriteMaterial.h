@@ -14,6 +14,19 @@ namespace bs
 	 *  @{
 	 */
 
+	/** Type of transparency supported by a sprite material. */
+	enum class SpriteMaterialTransparency
+	{
+		/** No transparency supported. */
+		Opaque = 0,
+
+		/** Transparency is deduced from the alpha value of the sprite color. */
+		Alpha = 1,
+
+		/** Same as Alpha, except it is assumed the sprite color has been premultiplied by the alpha value. */
+		Premultiplied = 2
+	};
+
 	/** Extension structure that can be used by SpriteMaterial%s to access specialized data. */
 	struct SpriteMaterialExtraInfo
 	{
@@ -62,7 +75,7 @@ namespace bs
 	class BS_EXPORT SpriteMaterial
 	{
 	public:
-		SpriteMaterial(UINT32 id, const HMaterial& material, const ShaderVariation& variation = ShaderVariation::EMPTY,
+		SpriteMaterial(UINT32 id, const HMaterial& material, ShaderVariation variation = ShaderVariation::EMPTY,
 			bool allowBatching = true);
 		virtual ~SpriteMaterial();
 
@@ -99,17 +112,21 @@ namespace bs
 		 * @param[in]	sampler			Optional sampler to render the texture with.
 		 * @param[in]	paramBuffer		Buffer containing data GPU parameters.
 		 * @param[in]	additionalData	Optional additional data that might be required by the renderer.
+		 * @param[in]	alphaOnly		If true the material will only render the alpha value. Render target is expected to
+		 *								have a stencil buffer attached and the value will be written only if stencil value is 0,
+		 *								after which the stencil value will be incremented by one. (i.e. only first element that
+		 *								writes to a pixel stores its alpha value).
 		 */
 		virtual void render(const SPtr<ct::MeshBase>& mesh, const SubMesh& subMesh, const SPtr<ct::Texture>& texture,
 			const SPtr<ct::SamplerState>& sampler, const SPtr<ct::GpuParamBlockBuffer>& paramBuffer,
-			const SPtr<SpriteMaterialExtraInfo>& additionalData) const;
+			const SPtr<SpriteMaterialExtraInfo>& additionalData, bool alphaOnly) const;
 
 	protected:
 		/** Perform initialization of core-thread specific objects. */
 		virtual void initialize();
 
 		/** Destroys the core thread material. */
-		static void destroy(const SPtr<ct::Material>& material, const SPtr<ct::GpuParamsSet>& params);
+		static void destroy(const SPtr<ct::Material>& material, const SPtr<ct::GpuParamsSet>& params, const SPtr<ct::GpuParamsSet>& alphaParams);
 
 		UINT32 mId;
 		bool mAllowBatching;
@@ -117,10 +134,13 @@ namespace bs
 		// Core thread only (everything below)
 		SPtr<ct::Material> mMaterial;
 		UINT32 mTechnique;
+		UINT32 mAlphaTechnique;
 		std::atomic<bool> mMaterialStored;
 
 		SPtr<ct::GpuParamsSet> mParams;
+		SPtr<ct::GpuParamsSet> mAlphaParams;
 		UINT32 mParamBufferIdx;
+		UINT32 mAlphaParamBufferIdx;
 		mutable ct::MaterialParamTexture mTextureParam;
 		mutable ct::MaterialParamSampState mSamplerParam;
 	};

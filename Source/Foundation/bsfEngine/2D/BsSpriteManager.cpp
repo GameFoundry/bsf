@@ -7,19 +7,25 @@ namespace bs
 {
 	SpriteManager::SpriteManager()
 	{
-		SpriteMaterial* imageTransparentMat = registerMaterial<SpriteImageMaterial>(true, false);
-		SpriteMaterial* imageOpaqueMat = registerMaterial<SpriteImageMaterial>(false, false);
-		SpriteMaterial* imageTransparentAnimMat = registerMaterial<SpriteImageMaterial>(true, true);
-		SpriteMaterial* imageOpaqueAnimMat = registerMaterial<SpriteImageMaterial>(false, true);
+#ifndef BS_IS_ASSET_TOOL
+		SpriteMaterial* imageOpaqueMat = registerMaterial<SpriteImageMaterial>(SpriteMaterialTransparency::Opaque, false);
+		SpriteMaterial* imageAlphaMat = registerMaterial<SpriteImageMaterial>(SpriteMaterialTransparency::Alpha, false);
+		SpriteMaterial* imagePremultipliedMat = registerMaterial<SpriteImageMaterial>(SpriteMaterialTransparency::Premultiplied, false);
+		SpriteMaterial* imageOpaqueAnimMat = registerMaterial<SpriteImageMaterial>(SpriteMaterialTransparency::Opaque, true);
+		SpriteMaterial* imageAlphaAnimMat = registerMaterial<SpriteImageMaterial>(SpriteMaterialTransparency::Alpha, true);
+		SpriteMaterial* imagePremultipliedAnimMat = registerMaterial<SpriteImageMaterial>(SpriteMaterialTransparency::Premultiplied, true);
 		SpriteMaterial* textMat = registerMaterial<SpriteTextMaterial>();
 		SpriteMaterial* lineMat = registerMaterial<SpriteLineMaterial>();
 
-		builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageTransparent] = imageTransparentMat->getId();
 		builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageOpaque] = imageOpaqueMat->getId();
-		builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageTransparentAnimated] = imageTransparentAnimMat->getId();
+		builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageTransparentAlpha] = imageAlphaMat->getId();
+		builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageTransparentPremultiplied] = imagePremultipliedMat->getId();
 		builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageOpaqueAnimated] = imageOpaqueAnimMat->getId();
+		builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageTransparentAlphaAnimated] = imageAlphaAnimMat->getId();
+		builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::ImageTransparentPremultipliedAnimated] = imagePremultipliedAnimMat->getId();
 		builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::Text] = textMat->getId();
 		builtinMaterialIds[(UINT32)BuiltinSpriteMaterialType::Line] = lineMat->getId();
+#endif
 	}
 
 	SpriteManager::~SpriteManager()

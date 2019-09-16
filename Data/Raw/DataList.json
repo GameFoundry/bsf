@@ -215,6 +215,10 @@
         {
             "Path": "DepthOfFieldCommon.bslinc",
             "UUID": "54902d51-41df-28f2-a9ad-41dfa3f28758"
+        },
+        {
+            "Path": "SpriteCommon.bslinc",
+            "UUID": "4249d0c0-4edd-6c00-2b82-4eddf29ba6f0"
         }
     ],
     "Shaders": [

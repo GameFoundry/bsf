@@ -61,7 +61,8 @@ namespace bs
 			if(animated)
 				matInfo.spriteTexture = desc.texture;
 
-			renderElem.material = SpriteManager::instance().getImageMaterial(desc.transparent, animated);
+			renderElem.material = SpriteManager::instance().getImageMaterial(
+				desc.transparent ? SpriteMaterialTransparency::Alpha : SpriteMaterialTransparency::Opaque, animated);
 		}
 
 		for(UINT32 i = 0; i < numQuads; i++)

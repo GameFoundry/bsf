@@ -7,37 +7,38 @@
 
 namespace bs
 {
-	UINT32 getMaterialId(bool transparent, bool animated)
+	UINT32 getMaterialId(SpriteMaterialTransparency transparency, bool animated)
 	{
-		if(!animated)
-			return transparent ? 0 : 1;
-
-		return transparent ? 2 : 3;
+		switch(transparency)
+		{
+		default:
+		case SpriteMaterialTransparency::Opaque: return animated ? 3 : 0;
+		case SpriteMaterialTransparency::Alpha: return animated ? 4 : 1;
+		case SpriteMaterialTransparency::Premultiplied: return animated ? 5 : 2;
+		}
 	}
 
-	ShaderVariation getMaterialVariation(bool transparent, bool animated)
+	ShaderVariation getMaterialVariation(SpriteMaterialTransparency transparency, bool animated)
 	{
 		return ShaderVariation(SmallVector<ShaderVariation::Param, 4>({
-			ShaderVariation::Param("TRANSPARENT", transparent),
+			ShaderVariation::Param("TRANSPARENCY", (INT32)transparency),
 			ShaderVariation::Param("ANIMATED", animated)
 			}));
 	}
 
-	SpriteImageMaterial::SpriteImageMaterial(bool transparent, bool animated)
+	SpriteImageMaterial::SpriteImageMaterial(SpriteMaterialTransparency transparency, bool animated)
 		:SpriteMaterial(
-			getMaterialId(transparent, animated),
+			getMaterialId(transparency, animated),
 			BuiltinResources::instance().createSpriteImageMaterial(),
-			getMaterialVariation(transparent, animated),
+			getMaterialVariation(transparency, animated),
 			!animated)
-	{
-		
-	}
+	{ }
 
 	SpriteTextMaterial::SpriteTextMaterial()
-		: SpriteMaterial(4, BuiltinResources::instance().createSpriteTextMaterial())
+		: SpriteMaterial(6, BuiltinResources::instance().createSpriteTextMaterial())
 	{ }
 
 	SpriteLineMaterial::SpriteLineMaterial()
-		: SpriteMaterial(5, BuiltinResources::instance().createSpriteLineMaterial())
+		: SpriteMaterial(7, BuiltinResources::instance().createSpriteLineMaterial())
 	{ }
 }

@@ -5,7 +5,10 @@
 #include "BsCorePrerequisites.h"
 
 namespace bs
-{
+{namespace ct {
+		struct RendererViewContext;
+	}
+
 	/** @addtogroup Renderer-Internal
 	 *  @{
 	 */
@@ -84,8 +87,11 @@ namespace bs
 		 * Called at the point at which rendering should be performed for the provided camera. Relevant render targets
 		 * are guaranteed to be already bound to the render API, depending on the RenderLocation. Note that actual structure
 		 * of the render targets depends on the active renderer.
+		 *
+		 * @param[in]	camera			Camera through which the renderer is currently rendering.
+		 * @param[in]	viewContext		Additional information about the currently rendered view.
 		 */
-		virtual void render(const ct::Camera& camera) = 0;
+		virtual void render(const ct::Camera& camera, const ct::RendererViewContext& viewContext) = 0;
 
 		/**
 		 * Determines when will the render() method execute, compared to other plugins using the same RenderLocation.

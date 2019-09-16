@@ -555,32 +555,38 @@ namespace bs { namespace ct
 		if (clearFlags.isSet(ClearFlagBits::Stencil))
 			clearBuffers |= FBT_STENCIL;
 
+		RenderAPI& rapi = RenderAPI::instance();
 		if (clearBuffers != 0)
 		{
-			RenderAPI::instance().setRenderTarget(target);
-			RenderAPI::instance().clearViewport(clearBuffers, viewport->getClearColorValue(),
+			rapi.setRenderTarget(target);
+			rapi.clearViewport(clearBuffers, viewport->getClearColorValue(),
 				viewport->getClearDepthValue(), viewport->getClearStencilValue());
 		}
 		else
-			RenderAPI::instance().setRenderTarget(target, 0, RT_COLOR0);
+			rapi.setRenderTarget(target, 0, RT_COLOR0);
 
-		RenderAPI::instance().setViewport(viewport->getArea());
+		rapi.setViewport(viewport->getArea());
 
 		// Trigger overlay callbacks
-		auto iterRenderCallback = mCallbacks.begin();
-		while (iterRenderCallback != mCallbacks.end())
+		if(!mCallbacks.empty())
 		{
-			RendererExtension* extension = *iterRenderCallback;
-			if (extension->getLocation() != RenderLocation::Overlay)
+			view._notifyCompositorTargetChanged(target);
+
+			auto iterRenderCallback = mCallbacks.begin();
+			while (iterRenderCallback != mCallbacks.end())
 			{
+				RendererExtension* extension = *iterRenderCallback;
+				if (extension->getLocation() != RenderLocation::Overlay)
+				{
+					++iterRenderCallback;
+					continue;
+				}
+
+				if (extension->check(*camera))
+					extension->render(*camera, view.getContext());
+
 				++iterRenderCallback;
-				continue;
 			}
-
-			if (extension->check(*camera))
-				extension->render(*camera);
-
-			++iterRenderCallback;
 		}
 
 		view.endFrame();

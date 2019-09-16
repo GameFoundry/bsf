@@ -194,7 +194,7 @@ namespace bs
 		return true;
 	}
 
-	void DebugDrawRenderer::render(const Camera& camera)
+	void DebugDrawRenderer::render(const Camera& camera, const RendererViewContext& viewContext)
 	{
 		SPtr<RenderTarget> renderTarget = camera.getViewport()->getTarget();
 		if (renderTarget == nullptr)

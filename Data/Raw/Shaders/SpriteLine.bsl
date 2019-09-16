@@ -1,21 +1,15 @@
+#define TRANSPARENCY 1
+#include "$ENGINE$\SpriteCommon.bslinc"
+
 shader SpriteLine
 {
-	blend
-	{
-		target	
-		{
-			enabled = true;
-			color = { srcA, srcIA, add };
-			writemask = RGB;
-		};
-	};	
+	mixin SpriteCommon;
 	
-	depth
+	variations
 	{
-		read = false;
-		write = false;
+		ALPHA = { false, true };
 	};
-	
+
 	raster
 	{
 		multisample = false; // This controls line rendering algorithm
@@ -24,39 +18,7 @@ shader SpriteLine
 	
 	code
 	{
-		struct VStoFS
-		{
-			float4 position : SV_POSITION;
-		};
-
-		cbuffer GUIParams
-		{
-			float4x4 gWorldTransform;
-			float gInvViewportWidth;
-			float gInvViewportHeight;
-			float gViewportYFlip;
-			float4 gTint;
-		}	
-		
-		struct VertexInput
-		{
-			float2 position : POSITION;
-		};			
-		
-		VStoFS vsmain(VertexInput input)
-		{
-			float4 tfrmdPos = mul(gWorldTransform, float4(input.position, 0, 1));
-			
-			float tfrmdX = -1.0f + (tfrmdPos.x * gInvViewportWidth);
-			float tfrmdY = (1.0f - (tfrmdPos.y * gInvViewportHeight)) * gViewportYFlip;
-
-			VStoFS output;
-			output.position = float4(tfrmdX, tfrmdY, 0, 1);
-
-			return output;
-		}
-
-		float4 fsmain(VStoFS input) : SV_Target
+		float4 fsmain() : SV_Target
 		{
 			return gTint;
 		}

@@ -15,7 +15,7 @@ namespace bs
 	class BS_EXPORT SpriteImageMaterial : public SpriteMaterial
 	{
 	public:
-		SpriteImageMaterial(bool transparent, bool animated = false);
+		SpriteImageMaterial(SpriteMaterialTransparency transparency, bool animated = false);
 	};
 
 	/** Sprite material used for rendering text. */

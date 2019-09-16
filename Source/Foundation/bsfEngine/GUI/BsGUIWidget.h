@@ -128,6 +128,7 @@ namespace bs
 			UINT32 minDepth = 0;
 			bool dirtyBounds = true;
 			bool needsRedraw = true;
+			bool dirtyTexture = true;
 			Rect2I bounds;
 			Vector<GUIGroupRenderElement> cachedElements;
 			Vector<GUIGroupRenderElement> nonCachedElements;

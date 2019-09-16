@@ -289,7 +289,7 @@ namespace bs
 					renderElement.numVertices = element.clippedNumVertices;
 					renderElement.numIndices = element.clippedNumVertices;
 
-					renderElement.material = SpriteManager::instance().getImageMaterial(true);
+					renderElement.material = SpriteManager::instance().getImageMaterial(SpriteMaterialTransparency::Alpha);
 					renderElement.matInfo = &mTriangleElementData[element.dataId].matInfo;
 
 					renderElement.depth = element.depth;

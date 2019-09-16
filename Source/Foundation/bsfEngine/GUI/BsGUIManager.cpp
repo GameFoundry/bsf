@@ -1581,7 +1581,7 @@ namespace bs
 		return iterFind != mPerCameraData.end();
 	}
 
-	void GUIRenderer::render(const Camera& camera)
+	void GUIRenderer::render(const Camera& camera, const RendererViewContext& viewContext)
 	{
 		Vector<GUIWidgetRenderData>& widgetRenderData = mPerCameraData[&camera];
 
@@ -1596,7 +1596,16 @@ namespace bs
 			for(auto& drawGroup : widget.drawGroups)
 			{
 				if (!drawGroup.nonCachedElements.empty())
+				{
+					for(auto& entry : drawGroup.nonCachedElements)
+					{
+						const SPtr<GpuParamBlockBuffer>& buffer = widget.paramBlocks[entry.bufferIdx];
+						updateParamBlockBuffer(buffer, invViewportWidth, invViewportHeight,
+							viewflipYFlip, widget.worldTransform, entry);
+					}
+
 					needsRedraw = true;
+				}
 				
 				if (!drawGroup.requiresRedraw)
 					continue;
@@ -1609,13 +1618,6 @@ namespace bs
 					const SPtr<GpuParamBlockBuffer>& buffer = widget.paramBlocks[entry.bufferIdx];
 					updateParamBlockBuffer(buffer, invDrawGroupWidth, invDrawGroupHeight,
 						viewflipYFlip, Matrix4::IDENTITY, entry);
-				}
-
-				for(auto& entry : drawGroup.nonCachedElements)
-				{
-					const SPtr<GpuParamBlockBuffer>& buffer = widget.paramBlocks[entry.bufferIdx];
-					updateParamBlockBuffer(buffer, invViewportWidth, invViewportHeight,
-						viewflipYFlip, widget.worldTransform, entry);
 				}
 
 				// Update draw group param buffer
@@ -1632,6 +1634,43 @@ namespace bs
 					buffer->flushToGPU();
 				}
 
+				// We need to write the alpha of the first (deepest) element for each pixel
+
+				// Note: We should cache/pool the stencil buffer texture (ideally just re-use a single one)
+				//  - If pooling we probably need to round draw group sizes to certain pow-2 sizes and then
+				//    use viewport to render to relevant bits
+				SPtr<Texture> colorTex = drawGroup.destination->getColorTexture(0);
+				const TextureProperties& colorProps = colorTex->getProperties();
+				
+				TEXTURE_DESC texDesc;
+				texDesc.width = colorProps.getWidth();
+				texDesc.height = colorProps.getHeight();
+				texDesc.format = PF_D24S8; // TODO: Can we create a stencil only texture here?
+				texDesc.usage = TU_DEPTHSTENCIL;
+
+				SPtr<Texture> stencilTexture = Texture::create(texDesc);
+
+				RENDER_TEXTURE_DESC rtDesc;
+				rtDesc.colorSurfaces[0].texture = colorTex;
+				rtDesc.depthStencilSurface.texture = stencilTexture;
+
+				// Draw the alpha only first
+				// Note: Can we avoid drawing each element twice?
+				SPtr<RenderTexture> alphaRenderTexture = RenderTexture::create(rtDesc);
+				rapi.setRenderTarget(alphaRenderTexture);
+				rapi.clearRenderTarget(FBT_COLOR | FBT_STENCIL, Color::ZERO, 1.0f, 0);
+
+				for (auto& entry : drawGroup.cachedElements)
+				{
+					// TODO - I shouldn't be re-applying the entire material for each entry, instead just check which programs
+					// changed, and apply only those + the modified constant buffers and/or texture.
+
+					const SPtr<GpuParamBlockBuffer>& buffer = widget.paramBlocks[entry.bufferIdx];
+					entry.material->render(entry.isLine ? widget.lineMesh : widget.triangleMesh, entry.subMesh, entry.texture,
+						mSamplerState, buffer, entry.additionalData, true);
+				}
+
+				// Draw the color values
 				rapi.setRenderTarget(drawGroup.destination);
 
 				for (auto& entry : drawGroup.cachedElements)
@@ -1641,7 +1680,7 @@ namespace bs
 
 					const SPtr<GpuParamBlockBuffer>& buffer = widget.paramBlocks[entry.bufferIdx];
 					entry.material->render(entry.isLine ? widget.lineMesh : widget.triangleMesh, entry.subMesh, entry.texture,
-						mSamplerState, buffer, entry.additionalData);
+						mSamplerState, buffer, entry.additionalData, false);
 				}
 
 				drawGroup.requiresRedraw = false;
@@ -1649,11 +1688,13 @@ namespace bs
 			}
 		}
 
+		// Restore original render target
+		rapi.setRenderTarget(viewContext.currentTarget);
+
 		// TODO - Avoid rendering to overlay if unnecessary. Ideally the renderer should not clear parts used by GUI (unless transparency is needed,
 		// but that could be a special flag on GUIWidget?)
 		if(needsRedraw)
 		{
-			// TODO - Need to restore original renderer's render target (might need to extend the renderer)
 			for (auto& widget : widgetRenderData)
 			{
 				for (auto& drawGroup : widget.drawGroups)
@@ -1666,15 +1707,15 @@ namespace bs
 
 						const SPtr<GpuParamBlockBuffer>& buffer = widget.paramBlocks[entry.bufferIdx];
 						entry.material->render(entry.isLine ? widget.lineMesh : widget.triangleMesh, entry.subMesh, entry.texture,
-							mSamplerState, buffer, entry.additionalData);
+							mSamplerState, buffer, entry.additionalData, false);
 					}
 					
 					// Draw the group itself
 					const SPtr<GpuParamBlockBuffer>& buffer = widget.paramBlocks[drawGroup.bufferIdx];
 
-					SpriteMaterial* batchedMat = SpriteManager::instance().getImageMaterial(true, false);
+					SpriteMaterial* batchedMat = SpriteManager::instance().getImageMaterial(SpriteMaterialTransparency::Premultiplied, false);
 					batchedMat->render(widget.drawGroupMesh, drawGroup.subMesh, drawGroup.destination->getColorTexture(0),
-						mSamplerState, buffer, nullptr);
+						mSamplerState, buffer, nullptr, false);
 				}
 			}
 		}

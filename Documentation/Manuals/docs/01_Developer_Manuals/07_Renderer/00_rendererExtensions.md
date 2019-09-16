@@ -56,7 +56,7 @@ public:
 		return true;
 	}
 
-	void render(const Camera& camera) override
+	void render(const Camera& camera, const RendererViewContext& viewContext)) override
 	{
 		RenderAPI& rapi = RenderAPI::instance();
 		
@@ -66,7 +66,7 @@ public:
 }
 ~~~~~~~~~~~~~
 
-> Your extension should never call **RenderAPI::setRenderTarget()**. Render targets are bound and managed exclusively by the renderer itself. The type of render target depends on the render location the extension is attached to. 
+@bs::RendererViewContext is an additional parameter provided to the **render()** method, that gives you insight in the current state of the renderer. In particular it contains the current render target set by the renderer. If you ever change the render target inside the extension (through a call to **RenderAPI::setRenderTarget()**) you must ensure to restore the original render target before exiting the method.
 
 # Registering an extension
 Once extension is implemented you need to register it with the renderer by calling @bs::RendererExtension::create<T>, where the template parameter is the type of your extension. You must also provide initialization data that will be passed to the extension - this can be null.

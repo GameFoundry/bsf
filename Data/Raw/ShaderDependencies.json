@@ -810,9 +810,21 @@
             "Path": "PerCameraData.bslinc"
         }
     ],
-    "SpriteImage.bsl": null,
-    "SpriteLine.bsl": null,
-    "SpriteText.bsl": null,
+    "SpriteImage.bsl": [
+        {
+            "Path": "SpriteCommon.bslinc"
+        }
+    ],
+    "SpriteLine.bsl": [
+        {
+            "Path": "SpriteCommon.bslinc"
+        }
+    ],
+    "SpriteText.bsl": [
+        {
+            "Path": "SpriteCommon.bslinc"
+        }
+    ],
     "TetrahedraRender.bsl": [
         {
             "Path": "PerCameraData.bslinc"

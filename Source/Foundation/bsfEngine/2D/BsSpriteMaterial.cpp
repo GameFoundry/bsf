@@ -11,8 +11,7 @@
 
 namespace bs
 {
-	SpriteMaterial::SpriteMaterial(UINT32 id, const HMaterial& material, const ShaderVariation& variation,
-		bool allowBatching)
+	SpriteMaterial::SpriteMaterial(UINT32 id, const HMaterial& material, ShaderVariation variation, bool allowBatching)
 		:mId(id), mAllowBatching(allowBatching), mMaterialStored(false), mParamBufferIdx(-1)
 	{
 		mMaterial = material->getCore();
@@ -20,7 +19,12 @@ namespace bs
 		FIND_TECHNIQUE_DESC findTechniqueDesc;
 		findTechniqueDesc.variation = &variation;
 
+		variation.setBool("ALPHA", false);
 		mTechnique = mMaterial->findTechnique(findTechniqueDesc);
+
+		variation.setBool("ALPHA", true);
+		mAlphaTechnique = mMaterial->findTechnique(findTechniqueDesc);
+
 		mMaterialStored.store(true, std::memory_order_release);
 
 		gCoreThread().queueCommand(std::bind(&SpriteMaterial::initialize, this));
@@ -28,7 +32,7 @@ namespace bs
 
 	SpriteMaterial::~SpriteMaterial()
 	{
-		gCoreThread().queueCommand(std::bind(&SpriteMaterial::destroy, mMaterial, mParams));
+		gCoreThread().queueCommand(std::bind(&SpriteMaterial::destroy, mMaterial, mParams, mAlphaParams));
 	}
 
 	void SpriteMaterial::initialize()
@@ -42,7 +46,13 @@ namespace bs
 		if(pass)
 			pass->compile();
 
+		const SPtr<ct::Pass>& alphaPass = mMaterial->getPass(0, mAlphaTechnique);
+
+		if(alphaPass)
+			alphaPass->compile();
+
 		mParams = mMaterial->createParamsSet(mTechnique);
+		mAlphaParams = mMaterial->createParamsSet(mAlphaTechnique);
 
 		SPtr<ct::Shader> shader = mMaterial->getShader();
 		if(shader->hasTextureParam("gMainTexture"))
@@ -52,12 +62,13 @@ namespace bs
 		}
 
 		mParamBufferIdx = mParams->getParamBlockBufferIndex("GUIParams");
+		mAlphaParamBufferIdx = mAlphaParams->getParamBlockBufferIndex("GUIParams");
 
-		if(mParamBufferIdx == (UINT32)-1)
+		if(mParamBufferIdx == (UINT32)-1 || mAlphaParamBufferIdx == (UINT32)-1)
 			BS_LOG(Error, GUI, "Sprite material shader missing \"GUIParams\" block.");
 	}
 
-	void SpriteMaterial::destroy(const SPtr<ct::Material>& material, const SPtr<ct::GpuParamsSet>& params)
+	void SpriteMaterial::destroy(const SPtr<ct::Material>& material, const SPtr<ct::GpuParamsSet>& params, const SPtr<ct::GpuParamsSet>& alphaParams)
 	{
 		// Do nothing, we just need to make sure the material pointer's last reference is lost while on the core thread
 	}
@@ -79,7 +90,7 @@ namespace bs
 
 	void SpriteMaterial::render(const SPtr<ct::MeshBase>& mesh, const SubMesh& subMesh, const SPtr<ct::Texture>& texture,
 		const SPtr<ct::SamplerState>& sampler, const SPtr<ct::GpuParamBlockBuffer>& paramBuffer,
-		const SPtr<SpriteMaterialExtraInfo>& additionalData) const
+		const SPtr<SpriteMaterialExtraInfo>& additionalData, bool alphaOnly) const
 	{
 		SPtr<ct::Texture> spriteTexture;
 		if (texture != nullptr)
@@ -90,13 +101,25 @@ namespace bs
 		mTextureParam.set(spriteTexture);
 		mSamplerParam.set(sampler);
 
-		if(mParamBufferIdx != (UINT32)-1)
-			mParams->setParamBlockBuffer(mParamBufferIdx, paramBuffer, true);
+		if(!alphaOnly)
+		{
+			if(mParamBufferIdx != (UINT32)-1)
+				mParams->setParamBlockBuffer(mParamBufferIdx, paramBuffer, true);
 
-		mMaterial->updateParamsSet(mParams);
+			mMaterial->updateParamsSet(mParams);
+			ct::gRendererUtility().setPass(mMaterial, 0, mTechnique);
+			ct::gRendererUtility().setPassParams(mParams);
+		}
+		else
+		{
+			if(mAlphaParamBufferIdx != (UINT32)-1)
+				mAlphaParams->setParamBlockBuffer(mAlphaParamBufferIdx, paramBuffer, true);
 
-		ct::gRendererUtility().setPass(mMaterial, 0, mTechnique);
-		ct::gRendererUtility().setPassParams(mParams);
+			mMaterial->updateParamsSet(mAlphaParams);
+			ct::gRendererUtility().setPass(mMaterial, 0, mAlphaTechnique);
+			ct::gRendererUtility().setPassParams(mAlphaParams);
+		}
+
 		ct::gRendererUtility().draw(mesh, subMesh);
 	}
 }

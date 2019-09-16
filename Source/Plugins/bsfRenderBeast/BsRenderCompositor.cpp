@@ -397,7 +397,7 @@ namespace bs { namespace ct
 			for(auto& extension : inputs.extPrepare)
 			{
 				if (extension->check(*sceneCamera))
-					extension->render(*sceneCamera);
+					extension->render(*sceneCamera, inputs.view.getContext());
 			}
 		}
 
@@ -414,10 +414,12 @@ namespace bs { namespace ct
 		// Trigger pre-base-pass callbacks
 		if (sceneCamera != nullptr)
 		{
+			inputs.view._notifyCompositorTargetChanged(renderTarget);
+
 			for(auto& extension : inputs.extPreBasePass)
 			{
 				if (extension->check(*sceneCamera))
-					extension->render(*sceneCamera);
+					extension->render(*sceneCamera, inputs.view.getContext());
 			}
 		}
 
@@ -451,18 +453,20 @@ namespace bs { namespace ct
 		const Vector<RenderQueueElement>& decalElements = inputs.view.getDecalQueue()->getSortedElements();
 		renderQueueElements(decalElements);
 
-		// Make sure that any compute shaders are able to read g-buffer by unbinding it
-		rapi.setRenderTarget(nullptr);
-
 		// Trigger post-base-pass callbacks
 		if (sceneCamera != nullptr)
 		{
+			inputs.view._notifyCompositorTargetChanged(renderTargetNoMask);
+
 			for(auto& extension : inputs.extPostBasePass)
 			{
 				if (extension->check(*sceneCamera))
-					extension->render(*sceneCamera);
+					extension->render(*sceneCamera, inputs.view.getContext());
 			}
 		}
+
+		// Make sure that any compute shaders are able to read g-buffer by unbinding it
+		rapi.setRenderTarget(nullptr);
 	}
 
 	void RCNodeBasePass::clear()
@@ -1512,10 +1516,12 @@ namespace bs { namespace ct
 		Camera* sceneCamera = inputs.view.getSceneCamera();
 		if (sceneCamera != nullptr)
 		{
+			inputs.view._notifyCompositorTargetChanged(renderTarget);
+
 			for(auto& extension : inputs.extPostLighting)
 			{
 				if (extension->check(*sceneCamera))
-					extension->render(*sceneCamera);
+					extension->render(*sceneCamera, inputs.view.getContext());
 			}
 		}
 	}
@@ -1623,12 +1629,16 @@ namespace bs { namespace ct
 		Camera* sceneCamera = inputs.view.getSceneCamera();
 		if (sceneCamera != nullptr)
 		{
+			inputs.view._notifyCompositorTargetChanged(target);
+
 			for(auto& extension : inputs.extOverlay)
 			{
 				if (extension->check(*sceneCamera))
-					extension->render(*sceneCamera);
+					extension->render(*sceneCamera, inputs.view.getContext());
 			}
 		}
+
+		inputs.view._notifyCompositorTargetChanged(nullptr);
 	}
 
 	void RCNodeFinalResolve::clear()

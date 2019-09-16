@@ -72,6 +72,16 @@ namespace bs
 		virtual ~RendererOptions() = default;
 	};
 
+	/**
+	 * Contains information about the current state of a particular renderer view. This will be updated
+	 * during rendering of a single frame.
+	 */
+	struct RendererViewContext
+	{
+		/** Current target the view is rendering to. */
+		SPtr<RenderTarget> currentTarget;
+	};
+
 	/** Settings that control renderer scene capture. */
 	struct CaptureSettings
 	{	

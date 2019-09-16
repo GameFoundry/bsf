@@ -15,6 +15,7 @@
 #include "BsRenderCompositor.h"
 #include "BsRendererParticles.h"
 #include "BsRendererDecal.h"
+#include "Renderer/BsRenderer.h"
 
 namespace bs { namespace ct
 {
@@ -393,6 +394,9 @@ namespace bs { namespace ct
 		/** Updates the light grid used for forward rendering. */
 		void updateLightGrid(const VisibleLightData& visibleLightData, const VisibleReflProbeData& visibleReflProbeData);
 
+		/** Returns a context that reflects the state of the view as it changes during rendering. */
+		const RendererViewContext& getContext() const { return mContext; }
+
 		/**
 		 * Returns a value that can be used for transforming x, y coordinates from NDC into UV coordinates that can be used
 		 * for sampling a texture projected on the view.
@@ -406,6 +410,14 @@ namespace bs { namespace ct
 
 		/** Assigns a view index to the view. To be called by the parent view group when the view is added to it. */
 		void _setViewIdx(UINT32 viewIdx) { mViewIdx = viewIdx; }
+
+		/**
+		 * Notifies the view that the render target the compositor is rendering to has changed. Note that this does not
+		 * mean the final render target, rather the current intermediate target as set by the renderer during the
+		 * rendering of a single frame. This should be set to null if the renderer is not currently rendering the
+		 * view.
+		 */
+		void _notifyCompositorTargetChanged(const SPtr<RenderTarget>& target) const { mContext.currentTarget = target; }
 
 		/**
 		 * Extracts the necessary values from the projection matrix that allow you to transform device Z value (range [0, 1]
@@ -434,6 +446,7 @@ namespace bs { namespace ct
 		static Vector2 getNDCZToDeviceZ();
 	private:
 		RendererViewProperties mProperties;
+		mutable RendererViewContext mContext;
 		Camera* mCamera;
 
 		SPtr<RenderQueue> mDeferredOpaqueQueue;
