@@ -42,6 +42,9 @@ namespace bs
 		/** @copydoc Bitstream::readBytes(void*, uint32_t) */
 		uint32_t readBytes(Bitstream::QuantType* data, uint32_t count);
 
+		/** @copydoc Bitstream::readVarInt(uint32_t&) */
+		uint32_t readVarInt(uint32_t& value);
+		
 		/** @copydoc Bitstream::skip */
 		void skip(int32_t count);
 
@@ -53,6 +56,9 @@ namespace bs
 		
 		/** @copydoc Bitstream::tell */
 		uint32_t tell() const { return mCursor; }
+
+		/** @copydoc Bitstream::align() */
+		void align(uint32_t count = 1);
 
 		/** Preloads the specified number of bytes into the bitstream from the data stream. */
 		void preload(uint32_t count);
@@ -107,6 +113,12 @@ namespace bs
 		/** @copydoc Bitstream::writeBytes(void*, uint32_t) */
 		uint32_t writeBytes(Bitstream::QuantType* data, uint32_t count);
 
+		/** @copydoc Bitstream::writeVarInt */
+		uint32_t writeVarInt(uint32_t value);
+		
+		/** @copydoc Bitstream::align() */
+		void align(uint32_t count = 1);
+		
 		/** Flushes the write buffer to the output stream if a certain buffer length is reached. */
 		void flush(bool force);
 
@@ -156,9 +168,27 @@ namespace bs
 		return mBitstream->readBytes(data, count);
 	}
 
+	inline uint32_t BufferedBitstreamReader::readVarInt(uint32_t& value)
+	{
+		preload(sizeof(value));
+		uint32_t readBits = mBitstream->readVarInt(value);
+		mCursor += readBits;
+
+		return readBits;
+	}
+
 	inline void BufferedBitstreamReader::skip(int32_t count)
 	{
 		seek((uint32_t)std::max(0, (int32_t)mCursor + count));
+	}
+
+	inline void BufferedBitstreamReader::align(uint32_t count)
+	{
+		if (count == 0)
+			return;
+
+		uint32_t bits = count * 8;
+		skip(bits - (((mCursor - 1) & (bits - 1)) + 1));
 	}
 
 	inline void BufferedBitstreamReader::seek(uint32_t pos)
@@ -256,6 +286,16 @@ namespace bs
 	inline uint32_t BufferedBitstreamWriter::writeBytes(Bitstream::QuantType* data, uint32_t count)
 	{
 		return mBitstream->writeBytes(data, count);
+	}
+
+	inline uint32_t BufferedBitstreamWriter::writeVarInt(uint32_t value)
+	{
+		return mBitstream->writeVarInt(value);
+	}
+
+	inline void BufferedBitstreamWriter::align(uint32_t count)
+	{
+		mBitstream->align(count);
 	}
 
 	inline void BufferedBitstreamWriter::flush(bool force)

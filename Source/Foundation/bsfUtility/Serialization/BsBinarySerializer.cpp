@@ -256,7 +256,7 @@ namespace bs
 					{
 					case SerializableFT_ReflectablePtr:
 						{
-							RTTIReflectablePtrFieldBase* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
+							auto* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
 
 							for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
 							{
@@ -276,7 +276,7 @@ namespace bs
 						}
 					case SerializableFT_Reflectable:
 						{
-							RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
+							auto* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
 
 							for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
 							{
@@ -293,7 +293,7 @@ namespace bs
 						}
 					case SerializableFT_Plain:
 						{
-							RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
+							auto* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
 
 							for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
 								curField->arrayElemToStream(rttiInstance, object, arrIdx, stream.getBitstream(), compress);
@@ -312,7 +312,7 @@ namespace bs
 					{
 					case SerializableFT_ReflectablePtr:
 						{
-							RTTIReflectablePtrFieldBase* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
+							auto* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
 							SPtr<IReflectable> childObject;
 							
 							if (!flags.isSet(BinarySerializerFlag::Shallow))
@@ -328,7 +328,7 @@ namespace bs
 						}
 					case SerializableFT_Reflectable:
 						{
-							RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
+							auto* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
 							IReflectable& childObject = curField->getValue(rttiInstance, object);
 
 							if(!complexTypeToStream(&childObject, stream, flags))
@@ -341,14 +341,14 @@ namespace bs
 						}
 					case SerializableFT_Plain:
 						{
-							RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
+							auto* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
 							curField->toStream(rttiInstance, object, stream.getBitstream(), compress);
 
 							break;
 						}
 					case SerializableFT_DataBlock:
 						{
-							RTTIManagedDataBlockFieldBase* curField = static_cast<RTTIManagedDataBlockFieldBase*>(curGenericField);
+							auto* curField = static_cast<RTTIManagedDataBlockFieldBase*>(curGenericField);
 
 							UINT32 dataBlockSize = 0;
 							SPtr<DataStream> blockStream = curField->getValue(rttiInstance, object, dataBlockSize);
@@ -550,7 +550,7 @@ namespace bs
 				}
 			}
 
-			int arrayNumElems = 1;
+			UINT32 arrayNumElems = 1;
 			if (isArray)
 			{
 				if (compressed)
@@ -567,9 +567,9 @@ namespace bs
 				{
 					RTTIReflectablePtrFieldBase* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
 
-					for (int i = 0; i < arrayNumElems; i++)
+					for (UINT32 i = 0; i < arrayNumElems; i++)
 					{
-						int childObjectId = 0;
+						UINT32 childObjectId = 0;
 						if (compressed)
 							stream.readVarInt(childObjectId);
 						else
@@ -630,7 +630,7 @@ namespace bs
 				{
 					RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
 
-					for (int i = 0; i < arrayNumElems; i++)
+					for (UINT32 i = 0; i < arrayNumElems; i++)
 					{
 						SPtr<IReflectable> childObj;
 						if(curField)
@@ -650,7 +650,7 @@ namespace bs
 				{
 					RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
 
-					for (int i = 0; i < arrayNumElems; i++)
+					for (UINT32 i = 0; i < arrayNumElems; i++)
 					{
 						UINT32 typeSize = fieldSize;
 						if (hasDynamicSize)
@@ -693,7 +693,7 @@ namespace bs
 				{
 					RTTIReflectablePtrFieldBase* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
 
-					int childObjectId = 0;
+					UINT32 childObjectId = 0;
 					if (compressed)
 						stream.readVarInt(childObjectId);
 					else
@@ -790,10 +790,10 @@ namespace bs
 					{
 						stream.preload(typeSize);
 						curField->fromBuffer(rttiInstance, output.get(), stream.getBitstream());
-						stream.skipBytes(typeSize);
+						stream.skipBytes(typeSize);// TODO - Need to skip actual number of bits read in case of compressed structures (e.g. bool, var-int)
 					}
 					else
-						stream.skipBytes(typeSize);
+						stream.skipBytes(typeSize);// TODO - Need to skip actual number of bits read in case of compressed structures (e.g. bool, var-int)
 
 					break;
 				}
