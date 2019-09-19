@@ -4,11 +4,13 @@
 
 #include "Prerequisites/BsPrerequisitesUtil.h"
 #include "Reflection/BsRTTIPlain.h"
+#include "Reflection/BsIReflectable.h"
 #include "Utility/BsAny.h"
 
 namespace bs
 {
 	class RTTITypeBase;
+	class RTTISchema;
 
 	/** @addtogroup Internal-Utility
 	 *  @{
@@ -45,11 +47,11 @@ namespace bs
 	};
 
 	/** Contains serializable meta-data about a single RTTI field. */
-	struct RTTIFieldSchema
+	struct RTTIFieldSchema : IReflectable
 	{
 		RTTIFieldSchema() = default;
-		RTTIFieldSchema(INT16 id, bool isArray, bool hasDynamicSize, UINT8 size, SerializableFieldType type, const RTTIFieldInfo& info)
-			:id(id), isArray(isArray), hasDynamicSize(hasDynamicSize), size(size), type(type), info(info)
+		RTTIFieldSchema(INT16 id, bool isArray, bool hasDynamicSize, UINT8 size, SerializableFieldType type, SPtr<RTTISchema> fieldTypeSchema, const RTTIFieldInfo& info)
+			:id(id), isArray(isArray), hasDynamicSize(hasDynamicSize), size(size), type(type), fieldTypeSchema(fieldTypeSchema), info(info)
 		{ }
 		
 		UINT16 id = 0;
@@ -57,7 +59,11 @@ namespace bs
 		bool hasDynamicSize = false;
 		UINT8 size = 0;
 		SerializableFieldType type = SerializableFT_Plain;
+		SPtr<RTTISchema> fieldTypeSchema;
 		RTTIFieldInfo info;
+
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/**

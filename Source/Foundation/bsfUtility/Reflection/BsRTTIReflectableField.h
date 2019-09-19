@@ -88,7 +88,9 @@ namespace bs
 			this->getter = getter;
 			this->setter = setter;
 
-			init(std::move(name), RTTIFieldSchema(uniqueId, false, true, 0, SerializableFT_Reflectable, info));
+			const SPtr<RTTISchema>& fieldTypeSchema = DataType::getRTTIStatic()->getSchema();;
+			init(std::move(name), RTTIFieldSchema(uniqueId, false, true, 0, SerializableFT_Reflectable,
+				fieldTypeSchema, info));
 		}
 
 		/**
@@ -112,7 +114,9 @@ namespace bs
 			arrayGetSize = getSize;
 			arraySetSize = setSize;
 
-			init(std::move(name), RTTIFieldSchema(uniqueId, true, true, 0, SerializableFT_Reflectable, info));
+			const SPtr<RTTISchema>& fieldTypeSchema = DataType::getRTTIStatic()->getSchema();;
+			init(std::move(name), RTTIFieldSchema(uniqueId, true, true, 0, SerializableFT_Reflectable,
+				fieldTypeSchema, info));
 		}
 
 		/** @copydoc RTTIReflectableFieldBase::getValue */

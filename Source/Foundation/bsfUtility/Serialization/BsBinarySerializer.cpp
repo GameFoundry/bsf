@@ -95,7 +95,8 @@ namespace bs
 	}
 
 	SPtr<IReflectable> BinarySerializer::decode(const SPtr<DataStream>& stream, UINT32 dataLength,
-		BinarySerializerFlags flags, SerializationContext* context, std::function<void(float)> progress)
+		BinarySerializerFlags flags, SerializationContext* context, std::function<void(float)> progress,
+		SPtr<RTTISchema> schema)
 	{
 		mContext = context;
 		mReportProgress = nullptr;
@@ -118,13 +119,28 @@ namespace bs
 		bool hasMeta = !flags.isSet(BinarySerializerFlag::NoMeta);
 		bool compress = flags.isSet(BinarySerializerFlag::Compress);
 
+		// Don't need a schema if we have meta-data
+		if (hasMeta)
+			schema = nullptr;
+		else
+		{
+			if(!schema)
+			{
+				BS_LOG(Error, Serialization, "Cannot decode an object without meta-data nor schema.");
+				return nullptr;
+			}
+		}
+
 		BufferedBitstreamReader bufferedStream(&mBuffer, stream, PRELOAD_CHUNK_BYTES, FLUSH_AFTER_BYTES);
 
 		// Note: Ideally we can avoid iterating twice over the stream data
-		// Create empty instances of all ptr objects
-		SPtr<IReflectable> rootObject = nullptr;
+		// We need to find offsets at which all objects start at so we can map object id to offset
+		UINT32 rootObjectId = (UINT32)-1;
+		SPtr<RTTISchema> curSchema = schema;
 		do
 		{
+			bool isRoot = rootObjectId == (UINT32)-1;
+			
 			UINT32 objectId = 0;
 			UINT32 objectTypeId = 0;
 			bool objectIsBaseClass = false;
@@ -138,14 +154,40 @@ namespace bs
 					"Base class objects are only supposed to be parts of a larger object.");
 			}
 
-			// TODO - Don't create object instance here as we might not know the type ID
-			SPtr<IReflectable> object = IReflectable::createInstanceFromTypeId(objectTypeId);
-			mDecodeObjectMap.insert(std::make_pair(objectId, ObjectToDecode(object, bufferedStream.tell())));
+			if (curSchema)
+				objectTypeId = curSchema->typeId;
 
-			if(rootObject == nullptr)
-				rootObject = object;
+			if (isRoot)
+			{
+				SPtr<IReflectable> object = IReflectable::createInstanceFromTypeId(objectTypeId);
+				mDecodeObjectMap.insert(std::make_pair(objectId, ObjectToDecode(object, bufferedStream.tell(), curSchema)));
+			}
+			else
+			{
+				if(hasMeta)
+				{
+					SPtr<IReflectable> object = IReflectable::createInstanceFromTypeId(objectTypeId);
+					mDecodeObjectMap.insert(std::make_pair(objectId, ObjectToDecode(object, bufferedStream.tell(), curSchema)));
+				}
+				else
+				{
+					// If no meta, it's expected the pass over the root object has populated mDecodeObjectMap with object instances
+					// as well as references to the schema
+					auto iterFind = mDecodeObjectMap.find(objectId);
+					assert(iterFind != mDecodeObjectMap.end());
 
-		} while (decodeEntry(bufferedStream, endBits, flags, nullptr));
+					ObjectToDecode& objectToDecode = iterFind->second;
+					objectToDecode.offset = bufferedStream.tell();
+					
+					curSchema = objectToDecode.schema;
+					objectTypeId = curSchema->typeId;
+				}
+			}			
+
+			if (isRoot)
+				rootObjectId = objectId;
+
+		} while (decodeEntry(bufferedStream, endBits, flags, nullptr, curSchema));
 
 		assert(bufferedStream.tell() == endBits);
 
@@ -153,22 +195,14 @@ namespace bs
 		mReportProgress = std::move(progress);
 		bufferedStream.seek((uint32_t)start * 8);
 
-		// Now go through all of the objects and actually decode them
-		for(auto iter = mDecodeObjectMap.begin(); iter != mDecodeObjectMap.end(); ++iter)
-		{
-			ObjectToDecode& objToDecode = iter->second;
+		// Now actually decode the objects
+		ObjectToDecode& rootObjectToDecode = mDecodeObjectMap[rootObjectId];
+		SPtr<IReflectable> rootObject = rootObjectToDecode.object;
 
-			if(objToDecode.isDecoded)
-				continue;
-
-			bufferedStream.seek((uint32_t)objToDecode.offset);
-
-			objToDecode.decodeInProgress = true;
-			// TODO - Assert if no object instance here (or just skip in case field was not found?)
-			decodeEntry(bufferedStream, endBits, flags, objToDecode.object);
-			objToDecode.decodeInProgress = false;
-			objToDecode.isDecoded = true;
-		}
+		rootObjectToDecode.decodeInProgress = true;
+		decodeEntry(bufferedStream, endBits, flags, rootObject, schema);
+		rootObjectToDecode.decodeInProgress = false;
+		rootObjectToDecode.isDecoded = true;
 
 		mDecodeObjectMap.clear();
 		bufferedStream.seek(endBits);
@@ -176,7 +210,7 @@ namespace bs
 
 		assert(bufferedStream.tell() == endBits);
 
-		if(mReportProgress)
+		if (mReportProgress)
 			mReportProgress(1.0f);
 
 		return rootObject;
@@ -389,7 +423,8 @@ namespace bs
 		return true;
 	}
 
-	bool BinarySerializer::decodeEntry(BufferedBitstreamReader& stream, size_t dataEnd, BinarySerializerFlags flags, const SPtr<IReflectable>& output)
+	bool BinarySerializer::decodeEntry(BufferedBitstreamReader& stream, size_t dataEnd, BinarySerializerFlags flags,
+		const SPtr<IReflectable>& output, SPtr<RTTISchema> schema)
 	{
 		const bool hasMeta = !flags.isSet(BinarySerializerFlag::NoMeta);
 		const bool compressed = flags.isSet(BinarySerializerFlag::Compress);
@@ -399,6 +434,9 @@ namespace bs
 		bool objectIsBaseClass = false;
 
 		readObjectMetaData(stream, flags, objectId, objectTypeId, objectIsBaseClass);
+
+		if(schema)
+			objectTypeId = schema->typeId;
 
 		if (objectIsBaseClass)
 		{
@@ -445,14 +483,23 @@ namespace bs
 		if(!rttiInstances.empty())
 			rttiInstance = rttiInstances[0];
 
+		Vector<RTTIFieldSchema>::iterator fieldSchemaIter;
+		if (schema)
+			fieldSchemaIter = schema->fieldSchemas.begin();
+		
 		while (stream.tell() < dataEnd)
 		{
-			bool isArray;
-			SerializableFieldType fieldType;
-			UINT16 fieldId;
-			UINT8 fieldSize;
-			bool hasDynamicSize;
-			bool terminator;
+			bool isArray = false;
+			SerializableFieldType fieldType = SerializableFT_Plain;
+			UINT16 fieldId = 0;
+			UINT8 fieldSize = 0;
+			bool hasDynamicSize = false;
+			SPtr<RTTISchema> fieldTypeSchema;
+			bool terminator = false;
+
+			UINT32 baseObjId = 0;
+			UINT32 baseObjTypeId = 0;
+			bool objIsBaseClass = false;
 
 			if(hasMeta)
 			{
@@ -462,32 +509,9 @@ namespace bs
 
 				if (isObjectMetaData(metaDataHeader)) // We've reached a new object or a base class of the current one
 				{
-					UINT32 objId = 0;
-					UINT32 objTypeId = 0;
-					bool objIsBaseClass = false;
-					UINT32 readBits = readObjectMetaData(stream, flags, objId, objTypeId, objIsBaseClass);
+					UINT32 readBits = readObjectMetaData(stream, flags, baseObjId, baseObjTypeId, objIsBaseClass);
 
-					// If it's a base class, get base class RTTI and handle that
-					if (objIsBaseClass)
-					{
-						if (rtti != nullptr)
-							rtti = rtti->getBaseClass();
-
-						// Saved and current base classes don't match, so just skip over all that data
-						if (rtti == nullptr || rtti->getRTTIId() != objTypeId)
-							rtti = nullptr;
-
-						rttiInstance = nullptr;
-
-						if (rtti)
-						{
-							rttiInstance = rttiInstances[rttiInstanceIdx + 1];
-							rttiInstanceIdx++;
-						}
-
-						continue;
-					}
-					else
+					if (!objIsBaseClass)
 					{
 						// Found new object, we're done
 						stream.skip(-(int32_t)readBits);
@@ -499,19 +523,59 @@ namespace bs
 
 				if (compressed)
 					terminator = isFieldTerminator(metaDataHeader);
-				else
-					terminator = false;
 
 				if (!terminator)
 					decodeFieldMetaData(metaDataHeader, fieldId, fieldSize, isArray, fieldType, hasDynamicSize, terminator);
 			}
 			else
 			{
-				// TODO - Need to read all the information from the schema or the current RTTI type:
-				// - Check if we're reached a new base type and switch rtti
-				// - If reached a new field read field information
-				// - If reached terminator or end of object, finalize
-				TODO;
+				if(fieldSchemaIter == schema->fieldSchemas.end())
+				{
+					// No more fields, move to base type if one exists
+					if (schema->baseTypeSchema)
+					{
+						schema = schema->baseTypeSchema;
+						fieldSchemaIter = schema->fieldSchemas.begin();
+						
+						baseObjTypeId = schema->typeId;
+						objIsBaseClass = true;
+					}
+					else // Otherwise we're done here
+						terminator = true;
+				}
+				else
+				{
+					const RTTIFieldSchema& fieldSchema = *fieldSchemaIter;
+					
+					isArray = fieldSchema.isArray;
+					fieldType = fieldSchema.type;
+					fieldId = fieldSchema.id;
+					fieldSize = fieldSchema.size;
+					hasDynamicSize = fieldSchema.hasDynamicSize;
+					fieldTypeSchema = fieldSchema.fieldTypeSchema;
+
+					++fieldSchemaIter;
+				}
+			}
+
+			if (objIsBaseClass)
+			{
+				if (rtti != nullptr)
+					rtti = rtti->getBaseClass();
+
+				// Saved and current base classes don't match, so just skip over all that data
+				if (rtti == nullptr || rtti->getRTTIId() != baseObjTypeId)
+					rtti = nullptr;
+
+				rttiInstance = nullptr;
+
+				if (rtti)
+				{
+					rttiInstance = rttiInstances[rttiInstanceIdx + 1];
+					rttiInstanceIdx++;
+				}
+
+				continue;
 			}
 
 			if (terminator)
@@ -565,7 +629,7 @@ namespace bs
 				{
 				case SerializableFT_ReflectablePtr:
 				{
-					RTTIReflectablePtrFieldBase* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
+					auto* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
 
 					for (UINT32 i = 0; i < arrayNumElems; i++)
 					{
@@ -575,10 +639,20 @@ namespace bs
 						else
 							stream.readBytes(childObjectId);
 
+						auto findObj = mDecodeObjectMap.find(childObjectId);
+
+						// If reading from schema we need to create object here as we don't know its type during the normal pass
+						if (schema)
+						{
+							if (findObj == mDecodeObjectMap.end())
+							{
+								SPtr<IReflectable> childObj = IReflectable::createInstanceFromTypeId(fieldTypeSchema->typeId);
+								mDecodeObjectMap.insert(std::make_pair(objectId, ObjectToDecode(childObj, (UINT32)-1, fieldTypeSchema)));
+							}
+						}
+						
 						if (curField != nullptr)
 						{
-							auto findObj = mDecodeObjectMap.find(childObjectId);
-
 							if(findObj == mDecodeObjectMap.end())
 							{
 								if(childObjectId != 0)
@@ -592,9 +666,8 @@ namespace bs
 							else
 							{
 								ObjectToDecode& objToDecode = findObj->second;
-
+								
 								const bool needsDecoding = !curField->schema.info.flags.isSet(RTTIFieldFlag::WeakRef) && !objToDecode.isDecoded;
-								// TODO - Create objToDecode.object instance here, if not already created
 								if (needsDecoding)
 								{
 									if (objToDecode.decodeInProgress)
@@ -611,7 +684,7 @@ namespace bs
 
 										const uint32_t curOffset = stream.tell();
 										stream.seek((uint32_t)objToDecode.offset);
-										decodeEntry(stream, dataEnd, flags, objToDecode.object);
+										decodeEntry(stream, dataEnd, flags, objToDecode.object, fieldTypeSchema);
 										stream.seek(curOffset);
 
 										objToDecode.decodeInProgress = false;
@@ -628,7 +701,7 @@ namespace bs
 				}
 				case SerializableFT_Reflectable:
 				{
-					RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
+					auto* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
 
 					for (UINT32 i = 0; i < arrayNumElems; i++)
 					{
@@ -636,7 +709,7 @@ namespace bs
 						if(curField)
 							childObj = curField->newObject();
 
-						decodeEntry(stream, dataEnd, flags, childObj);
+						decodeEntry(stream, dataEnd, flags, childObj, fieldTypeSchema);
 
 						if (curField != nullptr)
 						{
@@ -648,7 +721,7 @@ namespace bs
 				}
 				case SerializableFT_Plain:
 				{
-					RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
+					auto* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
 
 					for (UINT32 i = 0; i < arrayNumElems; i++)
 					{
@@ -691,7 +764,7 @@ namespace bs
 				{
 				case SerializableFT_ReflectablePtr:
 				{
-					RTTIReflectablePtrFieldBase* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
+					auto* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
 
 					UINT32 childObjectId = 0;
 					if (compressed)
@@ -699,9 +772,20 @@ namespace bs
 					else
 						stream.readBytes(childObjectId);
 
+					auto findObj = mDecodeObjectMap.find(childObjectId);
+
+					// If reading from schema we need to create object here as we don't know its type during the normal pass
+					if (schema)
+					{
+						if (findObj == mDecodeObjectMap.end())
+						{
+							SPtr<IReflectable> childObj = IReflectable::createInstanceFromTypeId(fieldTypeSchema->typeId);
+							mDecodeObjectMap.insert(std::make_pair(objectId, ObjectToDecode(childObj, (UINT32)-1, fieldTypeSchema)));
+						}
+					}
+						
 					if (curField != nullptr)
 					{
-						auto findObj = mDecodeObjectMap.find(childObjectId);
 						if(findObj == mDecodeObjectMap.end())
 						{
 							if(childObjectId != 0)
@@ -717,7 +801,6 @@ namespace bs
 							ObjectToDecode& objToDecode = findObj->second;
 
 							const bool needsDecoding = !curField->schema.info.flags.isSet(RTTIFieldFlag::WeakRef) && !objToDecode.isDecoded;
-							// TODO - Create objToDecode.object instance here, if not already created
 							if (needsDecoding)
 							{
 								if (objToDecode.decodeInProgress)
@@ -734,7 +817,7 @@ namespace bs
 
 									const size_t curOffset = stream.tell();
 									stream.seek((uint32_t)objToDecode.offset);
-									decodeEntry(stream, dataEnd, flags, objToDecode.object);
+									decodeEntry(stream, dataEnd, flags, objToDecode.object, fieldTypeSchema);
 									stream.seek((uint32_t)curOffset);
 
 									objToDecode.decodeInProgress = false;
@@ -750,14 +833,14 @@ namespace bs
 				}
 				case SerializableFT_Reflectable:
 				{
-					RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
+					auto* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
 
 					// Note: Ideally we can skip decoding the entry if the field no longer exists
 					SPtr<IReflectable> childObj;
 					if (curField)
 						childObj = curField->newObject();
 
-					decodeEntry(stream, dataEnd, flags, childObj);
+					decodeEntry(stream, dataEnd, flags, childObj, fieldTypeSchema);
 
 					if (curField != nullptr)
 					{
@@ -769,7 +852,7 @@ namespace bs
 				}
 				case SerializableFT_Plain:
 				{
-					RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
+					auto* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
 
 					UINT32 typeSize = fieldSize;
 					if (hasDynamicSize)
@@ -799,7 +882,7 @@ namespace bs
 				}
 				case SerializableFT_DataBlock:
 				{
-					RTTIManagedDataBlockFieldBase* curField = static_cast<RTTIManagedDataBlockFieldBase*>(curGenericField);
+					auto* curField = static_cast<RTTIManagedDataBlockFieldBase*>(curGenericField);
 
 					// Data block size
 					UINT32 dataBlockSize = 0;
@@ -1051,8 +1134,7 @@ namespace bs
 			}
 
 			decodeObjectMetaData(objectMetaData, objId, isBaseType);
-			// TODO - objTypeId needs to be retrieved here (either provided by user, from schema or from current RTTIType)
-			objTypeId = TODO;
+			objTypeId = 0; // Unavailable, needs to be read from a schema
 
 			return bitsRead;
 		}

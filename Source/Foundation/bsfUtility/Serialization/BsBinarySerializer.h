@@ -2,6 +2,7 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #pragma once
 
+#include <utility>
 #include "Prerequisites/BsPrerequisitesUtil.h"
 #include "Serialization/BsSerializedObject.h"
 #include "Reflection/BsRTTIField.h"
@@ -14,6 +15,7 @@ namespace bs
 	 */
 
 	class IReflectable;
+	class RTTISchema;
 	class BufferedBitstreamReader;
 	class BufferedBitstreamWriter;
 	struct RTTIReflectableFieldBase;
@@ -79,8 +81,8 @@ namespace bs
 		 *										maintaining state or sharing information between objects during
 		 *										serialization.
 		 */
-		void encode(IReflectable* object, const SPtr<DataStream>& stream, BinarySerializerFlags flags = BinarySerializerFlag::None,
-			SerializationContext* context = nullptr);
+		void encode(IReflectable* object, const SPtr<DataStream>& stream,
+			BinarySerializerFlags flags = BinarySerializerFlag::None, SerializationContext* context = nullptr);
 
 		/**
 		 * Decodes an object from binary data.
@@ -90,14 +92,18 @@ namespace bs
 		 * @param[in]	context		Optional object that will be passed along to all serialized objects through
 		 *							their deserialization callbacks. Can be used for controlling deserialization,
 		 *							maintaining state or sharing information between objects during deserialization.
-		 * @param[in]	progress	Optional callback that will occassionally trigger, reporting the current progress
+		 * @param[in]	progress	Optional callback that will occasionally trigger, reporting the current progress
 		 *							of the operation. The reported value is in range [0, 1].
+		 * @param[in]	schema		RTTI schema that contains information about types as they were when the data was
+		 *							originally serialized. Schema is only used (and required) if BinarySerializerFlag::NoMeta
+		 *							is set,	otherwise this information is read directly	from the encoded data. 
 		 *
 		 * @note
 		 * Child elements are guaranteed to be fully deserialized before their parents, except for fields marked with WeakRef flag.
 		 */
-		SPtr<IReflectable> decode(const SPtr<DataStream>& stream, UINT32 dataLength, BinarySerializerFlags flags = BinarySerializerFlag::None,
-			SerializationContext* context = nullptr, std::function<void(float)> progress = nullptr);
+		SPtr<IReflectable> decode(const SPtr<DataStream>& stream, UINT32 dataLength,
+			BinarySerializerFlags flags = BinarySerializerFlag::None, SerializationContext* context = nullptr,
+			std::function<void(float)> progress = nullptr, SPtr<RTTISchema> schema = nullptr);
 	private:
 		/** Determines how many bytes need to be read before the progress report callback is triggered. */
 		static constexpr UINT32 REPORT_AFTER_BYTES = 32768;
@@ -119,8 +125,8 @@ namespace bs
 
 		struct ObjectToEncode
 		{
-			ObjectToEncode(UINT32 _objectId, const SPtr<IReflectable>& _object)
-				:objectId(_objectId), object(_object)
+			ObjectToEncode(UINT32 objectId, SPtr<IReflectable> object)
+				:objectId(objectId), object(std::move(object))
 			{ }
 
 			UINT32 objectId;
@@ -129,21 +135,23 @@ namespace bs
 
 		struct ObjectToDecode
 		{
-			ObjectToDecode(const SPtr<IReflectable>& _object, size_t offset = 0)
-				:object(_object), offset(offset)
+			ObjectToDecode(SPtr<IReflectable> object, size_t offset = 0, SPtr<RTTISchema> schema = nullptr)
+				:object(std::move(object)), offset(offset), schema(std::move(schema))
 			{ }
 
 			SPtr<IReflectable> object;
 			bool isDecoded = false;
 			bool decodeInProgress = false; // Used for error reporting circular references
 			size_t offset;
+			SPtr<RTTISchema> schema;
 		};
 
 		/** Encodes a single IReflectable object. */
 		bool encodeEntry(IReflectable* object, UINT32 objectId, BufferedBitstreamWriter& stream, BinarySerializerFlags flags);
 
 		/**	Decodes a single IReflectable object. */
-		bool decodeEntry(BufferedBitstreamReader& stream, size_t dataLength, BinarySerializerFlags flags, const SPtr<IReflectable>& output);
+		bool decodeEntry(BufferedBitstreamReader& stream, size_t dataLength, BinarySerializerFlags flags, const SPtr<IReflectable>& output,
+			SPtr<RTTISchema> schema);
 
 		/**	Helper method for encoding a complex object and writing its data to a stream. */
 		bool complexTypeToStream(IReflectable* object, BufferedBitstreamWriter& stream, BinarySerializerFlags flags);

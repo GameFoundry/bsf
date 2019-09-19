@@ -2,10 +2,21 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "Reflection/BsRTTIField.h"
 #include "Reflection/BsRTTIPlain.h"
+#include "RTTI/BsRTTISchemaRTTI.h"
 #include "Error/BsException.h"
 
 namespace bs
 {
+	RTTITypeBase* RTTIFieldSchema::getRTTIStatic()
+	{
+		return RTTIFieldSchemaRTTI::instance();
+	}
+
+	RTTITypeBase* RTTIFieldSchema::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+	
 	RTTIFieldInfo RTTIFieldInfo::DEFAULT;
 
 	void RTTIField::checkIsArray(bool array) const

@@ -12,47 +12,34 @@ namespace bs
 	 *  @{
 	 */
 
-	template<> struct RTTIPlainType<RTTIFieldSchema>
+	class RTTIFieldSchemaRTTI : public RTTIType<RTTIFieldSchema, IReflectable, RTTIFieldSchemaRTTI>
 	{
-		enum { id = TID_RTTIFieldSchema }; enum { hasDynamicSize = 0 };
-
-		static uint32_t toMemory(const RTTIFieldSchema& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo, bool compress)
+	private:
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_PLAIN(id, 0)
+			BS_RTTI_MEMBER_PLAIN(type, 1)
+			BS_RTTI_MEMBER_PLAIN(isArray, 2)
+			BS_RTTI_MEMBER_PLAIN(hasDynamicSize, 3)
+			BS_RTTI_MEMBER_PLAIN(size, 4)
+			BS_RTTI_MEMBER_REFLPTR(fieldTypeSchema, 5)
+			BS_RTTI_MEMBER_PLAIN(info, 6)
+		BS_END_RTTI_MEMBERS
+		
+	public:
+		const String& getRTTIName() override
 		{
-			uint32_t size = 0;
-			size += rtti_write(data.id, stream);
-			size += rtti_write(data.type, stream);
-			size += rtti_write(data.isArray, stream);
-			size += rtti_write(data.hasDynamicSize, stream);
-			size += rtti_write(data.size, stream);
-			size += rtti_write(data.info, stream);
-			
-			return size;
+			static String name = "RTTIFieldSchema";
+			return name;
 		}
 
-		static uint32_t fromMemory(RTTIFieldSchema& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo, bool compress)
+		UINT32 getRTTIId() override
 		{
-			uint32_t size = 0;
-			size += rtti_read(data.id, stream);
-			size += rtti_read(data.type, stream);
-			size += rtti_read(data.isArray, stream);
-			size += rtti_read(data.hasDynamicSize, stream);
-			size += rtti_read(data.size, stream);
-			size += rtti_read(data.info, stream);
-			
-			return size;
+			return TID_RTTIFieldSchema;
 		}
 
-		static uint32_t getSize(const RTTIFieldSchema& data)
+		SPtr<IReflectable> newRTTIObject() override
 		{
-			uint32_t size = 0;
-			size += rtti_size(data.id);
-			size += rtti_size(data.type);
-			size += rtti_size(data.isArray);
-			size += rtti_size(data.hasDynamicSize);
-			size += rtti_size(data.size);
-			size += rtti_size(data.info);
-			
-			return size;
+			return bs_shared_ptr_new<RTTIFieldSchema>();
 		}
 	};
 

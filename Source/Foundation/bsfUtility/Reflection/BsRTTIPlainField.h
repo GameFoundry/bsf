@@ -133,7 +133,7 @@ namespace bs
 			this->setter = setter;
 
 			init(std::move(name), RTTIFieldSchema(uniqueId, false, RTTIPlainType<DataType>::hasDynamicSize, size,
-				SerializableFT_Plain, info));
+				SerializableFT_Plain, nullptr, info));
 		}
 
 		/**
@@ -164,7 +164,7 @@ namespace bs
 			arraySetSize = setSize;
 
 			init(std::move(name), RTTIFieldSchema(uniqueId, true, RTTIPlainType<DataType>::hasDynamicSize,
-				RTTIPlainType<DataType>::getSize(), SerializableFT_Plain, info));
+				RTTIPlainType<DataType>::getSize(), SerializableFT_Plain, nullptr, info));
 		}
 
 		/** @copydoc RTTIPlainFieldBase::getTypeId */
