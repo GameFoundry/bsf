@@ -425,7 +425,7 @@ namespace bs
 						if (group.id != groupId)
 							continue;
 
-						group.renderTargetElements.emplace_back(target->getCore());
+						group.renderTargetElements.push_back(target->getCore());
 					}
 				}
 			}

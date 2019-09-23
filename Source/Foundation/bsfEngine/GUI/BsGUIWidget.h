@@ -37,7 +37,7 @@ namespace bs
 	struct GUIRenderTargetRenderData
 	{
 		GUIRenderTargetRenderData() = default;
-		GUIRenderTargetRenderData(SPtr<ct::RenderTarget>& target)
+		GUIRenderTargetRenderData(SPtr<ct::RenderTarget> target)
 			:target(std::move(target))
 		{ }
 		
