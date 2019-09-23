@@ -48,7 +48,8 @@ namespace bs
 		}
 	}
 
-	GUIDrawGroups::GUIDrawGroups()
+	GUIDrawGroups::GUIDrawGroups(GUIWidget* parentWidget)
+		:mWidget(parentWidget)
 	{
 		GUIDrawGroup mainDrawGroup;
 		mainDrawGroup.minDepth = 0;
@@ -402,7 +403,32 @@ namespace bs
 			output.newDrawGroups.reserve(mDrawGroups.size());
 			for (auto& entry : mDrawGroups)
 				output.newDrawGroups.push_back(getRenderData(entry));
-			
+
+			// Register elements that depend on render textures (currently these always correspond to input bridged elements)
+			SmallVector<std::pair<const GUIElement*, SPtr<const RenderTarget>>, 4> bridgedElements;
+			gGUIManager().getBridgedElements(mWidget, bridgedElements);
+
+			for (auto& entry : bridgedElements)
+			{
+				auto* element = const_cast<GUIElement*>(entry.first);
+				auto iterFind = mElements.find(element);
+
+				assert(iterFind != mElements.end());
+				if (iterFind == mElements.end())
+					continue;
+
+				const SPtr<const RenderTarget>& target = entry.second;
+				for(auto& groupId : iterFind->second.groups)
+				{
+					for (auto& group : output.newDrawGroups)
+					{
+						if (group.id != groupId)
+							continue;
+
+						group.renderTargetElements.emplace_back(target->getCore());
+					}
+				}
+			}
 		}
 		
 		mGroupsCoreDirty = false;
@@ -826,13 +852,13 @@ namespace bs
 	}
 
 	GUIWidget::GUIWidget(const SPtr<Camera>& camera)
-		: mCamera(camera)
+		: mCamera(camera), mDrawGroups(this)
 	{
 		construct(camera);
 	}
 
 	GUIWidget::GUIWidget(const HCamera& camera)
-		: mCamera(camera->_getCamera())
+		: mCamera(camera->_getCamera()), mDrawGroups(this)
 	{
 		construct(mCamera);
 	}

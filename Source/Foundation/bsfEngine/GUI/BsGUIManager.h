@@ -197,6 +197,9 @@ namespace bs
 		 */
 		SPtr<RenderWindow> getBridgeWindow(const SPtr<RenderTexture>& target) const;
 
+		/** Returns all GUI elements that have input bridging set up and belong to the provided GUI widget. */
+		void getBridgedElements(const GUIWidget* widget, SmallVector<std::pair<const GUIElement*, SPtr<const RenderTarget>>, 4>& elements);
+
 		/**	Returns the parent render window of the specified widget. */
 		const RenderWindow* getWidgetWindow(const GUIWidget& widget) const;
 

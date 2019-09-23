@@ -223,7 +223,7 @@ namespace bs
 		 * Returns a number that increments each time the target is rendered to. External systems can use this to
 		 * determine when the target's contents changed.
 		 */
-		UINT32 getUpdateCount() const { return mUpdateCount; }
+		UINT64 getUpdateCount() const { return mUpdateCount; }
 
 		/**
 		 * @name Internal
@@ -241,7 +241,7 @@ namespace bs
 		virtual const RenderTargetProperties& getPropertiesInternal() const = 0;
 
 	private:
-		UINT32 mUpdateCount = 0;
+		UINT64 mUpdateCount = 0;
 	};
 
 	/** @} */

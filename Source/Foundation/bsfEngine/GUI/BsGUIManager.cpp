@@ -1323,7 +1323,7 @@ namespace bs
 
 	void GUIManager::setInputBridge(const SPtr<RenderTexture>& renderTex, const GUIElement* element)
 	{
-		if(element == nullptr)
+		if (element == nullptr)
 			mInputBridge.erase(renderTex);
 		else
 			mInputBridge[renderTex] = element;
@@ -1460,6 +1460,21 @@ namespace bs
 		return nullptr;
 	}
 
+	void GUIManager::getBridgedElements(const GUIWidget* widget,
+		SmallVector<std::pair<const GUIElement*, SPtr<const RenderTarget>>, 4>& elements)
+	{
+		if (widget == nullptr)
+			return;
+
+		for(auto& entry : mInputBridge)
+		{
+			const GUIElement* element = entry.second;
+			GUIWidget* parentWidget = element->_getParentWidget();
+			if (parentWidget == widget)
+				elements.add(std::make_pair(element, entry.first));
+		}
+	}
+
 	void GUIManager::tabFocusFirst()
 	{
 		UINT32 nearestDist = std::numeric_limits<UINT32>::max();
@@ -1593,6 +1608,15 @@ namespace bs
 					needsRedraw = true;
 					break;
 				}
+
+				for(auto& renderTargetElem : drawGroup.renderTargetElements)
+				{
+					if(renderTargetElem.lastUpdateCount != renderTargetElem.target->getUpdateCount())
+					{
+						needsRedraw = true;
+						break;
+					}
+				}
 			}
 		}
 
@@ -1612,13 +1636,19 @@ namespace bs
 		{
 			for(auto& drawGroup : widget.drawGroups)
 			{
-				if (!drawGroup.nonCachedElements.empty())
+				for (auto& entry : drawGroup.nonCachedElements)
 				{
-					for(auto& entry : drawGroup.nonCachedElements)
+					const SPtr<GpuParamBlockBuffer>& buffer = widget.paramBlocks[entry.bufferIdx];
+					updateParamBlockBuffer(buffer, invViewportWidth, invViewportHeight,
+						viewflipYFlip, widget.worldTransform, entry);
+				}
+
+				for(auto& renderTargetElem : drawGroup.renderTargetElements)
+				{
+					if(renderTargetElem.lastUpdateCount != renderTargetElem.target->getUpdateCount())
 					{
-						const SPtr<GpuParamBlockBuffer>& buffer = widget.paramBlocks[entry.bufferIdx];
-						updateParamBlockBuffer(buffer, invViewportWidth, invViewportHeight,
-							viewflipYFlip, widget.worldTransform, entry);
+						renderTargetElem.lastUpdateCount = renderTargetElem.target->getUpdateCount();
+						drawGroup.requiresRedraw = true;
 					}
 				}
 				
@@ -1705,8 +1735,6 @@ namespace bs
 		// Restore original render target
 		rapi.setRenderTarget(viewContext.currentTarget);
 
-		// TODO - Avoid rendering to overlay if unnecessary. Ideally the renderer should not clear parts used by GUI (unless transparency is needed,
-		// but that could be a special flag on GUIWidget?)
 		for (auto& widget : widgetRenderData)
 		{
 			for (auto& drawGroup : widget.drawGroups)

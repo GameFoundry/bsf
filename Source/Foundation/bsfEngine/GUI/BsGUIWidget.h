@@ -33,10 +33,22 @@ namespace bs
 		UINT32 bufferIdx;
 	};
 
+	/** Information about a GUI element that is displaying a render target. */
+	struct GUIRenderTargetRenderData
+	{
+		GUIRenderTargetRenderData() = default;
+		GUIRenderTargetRenderData(SPtr<ct::RenderTarget>& target)
+			:target(std::move(target))
+		{ }
+		
+		SPtr<ct::RenderTarget> target;
+		UINT64 lastUpdateCount = (UINT64)-1;
+	};
+
 	/** Data required for rendering all the batches in a single GUI draw group. */
 	struct GUIDrawGroupRenderData
 	{
-		UINT32 id = 0;
+		INT32 id = 0;
 		SPtr<ct::RenderTexture> destination;
 		Rect2I bounds;
 		SubMesh subMesh;
@@ -45,6 +57,7 @@ namespace bs
 
 		Vector<GUIMeshRenderData> cachedElements;
 		Vector<GUIMeshRenderData> nonCachedElements;
+		Vector<GUIRenderTargetRenderData> renderTargetElements;
 	};
 
 	/**
@@ -72,7 +85,7 @@ namespace bs
 			DirtyContent = 1 << 1
 		};
 	public:
-		GUIDrawGroups();
+		GUIDrawGroups(GUIWidget* parentWidget);
 		
 		/** Iterates over all the render elements in the GUI elements and adds them to suitable draw groups. */
 		void add(GUIElement* element);
@@ -173,6 +186,7 @@ namespace bs
 		UnorderedMap<GUIElement*, GUIGroupElement> mElements;
 		UnorderedMap<GUIElement*, UINT32> mDirtyElements;
 		bool mGroupsCoreDirty = true;
+		GUIWidget* mWidget;
 		
 		SPtr<Mesh> mTriangleMesh;
 		SPtr<Mesh> mLineMesh;
