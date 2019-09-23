@@ -540,7 +540,7 @@ namespace bs { namespace ct
 				if (request == RendererExtensionRequest::DontRender)
 					continue;
 
-				locationNeedsRedraw[(UINT32)location] = request == RendererExtensionRequest::ForceRender;
+				locationNeedsRedraw[(UINT32)location] |= request == RendererExtensionRequest::ForceRender;
 				switch(location)
 				{
 				case RenderLocation::Prepare:
