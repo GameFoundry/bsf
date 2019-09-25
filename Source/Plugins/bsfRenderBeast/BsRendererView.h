@@ -414,6 +414,9 @@ namespace bs { namespace ct
 		/** Determines if a view should be rendered this frame. */
 		bool shouldDraw() const { return !mProperties.onDemand || mNeedsRedraw; }
 
+		/** Determines if view's 3D geometry should be rendered this frame. */
+		bool shouldDraw3D() const { return !mRenderSettings->overlayOnly && shouldDraw(); }
+
 		/** Assigns a view index to the view. To be called by the parent view group when the view is added to it. */
 		void _setViewIdx(UINT32 viewIdx) { mViewIdx = viewIdx; }
 

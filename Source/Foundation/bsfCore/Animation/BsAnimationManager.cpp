@@ -90,6 +90,7 @@ namespace bs
 		auto& allCameras = gSceneManager().getAllCameras();
 		for(auto& entry : allCameras)
 		{
+			// Note: This should also check on-demand cameras as there's no point in updating them if they wont render this frame
 			bool isOverlayCamera = entry.second->getRenderSettings()->overlayOnly;
 			if (isOverlayCamera)
 				continue;

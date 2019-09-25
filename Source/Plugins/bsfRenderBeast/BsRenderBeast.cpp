@@ -454,9 +454,8 @@ namespace bs { namespace ct
 		for (UINT32 i = 0; i < numViews; i++)
 		{
 			RendererView* view = viewGroup.getView(i);
-			const RenderSettings& settings = view->getRenderSettings();
 
-			if (view->shouldDraw() && !settings.overlayOnly)
+			if (view->shouldDraw3D())
 			{
 				needs3DRender = true;
 				break;

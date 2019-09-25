@@ -187,7 +187,7 @@ namespace bs { namespace ct
 		mVisibility.renderables.clear();
 		mVisibility.renderables.resize(renderables.size(), false);
 
-		if (mRenderSettings->overlayOnly)
+		if (!shouldDraw3D())
 			return;
 
 		calculateVisibility(cullInfos, mVisibility.renderables);
@@ -209,7 +209,7 @@ namespace bs { namespace ct
 		mVisibility.particleSystems.clear();
 		mVisibility.particleSystems.resize(particleSystems.size(), false);
 
-		if (mRenderSettings->overlayOnly)
+		if (!shouldDraw3D())
 			return;
 
 		calculateVisibility(cullInfos, mVisibility.particleSystems);
@@ -231,7 +231,7 @@ namespace bs { namespace ct
 		mVisibility.decals.clear();
 		mVisibility.decals.resize(decals.size(), false);
 
-		if (mRenderSettings->overlayOnly)
+		if (!shouldDraw3D())
 			return;
 
 		calculateVisibility(cullInfos, mVisibility.decals);
@@ -275,7 +275,7 @@ namespace bs { namespace ct
 			perViewVisibility = &mVisibility.spotLights;
 		}
 
-		if (mRenderSettings->overlayOnly)
+		if (!shouldDraw3D())
 			return;
 
 		calculateVisibility(bounds, *perViewVisibility);
@@ -352,9 +352,6 @@ namespace bs { namespace ct
 
 	void RendererView::queueRenderElements(const SceneInfo& sceneInfo)
 	{
-		if (mRenderSettings->overlayOnly)
-			return;
-
 		// Queue renderables
 		for(UINT32 i = 0; i < (UINT32)sceneInfo.renderables.size(); i++)
 		{
@@ -680,17 +677,17 @@ namespace bs { namespace ct
 		const auto numViews = (UINT32)mViews.size();
 
 		// Early exit if no views render scene geometry
-		bool allViewsOverlay = false;
+		bool anyViewsNeed3DDrawing = false;
 		for (UINT32 i = 0; i < numViews; i++)
 		{
-			if (!mViews[i]->getRenderSettings().overlayOnly)
+			if (mViews[i]->shouldDraw())
 			{
-				allViewsOverlay = false;
+				anyViewsNeed3DDrawing = true;
 				break;
 			}
 		}
 
-		if (allViewsOverlay)
+		if (!anyViewsNeed3DDrawing)
 			return;
 
 		// Calculate renderable visibility per view
@@ -711,8 +708,11 @@ namespace bs { namespace ct
 		}
 		
 		// Generate render queues per camera
-		for(UINT32 i = 0; i < numViews; i++)
-			mViews[i]->queueRenderElements(sceneInfo);
+		for (UINT32 i = 0; i < numViews; i++)
+		{
+			if(mViews[i]->shouldDraw())
+				mViews[i]->queueRenderElements(sceneInfo);
+		}
 
 		// Calculate light visibility for all views
 		const auto numRadialLights = (UINT32)sceneInfo.radialLights.size();
@@ -725,7 +725,7 @@ namespace bs { namespace ct
 
 		for (UINT32 i = 0; i < numViews; i++)
 		{
-			if (mViews[i]->getRenderSettings().overlayOnly)
+			if (!mViews[i]->shouldDraw())
 				continue;
 
 			mViews[i]->determineVisible(sceneInfo.radialLights, sceneInfo.radialLightWorldBounds, LightType::Radial,
@@ -765,7 +765,7 @@ namespace bs { namespace ct
 		{
 			for (UINT32 i = 0; i < numViews; i++)
 			{
-				if (mViews[i]->getRenderSettings().overlayOnly)
+				if (!mViews[i]->shouldDraw())
 					continue;
 
 				mViews[i]->updateLightGrid(mVisibleLightData, mVisibleReflProbeData);
