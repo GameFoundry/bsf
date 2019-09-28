@@ -150,55 +150,106 @@ Once you specialize the class for your type, implementing all the required metho
 
 The specialization involves implementing methods for serializing/deserializing and retrieving object size. It has no advanced functionality like versioning (so if the structure of the type changes, it will break any previously serialized data), or keeping references to other objects.
 
-For example if we wanted to serialize a string:
+For example if we wanted to serialize a simple `struct`:
 ~~~~~~~~~~~~~{.cpp}
-template<> struct RTTIPlainType<std::string>
+struct MyStruct
+{
+	int a;
+	float b;
+	bool c;
+};
+
+template<> struct RTTIPlainType<MyStruct>
 {	
-	enum { id = 20 }; enum { hasDynamicSize = 1 }; // Provide unique ID, and a flag whether the size of the structure is dynamic.
+	enum { id = 20 }; enum { hasDynamicSize = 0 }; // Provide unique ID, and a flag whether the size of the structure is dynamic.
 
-	static uint32_t toMemory(const std::string& data, Bitstream& stream, const RTTIFieldInfo& info)
+	static BitLength toMemory(const MyStruct& data, Bitstream& stream, const RTTIFieldInfo& info, bool compress)
 	{ 
-		uint32_t size = data.size() + sizeof(uint32_t);
+		uint32_t size = 0;
 
-		stream.writeBytes(size);
-		stream.writeBytes((uint8_t*)data.data(), data.size());
-
+		// Assume we only want to serialize the first two fields of the structure
+		size += stream.writeBytes(data.a);
+		size += stream.writeBytes(data.b);
+		
 		return size; 
 	}
 
-	static uint32_t fromMemory(String& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo)
+	static BitLength fromMemory(MyStruct& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo, bool compress)
 	{
-		uint32_t size;
-		stream.readBytes(size);
-
-		uint32_t stringSize = size - sizeof(size);
-		data = String(stream.cursor(), stringSize);
-
+		uint32_t size = 0;
+		
+		size += stream.readBytes(data.a);
+		size += stream.readBytes(data.b);
+		
 		return size;
 	}
 
-	static uint32_t getSize(const std::string& data)	
+	static BitLength getSize(const std::string& data, const RTTIFieldInfo& fieldInfo, bool compress)
 	{ 
-		return data.size() + sizeof(uint32_t);
+		return sizeof(data.a) + sizeof(data.b);
 	}	
 }; 
 ~~~~~~~~~~~~~
 
-> Note: bs::f already provides many of such specializations, including ones for strings, vectors and maps.
-
-Each specialization must implement all three **toMemory()**, **fromMemory()** and **getSize()** methods. It must also provide a flag **hasDynamicSize** which determines whether or not it has dynamic size. Any structure whose size varies with each instance (like a string) must set this flag to true. You must also set it to true if the size is static but larger than 256 bytes.
+Each specialization must implement all three **toMemory()**, **fromMemory()** and **getSize()** methods. It must also provide an unique **id** that identifies the type, as well as a **hasDynamicSize** flag which determines whether or not the field has dynamic size. Any structure whose size varies with each instance (like a string) must set this flag to true. You must also set it to true if the size is fixed, but larger than 256 bytes.
 
 Both **toMemory()**, **fromMemory()** have a similar signature:
  - **data** - Object that is to be written (**toMemory()**) or object that will receive the results of a read (**fromMemory()**)
- - **stream** - @bs::Bitstream object that is used for writing or reading the serialized data. Note you should always write whole bytes during serialization, not individual bits.
- - **info** - Additional optional information about the field being serialized
- - **return** - The total size of the data that was written or read, in bytes
+ - **stream** - @bs::Bitstream object that is used for writing or reading the serialized data.
+ - **info** - Additional optional information about the field being serialized.
+ - **compress** - If true you are allowed to provide a more space efficient encoding for your type. This is generally used for serializing for networking where data sizes are important. When false all written/read data sizes must be in multiples of a byte. If true, data sizes are allowed to be sub-byte sized (e.g. a boolean is allowed to be encoded as a single bit).
+ - **return** - The total size of the data that was written or read as a @bs::BitLength struct that contains the number of full bytes and any used bits in the last byte.
  
+**getSize()** accepts similar parameters, without the **stream** parameter. It should calculate the size of the data and return it as **BitLength**.
+
+You should set **id** to some unique number not used by existing types. Make sure not to clash with built-in type ID's which are all listed as enum values starting with **TID_** (e.g. **TID_Texture = 1001**).
+
+After the specialization is implemented you will be able to use the type in getters/setters for plain fields as you would *int* or *float*. Note that the framework already provides many of such specializations, including ones for strings, vectors and maps.
+ 
+## Dynamic size 
 If your structure has dynamic size or is fixed size that is more than 256 bytes you must set the **hasDynamicSize** flag to 1. The size of the structure should be returned from the **getSize()** method. If the size is dynamic you must also encode the size as the first four bytes in a call to **toMemory()**.
 
-After the specialization is implemented you will be able to use the type in getters/setters for plain fields as you would *int* or *float*. 
+For example, you should use **hasDynamicSize** with **String** as each instance will have a different size depending on the string stored. Fields with dynamic size must write the actual size as a header before all encoded data. You can use the helper methods @bs::rtti_write_with_size_header to write the data with a header, @bs::rtti_read_size_header to read the size from the header and @bs::rtti_add_header_size to calculate the header size.
 
-For very simple classes you can also use the @BS_ALLOW_MEMCPY_SERIALIZATION macro instead. It will create a basic **RTTIPlainType<T>** specialization which basically just does a *memcpy()* and uses *sizeof()* to determine the object size.
+For example if we wanted to serialize a string:
+~~~~~~~~~~~~~{.cpp}
+template<> struct RTTIPlainType<String>
+{	
+	enum { id = 21 }; enum { hasDynamicSize = 1 }; // Provide unique ID, and a flag whether the size of the structure is dynamic.
+
+	static BitLength toMemory(const String& data, Bitstream& stream, const RTTIFieldInfo& info, bool compress)
+	{ 
+		return rtti_write_with_size_header(stream, data, compress, [&data, &stream]()
+		{
+			stream.writeBytes((uint8_t*)data.data(), data.size());
+			return data.size();
+		});
+	}
+
+	static BitLength fromMemory(String& data, Bitstream& stream, const RTTIFieldInfo& fieldInfo, bool compress)
+	{
+		BitLength size;
+		BitLength headerSize = rtti_read_size_header(stream, compress, size);
+
+		// 'size' includes the size of the header, so subtract that
+		BitLength stringSize = size - headerSize;
+		data = String(stream.cursor(), stringSize.bytes);
+
+		return size;
+	}
+
+	static BitLength getSize(const String& data, const RTTIFieldInfo& fieldInfo, bool compress)
+	{ 
+		BitLength dataSize = data.size();
+
+		rtti_add_header_size(dataSize, compress);
+		return dataSize;
+	}	
+}; 
+~~~~~~~~~~~~~
+
+## Plain old data types
+For very simple structures you can also use the @BS_ALLOW_MEMCPY_SERIALIZATION macro as a shortcut. It will create a basic **RTTIPlainType<T>** specialization which basically just does a *memcpy()* and uses *sizeof()* to determine the object size.
 
 ~~~~~~~~~~~~~{.cpp}
 // Simple plain old data type
@@ -212,10 +263,11 @@ struct SimpleData
 BS_ALLOW_MEMCPY_SERIALIZATION(SimpleData)
 ~~~~~~~~~~~~~
 
+## Helper methods
 **RTTIPlainType** specializations can also be used as a more traditional form of serialization in case you find the RTTI system an overkill. For example if you needed to transfer data over a network and don't require advanced versioning features. The system provides helper methods that allow you to easily work with plain types in such a case:
- - @bs::rtti_read - Deserializes an object from the provided stream, advances the stream cursor and returns number of bytes read
- - @bs::rtti_write - Serializes an object into the provided stream, advances the stream cursor and returns number of bytes written
- - @bs::rtti_size - Returns a size an object in bytes
+ - @bs::rtti_read - Deserializes an object from the provided stream, advances the stream cursor and returns number of bytes/bits read
+ - @bs::rtti_write - Serializes an object into the provided stream, advances the stream cursor and returns number of bytes/bits written
+ - @bs::rtti_size - Returns a size an object as **BitLength**
  
 ~~~~~~~~~~~~~{.cpp}
 // Assuming Vector has a RTTIPlainType<T> specialization (which it has, bs::f provides it by default)
@@ -224,9 +276,9 @@ Vector<SimpleData> myData;
 // fill out myData
 
 // Serialize the entire vector and all of its contents
-uint32_t size = rtti_size(myData);
+BitLength size = rtti_size(myData);
 
-Bitstream stream(size);
+Bitstream stream(size.bytes);
 rtti_write(myData, stream);
 
 // Deserialize the data

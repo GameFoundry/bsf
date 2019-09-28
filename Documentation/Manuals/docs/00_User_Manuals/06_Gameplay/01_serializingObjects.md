@@ -252,16 +252,16 @@ FileDecoder fd("Path\To\My\File.asset");
 SPtr<IReflectable> myObjectCopy = fd.decode();
 ~~~~~~~~~~~~~
 
-You can also encode/decode to/from memory by using @bs::MemorySerializer.
+You can also encode/decode to/from memory by using @bs::BinarySerializer.
 ~~~~~~~~~~~~~{.cpp}
 SPtr<IReflectable> myObject = bs_shared_ptr_new<MyClass>();
 
-MemorySerializer ms;
-UINT32 size;
-UINT8* data = ms.encode(myObject.get(), size);
-SPtr<IReflectable> myObjectCopy2 = ms.decode(data, size);
+BinarySerializer bs;
+SPtr<MemoryDataStream> stream = bs_shared_ptr_new<MemoryDataStream>();
+bs.encode(myObject.get(), stream);
 
-bs_free(data);
+stream->seek(0);
+SPtr<IReflectable> myObjectCopy2 = bs.decode(stream, stream->size());
 ~~~~~~~~~~~~~
 
 ## Casting & queries
