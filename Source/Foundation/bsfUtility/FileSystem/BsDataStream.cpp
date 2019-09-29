@@ -188,7 +188,8 @@ namespace bs
 		: DataStream(READ | WRITE)
 	{
 		realloc(capacity);
-		mCursor = mEnd = mData;
+		mCursor = mData;
+		mEnd = mCursor + capacity;
 	}
 
 	MemoryDataStream::MemoryDataStream(void* memory, size_t size)
