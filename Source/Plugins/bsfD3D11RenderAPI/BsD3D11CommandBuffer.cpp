@@ -1,6 +1,8 @@
 //************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "BsD3D11CommandBuffer.h"
+#include "BsD3D11Device.h"
+#include "BsD3D11EventQuery.h"
 
 namespace bs { namespace ct
 {
@@ -13,6 +15,14 @@ namespace bs { namespace ct
 
 	void D3D11CommandBuffer::queueCommand(const std::function<void()> command)
 	{
+#if BS_DEBUG_MODE
+		if (getState() == CommandBufferState::Executing)
+		{
+			BS_LOG(Error, RenderBackend, "Cannot modify a command buffer that's still executing.");
+			return;
+		}
+#endif
+		
 		mCommands.push_back(command);
 	}
 
@@ -44,14 +54,38 @@ namespace bs { namespace ct
 			BS_LOG(Error, RenderBackend, "Cannot execute commands on a secondary buffer.");
 			return;
 		}
-#endif
 
+		if(getState() == CommandBufferState::Executing)
+		{
+			BS_LOG(Error, RenderBackend, "Cannot submit a command buffer that's still executing.");
+			return;
+		}
+#endif
+		
 		for (auto& entry : mCommands)
 			entry();
+
+		mFence = bs_shared_ptr_new<D3D11EventQuery>(mDeviceIdx);
+		mFence->begin();
+		mIsSubmitted = true;
 	}
 
-	void D3D11CommandBuffer::clear()
+	CommandBufferState D3D11CommandBuffer::getState() const
+	{
+		if (mIsSubmitted)
+			return isComplete() ? CommandBufferState::Done : CommandBufferState::Executing;
+
+		return mCommands.empty() ? CommandBufferState::Empty : CommandBufferState::Recording;
+	}
+
+	void D3D11CommandBuffer::reset()
 	{
 		mCommands.clear();
+		mIsSubmitted = false;
+	}
+
+	bool D3D11CommandBuffer::isComplete() const
+	{
+		return mFence && mFence->isReady();
 	}
 }}

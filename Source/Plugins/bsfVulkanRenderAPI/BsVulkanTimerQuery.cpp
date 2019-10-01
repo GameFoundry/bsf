@@ -10,7 +10,7 @@
 namespace bs { namespace ct
 {
 	VulkanTimerQuery::VulkanTimerQuery(VulkanDevice& device)
-		: mDevice(device), mQueryEndCalled(false), mQueryFinalized(false), mQueryInterrupted(false)
+		: mDevice(device), mQueryEndCalled(false), mQueryFinalized(false)
 	{
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
 	}
@@ -68,8 +68,6 @@ namespace bs { namespace ct
 
 	void VulkanTimerQuery::end(const SPtr<CommandBuffer>& cb)
 	{
-		assert(!mQueryInterrupted);
-
 		if (mQueries.empty())
 		{
 			BS_LOG(Error, RenderBackend, "end() called but query was never started.");
@@ -100,26 +98,16 @@ namespace bs { namespace ct
 
 	void VulkanTimerQuery::_interrupt(VulkanCmdBuffer& cb)
 	{
-		assert(mQueries.size() != 0 && !mQueryEndCalled);
+		assert(!mQueries.empty() && !mQueryEndCalled);
+
+		mQueryEndCalled = true;
+		mQueryFinalized = false;
 
 		VulkanQueryPool& queryPool = mDevice.getQueryPool();
 		VulkanQuery* endQuery = queryPool.beginTimerQuery(&cb);
 		cb.registerQuery(this);
 
 		mQueries.back().second = endQuery;
-		mQueryInterrupted = true;
-	}
-
-	void VulkanTimerQuery::_resume(VulkanCmdBuffer& cb)
-	{
-		assert(mQueryInterrupted);
-
-		VulkanQueryPool& queryPool = mDevice.getQueryPool();
-		VulkanQuery* beginQuery = queryPool.beginTimerQuery(&cb);
-		cb.registerQuery(this);
-
-		mQueries.push_back(std::make_pair(beginQuery, nullptr));
-		mQueryInterrupted = false;
 	}
 
 	bool VulkanTimerQuery::isReady() const

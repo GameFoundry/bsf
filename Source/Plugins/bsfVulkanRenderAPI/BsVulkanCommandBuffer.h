@@ -661,13 +661,17 @@ namespace bs { namespace ct
 		 */
 		VulkanCmdBuffer* getInternal() const { return mBuffer; }
 
+		/** @copydoc CommandBuffer::getState() */
+		CommandBufferState getState() const override;
+
+		/** @copydoc CommandBuffer::reset() */
+		void reset() override;
+		
 	private:
 		friend class VulkanCommandBufferManager;
 
 		VulkanCommandBuffer(VulkanDevice& device, GpuQueueType type, UINT32 deviceIdx, UINT32 queueIdx,
 			bool secondary);
-
-		~VulkanCommandBuffer();
 
 		/**
 		 * Tasks the command buffer to find a new internal command buffer. Call this after the command buffer has been

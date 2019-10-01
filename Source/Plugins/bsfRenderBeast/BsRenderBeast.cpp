@@ -100,7 +100,7 @@ namespace bs { namespace ct
 		ParticleRenderer::startUp();
 		GpuParticleSimulation::startUp();
 
-		gProfilerGPU().endFrame();
+		gProfilerGPU().endFrame(true);
 
 		RenderCompositor::registerNodeType<RCNodeSceneDepth>();
 		RenderCompositor::registerNodeType<RCNodeBasePass>();
@@ -486,8 +486,16 @@ namespace bs { namespace ct
 		for (UINT32 i = 0; i < numViews; i++)
 		{
 			RendererView* view = viewGroup.getView(i);
+			auto viewId = (UINT64)view;
+			const RendererViewTargetData& viewTarget = view->getProperties().target;
+			String title = StringUtil::format("({0} x {1})", viewTarget.targetWidth, viewTarget.targetHeight);
+			gProfilerGPU().beginView(viewId, ProfilerString(title.data(), title.size()));
+			
 			if (!view->shouldDraw())
+			{
+				gProfilerGPU().endView();
 				continue;
+			}
 			
 			const RenderSettings& settings = view->getRenderSettings();
 
@@ -501,6 +509,8 @@ namespace bs { namespace ct
 				renderView(viewGroup, *view, frameInfo);
 				anythingDrawn = true;
 			}
+
+			gProfilerGPU().endView();
 		}
 
 		return anythingDrawn;

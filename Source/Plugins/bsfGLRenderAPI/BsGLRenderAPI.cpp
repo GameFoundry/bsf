@@ -1389,7 +1389,6 @@ namespace bs { namespace ct
 			return;
 
 		cb->executeCommands();
-		cb->clear();
 	}
 
 	void GLRenderAPI::clearArea(UINT32 buffers, const Color& color, float depth, UINT16 stencil, const Rect2I& clearRect,

@@ -34,13 +34,10 @@ namespace bs { namespace ct
 		bool _isInProgress() const;
 
 		/**
-		 * Interrupts an in-progress query, allowing the command buffer to submitted. Interrupted queries must be resumed
-		 * using _resume().
+		 * Interrupts an in-progress query allowing the command buffer to submitted. Gets called on queries that are still
+		 * open during command buffer submission.
 		 */
 		void _interrupt(VulkanCmdBuffer& cb);
-
-		/** Resumes an interrupted query, restoring it back to its original in-progress state. */
-		void _resume(VulkanCmdBuffer& cb);
 
 	private:
 		friend class QueryManager;
@@ -51,7 +48,6 @@ namespace bs { namespace ct
 		UINT64 mNumSamples = 0;
 		bool mQueryEndCalled : 1;
 		bool mQueryFinalized : 1;
-		bool mQueryInterrupted : 1;
 	};
 
 	/** @} */

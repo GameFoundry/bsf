@@ -2688,12 +2688,6 @@ namespace bs { namespace ct
 		return readMask;
 	}
 
-
-	VulkanCommandBuffer::~VulkanCommandBuffer()
-	{
-		mBuffer->reset();
-	}
-
 	void VulkanCommandBuffer::acquireNewBuffer()
 	{
 		VulkanCmdBufferPool& pool = mDevice.getCmdBufferPool();
@@ -2707,6 +2701,12 @@ namespace bs { namespace ct
 
 	void VulkanCommandBuffer::submit(UINT32 syncMask)
 	{
+		if (getState() == CommandBufferState::Executing)
+		{
+			BS_LOG(Error, RenderBackend, "Cannot submit a command buffer that's still executing.");
+			return;
+		}
+		
 		// Ignore myself
 		syncMask &= ~mIdMask;
 
@@ -2721,28 +2721,41 @@ namespace bs { namespace ct
 		Vector<VulkanOcclusionQuery*> occlusionQueries;
 		mBuffer->getInProgressQueries(timerQueries, occlusionQueries);
 
-		for (auto& query : timerQueries)
-			query->_interrupt(*mBuffer);
+		if(!timerQueries.empty() || !occlusionQueries.empty())
+		{
+			BS_LOG(Warning, RenderBackend, "Submitting a command buffer with {0} timer queries "
+				"and {1} occlusion queries that are still open. The queries will be closed automatically.",
+				timerQueries.size(), occlusionQueries.size());
 
-		for (auto& query : occlusionQueries)
-			query->_interrupt(*mBuffer);
+			for (auto& query : timerQueries)
+				query->_interrupt(*mBuffer);
 
+			for (auto& query : occlusionQueries)
+				query->_interrupt(*mBuffer);
+		}
+		
 		if (mBuffer->isRecording())
 			mBuffer->end();
 
 		if (mBuffer->isReadyForSubmit()) // Possibly nothing was recorded in the buffer
 		{
 			mBuffer->submit(mQueue, mQueueIdx, syncMask);
-			acquireNewBuffer();
-
 			mDevice.refreshStates(false);
 		}
-
-		// Resume interrupted queries on the new command buffer
-		for (auto& query : timerQueries)
-			query->_resume(*mBuffer);
-
-		for (auto& query : occlusionQueries)
-			query->_resume(*mBuffer);
 	}
+
+	CommandBufferState VulkanCommandBuffer::getState() const
+	{
+		if(mBuffer->isSubmitted())
+			return mBuffer->checkFenceStatus(false) ? CommandBufferState::Done : CommandBufferState::Executing;
+
+		bool recording = mBuffer->isRecording() || mBuffer->isReadyForSubmit() || mBuffer->isInRenderPass();
+		return recording ? CommandBufferState::Recording : CommandBufferState::Empty;
+	}
+
+	void VulkanCommandBuffer::reset()
+	{
+		acquireNewBuffer();
+	}
+
 }}

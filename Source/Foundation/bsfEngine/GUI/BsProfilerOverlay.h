@@ -131,7 +131,7 @@ namespace bs
 		 * Updates GPU GUI elemnts from the data in the provided profiler report. To be called whenever a new report is
 		 * received.
 		 */
-		void updateGPUSampleContents(const GPUProfilerReport& gpuReport);
+		void updateGPUSampleContents(const GPUProfileSample& gpuReport);
 
 		static constexpr UINT32 GPU_NUM_SAMPLE_COLUMNS = 3;
 

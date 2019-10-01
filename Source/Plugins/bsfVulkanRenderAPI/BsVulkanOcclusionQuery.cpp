@@ -11,7 +11,6 @@ namespace bs { namespace ct
 {
 	VulkanOcclusionQuery::VulkanOcclusionQuery(VulkanDevice& device, bool binary)
 		: OcclusionQuery(binary), mDevice(device), mQueryEndCalled(false), mQueryFinalized(false)
-		, mQueryInterrupted(false)
 	{
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
 	}
@@ -55,13 +54,15 @@ namespace bs { namespace ct
 
 	void VulkanOcclusionQuery::end(const SPtr<CommandBuffer>& cb)
 	{
-		assert(!mQueryInterrupted);
-
 		if(mQueries.empty())
 		{
 			BS_LOG(Error, RenderBackend, "end() called but query was never started.");
 			return;
 		}
+
+		// Could have been interrupted
+		if (mQueryEndCalled)
+			return;
 
 		mQueryEndCalled = true;
 		mQueryFinalized = false;
@@ -84,23 +85,13 @@ namespace bs { namespace ct
 
 	void VulkanOcclusionQuery::_interrupt(VulkanCmdBuffer& cb)
 	{
-		assert(mQueries.size() != 0 && !mQueryEndCalled);
+		assert(!mQueries.empty() && !mQueryEndCalled);
+
+		mQueryEndCalled = true;
+		mQueryFinalized = false;
 
 		VulkanQueryPool& queryPool = mDevice.getQueryPool();
 		queryPool.endOcclusionQuery(mQueries.back(), &cb);
-
-		mQueryInterrupted = true;
-	}
-
-	void VulkanOcclusionQuery::_resume(VulkanCmdBuffer& cb)
-	{
-		assert(mQueryInterrupted);
-
-		VulkanQueryPool& queryPool = mDevice.getQueryPool();
-		mQueries.push_back(queryPool.beginOcclusionQuery(&cb, !mBinary));
-		cb.registerQuery(this);
-
-		mQueryInterrupted = false;
 	}
 
 	bool VulkanOcclusionQuery::isReady() const

@@ -36,6 +36,25 @@ namespace bs { namespace ct
 		UINT32 mMask = 0;
 	};
 
+	/** Possible states that a CommandBuffer can be in. */
+	enum class CommandBufferState
+	{
+		/** Command buffer doesn't have any commands recorded, nor has it been queued for execution. */
+		Empty,
+
+		/** Command buffer has one or multiple commands recorded, but they haven't been queued for execution. */
+		Recording,
+
+		/**
+		 * Command buffer has been queued for execution, but still hasn't finished executing. Buffer that is
+		 * executing cannot be modified or re-submitted for execution until done executing.
+		 */
+		Executing,
+
+		/** Command buffer has been queued for execution and has finished executing. */
+		Done
+	};
+
 	/**
 	 * Contains a list of render API commands that can be queued for execution on the GPU. User is allowed to populate the
 	 * command buffer from any thread, ensuring render API command generation can be multi-threaded. Command buffers
@@ -78,6 +97,15 @@ namespace bs { namespace ct
 
 		/** Returns the device index this buffer will execute on. */
 		UINT32 getDeviceIdx() const { return mDeviceIdx; }
+
+		/** Returns the current state of the command buffer. */
+		virtual CommandBufferState getState() const = 0;
+
+		/**
+		 * Resets the command buffer back into initial state. Must only be used if the command buffer is
+		 * not in the executing state.
+		 */
+		virtual void reset() = 0;
 
 	protected:
 		CommandBuffer(GpuQueueType type, UINT32 deviceIdx, UINT32 queueIdx, bool secondary);

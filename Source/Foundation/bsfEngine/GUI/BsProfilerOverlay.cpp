@@ -538,7 +538,11 @@ namespace bs
 
 		if (ProfilerGPU::instance().getNumAvailableReports() > 0)
 		{
-			updateGPUSampleContents(ProfilerGPU::instance().getNextReport());
+			GPUProfilerReport report = ProfilerGPU::instance().getNextReport();
+
+			// TODO - Currently displaying just the first view. I need to add a way to toggle between views
+			if(!report.viewSamples.empty())
+				updateGPUSampleContents(report.viewSamples[0]);
 		}
 	}
 
@@ -705,26 +709,26 @@ namespace bs
 		}
 	}
 
-	void ProfilerOverlay::updateGPUSampleContents(const GPUProfilerReport& gpuReport)
+	void ProfilerOverlay::updateGPUSampleContents(const GPUProfileSample& frameSample)
 	{
 		mGPUFrameNumStr.setParameter(0, toString((UINT64)gTime().getFrameIdx()));
-		mGPUTimeStr.setParameter(0, toString(gpuReport.frameSample.timeMs));
-		mGPUDrawCallsStr.setParameter(0, toString(gpuReport.frameSample.numDrawCalls));
-		mGPURenTargetChangesStr.setParameter(0, toString(gpuReport.frameSample.numRenderTargetChanges));
-		mGPUPresentsStr.setParameter(0, toString(gpuReport.frameSample.numPresents));
-		mGPUClearsStr.setParameter(0, toString(gpuReport.frameSample.numClears));
-		mGPUVerticesStr.setParameter(0, toString(gpuReport.frameSample.numVertices));
-		mGPUPrimitivesStr.setParameter(0, toString(gpuReport.frameSample.numPrimitives));
-		mGPUSamplesStr.setParameter(0, toString(gpuReport.frameSample.numDrawnSamples));
-		mGPUPipelineStateChangesStr.setParameter(0, toString(gpuReport.frameSample.numPipelineStateChanges));
+		mGPUTimeStr.setParameter(0, toString(frameSample.timeMs));
+		mGPUDrawCallsStr.setParameter(0, toString(frameSample.numDrawCalls));
+		mGPURenTargetChangesStr.setParameter(0, toString(frameSample.numRenderTargetChanges));
+		mGPUPresentsStr.setParameter(0, toString(frameSample.numPresents));
+		mGPUClearsStr.setParameter(0, toString(frameSample.numClears));
+		mGPUVerticesStr.setParameter(0, toString(frameSample.numVertices));
+		mGPUPrimitivesStr.setParameter(0, toString(frameSample.numPrimitives));
+		mGPUSamplesStr.setParameter(0, toString(frameSample.numDrawnSamples));
+		mGPUPipelineStateChangesStr.setParameter(0, toString(frameSample.numPipelineStateChanges));
 
-		mGPUObjectsCreatedStr.setParameter(0, toString(gpuReport.frameSample.numObjectsCreated));
-		mGPUObjectsDestroyedStr.setParameter(0, toString(gpuReport.frameSample.numObjectsDestroyed));
-		mGPUResourceWritesStr.setParameter(0, toString(gpuReport.frameSample.numResourceWrites));
-		mGPUResourceReadsStr.setParameter(0, toString(gpuReport.frameSample.numResourceReads));
-		mGPUParamBindsStr.setParameter(0, toString(gpuReport.frameSample.numGpuParamBinds));
-		mGPUVertexBufferBindsStr.setParameter(0, toString(gpuReport.frameSample.numVertexBufferBinds));
-		mGPUIndexBufferBindsStr.setParameter(0, toString(gpuReport.frameSample.numIndexBufferBinds));
+		mGPUObjectsCreatedStr.setParameter(0, toString(frameSample.numObjectsCreated));
+		mGPUObjectsDestroyedStr.setParameter(0, toString(frameSample.numObjectsDestroyed));
+		mGPUResourceWritesStr.setParameter(0, toString(frameSample.numResourceWrites));
+		mGPUResourceReadsStr.setParameter(0, toString(frameSample.numResourceReads));
+		mGPUParamBindsStr.setParameter(0, toString(frameSample.numGpuParamBinds));
+		mGPUVertexBufferBindsStr.setParameter(0, toString(frameSample.numVertexBufferBinds));
+		mGPUIndexBufferBindsStr.setParameter(0, toString(frameSample.numIndexBufferBinds));
 
 		mGPUFrameNumLbl->setContent(mGPUFrameNumStr);
 		mGPUTimeLbl->setContent(mGPUTimeStr);
@@ -766,7 +770,7 @@ namespace bs
 		UINT32 currentCount = 0;
 
 		Stack<Todo> todo;
-		todo.push(Todo(gpuReport.frameSample, 0));
+		todo.push(Todo(frameSample, 0));
 
 		while (!todo.empty())
 		{

@@ -1119,7 +1119,6 @@ namespace bs { namespace ct
 			return;
 
 		cb->executeCommands();
-		cb->clear();
 	}
 
 	void D3D11RenderAPI::applyViewport()

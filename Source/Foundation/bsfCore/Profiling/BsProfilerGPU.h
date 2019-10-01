@@ -43,10 +43,17 @@ namespace bs
 		Vector<GPUProfileSample> children;
 	};
 
+	/** Contains various profiler statistics for a particular view. */
+	struct GPUProfileViewSample : GPUProfileSample
+	{
+		UINT64 viewId;
+	};
+
 	/** Profiler report containing information about GPU sampling data from a single frame. */
 	struct GPUProfilerReport
 	{
-		GPUProfileSample frameSample; /**< Sample containing data for entire frame. */
+		Vector<GPUProfileViewSample> viewSamples; /**< Profiler samples belonging to a particular view. */
+		Vector<GPUProfileSample> uncategorizedSamples; /**< Profiler samples not grouped under a particular view. */
 	};
 
 	/**
@@ -68,6 +75,17 @@ namespace bs
 			Vector<ProfiledSample*> children;
 		};
 
+		struct ProfiledViewSample : ProfiledSample
+		{
+			UINT64 viewId;
+		};
+
+		struct ProfiledFrame
+		{
+			Vector<ProfiledViewSample*> viewSamples;
+			Vector<ProfiledSample*> uncategorizedSamples;
+		};
+
 	public:
 		ProfilerGPU();
 		~ProfilerGPU();
@@ -86,6 +104,19 @@ namespace bs
 		 * @param[in]	 discard		If true, the results of the frame will not be resolved and it will be discarded.
 		 */
 		void endFrame(bool discard = false);
+
+		/**
+		 * Signals that all following sample calls are used for rendering a particular view represented with the provided
+		 * id. A top-level timing and occlusion query is issued for the entire view and all following samples will
+		 * be grouped under the view in the output report. Must be followed by endView() when done sampling.
+		 *
+		 * @param[in]	id			Identifier that can be used to uniquely identify the view.
+		 * @param[in]	title		Title describing the view.
+		 */
+		void beginView(UINT64 id, ProfilerString title);
+
+		/** Signals the end of rendering for a particular view. Must match the corresponding beginView() call. */
+		void endView();
 
 		/**
 		 * Begins sample measurement. Must be followed by endSample().
@@ -155,21 +186,26 @@ namespace bs
 		/** Frees the memory used by all the child samples. */
 		void freeSample(ProfiledSample& sample);
 
+		/** Frees the memory used by all the samples in the frame. */
+		void freeFrame(ProfiledFrame& frame);
+
 		/** Resolves an active sample and converts it to report sample. */
 		void resolveSample(const ProfiledSample& sample, GPUProfileSample& reportSample);
 
 	private:
-		ProfiledSample mFrameSample;
 		bool mIsFrameActive = false;
+		bool mIsViewActive = false;
 		Stack<ProfiledSample*> mActiveSamples;
+		ProfiledFrame mActiveFrame;
 
-		Queue<ProfiledSample> mUnresolvedFrames;
+		Queue<ProfiledFrame> mUnresolvedFrames;
 		GPUProfilerReport* mReadyReports = nullptr;
 
 		static const UINT32 MAX_QUEUE_ELEMENTS;
 		UINT32 mReportHeadPos = 0;
 		UINT32 mReportCount = 0;
 
+		PoolAlloc<sizeof(ProfiledViewSample), 16> mViewSamplePool;
 		PoolAlloc<sizeof(ProfiledSample), 256> mSamplePool;
 
 		mutable Stack<SPtr<ct::TimerQuery>> mFreeTimerQueries;
