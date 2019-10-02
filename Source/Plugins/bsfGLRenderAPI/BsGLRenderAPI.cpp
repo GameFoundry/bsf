@@ -118,6 +118,9 @@ namespace bs { namespace ct
 
 		QueryManager::startUp<GLQueryManager>();
 
+		// Create main command buffer
+		mMainCommandBuffer = std::static_pointer_cast<GLCommandBuffer>(CommandBuffer::create(GQT_GRAPHICS));
+
 		RenderAPI::initialize();
 	}
 
@@ -202,6 +205,7 @@ namespace bs { namespace ct
 		mCurrentHullProgram = nullptr;
 		mCurrentDomainProgram = nullptr;
 		mCurrentComputeProgram = nullptr;
+		mMainCommandBuffer = nullptr;
 
 		if (mGLSupport)
 			mGLSupport->stop();
@@ -348,15 +352,10 @@ namespace bs { namespace ct
 			}
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(pipelineState);
-		else
-		{
-			auto execute = [=]() { executeRef(pipelineState); };
+		auto execute = [=]() { executeRef(pipelineState); };
 
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
 		BS_INC_RENDER_STAT(NumPipelineStateChanges);
 	}
@@ -378,15 +377,10 @@ namespace bs { namespace ct
 				mCurrentComputeProgram = nullptr;
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(pipelineState);
-		else
-		{
-			auto execute = [=]() { executeRef(pipelineState); };
+		auto execute = [=]() { executeRef(pipelineState); };
 
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
 		BS_INC_RENDER_STAT(NumPipelineStateChanges);
 	}
@@ -897,15 +891,10 @@ namespace bs { namespace ct
 			activateGLTextureUnit(0);
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(gpuParams);
-		else
-		{
-			auto execute = [=]() { executeRef(gpuParams); };
+		auto execute = [=]() { executeRef(gpuParams); };
 
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
 		BS_INC_RENDER_STAT(NumGpuParamBinds);
 	}
@@ -919,15 +908,10 @@ namespace bs { namespace ct
 			setStencilRefValue(stencilRefValue);
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(stencilRefValue);
-		else
-		{
-			auto execute = [=]() { executeRef(stencilRefValue); };
+		auto execute = [=]() { executeRef(stencilRefValue); };
 
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 	}
 
 	void GLRenderAPI::setViewport(const Rect2& area,
@@ -941,15 +925,10 @@ namespace bs { namespace ct
 			applyViewport();
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(area);
-		else
-		{
-			auto execute = [=]() { executeRef(area); };
+		auto execute = [=]() { executeRef(area); };
 
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 	}
 
 	void GLRenderAPI::setRenderTarget(const SPtr<RenderTarget>& target, UINT32 readOnlyFlags,
@@ -1006,15 +985,10 @@ namespace bs { namespace ct
 			applyViewport();
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(target, readOnlyFlags);
-		else
-		{
-			auto execute = [=]() { executeRef(target, readOnlyFlags); };
+		auto execute = [=]() { executeRef(target, readOnlyFlags); };
 
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}
@@ -1032,27 +1006,23 @@ namespace bs { namespace ct
 		}
 #endif
 
-		auto executeRef = [&](UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers)
+		auto executeRef = [&](UINT32 index, const SmallVector<SPtr<VertexBuffer>, 8>& buffers, UINT32 numBuffers)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
-			std::array<SPtr<VertexBuffer>, MAX_VB_COUNT> boundBuffers;
 			for (UINT32 i = 0; i < numBuffers; i++)
-				boundBuffers[index + i] = buffers[i];
-
-			for (UINT32 i = 0; i < numBuffers; i++)
-				mBoundVertexBuffers[index + i] = boundBuffers[index + i];
+				mBoundVertexBuffers[index + i] = buffers[i];
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(index, buffers, numBuffers);
-		else
-		{
-			auto execute = [=]() { executeRef(index, buffers, numBuffers); };
+		SmallVector<SPtr<VertexBuffer>, 8> _buffers;
+		for (UINT32 i = 0; i < numBuffers; i++)
+			_buffers.add(buffers[i]);
 
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		auto execute = [executeRef, index, buffers = std::move(_buffers), numBuffers]()
+		{ executeRef(index, buffers, numBuffers); };
+
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 	}
 
 	void GLRenderAPI::setVertexDeclaration(const SPtr<VertexDeclaration>& vertexDeclaration,
@@ -1065,15 +1035,10 @@ namespace bs { namespace ct
 			mBoundVertexDeclaration = vertexDeclaration;
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(vertexDeclaration);
-		else
-		{
-			auto execute = [=]() { executeRef(vertexDeclaration); };
+		auto execute = [=]() { executeRef(vertexDeclaration); };
 
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 	}
 
 	void GLRenderAPI::setDrawOperation(DrawOperationType op, const SPtr<CommandBuffer>& commandBuffer)
@@ -1085,17 +1050,10 @@ namespace bs { namespace ct
 			mCurrentDrawOperation = op;
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(op);
-		else
-		{
-			auto execute = [=]() { executeRef(op); };
+		auto execute = [=]() { executeRef(op); };
 
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-
-			cb->mCurrentDrawOperation = op;
-		}
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 	}
 
 	void GLRenderAPI::setIndexBuffer(const SPtr<IndexBuffer>& buffer, const SPtr<CommandBuffer>& commandBuffer)
@@ -1107,15 +1065,10 @@ namespace bs { namespace ct
 			mBoundIndexBuffer = buffer;
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(buffer);
-		else
-		{
-			auto execute = [=]() { executeRef(buffer); };
+		auto execute = [=]() { executeRef(buffer); };
 
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 	}
 
 	void GLRenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount,
@@ -1143,22 +1096,12 @@ namespace bs { namespace ct
 			endDraw();
 		};
 
-		UINT32 primCount;
-		if (commandBuffer == nullptr)
-		{
-			executeRef(vertexOffset, vertexCount, instanceCount);
+		auto execute = [=]() { executeRef(vertexOffset, vertexCount, instanceCount); };
 
-			primCount = vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);
-		}
-		else
-		{
-			auto execute = [=]() { executeRef(vertexOffset, vertexCount, instanceCount); };
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-
-			primCount = vertexCountToPrimCount(cb->mCurrentDrawOperation, vertexCount);
-		}
+		UINT32 primCount = vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);
 
 		BS_INC_RENDER_STAT(NumDrawCalls);
 		BS_ADD_RENDER_STAT(NumVertices, vertexCount);
@@ -1216,22 +1159,12 @@ namespace bs { namespace ct
 			endDraw();
 		};
 
-		UINT32 primCount;
-		if (commandBuffer == nullptr)
-		{
-			executeRef(startIndex, indexCount, vertexOffset, vertexCount, instanceCount);
+		auto execute = [=]() { executeRef(startIndex, indexCount, vertexOffset, vertexCount, instanceCount); };
 
-			primCount = vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);
-		}
-		else
-		{
-			auto execute = [=]() { executeRef(startIndex, indexCount, vertexOffset, vertexCount, instanceCount); };
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-
-			primCount = vertexCountToPrimCount(cb->mCurrentDrawOperation, vertexCount);
-		}
+		UINT32 primCount = vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);
 
 		BS_INC_RENDER_STAT(NumDrawCalls);
 		BS_ADD_RENDER_STAT(NumVertices, vertexCount);
@@ -1266,15 +1199,10 @@ namespace bs { namespace ct
 #endif
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(numGroupsX, numGroupsY, numGroupsZ);
-		else
-		{
-			auto execute = [=]() { executeRef(numGroupsX, numGroupsY, numGroupsZ); };
+		auto execute = [=]() { executeRef(numGroupsX, numGroupsY, numGroupsZ); };
 
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
 		BS_INC_RENDER_STAT(NumComputeCalls);
 	}
@@ -1295,15 +1223,10 @@ namespace bs { namespace ct
 				mScissorRectDirty = true;
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(left, top, right, bottom);
-		else
-		{
-			auto execute = [=]() { executeRef(left, top, right, bottom); };
+		auto execute = [=]() { executeRef(left, top, right, bottom); };
 
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 	}
 
 	void GLRenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask,
@@ -1320,15 +1243,10 @@ namespace bs { namespace ct
 			clearArea(buffers, color, depth, stencil, clearRect, targetMask);
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(buffers, color, depth, stencil, targetMask);
-		else
-		{
-			auto execute = [=]() { executeRef(buffers, color, depth, stencil, targetMask); };
+		auto execute = [=]() { executeRef(buffers, color, depth, stencil, targetMask); };
 
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 	}
 
 	void GLRenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask,
@@ -1341,15 +1259,10 @@ namespace bs { namespace ct
 			clearArea(buffers, color, depth, stencil, clearRect, targetMask);
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(buffers, color, depth, stencil, targetMask);
-		else
-		{
-			auto execute = [=]() { executeRef(buffers, color, depth, stencil, targetMask); };
+		auto execute = [=]() { executeRef(buffers, color, depth, stencil, targetMask); };
 
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 	}
 
 	void GLRenderAPI::swapBuffers(const SPtr<RenderTarget>& target, UINT32 syncMask)
@@ -1359,6 +1272,8 @@ namespace bs { namespace ct
 		// Switch context if different from current one
 		if(!target->getProperties().isWindow)
 			return;
+
+		submitCommandBuffer(mMainCommandBuffer, syncMask);
 
 		RenderWindow* window = static_cast<RenderWindow*>(target.get());
 
@@ -1376,19 +1291,31 @@ namespace bs { namespace ct
 
 	void GLRenderAPI::addCommands(const SPtr<CommandBuffer>& commandBuffer, const SPtr<CommandBuffer>& secondary)
 	{
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		SPtr<GLCommandBuffer> secondaryCb = std::static_pointer_cast<GLCommandBuffer>(secondary);
-
-		cb->appendSecondary(secondaryCb);
+		// We're not supporting this as we don't support command buffer command queuing at all (i.e. they are executed
+		// straight away).
+		BS_LOG(Error, RenderBackend, "Secondary command buffers not supported on OpenGL.");
 	}
 
 	void GLRenderAPI::submitCommandBuffer(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask)
 	{
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		if (cb == nullptr)
-			return;
-
+		SPtr<GLCommandBuffer> cb = getCB(commandBuffer);
 		cb->executeCommands();
+
+		if (cb == mMainCommandBuffer)
+			mMainCommandBuffer = std::static_pointer_cast<GLCommandBuffer>(CommandBuffer::create(GQT_GRAPHICS));
+	}
+
+	SPtr<CommandBuffer> GLRenderAPI::getMainCommandBuffer() const
+	{
+		return mMainCommandBuffer;
+	}
+
+	SPtr<GLCommandBuffer> GLRenderAPI::getCB(const SPtr<CommandBuffer>& buffer)
+	{
+		if (buffer != nullptr)
+			return std::static_pointer_cast<GLCommandBuffer>(buffer);
+
+		return std::static_pointer_cast<GLCommandBuffer>(mMainCommandBuffer);
 	}
 
 	void GLRenderAPI::clearArea(UINT32 buffers, const Color& color, float depth, UINT16 stencil, const Rect2I& clearRect,

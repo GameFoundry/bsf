@@ -7,6 +7,8 @@
 
 namespace bs { namespace ct
 {
+	class D3D11CommandBuffer;
+
 	/** @addtogroup D3D11
 	 *  @{
 	 */
@@ -92,6 +94,9 @@ namespace bs { namespace ct
 		/** @copydoc RenderAPI::submitCommandBuffer() */
 		void submitCommandBuffer(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask = 0xFFFFFFFF) override;
 
+		/** @copydoc RenderAPI::getMainCommandBuffer() */
+		SPtr<CommandBuffer> getMainCommandBuffer() const override;
+
 		/** @copydoc RenderAPI::convertProjectionMatrix */
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest) override;
 
@@ -131,6 +136,12 @@ namespace bs { namespace ct
 
 		/** @copydoc RenderAPI::destroyCore */
 		void destroyCore() override;
+
+		/**
+		 * Returns a valid command buffer. Uses the provided buffer if not null. Otherwise returns the default command
+		 * buffer.
+		 */
+		SPtr<D3D11CommandBuffer> getCB(const SPtr<CommandBuffer>& buffer);
 
 		/**
 		 * Creates or retrieves a proper input layout depending on the currently set vertex shader and vertex buffer.
@@ -174,6 +185,7 @@ namespace bs { namespace ct
 		SPtr<VertexDeclaration> mActiveVertexDeclaration;
 		SPtr<D3D11GpuProgram> mActiveVertexShader;
 		SPtr<D3D11DepthStencilState> mActiveDepthStencilState;
+		SPtr<D3D11CommandBuffer> mMainCommandBuffer;
 
 		DrawOperationType mActiveDrawOp = DOT_TRIANGLE_LIST;
 	};

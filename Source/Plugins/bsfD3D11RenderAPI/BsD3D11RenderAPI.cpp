@@ -116,6 +116,9 @@ namespace bs { namespace ct
 		// Create render state manager
 		RenderStateManager::startUp<D3D11RenderStateManager>();
 
+		// Create main command buffer
+		mMainCommandBuffer = std::static_pointer_cast<D3D11CommandBuffer>(CommandBuffer::create(GQT_GRAPHICS));
+
 		mNumDevices = 1;
 		mCurrentCapabilities = bs_newN<RenderAPICapabilities>(mNumDevices);
 		initCapabilites(selectedAdapter, mCurrentCapabilities[0]);
@@ -170,6 +173,7 @@ namespace bs { namespace ct
 		mActiveVertexShader = nullptr;
 		mActiveRenderTarget = nullptr;
 		mActiveDepthStencilState = nullptr;
+		mMainCommandBuffer = nullptr;
 
 		RenderStateManager::shutDown();
 		RenderWindowManager::shutDown();
@@ -283,15 +287,10 @@ namespace bs { namespace ct
 			
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(pipelineState);
-		else
-		{
-			auto execute = [=]() { executeRef(pipelineState); };
+		auto execute = [=]() { executeRef(pipelineState); };
 
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
 		BS_INC_RENDER_STAT(NumPipelineStateChanges);
 	}
@@ -316,15 +315,10 @@ namespace bs { namespace ct
 				mDevice->getImmediateContext()->CSSetShader(nullptr, nullptr, 0);
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(pipelineState);
-		else
-		{
-			auto execute = [=]() { executeRef(pipelineState); };
+		auto execute = [=]() { executeRef(pipelineState); };
 
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
 		BS_INC_RENDER_STAT(NumPipelineStateChanges);
 	}
@@ -601,15 +595,10 @@ namespace bs { namespace ct
 				BS_EXCEPT(RenderingAPIException, "Failed to set GPU parameters: " + mDevice->getErrorDescription());
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(gpuParams);
-		else
-		{
-			auto execute = [=]() { executeRef(gpuParams); };
+		auto execute = [=]() { executeRef(gpuParams); };
 
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
 		BS_INC_RENDER_STAT(NumGpuParamBinds);
 	}
@@ -624,21 +613,16 @@ namespace bs { namespace ct
 			applyViewport();
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(vp);
-		else
-		{
-			auto execute = [=]() { executeRef(vp); };
+		auto execute = [=]() { executeRef(vp); };
 
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 	}
 
 	void D3D11RenderAPI::setVertexBuffers(UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto executeRef = [&](UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers)
+		auto executeRef = [&](UINT32 index, const SmallVector<SPtr<VertexBuffer>, 8>& buffers, UINT32 numBuffers)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -667,15 +651,15 @@ namespace bs { namespace ct
 			mDevice->getImmediateContext()->IASetVertexBuffers(index, numBuffers, dx11buffers, strides, offsets);
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(index, buffers, numBuffers);
-		else
-		{
-			auto execute = [=]() { executeRef(index, buffers, numBuffers); };
+		SmallVector<SPtr<VertexBuffer>, 8> _buffers;
+		for (UINT32 i = 0; i < numBuffers; i++)
+			_buffers.add(buffers[i]);
 
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		auto execute = [executeRef, index, buffers = std::move(_buffers), numBuffers]()
+			{ executeRef(index, buffers, numBuffers); };
+
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
 		BS_INC_RENDER_STAT(NumVertexBufferBinds);
 	}
@@ -699,15 +683,10 @@ namespace bs { namespace ct
 			mDevice->getImmediateContext()->IASetIndexBuffer(indexBuffer->getD3DIndexBuffer(), indexFormat, 0);
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(buffer);
-		else
-		{
-			auto execute = [=]() { executeRef(buffer); };
+		auto execute = [=]() { executeRef(buffer); };
 
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
 		BS_INC_RENDER_STAT(NumIndexBufferBinds);
 	}
@@ -722,15 +701,10 @@ namespace bs { namespace ct
 			mActiveVertexDeclaration = vertexDeclaration;
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(vertexDeclaration);
-		else
-		{
-			auto execute = [=]() { executeRef(vertexDeclaration); };
+		auto execute = [=]() { executeRef(vertexDeclaration); };
 
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 	}
 
 	void D3D11RenderAPI::setDrawOperation(DrawOperationType op, const SPtr<CommandBuffer>& commandBuffer)
@@ -743,17 +717,10 @@ namespace bs { namespace ct
 			mActiveDrawOp = op;
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(op);
-		else
-		{
-			auto execute = [=]() { executeRef(op); };
+		auto execute = [=]() { executeRef(op); };
 
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-
-			cb->mActiveDrawOp = op;
-		}
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 	}
 
 	void D3D11RenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount,
@@ -778,21 +745,12 @@ namespace bs { namespace ct
 #endif
 		};
 
-		UINT32 primCount;
-		if (commandBuffer == nullptr)
-		{
-			executeRef(vertexOffset, vertexCount, instanceCount);
-			primCount = vertexCountToPrimCount(mActiveDrawOp, vertexCount);
-		}
-		else
-		{
-			auto execute = [=]() { executeRef(vertexOffset, vertexCount, instanceCount); };
+		auto execute = [=]() { executeRef(vertexOffset, vertexCount, instanceCount); };
 
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
-			primCount = vertexCountToPrimCount(cb->mActiveDrawOp, vertexCount);
-		}
+		UINT32 primCount = vertexCountToPrimCount(mActiveDrawOp, vertexCount);
 
 		BS_INC_RENDER_STAT(NumDrawCalls);
 		BS_ADD_RENDER_STAT(NumVertices, vertexCount);
@@ -822,21 +780,12 @@ namespace bs { namespace ct
 #endif
 		};
 
-		UINT32 primCount;
-		if (commandBuffer == nullptr)
-		{
-			executeRef(startIndex, indexCount, vertexOffset, vertexCount, instanceCount);
-			primCount = vertexCountToPrimCount(mActiveDrawOp, indexCount);
-		}
-		else
-		{
-			auto execute = [=]() { executeRef(startIndex, indexCount, vertexOffset, vertexCount, instanceCount); };
+		auto execute = [=]() { executeRef(startIndex, indexCount, vertexOffset, vertexCount, instanceCount); };
 
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
-			primCount = vertexCountToPrimCount(cb->mActiveDrawOp, indexCount);
-		}
+		UINT32 primCount = vertexCountToPrimCount(mActiveDrawOp, indexCount);
 
 		BS_INC_RENDER_STAT(NumDrawCalls);
 		BS_ADD_RENDER_STAT(NumVertices, vertexCount);
@@ -858,15 +807,10 @@ namespace bs { namespace ct
 #endif
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(numGroupsX, numGroupsY, numGroupsZ);
-		else
-		{
-			auto execute = [=]() { executeRef(numGroupsX, numGroupsY, numGroupsZ); };
+		auto execute = [=]() { executeRef(numGroupsX, numGroupsY, numGroupsZ); };
 
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
 		BS_INC_RENDER_STAT(NumComputeCalls);
 	}
@@ -886,15 +830,10 @@ namespace bs { namespace ct
 			mDevice->getImmediateContext()->RSSetScissorRects(1, &mScissorRect);
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(left, top, right, bottom);
-		else
-		{
-			auto execute = [=]() { executeRef(left, top, right, bottom); };
+		auto execute = [=]() { executeRef(left, top, right, bottom); };
 
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 	}
 
 	void D3D11RenderAPI::setStencilRef(UINT32 value, const SPtr<CommandBuffer>& commandBuffer)
@@ -911,15 +850,10 @@ namespace bs { namespace ct
 				mDevice->getImmediateContext()->OMSetDepthStencilState(nullptr, mStencilRef);
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(value);
-		else
-		{
-			auto execute = [=]() { executeRef(value); };
+		auto execute = [=]() { executeRef(value); };
 
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 	}
 
 	void D3D11RenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask,
@@ -952,15 +886,10 @@ namespace bs { namespace ct
 				clearRenderTarget(buffers, color, depth, stencil, targetMask);
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(buffers, color, depth, stencil, targetMask);
-		else
-		{
-			auto execute = [=]() { executeRef(buffers, color, depth, stencil, targetMask); };
+		auto execute = [=]() { executeRef(buffers, color, depth, stencil, targetMask); };
 
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 	}
 
 	void D3D11RenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil,
@@ -1025,15 +954,10 @@ namespace bs { namespace ct
 			notifyRenderTargetModified();
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(buffers, color, depth, stencil, targetMask);
-		else
-		{
-			auto execute = [=]() { executeRef(buffers, color, depth, stencil, targetMask); };
+		auto execute = [=]() { executeRef(buffers, color, depth, stencil, targetMask); };
 
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
 		BS_INC_RENDER_STAT(NumClears);
 	}
@@ -1083,15 +1007,10 @@ namespace bs { namespace ct
 			applyViewport();
 		};
 
-		if (commandBuffer == nullptr)
-			executeRef(target, readOnlyFlags);
-		else
-		{
-			auto execute = [=]() { executeRef(target, readOnlyFlags); };
+		auto execute = [=]() { executeRef(target, readOnlyFlags); };
 
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
+		cb->queueCommand(execute);
 
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}
@@ -1099,6 +1018,8 @@ namespace bs { namespace ct
 	void D3D11RenderAPI::swapBuffers(const SPtr<RenderTarget>& target, UINT32 syncMask)
 	{
 		THROW_IF_NOT_CORE_THREAD;
+
+		submitCommandBuffer(mMainCommandBuffer, syncMask);
 		target->swapBuffers();
 		
 		BS_INC_RENDER_STAT(NumPresents);
@@ -1106,19 +1027,31 @@ namespace bs { namespace ct
 
 	void D3D11RenderAPI::addCommands(const SPtr<CommandBuffer>& commandBuffer, const SPtr<CommandBuffer>& secondary)
 	{
-		SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-		SPtr<D3D11CommandBuffer> secondaryCb = std::static_pointer_cast<D3D11CommandBuffer>(secondary);
-
-		cb->appendSecondary(secondaryCb);
+		// We're not supporting this as we don't support command buffer command queuing at all (i.e. they are executed
+		// straight away).
+		BS_LOG(Error, RenderBackend, "Secondary command buffers not supported on DirectX 11.");
 	}
 
 	void D3D11RenderAPI::submitCommandBuffer(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask)
 	{
-		SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-		if (cb == nullptr)
-			return;
-
+		SPtr<D3D11CommandBuffer> cb = getCB(commandBuffer);
 		cb->executeCommands();
+
+		if (cb == mMainCommandBuffer)
+			mMainCommandBuffer = std::static_pointer_cast<D3D11CommandBuffer>(CommandBuffer::create(GQT_GRAPHICS));
+	}
+
+	SPtr<CommandBuffer> D3D11RenderAPI::getMainCommandBuffer() const
+	{
+		return mMainCommandBuffer;
+	}
+
+	SPtr<D3D11CommandBuffer> D3D11RenderAPI::getCB(const SPtr<CommandBuffer>& buffer)
+	{
+		if (buffer != nullptr)
+			return std::static_pointer_cast<D3D11CommandBuffer>(buffer);
+
+		return std::static_pointer_cast<D3D11CommandBuffer>(mMainCommandBuffer);
 	}
 
 	void D3D11RenderAPI::applyViewport()

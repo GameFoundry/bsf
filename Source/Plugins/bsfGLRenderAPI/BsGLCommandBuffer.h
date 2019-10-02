@@ -22,9 +22,6 @@ namespace bs { namespace ct
 		/** Registers a new command in the command buffer. */
 		void queueCommand(const std::function<void()> command);
 
-		/** Appends all commands from the secondary buffer into this command buffer. */
-		void appendSecondary(const SPtr<GLCommandBuffer>& secondaryBuffer);
-
 		/** Executes all commands in the command buffer. Not supported on secondary buffer. */
 		void executeCommands();
 
@@ -43,11 +40,9 @@ namespace bs { namespace ct
 		/** Returns true if the command buffer has finished executing on the GPU. */
 		bool isComplete() const;
 
-		Vector<std::function<void()>> mCommands;
 		GLsync mFence = 0;
+		bool mCommandQueued = false;
 		bool mIsSubmitted = false;
-
-		DrawOperationType mCurrentDrawOperation = DOT_TRIANGLE_LIST;
 	};
 
 	/** @} */

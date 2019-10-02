@@ -21,27 +21,12 @@ namespace bs { namespace ct
 		}
 #endif
 		
-		mCommands.push_back(command);
-	}
-
-	void GLCommandBuffer::appendSecondary(const SPtr<GLCommandBuffer>& secondaryBuffer)
-	{
-#if BS_DEBUG_MODE
-		if(!secondaryBuffer->mIsSecondary)
-		{
-			BS_LOG(Error, RenderBackend, "Cannot append a command buffer that is not secondary.");
-			return;
-		}
-
-		if(mIsSecondary)
-		{
-			BS_LOG(Error, RenderBackend, "Cannot append a buffer to a secondary command buffer.");
-			return;
-		}
-#endif
-
-		for (auto& entry : secondaryBuffer->mCommands)
-			mCommands.push_back(entry);
+		// We don't support command buffer queuing on DX11, so we just execute the command right away. This means
+		// if caller uses a non-main command buffer the behaviour will likely be incorrect. To properly support
+		// command queuing we'd need to remember state of GpuParams when first bound and handles updates to
+		// buffers after they are bound (and potentially other things).
+		command();
+		mCommandQueued = true;
 	}
 
 	void GLCommandBuffer::executeCommands()
@@ -60,16 +45,12 @@ namespace bs { namespace ct
 		}
 #endif
 
-		for (auto& entry : mCommands)
-			entry();
-
-		mCommands.clear();
-
 		if (glIsSync(mFence))
 			glDeleteSync(mFence);
 
 		glFlush();
 		mFence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+		mIsSubmitted = true;
 	}
 
 	CommandBufferState GLCommandBuffer::getState() const
@@ -77,19 +58,19 @@ namespace bs { namespace ct
 		if (mIsSubmitted)
 			return isComplete() ? CommandBufferState::Done : CommandBufferState::Executing;
 
-		return mCommands.empty() ? CommandBufferState::Empty : CommandBufferState::Recording;
+		return mCommandQueued ? CommandBufferState::Recording : CommandBufferState::Empty;
 	}
 
 	void GLCommandBuffer::reset()
 	{
-		mCommands.clear();
+		mCommandQueued = false;
 		mIsSubmitted = false;
 	}
 
 	bool GLCommandBuffer::isComplete() const
 	{
 		GLenum result = glClientWaitSync(mFence, 0, 0);
-		return result == GL_ALREADY_SIGNALED || GL_CONDITION_SATISFIED;
+		return result == GL_ALREADY_SIGNALED || result == GL_CONDITION_SATISFIED;
 	}
 
 }}

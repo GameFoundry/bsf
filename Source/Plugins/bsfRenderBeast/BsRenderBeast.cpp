@@ -498,7 +498,6 @@ namespace bs { namespace ct
 			}
 			
 			const RenderSettings& settings = view->getRenderSettings();
-
 			if (settings.overlayOnly)
 			{
 				if (renderOverlay(*view, frameInfo))

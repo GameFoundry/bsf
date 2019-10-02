@@ -24,9 +24,6 @@ namespace bs { namespace ct
 		/** Registers a new command in the command buffer. */
 		void queueCommand(const std::function<void()> command);
 
-		/** Appends all commands from the secondary buffer into this command buffer. */
-		void appendSecondary(const SPtr<D3D11CommandBuffer>& secondaryBuffer);
-
 		/** Executes all commands in the command buffer. Not supported on secondary buffer. */
 		void executeCommands();
 
@@ -35,7 +32,7 @@ namespace bs { namespace ct
 
 		/** @copydoc CommandBuffer::reset() */
 		void reset() override;
-		
+
 	private:
 		friend class D3D11CommandBufferManager;
 		friend class D3D11RenderAPI;
@@ -45,11 +42,9 @@ namespace bs { namespace ct
 		/** Returns true if the command buffer has finished executing on the GPU. */
 		bool isComplete() const;
 		
-		Vector<std::function<void()>> mCommands;
 		SPtr<D3D11EventQuery> mFence;
+		bool mCommandQueued = false;
 		bool mIsSubmitted = false;
-
-		DrawOperationType mActiveDrawOp = DOT_TRIANGLE_LIST;
 	};
 
 	/** @} */

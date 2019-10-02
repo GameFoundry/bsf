@@ -22,28 +22,13 @@ namespace bs { namespace ct
 			return;
 		}
 #endif
-		
-		mCommands.push_back(command);
-	}
 
-	void D3D11CommandBuffer::appendSecondary(const SPtr<D3D11CommandBuffer>& secondaryBuffer)
-	{
-#if BS_DEBUG_MODE
-		if (!secondaryBuffer->mIsSecondary)
-		{
-			BS_LOG(Error, RenderBackend, "Cannot append a command buffer that is not secondary.");
-			return;
-		}
-
-		if (mIsSecondary)
-		{
-			BS_LOG(Error, RenderBackend, "Cannot append a buffer to a secondary command buffer.");
-			return;
-		}
-#endif
-
-		for (auto& entry : secondaryBuffer->mCommands)
-			mCommands.push_back(entry);
+		// We don't support command buffer queuing on DX11, so we just execute the command right away. This means
+		// if caller uses a non-main command buffer the behaviour will likely be incorrect. To properly support
+		// command queuing we'd need to remember state of GpuParams when first bound and handles updates to
+		// buffers after they are bound (and potentially other things).
+		command();
+		mCommandQueued = true;
 	}
 
 	void D3D11CommandBuffer::executeCommands()
@@ -62,9 +47,6 @@ namespace bs { namespace ct
 		}
 #endif
 		
-		for (auto& entry : mCommands)
-			entry();
-
 		mFence = bs_shared_ptr_new<D3D11EventQuery>(mDeviceIdx);
 		mFence->begin();
 		mIsSubmitted = true;
@@ -75,12 +57,12 @@ namespace bs { namespace ct
 		if (mIsSubmitted)
 			return isComplete() ? CommandBufferState::Done : CommandBufferState::Executing;
 
-		return mCommands.empty() ? CommandBufferState::Empty : CommandBufferState::Recording;
+		return mCommandQueued ? CommandBufferState::Recording : CommandBufferState::Empty;
 	}
 
 	void D3D11CommandBuffer::reset()
 	{
-		mCommands.clear();
+		mCommandQueued = false;
 		mIsSubmitted = false;
 	}
 

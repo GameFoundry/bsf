@@ -448,6 +448,12 @@ namespace bs
 		virtual void submitCommandBuffer(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask = 0xFFFFFFFF) = 0;
 
 		/**
+		 * Returns the currently active main command buffer instance. All commands queues without a user-provided command
+		 * buffer will be queued on this command buffer. The command buffer instance will change after it has been submitted.
+		 */
+		virtual SPtr<CommandBuffer> getMainCommandBuffer() const = 0;
+		
+		/**
 		 * Gets the capabilities of a specific GPU.
 		 *
 		 * @param[in]	deviceIdx	Index of the device to get the capabilities for.

@@ -10,6 +10,8 @@
 
 namespace bs { namespace ct
 {
+	class GLCommandBuffer;
+	
 	/** @addtogroup GL
 	 *  @{
 	 */
@@ -94,6 +96,9 @@ namespace bs { namespace ct
 		/** @copydoc RenderAPI::submitCommandBuffer() */
 		void submitCommandBuffer(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask = 0xFFFFFFFF) override;
 
+		/** @copydoc RenderAPI::getMainCommandBuffer() */
+		SPtr<CommandBuffer> getMainCommandBuffer() const override;
+
 		/** @copydoc RenderAPI::convertProjectionMatrix() */
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest) override;
 
@@ -164,6 +169,12 @@ namespace bs { namespace ct
 		 * (for example textures, gpu programs and such).
 		 */
 		void switchContext(const SPtr<GLContext>& context, const RenderWindow& window);
+
+		/**
+		 * Returns a valid command buffer. Uses the provided buffer if not null. Otherwise returns the default command
+		 * buffer.
+		 */
+		SPtr<GLCommandBuffer> getCB(const SPtr<CommandBuffer>& buffer);
 
 		/************************************************************************/
 		/* 								Sampler states                     		*/
@@ -414,6 +425,7 @@ namespace bs { namespace ct
 
 		SPtr<GLContext> mMainContext;
 		SPtr<GLContext> mCurrentContext;
+		SPtr<GLCommandBuffer> mMainCommandBuffer;
 
 		bool mDrawCallInProgress = false;
 

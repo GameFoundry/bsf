@@ -591,6 +591,11 @@ namespace bs { namespace ct
 			mMainCommandBuffer = std::static_pointer_cast<VulkanCommandBuffer>(CommandBuffer::create(GQT_GRAPHICS));
 	}
 
+	SPtr<CommandBuffer> VulkanRenderAPI::getMainCommandBuffer() const
+	{
+		return mMainCommandBuffer;
+	}
+
 	void VulkanRenderAPI::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
 	{
 		dest = matrix;

@@ -92,6 +92,9 @@ namespace bs { namespace ct
 		/** @copydoc RenderAPI::submitCommandBuffer() */
 		void submitCommandBuffer(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask = 0xFFFFFFFF) override;
 
+		/** @copydoc RenderAPI::getMainCommandBuffer() */
+		SPtr<CommandBuffer> getMainCommandBuffer() const override;
+
 		/** @copydoc RenderAPI::convertProjectionMatrix */
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest) override;
 
