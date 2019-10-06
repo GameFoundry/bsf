@@ -23,7 +23,7 @@ namespace bs
 	/**
 	 * Frame allocator. Performs very fast allocations but can only free all of its memory at once. Perfect for allocations
 	 * that last just a single frame.
-	 * 			
+	 *
 	 * @note	Not thread safe with an exception. alloc() and clear() methods need to be called from the same thread.
 	 * 			dealloc() is thread safe and can be called from any thread.
 	 */
@@ -57,7 +57,7 @@ namespace bs
 		 * Allocates a new block of memory of the specified size.
 		 *
 		 * @param[in]	amount	Amount of memory to allocate, in bytes.
-		 * 					
+		 *
 		 * @note	Not thread safe.
 		 */
 		UINT8* alloc(UINT32 amount);
@@ -68,14 +68,14 @@ namespace bs
 		 *
 		 * @param[in]	amount		Amount of memory to allocate, in bytes.
 		 * @param[in]	alignment	Alignment of the allocated memory. Must be power of two.
-		 * 					
+		 *
 		 * @note	Not thread safe.
 		 */
 		UINT8* allocAligned(UINT32 amount, UINT32 alignment);
 
 		/**
 		 * Allocates and constructs a new object.
-		 *	
+		 *
 		 * @note	Not thread safe.
 		 */
 		template<class T, class... Args>
@@ -86,7 +86,7 @@ namespace bs
 
 		/**
 		 * Destructs and deallocates an object.
-		 *	
+		 *
 		 * @note	Not thread safe.
 		 */
 		template<class T>
@@ -110,7 +110,7 @@ namespace bs
 		/**
 		 * Deallocates and destructs a previously allocated object.
 		 *
-		 * @note	
+		 * @note
 		 * No deallocation is actually done here. This method is only used to call the destructor and for debug purposes
 		 * so it is easier to track down memory leaks and corruption.
 		 * @note
@@ -131,7 +131,7 @@ namespace bs
 		/**
 		 * Deallocates all allocated memory since the last call to markFrame() (or all the memory if there was no call
 		 * to markFrame()).
-		 * 			
+		 *
 		 * @note	Not thread safe.
 		 */
 		void clear();

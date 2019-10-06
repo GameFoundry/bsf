@@ -19,18 +19,10 @@ namespace bs
 		mFreePtr = 0;
 	}
 
-#if BS_DEBUG_MODE
-	FrameAlloc::FrameAlloc(UINT32 blockSize)
-		:mBlockSize(blockSize), mFreeBlock(nullptr), mNextBlockIdx(0), mTotalAllocBytes(0),
-		mLastFrame(nullptr)
-	{
-	}
-#else
 	FrameAlloc::FrameAlloc(UINT32 blockSize)
 		: mBlockSize(blockSize), mFreeBlock(nullptr), mNextBlockIdx(0), mTotalAllocBytes(0), mLastFrame(nullptr)
 	{
 	}
-#endif
 
 	FrameAlloc::~FrameAlloc()
 	{
@@ -120,7 +112,7 @@ namespace bs
 	{
 		// Dealloc is only used for debug and can be removed if needed. All the actual deallocation
 		// happens in clear()
-			
+
 #if BS_DEBUG_MODE
 		if(data)
 		{
@@ -196,7 +188,7 @@ namespace bs
 					deallocBlock(curBlock);
 					mBlocks.erase(mBlocks.begin() + mNextBlockIdx);
 				}
-				
+
 				UINT32 oldNextBlockIdx = mNextBlockIdx;
 				allocBlock(totalBytes);
 
