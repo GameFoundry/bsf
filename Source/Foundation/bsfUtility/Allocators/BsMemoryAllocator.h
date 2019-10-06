@@ -423,7 +423,7 @@ namespace bs
 			if (num == 0)
 				return nullptr;
 
-			if (num > std::numeric_limits<size_t>::max() / sizeof(T))
+			if (num > max_size())
 				return nullptr; // Error
 
 			void* const pv = bs_alloc<Alloc>(num * sizeof(T));

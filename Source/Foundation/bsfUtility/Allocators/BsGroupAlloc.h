@@ -25,11 +25,9 @@ namespace bs
 		GroupAlloc() = default;
 
 		GroupAlloc(GroupAlloc&& other) noexcept
-			: mData(other.mData), mDataPtr(other.mDataPtr), mNumBytes(other.mNumBytes)
+			: mData(std::exchange(other.mData, nullptr)), mDataPtr(std::exchange(other.mDataPtr, nullptr)),
+				 mNumBytes(std::exchange(other.mNumBytes, 0))
 		{
-			other.mData = nullptr;
-			other.mDataPtr = nullptr;
-			other.mNumBytes = 0;
 		}
 
 		~GroupAlloc()
@@ -46,13 +44,9 @@ namespace bs
 			if (mNumBytes > 0)
 				bs_free(mData);
 
-			mData = other.mData;
-			mDataPtr = other.mDataPtr;
-			mNumBytes = other.mNumBytes;
-
-			other.mData = nullptr;
-			other.mDataPtr = nullptr;
-			other.mNumBytes = 0;
+			mData = std::exchange(other.mData, nullptr);
+			mDataPtr = std::exchange(other.mDataPtr, nullptr);
+			mNumBytes = std::exchange(other.mNumBytes, 0);
 
 			return *this;
 		}
