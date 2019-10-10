@@ -263,11 +263,22 @@ namespace bs { namespace ct
 		return Texture::create(pixels);
 	}
 
+	SPtr<Texture> generateChromaticAberrationFringe()
+	{
+		SPtr<PixelData> pixels = PixelData::create(3, 1, 1, PF_RGBA8);
+		pixels->setColorAt(Color(1.0f, 0.0f, 0.0f, 1.0f), 0, 0);
+		pixels->setColorAt(Color(0.0f, 1.0f, 0.0f, 1.0f), 1, 0);
+		pixels->setColorAt(Color(0.0f, 0.0f, 1.0f, 1.0f), 2, 0);
+
+		return Texture::create(pixels);
+	}
+
 	SPtr<Texture> RendererTextures::preintegratedEnvGF;
 	SPtr<Texture> RendererTextures::ssaoRandomization4x4;
 	SPtr<Texture> RendererTextures::defaultIndirect;
 	SPtr<Texture> RendererTextures::lensFlareGradient;
 	SPtr<Texture> RendererTextures::bokehFlare;
+	SPtr<Texture> RendererTextures::chromaticAberrationFringe;
 
 	void RendererTextures::startUp(const LoadedRendererTextures& textures)
 	{
@@ -276,6 +287,7 @@ namespace bs { namespace ct
 		defaultIndirect = generateDefaultIndirect();
 		lensFlareGradient = generateLensFlareGradientTint();
 		bokehFlare = textures.bokehFlare;
+		chromaticAberrationFringe = generateChromaticAberrationFringe();
 	}
 
 	void RendererTextures::shutDown()
@@ -285,5 +297,6 @@ namespace bs { namespace ct
 		defaultIndirect = nullptr;
 		lensFlareGradient = nullptr;
 		bokehFlare = nullptr;
+		chromaticAberrationFringe = nullptr;
 	}
 }}

@@ -48,6 +48,9 @@ namespace bs { namespace ct
 
 		/** Default texture to use for Bokeh flare. */
 		static SPtr<Texture> bokehFlare;
+
+		/** Texture that controls which color channels to shift in the chromatic aberration effect. */
+		static SPtr<Texture> chromaticAberrationFringe;
 	};
 
 	/** @} */

@@ -330,6 +330,61 @@ namespace bs
 			return bs_shared_ptr_new<ScreenSpaceLensFlareSettings>();
 		}
 	};
+	
+	class BS_CORE_EXPORT ChromaticAberrationSettingsRTTI : public RTTIType <ChromaticAberrationSettings, IReflectable, ChromaticAberrationSettingsRTTI>
+	{
+	private:
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_PLAIN(enabled, 0)
+			BS_RTTI_MEMBER_PLAIN(type, 1)
+			BS_RTTI_MEMBER_PLAIN(shiftAmount, 2)
+			BS_RTTI_MEMBER_REFL(fringeTexture, 3)
+		BS_END_RTTI_MEMBERS
+
+	public:
+		const String& getRTTIName() override
+		{
+			static String name = "ChromaticAberrationSettings";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_ChromaticAberrationSettings;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			return bs_shared_ptr_new<ChromaticAberrationSettings>();
+		}
+	};
+
+	class BS_CORE_EXPORT FilmGrainSettingsRTTI : public RTTIType <FilmGrainSettings, IReflectable, FilmGrainSettingsRTTI>
+	{
+	private:
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_PLAIN(enabled, 0)
+			BS_RTTI_MEMBER_PLAIN(intensity, 1)
+			BS_RTTI_MEMBER_PLAIN(speed, 2)
+		BS_END_RTTI_MEMBERS
+
+	public:
+		const String& getRTTIName() override
+		{
+			static String name = "FilmGrainSettings";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_FilmGrainSettings;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			return bs_shared_ptr_new<FilmGrainSettings>();
+		}
+	};
 
 	class BS_CORE_EXPORT ShadowSettingsRTTI : public RTTIType <ShadowSettings, IReflectable, ShadowSettingsRTTI>
 	{
@@ -385,6 +440,8 @@ namespace bs
 			BS_RTTI_MEMBER_REFL(bloom, 19)
 			BS_RTTI_MEMBER_REFL(screenSpaceLensFlare, 20)
 			BS_RTTI_MEMBER_REFL(motionBlur, 21)
+			BS_RTTI_MEMBER_REFL(filmGrain, 22)
+			BS_RTTI_MEMBER_REFL(chromaticAberration, 23)
 		BS_END_RTTI_MEMBERS
 
 	public:

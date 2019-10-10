@@ -461,6 +461,90 @@ namespace bs { namespace ct
 		GpuParamTexture mGradientTex;
 	};
 
+	BS_PARAM_BLOCK_BEGIN(ChromaticAberrationParamDef)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gInputSize)
+		BS_PARAM_BLOCK_ENTRY(float, gShiftAmount)
+	BS_PARAM_BLOCK_END
+
+	extern ChromaticAberrationParamDef gChromaticAberrationParamDef;
+
+	/** Renders a chromatic aberration effect by shifting RGB color channels. */
+	class ChromaticAberrationMat : public RendererMaterial<ChromaticAberrationMat>
+	{
+		RMAT_DEF_CUSTOMIZED("PPChromaticAberration.bsl");
+
+		static constexpr int MAX_SAMPLES = 16;
+
+		/** Helper method used for initializing variations of this material. */
+		template<bool SIMPLE>
+		static const ShaderVariation& getVariation()
+		{
+			static ShaderVariation variation = ShaderVariation(
+				{
+					ShaderVariation::Param("SIMPLE", SIMPLE)
+				});
+
+			return variation;
+		}
+	public:
+		ChromaticAberrationMat();
+
+		/**
+		 * Executes the post-process effect with the provided parameters and writes the results to the provided
+		 * render target.
+		 *
+		 * @param[in]	input		Texture to process.
+		 * @param[in]	settings	Settings used for customizing the effect.
+		 * @param[in]	output		Render target to write the results to.
+		 */
+		void execute(const SPtr<Texture>& input, const ChromaticAberrationSettings& settings,
+			const SPtr<RenderTarget>& output);
+
+		/**
+		 * Returns the material variation matching the provided parameters.
+		 *
+		 * @param[in]	type		Type that determines how is the effect performed.
+		 */
+		static ChromaticAberrationMat* getVariation(ChromaticAberrationType type);
+	private:
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
+
+		GpuParamTexture mInputTex;
+		GpuParamTexture mFringeTex;
+	};
+
+	BS_PARAM_BLOCK_BEGIN(FilmGrainParamDef)
+		BS_PARAM_BLOCK_ENTRY(float, gIntensity)
+		BS_PARAM_BLOCK_ENTRY(float, gTime)
+	BS_PARAM_BLOCK_END
+
+	extern FilmGrainParamDef gFilmGrainParamDef;
+
+	/** Renders a film grain effect using a noise function. */
+	class FilmGrainMat : public RendererMaterial<FilmGrainMat>
+	{
+		RMAT_DEF("PPFilmGrain.bsl");
+
+	public:
+		FilmGrainMat();
+
+		/**
+		 * Executes the post-process effect with the provided parameters and writes the results to the provided
+		 * render target.
+		 *
+		 * @param[in]	input		Texture to process.
+		 * @param[in]	time		Time of the current frame, in seconds.
+		 * @param[in]	settings	Settings used for customizing the effect.
+		 * @param[in]	output		Render target to write the results to.
+		 */
+		void execute(const SPtr<Texture>& input, float time, const FilmGrainSettings& settings,
+			const SPtr<RenderTarget>& output);
+	private:
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
+
+		GpuParamTexture mInputTex;
+	};
+
 	const int MAX_BLUR_SAMPLES = 128;
 
 	BS_PARAM_BLOCK_BEGIN(GaussianBlurParamDef)

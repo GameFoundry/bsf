@@ -808,6 +808,125 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 	};
 
+	/** Types of available chromatic aberration effects. */
+	enum class BS_SCRIPT_EXPORT(m:Rendering) ChromaticAberrationType
+	{
+		/** Simple chromatic aberration effect that is fast to execute. */
+		Simple,
+
+		/**
+		 * More complex chromatic aberration effect that takes longer to execute but may yield
+		 * more visually pleasing results than the simple variant.
+		 */
+		Complex
+	};
+
+	/** Base class used for both sim and core thread variants of ChromaticAberrationSettings. */
+	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering) ChromaticAberrationSettingsBase
+	{
+		BS_SCRIPT_EXPORT()
+		ChromaticAberrationSettingsBase() = default;
+
+		/** Enables or disables the effect. */
+		BS_SCRIPT_EXPORT()
+		bool enabled = false;
+
+		/** Type of algorithm to use for rendering the effect. */
+		BS_SCRIPT_EXPORT()
+		ChromaticAberrationType type = ChromaticAberrationType::Simple;
+
+		/**
+		 * Determines the brightness of the lens flare effect. Value of 1 means the lens flare will be displayed at the
+		 * same intensity as the scene it was derived from. In range [0, 1], default being 0.05.
+		 */
+		BS_SCRIPT_EXPORT(range:[0,1])
+		float shiftAmount = 0.05f;
+
+	protected:
+		~ChromaticAberrationSettingsBase() = default;
+	};
+
+	/** Template version of ChromaticAberrationSettings that can be specialized for either core or simulation thread. */
+	template<bool Core>
+	struct BS_CORE_EXPORT TChromaticAberrationSettings : ChromaticAberrationSettingsBase 
+	{
+		using TextureType = CoreVariantHandleType<Texture, Core>;
+
+		/**
+		 * Optional texture to apply to generate the channel shift fringe, allowing you to modulate the shifted colors.
+		 * This texture should be 3x1 size, where the first pixel modules red, second green and third blue channel.
+		 * If using the complex aberration effect you can use a larger texture, Nx1 size.
+		 */
+		BS_SCRIPT_EXPORT()
+		TextureType fringeTexture;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P processor);
+
+	protected:
+		~TChromaticAberrationSettings() = default;
+	};
+
+	/** Settings that control the chromatic aberration effect. */
+	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT() ChromaticAberrationSettings : TChromaticAberrationSettings<false>, IReflectable
+	{
+		BS_SCRIPT_EXPORT()
+		ChromaticAberrationSettings() = default;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class ChromaticAberrationSettingsRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
+
+	namespace ct
+	{
+		/** Core thread variant of ChromaticAberrationSettings. */
+		struct BS_CORE_EXPORT BS_SCRIPT_EXPORT() ChromaticAberrationSettings : TChromaticAberrationSettings<true>
+		{
+			ChromaticAberrationSettings() = default;
+		};
+	}
+
+	/** Settings that control the film grain effect. Film grains adds a time-varying noise effect over the entire image. */
+	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering) FilmGrainSettings : public IReflectable
+	{
+		BS_SCRIPT_EXPORT()
+		FilmGrainSettings() = default;
+
+		/** Enables or disables the effect. */
+		BS_SCRIPT_EXPORT()
+		bool enabled = false;
+
+		/** Controls how intense are the displayed film grains. */
+		BS_SCRIPT_EXPORT(range:[0,100.0])
+		float intensity = 16.0f;
+
+		/** Controls at what speed do the film grains change. */
+		BS_SCRIPT_EXPORT(range:[0,100.0])
+		float speed = 10.0f;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P processor);
+	public:
+		friend class FilmGrainSettingsRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
+
 	/** Various options that control shadow rendering for a specific view. */
 	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering) ShadowSettings : public IReflectable
 	{
@@ -932,6 +1051,10 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		ScreenSpaceLensFlareSettings screenSpaceLensFlare;
 
+		/** Parameters used for customizing the film grain effect. */
+		BS_SCRIPT_EXPORT()
+		FilmGrainSettings filmGrain;
+
 		/** Parameters used for customizing the motion blur effect. */
 		BS_SCRIPT_EXPORT()
 		MotionBlurSettings motionBlur;
@@ -1016,6 +1139,10 @@ namespace bs
 		/** Parameters used for customizing the gaussian depth of field effect. */
 		BS_SCRIPT_EXPORT()
 		CoreVariantType<DepthOfFieldSettings, Core> depthOfField;
+
+		/** Parameters used for customizing the chromatic aberration effect. */
+		BS_SCRIPT_EXPORT()
+		CoreVariantType<ChromaticAberrationSettings, Core> chromaticAberration;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

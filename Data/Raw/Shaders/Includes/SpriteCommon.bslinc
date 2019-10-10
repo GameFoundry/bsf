@@ -1,17 +1,17 @@
-#ifndef ANIMATED
-	#define ANIMATED 0
-#endif
-
-#ifndef TRANSPARENCY
-	#define TRANSPARENCY 0
-#endif
-
-#ifndef UV
-	#define UV 0
-#endif
-
 mixin SpriteCommon
 {
+	#ifndef ANIMATED
+		#define ANIMATED 0
+	#endif
+
+	#ifndef TRANSPARENCY
+		#define TRANSPARENCY 0
+	#endif
+
+	#ifndef UV
+		#define UV 0
+	#endif
+
 	#if TRANSPARENCY
 	blend
 	{

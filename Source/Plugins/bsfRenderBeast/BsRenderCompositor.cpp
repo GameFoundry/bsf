@@ -1637,7 +1637,7 @@ namespace bs { namespace ct
 		if(viewProps.runPostProcessing)
 		{
 			deps.add(RCNodePostProcess::getNodeId());
-			deps.add(RCNodeFXAA::getNodeId());
+			deps.add(RCNodeFilmGrain::getNodeId());
 		}
 		else
 		{
@@ -2134,6 +2134,58 @@ namespace bs { namespace ct
 		return { RCNodeGaussianDOF::getNodeId(), RCNodePostProcess::getNodeId() };
 	}
 
+	void RCNodeChromaticAberration::render(const RenderCompositorNodeInputs& inputs)
+	{
+		const RenderSettings& settings = inputs.view.getRenderSettings();
+		if (!settings.chromaticAberration.enabled)
+			return;
+
+		auto* postProcessNode = static_cast<RCNodePostProcess*>(inputs.inputNodes[1]);
+
+		SPtr<RenderTexture> ppOutput;
+		SPtr<Texture> ppLastFrame;
+		postProcessNode->getAndSwitch(inputs.view, ppOutput, ppLastFrame);
+
+		ChromaticAberrationMat* chromaticAberration = ChromaticAberrationMat::getVariation(settings.chromaticAberration.type);
+		chromaticAberration->execute(ppLastFrame, settings.chromaticAberration, ppOutput);
+	}
+
+	void RCNodeChromaticAberration::clear()
+	{
+		// Do nothing
+	}
+
+	SmallVector<StringID, 4> RCNodeChromaticAberration::getDependencies(const RendererView & view)
+	{
+		return { RCNodeFXAA::getNodeId(), RCNodePostProcess::getNodeId() };
+	}
+
+	void RCNodeFilmGrain::render(const RenderCompositorNodeInputs& inputs)
+	{
+		const RenderSettings& settings = inputs.view.getRenderSettings();
+		if (!settings.filmGrain.enabled)
+			return;
+
+		auto* postProcessNode = static_cast<RCNodePostProcess*>(inputs.inputNodes[1]);
+
+		SPtr<RenderTexture> ppOutput;
+		SPtr<Texture> ppLastFrame;
+		postProcessNode->getAndSwitch(inputs.view, ppOutput, ppLastFrame);
+
+		FilmGrainMat* filmGrain = FilmGrainMat::get();
+		filmGrain->execute(ppLastFrame, inputs.frameInfo.timings.time, settings.filmGrain, ppOutput);
+	}
+
+	void RCNodeFilmGrain::clear()
+	{
+		// Do nothing
+	}
+
+	SmallVector<StringID, 4> RCNodeFilmGrain::getDependencies(const RendererView & view)
+	{
+		return { RCNodeChromaticAberration::getNodeId(), RCNodePostProcess::getNodeId() };
+	}
+	
 	void RCNodeHalfSceneColor::render(const RenderCompositorNodeInputs& inputs)
 	{
 		const RendererViewProperties& viewProps = inputs.view.getProperties();

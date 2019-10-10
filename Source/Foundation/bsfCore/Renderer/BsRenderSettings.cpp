@@ -237,6 +237,47 @@ namespace bs
 		return getRTTIStatic();
 	}
 
+	template <bool Core>
+	template <class Processor>
+	void TChromaticAberrationSettings<Core>::rttiEnumFields(Processor p)
+	{
+		p(enabled);
+		p(type);
+		p(shiftAmount);
+		p(fringeTexture);
+	}
+
+	template struct TChromaticAberrationSettings<false>;
+	template struct TChromaticAberrationSettings<true>;
+
+	RTTITypeBase* ChromaticAberrationSettings::getRTTIStatic()
+	{
+		return ChromaticAberrationSettingsRTTI::instance();
+	}
+
+	RTTITypeBase* ChromaticAberrationSettings::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
+	template <class Processor>
+	void FilmGrainSettings::rttiEnumFields(Processor p)
+	{
+		p(enabled);
+		p(intensity);
+		p(speed);
+	}
+
+	RTTITypeBase* FilmGrainSettings::getRTTIStatic()
+	{
+		return FilmGrainSettingsRTTI::instance();
+	}
+
+	RTTITypeBase* FilmGrainSettings::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
 	template <class Processor>
 	void ShadowSettings::rttiEnumFields(Processor p)
 	{
@@ -282,6 +323,8 @@ namespace bs
 		p(enableSkybox);
 		p(cullDistance);
 		p(motionBlur);
+		p(filmGrain);
+		p(chromaticAberration);
 	}
 
 	template struct TRenderSettings<false>;

@@ -747,5 +747,33 @@ namespace ct
 		void clear() override;
 	};
 
+	/** Renders the chromatic aberration effect. */
+	class RCNodeChromaticAberration : public RenderCompositorNode
+	{
+	public:
+		static StringID getNodeId() { return "ChromaticAberration"; }
+		static SmallVector<StringID, 4> getDependencies(const RendererView & view);
+	protected:
+		/** @copydoc RenderCompositorNode::render */
+		void render(const RenderCompositorNodeInputs& inputs) override;
+
+		/** @copydoc RenderCompositorNode::clear */
+		void clear() override;
+	};
+
+	/** Renders the film grain effect. */
+	class RCNodeFilmGrain : public RenderCompositorNode
+	{
+	public:
+		static StringID getNodeId() { return "FilmGrain"; }
+		static SmallVector<StringID, 4> getDependencies(const RendererView & view);
+	protected:
+		/** @copydoc RenderCompositorNode::render */
+		void render(const RenderCompositorNodeInputs& inputs) override;
+
+		/** @copydoc RenderCompositorNode::clear */
+		void clear() override;
+	};
+
 	/** @} */
 }}

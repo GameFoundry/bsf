@@ -565,6 +565,14 @@
         {
             "Path": "PPMotionBlur.bsl",
             "UUID": "041e3400-4192-d889-a781-41923dbdd11a"
+        },
+        {
+            "Path": "PPChromaticAberration.bsl",
+            "UUID": "628e06c1-4fec-0620-309a-4fec04df32fd"
+        },
+        {
+            "Path": "PPFilmGrain.bsl",
+            "UUID": "2c006eb5-4977-3f27-75aa-49770fb3abe6"
         }
     ],
     "Skin": [

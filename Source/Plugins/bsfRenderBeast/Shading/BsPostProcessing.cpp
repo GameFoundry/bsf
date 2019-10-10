@@ -736,6 +736,91 @@ namespace bs { namespace ct
 		}
 	}
 
+	ChromaticAberrationParamDef gChromaticAberrationParamDef;
+
+	constexpr int ChromaticAberrationMat::MAX_SAMPLES;
+
+	ChromaticAberrationMat::ChromaticAberrationMat()
+	{
+		mParamBuffer = gChromaticAberrationParamDef.createBuffer();
+
+		mParams->setParamBlockBuffer("Params", mParamBuffer);
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTex);
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gFringeTex", mFringeTex);
+	}
+
+	void ChromaticAberrationMat::execute(const SPtr<Texture>& input, const ChromaticAberrationSettings& settings,
+		const SPtr<RenderTarget>& output)
+	{
+		BS_RENMAT_PROFILE_BLOCK
+
+		const TextureProperties& texProps = input->getProperties();
+		
+		// Set parameters
+		gChromaticAberrationParamDef.gInputSize.set(mParamBuffer,
+			Vector2((float)texProps.getWidth(), (float)texProps.getHeight()));
+
+		gChromaticAberrationParamDef.gShiftAmount.set(mParamBuffer, settings.shiftAmount);
+		
+		SPtr<Texture> fringeTex;
+		if (settings.fringeTexture)
+			fringeTex = settings.fringeTexture;
+		else
+			fringeTex = RendererTextures::chromaticAberrationFringe;
+		
+		mInputTex.set(input);
+		mFringeTex.set(fringeTex);
+
+		// Render
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(output);
+
+		bind();
+		gRendererUtility().drawScreenQuad();
+	}
+
+	ChromaticAberrationMat* ChromaticAberrationMat::getVariation(ChromaticAberrationType type)
+	{
+		if (type == ChromaticAberrationType::Complex)
+			return get(getVariation<false>());
+
+		return get(getVariation<true>());
+	}
+
+	void ChromaticAberrationMat::_initDefines(ShaderDefines& defines)
+	{
+		defines.set("MAX_SAMPLES", MAX_SAMPLES);
+	}
+
+	FilmGrainParamDef gFilmGrainParamDef;
+
+	FilmGrainMat::FilmGrainMat()
+	{
+		mParamBuffer = gFilmGrainParamDef.createBuffer();
+
+		mParams->setParamBlockBuffer("Params", mParamBuffer);
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTex);
+	}
+
+	void FilmGrainMat::execute(const SPtr<Texture>& input, float time,
+		const FilmGrainSettings& settings, const SPtr<RenderTarget>& output)
+	{
+		BS_RENMAT_PROFILE_BLOCK
+
+		// Set parameters
+		gFilmGrainParamDef.gIntensity.set(mParamBuffer, settings.intensity);
+		gFilmGrainParamDef.gTime.set(mParamBuffer, settings.speed * time);
+
+		mInputTex.set(input);
+
+		// Render
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(output);
+
+		bind();
+		gRendererUtility().drawScreenQuad();
+	}
+
 	GaussianBlurParamDef gGaussianBlurParamDef;
 
 	GaussianBlurMat::GaussianBlurMat()

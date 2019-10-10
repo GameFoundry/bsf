@@ -408,6 +408,11 @@
             "Path": "PPBase.bslinc"
         }
     ],
+    "PPChromaticAberration.bsl": [
+        {
+            "Path": "PPBase.bslinc"
+        }
+    ],
     "PPCreateTonemapLUT.bsl": [
         {
             "Path": "PPBase.bslinc"
@@ -463,6 +468,11 @@
         }
     ],
     "PPFXAA.bsl": [
+        {
+            "Path": "PPBase.bslinc"
+        }
+    ],
+    "PPFilmGrain.bsl": [
         {
             "Path": "PPBase.bslinc"
         }
