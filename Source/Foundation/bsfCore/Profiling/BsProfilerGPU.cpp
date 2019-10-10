@@ -21,7 +21,7 @@ namespace bs
 		{
 			ProfiledFrame& frame = mUnresolvedFrames.front();
 
-			freeFrame(mActiveFrame);
+			freeFrame(frame);
 			mUnresolvedFrames.pop();
 		}
 
@@ -214,7 +214,7 @@ namespace bs
 			for (size_t i = 0; i < frame.uncategorizedSamples.size(); i++)
 				resolveSample(*frame.uncategorizedSamples[i], report.uncategorizedSamples[i]);
 				
-			freeFrame(mActiveFrame);
+			freeFrame(frame);
 			mUnresolvedFrames.pop();
 
 			{
