@@ -17,33 +17,37 @@ Huge thanks to all the patrons, contributors and donators!
 - Chance McDonald [Founder] [Inactive]
 
 # Commercial Tier 1 Patrons
-- Nathan Warden [Founder]
+- Nathan Warden [Founder] [Inactive]
  
 # Tier X Patrons
-- Paul Gruenbacher
 - Henri Hyyryläinen
 - Dreyton Brereton
-- Andreas Schüle [Founder]
-- John Lagerquist [Founder]
 - Christian Clavet [Founder]
 - jeaninde [Founder]
-- Robert Campbell [Founder]
 - Galnart
+----------------------------------------
+- Paul Gruenbacher [Inactive]
+- Robert Campbell [Founder] [Inactive]
+- John Lagerquist [Founder] [Inactive]
+- Andreas Schüle [Founder] [Inactive]
+
 
 # Tier 3 Patrons
 
 # Tier 2 Patrons
+- Adisibo
 - Andre Taulien
-- Andrzej Oraniewicz [Founder]
 - Nemerle [Founder]
 - Thomas Tang [Founder]
+----------------------------------------
+- Andrzej Oraniewicz [Founder] [Inactive]
 
 # Tier 1 Patrons
-- Nekith [Founder]
-- Vladimir Zakharov [Founder]
 - Timothy Green
 - Marko Kovačić
 -----------------------------------------
+- Nekith [Founder] [Inactive]
+- Vladimir Zakharov [Founder] [Inactive]
 - Akaoray [Founder] [Inactive]
 - Danijel Ribić [Founder] [Inactive]
 - Summer Softleigh [Founder] [Inactive]
