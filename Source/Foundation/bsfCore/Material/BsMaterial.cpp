@@ -201,7 +201,6 @@ namespace bs
 		}
 
 		return bestTechniqueIdx;
-		
 	}
 
 	template<bool Core>

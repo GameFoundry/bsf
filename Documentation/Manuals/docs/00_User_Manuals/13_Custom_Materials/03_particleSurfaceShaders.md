@@ -25,10 +25,7 @@ shader Surface
 		void fsmain(
 			in VStoFS input, 
 			out float4 OutSceneColor : SV_Target0,
-			out float4 OutGBufferA : SV_Target1,
-			out float4 OutGBufferB : SV_Target2,
-			out float2 OutGBufferC : SV_Target3,
-			out float OutGBufferD : SV_Target4)
+			out GBufferData OutGBuffer)
 		{
 			SurfaceData surfaceData;
 			surfaceData.albedo = gAlbedoTex.Sample(gAlbedoSamp, input.uv0);
@@ -36,10 +33,10 @@ shader Surface
 			surfaceData.roughness = 1.0f;
 			surfaceData.metalness = 0.0f;
 			surfaceData.mask = gLayer;
-			
-			encodeGBuffer(surfaceData, OutGBufferA, OutGBufferB, OutGBufferC, OutGBufferD);
+			surfaceData.velocity = 0.0f;
 			
 			OutSceneColor = 0.0f;
+			OutGBuffer = encodeGBuffer(surfaceData);
 		}	
 	};
 };

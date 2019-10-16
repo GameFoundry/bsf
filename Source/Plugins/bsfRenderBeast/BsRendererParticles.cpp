@@ -106,6 +106,22 @@ namespace bs { namespace ct
 		}
 	}
 
+	void RendererParticles::updatePerObjectBuffer()
+	{
+		const ParticleSystemSettings& settings = particleSystem->getSettings();
+		const UINT32 layer = Bitwise::mostSignificantBit(particleSystem->getLayer());
+		Matrix4 localToWorldNoScale;
+		if (settings.simulationSpace == ParticleSimulationSpace::Local)
+		{
+			const Transform& tfrm = particleSystem->getTransform();
+			localToWorldNoScale = Matrix4::TRS(tfrm.getPosition(), tfrm.getRotation(), Vector3::ONE);
+		}
+		else
+			localToWorldNoScale = Matrix4::IDENTITY;
+
+		PerObjectBuffer::update(perObjectParamBuffer, localToWorld, localToWorldNoScale, prevLocalToWorld, layer);
+	}
+
 	void RendererParticles::bindCPUSimulatedInputs(const ParticleRenderData* renderData, const RendererView& view) const
 	{
 		ParticleTexturePool& particlesTexPool = ParticleRenderer::instance().getTexturePool();

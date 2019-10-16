@@ -9,7 +9,22 @@ mixin SurfaceData
 			float depth;
 			float roughness;
 			float metalness;
+			float2 velocity;
 			uint mask;
 		};
+		
+		// Encodes velocity into a format suitable for storing in a 16-bit SNORM texture. 
+		// Velocity range of [-2, 2] is supported (full NDC).
+		float2 encodeVelocity16SNORM(float2 velocity)
+		{
+			return velocity * 0.5f;
+		}
+		
+		// Decodes velocity from an encoded 16-bit SNORM format. See encodeVelocity16SNORM().
+		// Velocity range of [-2, 2] is supported (full NDC).
+		float2 decodeVelocity16SNORM(float2 val)
+		{
+			return val * 2.0f;
+		}
 	};
 };

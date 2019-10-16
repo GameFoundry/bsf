@@ -152,6 +152,10 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		void removeParam(const StringID& paramName) { mParams.erase(paramName); }
 
+		/** Checks if the variation has a parameter with the specified name. */
+		BS_SCRIPT_EXPORT()
+		bool hasParam(const StringID& paramName) { return mParams.find(paramName) != mParams.end(); }
+
 		/** Removes all parameters. */
 		BS_SCRIPT_EXPORT()
 		void clearParams() { mParams.clear(); }

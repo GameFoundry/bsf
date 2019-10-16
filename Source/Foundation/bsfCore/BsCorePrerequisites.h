@@ -667,6 +667,7 @@ namespace bs
 		TID_ScreenSpaceReflectionsSettings = 1207,
 		TID_ShadowSettings = 1208,
 		TID_MotionBlurSettings = 1209,
+		TID_TemporalAASettings = 1210,
 
 		// Moved from Engine layer
 		TID_CCamera = 30000,

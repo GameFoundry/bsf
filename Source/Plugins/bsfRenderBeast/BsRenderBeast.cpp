@@ -398,24 +398,15 @@ namespace bs { namespace ct
 		// If any reflection probes were updated or added, we need to copy them over in the global reflection probe array
 		updateReflProbeArray();
 
-		// Update material parameters & animation times for all renderables
+		// Update per-frame data for all renderable objects
 		for (UINT32 i = 0; i < sceneInfo.renderables.size(); i++)
-		{
-			RendererRenderable* renderable = sceneInfo.renderables[i];
-			for (auto& element : renderable->elements)
-				element.materialAnimationTime += timings.timeDelta;
-		}
+			mScene->prepareRenderable(i, frameInfo);
 
 		for (UINT32 i = 0; i < sceneInfo.particleSystems.size(); i++)
 			mScene->prepareParticleSystem(i, frameInfo);
 
 		for (UINT32 i = 0; i < sceneInfo.decals.size(); i++)
-		{
-			const RendererDecal& decal = sceneInfo.decals[i];
-			decal.renderElement.materialAnimationTime += timings.timeDelta;
-
 			mScene->prepareDecal(i, frameInfo);
-		}
 
 		// Gather all views
 		for (auto& rtInfo : sceneInfo.renderTargets)
@@ -480,7 +471,7 @@ namespace bs { namespace ct
 				if (!visibility.renderables[i])
 					continue;
 
-				mScene->prepareRenderable(i, frameInfo);
+				mScene->prepareVisibleRenderable(i, frameInfo);
 			}
 		}
 

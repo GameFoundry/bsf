@@ -243,6 +243,8 @@ namespace bs { namespace ct
 		const UINT32 height = viewProps.target.viewRect.height;
 		const UINT32 numSamples = viewProps.target.numSamples;
 
+		bool needsVelocity = inputs.view.requiresVelocityWrites();
+
 		// Note: Consider customizable formats. e.g. for testing if quality can be improved with higher precision normals.
 		albedoTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA8, width, height, TU_RENDERTARGET,
 			numSamples, true));
@@ -253,6 +255,12 @@ namespace bs { namespace ct
 		idTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, width, height, TU_RENDERTARGET,
 			numSamples, false));
 
+		if(needsVelocity)
+		{
+			velocityTex = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RG16S, width, height, TU_RENDERTARGET,
+				numSamples, false));
+		}
+
 		auto sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[0]);
 		auto sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[1]);
 		SPtr<PooledRenderTexture> sceneDepthTex = sceneDepthNode->depthTex;
@@ -261,11 +269,13 @@ namespace bs { namespace ct
 		bool rebuildRT = false;
 		if (renderTarget != nullptr)
 		{
-			rebuildRT |= renderTarget->getColorTexture(0) != sceneColorTex->texture;
-			rebuildRT |= renderTarget->getColorTexture(1) != albedoTex->texture;
-			rebuildRT |= renderTarget->getColorTexture(2) != normalTex->texture;
-			rebuildRT |= renderTarget->getColorTexture(3) != roughMetalTex->texture;
-			rebuildRT |= renderTarget->getColorTexture(4) != idTex->texture;
+			UINT32 targetIdx = 0;
+			rebuildRT |= renderTarget->getColorTexture(targetIdx++) != sceneColorTex->texture;
+			rebuildRT |= renderTarget->getColorTexture(targetIdx++) != albedoTex->texture;
+			rebuildRT |= renderTarget->getColorTexture(targetIdx++) != normalTex->texture;
+			rebuildRT |= renderTarget->getColorTexture(targetIdx++) != roughMetalTex->texture;
+			if (needsVelocity) rebuildRT |= renderTarget->getColorTexture(targetIdx++) != velocityTex->texture;
+			rebuildRT |= renderTarget->getColorTexture(targetIdx++) != idTex->texture;
 			rebuildRT |= renderTarget->getDepthStencilTexture() != sceneDepthTex->texture;
 		}
 		else
@@ -273,26 +283,41 @@ namespace bs { namespace ct
 
 		if (renderTarget == nullptr || rebuildRT)
 		{
+			UINT32 targetIdx = 0;
+			
 			RENDER_TEXTURE_DESC gbufferDesc;
-			gbufferDesc.colorSurfaces[0].texture = sceneColorTex->texture;
-			gbufferDesc.colorSurfaces[0].face = 0;
-			gbufferDesc.colorSurfaces[0].numFaces = 1;
-			gbufferDesc.colorSurfaces[0].mipLevel = 0;
+			gbufferDesc.colorSurfaces[targetIdx].texture = sceneColorTex->texture;
+			gbufferDesc.colorSurfaces[targetIdx].face = 0;
+			gbufferDesc.colorSurfaces[targetIdx].numFaces = 1;
+			gbufferDesc.colorSurfaces[targetIdx].mipLevel = 0;
+			targetIdx++;
 
-			gbufferDesc.colorSurfaces[1].texture = albedoTex->texture;
-			gbufferDesc.colorSurfaces[1].face = 0;
-			gbufferDesc.colorSurfaces[1].numFaces = 1;
-			gbufferDesc.colorSurfaces[1].mipLevel = 0;
+			gbufferDesc.colorSurfaces[targetIdx].texture = albedoTex->texture;
+			gbufferDesc.colorSurfaces[targetIdx].face = 0;
+			gbufferDesc.colorSurfaces[targetIdx].numFaces = 1;
+			gbufferDesc.colorSurfaces[targetIdx].mipLevel = 0;
+			targetIdx++;
 
-			gbufferDesc.colorSurfaces[2].texture = normalTex->texture;
-			gbufferDesc.colorSurfaces[2].face = 0;
-			gbufferDesc.colorSurfaces[2].numFaces = 1;
-			gbufferDesc.colorSurfaces[2].mipLevel = 0;
+			gbufferDesc.colorSurfaces[targetIdx].texture = normalTex->texture;
+			gbufferDesc.colorSurfaces[targetIdx].face = 0;
+			gbufferDesc.colorSurfaces[targetIdx].numFaces = 1;
+			gbufferDesc.colorSurfaces[targetIdx].mipLevel = 0;
+			targetIdx++;
 
-			gbufferDesc.colorSurfaces[3].texture = roughMetalTex->texture;
-			gbufferDesc.colorSurfaces[3].face = 0;
-			gbufferDesc.colorSurfaces[3].numFaces = 1;
-			gbufferDesc.colorSurfaces[3].mipLevel = 0;
+			gbufferDesc.colorSurfaces[targetIdx].texture = roughMetalTex->texture;
+			gbufferDesc.colorSurfaces[targetIdx].face = 0;
+			gbufferDesc.colorSurfaces[targetIdx].numFaces = 1;
+			gbufferDesc.colorSurfaces[targetIdx].mipLevel = 0;
+			targetIdx++;
+
+			if (needsVelocity)
+			{
+				gbufferDesc.colorSurfaces[targetIdx].texture = velocityTex->texture;
+				gbufferDesc.colorSurfaces[targetIdx].face = 0;
+				gbufferDesc.colorSurfaces[targetIdx].numFaces = 1;
+				gbufferDesc.colorSurfaces[targetIdx].mipLevel = 0;
+				targetIdx++;
+			}
 
 			gbufferDesc.depthStencilSurface.texture = sceneDepthTex->texture;
 			gbufferDesc.depthStencilSurface.face = 0;
@@ -300,10 +325,11 @@ namespace bs { namespace ct
 
 			renderTargetNoMask = RenderTexture::create(gbufferDesc);
 
-			gbufferDesc.colorSurfaces[4].texture = idTex->texture;
-			gbufferDesc.colorSurfaces[4].face = 0;
-			gbufferDesc.colorSurfaces[4].numFaces = 1;
-			gbufferDesc.colorSurfaces[4].mipLevel = 0;
+			gbufferDesc.colorSurfaces[targetIdx].texture = idTex->texture;
+			gbufferDesc.colorSurfaces[targetIdx].face = 0;
+			gbufferDesc.colorSurfaces[targetIdx].numFaces = 1;
+			gbufferDesc.colorSurfaces[targetIdx].mipLevel = 0;
+			targetIdx++;
 
 			renderTarget = RenderTexture::create(gbufferDesc);
 		}

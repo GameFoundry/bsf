@@ -12,6 +12,7 @@ mixin PerCameraData
 			float4x4 gMatProj;
 			float4x4 gMatInvProj;
 			float4x4 gMatInvViewProj;
+			float4x4 gMatPrevViewProj;
 			
 			// Special inverse view-projection matrix that had projection entries that affect z and w eliminated.
 			// Used to transform a vector(clip_x, clip_y, view_z, view_w), where clip_x/clip_y are in clip space, 

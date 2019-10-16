@@ -1,10 +1,12 @@
 #include "$ENGINE$/PerCameraData.bslinc"
 #include "$ENGINE$/ColorSpace.bslinc"
+#include "$ENGINE$/SurfaceData.bslinc"
 
 mixin TemporalResolve
 {
 	mixin PerCameraData;
 	mixin ColorSpace;
+	mixin SurfaceData;
 
 	code
 	{
@@ -214,20 +216,6 @@ mixin TemporalResolve
 			
 			return saturate(max(max(min(tNeg.x, tPos.x), min(tNeg.y, tPos.y)), min(tNeg.z, tPos.z)));
 		}
-		
-		// Encodes velocity into a format suitable for storing in a 16-bit SNORM texture. 
-		// Velocity range of [-2, 2] is supported (full NDC).
-		float2 encodeVelocity16SNORM(float2 velocity)
-		{
-			return velocity * 0.5f;
-		}
-		
-		// Decodes velocity from an encoded 16-bit SNORM format. See encodeVelocity16SNORM().
-		// Velocity range of [-2, 2] is supported (full NDC).
-		float2 decodeVelocity16SNORM(float2 val)
-		{
-			return val * 2.0f;
-		}
 
 		////////////////////// HELPER TONEMAP/COLOR SPACE DEFINES /////////////////////
 		// Automatically scale HDR values based on luminance, if enabled
@@ -347,6 +335,8 @@ mixin TemporalResolve
 			neighbor[3] = _SAMPLE_COLOR(sceneColor, uvColor, int2( 1,  0));
 			neighbor[4] = _SAMPLE_COLOR(sceneColor, uvColor, int2( 0,  1));
 			
+			// TODO - Do a border check? If offscreen just use the center sample, or
+			// do the border check per-sample
 			float4 filtered = 0;
 			[unroll]
 			for(uint i = 0; i < 5; ++i)
@@ -372,6 +362,8 @@ mixin TemporalResolve
 			neighbor[7] = _SAMPLE_COLOR(sceneColor, uvColor, int2( 0,  1));
 			neighbor[8] = _SAMPLE_COLOR(sceneColor, uvColor, int2( 1,  1));
 			
+			// TODO - Do a border check? If offscreen just use the center sample, or
+			// do the border check per-sample
 			float4 filtered = 0;
 			[unroll]
 			for(uint i = 0; i < 9; ++i)
@@ -421,6 +413,7 @@ mixin TemporalResolve
 			#endif // TEMPORAL_YCOCG
 			
 			/////////////////// GET PREVIOUS FRAME COLOR ///////////////////////
+			// TODO - Do bicubic sample of history?
 			float4 prevColorVal = _SAMPLE_COLOR(prevColor, prevUV, int2(0, 0));
 			
 			///////////////////// CLAMP TO NEIGHBORHOOD ////////////////////////

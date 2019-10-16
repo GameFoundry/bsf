@@ -16,6 +16,10 @@ mixin VertexCommon
 			#if CLIP_POS
 				float4 clipPos : TEXCOORD2;
 			#endif
+						
+			#if PREV_CLIP_POS
+				float4 prevClipPos : TEXCOORD3;
+			#endif
 		};
 
 		struct VertexInput
@@ -67,6 +71,10 @@ mixin VertexCommon
 		{
 			#if SKINNED
 				float3x4 blendMatrix;
+				
+				#if PREV_CLIP_POS
+					float3x4 prevBlendMatrix;
+				#endif
 			#endif
 		
 			#if LIGHTING_DATA
@@ -77,6 +85,7 @@ mixin VertexCommon
 		
 		#if SKINNED
 		Buffer<float4> boneMatrices;
+		Buffer<float4> prevBoneMatrices;
 		
 		float3x4 getBoneMatrix(uint idx)
 		{
@@ -87,12 +96,31 @@ mixin VertexCommon
 			return float3x4(row0, row1, row2);
 		}
 		
+		float3x4 getPrevBoneMatrix(uint idx)
+		{
+			float4 row0 = prevBoneMatrices[idx * 3 + 0];
+			float4 row1 = prevBoneMatrices[idx * 3 + 1];
+			float4 row2 = prevBoneMatrices[idx * 3 + 2];
+			
+			return float3x4(row0, row1, row2);
+		}
+		
 		float3x4 getBlendMatrix(float4 blendWeights, uint4 blendIndices)
 		{
 			float3x4 result = blendWeights.x * getBoneMatrix(blendIndices.x);
 			result += blendWeights.y * getBoneMatrix(blendIndices.y);
 			result += blendWeights.z * getBoneMatrix(blendIndices.z);
 			result += blendWeights.w * getBoneMatrix(blendIndices.w);
+			
+			return result;
+		}
+		
+		float3x4 getPrevBlendMatrix(float4 blendWeights, uint4 blendIndices)
+		{
+			float3x4 result = blendWeights.x * getPrevBoneMatrix(blendIndices.x);
+			result += blendWeights.y * getPrevBoneMatrix(blendIndices.y);
+			result += blendWeights.z * getPrevBoneMatrix(blendIndices.z);
+			result += blendWeights.w * getPrevBoneMatrix(blendIndices.w);
 			
 			return result;
 		}
@@ -151,6 +179,10 @@ mixin VertexCommon
 			#if SKINNED
 				result.blendMatrix = getBlendMatrix(input.blendWeights, input.blendIndices);
 				float3x3 tangentToLocal = getTangentToLocal(input, tangentSign, result.blendMatrix);
+				
+				#if PREV_CLIP_POS
+					result.prevBlendMatrix = getPrevBlendMatrix(input.blendWeights, input.blendIndices);
+				#endif
 			#else
 				float3x3 tangentToLocal = getTangentToLocal(input, tangentSign);
 			#endif

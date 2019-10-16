@@ -99,6 +99,13 @@ shader Surface
 			#endif
 			#endif
 		};
+		
+		// Velocity
+		target	
+		{
+			enabled = true;
+			writemask = empty;
+		};
 	};
 	
 	depth

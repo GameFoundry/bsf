@@ -550,6 +550,9 @@
             "Path": "TemporalResolve.bslinc"
         },
         {
+            "Path": "SurfaceData.bslinc"
+        },
+        {
             "Path": "ColorSpace.bslinc"
         },
         {

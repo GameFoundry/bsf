@@ -212,6 +212,7 @@ namespace ct
 		SPtr<PooledRenderTexture> normalTex;
 		SPtr<PooledRenderTexture> roughMetalTex;
 		SPtr<PooledRenderTexture> idTex;
+		SPtr<PooledRenderTexture> velocityTex;
 
 		SPtr<RenderTexture> renderTarget;
 		SPtr<RenderTexture> renderTargetNoMask;

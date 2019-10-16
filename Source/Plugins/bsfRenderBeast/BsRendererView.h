@@ -33,6 +33,7 @@ namespace bs { namespace ct
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatProj)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvProj)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvViewProj)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatPrevViewProj)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatScreenToWorld)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gNDCToPrevNDC)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gDeviceZToWorldZ)
@@ -432,6 +433,9 @@ namespace bs { namespace ct
 		/** Determines if view's 3D geometry should be rendered this frame. */
 		bool shouldDraw3D() const { return !mRenderSettings->overlayOnly && shouldDraw(); }
 
+		/** Returns true if the view should write to the velocity buffer. */
+		bool requiresVelocityWrites() const;
+		
 		/**
 		 * Determines if any async operations have completed executing and finalizes them. Should be called once
 		 * per frame.

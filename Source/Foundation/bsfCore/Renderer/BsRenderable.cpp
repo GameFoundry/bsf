@@ -143,6 +143,16 @@ namespace bs
 	}
 
 	template<bool Core>
+	void TRenderable<Core>::setWriteVelocity(bool enable)
+	{
+		if (mWriteVelocity == enable)
+			return;
+
+		mWriteVelocity = enable;
+		_markCoreDirty();
+	}
+
+	template<bool Core>
 	void TRenderable<Core>::setCullDistanceFactor(float factor)
 	{
 		mCullDistanceFactor = factor;
@@ -328,6 +338,7 @@ namespace bs
 				rtti_size(mLayer).bytes +
 				rtti_size(mOverrideBounds).bytes +
 				rtti_size(mUseOverrideBounds).bytes +
+				rtti_size(mWriteVelocity).bytes +
 				rtti_size(numMaterials).bytes +
 				rtti_size(animationId).bytes +
 				rtti_size(mAnimType).bytes +
@@ -348,6 +359,7 @@ namespace bs
 			rtti_write(mLayer, stream);
 			rtti_write(mOverrideBounds, stream);
 			rtti_write(mUseOverrideBounds, stream);
+			rtti_write(mWriteVelocity, stream);
 			rtti_write(numMaterials, stream);
 			rtti_write(animationId, stream);
 			rtti_write(mAnimType, stream);
@@ -505,6 +517,30 @@ namespace bs
 		}
 	}
 
+	SPtr<GpuBuffer> createBoneMatrixBuffer(UINT32 numBones)
+	{
+		GPU_BUFFER_DESC desc;
+		desc.elementCount = numBones * 3;
+		desc.elementSize = 0;
+		desc.type = GBT_STANDARD;
+		desc.format = BF_32X4F;
+		desc.usage = GBU_DYNAMIC;
+
+		SPtr<GpuBuffer> buffer = GpuBuffer::create(desc);
+		UINT8* dest = (UINT8*)buffer->lock(0, numBones * 3 * sizeof(Vector4), GBL_WRITE_ONLY_DISCARD);
+
+		// Initialize bone transforms to identity, so the object renders properly even if no animation is animating it
+		for (UINT32 i = 0; i < numBones; i++)
+		{
+			memcpy(dest, &Matrix4::IDENTITY, 12 * sizeof(float)); // Assuming row-major format
+			dest += 12 * sizeof(float);
+		}
+
+		buffer->unlock();
+
+		return buffer;
+	}
+
 	void Renderable::createAnimationBuffers()
 	{
 		if (mAnimType == RenderableAnimType::Skinned || mAnimType == RenderableAnimType::SkinnedMorph)
@@ -514,36 +550,29 @@ namespace bs
 
 			if (numBones > 0)
 			{
-				GPU_BUFFER_DESC desc;
-				desc.elementCount = numBones * 3;
-				desc.elementSize = 0;
-				desc.type = GBT_STANDARD;
-				desc.format = BF_32X4F;
-				desc.usage = GBU_DYNAMIC;
+				mBoneMatrixBuffer = createBoneMatrixBuffer(numBones);
 
-				SPtr<GpuBuffer> buffer = GpuBuffer::create(desc);
-				UINT8* dest = (UINT8*)buffer->lock(0, numBones * 3 * sizeof(Vector4), GBL_WRITE_ONLY_DISCARD);
-
-				// Initialize bone transforms to identity, so the object renders properly even if no animation is animating it
-				for (UINT32 i = 0; i < numBones; i++)
-				{
-					memcpy(dest, &Matrix4::IDENTITY, 12 * sizeof(float)); // Assuming row-major format
-
-					dest += 12 * sizeof(float);
-				}
-
-				buffer->unlock();
-
-				mBoneMatrixBuffer = buffer;
+				if (mWriteVelocity)
+					mBonePrevMatrixBuffer = createBoneMatrixBuffer(numBones);
+				else
+					mBonePrevMatrixBuffer = nullptr;
 			}
 			else
+			{
 				mBoneMatrixBuffer = nullptr;
+				mBonePrevMatrixBuffer = nullptr;
+			}
 		}
 		else
+		{
 			mBoneMatrixBuffer = nullptr;
+			mBonePrevMatrixBuffer = nullptr;
+		}
 
 		if (mAnimType == RenderableAnimType::Morph || mAnimType == RenderableAnimType::SkinnedMorph)
 		{
+			// Note: Not handling velocity writing for morph animations
+			
 			SPtr<MorphShapes> morphShapes = mMesh->getMorphShapes();
 
 			UINT32 vertexSize = sizeof(Vector3) + sizeof(UINT32);
@@ -587,6 +616,9 @@ namespace bs
 		{
 			const EvaluatedAnimationData::PoseInfo& poseInfo = animInfo->poseInfo;
 
+			if (mWriteVelocity)
+				std::swap(mBoneMatrixBuffer, mBonePrevMatrixBuffer);
+
 			// Note: If multiple elements are using the same animation (not possible atm), this buffer should be shared by
 			// all such elements
 			UINT8* dest = (UINT8*)mBoneMatrixBuffer->lock(0, poseInfo.numBones * 3 * sizeof(Vector4), GBL_WRITE_ONLY_DISCARD);
@@ -616,6 +648,15 @@ namespace bs
 		}
 	}
 
+	void Renderable::updatePrevFrameAnimationBuffers()
+	{
+		if (!mWriteVelocity)
+			return;
+		
+		if (mAnimType == RenderableAnimType::Skinned || mAnimType == RenderableAnimType::SkinnedMorph)
+			std::swap(mBoneMatrixBuffer, mBonePrevMatrixBuffer);
+	}
+
 	void Renderable::syncToCore(const CoreSyncData& data)
 	{
 		Bitstream stream(data.getBuffer(), data.getBufferSize());
@@ -637,6 +678,7 @@ namespace bs
 			rtti_read(mLayer, stream);
 			rtti_read(mOverrideBounds, stream);
 			rtti_read(mUseOverrideBounds, stream);
+			rtti_read(mWriteVelocity, stream);
 			rtti_read(numMaterials, stream);
 			rtti_read(mAnimationId, stream);
 			rtti_read(mAnimType, stream);

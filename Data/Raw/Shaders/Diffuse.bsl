@@ -6,6 +6,11 @@ shader Surface
 	mixin BasePass;
 	mixin GBufferOutput;
 
+	variations
+	{
+		WRITE_VELOCITY = { false, true };
+	};
+	
 	code
 	{
 		[alias(gAlbedoTex)]
@@ -40,10 +45,7 @@ shader Surface
 		void fsmain(
 			in VStoFS input, 
 			out float4 OutSceneColor : SV_Target0,
-			out float4 OutGBufferA : SV_Target1,
-			out float4 OutGBufferB : SV_Target2,
-			out float2 OutGBufferC : SV_Target3,
-			out float OutGBufferD : SV_Target4)
+			out GBufferData OutGBuffer)
 		{
 			float2 uv = input.uv0 * gUVTile + gUVOffset;
 		
@@ -57,9 +59,17 @@ shader Surface
 			surfaceData.metalness = gMetalnessTex.Sample(gMetalnessSamp, uv).x;
 			surfaceData.mask = gLayer;
 			
-			encodeGBuffer(surfaceData, OutGBufferA, OutGBufferB, OutGBufferC, OutGBufferD);
+			#if WRITE_VELOCITY
+			float2 ndcPos = input.clipPos.xy / input.clipPos.w;
+			float2 prevNdcPos = input.prevClipPos.xy / input.prevClipPos.w;
+			
+			surfaceData.velocity = ndcPos - prevNdcPos;
+			#else
+			surfaceData.velocity = 0.0f;
+			#endif
 			
 			OutSceneColor = float4(gEmissiveColor * gEmissiveMaskTex.Sample(gEmissiveMaskSamp, uv).x, 1.0f);
+			OutGBuffer = encodeGBuffer(surfaceData);
 		}	
 	};
 };

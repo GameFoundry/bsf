@@ -44,6 +44,24 @@ mixin VertexInput
 			#endif
 		
 			return mul(gMatWorld, position);
-		}			
+		}
+		
+		// Note: This can be made optional if velocity buffer isn't required
+		float4 getPrevVertexWorldPosition(VertexInput input, VertexIntermediate intermediate)
+		{
+			#if MORPH
+				float4 position = float4(input.position + input.deltaPosition, 1.0f);
+			#else
+				float4 position = float4(input.position, 1.0f);
+			#endif			
+		
+			#if SKINNED
+				#if PREV_CLIP_POS
+					position = float4(mul(intermediate.prevBlendMatrix, position), 1.0f);
+				#endif
+			#endif
+		
+			return mul(gMatPrevWorld, position);
+		}
 	};
 };

@@ -236,6 +236,11 @@ namespace bs { namespace ct
 		return mRedrawForFrames > 0 || mRedrawForSeconds > 0.0f;
 	}
 
+	bool RendererView::requiresVelocityWrites() const
+	{
+		return mRenderSettings->temporalAA.enabled || mRenderSettings->enableVelocityBuffer;
+	}
+
 	void RendererView::updateAsyncOperations()
 	{
 		// Find most recent available frame
@@ -463,17 +468,28 @@ namespace bs { namespace ct
 			const AABox& boundingBox = sceneInfo.renderableCullInfos[i].bounds.getBox();
 			const float distanceToCamera = (mProperties.viewOrigin - boundingBox.getCenter()).length();
 
+			bool needsVelocity = requiresVelocityWrites();
 			for (auto& renderElem : sceneInfo.renderables[i]->elements)
 			{
-				// Note: I could keep renderables in multiple separate arrays, so I don't need to do the check here
+				UINT32 techniqueIdx;
+				if (needsVelocity)
+				{
+					techniqueIdx = renderElem.writeVelocityTechniqueIdx != (UINT32)-1
+						? renderElem.writeVelocityTechniqueIdx
+						: renderElem.defaultTechniqueIdx;
+				}
+				else
+					techniqueIdx = renderElem.defaultTechniqueIdx;
+
 				ShaderFlags shaderFlags = renderElem.material->getShader()->getFlags();
 
+				// Note: I could keep renderables in multiple separate arrays, so I don't need to do the check here
 				if (shaderFlags.isSet(ShaderFlag::Transparent))
-					mTransparentQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
+					mTransparentQueue->add(&renderElem, distanceToCamera, techniqueIdx);
 				else if (shaderFlags.isSet(ShaderFlag::Forward))
-					mForwardOpaqueQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
+					mForwardOpaqueQueue->add(&renderElem, distanceToCamera, techniqueIdx);
 				else
-					mDeferredOpaqueQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
+					mDeferredOpaqueQueue->add(&renderElem, distanceToCamera, techniqueIdx);
 			}
 		}
 
@@ -493,11 +509,11 @@ namespace bs { namespace ct
 			ShaderFlags shaderFlags = renderElem.material->getShader()->getFlags();
 
 			if (shaderFlags.isSet(ShaderFlag::Transparent))
-				mTransparentQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
+				mTransparentQueue->add(&renderElem, distanceToCamera, renderElem.defaultTechniqueIdx);
 			else if (shaderFlags.isSet(ShaderFlag::Forward))
-				mForwardOpaqueQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
+				mForwardOpaqueQueue->add(&renderElem, distanceToCamera, renderElem.defaultTechniqueIdx);
 			else
-				mDeferredOpaqueQueue->add(&renderElem, distanceToCamera, renderElem.techniqueIdx);
+				mDeferredOpaqueQueue->add(&renderElem, distanceToCamera, renderElem.defaultTechniqueIdx);
 		}
 
 		// Queue decals
@@ -676,6 +692,7 @@ namespace bs { namespace ct
 		gPerCameraParamDef.gMatViewProj.set(mParamBuffer, viewProj);
 		gPerCameraParamDef.gMatInvViewProj.set(mParamBuffer, invViewProj);
 		gPerCameraParamDef.gMatInvProj.set(mParamBuffer, invProj);
+		gPerCameraParamDef.gMatPrevViewProj.set(mParamBuffer, mProperties.prevViewProjTransform);
 
 		// Construct a special inverse view-projection matrix that had projection entries that effect z and w eliminated.
 		// Used to transform a vector(clip_x, clip_y, view_z, view_w), where clip_x/clip_y are in clip space, and

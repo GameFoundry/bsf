@@ -592,6 +592,29 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 	};
 
+	/** Settings that control temporal anti-aliasing. */
+	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m :Rendering) TemporalAASettings : public IReflectable
+	{
+		BS_SCRIPT_EXPORT()
+		TemporalAASettings() = default;
+
+		/** Enables or disables temporal anti-aliasing. */
+		BS_SCRIPT_EXPORT()
+		bool enabled = false;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+
+		/** Enumerates all the fields in the type and executes the specified processor action for each field. */
+		template<class P>
+		void rttiEnumFields(P processor);
+	public:
+		friend class TemporalAASettingsRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
+
 	/**
 	 * Settings that control the screen space reflections effect. Screen space reflections provide high quality mirror-like
 	 * reflections at low performance cost. They should be used together with reflection probes as the effects complement
@@ -1059,6 +1082,10 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		MotionBlurSettings motionBlur;
 
+		/** Parameters used for customizing the temporal anti-aliasing effect. */
+		BS_SCRIPT_EXPORT()
+		TemporalAASettings temporalAA;
+
 		/** Enables the fast approximate anti-aliasing effect. */
 		BS_SCRIPT_EXPORT()
 		bool enableFXAA = true;
@@ -1097,6 +1124,14 @@ namespace bs
 		/** Determines if shadows cast by lights should be rendered. Only relevant if lighting is turned on. */
 		BS_SCRIPT_EXPORT()
 		bool enableShadows = true;
+
+		/**
+		 * Determines if the G-Buffer should contain per-pixel velocity information. This can be useful if you are rendering
+		 * an effect that requires this information. Note that effects such as motion blur or temporal anti-aliasing
+		 * might force the velocity buffer to be enabled regardless of this setting.
+		 */
+		BS_SCRIPT_EXPORT()
+		bool enableVelocityBuffer = false;
 
 		/** Parameters used for customizing shadow rendering. */
 		BS_SCRIPT_EXPORT()

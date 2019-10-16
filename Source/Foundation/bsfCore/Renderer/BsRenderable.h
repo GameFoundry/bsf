@@ -95,6 +95,16 @@ namespace bs
 		 */
 		void setUseOverrideBounds(bool enable);
 
+		/**
+		 * If enabled this renderable will write per-pixel velocity information when rendered. This is required for effects
+		 * such as temporal anti-aliasing and motion blur, but comes with a minor performance overhead. If you are not using
+		 * those effects you can disable this for a performance gain.
+		 */
+		void setWriteVelocity(bool enable);
+
+		/** @copydoc setWriteVelocity */
+		bool getWriteVelocity() const { return mWriteVelocity; }
+		
 		/** Factor to be applied to the cull distance set in the camera's render settings.  */
 		void setCullDistanceFactor(float factor);
 
@@ -138,6 +148,7 @@ namespace bs
 		UINT64 mLayer = 1;
 		AABox mOverrideBounds;
 		bool mUseOverrideBounds = false;
+		bool mWriteVelocity = true;
 		float mCullDistanceFactor = 1.0f;
 		Matrix4 mTfrmMatrix = BsIdentity;
 		Matrix4 mTfrmMatrixNoScale = BsIdentity;
@@ -264,8 +275,17 @@ namespace bs
 		 */
 		void updateAnimationBuffers(const EvaluatedAnimationData& animData);
 
+		/**
+		 * Records information about previous frame's animation buffer data. Should be called once per frame, before the
+		 * call to updateAnimationBuffers().
+		 */
+		void updatePrevFrameAnimationBuffers();
+
 		/** Returns the GPU buffer containing element's bone matrices, if it has any. */
 		const SPtr<GpuBuffer>& getBoneMatrixBuffer() const { return mBoneMatrixBuffer; }
+
+		/** Returns the GPU buffer containing element's bone matrices for the previous frame, if it has any. */
+		const SPtr<GpuBuffer>& getBonePrevMatrixBuffer() const { return mBonePrevMatrixBuffer; }
 
 		/** Returns the vertex buffer containing element's morph shape vertices, if it has any. */
 		const SPtr<VertexBuffer>& getMorphShapeBuffer() const { return mMorphShapeBuffer; }
@@ -292,6 +312,7 @@ namespace bs
 		UINT32 mMorphShapeVersion;
 
 		SPtr<GpuBuffer> mBoneMatrixBuffer;
+		SPtr<GpuBuffer> mBonePrevMatrixBuffer;
 		SPtr<VertexBuffer> mMorphShapeBuffer;
 		SPtr<VertexDeclaration> mMorphVertexDeclaration;
 	};

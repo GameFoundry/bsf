@@ -1,3 +1,15 @@
+#ifndef WRITE_VELOCITY
+	#define WRITE_VELOCITY 0
+#endif
+
+#if WRITE_VELOCITY
+	#define CLIP_POS 1
+	#define PREV_CLIP_POS 1
+#else
+	#define CLIP_POS 0
+	#define PREV_CLIP_POS 0
+#endif
+
 #include "$ENGINE$\PerCameraData.bslinc"
 #include "$ENGINE$\PerObjectData.bslinc"
 #include "$ENGINE$\VertexInput.bslinc"
@@ -19,6 +31,12 @@ mixin BasePass
 			
 			output.worldPosition = worldPosition.xyz;
 			output.position = mul(gMatViewProj, worldPosition);
+			
+			#if PREV_CLIP_POS
+				float4 prevWorldPosition = getPrevVertexWorldPosition(input, intermediate);
+				output.prevClipPos = mul(gMatPrevViewProj, prevWorldPosition);
+			#endif
+			
 			populateVertexOutput(input, intermediate, output);
 						
 			return output;

@@ -25,7 +25,10 @@ namespace bs { namespace ct
 		SPtr<Material> material;
 
 		/** Index of the technique in the material to render the element with. */
-		UINT32 techniqueIdx;
+		UINT32 defaultTechniqueIdx = 0;
+
+		/** Index of the technique in the material to render the element with when velocity writes are supported. */
+		UINT32 writeVelocityTechniqueIdx = (UINT32)-1;
 
 		/** All GPU parameters from the material used by the renderable. */
 		SPtr<GpuParamsSet> params;

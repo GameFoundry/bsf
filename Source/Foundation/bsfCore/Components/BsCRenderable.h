@@ -56,6 +56,14 @@ namespace bs
 		/** @copydoc Renderable::getCullDistanceFactor */
 		BS_SCRIPT_EXPORT(n:CullDistance, pr:getter)
 		float getCullDistanceFactor() const { return mInternal->getCullDistanceFactor(); }
+
+		/** @copydoc Renderable::setWriteVelocity */
+		BS_SCRIPT_EXPORT(n:WriteVelocity, pr:setter)
+		void setWriteVelocity(bool enable) { mInternal->setWriteVelocity(enable); }
+
+		/** @copydoc Renderable::getWriteVelocity */
+		BS_SCRIPT_EXPORT(n:WriteVelocity, pr:getter)
+		bool getWriteVelocity() const { return mInternal->getWriteVelocity(); }
 		
 		/** @copydoc Renderable::setLayer */
 		BS_SCRIPT_EXPORT(n:Layers,pr:setter)

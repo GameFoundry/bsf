@@ -233,6 +233,31 @@ namespace bs
 		}
 	};
 
+	class BS_CORE_EXPORT TemporalAASettingsRTTI : public RTTIType <TemporalAASettings, IReflectable, TemporalAASettingsRTTI>
+	{
+	private:
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_PLAIN(enabled, 0)
+		BS_END_RTTI_MEMBERS
+
+	public:
+		const String& getRTTIName() override
+		{
+			static String name = "TemporalAASettings";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_TemporalAASettings;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			return bs_shared_ptr_new<TemporalAASettings>();
+		}
+	};
+
 	class BS_CORE_EXPORT ScreenSpaceReflectionsSettingsRTTI : public RTTIType <ScreenSpaceReflectionsSettings, IReflectable, ScreenSpaceReflectionsSettingsRTTI>
 	{
 	private:
@@ -442,6 +467,8 @@ namespace bs
 			BS_RTTI_MEMBER_REFL(motionBlur, 21)
 			BS_RTTI_MEMBER_REFL(filmGrain, 22)
 			BS_RTTI_MEMBER_REFL(chromaticAberration, 23)
+			BS_RTTI_MEMBER_REFL(temporalAA, 24)
+			BS_RTTI_MEMBER_PLAIN(enableVelocityBuffer, 25)
 		BS_END_RTTI_MEMBERS
 
 	public:

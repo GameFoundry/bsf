@@ -115,15 +115,12 @@ Due to the way its rendering works, this pipeline is incompatible with transpare
 
 ## Surface
 This shader is responsible for writing the surface data into the GBuffer. Its entry point must have the following signature:
- - `void fsmain(in VStoFS input, out float3 OutSceneColor : SV_Target0, out float4 OutGBufferA : SV_Target1, out float4 OutGBufferB : SV_Target2, out float2 OutGBufferC : SV_Target3, out uint OutGBufferD : SV_Target4)`
+ - `void fsmain(in VStoFS input, out float4 OutSceneColor : SV_Target0, out GBufferData OutGBuffer)`
  
 Where:
  - *input* - **VSToFS** structure that gets output from the vertex shader.
- - *OutSceneColor* - Use to write scene color directly. This will be blended as-is with results from the lighting calculations. Used for emissive materials.
- - *OutGBufferA* - RGB channels containing albedo color, while A contains opacity.
- - *OutGBufferB* - RGB channels containing encoded world-space normals, while A channel contains a non-zero value if anything was rendered to that location.
- - *OutGBufferC* - R channel contains roughness, G channels contains metalness. Used by physically based lighting.
- - *OutGBufferD* - R channel contains the layer of the rendered object. Layer can be used for masking on which surfaces things like decals render on.
+ - *OutSceneColor* - Use to write scene color directly. This will be blended as-is with results from the lighting calculations. Used primarily for emissive materials.
+ - *OutGBuffer* - Structure containing data to be encoded into G-Buffer textures. This includes the albedo color, normals, roughness, metalness, and other parameters.
  
 The shader needs to include the following mixins:
  - **BasePass** (from `BasePass.bslinc`) - Performs the default per-vertex transformations and outputs data in the **VStoFS** structure. Optionally you can provide your own vertex evaluation code, as described earlier.
@@ -143,10 +140,7 @@ shader Surface
 		void fsmain(
 			in VStoFS input, 
 			out float4 OutSceneColor : SV_Target0,
-			out float4 OutGBufferA : SV_Target1,
-			out float4 OutGBufferB : SV_Target2,
-			out float2 OutGBufferC : SV_Target3,
-			out float OutGBufferD : SV_Target4)
+			out GBufferData OutGBuffer)
 		{
 			// ...
 		}	
@@ -165,10 +159,11 @@ struct SurfaceData
 	float roughness;
 	float metalness;
 	uint mask;
+	float2 velocity;
 };
 ~~~~~~~~~~~~~
 
-Once populated, you call **encodeGBuffer** method with the **SurfaceData** object, and the GBuffer textures to write the output to. The method then transfers the data written to **SurfaceData** into the GBuffer textures.
+Once populated, you call **encodeGBuffer** method with the **SurfaceData** object and it will return a **GBufferData** structure that will contain the encoded surface data used for populating the GBuffer textures.
  
 A complete example looks like below. For simplicity the shader only evaluates albedo from the texture, while it assumes the rest of the surface data parameters are constant.
 
@@ -189,10 +184,7 @@ shader Surface
 		void fsmain(
 			in VStoFS input, 
 			out float4 OutSceneColor : SV_Target0,
-			out float4 OutGBufferA : SV_Target1,
-			out float4 OutGBufferB : SV_Target2,
-			out float2 OutGBufferC : SV_Target3,
-			out float OutGBufferD : SV_Target4)
+			out GBufferData OutGBuffer)
 		{
 			SurfaceData surfaceData;
 			surfaceData.albedo = gAlbedoTex.Sample(gAlbedoSamp, input.uv0);
@@ -200,10 +192,10 @@ shader Surface
 			surfaceData.roughness = 1.0f;
 			surfaceData.metalness = 0.0f;
 			surfaceData.mask = gLayer;
-			
-			encodeGBuffer(surfaceData, OutGBufferA, OutGBufferB, OutGBufferC, OutGBufferD);
-			
+			surfaceData.velocity = 0.0f;
+
 			OutSceneColor = 0.0f;
+			OutGBuffer = encodeGBuffer(surfaceData);
 		}	
 	};
 };

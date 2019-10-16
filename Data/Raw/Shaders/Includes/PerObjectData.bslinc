@@ -9,6 +9,7 @@ mixin PerObjectData
 			float4x4 gMatInvWorld;
 			float4x4 gMatWorldNoScale;
 			float4x4 gMatInvWorldNoScale;
+			float4x4 gMatPrevWorld;
 			float gWorldDeterminantSign;
 			uint gLayer;
 		}	

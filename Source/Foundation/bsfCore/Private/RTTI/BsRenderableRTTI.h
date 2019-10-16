@@ -24,6 +24,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mLayer, 4)
 			BS_RTTI_MEMBER_REFL_ARRAY(mMaterials, 5)
 			BS_RTTI_MEMBER_PLAIN(mCullDistanceFactor, 6)
+			BS_RTTI_MEMBER_PLAIN(mWriteVelocity, 7)
 		BS_END_RTTI_MEMBERS
 
 	public:

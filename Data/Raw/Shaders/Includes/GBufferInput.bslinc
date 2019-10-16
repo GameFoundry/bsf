@@ -41,7 +41,10 @@ mixin GBufferInput
 			output.depth = convertFromDeviceZ(deviceZ);
 			output.roughness = GBufferCData.x;
 			output.metalness = GBufferCData.y;
-			output.mask = 0; // Not being read at the moment, as it's only needed in specific circumstances
+			
+			// Not being read at the moment, as these are only needed in specific circumstances
+			output.mask = 0; 
+			output.velocity = 0.0f;
 			
 			return output;
 		}

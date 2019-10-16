@@ -55,6 +55,17 @@ namespace bs { namespace ct
 		Full,
 	};
 
+	/** State used to controlling how are properties that need to maintain their previous frame state updated. */
+	enum class PrevFrameDirtyState
+	{
+		/** Most recent version of the property was updated this frame, and its old data stored as prev. version. */
+		Updated,
+		/** No update has been done this frame, most recent version of the properties should be copied into prev. frame. */
+		CopyMostRecent,
+		/** Most recent and prev. frame versions are the same and require no updates. */
+		Clean
+	};
+
 	/** Information about current time and frame index. */
 	struct FrameTimings
 	{

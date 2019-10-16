@@ -41,10 +41,7 @@ shader Surface
 		void fsmain(
 			in VStoFS input, 
 			out float4 OutSceneColor : SV_Target0,
-			out float4 OutGBufferA : SV_Target1,
-			out float4 OutGBufferB : SV_Target2,
-			out float2 OutGBufferC : SV_Target3,
-			out float OutGBufferD : SV_Target4)
+			out GBufferData OutGBuffer)
 		{
 			float2 uv = input.uv0 * gUVTile + gUVOffset;
 		
@@ -57,10 +54,10 @@ shader Surface
 			surfaceData.roughness = gRoughnessTex.Sample(gRoughnessSamp, uv).x;
 			surfaceData.metalness = gMetalnessTex.Sample(gMetalnessSamp, uv).x;
 			surfaceData.mask = gLayer;
-			
-			encodeGBuffer(surfaceData, OutGBufferA, OutGBufferB, OutGBufferC, OutGBufferD);
+			surfaceData.velocity = 0.0f; // Note: No velocity for particles yet, but this should be added
 			
 			OutSceneColor = float4(gEmissiveColor * gEmissiveMaskTex.Sample(gEmissiveMaskSamp, uv).x, 1);
+			OutGBuffer = encodeGBuffer(surfaceData);
 		}	
 	};
 };

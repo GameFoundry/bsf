@@ -237,6 +237,22 @@ namespace bs
 		return getRTTIStatic();
 	}
 
+	template <class Processor>
+	void TemporalAASettings::rttiEnumFields(Processor p)
+	{
+		p(enabled);
+	}
+
+	RTTITypeBase* TemporalAASettings::getRTTIStatic()
+	{
+		return TemporalAASettingsRTTI::instance();
+	}
+
+	RTTITypeBase* TemporalAASettings::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
 	template <bool Core>
 	template <class Processor>
 	void TChromaticAberrationSettings<Core>::rttiEnumFields(Processor p)
@@ -325,6 +341,8 @@ namespace bs
 		p(motionBlur);
 		p(filmGrain);
 		p(chromaticAberration);
+		p(temporalAA);
+		p(enableVelocityBuffer);
 	}
 
 	template struct TRenderSettings<false>;

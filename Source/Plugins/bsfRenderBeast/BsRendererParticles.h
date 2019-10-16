@@ -215,6 +215,12 @@ namespace bs { namespace ct
 		/** Matrix that transforms the particle system to world space. */
 		Matrix4 localToWorld = Matrix4::IDENTITY;
 
+		/** Previous frame's local -> world transform matrix. */
+		Matrix4 prevLocalToWorld = Matrix4::IDENTITY;
+
+		/** Determines if the previous frame properties require updating. */
+		PrevFrameDirtyState prevFrameDirtyState = PrevFrameDirtyState::Clean;
+
 		/** Element used for sorting and rendering the particle system. */
 		mutable ParticlesRenderElement renderElement;
 
@@ -233,6 +239,9 @@ namespace bs { namespace ct
 		/** Information about the size over lifetime / frame index curve stored in the global curve texture. */
 		TextureRowAllocation sizeScaleFrameIdxCurveAlloc;
 
+		/** Updates the per-object GPU buffer according to the currently set properties. */
+		void updatePerObjectBuffer();
+		
 		/**
 		 * Binds all the GPU program inputs required for rendering a particle system that is being simulated by the CPU.
 		 *

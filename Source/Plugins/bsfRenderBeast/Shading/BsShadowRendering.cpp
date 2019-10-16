@@ -478,7 +478,7 @@ namespace bs { namespace ct
 					if (!opt.intersects(bounds))
 						continue;
 
-					scene.prepareRenderable(i, frameInfo);
+					scene.prepareVisibleRenderable(i, frameInfo);
 
 					Command renderableCommand;
 					renderableCommand.mask = 0;
@@ -507,10 +507,10 @@ namespace bs { namespace ct
 				}
 
 				static const ShaderVariation* VAR_LOOKUP[4];
-				VAR_LOOKUP[0] = &getVertexInputVariation<false, false>();
-				VAR_LOOKUP[1] = &getVertexInputVariation<true, false>();
-				VAR_LOOKUP[2] = &getVertexInputVariation<false, true>();
-				VAR_LOOKUP[3] = &getVertexInputVariation<true, true>();
+				VAR_LOOKUP[0] = &getVertexInputVariation<false, false, false>(false);
+				VAR_LOOKUP[1] = &getVertexInputVariation<true, false, false>(false);
+				VAR_LOOKUP[2] = &getVertexInputVariation<false, true, false>(false);
+				VAR_LOOKUP[3] = &getVertexInputVariation<true, true, false>(false);
 
 				for (UINT32 i = 0; i < (UINT32)RenderableAnimType::Count; i++)
 				{

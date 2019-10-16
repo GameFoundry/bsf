@@ -37,6 +37,140 @@ namespace bs {	namespace ct
 		}
 	};
 
+	/** Returns a specific forward rendering shader variation. */
+	template<bool SKINNED, bool MORPH, bool CLUSTERED, bool WRITE_VELOCITY>
+	static const ShaderVariation& getForwardRenderingVariation(bool supportsVelocityWrites)
+	{
+		if (!supportsVelocityWrites)
+		{
+			static ShaderVariation variation = ShaderVariation(
+				{
+					ShaderVariation::Param("SKINNED", SKINNED),
+					ShaderVariation::Param("MORPH", MORPH),
+					ShaderVariation::Param("CLUSTERED", CLUSTERED),
+				});
+
+			return variation;
+		}
+		else
+		{
+			static ShaderVariation variation = ShaderVariation(
+				{
+					ShaderVariation::Param("SKINNED", SKINNED),
+					ShaderVariation::Param("MORPH", MORPH),
+					ShaderVariation::Param("CLUSTERED", CLUSTERED),
+					ShaderVariation::Param("WRITE_VELOCITY", WRITE_VELOCITY),
+				});
+
+			return variation;
+		}
+	}
+
+
+	/** Returns a specific forward rendering shader variation. */
+	template<bool CLUSTERED, bool WRITE_VELOCITY>
+	static const ShaderVariation* getClusteredForwardRenderingVariation(RenderableAnimType animType, bool shaderCanWriteVelocity)
+	{
+		const ShaderVariation* VAR_LOOKUP[4];
+		VAR_LOOKUP[0] = &getForwardRenderingVariation<false, false, CLUSTERED, WRITE_VELOCITY>(shaderCanWriteVelocity);
+		VAR_LOOKUP[1] = &getForwardRenderingVariation<true, false, CLUSTERED, WRITE_VELOCITY>(shaderCanWriteVelocity);
+		VAR_LOOKUP[2] = &getForwardRenderingVariation<false, true, CLUSTERED, WRITE_VELOCITY>(shaderCanWriteVelocity);
+		VAR_LOOKUP[3] = &getForwardRenderingVariation<true, true, CLUSTERED, WRITE_VELOCITY>(shaderCanWriteVelocity);
+
+		return VAR_LOOKUP[(int)animType];
+	}
+
+	/** Returns a specific base pass shader variation. */
+	template<bool WRITE_VELOCITY>
+	static const ShaderVariation* getBasePassVariation(bool useForwardRendering, bool supportsClusteredForward,
+		bool shaderCanWriteVelocity, RenderableAnimType animType)
+	{
+		if (useForwardRendering)
+		{
+			if (supportsClusteredForward)
+				return getClusteredForwardRenderingVariation<true, WRITE_VELOCITY>(animType, shaderCanWriteVelocity);
+			else
+				return getClusteredForwardRenderingVariation<false, WRITE_VELOCITY>(animType, shaderCanWriteVelocity);
+		}
+		else
+		{
+			const ShaderVariation* VAR_LOOKUP[4];
+			VAR_LOOKUP[0] = &getVertexInputVariation<false, false, WRITE_VELOCITY>(shaderCanWriteVelocity);
+			VAR_LOOKUP[1] = &getVertexInputVariation<true, false, WRITE_VELOCITY>(shaderCanWriteVelocity);
+			VAR_LOOKUP[2] = &getVertexInputVariation<false, true, WRITE_VELOCITY>(shaderCanWriteVelocity);
+			VAR_LOOKUP[3] = &getVertexInputVariation<true, true, WRITE_VELOCITY>(shaderCanWriteVelocity);
+
+			return VAR_LOOKUP[(int)animType];
+		}
+	}
+
+	/** Initializes a specific base pass technique on the provided material and returns the technique index. */
+	static UINT32 initAndRetrieveBasePassTechnique(Material& material, bool useForwardRendering, bool supportsClusteredForward,
+		bool shaderCanWriteVelocity, bool writeVelocity, RenderableAnimType animType)
+	{
+		const ShaderVariation* variation = writeVelocity ?
+			getBasePassVariation<true>(useForwardRendering, supportsClusteredForward, shaderCanWriteVelocity, animType) :
+			getBasePassVariation<false>(useForwardRendering, supportsClusteredForward, shaderCanWriteVelocity, animType);
+		
+		FIND_TECHNIQUE_DESC findDesc;
+		findDesc.variation = variation;
+		findDesc.override = true;
+
+		UINT32 techniqueIdx = material.findTechnique(findDesc);
+
+		if (techniqueIdx == (UINT32)-1)
+			techniqueIdx = material.getDefaultTechnique();
+
+		// Make sure the technique shaders are compiled
+		const SPtr<Technique>& technique = material.getTechnique(techniqueIdx);
+		if (technique)
+			technique->compile();
+
+		return techniqueIdx;
+	}
+
+	static void validateBasePassMaterial(Material& material, RenderableAnimType animType, UINT32 techniqueIdx, VertexDeclaration& vertexDecl)
+	{
+		// Validate mesh <-> shader vertex bindings
+		UINT32 numPasses = material.getNumPasses(techniqueIdx);
+		for (UINT32 j = 0; j < numPasses; j++)
+		{
+			SPtr<Pass> pass = material.getPass(j, techniqueIdx);
+			SPtr<GraphicsPipelineState> graphicsPipeline = pass->getGraphicsPipelineState();
+
+			SPtr<VertexDeclaration> shaderDecl = graphicsPipeline->getVertexProgram()->getInputDeclaration();
+			if (shaderDecl && !vertexDecl.isCompatible(shaderDecl))
+			{
+				Vector<VertexElement> missingElements = vertexDecl.getMissingElements(shaderDecl);
+
+				// If using morph shapes ignore POSITION1 and NORMAL1 missing since we assign them from within the renderer
+				if (animType == RenderableAnimType::Morph || animType == RenderableAnimType::SkinnedMorph)
+				{
+					auto removeIter = std::remove_if(missingElements.begin(), missingElements.end(), [](const VertexElement& x)
+						{
+							return (x.getSemantic() == VES_POSITION && x.getSemanticIdx() == 1) ||
+								(x.getSemantic() == VES_NORMAL && x.getSemanticIdx() == 1);
+						});
+
+					missingElements.erase(removeIter, missingElements.end());
+				}
+
+				if (!missingElements.empty())
+				{
+					StringStream wrnStream;
+					wrnStream << "Provided mesh is missing required vertex attributes to render with the \
+									provided shader. Missing elements: " << std::endl;
+
+					for (auto& entry : missingElements)
+						wrnStream << "\t" << toString(entry.getSemantic()) << entry.getSemanticIdx() << std::endl;
+
+					BS_LOG(Warning, Renderer, wrnStream.str());
+					break;
+				}
+			}
+		}
+	}
+
 	RendererScene::RendererScene(const SPtr<RenderBeastOptions>& options)
 		:mOptions(options)
 	{
@@ -247,6 +381,9 @@ namespace bs {	namespace ct
 
 		RendererRenderable* rendererRenderable = mInfo.renderables.back();
 		rendererRenderable->renderable = renderable;
+		rendererRenderable->worldTfrm = renderable->getMatrix();
+		rendererRenderable->prevWorldTfrm = rendererRenderable->worldTfrm;
+		rendererRenderable->prevFrameDirtyState = PrevFrameDirtyState::Clean;
 		rendererRenderable->updatePerObjectBuffer();
 
 		SPtr<Mesh> mesh = renderable->getMesh();
@@ -268,6 +405,7 @@ namespace bs {	namespace ct
 				renElement.morphShapeVersion = 0;
 				renElement.morphShapeBuffer = renderable->getMorphShapeBuffer();
 				renElement.boneMatrixBuffer = renderable->getBoneMatrixBuffer();
+				renElement.bonePrevMatrixBuffer = renderable->getBonePrevMatrixBuffer();
 				renElement.morphVertexDeclaration = renderable->getMorphVertexDeclaration();
 
 				renElement.material = renderable->getMaterial(i);
@@ -284,105 +422,44 @@ namespace bs {	namespace ct
 				// Determine which technique to use
 				static_assert((UINT32)RenderableAnimType::Count == 4, "RenderableAnimType is expected to have four sequential entries.");
 
-				ShaderFlags shaderFlags = renElement.material->getShader()->getFlags();
+				const SPtr<Shader>& shader = renElement.material->getShader();
+				ShaderFlags shaderFlags = shader->getFlags();
 				const bool useForwardRendering = shaderFlags.isSet(ShaderFlag::Forward) || shaderFlags.isSet(ShaderFlag::Transparent);
+				bool supportsClusteredForward = gRenderBeast()->getFeatureSet() == RenderBeastFeatureSet::Desktop;
+
+				const Vector<ShaderVariationParamInfo>& variationParams = shader->getVariationParams();
+				const bool shaderCanWriteVelocity = std::find_if(variationParams.begin(), variationParams.end(),
+					[](const ShaderVariationParamInfo& x) { return x.identifier == "WRITE_VELOCITY"; }) != variationParams.end();
+				
+				const bool writeVelocity = shaderCanWriteVelocity && renderable->getWriteVelocity();
 				
 				RenderableAnimType animType = renderable->getAnimType();
 
-				static const ShaderVariation* VAR_LOOKUP[4];
-				if(useForwardRendering)
-				{
-					bool supportsClusteredForward = gRenderBeast()->getFeatureSet() == RenderBeastFeatureSet::Desktop;
-
-					if(supportsClusteredForward)
-					{
-						VAR_LOOKUP[0] = &getForwardRenderingVariation<false, false, true>();
-						VAR_LOOKUP[1] = &getForwardRenderingVariation<true, false, true>();
-						VAR_LOOKUP[2] = &getForwardRenderingVariation<false, true, true>();
-						VAR_LOOKUP[3] = &getForwardRenderingVariation<true, true, true>();
-					}
-					else
-					{
-						VAR_LOOKUP[0] = &getForwardRenderingVariation<false, false, false>();
-						VAR_LOOKUP[1] = &getForwardRenderingVariation<true, false, false>();
-						VAR_LOOKUP[2] = &getForwardRenderingVariation<false, true, false>();
-						VAR_LOOKUP[3] = &getForwardRenderingVariation<true, true, false>();
-					}
-				}
-				else
-				{
-					VAR_LOOKUP[0] = &getVertexInputVariation<false, false>();
-					VAR_LOOKUP[1] = &getVertexInputVariation<true, false>();
-					VAR_LOOKUP[2] = &getVertexInputVariation<false, true>();
-					VAR_LOOKUP[3] = &getVertexInputVariation<true, true>();
-				}
-
-				const ShaderVariation* variation = VAR_LOOKUP[(int)animType];
-
-				FIND_TECHNIQUE_DESC findDesc;
-				findDesc.variation = variation;
-				findDesc.override = true;
-
-				UINT32 techniqueIdx = renElement.material->findTechnique(findDesc);
-
-				if (techniqueIdx == (UINT32)-1)
-					techniqueIdx = renElement.material->getDefaultTechnique();
-
-				renElement.techniqueIdx = techniqueIdx;
-
-				// Make sure the technique shaders are compiled
-				const SPtr<Technique>& technique = renElement.material->getTechnique(techniqueIdx);
-				if(technique)
-					technique->compile();
+				renElement.defaultTechniqueIdx = initAndRetrieveBasePassTechnique(*renElement.material, useForwardRendering,
+					supportsClusteredForward, shaderCanWriteVelocity, false, animType);
 
 #if BS_DEBUG_MODE
-				// Validate mesh <-> shader vertex bindings
-				if (renElement.material != nullptr)
-				{
-					UINT32 numPasses = renElement.material->getNumPasses(techniqueIdx);
-					for (UINT32 j = 0; j < numPasses; j++)
-					{
-						SPtr<Pass> pass = renElement.material->getPass(j, techniqueIdx);
-						SPtr<GraphicsPipelineState> graphicsPipeline = pass->getGraphicsPipelineState();
-
-						SPtr<VertexDeclaration> shaderDecl = graphicsPipeline->getVertexProgram()->getInputDeclaration();
-						if (shaderDecl && !vertexDecl->isCompatible(shaderDecl))
-						{
-							Vector<VertexElement> missingElements = vertexDecl->getMissingElements(shaderDecl);
-
-							// If using morph shapes ignore POSITION1 and NORMAL1 missing since we assign them from within the renderer
-							if (animType == RenderableAnimType::Morph || animType == RenderableAnimType::SkinnedMorph)
-							{
-								auto removeIter = std::remove_if(missingElements.begin(), missingElements.end(), [](const VertexElement& x)
-								{
-									return (x.getSemantic() == VES_POSITION && x.getSemanticIdx() == 1) ||
-										(x.getSemantic() == VES_NORMAL && x.getSemanticIdx() == 1);
-								});
-
-								missingElements.erase(removeIter, missingElements.end());
-							}
-
-							if (!missingElements.empty())
-							{
-								StringStream wrnStream;
-								wrnStream << "Provided mesh is missing required vertex attributes to render with the \
-									provided shader. Missing elements: " << std::endl;
-
-								for (auto& entry : missingElements)
-									wrnStream << "\t" << toString(entry.getSemantic()) << entry.getSemanticIdx() << std::endl;
-
-								BS_LOG(Warning, Renderer, wrnStream.str());
-								break;
-							}
-						}
-					}
-				}
+				validateBasePassMaterial(*renElement.material, animType, renElement.defaultTechniqueIdx, *vertexDecl);
 #endif
 
 				// Generate or assigned renderer specific data for the material
-				renElement.params = renElement.material->createParamsSet(techniqueIdx);
+				renElement.params = renElement.material->createParamsSet(renElement.defaultTechniqueIdx);
 				renElement.material->updateParamsSet(renElement.params, 0.0f, true);
 
+				if (writeVelocity)
+				{
+					renElement.writeVelocityTechniqueIdx = initAndRetrieveBasePassTechnique(*renElement.material, useForwardRendering,
+						supportsClusteredForward, shaderCanWriteVelocity, true, animType);
+
+#if BS_DEBUG_MODE
+					validateBasePassMaterial(*renElement.material, animType, renElement.writeVelocityTechniqueIdx, *vertexDecl);
+#endif
+
+					// Note: Using the same params as the non-velocity technique. There are assumed to be no differences
+				}
+				else
+					renElement.writeVelocityTechniqueIdx = (UINT32)-1;
+				
 				// Generate or assign sampler state overrides
 				renElement.samplerOverrides = allocSamplerStateOverrides(renElement);
 			}
@@ -415,6 +492,9 @@ namespace bs {	namespace ct
 			if (gpuParams->hasBuffer(GPT_VERTEX_PROGRAM, "boneMatrices"))
 				gpuParams->setBuffer(GPT_VERTEX_PROGRAM, "boneMatrices", element.boneMatrixBuffer);
 
+			if (gpuParams->hasBuffer(GPT_VERTEX_PROGRAM, "prevBoneMatrices"))
+				gpuParams->setBuffer(GPT_VERTEX_PROGRAM, "prevBoneMatrices", element.bonePrevMatrixBuffer);
+
 			ShaderFlags shaderFlags = shader->getFlags();
 			const bool useForwardRendering = shaderFlags.isSet(ShaderFlag::Forward) || shaderFlags.isSet(ShaderFlag::Transparent);
 
@@ -432,6 +512,14 @@ namespace bs {	namespace ct
 	void RendererScene::updateRenderable(Renderable* renderable)
 	{
 		UINT32 renderableId = renderable->getRendererId();
+
+		RendererRenderable* rendererRenderable = mInfo.renderables[renderableId];
+
+		if(rendererRenderable->prevFrameDirtyState != PrevFrameDirtyState::Updated)
+			rendererRenderable->prevWorldTfrm = rendererRenderable->worldTfrm;
+
+		rendererRenderable->worldTfrm = renderable->getMatrix();
+		rendererRenderable->prevFrameDirtyState = PrevFrameDirtyState::Updated;
 
 		mInfo.renderables[renderableId]->updatePerObjectBuffer();
 		mInfo.renderableCullInfos[renderableId].bounds = renderable->getBounds();
@@ -594,6 +682,9 @@ namespace bs {	namespace ct
 		rendererParticles.particleSystem = particleSystem;
 
 		updateParticleSystem(particleSystem, false);
+
+		rendererParticles.prevLocalToWorld = rendererParticles.localToWorld;
+		rendererParticles.prevFrameDirtyState = PrevFrameDirtyState::Clean;
 	}
 
 	void RendererScene::updateParticleSystem(ParticleSystem* particleSystem, bool tfrmOnly)
@@ -601,33 +692,29 @@ namespace bs {	namespace ct
 		const UINT32 rendererId = particleSystem->getRendererId();
 		RendererParticles& rendererParticles = mInfo.particleSystems[rendererId];
 
+		rendererParticles.prevLocalToWorld = rendererParticles.localToWorld;
+		rendererParticles.prevFrameDirtyState = PrevFrameDirtyState::Updated;
+
 		const ParticleSystemSettings& settings = particleSystem->getSettings();
-		const UINT32 layer = Bitwise::mostSignificantBit(particleSystem->getLayer());
-		Matrix4 localToWorldNoScale;
 		if (settings.simulationSpace == ParticleSimulationSpace::Local)
 		{
 			const Transform& tfrm = particleSystem->getTransform();
-
 			rendererParticles.localToWorld = tfrm.getMatrix();
-			localToWorldNoScale = Matrix4::TRS(tfrm.getPosition(), tfrm.getRotation(), Vector3::ONE);
 		}
 		else
-		{
 			rendererParticles.localToWorld = Matrix4::IDENTITY;
-			localToWorldNoScale = Matrix4::IDENTITY;
-		}
 
 		if(tfrmOnly)
 		{
-			SPtr<GpuParamBlockBuffer>& paramBuffer = rendererParticles.perObjectParamBuffer;
-			PerObjectBuffer::update(paramBuffer, rendererParticles.localToWorld, localToWorldNoScale, layer);
-
+			rendererParticles.updatePerObjectBuffer();
 			return;
 		}
 
-		SPtr<GpuParamBlockBuffer> perObjectParamBuffer = gPerObjectParamDef.createBuffer();
+		rendererParticles.perObjectParamBuffer = gPerObjectParamDef.createBuffer();
+		rendererParticles.updatePerObjectBuffer();
+
 		SPtr<GpuParamBlockBuffer> particlesParamBuffer = gParticlesParamDef.createBuffer();
-		PerObjectBuffer::update(perObjectParamBuffer, rendererParticles.localToWorld, localToWorldNoScale, layer);
+		rendererParticles.particlesParamBuffer = particlesParamBuffer;
 
 		Vector3 axisForward = settings.orientationPlaneNormal;
 
@@ -640,9 +727,6 @@ namespace bs {	namespace ct
 
 		gParticlesParamDef.gAxisUp.set(particlesParamBuffer, axisUp);
 		gParticlesParamDef.gAxisRight.set(particlesParamBuffer, axisRight);
-
-		rendererParticles.perObjectParamBuffer = perObjectParamBuffer;
-		rendererParticles.particlesParamBuffer = particlesParamBuffer;
 
 		// Initialize the variant of the particle system for GPU simulation, if needed
 		if (settings.gpuSimulation)
@@ -726,7 +810,7 @@ namespace bs {	namespace ct
 		if (techniqueIdx == (UINT32)-1)
 			techniqueIdx = renElement.material->getDefaultTechnique();
 
-		renElement.techniqueIdx = techniqueIdx;
+		renElement.defaultTechniqueIdx = techniqueIdx;
 
 		// Make sure the technique shaders are compiled
 		const SPtr<Technique>& technique = renElement.material->getTechnique(techniqueIdx);
@@ -971,11 +1055,11 @@ namespace bs {	namespace ct
 			}
 		}
 
-		renElement.techniqueIdx = renElement.techniqueIndices[0][0];
+		renElement.defaultTechniqueIdx = renElement.techniqueIndices[0][0];
 
 		// Generate or assigned renderer specific data for the material
 		// Note: This makes the assumption that all variations of the material share the same parameter set
-		renElement.params = renElement.material->createParamsSet(renElement.techniqueIdx);
+		renElement.params = renElement.material->createParamsSet(renElement.defaultTechniqueIdx);
 		renElement.material->updateParamsSet(renElement.params, 0.0f, true);
 
 		// Generate or assign sampler state overrides
@@ -1276,24 +1360,63 @@ namespace bs {	namespace ct
 
 	void RendererScene::prepareRenderable(UINT32 idx, const FrameInfo& frameInfo)
 	{
+		RendererRenderable* rendererRenderable = mInfo.renderables[idx];
+		
+		for (auto& element : rendererRenderable->elements)
+			element.materialAnimationTime += frameInfo.timings.timeDelta;
+
+		if (frameInfo.perFrameData.animation != nullptr)
+			rendererRenderable->renderable->updatePrevFrameAnimationBuffers();
+
+		if (rendererRenderable->prevFrameDirtyState != PrevFrameDirtyState::Clean)
+		{
+			if (rendererRenderable->prevFrameDirtyState == PrevFrameDirtyState::Updated)
+				rendererRenderable->prevFrameDirtyState = PrevFrameDirtyState::CopyMostRecent;
+			else if (rendererRenderable->prevFrameDirtyState == PrevFrameDirtyState::CopyMostRecent)
+			{
+				rendererRenderable->prevWorldTfrm = mInfo.renderables[idx]->worldTfrm;
+				rendererRenderable->prevFrameDirtyState = PrevFrameDirtyState::Clean;
+				rendererRenderable->updatePerObjectBuffer();
+			}
+		}
+	}
+
+	void RendererScene::prepareVisibleRenderable(UINT32 idx, const FrameInfo& frameInfo)
+	{
 		if (mInfo.renderableReady[idx])
 			return;
+
+		RendererRenderable* rendererRenderable = mInfo.renderables[idx];
 		
 		// Note: Before uploading bone matrices perhaps check if they has actually been changed since last frame
 		if(frameInfo.perFrameData.animation != nullptr)
-			mInfo.renderables[idx]->renderable->updateAnimationBuffers(*frameInfo.perFrameData.animation);
+			rendererRenderable->renderable->updateAnimationBuffers(*frameInfo.perFrameData.animation);
 		
 		// Note: Could this step be moved in notifyRenderableUpdated, so it only triggers when material actually gets
 		// changed? Although it shouldn't matter much because if the internal versions keeping track of dirty params.
-		for (auto& element : mInfo.renderables[idx]->elements)
+		for (auto& element : rendererRenderable->elements)
 			element.material->updateParamsSet(element.params, element.materialAnimationTime);
-		
+
 		mInfo.renderables[idx]->perObjectParamBuffer->flushToGPU();
 		mInfo.renderableReady[idx] = true;
 	}
 
 	void RendererScene::prepareParticleSystem(UINT32 idx, const FrameInfo& frameInfo)
 	{
+		RendererParticles& rendererParticles = mInfo.particleSystems[idx];
+		
+		if (rendererParticles.prevFrameDirtyState != PrevFrameDirtyState::Clean)
+		{
+			if (rendererParticles.prevFrameDirtyState == PrevFrameDirtyState::Updated)
+				rendererParticles.prevFrameDirtyState = PrevFrameDirtyState::CopyMostRecent;
+			else if (rendererParticles.prevFrameDirtyState == PrevFrameDirtyState::CopyMostRecent)
+			{
+				rendererParticles.prevLocalToWorld = rendererParticles.localToWorld;
+				rendererParticles.prevFrameDirtyState = PrevFrameDirtyState::Clean;
+				rendererParticles.updatePerObjectBuffer();
+			}
+		}
+		
 		ParticlesRenderElement& renElement = mInfo.particleSystems[idx].renderElement;
 		renElement.material->updateParamsSet(renElement.params, 0.0f);
 		
@@ -1303,6 +1426,7 @@ namespace bs {	namespace ct
 	void RendererScene::prepareDecal(UINT32 idx, const FrameInfo& frameInfo)
 	{
 		DecalRenderElement& renElement = mInfo.decals[idx].renderElement;
+		renElement.materialAnimationTime += frameInfo.timings.timeDelta;
 		renElement.material->updateParamsSet(renElement.params, renElement.materialAnimationTime);
 		
 		mInfo.decals[idx].perObjectParamBuffer->flushToGPU();
@@ -1335,7 +1459,7 @@ namespace bs {	namespace ct
 
 	MaterialSamplerOverrides* RendererScene::allocSamplerStateOverrides(RenderElement& elem)
 	{
-		SamplerOverrideKey samplerKey(elem.material, elem.techniqueIdx);
+		SamplerOverrideKey samplerKey(elem.material, elem.defaultTechniqueIdx);
 		auto iterFind = mSamplerOverrides.find(samplerKey);
 		if (iterFind != mSamplerOverrides.end())
 		{
@@ -1357,7 +1481,7 @@ namespace bs {	namespace ct
 
 	void RendererScene::freeSamplerStateOverrides(RenderElement& elem)
 	{
-		SamplerOverrideKey samplerKey(elem.material, elem.techniqueIdx);
+		SamplerOverrideKey samplerKey(elem.material, elem.defaultTechniqueIdx);
 
 		auto iterFind = mSamplerOverrides.find(samplerKey);
 		assert(iterFind != mSamplerOverrides.end());
