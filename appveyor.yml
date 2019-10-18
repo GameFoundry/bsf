@@ -17,8 +17,8 @@ install:
   - cmd: if "%APPVEYOR_SCHEDULED_BUILD%" == "True" (choco install composer)
   - cmd: refreshenv
   # Install daux on tagged and scheduled builds (need it for documentation gen.)
-  - cmd: if "%APPVEYOR_REPO_TAG%" == "true" (composer global require daux/daux.io)
-  - cmd: if "%APPVEYOR_SCHEDULED_BUILD%" == "True" (composer global require daux/daux.io)
+  - cmd: if "%APPVEYOR_REPO_TAG%" == "true" (composer global require daux/daux.io:0.8.1)
+  - cmd: if "%APPVEYOR_SCHEDULED_BUILD%" == "True" (composer global require daux/daux.io:0.8.1)
   - cmd: refreshenv
 
 build_script:
