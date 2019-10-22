@@ -999,14 +999,14 @@ namespace bs
 		}
 		
 		/**
-		* Calculates the Romberg Integration.
-		*
-		* @param[in]  a				Lower bound.
-		* @param[in]  b				Upper bound.
-		* @param[in]  order			Order of the function.
-		* @param[in]  integrand		Function to integrate.
-		* @return					Integrated function.
-		*/
+		 * Calculates the Romberg Integration.
+		 *
+		 * @param[in]  a				Lower bound.
+		 * @param[in]  b				Upper bound.
+		 * @param[in]  order			Order of the function.
+		 * @param[in]  integrand		Function to integrate.
+		 * @return					Integrated function.
+		 */
 		template <typename T>
 		static T rombergIntegration(T a, T b, int order, const std::function<T(T)> integrand)
 		{
@@ -1037,15 +1037,15 @@ namespace bs
 		}
 
 		/**
-		* Calculates the Gaussian Quadrature.
-		*
-		* @param[in]  a				Lower bound.
-		* @param[in]  b				Upper bound.
-		* @param[in]  roots			Roots of the function.
-		* @param[in]  coefficients  Coefficients of the function.
-		* @param[in]  integrand		Function to integrate.
-		* @return					Gaussian Quadrature integration.
-		*/
+		 * Calculates the Gaussian Quadrature.
+		 *
+		 * @param[in]  a				Lower bound.
+		 * @param[in]  b				Upper bound.
+		 * @param[in]  roots			Roots of the function.
+		 * @param[in]  coefficients  Coefficients of the function.
+		 * @param[in]  integrand		Function to integrate.
+		 * @return					Gaussian Quadrature integration.
+		 */
 		template <typename T>
 		static T gaussianQuadrature(T a, T b, T* roots, T* coefficients, const std::function <T(T)>& integrand)
 		{
@@ -1060,6 +1060,29 @@ namespace bs
 			res *= radius;
 
 			return res;
+		}
+
+		/**
+		 * Generates numbers in a deterministic sequence suitable for Monte Carlo algorithms.
+		 * 
+		 * @param[in]	index		Index of the item in the sequence to return.
+		 * @param[in]	base		Base that determines how is the sequence sub-divided.
+		 *
+		 */
+		template <typename T>
+		static T haltonSequence(UINT32 index, UINT32 base)
+		{
+			T output = (T)0.0;
+			T invBase = (T)1.0 / base;
+			T frac = invBase;
+			while (index > 0)
+			{
+				output += (index % base) * frac;
+				index /= base;
+				frac *= invBase;
+			}
+
+			return output;
 		}
 
 		static constexpr float POS_INFINITY = std::numeric_limits<float>::infinity();

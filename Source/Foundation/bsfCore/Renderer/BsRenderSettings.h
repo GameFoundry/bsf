@@ -602,6 +602,18 @@ namespace bs
 		BS_SCRIPT_EXPORT()
 		bool enabled = false;
 
+		/**
+		 * Number of different jittered positions to use. Each frame will use one position and subsequent frames
+		 * will use subsequent positions until this number of reached, at which point the positions start getting
+		 * re-used from the start.
+		 */
+		BS_SCRIPT_EXPORT(range:[4,128])
+		UINT32 jitteredPositionCount = 8;
+
+		/** Determines the distance between temporal AA samples. Larger values result in a sharper image. */
+		BS_SCRIPT_EXPORT(range:[0, 1] )
+		float sharpness = 1.0f;
+
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/

@@ -241,6 +241,8 @@ namespace bs
 	void TemporalAASettings::rttiEnumFields(Processor p)
 	{
 		p(enabled);
+		p(jitteredPositionCount);
+		p(sharpness);
 	}
 
 	RTTITypeBase* TemporalAASettings::getRTTIStatic()

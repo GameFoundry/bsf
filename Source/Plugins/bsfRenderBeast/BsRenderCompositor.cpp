@@ -2079,7 +2079,7 @@ namespace bs { namespace ct
 			TemporalFilteringMat* temporalFilteringMat =
 				TemporalFilteringMat::getVariation(TemporalFilteringType::FullScreenAA, true, viewProps.target.numSamples > 1);
 			temporalFilteringMat->execute(inputs.view, mPrevFrame->texture, sceneColor->texture, velocityTex,
-				sceneDepthNode->depthTex->texture, mPooledOutput->renderTexture);
+				sceneDepthNode->depthTex->texture, viewProps.temporalJitter, mPooledOutput->renderTexture);
 
 			sceneColorNode->setExternalTexture(mPooledOutput);
 		}
@@ -2781,7 +2781,7 @@ namespace bs { namespace ct
 			TemporalFilteringMat* temporalFilteringMat =
 				TemporalFilteringMat::getVariation(TemporalFilteringType::SSR, false, viewProps.target.numSamples > 1);
 			temporalFilteringMat->execute(inputs.view, mPrevFrame->texture, traceOutput->texture, nullptr,
-				sceneDepthNode->depthTex->texture, mPooledOutput->renderTexture);
+				sceneDepthNode->depthTex->texture, Vector2::ZERO, mPooledOutput->renderTexture);
 
 			traceOutput = nullptr;
 		}

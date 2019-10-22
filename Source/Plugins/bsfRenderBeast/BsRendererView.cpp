@@ -51,7 +51,7 @@ namespace bs { namespace ct
 	}
 
 	RendererViewData::RendererViewData()
-		:encodeDepth(false), depthEncodeNear(0.0f), depthEncodeFar(0.0f)
+		:encodeDepth(false)
 	{
 		
 	}
@@ -59,6 +59,7 @@ namespace bs { namespace ct
 	RendererViewProperties::RendererViewProperties(const RENDERER_VIEW_DESC& src)
 		:RendererViewData(src), frameIdx(0), target(src.target)
 	{
+		projTransformNoAA = src.projTransform;
 		viewProjTransform = src.projTransform * src.viewTransform;
 	}
 
@@ -112,17 +113,21 @@ namespace bs { namespace ct
 		mProperties.viewDirection = direction;
 		mProperties.viewTransform = view;
 		mProperties.projTransform = proj;
+		mProperties.projTransformNoAA = proj;
 		mProperties.cullFrustum = worldFrustum;
 		mProperties.viewProjTransform = proj * view;
+		mProperties.temporalJitter = Vector2::ZERO;
 	}
 
 	void RendererView::setView(const RENDERER_VIEW_DESC& desc)
 	{
 		mCamera = desc.sceneCamera;
 		mProperties = desc;
+		mProperties.projTransformNoAA = desc.projTransform;
 		mProperties.viewProjTransform = desc.projTransform * desc.viewTransform;
 		mProperties.prevViewProjTransform = Matrix4::IDENTITY;
 		mProperties.target = desc.target;
+		mProperties.temporalJitter = Vector2::ZERO;
 
 		setStateReductionMode(desc.stateReduction);
 	}
@@ -133,6 +138,7 @@ namespace bs { namespace ct
 		// Note: Normally we rely on the renderer notify* methods to let us know of changes to camera/viewport, but since
 		// render target resize can often originate from the core thread, this avoids the back and forth between
 		// main <-> core thread, and the frame delay that comes with it
+		bool perViewBufferDirty = false;
 		if(mCamera)
 		{
 			const SPtr<Viewport>& viewport = mCamera->getViewport();
@@ -153,10 +159,60 @@ namespace bs { namespace ct
 					mProperties.target.targetWidth = newTargetWidth;
 					mProperties.target.targetHeight = newTargetHeight;
 					
-					updatePerViewBuffer();
+					perViewBufferDirty = true;
 				}
 			}
 		}
+
+		// Update projection matrix jitter if temporal AA is enabled
+		if(mRenderSettings->temporalAA.enabled)
+		{
+			UINT32 positionCount = mRenderSettings->temporalAA.jitteredPositionCount;
+			positionCount = Math::clamp(positionCount, 4U, 128U);
+			
+			UINT32 positionIndex = mTemporalPositionIdx % positionCount;
+			
+			if (positionCount == 4)
+			{
+				// Using a 4x MSAA pattern: http://msdn.microsoft.com/en-us/library/windows/desktop/ff476218(v=vs.85).aspx
+				Vector2 samples[] =
+				{
+					{ -2.0f / 16.0f, -6.0f / 16.0f },
+					{  6.0f / 16.0f, -2.0f / 16.0f },
+					{  2.0f / 16.0f,  6.0f / 16.0f },
+					{ -6.0f / 16.0f,  2.0f / 16.0f }
+				};
+
+				mProperties.temporalJitter = samples[positionIndex];
+			}
+			else
+			{
+				constexpr float EPSILON = 1e-6f;
+				
+				float u1 = Math::haltonSequence<float>(positionIndex + 1, 2);
+				float u2 = Math::haltonSequence<float>(positionIndex + 1, 3);
+
+				float scale = (2.0f - mRenderSettings->temporalAA.sharpness) * 0.3f;
+
+				float angle = 2.0f * Math::PI * u2;
+				float radius = scale * Math::sqrt(-2.0f * Math::log(Math::max(u1, EPSILON)));
+
+				mProperties.temporalJitter = Vector2(radius * Math::cos(angle), radius * Math::sin(angle));
+			}
+
+			Vector2 viewSize = Vector2((float)mProperties.target.targetWidth, (float)mProperties.target.targetHeight);
+			Vector2 subsampleJitter = mProperties.temporalJitter / viewSize;
+			Matrix4 subSampleTranslate = Matrix4::translation(Vector3(subsampleJitter.x, subsampleJitter.y, 0.0f));
+			
+			mProperties.projTransform = subSampleTranslate * mProperties.projTransformNoAA;
+			mProperties.viewProjTransform = mProperties.projTransform * mProperties.viewTransform;
+
+			mTemporalPositionIdx++;
+			perViewBufferDirty = true;
+		}
+
+		if (perViewBufferDirty)
+			updatePerViewBuffer();
 
 		// Note: inverse view-projection can be cached, it doesn't change every frame
 		Matrix4 viewProj = mProperties.projTransform * mProperties.viewTransform;

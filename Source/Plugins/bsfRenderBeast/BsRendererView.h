@@ -136,13 +136,13 @@ namespace bs { namespace ct
 		 * Controls at which position to start encoding depth, in view space. Only relevant with @p encodeDepth is enabled.
 		 * Depth will be linearly interpolated between this value and @p depthEncodeFar.
 		 */
-		float depthEncodeNear;
+		float depthEncodeNear = 0.0f;
 
 		/**
 		 * Controls at which position to stop encoding depth, in view space. Only relevant with @p encodeDepth is enabled.
 		 * Depth will be linearly interpolated between @p depthEncodeNear and this value.
 		 */
-		float depthEncodeFar;
+		float depthEncodeFar = 0.0f;
 
 		UINT64 visibleLayers;
 		ConvexVolume cullFrustum;
@@ -186,6 +186,8 @@ namespace bs { namespace ct
 
 		Matrix4 viewProjTransform;
 		Matrix4 prevViewProjTransform;
+		Matrix4 projTransformNoAA;
+		Vector2 temporalJitter { BsZero };
 		UINT32 frameIdx;
 
 		RendererViewTargetData target;
@@ -496,7 +498,7 @@ namespace bs { namespace ct
 	private:
 		struct LuminanceUpdate
 		{
-			LuminanceUpdate(UINT64 frameIdx, SPtr<CommandBuffer> commandBuffer, const SPtr<PooledRenderTexture>& outputTexture)
+			LuminanceUpdate(UINT64 frameIdx, SPtr<CommandBuffer> commandBuffer, SPtr<PooledRenderTexture> outputTexture)
 				: frameIdx(frameIdx), commandBuffer(std::move(commandBuffer)), outputTexture(std::move(outputTexture))
 			{ }
 
@@ -522,6 +524,9 @@ namespace bs { namespace ct
 		VisibilityInfo mVisibility;
 		LightGrid mLightGrid;
 		UINT32 mViewIdx;
+
+		// Temporal anti-aliasing
+		UINT32 mTemporalPositionIdx;
 
 		// On-demand drawing
 		bool mRedrawThisFrame = false;

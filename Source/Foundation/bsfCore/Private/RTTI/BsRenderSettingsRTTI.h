@@ -238,6 +238,8 @@ namespace bs
 	private:
 		BS_BEGIN_RTTI_MEMBERS
 			BS_RTTI_MEMBER_PLAIN(enabled, 0)
+			BS_RTTI_MEMBER_PLAIN(jitteredPositionCount, 1)
+			BS_RTTI_MEMBER_PLAIN(sharpness, 2)
 		BS_END_RTTI_MEMBERS
 
 	public:

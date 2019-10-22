@@ -2198,7 +2198,7 @@ namespace bs { namespace ct
 
 	void TemporalFilteringMat::execute(const RendererView& view, const SPtr<Texture>& prevFrame,
 		const SPtr<Texture>& curFrame, const SPtr<Texture>& velocity, const SPtr<Texture>& sceneDepth,
-		const SPtr<RenderTarget>& destination)
+		const Vector2& jitter, const SPtr<RenderTarget>& destination)
 	{
 		BS_RENMAT_PROFILE_BLOCK
 
@@ -2234,6 +2234,14 @@ namespace bs { namespace ct
 		gTemporalFilteringParamDef.gVelocityTexelSize.set(mParamBuffer, velocityPixelSize);
 		gTemporalFilteringParamDef.gManualExposure.set(mParamBuffer, 1.0f);
 
+		Vector2 jitterUV;
+		jitterUV.x = jitter.x * 0.5f;
+
+		if ((gCaps().conventions.uvYAxis == Conventions::Axis::Up) ^ (gCaps().conventions.ndcYAxis == Conventions::Axis::Down))
+			jitterUV.y = jitter.y * 0.5f;
+		else
+			jitterUV.y = jitter.y * -0.5f;
+		
 		// Generate samples
 		// Note: Move this code to a more general spot where it can be used by other temporal shaders.
 		
@@ -2242,8 +2250,6 @@ namespace bs { namespace ct
 
 		float totalWeights = 0.0f;
 		float totalWeightsLowPass = 0.0f;
-
-		Vector2 jitter(BsZero); // Only relevant for general case, not using this type of jitter for SSR
 
 		// Weights are generated using an exponential fit to Blackman-Harris 3.3
 		bool useYCoCg = false; // Only relevant for general case, not using it for SSR
@@ -2262,7 +2268,7 @@ namespace bs { namespace ct
 			for (UINT32 i = 0; i < 5; ++i)
 			{
 				// Get rid of jitter introduced by the projection matrix
-				Vector2 offset = sampleOffsets[i] - jitter;
+				Vector2 offset = sampleOffsets[i] - jitterUV * Vector2(0.5f, -0.5f);
 
 				offset *= 1.0f + sharpness * 0.5f;
 				sampleWeights[i] = exp(-2.29f * offset.dot(offset));
@@ -2293,7 +2299,7 @@ namespace bs { namespace ct
 			for (UINT32 i = 0; i < 9; ++i)
 			{
 				// Get rid of jitter introduced by the projection matrix
-				Vector2 offset = sampleOffsets[i] - jitter;
+				Vector2 offset = sampleOffsets[i] - jitterUV;
 
 				offset *= 1.0f + sharpness * 0.5f;
 				sampleWeights[i] = exp(-2.29f * offset.dot(offset));
