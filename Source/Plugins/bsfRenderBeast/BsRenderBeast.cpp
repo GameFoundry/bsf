@@ -532,10 +532,7 @@ namespace bs { namespace ct
 		if (viewProps.triggerCallbacks)
 		{
 			const Camera* camera = view.getSceneCamera();
-
-			bool locationNeedsRedraw[(UINT32)RenderLocation::Count]{ false };
-
-			for(auto& extension : mCallbacks)
+			for (auto& extension : mCallbacks)
 			{
 				RenderLocation location = extension->getLocation();
 				RendererExtensionRequest request = extension->check(*camera);
@@ -543,7 +540,6 @@ namespace bs { namespace ct
 				if (request == RendererExtensionRequest::DontRender)
 					continue;
 
-				locationNeedsRedraw[(UINT32)location] |= request == RendererExtensionRequest::ForceRender;
 				switch(location)
 				{
 				case RenderLocation::Prepare:
@@ -565,21 +561,6 @@ namespace bs { namespace ct
 					break;
 				}
 			}
-
-			if (!locationNeedsRedraw[(UINT32)RenderLocation::Prepare])
-				inputs.extPrepare.clear();
-
-			if (!locationNeedsRedraw[(UINT32)RenderLocation::PreBasePass])
-				inputs.extPreBasePass.clear();
-
-			if (!locationNeedsRedraw[(UINT32)RenderLocation::PostBasePass])
-				inputs.extPostBasePass.clear();
-
-			if (!locationNeedsRedraw[(UINT32)RenderLocation::PostLightPass])
-				inputs.extPostLighting.clear();
-
-			if (!locationNeedsRedraw[(UINT32)RenderLocation::Overlay])
-				inputs.extOverlay.clear();
 		}
 
 		const RenderCompositor& compositor = view.getCompositor();
