@@ -37,6 +37,7 @@
 		* Fast approximate anti-aliasing (FXAA)
 		* Film grain
 		* Chromatic aberration
+		* Temporal anti-aliasing (TAA)
 	* Extensive material & shader system
 		* Custom high level shading language (BSL)
 			* Unified shader code for all render backends
