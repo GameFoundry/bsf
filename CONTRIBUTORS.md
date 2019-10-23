@@ -43,6 +43,7 @@ Huge thanks to all the patrons, contributors and donators!
 - Andrzej Oraniewicz [Founder] [Inactive]
 
 # Tier 1 Patrons
+- Andreas Schüle
 - Timothy Green
 - Marko Kovačić
 -----------------------------------------
