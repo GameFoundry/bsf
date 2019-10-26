@@ -298,7 +298,9 @@ namespace bs
 		private:
 			SerializedObject* mObj;
 			UINT32 mSubObjectIdx;
-			UINT32 mFieldIdx = (UINT32)-1;
+			RTTITypeBase* mRTTIType;
+			UnorderedMap<UINT32, SerializedEntry>::iterator mFieldIter;
+			bool mIterSet = false;
 		};
 
 		/** Iterates over all fields in a RTTIType. */
@@ -632,38 +634,27 @@ namespace bs
 		}
 
 		RTTIFieldWrapperIterator<false>::RTTIFieldWrapperIterator(SerializedObject* obj, UINT32 subObjectIdx)
-			:mObj(obj), mSubObjectIdx(subObjectIdx)
+			:mObj(obj), mSubObjectIdx(subObjectIdx), mRTTIType(IReflectable::_getRTTIfromTypeId(obj->subObjects[subObjectIdx].typeId))
 		{ }
 
 		bool RTTIFieldWrapperIterator<false>::moveNext()
 		{
-			UINT32 numFields = mObj->getRTTI()->getNumFields();
+			UINT32 numFields = mRTTIType->getNumFields();
 
-			if (mFieldIdx == (UINT32)-1)
+			if (!mIterSet)
 			{
-				if (numFields > 0)
-				{
-					mFieldIdx = 0;
-					return true;
-				}
-
-				return false;
+				mFieldIter = mObj->subObjects[mSubObjectIdx].entries.begin();
+				mIterSet = true;
 			}
+			else
+				++mFieldIter;
 
-			if ((mFieldIdx + 1) < numFields)
-			{
-				mFieldIdx++;
-				return true;
-			}
-
-			return false;
+			return mFieldIter != mObj->subObjects[mSubObjectIdx].entries.end();
 		}
 
 		RTTIFieldWrapper<false> RTTIFieldWrapperIterator<false>::value() const
 		{
-			RTTIField* field = mObj->getRTTI()->getField(mFieldIdx);
-
-			return RTTIFieldWrapper<false>(field->schema.id, mObj->subObjects[mSubObjectIdx].entries[mFieldIdx].serialized);
+			return RTTIFieldWrapper<false>(mFieldIter->first, mFieldIter->second.serialized);
 		}
 
 		RTTIFieldWrapperIterator<true>::RTTIFieldWrapperIterator(RTTITypeBase* rttiType, IReflectable* obj)
@@ -672,7 +663,7 @@ namespace bs
 
 		bool RTTIFieldWrapperIterator<true>::moveNext()
 		{
-			UINT32 numFields = mObj->getRTTI()->getNumFields();
+			UINT32 numFields = mRTTIType->getNumFields();
 
 			if (mFieldIdx == (UINT32)-1)
 			{
@@ -866,6 +857,7 @@ namespace bs
 						{
 							orgEntry = curEntry;
 							hasOrgEntry = true;
+
 							break;
 						}
 					}
@@ -935,14 +927,46 @@ namespace bs
 					}
 					else
 					{
+						bool newEntryNull = false;
+						if (genericField->schema.type == SerializableFT_ReflectablePtr)
+							newEntryNull = newEntry.getObject().getObjectPtr() == nullptr;
+
 						if (hasOrgEntry)
 						{
-							modification = generateFieldDiff(rtti, genericField->schema.type, orgEntry, newEntry, objectMap, replicableOnly);
-							hasModification = modification != nullptr;
+							bool orgEntryNull = false;
+							if (genericField->schema.type == SerializableFT_ReflectablePtr)
+								orgEntryNull = orgEntry.getObject().getObjectPtr() == nullptr;
+
+							if(!orgEntryNull)
+							{
+								if(!newEntryNull)
+								{
+									modification = generateFieldDiff(rtti, genericField->schema.type, orgEntry, newEntry,
+										objectMap, replicableOnly);
+									hasModification = modification != nullptr;
+								}
+								else
+								{
+									modification = nullptr;
+									hasModification = true;
+								}
+							}
+							else
+							{
+								if(!newEntryNull)
+								{
+									modification = newEntry.clone(flags, context, alloc);
+									hasModification = true;
+								}
+							}
 						}
 						else
 						{
-							modification = newEntry.clone(flags, context, alloc);
+							if (!newEntryNull)
+								modification = newEntry.clone(flags, context, alloc);
+							else
+								modification = nullptr;
+							
 							hasModification = true;
 						}
 					}
