@@ -68,7 +68,12 @@ namespace bs
 			if (isStartedUp())
 				BS_EXCEPT(InternalErrorException, "Trying to start an already started module.");
 
-			_instance() = bs_new<T>(std::forward<Args>(args)...);
+			T * test = nullptr;
+			bool const success = _instance().compare_exchange_strong(test, bs_new<T>(std::forward<Args>(args)...));
+
+			if (!success)
+				BS_EXCEPT(InternalErrorException, "Race condition when starting module.");
+
 			isStartedUp() = true;
 
 			((Module*)_instance())->onStartUp();
@@ -86,7 +91,12 @@ namespace bs
 			if (isStartedUp())
 				BS_EXCEPT(InternalErrorException, "Trying to start an already started module.");
 
-			_instance() = bs_new<SubType>(std::forward<Args>(args)...);
+			T * test = nullptr;
+			bool const success = _instance().compare_exchange_strong(test, bs_new<SubType>(std::forward<Args>(args)...));
+
+			if (!success)
+				BS_EXCEPT(InternalErrorException, "Race condition when starting module.");
+
 			isStartedUp() = true;
 
 			((Module*)_instance())->onStartUp();
@@ -95,6 +105,18 @@ namespace bs
 		/** Shuts down this module and frees any resources it is using. */
 		static void shutDown()
 		{
+			struct ScopeGuard
+			{
+				ScopeGuard(Module* inst)
+				 : m_inst(inst)
+				{ }
+				~ScopeGuard()
+				{
+					bs_delete(inst);
+				}
+				Module* m_inst;
+			};
+
 			if (isDestroyed())
 			{
 				BS_EXCEPT(InternalErrorException,
@@ -107,9 +129,15 @@ namespace bs
 					"Trying to shut down a module which was never started.");
 			}
 
-			((Module*)_instance())->onShutDown();
+			Module* const inst = _instance().exchange(nullptr);
 
-			bs_delete(_instance());
+			if (nullptr == inst)
+				BS_EXCEPT(InternalErrorException, "Race condition when starting module.");
+
+			ScopeGuard guard(inst);
+
+			inst->onShutDown();
+
 			isDestroyed() = true;
 		}
 
@@ -122,7 +150,7 @@ namespace bs
 	protected:
 		Module() = default;
 
-		virtual ~Module() = default;
+		~Module() = default;
 
 		/*
 		 * The notion of copying or moving a singleton is rather nonsensical.
@@ -149,9 +177,9 @@ namespace bs
 		virtual void onShutDown() {}
 
 		/** Returns a singleton instance of this module. */
-		static T*& _instance()
+		static std::atomic<T*>& _instance()
 		{
-			static T* inst = nullptr;
+			static std::atomic<T*> inst{nullptr};
 			return inst;
 		}
 
@@ -160,16 +188,16 @@ namespace bs
 		 *
 		 * @note	If module was never even started, this will return false.
 		 */
-		static bool& isDestroyed()
+		static std::atomic<bool>& isDestroyed()
 		{
-			static bool inst = false;
+			static std::atomic<bool> inst{false};
 			return inst;
 		}
 
 		/** Checks has the Module been started up. */
-		static bool& isStartedUp()
+		static std::atomic<bool>& isStartedUp()
 		{
-			static bool inst = false;
+			static std::atomic<bool> inst{false};
 			return inst;
 		}
 	};
