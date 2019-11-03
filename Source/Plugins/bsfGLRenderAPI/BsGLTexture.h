@@ -74,6 +74,10 @@ namespace bs { namespace ct
 		void writeDataImpl(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false,
 					   UINT32 queueIdx = 0) override;
 
+		/** @copydoc Texture::writeSubData */
+		void writeSubDataImpl(const PixelData& src, Vector3I dstPosition, UINT32 mipLevel = 0, UINT32 face = 0,
+						   UINT32 queueIdx = 0) override;
+
 		/** Creates pixel buffers for each face and mip level. Texture must have been created previously. */
 		void createSurfaceList();
 
@@ -86,7 +90,7 @@ namespace bs { namespace ct
 		PixelFormat mInternalFormat = PF_UNKNOWN;
 		GLSupport& mGLSupport;
 		SPtr<GLPixelBuffer> mLockedBuffer;
-		
+
 		Vector<SPtr<GLPixelBuffer>>mSurfaceList;
 	};
 

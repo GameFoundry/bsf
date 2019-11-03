@@ -171,7 +171,7 @@ namespace bs
 		 * Allocates a buffer that exactly matches the format of the texture described by these properties, for the provided
 		 * face and mip level. This is a helper function, primarily meant for creating buffers when reading from, or writing
 		 * to a texture.
-		 * 			
+		 *
 		 * @note	Thread safe.
 		 */
 		SPtr<PixelData> allocBuffer(UINT32 face, UINT32 mipLevel) const;
@@ -222,6 +222,20 @@ namespace bs
 			bool discardEntireBuffer = false);
 
 		/**
+		 * Updates part of the texture with new data. Provided data buffer will be locked until the operation completes.
+		 *
+		 * @param[in]	data				Pixel data to write. User must ensure it is in format and size compatible with
+		 *									the texture.
+		 * @param[in]	dstPosition			Position that will be overwritten by provided data.
+		 * @param[in]	face				Texture face to write to.
+		 * @param[in]	mipLevel			Mipmap level to write to.
+		 * @return							Async operation object you can use to track operation completion.
+		 *
+		 * @note This is an @ref asyncMethod "asynchronous method".
+		 */
+		AsyncOp writeSubData(const SPtr<PixelData>& data, Vector3I dstPosition, UINT32 face = 0, UINT32 mipLevel = 0);
+
+		/**
 		 * Reads internal texture data to the provided previously allocated buffer. Provided data buffer will be locked
 		 * until the operation completes.
 		 *
@@ -250,13 +264,13 @@ namespace bs
 
 		/**
 		 * Reads data from the cached system memory texture buffer into the provided buffer.
-		 * 		
+		 *
 		 * @param[out]	data		Pre-allocated buffer of proper size and format where data will be read to. You can use
 		 *							TextureProperties::allocBuffer() to allocate a buffer of a correct format and size.
 		 * @param[in]	face		Texture face to read from.
 		 * @param[in]	mipLevel	Mipmap level to read from.
 		 *
-		 * @note	
+		 * @note
 		 * The data read is the cached texture data. Any data written to the texture from the GPU or core thread will not
 		 * be reflected in this data. Use readData() if you require those changes.
 		 * @note
@@ -377,8 +391,8 @@ namespace bs
 		 * @param[in]	deviceIdx	Index of the device whose memory to map. If the buffer doesn't exist on this device,
 		 *							the method returns null.
 		 * @param[in]	queueIdx	Device queue to perform the read/write operations on. See @ref queuesDoc.
-		 * 			
-		 * @note	
+		 *
+		 * @note
 		 * If you are just reading or writing one block of data use readData()/writeData() methods as they can be much faster
 		 * in certain situations.
 		 */
@@ -419,7 +433,7 @@ namespace bs
 
 		/**
 		 * Reads data from the texture buffer into the provided buffer.
-		 * 		
+		 *
 		 * @param[out]	dest		Previously allocated buffer to read data into.
 		 * @param[in]	mipLevel	(optional) Mipmap level to read from.
 		 * @param[in]	face		(optional) Texture face to read from.
@@ -428,11 +442,11 @@ namespace bs
 		 * @param[in]	queueIdx	Device queue to perform the read operation on. See @ref queuesDoc.
 		 */
 		void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 deviceIdx = 0,
-							  UINT32 queueIdx = 0);
+					  UINT32 queueIdx = 0);
 
 		/**
 		 * Writes data from the provided buffer into the texture buffer.
-		 * 		
+		 *
 		 * @param[in]	src					Buffer to retrieve the data from.
 		 * @param[in]	mipLevel			(optional) Mipmap level to write into.
 		 * @param[in]	face				(optional) Texture face to write into.
@@ -441,7 +455,19 @@ namespace bs
 		 * @param[in]	queueIdx			Device queue to perform the write operation on. See @ref queuesDoc.
 		 */
 		void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false,
-							   UINT32 queueIdx = 0);
+					   UINT32 queueIdx = 0);
+
+		/**
+		 * Writes data from the provided buffer into the specific location in texture buffer.
+		 *
+		 * @param[in]	src					Buffer to retrieve the data from.
+		 * @param[in]	dstPosition			Position that will be overwritten by provided data.
+		 * @param[in]	mipLevel			(optional) Mipmap level to write into.
+		 * @param[in]	face				(optional) Texture face to write into.
+		 * @param[in]	queueIdx			Device queue to perform the write operation on. See @ref queuesDoc.
+		*/
+		void writeSubData(const PixelData& src, Vector3I dstPosition, UINT32 mipLevel = 0, UINT32 face = 0,
+					   UINT32 queueIdx = 0);
 
 		/**	Returns properties that contain information about the texture. */
 		const TextureProperties& getProperties() const { return mProperties; }
@@ -504,6 +530,9 @@ namespace bs
 		virtual void writeDataImpl(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0,
 			bool discardWholeBuffer = false, UINT32 queueIdx = 0) = 0;
 
+		/** @copydoc writeSubData */
+		virtual void writeSubDataImpl(const PixelData& src, Vector3I dstPosition, UINT32 mipLevel = 0, UINT32 face = 0,
+						   UINT32 queueIdx = 0) = 0;
 		/** @copydoc clear */
 		virtual void clearImpl(const Color& value, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 queueIdx = 0);
 

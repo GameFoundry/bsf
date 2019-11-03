@@ -237,7 +237,7 @@ namespace bs { namespace ct
 		// If it's load-store, no other flags matter, it must be in general layout
 		if ((mUsage & TU_LOADSTORE) != 0)
 			return VK_IMAGE_LAYOUT_GENERAL;
-		
+
 		if ((mUsage & TU_RENDERTARGET) != 0)
 			return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		else if ((mUsage & TU_DEPTHSTENCIL) != 0)
@@ -261,10 +261,10 @@ namespace bs { namespace ct
 
 			if (hasStencil)
 				return VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
-			
+
 			return VK_IMAGE_ASPECT_DEPTH_BIT;
 		}
-		
+
 		return VK_IMAGE_ASPECT_COLOR_BIT;
 	}
 
@@ -604,7 +604,7 @@ namespace bs { namespace ct
 		, mMappedMip(0), mMappedFace(0), mMappedRowPitch(0), mMappedSlicePitch(0)
 		, mMappedLockOptions(GBL_WRITE_ONLY), mDirectlyMappable(false), mSupportsGPUWrites(false), mIsMapped(false)
 	{
-		
+
 	}
 
 	VulkanTexture::~VulkanTexture()
@@ -652,7 +652,7 @@ namespace bs { namespace ct
 
 		// Note: I force rendertarget and depthstencil types to be readable in shader. Depending on performance impact
 		// it might be beneficial to allow the user to enable this explicitly only when needed.
-		
+
 		mImageCI.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 
 		int usage = props.getUsage();
@@ -666,7 +666,7 @@ namespace bs { namespace ct
 			mImageCI.usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 			mSupportsGPUWrites = true;
 		}
-		
+
 		if ((usage & TU_LOADSTORE) != 0)
 		{
 			mImageCI.usage |= VK_IMAGE_USAGE_STORAGE_BIT;
@@ -732,7 +732,7 @@ namespace bs { namespace ct
 				props.isHardwareGammaEnabled());
 
 			mImages[i] = createImage(*devices[i], mInternalFormats[i]);
-			
+
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Texture);
@@ -1474,5 +1474,10 @@ namespace bs { namespace ct
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_Texture);
+	}
+	void VulkanTexture::writeSubDataImpl(const PixelData& src,Vector3I dst, UINT32 mipLevel, UINT32 face,
+								  UINT32 queueIdx)
+	{
+		BS_EXCEPT(RenderingAPIException, "VulkanTexture writeSubDataImpl has not been implementeted yet");
 	}
 }}

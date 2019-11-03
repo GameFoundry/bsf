@@ -281,6 +281,12 @@ namespace bs { namespace ct
 		}
 	}
 
+	void D3D11Texture::writeSubDataImpl(const PixelData& src,Vector3I dst, UINT32 mipLevel, UINT32 face,
+								  UINT32 queueIdx)
+	{
+		BS_EXCEPT(RenderingAPIException, "D3D11Texture writeSubDataImpl has not been implementeted yet");
+	}
+
 	void D3D11Texture::create1DTex()
 	{
 		UINT32 width = mProperties.getWidth();

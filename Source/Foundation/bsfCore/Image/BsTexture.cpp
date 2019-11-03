@@ -67,7 +67,7 @@ namespace bs
 	Texture::Texture(const TEXTURE_DESC& desc)
 		:mProperties(desc)
 	{
-		
+
 	}
 
 	Texture::Texture(const TEXTURE_DESC& desc, const SPtr<PixelData>& pixelData)
@@ -125,7 +125,26 @@ namespace bs
 		return gCoreThread().queueReturnCommand(std::bind(func, getCore(), face, mipLevel,
 			data, discardEntireBuffer, std::placeholders::_1));
 	}
+	AsyncOp Texture::writeSubData(const SPtr<PixelData>& data, Vector3I dstPosition, UINT32 face, UINT32 mipLevel)
+	{
+		UINT32 subresourceIdx = mProperties.mapToSubresourceIdx(face, mipLevel);
+		updateCPUBuffers(subresourceIdx, *data);
 
+		data->_lock();
+
+		std::function<void(const SPtr<ct::Texture>&, Vector3I, UINT32, UINT32, const SPtr<PixelData>&, AsyncOp&)> func =
+			[&](const SPtr<ct::Texture>& texture, Vector3I dstPos, UINT32 _face, UINT32 _mipLevel, const SPtr<PixelData>& _pixData,
+				AsyncOp& asyncOp)
+		{
+			texture->writeSubData(*_pixData, dstPos,_mipLevel, _face);
+			_pixData->_unlock();
+			asyncOp._completeOperation();
+
+		};
+
+		return gCoreThread().queueReturnCommand(std::bind(func, getCore(), dstPosition,face, mipLevel,
+			data, std::placeholders::_1));
+	}
 	AsyncOp Texture::readData(const SPtr<PixelData>& data, UINT32 face, UINT32 mipLevel)
 	{
 		data->_lock();
@@ -306,7 +325,7 @@ namespace bs
 
 		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
 	}
-	
+
 	HTexture Texture::create(const SPtr<PixelData>& pixelData, int usage, bool hwGammaCorrection)
 	{
 		SPtr<Texture> texturePtr = _createPtr(pixelData, usage, hwGammaCorrection);
@@ -370,6 +389,13 @@ namespace bs
 		}
 
 		writeDataImpl(src, mipLevel, face, discardEntireBuffer, queueIdx);
+	}
+
+	void Texture::writeSubData(const PixelData& src, Vector3I dstPosition, UINT32 mipLevel, UINT32 face,
+		UINT32 queueIdx)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+		writeSubDataImpl(src, dstPosition,mipLevel, face, queueIdx);
 	}
 
 	void Texture::readData(PixelData& dest, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx, UINT32 queueIdx)
@@ -555,7 +581,7 @@ namespace bs
 	{
 		SPtr<PixelData> data = mProperties.allocBuffer(face, mipLevel);
 		data->setColors(value);
-		
+
 		writeData(*data, mipLevel, face, true, queueIdx);
 	}
 
