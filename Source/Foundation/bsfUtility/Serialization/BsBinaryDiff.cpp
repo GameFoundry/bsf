@@ -619,6 +619,8 @@ namespace bs
 			if (!isModified)
 				isModified = memcmp(otherFieldData->value, buffer, curTypeSize) != 0;
 
+			bs_stack_free(buffer);
+			
 			return isModified;
 		}
 
