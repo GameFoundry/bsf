@@ -495,7 +495,9 @@ namespace bs
 			bool isModified = curFieldData->size != otherTypeSize;
 			if (!isModified)
 				isModified = memcmp(curFieldData->value, buffer, otherTypeSize) != 0;
-
+			
+			bs_stack_free(buffer);
+			
 			return isModified;
 		}
 
@@ -598,6 +600,9 @@ namespace bs
 			if (!isModified)
 				isModified = memcmp(curBuffer, otherBuffer, otherTypeSize) != 0;
 
+			bs_stack_free(otherBuffer);
+			bs_stack_free(curBuffer);
+			
 			return isModified;
 		}
 
@@ -614,6 +619,8 @@ namespace bs
 			if (!isModified)
 				isModified = memcmp(otherFieldData->value, buffer, curTypeSize) != 0;
 
+			bs_stack_free(buffer);
+			
 			return isModified;
 		}
 
