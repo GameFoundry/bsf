@@ -151,7 +151,7 @@ HSceneObject cameraSO = SceneObject::create("Camera");
 HCamera camera = cameraSO->addComponent<CCamera>(primaryWindow);
 
 // And finally we add our component
-HCameraFlyer = cameraSO->addComponent<CCameraFlyer>();
+HCameraFlyer flyer = cameraSO->addComponent<CCameraFlyer>();
 ~~~~~~~~~~~~~
 
 # Activating/deactivating a scene object
