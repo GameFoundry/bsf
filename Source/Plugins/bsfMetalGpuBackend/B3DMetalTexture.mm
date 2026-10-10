@@ -177,8 +177,8 @@ namespace b3d
 			return view;
 		}
 
-		MetalTexture::MetalTexture(MetalGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation)
-			: Texture(createInformation, allocation), mGpuDevice(gpuDevice)
+		MetalTexture::MetalTexture(MetalGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags)
+			: Texture(createInformation, allocation, flags), mGpuDevice(gpuDevice)
 		{ }
 
 		MetalTexture::~MetalTexture()

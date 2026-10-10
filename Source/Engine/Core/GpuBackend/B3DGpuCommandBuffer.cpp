@@ -2,6 +2,7 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DGpuDevice.h"
+#include "GpuBackend/B3DGpuBuffer.h"
 #include "GpuBackend/B3DGpuParameterSet.h"
 #include "GpuBackend/B3DGpuPipelineParameterLayout.h"
 #include "GpuBackend/B3DGpuDeviceCapabilities.h"
@@ -14,6 +15,14 @@
 #include "Profiling/B3DProfilerGPU.h"
 
 using namespace b3d;
+
+#if B3D_GPU_EXPLICIT_BARRIERS
+namespace b3d
+{
+	TConfigVariable<bool> gGpuValidateRestingStates("gpu.ValidateRestingStates",
+		"If enabled, development builds check the accesses of resources that a command buffer with explicit barriers neither declared nor barriered against the resources' resting state.", false);
+} // namespace b3d
+#endif
 
 namespace b3d { namespace render
 {
@@ -130,12 +139,7 @@ GpuCommandBuffer::GpuCommandBuffer(GpuDevice& gpuDevice, ThreadId ownerThread, G
 #if B3D_GPU_EXPLICIT_BARRIERS
 	, mUsesExplicitBarriers(explicitBarriers)
 #endif
-{
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
-	if(mUsesExplicitBarriers)
-		mExplicitBarrierValidator = B3DMakeUnique<GpuExplicitBarrierValidator>();
-#endif
-}
+{ }
 
 
 GpuCommandBuffer::~GpuCommandBuffer()
@@ -310,10 +314,6 @@ void GpuCommandBuffer::NotifyWillQueueForSubmit([[maybe_unused]] GpuQueueId queu
 		else
 			B3D_ENSURE_LOG(syncMask.IsSet(releaseQueueId), "The acquire of a split barrier was submitted without waiting for the queue of its release.");
 	}
-
-	// Recording is done, so release the bound objects together with the backend
-	if(mExplicitBarrierValidator != nullptr)
-		mExplicitBarrierValidator->Clear();
 #endif
 }
 
@@ -356,7 +356,8 @@ void GpuCommandBuffer::IssueExplicitBarriers(const GpuExplicitBarriers& barriers
 		return;
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
-	mExplicitBarrierValidator->ValidateBarriers(barriers, GpuBarrierPhase::Full, nullptr);
+	if(mExplicitBarrierValidator != nullptr)
+		mExplicitBarrierValidator->ValidateBarriers(barriers, GpuBarrierPhase::Full, nullptr);
 #endif
 }
 
@@ -399,7 +400,8 @@ void GpuCommandBuffer::ReleaseBarriers(const GpuExplicitBarriers& barriers, cons
 #if B3D_BUILD_TYPE_DEVELOPMENT
 	recorded.Phase = GpuBarrierPhase::Release;
 	ValidateSplitBarrierHalf(split->mBarrierHash, barriers);
-	mExplicitBarrierValidator->ValidateBarriers(barriers, GpuBarrierPhase::Release, split.get());
+	if(mExplicitBarrierValidator != nullptr)
+		mExplicitBarrierValidator->ValidateBarriers(barriers, GpuBarrierPhase::Release, split.get());
 #endif
 	mSplitBarriers.Add(std::move(recorded));
 }
@@ -435,10 +437,25 @@ void GpuCommandBuffer::AcquireBarriers(const GpuExplicitBarriers& barriers, cons
 	recorded.Phase = GpuBarrierPhase::Acquire;
 	recorded.IsReleasedByRecording = std::any_of(mSplitBarriers.begin(), mSplitBarriers.end(), [&split](const RecordedSplitBarrier& entry) { return entry.SplitBarrier == split; });
 	ValidateSplitBarrierHalf(split->mBarrierHash, barriers);
-	mExplicitBarrierValidator->ValidateBarriers(barriers, GpuBarrierPhase::Acquire, split.get());
+	if(mExplicitBarrierValidator != nullptr)
+		mExplicitBarrierValidator->ValidateBarriers(barriers, GpuBarrierPhase::Acquire, split.get());
 #endif
 	mSplitBarriers.Add(std::move(recorded));
 }
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+void GpuCommandBuffer::SetValidator(GpuExplicitBarrierValidator* validator)
+{
+	EnsureValidThread();
+
+	if(!B3D_ENSURE_LOG(mUsesExplicitBarriers, "Explicit barriers require a command buffer pool created with explicit barriers."))
+		return;
+
+	mExplicitBarrierValidator = validator;
+	if(mExplicitBarrierValidator != nullptr)
+		mExplicitBarrierValidator->BeginCommandBuffer(mQueueType);
+}
+#endif
 
 bool GpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& /*barriers*/, GpuBarrierPhase /*phase*/, GpuSplitBarrier* /*split*/)
 {
@@ -457,8 +474,7 @@ void GpuCommandBuffer::ClearExplicitBarrierState([[maybe_unused]] bool wasSubmit
 			recorded.SplitBarrier->mReleaseSubmission = ReleaseSubmission::Discarded;
 	}
 
-	if(mExplicitBarrierValidator != nullptr)
-		mExplicitBarrierValidator->Clear();
+	mExplicitBarrierValidator = nullptr;
 #endif
 
 	mSplitBarriers.Clear();

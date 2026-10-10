@@ -333,7 +333,7 @@ namespace b3d
 
 		TShared<Texture> MetalGpuDevice::CreateTextureInternal(const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags)
 		{
-			MetalTexture* rawTexture = new(B3DAllocate<MetalTexture>()) MetalTexture(*this, createInformation, allocation);
+			MetalTexture* rawTexture = new(B3DAllocate<MetalTexture>()) MetalTexture(*this, createInformation, allocation, flags);
 
 			TShared<MetalTexture> texture = flags.IsSet(GpuObjectCreateFlag::RenderThreadDestroy)
 				? B3DMakeSharedFromExisting(rawTexture)

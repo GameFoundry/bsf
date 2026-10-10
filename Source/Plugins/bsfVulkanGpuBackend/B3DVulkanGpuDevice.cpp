@@ -415,7 +415,7 @@ TShared<GpuCommandBufferPool> VulkanGpuDevice::CreateGpuCommandBufferPool(const 
 
 TShared<render::Texture> VulkanGpuDevice::CreateTextureInternal(const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags)
 {
-	VulkanTexture* rawTexture = new(B3DAllocate<VulkanTexture>()) VulkanTexture(*this, createInformation, allocation);
+	VulkanTexture* rawTexture = new(B3DAllocate<VulkanTexture>()) VulkanTexture(*this, createInformation, allocation, flags);
 
 	TShared<Texture> output = flags.IsSet(GpuObjectCreateFlag::RenderThreadDestroy)
 		? B3DMakeSharedFromExisting(rawTexture)

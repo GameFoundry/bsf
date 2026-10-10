@@ -685,6 +685,35 @@ namespace b3d::render
 		 */
 		bool HasFixedLocation() const { return !mRequestedAllocation.IsPending(); }
 
+		/**
+		 * @name Internal
+		 * @{
+		 */
+
+		/**
+		 * Moves the buffer to @p allocation. An initialized buffer recreates its native resource there and loses its contents, and
+		 * views of the old native resource are no longer valid. The old native resource is released once the GPU finishes using it.
+		 * An uninitialized buffer is created there once initialized.
+		 *
+		 * @param	allocation	Memory to create the native resource at. Rules match GpuDevice::CreateGpuBuffer(const GpuBufferCreateInformation&,
+		 *						const GpuAllocation&, GpuObjectCreateFlags), except that the memory requirements are not checked.
+		 * @param	flags		GpuObjectCreateFlag::Aliased if the memory is shared with other resources over time. Other flags are ignored.
+		 */
+		void SetAllocation(const GpuAllocation& allocation, GpuObjectCreateFlags flags);
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+		/**
+		 * Marks the buffer as unplaced: a transient resource allocator returned it without memory for its next use. Accessing a marked buffer
+		 * on the GPU is invalid. Development builds only.
+		 */
+		void SetUnplaced(bool unplaced) { mIsUnplaced.store(unplaced, std::memory_order_relaxed); }
+
+		/** Returns true if the buffer is marked with SetUnplaced(). Development builds only. */
+		bool IsUnplaced() const { return mIsUnplaced.load(std::memory_order_relaxed); }
+#endif
+
+		/** @} */
+
 #if B3D_BUILD_TYPE_DEVELOPMENT
 		/** Checks if any suballocation overlapping the given byte range is bound. */
 		virtual bool IsRangeBound(u32 offset, u32 size) const = 0;
@@ -728,6 +757,10 @@ namespace b3d::render
 		 * by the proxy itself.
 		 */
 		GpuAllocation mRequestedAllocation;
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+		std::atomic<bool> mIsUnplaced = false;
+#endif
 	};
 
 	/** Flags used to control the GPU buffer writes. */

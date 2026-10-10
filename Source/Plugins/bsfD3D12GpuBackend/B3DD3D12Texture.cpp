@@ -49,8 +49,8 @@ namespace b3d
 			return D3D12BarrierUtility::TranslateTextureLayout(layout, queueType, options);
 		}
 
-		D3D12Texture::D3D12Texture(const TextureCreateInformation& createInformation, GpuDevice& device, const GpuAllocation& allocation)
-			: Texture(createInformation, allocation), mGpuDevice(device)
+		D3D12Texture::D3D12Texture(const TextureCreateInformation& createInformation, GpuDevice& device, const GpuAllocation& allocation, GpuObjectCreateFlags flags)
+			: Texture(createInformation, allocation, flags), mGpuDevice(device)
 		{
 		}
 
@@ -149,6 +149,8 @@ namespace b3d
 
 		void D3D12Texture::CreateTexture()
 		{
+			mResourceGeneration++;
+
 			D3D12GpuDevice& device = static_cast<D3D12GpuDevice&>(mGpuDevice);
 
 			const TextureProperties& properties = GetProperties();

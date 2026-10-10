@@ -266,6 +266,19 @@ namespace b3d::render
 	GpuBuffer::~GpuBuffer()
 	{ }
 
+	void GpuBuffer::SetAllocation(const GpuAllocation& allocation, GpuObjectCreateFlags flags)
+	{
+		if(!B3D_ENSURE_LOG(allocation.HasMemory() || allocation.IsPending(), "Cannot move buffer '{0}' to an empty allocation.", mName))
+			return;
+
+		if(!B3D_ENSURE_LOG(!flags.IsSet(GpuObjectCreateFlag::Aliased) || allocation.HasMemory(), "Only a buffer moved to a fixed memory location can be aliased. Buffer: '{0}'.", mName))
+			return;
+
+		mRequestedAllocation = allocation;
+		if(IsInitialized())
+			RecreateInternalBuffer();
+	}
+
 #if B3D_BUILD_TYPE_DEVELOPMENT
 	void GpuBuffer::ValidateMap(u32 offset, u32 size, GpuMapOptions options)
 	{

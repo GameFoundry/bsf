@@ -24,7 +24,7 @@ namespace b3d
 		class NullTexture : public Texture
 		{
 		public:
-			NullTexture(NullGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation);
+			NullTexture(NullGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags);
 			~NullTexture();
 
 			void SetName(const StringView& name) override { mName = name; }

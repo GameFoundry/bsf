@@ -89,7 +89,7 @@ namespace b3d
 		class MetalTexture : public Texture
 		{
 		public:
-			MetalTexture(MetalGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation);
+			MetalTexture(MetalGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags);
 			~MetalTexture();
 
 			void SetName(const StringView& name) override;

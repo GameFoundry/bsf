@@ -395,8 +395,8 @@ void VulkanImage::Invalidate(VkDeviceSize offset, VkDeviceSize size)
 	device.InvalidateMemory(mAllocation, offset, size);
 }
 
-VulkanTexture::VulkanTexture(VulkanGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation)
-	: Texture(createInformation, allocation), mGpuDevice(gpuDevice), mDirectlyMappable(false), mSupportsGPUWrites(false), mUsesGeneralLayout(false)
+VulkanTexture::VulkanTexture(VulkanGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags)
+	: Texture(createInformation, allocation, flags), mGpuDevice(gpuDevice), mDirectlyMappable(false), mSupportsGPUWrites(false), mUsesGeneralLayout(false)
 {
 }
 

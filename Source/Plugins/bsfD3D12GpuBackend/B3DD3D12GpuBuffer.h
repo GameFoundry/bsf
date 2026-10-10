@@ -109,6 +109,12 @@ namespace b3d
 			/** Returns the GPU virtual address of the buffer. */
 			D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() const;
 
+			/**
+			 * Returns a number that changes whenever the native resource is created or recreated. Recreation releases the views of the
+			 * previous native resource, so view handles obtained before the number changed are no longer valid.
+			 */
+			u32 GetResourceGeneration() const { return mResourceGeneration; }
+
 			/** Returns the vertex buffer view (only valid for vertex buffers). */
 			const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return mVertexBufferView; }
 
@@ -182,6 +188,7 @@ namespace b3d
 
 			mutable TInlineArray<BufferViews, 2> mViews; /**< Default descriptors plus format and constant-buffer offset views created on demand. */
 			mutable Mutex mViewMutex; /**< Guards descriptor lookup, creation, and release. */
+			u32 mResourceGeneration = 0;
 		};
 
 		/** @} */

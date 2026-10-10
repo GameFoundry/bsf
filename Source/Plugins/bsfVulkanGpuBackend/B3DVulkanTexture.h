@@ -247,7 +247,7 @@ namespace b3d
 			friend class VulkanGpuDevice;
 			friend class VulkanImage;
 
-			VulkanTexture(VulkanGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation);
+			VulkanTexture(VulkanGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags);
 
 			void Initialize() override;
 

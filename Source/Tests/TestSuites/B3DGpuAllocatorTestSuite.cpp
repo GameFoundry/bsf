@@ -81,6 +81,7 @@ GpuAllocatorTestSuite::GpuAllocatorTestSuite()
 	B3D_ADD_TEST(GpuAllocatorTestSuite::TestAliasing_SameQueueReuse)
 	B3D_ADD_TEST(GpuAllocatorTestSuite::TestAliasing_CrossQueueEligibility)
 	B3D_ADD_TEST(GpuAllocatorTestSuite::TestAliasing_InheritedTags)
+	B3D_ADD_TEST(GpuAllocatorTestSuite::TestAliasing_Passes)
 	B3D_ADD_TEST(GpuAllocatorTestSuite::TestAliasing_ConcurrentScopes)
 	B3D_ADD_TEST(GpuAllocatorTestSuite::TestAliasing_ExactClaims)
 	B3D_ADD_TEST(GpuAllocatorTestSuite::TestAliasing_SegmentsAndGranularity)
@@ -2900,6 +2901,83 @@ void GpuAllocatorTestSuite::TestAliasing_InheritedTags()
 	B3D_TEST_ASSERT(lastAllocation.Offset == 0)
 	B3D_TEST_ASSERT(lastAcquire.Source.ReadStages == GpuStageFlag::FragmentShaderNonUniform)
 	B3D_TEST_ASSERT(lastAcquire.Source.WriteStages == GpuStageFlag::None)
+
+	allocator.EndScope();
+}
+
+void GpuAllocatorTestSuite::TestAliasing_Passes()
+{
+	const TransientHeapConfigurationScope configurationScope(kTransientHeapSizeMegabytes, 1);
+	MockHeapBackend backend;
+	MockGpuCompletionTracker tracker;
+	TransientHeapPool pool(&backend, MakeTransientHeapPoolConfiguration(tracker));
+	GpuAliasingAllocator allocator;
+
+	const GpuQueueId graphics(GQT_GRAPHICS, 0);
+	const GpuQueueId compute(GQT_COMPUTE, 0);
+
+	// Graphics, compute without a wait, then graphics waiting on compute
+	GpuSubmissionTimeline timeline;
+	const u32 first = timeline.AddSubmission(graphics, GpuQueueMask::kNone);
+	const u32 computeSubmission = timeline.AddSubmission(compute, GpuQueueMask::kNone);
+	const u32 join = timeline.AddSubmission(graphics, GpuQueueMask(compute));
+
+	const GpuAccessScope read = MakeAccess(GpuStageFlag::FragmentShaderNonUniform, GpuAccessFlag::Read);
+	const GpuAccessScope write = MakeAccess(GpuStageFlag::ColorAttachment, GpuAccessFlag::Write);
+
+	allocator.BeginScope(timeline);
+
+	// Memory never used before has no pass
+	GpuAllocation leftAllocation, rightAllocation;
+	GpuAliasAcquire leftAcquire, rightAcquire;
+	TOptional<u32> leftPass;
+	B3D_TEST_ASSERT(allocator.TryAllocate(pool, 256, 16, first, leftAllocation, leftAcquire, &leftPass))
+	B3D_TEST_ASSERT(allocator.TryAllocate(pool, 256, 16, first, rightAllocation, rightAcquire))
+	B3D_TEST_ASSERT(leftAllocation.Offset == 0 && rightAllocation.Offset == 256)
+	B3D_TEST_ASSERT(!leftPass.has_value())
+
+	const GpuTransientLastUse leftLastUse(first, read, 3);
+	const GpuTransientLastUse rightLastUse(first, write, 7);
+	allocator.Release(leftAllocation, TArrayView<const GpuTransientLastUse>(&leftLastUse, 1), nullptr);
+	allocator.Release(rightAllocation, TArrayView<const GpuTransientLastUse>(&rightLastUse, 1), nullptr);
+
+	// A resource over both reports the latest of their passes
+	GpuAllocation spanAllocation;
+	GpuAliasAcquire spanAcquire;
+	TOptional<u32> spanPass;
+	B3D_TEST_ASSERT(allocator.TryAllocate(pool, 512, 16, join, spanAllocation, spanAcquire, &spanPass))
+	B3D_TEST_ASSERT(spanAllocation.Offset == 0)
+	B3D_TEST_ASSERT(spanPass == 7u)
+
+	// Several last uses on one queue merge to the latest pass
+	const GpuTransientLastUse spanLastUses[] = { GpuTransientLastUse(join, write, 12), GpuTransientLastUse(join, read, 9) };
+	allocator.Release(spanAllocation, TArrayView<const GpuTransientLastUse>(spanLastUses, 2), nullptr);
+
+	// Passes on other queues are ordered by queue waits, so they are not reported
+	GpuAllocation computeAllocation;
+	GpuAliasAcquire computeAcquire;
+	B3D_TEST_ASSERT(allocator.TryAllocate(pool, 256, 16, computeSubmission, computeAllocation, computeAcquire))
+	B3D_TEST_ASSERT(computeAllocation.Offset == 512)
+
+	const GpuTransientLastUse computeLastUse(computeSubmission, MakeAccess(GpuStageFlag::ComputeShaderNonUniform, GpuAccessFlag::Write), 20);
+	allocator.Release(computeAllocation, TArrayView<const GpuTransientLastUse>(&computeLastUse, 1), nullptr);
+
+	GpuAllocation joinAllocation;
+	GpuAliasAcquire joinAcquire;
+	TOptional<u32> joinPass;
+	B3D_TEST_ASSERT(allocator.TryAllocate(pool, 768, 16, join, joinAllocation, joinAcquire, &joinPass))
+	B3D_TEST_ASSERT(joinAllocation.Offset == 0)
+	B3D_TEST_ASSERT(joinPass == 12u)
+
+	// A resource released without accesses leaves the passes it was placed over
+	allocator.Release(joinAllocation, TArrayView<const GpuTransientLastUse>(), nullptr);
+
+	GpuAllocation inheritedAllocation;
+	GpuAliasAcquire inheritedAcquire;
+	TOptional<u32> inheritedPass;
+	B3D_TEST_ASSERT(allocator.TryAllocate(pool, 256, 16, join, inheritedAllocation, inheritedAcquire, &inheritedPass))
+	B3D_TEST_ASSERT(inheritedAllocation.Offset == 0)
+	B3D_TEST_ASSERT(inheritedPass == 12u)
 
 	allocator.EndScope();
 }

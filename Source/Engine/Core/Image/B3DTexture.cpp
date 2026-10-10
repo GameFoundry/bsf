@@ -352,9 +352,25 @@ TShared<Texture> Texture::kBlack;
 TShared<Texture> Texture::kPink;
 TShared<Texture> Texture::kNormal;
 
-Texture::Texture(const TextureCreateInformation& createInformation, const GpuAllocation& allocation)
+Texture::Texture(const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags)
 	: mName(createInformation.Name), mProperties(createInformation), mInitData(createInformation.InitialData), mRequestedAllocation(allocation)
+	, mIsAliased(flags.IsSet(GpuObjectCreateFlag::Aliased))
 {}
+
+void Texture::SetAllocation(const GpuAllocation& allocation, GpuObjectCreateFlags flags)
+{
+	if(!B3D_ENSURE_LOG(allocation.HasMemory() || allocation.IsPending(), "Cannot move texture '{0}' to an empty allocation.", mName))
+		return;
+
+	if(!B3D_ENSURE_LOG(!flags.IsSet(GpuObjectCreateFlag::Aliased) || allocation.HasMemory(), "Only a texture moved to a fixed memory location can be aliased. Texture: '{0}'.", mName))
+		return;
+
+	mRequestedAllocation = allocation;
+	mIsAliased = flags.IsSet(GpuObjectCreateFlag::Aliased);
+
+	if(IsInitialized())
+		RecreateInternalTexture();
+}
 
 void Texture::Initialize()
 {

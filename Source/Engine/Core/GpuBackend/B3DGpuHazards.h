@@ -148,7 +148,10 @@ namespace b3d
 			GpuAccessScope Source;
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
-			/** Earlier resources on the memory. Accessing them after the acquire is invalid until they are acquired again. Validation only. */
+			/**
+			 * Earlier resources on the memory. Accessing them after the acquire is invalid until they are acquired again. Validation only,
+			 * see GpuExplicitBarrierValidator::DeclareAliasAcquire().
+			 */
 			TArrayView<IGpuResource* const> Predecessors;
 #endif
 		};

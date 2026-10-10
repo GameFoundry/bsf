@@ -47,7 +47,7 @@ void GpuAliasingAllocator::EndScope()
 	mTimeline = nullptr;
 }
 
-bool GpuAliasingAllocator::TryAllocate(IGpuTransientHeapPool& pool, u64 size, u64 alignment, u32 firstSubmission, GpuAllocation& outAllocation, render::GpuAliasAcquire& outAcquire)
+bool GpuAliasingAllocator::TryAllocate(IGpuTransientHeapPool& pool, u64 size, u64 alignment, u32 firstSubmission, GpuAllocation& outAllocation, render::GpuAliasAcquire& outAcquire, TOptional<u32>* outLatestSourcePass)
 {
 	B3D_ASSERT(mTimeline != nullptr && "Aliased memory can only be allocated within a scope.");
 	B3D_ASSERT(firstSubmission < mTimeline->GetSubmissionCount());
@@ -68,7 +68,7 @@ bool GpuAliasingAllocator::TryAllocate(IGpuTransientHeapPool& pool, u64 size, u6
 			const GpuTransientHeap heap = pool.AcquireHeap(slot, allocationSize);
 			if(heap.Heap != nullptr)
 			{
-				Place(AddHeap(pool, slot, heap), 0, 0, 0, allocationSize, firstSubmission, outAllocation, outAcquire);
+				Place(AddHeap(pool, slot, heap), 0, 0, 0, allocationSize, firstSubmission, outAllocation, outAcquire, outLatestSourcePass);
 				return true;
 			}
 
@@ -102,7 +102,7 @@ bool GpuAliasingAllocator::TryAllocate(IGpuTransientHeapPool& pool, u64 size, u6
 			while(heap.FreeSegments[firstSegmentIndex].GetEnd() <= offset)
 				firstSegmentIndex++;
 
-			Place(heapIndex, firstSegmentIndex, segmentIndex, offset, allocationSize, firstSubmission, outAllocation, outAcquire);
+			Place(heapIndex, firstSegmentIndex, segmentIndex, offset, allocationSize, firstSubmission, outAllocation, outAcquire, outLatestSourcePass);
 			return true;
 		}
 	}
@@ -125,12 +125,13 @@ bool GpuAliasingAllocator::TryAllocate(IGpuTransientHeapPool& pool, u64 size, u6
 			continue;
 		}
 
-		Place(AddHeap(pool, slot, heap), 0, 0, 0, allocationSize, firstSubmission, outAllocation, outAcquire);
+		Place(AddHeap(pool, slot, heap), 0, 0, 0, allocationSize, firstSubmission, outAllocation, outAcquire, outLatestSourcePass);
 		return true;
 	}
 }
 
-bool GpuAliasingAllocator::TryAllocateAt(IGpuTransientHeapPool& pool, const GpuAllocation& location, u32 firstSubmission, GpuAllocation& outAllocation, render::GpuAliasAcquire& outAcquire)
+bool GpuAliasingAllocator::TryAllocateAt(IGpuTransientHeapPool& pool, const GpuAllocation& location, u32 firstSubmission, GpuAllocation& outAllocation, render::GpuAliasAcquire& outAcquire,
+	TOptional<u32>* outLatestSourcePass)
 {
 	B3D_ASSERT(mTimeline != nullptr && "Aliased memory can only be allocated within a scope.");
 	B3D_ASSERT(firstSubmission < mTimeline->GetSubmissionCount());
@@ -176,7 +177,7 @@ bool GpuAliasingAllocator::TryAllocateAt(IGpuTransientHeapPool& pool, const GpuA
 
 		if(segment.GetEnd() >= locationEnd)
 		{
-			Place(heapIndex, firstSegmentIndex, segmentIndex, location.Offset, location.Size, firstSubmission, outAllocation, outAcquire);
+			Place(heapIndex, firstSegmentIndex, segmentIndex, location.Offset, location.Size, firstSubmission, outAllocation, outAcquire, outLatestSourcePass);
 			return true;
 		}
 	}
@@ -219,11 +220,12 @@ void GpuAliasingAllocator::Release(const GpuAllocation& allocation, TArrayView<c
 			}
 
 			if(existingUse == nullptr)
-				mTagUses.Add(TagUse(queue, lastUse.Submission, lastUse.Access));
+				mTagUses.Add(TagUse(queue, lastUse.Submission, lastUse.Pass, lastUse.Access));
 			else
 			{
 				existingUse->LastSubmission = std::max(existingUse->LastSubmission, lastUse.Submission);
 				existingUse->Access.Add(lastUse.Access);
+				existingUse->LastPass = std::max(existingUse->LastPass, lastUse.Pass);
 			}
 		}
 
@@ -297,8 +299,7 @@ bool GpuAliasingAllocator::IsEligible(u32 tagIndex, u32 firstSubmission) const
 	return true;
 }
 
-void GpuAliasingAllocator::Place(u32 heapIndex, u32 firstSegmentIndex, u32 lastSegmentIndex, u64 offset, u64 size, u32 firstSubmission, GpuAllocation& outAllocation,
-	render::GpuAliasAcquire& outAcquire)
+void GpuAliasingAllocator::Place(u32 heapIndex, u32 firstSegmentIndex, u32 lastSegmentIndex, u64 offset, u64 size, u32 firstSubmission, GpuAllocation& outAllocation, render::GpuAliasAcquire& outAcquire, TOptional<u32>* outLatestSourcePass)
 {
 	Heap& heap = mHeaps[heapIndex];
 
@@ -323,6 +324,7 @@ void GpuAliasingAllocator::Place(u32 heapIndex, u32 firstSegmentIndex, u32 lastS
 
 	// Order the first use after the last uses of the earlier resources on the same queue
 	outAcquire = render::GpuAliasAcquire();
+	TOptional<u32> latestSourcePass;
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
 	mPredecessors.Clear();
@@ -344,8 +346,11 @@ void GpuAliasingAllocator::Place(u32 heapIndex, u32 firstSegmentIndex, u32 lastS
 		for(u32 useIndex = tag.FirstUse; useIndex < tag.FirstUse + tag.UseCount; useIndex++)
 		{
 			const TagUse& use = mTagUses[useIndex];
-			if(use.Queue.Id == firstQueue.Id)
-				outAcquire.Source.Add(use.Access);
+			if(use.Queue.Id != firstQueue.Id)
+				continue;
+
+			outAcquire.Source.Add(use.Access);
+			latestSourcePass = std::max(latestSourcePass.value_or(0), use.LastPass);
 		}
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
@@ -357,6 +362,9 @@ void GpuAliasingAllocator::Place(u32 heapIndex, u32 firstSegmentIndex, u32 lastS
 #if B3D_BUILD_TYPE_DEVELOPMENT
 	outAcquire.Predecessors = TArrayView<IGpuResource* const>(mPredecessors.Data(), mPredecessors.Size());
 #endif
+
+	if(outLatestSourcePass != nullptr)
+		*outLatestSourcePass = latestSourcePass;
 
 	// Replace the spanned segments with the parts the allocation does not cover
 	const Segment firstSegment = heap.FreeSegments[firstSegmentIndex];

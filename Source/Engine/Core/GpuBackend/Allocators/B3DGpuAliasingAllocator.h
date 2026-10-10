@@ -24,12 +24,18 @@ namespace b3d
 	struct GpuTransientLastUse
 	{
 		GpuTransientLastUse() = default;
-		GpuTransientLastUse(u32 submission, const render::GpuAccessScope& access)
-			: Submission(submission), Access(access)
+		GpuTransientLastUse(u32 submission, const render::GpuAccessScope& access, u32 pass = 0)
+			: Submission(submission), Pass(pass), Access(access)
 		{ }
 
 		/** Index of the last submission that used the resource on its queue, in the timeline of the scope that releases the resource. */
 		u32 Submission = 0;
+
+		/**
+		 * Index of the last pass that used the resource on its queue, within Submission, or of any other unit of work the caller records in
+		 * order. Must not decrease with later work on the queue. Reported back as GpuAliasAcquire::LatestSourcePass, and otherwise unused.
+		 */
+		u32 Pass = 0;
 
 		/** Stages of the last write on the queue, and of every read on the queue since that write, over all subresources. */
 		render::GpuAccessScope Access;
@@ -89,16 +95,19 @@ namespace b3d
 		 * @param	outAcquire			Accesses on the queue of @p firstSubmission that the first use of the resource must be
 		 *								ordered after. In development builds also lists the earlier resources on the memory,
 		 *								valid until the next call to TryAllocate() or TryAllocateAt().
+		 * @param	outLatestSourcePass	If not null, receives the latest pass among the accesses of @p outAcquire, as reported by
+		 *								GpuTransientLastUse::Pass when the earlier resources were released. Empty if
+		 *								@p outAcquire has no accesses.
 		 * @return						False if a heap that fits the memory could not be created.
 		 */
-		bool TryAllocate(IGpuTransientHeapPool& pool, u64 size, u64 alignment, u32 firstSubmission, GpuAllocation& outAllocation, render::GpuAliasAcquire& outAcquire);
+		bool TryAllocate(IGpuTransientHeapPool& pool, u64 size, u64 alignment, u32 firstSubmission, GpuAllocation& outAllocation, render::GpuAliasAcquire& outAcquire, TOptional<u32>* outLatestSourcePass = nullptr);
 
 		/**
 		 * Places memory at exactly the location of @p location, an allocation that TryAllocate() or TryAllocateAt() returned in
 		 * this or an earlier scope, and whose heap is still referenced. Fails if that memory is not free in the scope, or if
 		 * the first use is not ordered after its earlier uses. Parameters otherwise match TryAllocate().
 		 */
-		bool TryAllocateAt(IGpuTransientHeapPool& pool, const GpuAllocation& location, u32 firstSubmission, GpuAllocation& outAllocation, render::GpuAliasAcquire& outAcquire);
+		bool TryAllocateAt(IGpuTransientHeapPool& pool, const GpuAllocation& location, u32 firstSubmission, GpuAllocation& outAllocation, render::GpuAliasAcquire& outAcquire, TOptional<u32>* outLatestSourcePass = nullptr);
 
 		/**
 		 * Releases the memory of @p allocation, so later allocations of the scope may reuse it once they are ordered after
@@ -122,12 +131,13 @@ namespace b3d
 		/** Last use of released memory on one queue. */
 		struct TagUse
 		{
-			TagUse(GpuQueueId queue, u32 lastSubmission, const render::GpuAccessScope& access)
-				: Queue(queue), LastSubmission(lastSubmission), Access(access)
+			TagUse(GpuQueueId queue, u32 lastSubmission, u32 lastPass, const render::GpuAccessScope& access)
+				: Queue(queue), LastSubmission(lastSubmission), LastPass(lastPass), Access(access)
 			{ }
 
 			GpuQueueId Queue;
 			u32 LastSubmission; /**< Index of the submission in the scope's timeline. */
+			u32 LastPass; /**< See GpuTransientLastUse::Pass. */
 			render::GpuAccessScope Access;
 		};
 
@@ -194,10 +204,10 @@ namespace b3d
 
 		/**
 		 * Allocates @p size bytes at @p offset of the heap at @p heapIndex, over its free segments @p firstSegmentIndex to
-		 * @p lastSegmentIndex. Returns the allocation and the acquire of its first use in @p firstSubmission.
+		 * @p lastSegmentIndex. Returns the allocation and the acquire of its first use in @p firstSubmission, along with the latest pass
+		 * among the acquire's accesses if @p outLatestSourcePass is not null.
 		 */
-		void Place(u32 heapIndex, u32 firstSegmentIndex, u32 lastSegmentIndex, u64 offset, u64 size, u32 firstSubmission, GpuAllocation& outAllocation,
-			render::GpuAliasAcquire& outAcquire);
+		void Place(u32 heapIndex, u32 firstSegmentIndex, u32 lastSegmentIndex, u64 offset, u64 size, u32 firstSubmission, GpuAllocation& outAllocation, render::GpuAliasAcquire& outAcquire, TOptional<u32>* outLatestSourcePass);
 
 		/** Returns the live allocation that @p allocation refers to. */
 		Allocation& GetAllocation(const GpuAllocation& allocation);

@@ -227,7 +227,7 @@ namespace b3d
 
 		TShared<Texture> NullGpuDevice::CreateTextureInternal(const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags)
 		{
-			NullTexture* rawTexture = new(B3DAllocate<NullTexture>()) NullTexture(*this, createInformation, allocation);
+			NullTexture* rawTexture = new(B3DAllocate<NullTexture>()) NullTexture(*this, createInformation, allocation, flags);
 
 			// Default: standalone (calling-thread deletion)
 			// With RenderProxy flag: forward destruction to render thread

@@ -133,6 +133,7 @@ VulkanGpuBuffer::~VulkanGpuBuffer()
 void VulkanGpuBuffer::Initialize()
 {
 	RecreateInternalBuffer();
+	GpuBuffer::Initialize();
 }
 
 VkBufferUsageFlags VulkanGpuBuffer::GetVkBufferUsageFlags(const GpuBufferCreateInformation& createInformation)

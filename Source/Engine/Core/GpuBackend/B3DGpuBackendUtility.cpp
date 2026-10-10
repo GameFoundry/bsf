@@ -1,6 +1,7 @@
 //************************************* B3D Framework - Copyright 2026 Marko Pintera *************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "GpuBackend/B3DGpuBackendUtility.h"
+#include "GpuBackend/B3DRenderTexture.h"
 
 #include "Utility/B3DBitwise.h"
 #include "Math/B3DMath.h"
@@ -380,3 +381,44 @@ const char* GpuBackendUtility::GetImageLayoutName(GpuImageLayout layout)
 	default: return "Unknown";
 	}
 }
+
+#if B3D_GPU_EXPLICIT_BARRIERS
+GpuAccessState GpuBackendUtility::GetRestingState(const render::GpuBuffer& /*buffer*/, GpuQueueType queueType)
+{
+	const GpuStageFlags stages = GpuStageFlag::DrawIndirect | GpuStageFlag::VertexInputAttributes | GpuStageFlag::VertexInputIndices | GpuStageFlag::AllShader;
+	return GpuAccessState(stages & GetQueueStageFlags(queueType), GpuAccessFlag::Read);
+}
+
+GpuAccessState GpuBackendUtility::GetRestingState(const render::Texture& texture, GpuQueueType queueType)
+{
+	const GpuStageFlags stages = GpuStageFlag::VertexShaderNonUniform | GpuStageFlag::FragmentShaderNonUniform | GpuStageFlag::ComputeShaderNonUniform;
+
+	// Only render targets, depth-stencil targets and storage textures can have compression metadata. Whoever leaves their write state
+	// resolves fast clears on the way back to rest, so sampling reads the contents directly.
+	const TextureUsageFlags metadataUsage = TextureUsageFlag::RenderTarget | TextureUsageFlag::DepthStencil | TextureUsageFlag::AllowUnorderedAccessOnTheGPU;
+	const GpuCompressionHint compression = texture.GetProperties().Usage.IsSetAny(metadataUsage) ? GpuCompressionHint::Compressed : GpuCompressionHint::Unknown;
+
+	return GpuAccessState(stages & GetQueueStageFlags(queueType), GpuAccessFlag::Read, GpuImageLayout::ShaderReadOnly, compression);
+}
+
+GpuAccessState GpuBackendUtility::GetRestingState(const render::RenderTarget& target, RenderSurfaceMaskBits surface, GpuQueueType queueType)
+{
+	const bool isColor = ((u32)surface & (u32)RT_COLOR_ALL) != 0;
+	if(!target.GetProperties().IsWindow)
+	{
+		const render::RenderTexture& renderTexture = static_cast<const render::RenderTexture&>(target);
+		const render::RenderSurfaceInformation& surfaceInformation = isColor ? renderTexture.GetColorSurfaceInformation(Bitwise::LeastSignificantBit((u32)surface)) : renderTexture.GetDepthStencilSurfaceInformation();
+		if(surfaceInformation.Texture != nullptr)
+			return GetRestingState(*surfaceInformation.Texture, queueType);
+
+		return GpuAccessState();
+	}
+
+	// Presentation reads the color surface after the queue's work, so it rests with nothing left to order on the queue
+	if(isColor)
+		return GpuAccessState(GpuStageFlag::None, GpuAccessFlag::None, GpuImageLayout::Present);
+
+	const GpuStageFlags depthStencilStages = GpuStageFlag::EarlyFragmentTests | GpuStageFlag::LateFragmentTests;
+	return GpuAccessState(depthStencilStages & GetQueueStageFlags(queueType), GpuAccessFlag::Read | GpuAccessFlag::Write, GpuImageLayout::DepthStencilAttachment);
+}
+#endif

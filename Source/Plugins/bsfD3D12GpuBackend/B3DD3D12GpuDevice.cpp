@@ -240,7 +240,7 @@ TShared<GpuCommandBufferPool> D3D12GpuDevice::CreateGpuCommandBufferPool(const r
 
 TShared<render::Texture> D3D12GpuDevice::CreateTextureInternal(const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags)
 {
-	D3D12Texture* rawTexture = new (B3DAllocate<D3D12Texture>()) D3D12Texture(createInformation, *this, allocation);
+	D3D12Texture* rawTexture = new (B3DAllocate<D3D12Texture>()) D3D12Texture(createInformation, *this, allocation, flags);
 
 	TShared<Texture> output = flags.IsSet(GpuObjectCreateFlag::RenderThreadDestroy) ? B3DMakeSharedFromExisting(rawTexture) : MakeSharedStandalone<D3D12Texture>(rawTexture);
 

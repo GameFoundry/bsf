@@ -8,8 +8,8 @@ namespace b3d
 {
 	namespace render
 	{
-		NullTexture::NullTexture(NullGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation)
-			: Texture(createInformation, allocation), mGpuDevice(gpuDevice)
+		NullTexture::NullTexture(NullGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags)
+			: Texture(createInformation, allocation, flags), mGpuDevice(gpuDevice)
 		{
 			if(allocation.IsPending())
 			{

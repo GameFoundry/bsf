@@ -493,10 +493,10 @@ namespace b3d
 		{
 		public:
 			/**
-			 * Constructs a texture whose native resource is created at @p allocation. See
+			 * Constructs a texture whose native resource is created at @p allocation, with the creation @p flags. See
 			 * GpuDevice::CreateTexture(const TextureCreateInformation&, const GpuAllocation&, GpuObjectCreateFlags).
 			 */
-			Texture(const TextureCreateInformation& createInformation, const GpuAllocation& allocation);
+			Texture(const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags);
 			virtual ~Texture() {}
 
 			void Initialize() override;
@@ -576,6 +576,35 @@ namespace b3d
 			 */
 			bool HasFixedLocation() const { return !mRequestedAllocation.IsPending(); }
 
+			/**
+			 * @name Internal
+			 * @{
+			 */
+
+			/**
+			 * Moves the texture to @p allocation. An initialized texture recreates its native resource there and loses its contents, and
+			 * views of the old native resource are no longer valid. The old native resource is released once the GPU finishes using it.
+			 * An uninitialized texture is created there once initialized.
+			 *
+			 * @param	allocation	Memory to create the native resource at. Rules match GpuDevice::CreateTexture(const TextureCreateInformation&,
+			 *						const GpuAllocation&, GpuObjectCreateFlags), except that the memory requirements are not checked.
+			 * @param	flags		GpuObjectCreateFlag::Aliased if the memory is shared with other resources over time. Other flags are ignored.
+			 */
+			void SetAllocation(const GpuAllocation& allocation, GpuObjectCreateFlags flags);
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+			/**
+			 * Marks the texture as unplaced: a transient resource allocator returned it without memory for its next use. Accessing a marked texture
+			 * on the GPU is invalid. Development builds only.
+			 */
+			void SetUnplaced(bool unplaced) { mIsUnplaced.store(unplaced, std::memory_order_relaxed); }
+
+			/** Returns true if the texture is marked with SetUnplaced(). Development builds only. */
+			bool IsUnplaced() const { return mIsUnplaced.load(std::memory_order_relaxed); }
+#endif
+
+			/** @} */
+
 			/**	Returns properties that contain information about the texture. */
 			const TextureProperties& GetProperties() const { return mProperties; }
 
@@ -637,6 +666,16 @@ namespace b3d
 			 * by the proxy itself.
 			 */
 			GpuAllocation mRequestedAllocation;
+
+			/**
+			 * True if mRequestedAllocation is memory shared with other resources over time (see GpuObjectCreateFlag::Aliased), so creating the
+			 * native resource must not write to it.
+			 */
+			bool mIsAliased = false;
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+			std::atomic<bool> mIsUnplaced = false;
+#endif
 		};
 
 		/** Flags controlling texture write behavior. */

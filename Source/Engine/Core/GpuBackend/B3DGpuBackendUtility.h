@@ -117,6 +117,31 @@ namespace b3d
 
 		/** Converts a GpuImageLayout enum value to a readable string representing the layout name. */
 		static const char* GetImageLayoutName(render::GpuImageLayout layout);
+
+#if B3D_GPU_EXPLICIT_BARRIERS
+		/**
+		 * Returns the resting state of a buffer on queues of @p queueType. With explicit barriers, a resource outside of the work that
+		 * declares its state is at rest: it may be read in the resting state without a barrier, and whoever writes it brings it back to
+		 * rest. Buffers rest readable as vertex, index and indirect arguments, and from every shader stage.
+		 */
+		static render::GpuAccessState GetRestingState(const render::GpuBuffer& buffer, GpuQueueType queueType);
+
+		/**
+		 * Returns the resting state of a texture on queues of @p queueType: sampled from every shader stage in
+		 * GpuImageLayout::ShaderReadOnly. Textures that can be render targets, depth-stencil targets or storage textures, which may have
+		 * compression metadata, rest with GpuCompressionHint::Compressed: compressed in an encoding sampling can read, without fast-clear
+		 * markers. Other textures have no compression metadata, and rest with GpuCompressionHint::Unknown. See
+		 * GetRestingState(const render::GpuBuffer&, GpuQueueType).
+		 */
+		static render::GpuAccessState GetRestingState(const render::Texture& texture, GpuQueueType queueType);
+
+		/**
+		 * Returns the resting state of the single-bit @p surface of @p target, on queues of @p queueType. A render texture surface rests
+		 * like its texture. A window surface can only be accessed as an attachment: its color surface rests in GpuImageLayout::Present,
+		 * and its depth and stencil surfaces in GpuImageLayout::DepthStencilAttachment.
+		 */
+		static render::GpuAccessState GetRestingState(const render::RenderTarget& target, RenderSurfaceMaskBits surface, GpuQueueType queueType);
+#endif
 	};
 
 	/** @} */

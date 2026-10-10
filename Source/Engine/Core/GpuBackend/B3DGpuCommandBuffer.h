@@ -10,6 +10,7 @@
 #include "Image/B3DTexture.h"
 #include "Math/B3DArea2.h"
 #include "Threading/B3DSingleConsumerQueue.h"
+#include "Utility/B3DConfigVariable.h"
 
 #if B3D_GPU_EXPLICIT_BARRIERS
 #include "B3DGpuSplitBarrier.h"
@@ -23,6 +24,15 @@ namespace b3d
 	{
 		class GpuExplicitBarrierValidator;
 	}
+
+#if B3D_GPU_EXPLICIT_BARRIERS
+	/**
+	 * If enabled, development builds check the accesses of resources that a command buffer with explicit barriers neither declared nor
+	 * barriered against the resources' resting state (see GpuBackendUtility::GetRestingState()). Enable when every resource outside of
+	 * explicit barrier work is kept at rest.
+	 */
+	extern B3D_EXPORT TConfigVariable<bool> gGpuValidateRestingStates;
+#endif
 }
 
 namespace b3d
@@ -855,6 +865,17 @@ namespace b3d
 			 *						it alive until it is reset.
 			 */
 			void AcquireBarriers(const GpuExplicitBarriers& barriers, const TShared<GpuSplitBarrier>& split);
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+			/**
+			 * Sets the validator that checks the explicit barriers and accesses the command buffer records. A command buffer without one
+			 * validates nothing. Resource states carry over between the command buffers that share a validator, so they must be recorded one
+			 * at a time, in the order the GPU executes them. The caller keeps the validator alive until the command buffer is reset, which
+			 * clears it. Must be called before the command buffer records anything. Only valid on command buffers of a pool created with
+			 * GpuCommandBufferPoolInformation::ExplicitBarriers. Development builds only.
+			 */
+			void SetValidator(GpuExplicitBarrierValidator* validator);
+#endif
 #endif
 
 			/**
@@ -1178,7 +1199,7 @@ namespace b3d
 			TInlineArray<ExplicitImageLayout, 4> mExplicitImageLayouts;
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
-			TUnique<GpuExplicitBarrierValidator> mExplicitBarrierValidator; /**< Only created for command buffers with explicit barriers. */
+			GpuExplicitBarrierValidator* mExplicitBarrierValidator = nullptr; /**< Set by SetValidator(). Null if the command buffer does not validate. */
 #endif
 #endif
 

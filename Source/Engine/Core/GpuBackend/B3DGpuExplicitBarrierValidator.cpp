@@ -10,19 +10,23 @@
 #include "GpuBackend/B3DGpuPipelineParameterLayout.h"
 #include "GpuBackend/B3DGpuPipelineState.h"
 #include "GpuBackend/B3DRenderTexture.h"
+#include "GpuBackend/Allocators/B3DGpuResource.h"
 #include "Utility/B3DBitwise.h"
 
 namespace b3d::render
 {
+	void GpuExplicitBarrierValidator::BeginCommandBuffer(GpuQueueType queueType)
+	{
+		mQueueType = queueType;
+		ClearBindings();
+	}
+
 	void GpuExplicitBarrierValidator::ValidateBarriers(const GpuExplicitBarriers& barriers, GpuBarrierPhase phase, const GpuSplitBarrier* split)
 	{
 		for(const GpuExplicitBufferBarrier& barrier : barriers.BufferBarriers)
 		{
-			if(barrier.Object == nullptr)
-				continue;
-
-			const char* const error = ApplyBarrier(mBuffers[barrier.Object.get()], barrier, phase, split, false);
-			B3D_ENSURE_LOG(error == nullptr, "{0} Buffer: '{1}'.", error, barrier.Object->GetName());
+			if(barrier.Object != nullptr)
+				ValidateBufferBarrier(*barrier.Object, barrier, phase, split);
 		}
 
 		for(const GpuExplicitTextureBarrier& barrier : barriers.TextureBarriers)
@@ -42,6 +46,33 @@ namespace b3d::render
 			if(image.Key.Object != nullptr)
 				ValidateImageBarrier(image, barrier, phase, split);
 		}
+
+		// The release of a split alias acquire starts the new lifetime, so the acquire half has nothing left to start
+		if(phase != GpuBarrierPhase::Acquire)
+			StartAliasLifetimes(barriers);
+	}
+
+	void GpuExplicitBarrierValidator::DeclareAliasAcquire(const GpuBuffer& buffer, const GpuAliasAcquire& acquire)
+	{
+		DeclareAliasAcquire(buffer.GetGpuResource(), acquire, buffer.GetName());
+	}
+
+	void GpuExplicitBarrierValidator::DeclareAliasAcquire(const Texture& texture, const GpuAliasAcquire& acquire)
+	{
+		DeclareAliasAcquire(texture.GetGpuResource(), acquire, texture.GetName());
+	}
+
+	void GpuExplicitBarrierValidator::DeclareAliasAcquire(const IGpuResource* gpuResource, const GpuAliasAcquire& acquire, StringView name)
+	{
+		if(!B3D_ENSURE_LOG(gpuResource != nullptr, "An alias acquire can only be declared for a placed resource. Resource: '{0}'.", name))
+			return;
+
+		DeclaredAliasAcquire& declared = mAliasAcquires[gpuResource];
+		declared.Source = acquire.Source;
+		declared.Predecessors.Clear();
+
+		for(const IGpuResource* predecessor : acquire.Predecessors)
+			declared.Predecessors.Add(predecessor);
 	}
 
 	void GpuExplicitBarrierValidator::SetParameterSet(const TShared<GpuParameterSet>& parameters)
@@ -97,6 +128,8 @@ namespace b3d::render
 
 	void GpuExplicitBarrierValidator::ValidateDraw(bool indexed)
 	{
+		mOperation = ++mOperationCount;
+
 		for(const TShared<GpuBuffer>& buffer : mVertexBuffers)
 		{
 			if(buffer != nullptr)
@@ -108,17 +141,26 @@ namespace b3d::render
 
 		if(mGraphicsPipeline != nullptr && mGraphicsPipeline->GetParameterLayout() != nullptr)
 			ValidateBindings(*mGraphicsPipeline->GetParameterLayout(), true);
+
+		mOperation = 0;
 	}
 
 	void GpuExplicitBarrierValidator::ValidateDispatch()
 	{
+		mOperation = ++mOperationCount;
+
 		if(mComputePipeline != nullptr && mComputePipeline->GetParameterLayout() != nullptr)
 			ValidateBindings(*mComputePipeline->GetParameterLayout(), false);
+
+		mOperation = 0;
 	}
 
 	void GpuExplicitBarrierValidator::ValidateBufferAccess(const GpuBuffer& buffer, GpuStageFlags stages, GpuAccessFlags access)
 	{
-		const char* const error = ApplyAccess(mBuffers[&buffer], GpuImageLayout::Undefined, stages, access);
+		const char* error = GetLifetimeError(buffer.IsUnplaced(), buffer.GetGpuResource(), nullptr, GpuBarrierPhase::Full);
+		if(error == nullptr)
+			error = ApplyAccess(mBuffers[&buffer], GpuImageLayout::Undefined, stages, access, GetUndeclaredState(GpuBackendUtility::GetRestingState(buffer, mQueueType)), mOperation);
+
 		B3D_ENSURE_LOG(error == nullptr, "{0} Buffer: '{1}'.", error, buffer.GetName());
 	}
 
@@ -131,12 +173,69 @@ namespace b3d::render
 	{
 		mBuffers.clear();
 		mImages.clear();
+		mAliasAcquires.clear();
+		mSupersededResources.clear();
+		ClearBindings();
+	}
+
+	void GpuExplicitBarrierValidator::ClearBindings()
+	{
 		mParameterSets.clear();
 		mGraphicsPipeline = nullptr;
 		mComputePipeline = nullptr;
 		mVertexBuffers.clear();
 		mIndexBuffer = nullptr;
 		mRenderPassAttachments.Clear();
+		mOperation = 0;
+	}
+
+	void GpuExplicitBarrierValidator::StartAliasLifetimes(const GpuExplicitBarriers& barriers)
+	{
+		TInlineArray<const IGpuResource*, 8> barrierResources;
+		for(const GpuExplicitBufferBarrier& barrier : barriers.BufferBarriers)
+		{
+			if(barrier.Object != nullptr && barrier.Object->GetGpuResource() != nullptr)
+				barrierResources.Add(barrier.Object->GetGpuResource());
+		}
+
+		for(const GpuExplicitTextureBarrier& barrier : barriers.TextureBarriers)
+		{
+			if(barrier.Object != nullptr && barrier.Object->GetGpuResource() != nullptr)
+				barrierResources.Add(barrier.Object->GetGpuResource());
+		}
+
+		const auto fnStartLifetime = [this, &barrierResources](const IGpuResource* gpuResource, const GpuExplicitBarrier& barrier, StringView name)
+		{
+			if(gpuResource == nullptr || !barrier.Flags.IsSet(GpuBarrierFlag::AliasAcquire))
+				return;
+
+			mSupersededResources.erase(gpuResource);
+
+			const auto found = mAliasAcquires.find(gpuResource);
+			if(found == mAliasAcquires.end())
+				return;
+
+			for(const IGpuResource* predecessor : found->second.Predecessors)
+			{
+				// Barriers of one call are not ordered against each other, so a barrier of an earlier resource could overlap the acquire's barrier
+				B3D_ENSURE_LOG(!barrierResources.Contains(predecessor), "A barrier of an earlier resource on the memory is issued together with the alias acquire that supersedes it. Resource: '{0}'.", name);
+				mSupersededResources.insert(predecessor);
+			}
+
+			mAliasAcquires.erase(found);
+		};
+
+		for(const GpuExplicitBufferBarrier& barrier : barriers.BufferBarriers)
+		{
+			if(barrier.Object != nullptr)
+				fnStartLifetime(barrier.Object->GetGpuResource(), barrier, barrier.Object->GetName());
+		}
+
+		for(const GpuExplicitTextureBarrier& barrier : barriers.TextureBarriers)
+		{
+			if(barrier.Object != nullptr)
+				fnStartLifetime(barrier.Object->GetGpuResource(), barrier, barrier.Object->GetName());
+		}
 	}
 
 	GpuImageLayout GpuExplicitBarrierValidator::GetAttachmentLayout(RenderSurfaceMaskBits surface, RenderSurfaceMask readOnlyMask)
@@ -152,7 +251,7 @@ namespace b3d::render
 		return stencilReadOnly ? GpuImageLayout::DepthAttachmentStencilReadOnly : GpuImageLayout::DepthStencilAttachment;
 	}
 
-	GpuExplicitBarrierValidator::ImageSubresources GpuExplicitBarrierValidator::GetTextureSubresources(const Texture& texture, const GpuTextureSubresourceRange& range)
+	GpuExplicitBarrierValidator::ImageSubresources GpuExplicitBarrierValidator::GetTextureSubresources(const Texture& texture, const GpuTextureSubresourceRange& range) const
 	{
 		const TextureProperties& properties = texture.GetProperties();
 
@@ -161,11 +260,13 @@ namespace b3d::render
 		image.FullRange = GpuTextureSubresourceRange(0, properties.MipMapCount + 1, 0, properties.GetFaceCount(), GpuBackendUtility::GetFormatAspects(properties.Format));
 		image.Range = GpuBackendUtility::ClampRange(range, image.FullRange);
 		image.Name = texture.GetName();
+		image.RestingState = GpuBackendUtility::GetRestingState(texture, mQueueType);
+		image.Texture = &texture;
 
 		return image;
 	}
 
-	GpuExplicitBarrierValidator::ImageSubresources GpuExplicitBarrierValidator::GetSurfaceSubresources(const RenderTarget& target, RenderSurfaceMaskBits surface)
+	GpuExplicitBarrierValidator::ImageSubresources GpuExplicitBarrierValidator::GetSurfaceSubresources(const RenderTarget& target, RenderSurfaceMaskBits surface) const
 	{
 		const bool isColor = ((u32)surface & (u32)RT_COLOR_ALL) != 0;
 		if(target.GetProperties().IsWindow)
@@ -180,6 +281,7 @@ namespace b3d::render
 			image.FullRange = GpuTextureSubresourceRange(0, 1, 0, 1, isColor ? GpuTextureAspectFlags(GpuTextureAspectFlag::Color) : GpuTextureAspectFlag::Depth | GpuTextureAspectFlag::Stencil);
 			image.Range = image.FullRange;
 			image.Name = "Window";
+			image.RestingState = GpuBackendUtility::GetRestingState(target, surface, mQueueType);
 
 			return image;
 		}
@@ -271,20 +373,41 @@ namespace b3d::render
 
 	void GpuExplicitBarrierValidator::ValidateImageBarrier(const ImageSubresources& image, const GpuExplicitBarrier& barrier, GpuBarrierPhase phase, const GpuSplitBarrier* split)
 	{
-		const char* const error = ForEachSubresourceState(image, [&](ResourceState& state)
+		const char* error = image.Texture != nullptr ? GetLifetimeError(image.Texture->IsUnplaced(), image.Texture->GetGpuResource(), &barrier, phase) : nullptr;
+		if(error == nullptr)
 		{
-			return ApplyBarrier(state, barrier, phase, split, true);
-		});
+			error = ForEachSubresourceState(image, [&](ResourceState& state)
+			{
+				return ApplyBarrier(state, barrier, phase, split, true);
+			});
+		}
 
 		B3D_ENSURE_LOG(error == nullptr, "{0} Image: '{1}'.", error, image.Name);
 	}
 
+	void GpuExplicitBarrierValidator::ValidateBufferBarrier(const GpuBuffer& buffer, const GpuExplicitBarrier& barrier, GpuBarrierPhase phase, const GpuSplitBarrier* split)
+	{
+		const char* error = GetLifetimeError(buffer.IsUnplaced(), buffer.GetGpuResource(), &barrier, phase);
+		if(error == nullptr)
+		{
+			ResourceState& state = mBuffers[&buffer];
+			error = ApplyBarrier(state, barrier, phase, split, false);
+		}
+
+		B3D_ENSURE_LOG(error == nullptr, "{0} Buffer: '{1}'.", error, buffer.GetName());
+	}
+
 	void GpuExplicitBarrierValidator::ValidateImageAccess(const ImageSubresources& image, GpuImageLayout layout, GpuStageFlags stages, GpuAccessFlags access)
 	{
-		const char* const error = ForEachSubresourceState(image, [&](ResourceState& state)
+		const char* error = image.Texture != nullptr ? GetLifetimeError(image.Texture->IsUnplaced(), image.Texture->GetGpuResource(), nullptr, GpuBarrierPhase::Full) : nullptr;
+		if(error == nullptr)
 		{
-			return ApplyAccess(state, layout, stages, access);
-		});
+			const GpuAccessState* const undeclaredState = GetUndeclaredState(image.RestingState);
+			error = ForEachSubresourceState(image, [&](ResourceState& state)
+			{
+				return ApplyAccess(state, layout, stages, access, undeclaredState, mOperation);
+			});
+		}
 
 		B3D_ENSURE_LOG(error == nullptr, "{0} Image: '{1}'.", error, image.Name);
 	}
@@ -295,6 +418,44 @@ namespace b3d::render
 		{
 			return attachment.Key == image.Key && GpuBackendUtility::RangeOverlaps(attachment.Range, image.Range);
 		});
+	}
+
+	const GpuAccessState* GpuExplicitBarrierValidator::GetUndeclaredState(const GpuAccessState& restingState)
+	{
+		return gGpuValidateRestingStates ? &restingState : nullptr;
+	}
+
+	const char* GpuExplicitBarrierValidator::GetLifetimeError(bool isUnplaced, const IGpuResource* gpuResource, const GpuExplicitBarrier* barrier, GpuBarrierPhase phase) const
+	{
+		if(isUnplaced)
+			return "The resource was used while it is unplaced, without memory from its transient resource allocator. Place it first.";
+
+		if(gpuResource == nullptr)
+			return nullptr;
+
+		// The acquire half of a split alias acquire follows the release, which started the new lifetime
+		const bool isAliasAcquire = barrier != nullptr && barrier->Flags.IsSet(GpuBarrierFlag::AliasAcquire) && phase != GpuBarrierPhase::Acquire;
+		const auto declaredAcquire = mAliasAcquires.find(gpuResource);
+		if(!isAliasAcquire)
+		{
+			if(mSupersededResources.find(gpuResource) != mSupersededResources.end())
+				return "The resource was used after an alias acquire of another resource took over its memory.";
+
+			if(declaredAcquire != mAliasAcquires.end())
+				return "The resource was used before its alias acquire.";
+
+			return nullptr;
+		}
+
+		if(declaredAcquire == mAliasAcquires.end())
+			return nullptr;
+
+		const GpuAccessScope& acquireSource = declaredAcquire->second.Source;
+		const GpuAccessState& source = barrier->Source;
+		if(!source.Stages.IsSetAll(acquireSource.GetStages()) || (acquireSource.WriteStages != GpuStageFlag::None && !source.Access.IsSet(GpuAccessFlag::Write)))
+			return "The source of an alias acquire is missing stages or writes of the source of its GpuAliasAcquire.";
+
+		return nullptr;
 	}
 
 	const char* GpuExplicitBarrierValidator::ApplyBarrier(ResourceState& state, const GpuExplicitBarrier& barrier, GpuBarrierPhase phase, const GpuSplitBarrier* split, bool isImage)
@@ -308,7 +469,7 @@ namespace b3d::render
 				error = "An explicit barrier was recorded between the release and the acquire of a split barrier of the same resource.";
 		}
 		else if(barrier.Flags.IsSet(GpuBarrierFlag::AliasAcquire) && (state.IsDeclared || state.UsedAccess != GpuAccessFlag::None))
-			error = "An alias acquire must precede every other use of the resource on the command buffer.";
+			error = "An alias acquire must precede every other use of the resource.";
 		else if(isImage && state.IsDeclared && source.Layout != GpuImageLayout::Undefined && source.Layout != state.Declared.Layout)
 			error = "The source layout of an explicit barrier differs from the destination layout of the previous barrier of the resource.";
 		else if(!source.Stages.IsSetAll(state.UsedStages))
@@ -327,23 +488,32 @@ namespace b3d::render
 
 		state.UsedStages = GpuStageFlag::None;
 		state.UsedAccess = GpuAccessFlag::None;
+		state.WriterOperation = 0;
 		return error;
 	}
 
-	const char* GpuExplicitBarrierValidator::ApplyAccess(ResourceState& state, GpuImageLayout layout, GpuStageFlags stages, GpuAccessFlags access)
+	const char* GpuExplicitBarrierValidator::ApplyAccess(ResourceState& state, GpuImageLayout layout, GpuStageFlags stages, GpuAccessFlags access, const GpuAccessState* undeclaredState, u32 operation)
 	{
+		const GpuAccessState* const declared = state.IsDeclared ? &state.Declared : undeclaredState;
+
 		const char* error = nullptr;
 		if(state.PendingAcquire != nullptr)
 			error = "The resource was accessed between the release and the acquire of a split barrier.";
-		else if(state.IsDeclared && !state.Declared.Stages.IsSetAll(stages))
-			error = "The resource was accessed in stages that its last explicit barrier does not declare.";
-		else if(state.IsDeclared && !state.Declared.Access.IsSetAll(access))
-			error = "The resource was accessed with reads or writes that its last explicit barrier does not declare.";
-		else if(state.IsDeclared && layout != GpuImageLayout::Undefined && layout != state.Declared.Layout)
-			error = "The image was accessed in a different layout than its last explicit barrier declares.";
+		else if(declared != nullptr && !declared->Stages.IsSetAll(stages))
+			error = state.IsDeclared ? "The resource was accessed in stages that its last explicit barrier does not declare." : "The resource was accessed in stages its resting state does not allow, without an explicit barrier.";
+		else if(declared != nullptr && !declared->Access.IsSetAll(access))
+			error = state.IsDeclared ? "The resource was accessed with reads or writes that its last explicit barrier does not declare." : "The resource was accessed with reads or writes its resting state does not allow, without an explicit barrier.";
+		else if(declared != nullptr && layout != GpuImageLayout::Undefined && layout != declared->Layout)
+			error = state.IsDeclared ? "The image was accessed in a different layout than its last explicit barrier declares." : "The image was accessed in a different layout than its resting state, without an explicit barrier.";
+		else if(operation != 0 && state.WriterOperation != 0 && state.WriterOperation != operation)
+			error = "The resource was accessed by a draw or dispatch after another draw or dispatch wrote it, without a barrier in between.";
 
 		state.UsedStages |= stages;
 		state.UsedAccess |= access;
+
+		if(operation != 0 && access.IsSet(GpuAccessFlag::Write))
+			state.WriterOperation = operation;
+
 		return error;
 	}
 

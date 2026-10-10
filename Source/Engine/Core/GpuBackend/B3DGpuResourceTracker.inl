@@ -261,10 +261,6 @@ void TGpuResourceTracker<TDerived, TBarrierHelper>::ResolveSubmissionTransitions
 template<class TDerived, class TBarrierHelper>
 GpuBufferTrackingState& TGpuResourceTracker<TDerived, TBarrierHelper>::GetOrCreateBufferTrackingState(IGpuBufferResource* buffer)
 {
-#if B3D_BUILD_TYPE_DEVELOPMENT
-	B3D_ENSURE_LOG(!buffer->IsSupersededByAlias(), "A GPU buffer is used after another resource took over its memory with an alias acquire.");
-#endif
-
 	auto insertResult = mBuffers.insert(std::make_pair(buffer, GpuBufferTrackingState()));
 	if(insertResult.second) // New element
 	{
@@ -324,16 +320,6 @@ void TGpuResourceTracker<TDerived, TBarrierHelper>::TrackBufferBarrier(IGpuBuffe
 	{
 		if(!B3D_ENSURE_LOG(FindBufferTrackingState(buffer) == nullptr, "An alias acquire must precede every other use of the GPU buffer on the command buffer."))
 			return;
-
-#if B3D_BUILD_TYPE_DEVELOPMENT
-		buffer->NotifyAliasAcquired();
-		for(IGpuResource* predecessor : aliasAcquire->Predecessors)
-		{
-			// Barriers of one batch are not ordered against each other, so a barrier of an earlier resource could overlap the acquire's barrier
-			B3D_ENSURE_LOG(!barrierHelper.HasQueuedBarrier(predecessor), "A barrier of an earlier resource on the memory is issued together with the alias acquire that supersedes it.");
-			predecessor->SetSupersededByAlias(true);
-		}
-#endif
 
 		GpuBufferTrackingState& bufferTrackingState = GetOrCreateBufferTrackingState(buffer);
 		bufferTrackingState.SubmissionBarrierFlags = GpuBarrierFlag::AliasAcquire;
@@ -939,16 +925,6 @@ void TGpuResourceTracker<TDerived, TBarrierHelper>::TrackImageBarrier(IGpuImageR
 		if(!B3D_ENSURE_LOG(destinationLayout != GpuImageLayout::Undefined, "An alias acquire of a GPU image must provide a destination layout."))
 			return;
 
-#if B3D_BUILD_TYPE_DEVELOPMENT
-		image->NotifyAliasAcquired();
-		for(IGpuResource* predecessor : aliasAcquire->Predecessors)
-		{
-			// Barriers of one batch are not ordered against each other, so a barrier of an earlier resource could overlap the acquire's discard
-			B3D_ENSURE_LOG(!barrierHelper.HasQueuedBarrier(predecessor), "A barrier of an earlier resource on the memory is issued together with the alias acquire that supersedes it.");
-			predecessor->SetSupersededByAlias(true);
-		}
-#endif
-
 		struct AcquireCallbackParameters
 		{
 			TGpuResourceTracker* Tracker;
@@ -1183,10 +1159,6 @@ void TGpuResourceTracker<TDerived, TBarrierHelper>::TrackSwapChainUsage(IGpuSwap
 template<class TDerived, class TBarrierHelper>
 GpuImageTrackingState& TGpuResourceTracker<TDerived, TBarrierHelper>::GetOrCreateImageTrackingState(IGpuImageResource* image)
 {
-#if B3D_BUILD_TYPE_DEVELOPMENT
-	B3D_ENSURE_LOG(!image->IsSupersededByAlias(), "A GPU image is used after another resource took over its memory with an alias acquire.");
-#endif
-
 	const u32 nextImageTrackingIndex = (u32)mImageTrackingState.size();
 
 	auto insertResult = mImages.insert(std::make_pair(image, nextImageTrackingIndex));

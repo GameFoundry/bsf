@@ -12,6 +12,7 @@
 #include "GpuBackend/B3DGpuDeviceCapabilities.h"
 #include "GpuBackend/B3DGpuSplitBarrier.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
+#include "GpuBackend/B3DGpuExplicitBarrierValidator.h"
 #include "GpuBackend/B3DGpuParameterSet.h"
 #include "GpuBackend/B3DGpuParameterSetPool.h"
 #include "GpuBackend/B3DGpuPipelineState.h"
@@ -418,13 +419,16 @@ GpuBackendTestSuite::GpuBackendTestSuite()
 	B3D_ADD_TEST(GpuBackendTestSuite::TestAliasAcquireExecution)
 	B3D_ADD_TEST(GpuBackendTestSuite::TestTransientResourceAllocator)
 	B3D_ADD_TEST(GpuBackendTestSuite::TestTransientResourceExecution)
+	B3D_ADD_TEST(GpuBackendTestSuite::TestTransientResourcePlacement)
 	B3D_ADD_TEST(GpuBackendTestSuite::TestFramebufferAttachmentUsage)
 	B3D_ADD_TEST(GpuBackendTestSuite::TestRenderPassResourceTracking)
 #if B3D_GPU_EXPLICIT_BARRIERS
 	B3D_ADD_TEST(GpuBackendTestSuite::TestTrackingWithoutHazards)
 	B3D_ADD_TEST(GpuBackendTestSuite::TestExplicitBarriers)
+	B3D_ADD_TEST(GpuBackendTestSuite::TestTransientExplicitAliasing)
 #if B3D_BUILD_TYPE_DEVELOPMENT
 	B3D_ADD_TEST(GpuBackendTestSuite::TestExplicitBarrierValidation)
+	B3D_ADD_TEST(GpuBackendTestSuite::TestExplicitBarrierResourceValidation)
 #endif
 #endif
 	B3D_ADD_TEST(GpuBackendTestSuite::TestPushConstantMetadata)
@@ -2824,76 +2828,6 @@ void GpuBackendTestSuite::TestAliasAcquire()
 		tracker.NotifyUnbound();
 		tracker.Clear();
 	}
-
-#if B3D_BUILD_TYPE_DEVELOPMENT
-	// Validation: earlier resources on the memory are invalid after the acquire, until they are acquired again
-	{
-		SubmissionTestImage predecessorImage(1, 1, GpuTextureAspectFlag::Color);
-		SubmissionTestBuffer predecessorBuffer;
-		SubmissionTestImage successor(1, 1, GpuTextureAspectFlag::Color);
-		IGpuResource* const predecessors[] = { &predecessorImage, &predecessorBuffer };
-
-		GpuAliasAcquire acquire = attachmentWriteAcquire;
-		acquire.Predecessors = TArrayView<IGpuResource* const>(predecessors, 2);
-
-		SubmissionTestTracker tracker;
-		SubmissionTestBarrierHelper barrierHelper;
-		fnAcquireImage(tracker, barrierHelper, successor, acquire, GpuImageLayout::General, computeStages, GpuAccessFlag::Write);
-		B3D_TEST_ASSERT(predecessorImage.IsSupersededByAlias())
-		B3D_TEST_ASSERT(predecessorBuffer.IsSupersededByAlias())
-		B3D_TEST_ASSERT(!successor.IsSupersededByAlias())
-
-		{
-			LoggingScope logs(*this);
-			logs.ExpectError("A GPU image is used after another resource took over its memory with an alias acquire.");
-			logs.ExpectError("A GPU buffer is used after another resource took over its memory with an alias acquire.");
-			tracker.TrackImageAccess(&predecessorImage, predecessorImage.GetRange(), GpuImageLayout::General, computeStages, GpuAccessFlag::Write, barrierHelper);
-			tracker.TrackBufferAccess(&predecessorBuffer, computeStages, GpuAccessFlag::Write, barrierHelper);
-		}
-
-		tracker.CommitPendingAccesses();
-		barrierHelper.Clear();
-		tracker.NotifyUnbound();
-		tracker.Clear();
-
-		// Acquiring the predecessor again starts its own new lifetime, which supersedes the successor
-		GpuAliasAcquire predecessorAcquire;
-		IGpuResource* const successors[] = { &successor };
-		predecessorAcquire.Predecessors = TArrayView<IGpuResource* const>(successors, 1);
-		fnAcquireImage(tracker, barrierHelper, predecessorImage, predecessorAcquire, GpuImageLayout::General, computeStages, GpuAccessFlag::Write);
-		B3D_TEST_ASSERT(!predecessorImage.IsSupersededByAlias())
-		B3D_TEST_ASSERT(successor.IsSupersededByAlias())
-
-		fnExecuteImageAccess(tracker, barrierHelper, predecessorImage, GpuImageLayout::General, computeStages, GpuAccessFlag::Write);
-		tracker.NotifyUnbound();
-		tracker.Clear();
-	}
-
-	// Validation: a barrier of an earlier resource is not issued together with the acquire, as barriers of one batch are not ordered
-	{
-		SubmissionTestImage predecessor(1, 1, GpuTextureAspectFlag::Color);
-		SubmissionTestImage successor(1, 1, GpuTextureAspectFlag::Color);
-		IGpuResource* const predecessors[] = { &predecessor };
-
-		GpuAliasAcquire acquire = attachmentWriteAcquire;
-		acquire.Predecessors = TArrayView<IGpuResource* const>(predecessors, 1);
-
-		SubmissionTestTracker tracker;
-		SubmissionTestBarrierHelper barrierHelper;
-		fnExecuteImageAccess(tracker, barrierHelper, predecessor, GpuImageLayout::ColorAttachment, attachmentStages, GpuAccessFlag::Write);
-
-		tracker.TrackImageBarrier(&predecessor, predecessor.GetRange(), computeStages, GpuAccessFlag::Read, GpuImageLayout::General, barrierHelper);
-		{
-			LoggingScope logs(*this);
-			logs.ExpectError("A barrier of an earlier resource on the memory is issued together with the alias acquire that supersedes it.");
-			tracker.TrackImageBarrier(&successor, successor.GetRange(), computeStages, GpuAccessFlag::Write, GpuImageLayout::General, barrierHelper, &acquire);
-		}
-
-		fnExecuteBarriers(tracker, barrierHelper, &successor, nullptr);
-		tracker.NotifyUnbound();
-		tracker.Clear();
-	}
-#endif
 }
 
 void GpuBackendTestSuite::TestAliasAcquireExecution()
@@ -3683,10 +3617,25 @@ void GpuBackendTestSuite::TestExplicitBarriers()
 		const TShared<GpuWorkContext> context = GpuWorkContext::Create(*device);
 		const TShared<GpuCommandBufferPool> graphicsPool = fnCreatePool(GQT_GRAPHICS, true);
 
+		// Each command buffer validates its barriers on its own, which must not report errors for any of them. The validators keep the
+		// last bound parameter sets alive, so they must be destroyed before the context that allocated them.
+#if B3D_BUILD_TYPE_DEVELOPMENT
+		Vector<TUnique<GpuExplicitBarrierValidator>> validators;
+#endif
+		auto fnCreateCommands = [&](const TShared<GpuCommandBufferPool>& pool, const char* name)
+		{
+			const TShared<GpuCommandBuffer> commands = pool->Create(GpuCommandBufferCreateInformation::Create(name));
+#if B3D_BUILD_TYPE_DEVELOPMENT
+			validators.push_back(B3DMakeUnique<GpuExplicitBarrierValidator>());
+			commands->SetValidator(validators.back().get());
+#endif
+			return commands;
+		};
+
 		// Full barriers
 		{
 			const CaseResources resources = fnCreateResources();
-			const TShared<GpuCommandBuffer> commands = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("Explicit full barriers"));
+			const TShared<GpuCommandBuffer> commands = fnCreateCommands(graphicsPool, "Explicit full barriers");
 			fnWrite(*commands, resources);
 			commands->IssueExplicitBarriers(CaseBarriers(resources, transferWrite, transferRead).Get());
 			fnRead(*commands, resources);
@@ -3711,7 +3660,7 @@ void GpuBackendTestSuite::TestExplicitBarriers()
 			const TShared<GpuSplitBarrier> split = device->CreateSplitBarrier();
 			const TShared<render::GpuBuffer> unrelated = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize));
 
-			const TShared<GpuCommandBuffer> commands = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("Explicit split barriers"));
+			const TShared<GpuCommandBuffer> commands = fnCreateCommands(graphicsPool, "Explicit split barriers");
 			fnWrite(*commands, resources);
 			commands->ReleaseBarriers(barriers.Get(), split);
 			commands->CopyBufferToBuffer(upload, unrelated, 0, 0, bufferBytes);
@@ -3730,11 +3679,11 @@ void GpuBackendTestSuite::TestExplicitBarriers()
 			const CaseBarriers barriers(resources, transferWrite, transferRead);
 			const TShared<GpuSplitBarrier> split = writeQueue == readQueue ? device->CreateSplitBarrier() : device->CreateSplitBarrier(writeQueue, readQueue);
 
-			const TShared<GpuCommandBuffer> readCommands = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("Explicit split barrier acquire"));
+			const TShared<GpuCommandBuffer> readCommands = fnCreateCommands(graphicsPool, "Explicit split barrier acquire");
 			if(acquireFirst)
 				readCommands->AcquireBarriers(barriers.Get(), split);
 
-			const TShared<GpuCommandBuffer> writeCommands = writePool->Create(GpuCommandBufferCreateInformation::Create("Explicit split barrier release"));
+			const TShared<GpuCommandBuffer> writeCommands = fnCreateCommands(writePool, "Explicit split barrier release");
 			fnWrite(*writeCommands, resources);
 			writeCommands->ReleaseBarriers(barriers.Get(), split);
 
@@ -3779,7 +3728,7 @@ void GpuBackendTestSuite::TestExplicitBarriers()
 			parameters->SetStorageBuffer("OutputBuffer", buffer);
 			parameters->SetStorageTexture("OutputTexture", texture, TextureSurface());
 
-			const TShared<GpuCommandBuffer> commands = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("Explicit barriers around a dispatch"));
+			const TShared<GpuCommandBuffer> commands = fnCreateCommands(graphicsPool, "Explicit barriers around a dispatch");
 			const auto fnIssueBarriers = [&](const GpuAccessState& source, const GpuAccessState& destination, const GpuAccessState& readbackSource, const GpuAccessState& readbackDestination)
 			{
 				const GpuExplicitBufferBarrier bufferBarriers[] = { GpuExplicitBufferBarrier(buffer, source, destination),
@@ -3843,7 +3792,7 @@ void GpuBackendTestSuite::TestExplicitBarrierValidation()
 	logs.ExpectError("The resource was accessed with reads or writes that its last explicit barrier does not declare. Buffer: 'UndeclaredWrite'.");
 	logs.ExpectError("The resource was accessed between the release and the acquire of a split barrier. Buffer: 'AccessBetweenHalves'.");
 	logs.ExpectError("An explicit barrier was recorded between the release and the acquire of a split barrier of the same resource. Buffer: 'BarrierBetweenHalves'.");
-	logs.ExpectError("An alias acquire must precede every other use of the resource on the command buffer. Buffer: 'LateAliasAcquire'.");
+	logs.ExpectError("An alias acquire must precede every other use of the resource. Buffer: 'LateAliasAcquire'.");
 	logs.ExpectError("The release and the acquire of a split barrier must be given the same barriers, in the same order.");
 	logs.ExpectError("The image was accessed in a different layout than its last explicit barrier declares. Image: 'RenderPassLayout'.");
 	logs.ExpectError("The release of a split barrier was recorded on a queue type other than the one the split barrier was created for.");
@@ -3906,7 +3855,9 @@ void GpuBackendTestSuite::TestExplicitBarrierValidation()
 		GpuCommandBufferPoolCreateInformation poolInformation = GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS);
 		poolInformation.ExplicitBarriers = true;
 		const TShared<GpuCommandBufferPool> pool = device->CreateGpuCommandBufferPool(poolInformation);
+		GpuExplicitBarrierValidator validator;
 		const TShared<GpuCommandBuffer> commandBuffer = pool->Create(GpuCommandBufferCreateInformation::Create("Explicit barrier validation"));
+		commandBuffer->SetValidator(&validator);
 
 		const TShared<render::GpuBuffer> source = fnCreateBuffer("Source");
 		const TShared<render::Texture> sourceTexture = fnCreateTexture("SourceTexture");
@@ -4695,7 +4646,7 @@ void GpuBackendTestSuite::TestTransientResourceAllocator()
 
 		const TArrayView<const GpuTransientLastUse> noUses;
 
-		// The same allocations in the same order reuse the textures cached by the previous frame. A texture is handed out at most once per
+		// The same allocations in the same order reuse the textures cached by the previous frame. A texture is placed at most once per
 		// scope, so the second allocation creates a new texture at the memory the first one released.
 		bool isAliased = false;
 		TShared<render::Texture> cachedTextures[2];
@@ -4724,7 +4675,7 @@ void GpuBackendTestSuite::TestTransientResourceAllocator()
 			device->EndFrame();
 
 			const GpuTransientStatistics statistics = allocator.GetStatistics();
-			B3D_TEST_ASSERT(statistics.AllocationCount == 2)
+			B3D_TEST_ASSERT(statistics.PlacementCount == 2)
 			if(isAliased)
 			{
 				B3D_TEST_ASSERT(statistics.CacheHits == (frame == 0 ? 0u : 2u))
@@ -4762,7 +4713,7 @@ void GpuBackendTestSuite::TestTransientResourceAllocator()
 				allocator.EndScope();
 
 				const GpuTransientStatistics statistics = allocator.GetStatistics();
-				B3D_TEST_ASSERT(statistics.AllocationCount == 3)
+				B3D_TEST_ASSERT(statistics.PlacementCount == 3)
 				B3D_TEST_ASSERT(statistics.CacheHits == 1)
 				B3D_TEST_ASSERT(statistics.CacheMisses == 2)
 				B3D_TEST_ASSERT(statistics.CachedTextures == 2)
@@ -4839,37 +4790,7 @@ void GpuBackendTestSuite::TestTransientResourceAllocator()
 			B3D_TEST_ASSERT(texture.Texture != nullptr)
 			{
 				LoggingScope logs(*this);
-				logs.ExpectError("A transient resource was not released before the end of the scope that allocated it.");
-				allocator.EndScope();
-			}
-
-			device->EndFrame();
-		}
-
-		// Validation: a resource released with uses must have been alias acquired
-		{
-			GpuTransientScope& scope = allocator.BeginScope(timeline);
-			const GpuTransientTexture texture = scope.AllocateTexture(textureInformation, 0);
-			B3D_TEST_ASSERT(texture.Texture != nullptr)
-
-			bool isAcquireValidated = false;
-			if(texture.Texture != nullptr)
-			{
-#if B3D_BUILD_TYPE_DEVELOPMENT
-				isAcquireValidated = texture.Texture->HasFixedLocation() && texture.Texture->GetGpuResource() != nullptr;
-#endif
-
-				GpuAccessScope access;
-				access.Add(GpuStageFlag::Transfer, GpuAccessFlag::Write);
-				const GpuTransientLastUse lastUse(0, access);
-				scope.Release(*texture.Texture, TArrayView<const GpuTransientLastUse>(&lastUse, 1));
-			}
-
-			{
-				LoggingScope logs(*this);
-				if(isAcquireValidated)
-					logs.ExpectError("A transient resource was used without an alias acquire before its first use.");
-
+				logs.ExpectError("A transient resource was not released before the end of the scope that placed it.");
 				allocator.EndScope();
 			}
 
@@ -4920,7 +4841,7 @@ void GpuBackendTestSuite::TestTransientResourceAllocator()
 			gGpuTransientResources.Set(true);
 
 			const GpuTransientStatistics statistics = allocator.GetStatistics();
-			B3D_TEST_ASSERT(statistics.AllocationCount == 1)
+			B3D_TEST_ASSERT(statistics.PlacementCount == 1)
 			B3D_TEST_ASSERT(statistics.CacheHits == 0)
 			B3D_TEST_ASSERT(statistics.CacheMisses == 0)
 
@@ -5097,7 +5018,7 @@ void GpuBackendTestSuite::TestTransientResourceExecution()
 			// Aliasing keeps the peak memory use of the scope below the total size of its allocations. The second frame reuses every cached
 			// resource.
 			GpuTransientStatistics statistics = allocator.GetStatistics();
-			B3D_TEST_ASSERT(statistics.AllocationCount == 3)
+			B3D_TEST_ASSERT(statistics.PlacementCount == 3)
 			if(isBufferAliased)
 				B3D_TEST_ASSERT(statistics.LastScope.PeakUsed < statistics.LastScope.RequestedBytes)
 
@@ -5126,7 +5047,7 @@ void GpuBackendTestSuite::TestTransientResourceExecution()
 			allocator.EndScope();
 
 			statistics = allocator.GetStatistics();
-			B3D_TEST_ASSERT(statistics.AllocationCount == 1)
+			B3D_TEST_ASSERT(statistics.PlacementCount == 1)
 			B3D_TEST_ASSERT(statistics.CacheHits == (isBufferAliased ? 1u : 0u))
 
 			device->WaitUntilIdle();
@@ -5139,3 +5060,781 @@ void GpuBackendTestSuite::TestTransientResourceExecution()
 		}
 	}, "GpuBackendTestSuite::TestTransientResourceExecution", true);
 }
+
+void GpuBackendTestSuite::TestTransientResourcePlacement()
+{
+	GpuBackend& backend = GpuBackend::Instance();
+	if(backend.GetDeviceCount() == 0)
+		return;
+
+	const TShared<GpuDevice> device = backend.GetDevice(0);
+	GetRenderThread().PostCommand([this, &device]()
+	{
+		const TransientConfigurationScope configurationScope(4, 2, 2);
+
+		GpuSubmissionTimeline timeline;
+		timeline.AddSubmission(GpuQueueId(GQT_GRAPHICS, 0), GpuQueueMask::kNone);
+
+		GpuTransientResourceAllocator allocator(*device);
+
+		TextureCreateInformation textureInformation;
+		textureInformation.Name = "Placed texture";
+		textureInformation.Width = 64;
+		textureInformation.Height = 64;
+		textureInformation.Format = PF_RGBA8;
+		textureInformation.Usage = TextureUsageFlag::RenderTarget;
+
+		const TArrayView<const GpuTransientLastUse> noUses;
+		const bool isAliased = device->GetTransientHeapPool(device->GetMemoryRequirements(textureInformation).MemoryType) != nullptr;
+
+		// Unplaced textures have no memory. Placement creates the native resource of a new texture.
+		TShared<render::Texture> textures[2];
+		{
+			for(TShared<render::Texture>& texture : textures)
+			{
+				texture = allocator.GetOrCreateTexture(textureInformation);
+				B3D_TEST_ASSERT(texture != nullptr)
+				if(texture == nullptr)
+					return;
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+				B3D_TEST_ASSERT(texture->IsUnplaced())
+#endif
+			}
+
+			B3D_TEST_ASSERT(textures[0] != textures[1])
+
+			GpuTransientScope& scope = allocator.BeginScope(timeline);
+			for(const TShared<render::Texture>& texture : textures)
+			{
+				const GpuTransientPlacement placement = scope.PlaceTexture(*texture, 0);
+				B3D_TEST_ASSERT(!placement.Recreated)
+				B3D_TEST_ASSERT(texture->HasFixedLocation() == isAliased)
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+				B3D_TEST_ASSERT(!texture->IsUnplaced())
+#endif
+
+				scope.Release(*texture, noUses);
+			}
+
+			allocator.EndScope();
+			device->EndFrame();
+
+			const GpuTransientStatistics statistics = allocator.GetStatistics();
+			B3D_TEST_ASSERT(statistics.PlacementCount == 2)
+			B3D_TEST_ASSERT(statistics.CacheMisses == (isAliased ? 2u : 0u))
+			B3D_TEST_ASSERT(statistics.CachedTextures == (isAliased ? 2u : 0u))
+		}
+
+		// Validation: only unplaced textures can be placed, and their first use cannot be on a transfer queue
+		{
+			GpuSubmissionTimeline transferTimeline;
+			transferTimeline.AddSubmission(GpuQueueId(GQT_TRANSFER, 0), GpuQueueMask::kNone);
+
+			const TShared<render::Texture> texture = allocator.GetOrCreateTexture(textureInformation);
+			B3D_TEST_ASSERT(texture != nullptr)
+
+			LoggingScope logs(*this);
+			logs.ExpectError("Only an unplaced transient resource can be placed.");
+			logs.ExpectError("The first use of transient texture 'Placed texture' cannot be on a transfer queue.");
+
+			GpuTransientScope& scope = allocator.BeginScope(timeline);
+			scope.PlaceTexture(*device->CreateTexture(textureInformation), 0);
+			allocator.EndScope();
+
+			// The texture remains unplaced
+			GpuTransientScope& transferScope = allocator.BeginScope(transferTimeline);
+			if(texture != nullptr)
+				transferScope.PlaceTexture(*texture, 0);
+
+			allocator.EndScope();
+			if(texture != nullptr)
+				allocator.Return(*texture);
+
+			device->EndFrame();
+		}
+
+		if(!isAliased)
+			return;
+
+		// The same requests in the same order return the same textures, which keep their memory
+		{
+			const TShared<render::Texture> first = allocator.GetOrCreateTexture(textureInformation);
+			const TShared<render::Texture> second = allocator.GetOrCreateTexture(textureInformation);
+			B3D_TEST_ASSERT(first == textures[0] && second == textures[1])
+
+			GpuTransientScope& scope = allocator.BeginScope(timeline);
+			for(const TShared<render::Texture>& texture : textures)
+			{
+				B3D_TEST_ASSERT(!scope.PlaceTexture(*texture, 0).Recreated)
+				scope.Release(*texture, noUses);
+			}
+
+			allocator.EndScope();
+			device->EndFrame();
+
+			const GpuTransientStatistics statistics = allocator.GetStatistics();
+			B3D_TEST_ASSERT(statistics.CacheHits == 2)
+			B3D_TEST_ASSERT(statistics.CacheMisses == 0)
+			B3D_TEST_ASSERT(statistics.Relocations == 0)
+		}
+
+		// Both textures were cached at the memory the first one released. While the first one holds it, the second one is recreated
+		// at other memory.
+		{
+			for(const TShared<render::Texture>& texture : textures)
+				B3D_TEST_ASSERT(allocator.GetOrCreateTexture(textureInformation) == texture)
+
+			GpuTransientScope& scope = allocator.BeginScope(timeline);
+			B3D_TEST_ASSERT(!scope.PlaceTexture(*textures[0], 0).Recreated)
+			B3D_TEST_ASSERT(scope.PlaceTexture(*textures[1], 0).Recreated)
+			B3D_TEST_ASSERT(textures[1]->HasFixedLocation())
+
+			for(const TShared<render::Texture>& texture : textures)
+				scope.Release(*texture, noUses);
+
+			allocator.EndScope();
+			device->EndFrame();
+
+			const GpuTransientStatistics statistics = allocator.GetStatistics();
+			B3D_TEST_ASSERT(statistics.CacheHits == 1)
+			B3D_TEST_ASSERT(statistics.Relocations == 1)
+			B3D_TEST_ASSERT(statistics.CacheMisses == 0)
+			B3D_TEST_ASSERT(statistics.CachedTextures == 2)
+		}
+
+		// A held texture is neither returned again nor evicted, even though it was cached first. Eviction beyond the cache size
+		// releases the oldest of the others.
+		TShared<render::Texture> survivor;
+		{
+			const TShared<render::Texture> held = allocator.GetOrCreateTexture(textureInformation);
+			B3D_TEST_ASSERT(held == textures[0])
+
+			TShared<render::Texture> placed[3];
+			for(TShared<render::Texture>& texture : placed)
+			{
+				texture = allocator.GetOrCreateTexture(textureInformation);
+				B3D_TEST_ASSERT(texture != nullptr && texture != held)
+				if(texture == nullptr)
+					return;
+			}
+
+			B3D_TEST_ASSERT(placed[0] == textures[1])
+
+			GpuTransientScope& scope = allocator.BeginScope(timeline);
+			for(const TShared<render::Texture>& texture : placed)
+			{
+				scope.PlaceTexture(*texture, 0);
+				scope.Release(*texture, noUses);
+			}
+
+			allocator.EndScope();
+			device->EndFrame();
+			B3D_TEST_ASSERT(allocator.GetStatistics().CachedTextures == 2)
+
+			// The held texture and the last placed one remain
+			allocator.Return(*held);
+			B3D_TEST_ASSERT(allocator.GetOrCreateTexture(textureInformation) == held)
+			B3D_TEST_ASSERT(allocator.GetOrCreateTexture(textureInformation) == placed[2])
+			allocator.Return(*held);
+			allocator.Return(*placed[2]);
+			survivor = placed[2];
+		}
+
+		// A detached texture leaves the cache, and keeps its native resource until it is moved off transient memory
+		{
+			const TShared<render::Texture> detached = allocator.GetOrCreateTexture(textureInformation);
+			B3D_TEST_ASSERT(detached == textures[0])
+			allocator.Detach(*detached);
+			B3D_TEST_ASSERT(allocator.GetStatistics().CachedTextures == 1)
+			B3D_TEST_ASSERT(detached->HasFixedLocation())
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+			B3D_TEST_ASSERT(!detached->IsUnplaced())
+#endif
+
+			const u32 memoryType = device->GetMemoryRequirements(textureInformation).MemoryType;
+			detached->SetAllocation(GpuAllocation::CreatePending(device->GetPersistentAllocator(memoryType)), GpuObjectCreateFlag::None);
+			B3D_TEST_ASSERT(!detached->HasFixedLocation())
+
+			const TShared<render::Texture> next = allocator.GetOrCreateTexture(textureInformation);
+			B3D_TEST_ASSERT(next == survivor)
+			allocator.Return(*next);
+
+			// A texture created anew has nothing in the cache to remove
+			const TShared<render::Texture> held = allocator.GetOrCreateTexture(textureInformation);
+			const TShared<render::Texture> created = allocator.GetOrCreateTexture(textureInformation);
+			B3D_TEST_ASSERT(created != nullptr && created != held && created != detached)
+			if(created != nullptr)
+				allocator.Detach(*created);
+
+			allocator.Return(*held);
+			B3D_TEST_ASSERT(allocator.GetStatistics().CachedTextures == 1)
+		}
+
+		device->WaitUntilIdle();
+	}, "GpuBackendTestSuite::TestTransientResourcePlacement", true);
+}
+
+#if B3D_GPU_EXPLICIT_BARRIERS
+namespace
+{
+	/** Returns the source an explicit alias acquire needs to cover the accesses @p acquire orders after. */
+	GpuAccessState GetAliasAcquireSource(const render::GpuAliasAcquire& acquire)
+	{
+		GpuAccessFlags access;
+		if(acquire.Source.ReadStages != GpuStageFlag::None)
+			access |= GpuAccessFlag::Read;
+
+		if(acquire.Source.WriteStages != GpuStageFlag::None)
+			access |= GpuAccessFlag::Write;
+
+		return GpuAccessState(acquire.Source.GetStages(), access);
+	}
+
+	/** Returns an explicit alias acquire of @p buffer, placed with @p acquire, into @p destination. */
+	GpuExplicitBufferBarrier CreateAliasAcquire(const TShared<render::GpuBuffer>& buffer, const render::GpuAliasAcquire& acquire, const GpuAccessState& destination)
+	{
+		return GpuExplicitBufferBarrier(buffer, GetAliasAcquireSource(acquire), destination, GpuBarrierFlag::AliasAcquire);
+	}
+
+	/** Returns an explicit alias acquire of @p texture, placed with @p acquire, into @p destination. */
+	GpuExplicitTextureBarrier CreateAliasAcquire(const TShared<render::Texture>& texture, const render::GpuAliasAcquire& acquire, const GpuAccessState& destination)
+	{
+		return GpuExplicitTextureBarrier(texture, GetAliasAcquireSource(acquire), destination, GpuTextureSubresourceRange::AllSubresources(), GpuBarrierFlag::AliasAcquire);
+	}
+} // namespace
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+void GpuBackendTestSuite::TestExplicitBarrierResourceValidation()
+{
+	GpuBackend& backend = GpuBackend::Instance();
+	if(backend.GetDeviceCount() == 0 || !backend.GetDevice(0)->GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS))
+		return;
+
+	// Shaders are resources, which are created outside of the render thread
+	const TShared<GpuDevice> device = backend.GetDevice(0);
+	const TShared<GpuComputePipelineState> pipeline = CreateExplicitBarrierDispatchPipeline(*device);
+
+	// The D3D12 debug layer tracks layouts natively and fails to close a command list that copies into a texture in another layout
+	const bool recordsMisdeclaredLayouts = String(backend.GetBackendName()) != "bsfD3D12GpuBackend";
+
+	GetRenderThread().PostCommand([this, &device, &pipeline, recordsMisdeclaredLayouts]()
+	{
+		static constexpr u32 kSize = 16;
+		const GpuAccessFlags readWrite = GpuAccessFlag::Read | GpuAccessFlag::Write;
+		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write, GpuImageLayout::TransferDestination);
+		const GpuAccessState transferRead(GpuStageFlag::Transfer, GpuAccessFlag::Read, GpuImageLayout::TransferSource);
+		const GpuAccessState computeReadWrite(GpuStageFlag::ComputeShaderNonUniform, readWrite, GpuImageLayout::General);
+
+		// Declares accesses in other stages than the ones the commands access in
+		const GpuAccessState host(GpuStageFlag::Host, readWrite);
+
+		const GpuBufferCreateInformation bufferInformation = GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize,
+			GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU);
+
+		TextureCreateInformation textureInformation;
+		textureInformation.Width = kSize;
+		textureInformation.Height = kSize;
+		textureInformation.Format = PF_R32U;
+		textureInformation.Usage = TextureUsageFlag::AllowUnorderedAccessOnTheGPU;
+
+		const auto fnCreateBuffer = [&device, &bufferInformation](const char* name)
+		{
+			const TShared<render::GpuBuffer> buffer = device->CreateGpuBuffer(bufferInformation);
+			buffer->SetName(name);
+			return buffer;
+		};
+
+		const auto fnCreateTexture = [&device, &textureInformation](const char* name)
+		{
+			TextureCreateInformation information = textureInformation;
+			information.Name = name;
+			return device->CreateTexture(information);
+		};
+
+		const TShared<GpuWorkContext> context = GpuWorkContext::Create(*device);
+		GpuCommandBufferPoolCreateInformation poolInformation = GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS);
+		poolInformation.ExplicitBarriers = true;
+		const TShared<GpuCommandBufferPool> pool = device->CreateGpuCommandBufferPool(poolInformation);
+
+		// The command buffers share one validator, as a frame graph's do, so resource states carry over from one to the next
+		GpuExplicitBarrierValidator validator;
+		const TShared<GpuCommandBuffer> commandBuffer = pool->Create(GpuCommandBufferCreateInformation::Create("Explicit barrier resource validation"));
+		commandBuffer->SetValidator(&validator);
+
+		GpuSubmissionTimeline timeline;
+		timeline.AddSubmission(GpuQueueId(GQT_GRAPHICS, 0), GpuQueueMask::kNone);
+
+		GpuTransientResourceAllocator allocator(*device);
+		const TArrayView<const GpuTransientLastUse> noUses;
+
+		GpuAccessScope transferAccess;
+		transferAccess.Add(GpuStageFlag::Transfer, GpuAccessFlag::Write);
+		const GpuTransientLastUse transferLastUse(0, transferAccess);
+
+		// A cached texture returned again keeps its native resource, but has no memory until it is placed
+		TShared<render::Texture> unplaced;
+		if(device->GetTransientHeapPool(device->GetMemoryRequirements(textureInformation).MemoryType) != nullptr)
+		{
+			TextureCreateInformation unplacedInformation = textureInformation;
+			unplacedInformation.Name = "Unplaced";
+
+			GpuTransientScope& scope = allocator.BeginScope(timeline);
+			const GpuTransientTexture cached = scope.AllocateTexture(unplacedInformation, 0);
+			if(cached.Texture != nullptr)
+				scope.Release(*cached.Texture, noUses);
+
+			allocator.EndScope();
+
+			unplaced = allocator.GetOrCreateTexture(unplacedInformation);
+			B3D_TEST_ASSERT(unplaced != nullptr && unplaced == cached.Texture)
+		}
+
+		// Three buffers on the same memory, each placed over the previous one
+		GpuTransientScope& scope = allocator.BeginScope(timeline);
+		const GpuTransientBuffer superseded = scope.AllocateBuffer(bufferInformation, 0);
+		if(superseded.Buffer != nullptr)
+			scope.Release(*superseded.Buffer, TArrayView<const GpuTransientLastUse>(&transferLastUse, 1));
+
+		const GpuTransientBuffer acquired = scope.AllocateBuffer(bufferInformation, 0);
+		if(acquired.Buffer != nullptr)
+			scope.Release(*acquired.Buffer, TArrayView<const GpuTransientLastUse>(&transferLastUse, 1));
+
+		const GpuTransientBuffer misacquired = scope.AllocateBuffer(bufferInformation, 0);
+		if(misacquired.Buffer != nullptr)
+			scope.Release(*misacquired.Buffer, noUses);
+
+		B3D_TEST_ASSERT(superseded.Buffer != nullptr && acquired.Buffer != nullptr && misacquired.Buffer != nullptr)
+		const bool hasAliasedBuffers = superseded.Buffer != nullptr && acquired.Buffer != nullptr && misacquired.Buffer != nullptr &&
+			superseded.Buffer->HasFixedLocation() && superseded.Buffer->GetGpuResource() != nullptr;
+
+		if(hasAliasedBuffers)
+		{
+			superseded.Buffer->SetName("Superseded");
+			acquired.Buffer->SetName("Acquired");
+			misacquired.Buffer->SetName("AliasAcquireSource");
+			B3D_TEST_ASSERT(acquired.Acquire.Source.WriteStages == GpuStageFlag::Transfer)
+			B3D_TEST_ASSERT(misacquired.Acquire.Source.WriteStages == GpuStageFlag::Transfer)
+
+			validator.DeclareAliasAcquire(*superseded.Buffer, superseded.Acquire);
+			validator.DeclareAliasAcquire(*acquired.Buffer, acquired.Acquire);
+			validator.DeclareAliasAcquire(*misacquired.Buffer, misacquired.Acquire);
+		}
+
+		// Two resources on the same memory, outside of the allocator. The successor supersedes the predecessor.
+		const TShared<render::GpuBuffer> predecessor = fnCreateBuffer("TogetherPredecessor");
+		const TShared<render::GpuBuffer> successor = fnCreateBuffer("TogetherSuccessor");
+		IGpuResource* const successorPredecessors[] = { predecessor->GetGpuResource() };
+		GpuAliasAcquire successorAcquire;
+		successorAcquire.Predecessors = TArrayView<IGpuResource* const>(successorPredecessors, 1);
+		validator.DeclareAliasAcquire(*successor, successorAcquire);
+
+		const TShared<render::GpuBuffer> beforeAliasAcquire = fnCreateBuffer("BeforeAliasAcquire");
+		validator.DeclareAliasAcquire(*beforeAliasAcquire, GpuAliasAcquire());
+
+		LoggingScope logs(*this);
+		if(hasAliasedBuffers)
+		{
+			logs.ExpectError("The resource was used after an alias acquire of another resource took over its memory. Buffer: 'Superseded'.");
+			logs.ExpectError("The source of an alias acquire is missing stages or writes of the source of its GpuAliasAcquire. Buffer: 'AliasAcquireSource'.");
+		}
+
+		logs.ExpectError("A barrier of an earlier resource on the memory is issued together with the alias acquire that supersedes it. Resource: 'TogetherSuccessor'.");
+		logs.ExpectError("The resource was used before its alias acquire. Buffer: 'BeforeAliasAcquire'.");
+
+		if(unplaced != nullptr)
+			logs.ExpectError("The resource was used while it is unplaced, without memory from its transient resource allocator. Place it first. Image: 'Unplaced'.");
+
+		logs.ExpectError("The source of an explicit barrier is missing stages that accessed the resource since the previous barrier. Buffer: 'CarriedState'.");
+		logs.ExpectError("The resource was accessed in stages its resting state does not allow, without an explicit barrier. Buffer: 'RestingBuffer'.");
+		if(recordsMisdeclaredLayouts)
+			logs.ExpectError("The resource was accessed in stages its resting state does not allow, without an explicit barrier. Image: 'RestingTexture'.");
+
+		if(pipeline != nullptr)
+		{
+			const String hazard = "The resource was accessed by a draw or dispatch after another draw or dispatch wrote it, without a barrier in between.";
+			logs.ExpectError(hazard + " Buffer: 'InPassHazard'.");
+			logs.ExpectError(hazard + " Image: 'InPassHazardTexture'.");
+		}
+
+		const TShared<render::GpuBuffer> source = fnCreateBuffer("Source");
+		commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(source, GpuAccessState(), transferRead));
+
+		// An alias acquire ends the lifetime of the earlier resources on the memory, and must cover the accesses they were released with
+		if(hasAliasedBuffers)
+		{
+			commandBuffer->IssueExplicitBarriers(CreateAliasAcquire(superseded.Buffer, superseded.Acquire, transferWrite));
+			commandBuffer->CopyBufferToBuffer(source, superseded.Buffer, 0, 0, sizeof(u32));
+			commandBuffer->IssueExplicitBarriers(CreateAliasAcquire(acquired.Buffer, acquired.Acquire, transferWrite));
+			commandBuffer->CopyBufferToBuffer(source, acquired.Buffer, 0, 0, sizeof(u32));
+			commandBuffer->CopyBufferToBuffer(source, superseded.Buffer, 0, 0, sizeof(u32));
+
+			commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(misacquired.Buffer, GpuAccessState(), transferWrite, GpuBarrierFlag::AliasAcquire));
+		}
+
+		// The barriers of one call are not ordered against each other, so an alias acquire must not share a call with a barrier of a
+		// resource it supersedes
+		{
+			const GpuExplicitBufferBarrier barriers[] = { GpuExplicitBufferBarrier(predecessor, GpuAccessState(), transferWrite),
+				GpuExplicitBufferBarrier(successor, GpuAccessState(), transferWrite, GpuBarrierFlag::AliasAcquire) };
+			commandBuffer->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(barriers, 2)));
+		}
+
+		// A resource with a declared alias acquire must not be used before it
+		commandBuffer->CopyBufferToBuffer(source, beforeAliasAcquire, 0, 0, sizeof(u32));
+
+		// An unplaced texture must be placed before its first use
+		if(unplaced != nullptr)
+			commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(unplaced, GpuAccessState(), transferWrite));
+
+		// With resting state validation, resources that no barrier covers must be accessed within their resting state. The
+		// validator identifies resources by address, so every resource must outlive the recording.
+		const TShared<render::GpuBuffer> restingBuffer = fnCreateBuffer("RestingBuffer");
+		const TShared<render::Texture> restingTexture = fnCreateTexture("RestingTexture");
+		const ImageSubresourcePitch pitch = restingTexture->GetStagingBufferPitchForSubresource(0, 0);
+		const TShared<render::GpuBuffer> upload = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingWrite(pitch.RowPitch * pitch.SliceHeight * sizeof(u32)));
+		upload->SetName("Upload");
+		commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(upload, GpuAccessState(), transferRead));
+
+		const bool validateRestingStates = gGpuValidateRestingStates;
+		gGpuValidateRestingStates.Set(true);
+
+		commandBuffer->CopyBufferToBuffer(source, restingBuffer, 0, 0, sizeof(u32));
+		if(recordsMisdeclaredLayouts)
+			commandBuffer->CopyBufferToTexture(upload, restingTexture, 0, 0, 0);
+
+		gGpuValidateRestingStates.Set(validateRestingStates);
+
+		// A dispatch must not access what an earlier dispatch wrote without a barrier in between
+		if(pipeline != nullptr)
+		{
+			const TShared<render::GpuBuffer> hazardBuffer = fnCreateBuffer("InPassHazard");
+			const TShared<render::Texture> hazardTexture = fnCreateTexture("InPassHazardTexture");
+			const auto fnIssueBarriers = [&commandBuffer, &hazardBuffer, &hazardTexture](const GpuAccessState& source, const GpuAccessState& destination)
+			{
+				const GpuExplicitBufferBarrier bufferBarrier(hazardBuffer, source, destination);
+				const GpuExplicitTextureBarrier textureBarrier(hazardTexture, source, destination);
+				commandBuffer->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(&bufferBarrier, 1), TArrayView<const GpuExplicitTextureBarrier>(&textureBarrier, 1)));
+			};
+
+			const TShared<render::GpuParameterSet> parameters = context->GetParameterSetPool().Create(pipeline->GetParameterLayout()->GetSet(0), 0);
+			parameters->SetStorageBuffer("OutputBuffer", hazardBuffer);
+			parameters->SetStorageTexture("OutputTexture", hazardTexture, TextureSurface());
+
+			fnIssueBarriers(GpuAccessState(), computeReadWrite);
+			commandBuffer->SetGpuComputePipelineState(pipeline);
+			commandBuffer->SetGpuParameterSet(parameters);
+			commandBuffer->DispatchCompute(1, 1, 1);
+			commandBuffer->DispatchCompute(1, 1, 1);
+
+			// A barrier orders the next dispatch after the earlier writes
+			fnIssueBarriers(computeReadWrite, computeReadWrite);
+			commandBuffer->DispatchCompute(1, 1, 1);
+		}
+
+		// A barrier on the next command buffer must cover the accesses on the previous one
+		const TShared<render::GpuBuffer> carried = fnCreateBuffer("CarriedState");
+		commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(carried, GpuAccessState(), transferWrite));
+		commandBuffer->CopyBufferToBuffer(source, carried, 0, 0, sizeof(u32));
+		commandBuffer->End();
+
+		const TShared<GpuCommandBuffer> nextCommandBuffer = pool->Create(GpuCommandBufferCreateInformation::Create("Explicit barrier resource validation, continued"));
+		nextCommandBuffer->SetValidator(&validator);
+		nextCommandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(carried, host, transferRead));
+		nextCommandBuffer->End();
+
+		// The command buffers are never submitted
+		if(unplaced != nullptr)
+			allocator.Return(*unplaced);
+
+		allocator.EndScope();
+		pool->Reset();
+
+		// Backends may only report their validation messages when the device next goes idle, which must happen within the logging scope
+		device->WaitUntilIdle();
+	}, "GpuBackendTestSuite::TestExplicitBarrierResourceValidation", true);
+}
+#endif
+
+void GpuBackendTestSuite::TestTransientExplicitAliasing()
+{
+	GpuBackend& backend = GpuBackend::Instance();
+	if(backend.GetDeviceCount() == 0 || !backend.GetDevice(0)->GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS))
+		return;
+
+	// Shaders are resources, which are created outside of the render thread
+	const TShared<GpuDevice> device = backend.GetDevice(0);
+	const TShared<GpuComputePipelineState> pipeline = CreateExplicitBarrierDispatchPipeline(*device);
+	GetRenderThread().PostCommand([this, &device, &pipeline]()
+	{
+		static constexpr u32 kSize = 16;
+		static constexpr u32 kDispatchPattern = 0x5A000000;
+		static constexpr u32 kBufferBytes = kSize * kSize * sizeof(u32);
+		const GpuAccessFlags readWrite = GpuAccessFlag::Read | GpuAccessFlag::Write;
+		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write, GpuImageLayout::TransferDestination);
+		const GpuAccessState transferRead(GpuStageFlag::Transfer, GpuAccessFlag::Read, GpuImageLayout::TransferSource);
+		const GpuAccessState hostRead(GpuStageFlag::Host, GpuAccessFlag::Read);
+		const GpuAccessState computeReadWrite(GpuStageFlag::ComputeShaderNonUniform, readWrite, GpuImageLayout::General);
+
+		const GpuBufferCreateInformation bufferInformation = GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize,
+			GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU);
+
+		TextureCreateInformation textureInformation;
+		textureInformation.Name = "Transient aliased texture";
+		textureInformation.Width = kSize;
+		textureInformation.Height = kSize;
+		textureInformation.Format = PF_R32U;
+		textureInformation.Usage = TextureUsageFlag::AllowUnorderedAccessOnTheGPU;
+
+		const ImageSubresourcePitch pitch = device->CreateTexture(textureInformation)->GetStagingBufferPitchForSubresource(0, 0);
+		const u32 stagingElementCount = pitch.RowPitch * pitch.SliceHeight;
+
+		// Each resource gets its own pattern, with the resource index in the high bits and the element index in the low bits
+		static constexpr u32 kResourceCount = 4;
+		TShared<render::GpuBuffer> uploads[kResourceCount];
+		TShared<render::GpuBuffer> readbacks[kResourceCount];
+		for(u32 resourceIndex = 0; resourceIndex < kResourceCount; resourceIndex++)
+		{
+			uploads[resourceIndex] = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingWrite(stagingElementCount * sizeof(u32)));
+			readbacks[resourceIndex] = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(stagingElementCount * sizeof(u32)));
+
+			const render::GpuBufferMappedScope mapping = uploads[resourceIndex]->Map(GpuMapOption::Write);
+			B3D_TEST_ASSERT(mapping.IsValid())
+			if(!mapping.IsValid())
+				return;
+
+			u32* elements = static_cast<u32*>(mapping.GetMappedMemory());
+			for(u32 elementIndex = 0; elementIndex < stagingElementCount; elementIndex++)
+				elements[elementIndex] = ((resourceIndex + 1) << 24) | elementIndex;
+		}
+
+		// Checks that a readback holds @p pattern in the high bits of every element. The low bits hold the element index of a copy,
+		// or the thread index of a dispatch.
+		auto fnCheckReadback = [this, &pitch](const TShared<render::GpuBuffer>& readback, bool isTexture, u32 pattern, bool isDispatch, const String& caseName)
+		{
+			const render::GpuBufferMappedScope mapping = readback->Map(GpuMapOption::Read);
+			B3D_TEST_ASSERT(mapping.IsValid())
+			if(!mapping.IsValid())
+				return;
+
+			const u32* elements = static_cast<const u32*>(mapping.GetMappedMemory());
+			bool matches = true;
+			for(u32 row = 0; row < kSize; row++)
+			{
+				for(u32 column = 0; column < kSize; column++)
+				{
+					const u32 elementIndex = isTexture ? row * pitch.RowPitch + column : row * kSize + column;
+					matches &= elements[elementIndex] == (pattern | (isDispatch ? row * kSize + column : elementIndex));
+				}
+			}
+
+			B3D_TEST_ASSERT_MSG(matches, caseName + ": the readback does not hold the written values.")
+		};
+
+		const auto fnIssueReadbackBarriers = [&readbacks](render::GpuCommandBuffer& commands, const GpuAccessState& source, const GpuAccessState& destination)
+		{
+			GpuExplicitBufferBarrier barriers[] = { GpuExplicitBufferBarrier(readbacks[0], source, destination), GpuExplicitBufferBarrier(readbacks[1], source, destination),
+				GpuExplicitBufferBarrier(readbacks[2], source, destination), GpuExplicitBufferBarrier(readbacks[3], source, destination) };
+			commands.IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(barriers, kResourceCount)));
+		};
+
+		const TShared<GpuWorkContext> context = GpuWorkContext::Create(*device);
+		GpuCommandBufferPoolCreateInformation poolInformation = GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS);
+		poolInformation.ExplicitBarriers = true;
+		const TShared<GpuCommandBufferPool> pool = device->CreateGpuCommandBufferPool(poolInformation);
+
+		GpuSubmissionTimeline timeline;
+		timeline.AddSubmission(GpuQueueId(GQT_GRAPHICS, 0), GpuQueueMask::kNone);
+
+		GpuTransientResourceAllocator allocator(*device);
+		const TArrayView<const GpuTransientLastUse> noUses;
+
+		GpuAccessScope transferAccess;
+		transferAccess.Add(GpuStageFlag::Transfer, readWrite);
+
+		// Two buffers, then two textures, each placed over the memory the one before it released. Passes count the releases.
+		GpuTransientScope& scope = allocator.BeginScope(timeline);
+		const GpuTransientLastUse lastUses[] = { GpuTransientLastUse(0, transferAccess, 1), GpuTransientLastUse(0, transferAccess, 2),
+			GpuTransientLastUse(0, transferAccess, 3), GpuTransientLastUse(0, transferAccess, 4) };
+
+		const GpuTransientBuffer firstBuffer = scope.AllocateBuffer(bufferInformation, 0);
+		if(firstBuffer.Buffer != nullptr)
+			scope.Release(*firstBuffer.Buffer, TArrayView<const GpuTransientLastUse>(&lastUses[0], 1));
+
+		const GpuTransientBuffer secondBuffer = scope.AllocateBuffer(bufferInformation, 0);
+		if(secondBuffer.Buffer != nullptr)
+			scope.Release(*secondBuffer.Buffer, TArrayView<const GpuTransientLastUse>(&lastUses[1], 1));
+
+		const GpuTransientTexture firstTexture = scope.AllocateTexture(textureInformation, 0);
+		if(firstTexture.Texture != nullptr)
+			scope.Release(*firstTexture.Texture, TArrayView<const GpuTransientLastUse>(&lastUses[2], 1));
+
+		const GpuTransientTexture secondTexture = scope.AllocateTexture(textureInformation, 0);
+		if(secondTexture.Texture != nullptr)
+			scope.Release(*secondTexture.Texture, TArrayView<const GpuTransientLastUse>(&lastUses[3], 1));
+
+		const bool isAllocated = firstBuffer.Buffer != nullptr && secondBuffer.Buffer != nullptr && firstTexture.Texture != nullptr && secondTexture.Texture != nullptr;
+		B3D_TEST_ASSERT(isAllocated)
+		if(!isAllocated)
+		{
+			allocator.EndScope();
+			return;
+		}
+
+		// The second resource of each pair orders its first use after the transfers of the first one
+		const bool isBufferAliased = firstBuffer.Buffer->HasFixedLocation();
+		const bool isTextureAliased = firstTexture.Texture->HasFixedLocation();
+		if(isBufferAliased)
+		{
+			B3D_TEST_ASSERT(secondBuffer.Acquire.Source.GetStages() == GpuStageFlag::Transfer)
+			B3D_TEST_ASSERT(secondBuffer.LatestSourcePass == 1u)
+		}
+
+		if(isTextureAliased)
+		{
+			B3D_TEST_ASSERT(secondTexture.Acquire.Source.GetStages() == GpuStageFlag::Transfer)
+			B3D_TEST_ASSERT(secondTexture.LatestSourcePass == 3u)
+		}
+
+		const TShared<render::GpuBuffer> unrelated = device->CreateGpuBuffer(bufferInformation);
+		const TShared<GpuCommandBuffer> commands = pool->Create(GpuCommandBufferCreateInformation::Create("Transient explicit aliasing"));
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+		// Development builds validate the alias acquires as a frame graph does, with one validator per scope
+		GpuExplicitBarrierValidator validator;
+		commands->SetValidator(&validator);
+		validator.DeclareAliasAcquire(*firstBuffer.Buffer, firstBuffer.Acquire);
+		validator.DeclareAliasAcquire(*secondBuffer.Buffer, secondBuffer.Acquire);
+		validator.DeclareAliasAcquire(*firstTexture.Texture, firstTexture.Acquire);
+		validator.DeclareAliasAcquire(*secondTexture.Texture, secondTexture.Acquire);
+#endif
+
+		fnIssueReadbackBarriers(*commands, GpuAccessState(), transferWrite);
+		commands->IssueExplicitBarriers(GpuExplicitBufferBarrier(unrelated, GpuAccessState(), transferWrite));
+
+		// Full alias acquires of the buffers
+		const auto fnWriteAndReadBuffer = [&](const GpuTransientBuffer& buffer, u32 resourceIndex)
+		{
+			commands->IssueExplicitBarriers(CreateAliasAcquire(buffer.Buffer, buffer.Acquire, transferWrite));
+			commands->CopyBufferToBuffer(uploads[resourceIndex], buffer.Buffer, 0, 0, kBufferBytes);
+			commands->IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer.Buffer, transferWrite, transferRead));
+			commands->CopyBufferToBuffer(buffer.Buffer, readbacks[resourceIndex], 0, 0, kBufferBytes);
+		};
+
+		fnWriteAndReadBuffer(firstBuffer, 0);
+		fnWriteAndReadBuffer(secondBuffer, 1);
+
+		// A full alias acquire of the first texture, which may be placed over the buffers
+		commands->IssueExplicitBarriers(CreateAliasAcquire(firstTexture.Texture, firstTexture.Acquire, transferWrite));
+		commands->CopyBufferToTexture(uploads[2], firstTexture.Texture, 0, 0, 0);
+		commands->IssueExplicitBarriers(GpuExplicitTextureBarrier(firstTexture.Texture, transferWrite, transferRead));
+		commands->CopyTextureToBuffer(firstTexture.Texture, readbacks[2], 0, 0);
+
+		// A split alias acquire of the second texture, with unrelated work between the halves
+		const GpuExplicitTextureBarrier splitAcquire = CreateAliasAcquire(secondTexture.Texture, secondTexture.Acquire, transferWrite);
+		const TShared<GpuSplitBarrier> split = device->CreateSplitBarrier();
+		commands->ReleaseBarriers(splitAcquire, split);
+		commands->CopyBufferToBuffer(uploads[3], unrelated, 0, 0, kBufferBytes);
+		commands->AcquireBarriers(splitAcquire, split);
+		commands->CopyBufferToTexture(uploads[3], secondTexture.Texture, 0, 0, 0);
+		commands->IssueExplicitBarriers(GpuExplicitTextureBarrier(secondTexture.Texture, transferWrite, transferRead));
+		commands->CopyTextureToBuffer(secondTexture.Texture, readbacks[3], 0, 0);
+
+		fnIssueReadbackBarriers(*commands, transferWrite, hostRead);
+		context->SubmitCommandBuffer(commands, GpuQueueMask::kNone);
+		allocator.EndScope();
+		device->WaitUntilIdle();
+
+		fnCheckReadback(readbacks[0], false, 1 << 24, false, "Full alias acquire of a buffer");
+		fnCheckReadback(readbacks[1], false, 2 << 24, false, "Full alias acquire of a buffer over another buffer");
+		fnCheckReadback(readbacks[2], true, 3 << 24, false, "Full alias acquire of a texture");
+		fnCheckReadback(readbacks[3], true, 4 << 24, false, "Split alias acquire of a texture over another texture");
+
+		// Aliasing keeps the peak memory use of the scope below the total size of its allocations
+		const GpuTransientStatistics statistics = allocator.GetStatistics();
+		B3D_TEST_ASSERT(statistics.PlacementCount == 4)
+		if(isBufferAliased)
+			B3D_TEST_ASSERT(statistics.LastScope.PeakUsed < statistics.LastScope.RequestedBytes)
+
+		device->EndFrame();
+
+		// Resources bound before they are placed, and then recreated at other memory by the placement, are written by a dispatch
+		if(pipeline != nullptr)
+		{
+			// The first resources come out of the cache again
+			const TShared<render::GpuBuffer> movedBuffer = allocator.GetOrCreateBuffer(bufferInformation);
+			const TShared<render::Texture> movedTexture = allocator.GetOrCreateTexture(textureInformation);
+			B3D_TEST_ASSERT(movedBuffer != nullptr && movedTexture != nullptr)
+			if(movedBuffer == nullptr || movedTexture == nullptr)
+				return;
+
+			B3D_TEST_ASSERT(!isBufferAliased || movedBuffer == firstBuffer.Buffer)
+			B3D_TEST_ASSERT(!isTextureAliased || movedTexture == firstTexture.Texture)
+
+			const TShared<render::GpuParameterSet> parameters = context->GetParameterSetPool().Create(pipeline->GetParameterLayout()->GetSet(0), 0);
+			parameters->SetStorageBuffer("OutputBuffer", movedBuffer);
+			parameters->SetStorageTexture("OutputTexture", movedTexture, TextureSurface());
+
+			// The second resources take the memory the first ones were cached at, so the first ones move
+			GpuTransientScope& movedScope = allocator.BeginScope(timeline);
+			const GpuTransientBuffer bufferBlocker = movedScope.AllocateBuffer(bufferInformation, 0);
+			const GpuTransientTexture textureBlocker = movedScope.AllocateTexture(textureInformation, 0);
+			const GpuTransientPlacement bufferPlacement = movedScope.PlaceBuffer(*movedBuffer, 0);
+			const GpuTransientPlacement texturePlacement = movedScope.PlaceTexture(*movedTexture, 0);
+			B3D_TEST_ASSERT(bufferPlacement.Recreated == isBufferAliased)
+			B3D_TEST_ASSERT(texturePlacement.Recreated == isTextureAliased)
+
+			if(bufferBlocker.Buffer != nullptr)
+				movedScope.Release(*bufferBlocker.Buffer, noUses);
+
+			if(textureBlocker.Texture != nullptr)
+				movedScope.Release(*textureBlocker.Texture, noUses);
+
+			GpuAccessScope dispatchAccess;
+			dispatchAccess.Add(GpuStageFlag::ComputeShaderNonUniform, readWrite);
+			dispatchAccess.Add(GpuStageFlag::Transfer, GpuAccessFlag::Read);
+			const GpuTransientLastUse dispatchLastUse(0, dispatchAccess);
+			movedScope.Release(*movedBuffer, TArrayView<const GpuTransientLastUse>(&dispatchLastUse, 1));
+			movedScope.Release(*movedTexture, TArrayView<const GpuTransientLastUse>(&dispatchLastUse, 1));
+
+			const GpuExplicitBufferBarrier bufferAcquire = CreateAliasAcquire(movedBuffer, bufferPlacement.Acquire, computeReadWrite);
+			const GpuExplicitTextureBarrier textureAcquire = CreateAliasAcquire(movedTexture, texturePlacement.Acquire, computeReadWrite);
+
+			const TShared<GpuCommandBuffer> dispatchCommands = pool->Create(GpuCommandBufferCreateInformation::Create("Transient dispatch after placement"));
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+			GpuExplicitBarrierValidator dispatchValidator;
+			dispatchCommands->SetValidator(&dispatchValidator);
+			dispatchValidator.DeclareAliasAcquire(*movedBuffer, bufferPlacement.Acquire);
+			dispatchValidator.DeclareAliasAcquire(*movedTexture, texturePlacement.Acquire);
+#endif
+
+			fnIssueReadbackBarriers(*dispatchCommands, GpuAccessState(), transferWrite);
+			dispatchCommands->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(&bufferAcquire, 1), TArrayView<const GpuExplicitTextureBarrier>(&textureAcquire, 1)));
+			dispatchCommands->SetGpuComputePipelineState(pipeline);
+			dispatchCommands->SetGpuParameterSet(parameters);
+			dispatchCommands->DispatchCompute(1, 1, 1);
+
+			const GpuExplicitBufferBarrier bufferRead(movedBuffer, computeReadWrite, transferRead);
+			const GpuExplicitTextureBarrier textureRead(movedTexture, computeReadWrite, transferRead);
+			dispatchCommands->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(&bufferRead, 1), TArrayView<const GpuExplicitTextureBarrier>(&textureRead, 1)));
+			dispatchCommands->CopyBufferToBuffer(movedBuffer, readbacks[0], 0, 0, kBufferBytes);
+			dispatchCommands->CopyTextureToBuffer(movedTexture, readbacks[2], 0, 0);
+			fnIssueReadbackBarriers(*dispatchCommands, transferWrite, hostRead);
+			context->SubmitCommandBuffer(dispatchCommands, GpuQueueMask::kNone);
+			allocator.EndScope();
+			device->WaitUntilIdle();
+
+			fnCheckReadback(readbacks[0], false, kDispatchPattern, true, "Dispatch to a buffer recreated after it was bound");
+			fnCheckReadback(readbacks[2], true, kDispatchPattern, true, "Dispatch to a texture recreated after it was bound");
+
+			if(isBufferAliased && isTextureAliased)
+				B3D_TEST_ASSERT(allocator.GetStatistics().Relocations == 2)
+
+			device->EndFrame();
+		}
+	}, "GpuBackendTestSuite::TestTransientExplicitAliasing", true);
+}
+#endif

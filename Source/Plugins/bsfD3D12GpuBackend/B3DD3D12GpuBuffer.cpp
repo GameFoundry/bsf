@@ -229,11 +229,13 @@ void D3D12GpuBuffer::ReleaseBuffer()
 void D3D12GpuBuffer::Initialize()
 {
 	RecreateInternalBuffer();
+	GpuBuffer::Initialize();
 }
 
 void D3D12GpuBuffer::RecreateInternalBuffer()
 {
 	ReleaseBuffer();
+	mResourceGeneration++;
 
 	D3D12GpuDevice& device = static_cast<D3D12GpuDevice&>(mDevice);
 
