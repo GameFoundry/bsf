@@ -503,6 +503,8 @@ namespace b3d::render
 		B3D_ASSERT(!mIsCompiled && "A frame graph can only be compiled once.");
 		mIsCompiled = true;
 
+		FrameAllocatorScope frameScope;
+
 		mStatistics = FrameGraphStatistics();
 		mStatistics.PassCount = (u32)mPasses.size();
 
@@ -520,7 +522,7 @@ namespace b3d::render
 		// Culling. Walking backwards, a pass survives if it writes contents that a later surviving pass or the end of the graph observes.
 		// The contents of imported and extracted resources are observed after the graph ends, and exported contents after their pass.
 		{
-			Vector<bool> isObserved(subresourceCount, false);
+			FrameVector<bool> isObserved(subresourceCount, false);
 			for(const Resource& resource : mResources)
 			{
 				if(resource.Type != ResourceType::Transient || resource.IsExtracted)
@@ -636,7 +638,7 @@ namespace b3d::render
 			};
 
 			// Last accesses of each subresource of the transients: the last write, and every read after it
-			Vector<GpuAccessScope> lastUses(subresourceCount);
+			FrameVector<GpuAccessScope> lastUses(subresourceCount);
 			for(u32 compiledIndex = 0; compiledIndex < (u32)mCompiledPassIndices.size(); compiledIndex++)
 			{
 				const Pass& pass = mPasses[mCompiledPassIndices[compiledIndex]];
@@ -830,7 +832,7 @@ namespace b3d::render
 		};
 
 		// Imports start in their resting state. Transients have no state until their first access.
-		Vector<SubresourceState> states(subresourceCount);
+		FrameVector<SubresourceState> states(subresourceCount);
 		for(const Resource& resource : mResources)
 		{
 			if(resource.Type == ResourceType::Transient)
@@ -844,7 +846,7 @@ namespace b3d::render
 			}
 		}
 
-		Vector<PlannedBarrier> plannedBarriers;
+		FrameVector<PlannedBarrier> plannedBarriers;
 
 		// Plans a barrier of one subresource from its current state into @p destination, before the compiled pass at @p compiledIndex
 		const auto fnPlanBarrier = [&](u32 resourceIndex, u32 subresourceIndex, const GpuAccessState& destination, u32 compiledIndex, bool discardsContents, bool isExport)
@@ -1051,7 +1053,7 @@ namespace b3d::render
 				(u32)barrier.Destination.Stages, (u32)barrier.Destination.Access, (u32)barrier.Destination.Layout, (u32)barrier.Destination.Compression);
 		};
 
-		Vector<u32> order(plannedBarriers.size());
+		FrameVector<u32> order(plannedBarriers.size());
 		for(u32 barrierIndex = 0; barrierIndex < (u32)order.size(); barrierIndex++)
 			order[barrierIndex] = barrierIndex;
 
@@ -1123,7 +1125,7 @@ namespace b3d::render
 			{
 				// Each aspect and layer gets runs of consecutive mips, and layers with the same runs merge
 				const GpuTextureSubresourceRange& fullRange = resource.FullRange;
-				Vector<bool> isIncluded(resource.SubresourceCount, false);
+				FrameVector<bool> isIncluded(resource.SubresourceCount, false);
 				for(u32 orderIndex = runStart; orderIndex < runEnd; orderIndex++)
 					isIncluded[plannedBarriers[order[orderIndex]].SubresourceIndex] = true;
 
