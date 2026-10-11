@@ -12,4 +12,11 @@ namespace b3d
 	 * cannot compile shaders on the host.
 	 */
 	TShared<GpuComputePipelineState> CreateTestDispatchPipeline(GpuDevice& device);
+
+	/**
+	 * Creates a compute pipeline whose thread (x, y) of a 16 x 16 dispatch reads texel (x, y) of the sampled R32U texture InputTexture,
+	 * and writes it into element y * 16 + x of the storage buffer OutputBuffer. Returns null on backends that cannot compile shaders on
+	 * the host.
+	 */
+	TShared<GpuComputePipelineState> CreateTestSamplePipeline(GpuDevice& device);
 } // namespace b3d

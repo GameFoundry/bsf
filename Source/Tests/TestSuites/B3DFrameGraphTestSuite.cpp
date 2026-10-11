@@ -15,6 +15,8 @@
 #include "GpuBackend/B3DGpuPipelineParameterLayout.h"
 #include "GpuBackend/B3DGpuTransientResourceAllocator.h"
 #include "GpuBackend/B3DGpuWorkContext.h"
+#include "Image/B3DPixelData.h"
+#include "Image/B3DTexture.h"
 
 using namespace b3d;
 using namespace b3d::render;
@@ -28,6 +30,8 @@ FrameGraphTestSuite::FrameGraphTestSuite()
 	B3D_ADD_TEST(FrameGraphTestSuite::TestSplitAliasAcquire)
 	B3D_ADD_TEST(FrameGraphTestSuite::TestExtract)
 	B3D_ADD_TEST(FrameGraphTestSuite::TestExport)
+	B3D_ADD_TEST(FrameGraphTestSuite::TestRestingReads)
+	B3D_ADD_TEST(FrameGraphTestSuite::TestLateMemory)
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
 	B3D_ADD_TEST(FrameGraphTestSuite::TestValidation)
@@ -47,8 +51,8 @@ namespace
 	/** Resources and helpers the frame graph tests share. Lives on the render thread. */
 	struct FrameGraphTestContext
 	{
-		FrameGraphTestContext(GpuDevice& device, const TShared<GpuComputePipelineState>& pipeline)
-			: Device(device), Pipeline(pipeline), Context(GpuWorkContext::Create(device))
+		FrameGraphTestContext(GpuDevice& device, const TShared<GpuComputePipelineState>& pipeline, const TShared<GpuComputePipelineState>& samplePipeline = nullptr)
+			: Device(device), Pipeline(pipeline), SamplePipeline(samplePipeline), Context(GpuWorkContext::Create(device))
 		{
 			GpuCommandBufferPoolCreateInformation poolInformation = GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS);
 			poolInformation.ExplicitBarriers = true;
@@ -73,11 +77,12 @@ namespace
 			return buffer;
 		}
 
-		/** Creates a texture the test dispatch can write, and brings it to rest. */
-		TShared<render::Texture> CreateTexture(const char* name) const
+		/** Creates a texture with @p usage, which the test dispatch can write by default, and brings it to rest. */
+		TShared<render::Texture> CreateTexture(const char* name, TextureUsageFlags usage = TextureUsageFlag::AllowUnorderedAccessOnTheGPU) const
 		{
 			TextureCreateInformation information = TextureInformation;
 			information.Name = name;
+			information.Usage = usage;
 
 			const TShared<render::Texture> texture = Device.CreateTexture(information);
 			const TShared<render::GpuCommandBuffer> commands = Pool->Create(GpuCommandBufferCreateInformation::Create("Bring to rest"));
@@ -94,14 +99,20 @@ namespace
 			return Device.CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(size));
 		}
 
-		/** Adds a pass that dispatches the test pipeline into @p buffer and @p texture. */
-		void AddDispatch(FrameGraph& graph, const char* name, const TShared<render::GpuBuffer>& buffer, const TShared<render::Texture>& texture) const
+		/** Adds a pass that dispatches the test pipeline into @p buffer and @p texture, and exports both after it if @p exports is true. */
+		void AddDispatch(FrameGraph& graph, const char* name, const TShared<render::GpuBuffer>& buffer, const TShared<render::Texture>& texture, bool exports = false) const
 		{
 			FrameGraphComputePass pass;
 			const TShared<render::GpuParameterSet> parameters = Context->GetParameterSetPool().Create(Pipeline->GetParameterLayout()->GetSet(0), 0);
 			pass.AddParameterSet(parameters);
 			parameters->SetStorageBuffer("OutputBuffer", buffer);
 			parameters->SetStorageTexture("OutputTexture", texture, TextureSurface());
+
+			if(exports)
+			{
+				pass.Export(buffer);
+				pass.Export(texture);
+			}
 
 			const TShared<GpuComputePipelineState> pipeline = Pipeline;
 			graph.AddComputePass(name, std::move(pass), [pipeline, parameters](FrameGraphPassContext& passContext)
@@ -110,6 +121,40 @@ namespace
 				commands.SetGpuComputePipelineState(pipeline);
 				commands.SetGpuParameterSet(parameters);
 				commands.DispatchCompute(1, 1, 1);
+			});
+		}
+
+		/** Adds a pass that samples @p texture with the test sample pipeline, and writes its texels into @p buffer. */
+		void AddSample(FrameGraph& graph, const char* name, const TShared<render::Texture>& texture, const TShared<render::GpuBuffer>& buffer) const
+		{
+			FrameGraphComputePass pass;
+			const TShared<render::GpuParameterSet> parameters = Context->GetParameterSetPool().Create(SamplePipeline->GetParameterLayout()->GetSet(0), 0);
+			pass.AddParameterSet(parameters);
+			parameters->SetSampledTexture("InputTexture", texture);
+			parameters->SetStorageBuffer("OutputBuffer", buffer);
+
+			const TShared<GpuComputePipelineState> pipeline = SamplePipeline;
+			graph.AddComputePass(name, std::move(pass), [pipeline, parameters](FrameGraphPassContext& passContext)
+			{
+				render::GpuCommandBuffer& commands = passContext.GetCommandBuffer();
+				commands.SetGpuComputePipelineState(pipeline);
+				commands.SetGpuParameterSet(parameters);
+				commands.DispatchCompute(1, 1, 1);
+			});
+		}
+
+		/** Adds a pass that copies @p buffer into @p readback, which the graph imports. */
+		void AddReadback(FrameGraph& graph, const char* name, const TShared<render::GpuBuffer>& buffer, const TShared<render::GpuBuffer>& readback) const
+		{
+			graph.ImportBuffer(readback);
+
+			FrameGraphCopyPass pass;
+			pass.AddSource(buffer);
+			pass.AddDestination(readback);
+
+			graph.AddCopyPass(name, std::move(pass), [buffer, readback](FrameGraphPassContext& passContext)
+			{
+				passContext.GetCommandBuffer().CopyBufferToBuffer(buffer, readback, 0, 0, kSize * kSize * sizeof(u32));
 			});
 		}
 
@@ -171,6 +216,7 @@ namespace
 
 		GpuDevice& Device;
 		TShared<GpuComputePipelineState> Pipeline;
+		TShared<GpuComputePipelineState> SamplePipeline; /**< Pipeline of AddSample(). */
 		TShared<GpuWorkContext> Context;
 		TShared<GpuCommandBufferPool> Pool;
 		TextureCreateInformation TextureInformation;
@@ -406,45 +452,51 @@ void FrameGraphTestSuite::TestExtract()
 		const GpuBufferCreateInformation bufferInformation = GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize,
 			GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU);
 
-		TShared<render::GpuBuffer> extractedBuffer;
-		TShared<render::Texture> extractedTexture;
+		// An exported transient returns to rest after its pass, and the end of the graph finds it there
+		for(const bool isExported : { false, true })
 		{
-			FrameGraph graph(*test.Context);
-			extractedBuffer = graph.CreateBuffer("Extracted buffer", bufferInformation);
-			extractedTexture = graph.CreateTexture("Extracted texture", test.TextureInformation);
-			test.AddDispatch(graph, "Write", extractedBuffer, extractedTexture);
-			graph.ExtractBuffer(extractedBuffer);
-			graph.ExtractTexture(extractedTexture);
+			TShared<render::GpuBuffer> extractedBuffer;
+			TShared<render::Texture> extractedTexture;
+			{
+				FrameGraph graph(*test.Context);
+				extractedBuffer = graph.CreateBuffer("Extracted buffer", bufferInformation);
+				extractedTexture = graph.CreateTexture("Extracted texture", test.TextureInformation);
+				test.AddDispatch(graph, "Write", extractedBuffer, extractedTexture, isExported);
+				graph.ExtractBuffer(extractedBuffer);
+				graph.ExtractTexture(extractedTexture);
 
-			graph.Compile();
-			B3D_TEST_ASSERT(!graph.IsPassCulled(0))
-			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == 0)
-			graph.Execute();
+				graph.Compile();
+				B3D_TEST_ASSERT(!graph.IsPassCulled(0))
+				B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == 0)
+				graph.Execute();
+			}
+
+			// Extracted resources live in persistent memory, which no transient shares
+			B3D_TEST_ASSERT(!extractedBuffer->HasFixedLocation() && !extractedTexture->HasFixedLocation())
+			B3D_TEST_ASSERT(extractedBuffer->GetFrameGraphResourceIndex() == ~0u && extractedTexture->GetFrameGraphResourceIndex() == ~0u)
+
+			device->EndFrame();
+
+			const TShared<render::GpuBuffer> bufferReadback = test.CreateReadback(kSize * kSize * sizeof(u32));
+			const TShared<render::GpuBuffer> textureReadback = test.CreateReadback(test.TextureReadbackSize);
+			{
+				FrameGraph graph(*test.Context);
+				graph.ImportBuffer(extractedBuffer);
+				graph.ImportTexture(extractedTexture);
+				test.AddReadback(graph, "Read", extractedBuffer, extractedTexture, bufferReadback, textureReadback);
+
+				graph.Compile();
+				graph.Execute();
+			}
+
+			test.FinishReadbacks({ bufferReadback, textureReadback });
+			B3D_TEST_ASSERT_MSG(test.HasDispatchValues(bufferReadback, false), isExported ? "The extracted and exported buffer does not hold the values written before its extraction."
+				: "The extracted buffer does not hold the values written before its extraction.")
+			B3D_TEST_ASSERT_MSG(test.HasDispatchValues(textureReadback, true), isExported ? "The extracted and exported texture does not hold the values written before its extraction."
+				: "The extracted texture does not hold the values written before its extraction.")
+
+			device->EndFrame();
 		}
-
-		// Extracted resources live in persistent memory, which no transient shares
-		B3D_TEST_ASSERT(!extractedBuffer->HasFixedLocation() && !extractedTexture->HasFixedLocation())
-		B3D_TEST_ASSERT(extractedBuffer->GetFrameGraphResourceIndex() == ~0u && extractedTexture->GetFrameGraphResourceIndex() == ~0u)
-
-		device->EndFrame();
-
-		const TShared<render::GpuBuffer> bufferReadback = test.CreateReadback(kSize * kSize * sizeof(u32));
-		const TShared<render::GpuBuffer> textureReadback = test.CreateReadback(test.TextureReadbackSize);
-		{
-			FrameGraph graph(*test.Context);
-			graph.ImportBuffer(extractedBuffer);
-			graph.ImportTexture(extractedTexture);
-			test.AddReadback(graph, "Read", extractedBuffer, extractedTexture, bufferReadback, textureReadback);
-
-			graph.Compile();
-			graph.Execute();
-		}
-
-		test.FinishReadbacks({ bufferReadback, textureReadback });
-		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(bufferReadback, false), "The extracted buffer does not hold the values written before its extraction.")
-		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(textureReadback, true), "The extracted texture does not hold the values written before its extraction.")
-
-		device->EndFrame();
 	}, "FrameGraphTestSuite::TestExtract", true);
 }
 
@@ -517,12 +569,143 @@ void FrameGraphTestSuite::TestExport()
 	}, "FrameGraphTestSuite::TestExport", true);
 }
 
+void FrameGraphTestSuite::TestRestingReads()
+{
+	const TShared<GpuDevice> device = GetTestDevice();
+	const TShared<GpuComputePipelineState> pipeline = device != nullptr ? CreateTestDispatchPipeline(*device) : nullptr;
+	const TShared<GpuComputePipelineState> samplePipeline = device != nullptr ? CreateTestSamplePipeline(*device) : nullptr;
+	if(pipeline == nullptr || samplePipeline == nullptr)
+		return;
+
+	LoggingScope logs(*this);
+	logs.IgnoreWarning(kBarrierOnlyWarning);
+
+	// Undeclared accesses are checked against the resting state
+	const bool validateRestingStates = gGpuValidateRestingStates;
+	gGpuValidateRestingStates.Set(true);
+
+	GetRenderThread().PostCommand([this, &device, &pipeline, &samplePipeline]()
+	{
+		const FrameGraphTestContext test(*device, pipeline, samplePipeline);
+
+		// The upload takes the texture from rest and returns it there
+		const TShared<render::Texture> uploaded = test.CreateTexture("Uploaded texture", TextureUsageFlag::Default);
+		const TShared<PixelData> pixels = PixelData::Create(kSize, kSize, 1, PF_R32U);
+		for(u32 row = 0; row < kSize; row++)
+		{
+			u32* const rowElements = reinterpret_cast<u32*>(pixels->GetData() + row * pixels->GetRowPitch());
+			for(u32 column = 0; column < kSize; column++)
+				rowElements[column] = kDispatchPattern | (row * kSize + column);
+		}
+
+		const TShared<render::GpuCommandBuffer> uploadCommands = test.Pool->Create(GpuCommandBufferCreateInformation::Create("Upload"));
+		TextureUtility::Write(*test.Context, uploaded, *pixels, 0, 0, TextureWriteFlag::Normal, uploadCommands);
+		test.Context->SubmitCommandBuffer(uploadCommands, GpuQueueMask::kNone);
+
+		// A graph writes a render target texture, and returns it to rest at its end
+		const TShared<render::Texture> rendered = test.CreateTexture("Rendered texture", TextureUsageFlag::RenderTarget | TextureUsageFlag::AllowUnorderedAccessOnTheGPU);
+		const TShared<render::GpuBuffer> renderedBuffer = test.CreateBuffer("Rendered buffer");
+		{
+			FrameGraph graph(*test.Context);
+			graph.ImportBuffer(renderedBuffer);
+			graph.ImportTexture(rendered);
+			test.AddDispatch(graph, "Render", renderedBuffer, rendered);
+
+			graph.Compile();
+			graph.Execute();
+		}
+
+		device->EndFrame();
+
+		// A later frame samples both without importing them
+		const TShared<render::GpuBuffer> uploadedValues = test.CreateBuffer("Uploaded values");
+		const TShared<render::GpuBuffer> renderedValues = test.CreateBuffer("Rendered values");
+		const TShared<render::GpuBuffer> uploadedReadback = test.CreateReadback(kSize * kSize * sizeof(u32));
+		const TShared<render::GpuBuffer> renderedReadback = test.CreateReadback(kSize * kSize * sizeof(u32));
+		{
+			FrameGraph graph(*test.Context);
+			graph.ImportBuffer(uploadedValues);
+			graph.ImportBuffer(renderedValues);
+			test.AddSample(graph, "Sample upload", uploaded, uploadedValues);
+			test.AddSample(graph, "Sample render", rendered, renderedValues);
+			test.AddReadback(graph, "Read upload", uploadedValues, uploadedReadback);
+			test.AddReadback(graph, "Read render", renderedValues, renderedReadback);
+
+			graph.Compile();
+			graph.Execute();
+		}
+
+		test.FinishReadbacks({ uploadedReadback, renderedReadback });
+		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(uploadedReadback, false), "Sampling at rest does not read the uploaded texels.")
+		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(renderedReadback, false), "Sampling at rest does not read what the earlier graph wrote.")
+
+		device->EndFrame();
+	}, "FrameGraphTestSuite::TestRestingReads", true);
+
+	gGpuValidateRestingStates.Set(validateRestingStates);
+}
+
+void FrameGraphTestSuite::TestLateMemory()
+{
+	const TShared<GpuDevice> device = GetTestDevice();
+	const TShared<GpuComputePipelineState> pipeline = device != nullptr ? CreateTestDispatchPipeline(*device) : nullptr;
+	if(pipeline == nullptr)
+		return;
+
+	LoggingScope logs(*this);
+	logs.IgnoreWarning(kBarrierOnlyWarning);
+
+	GetRenderThread().PostCommand([this, &device, &pipeline]()
+	{
+		const FrameGraphTestContext test(*device, pipeline);
+		const GpuBufferCreateInformation bufferInformation = GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize,
+			GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU);
+
+		// The first graph places the texture alone. The second places a transient buffer before it, so the cached texture moves to other
+		// memory after the dispatch's parameter set took it.
+		for(const bool isMoved : { false, true })
+		{
+			const TShared<render::GpuBuffer> bufferReadback = test.CreateReadback(kSize * kSize * sizeof(u32));
+			const TShared<render::GpuBuffer> textureReadback = test.CreateReadback(test.TextureReadbackSize);
+			{
+				FrameGraph graph(*test.Context);
+
+				TShared<render::GpuBuffer> buffer;
+				if(isMoved)
+					buffer = graph.CreateBuffer("Late buffer", bufferInformation);
+				else
+				{
+					buffer = test.CreateBuffer("Late buffer");
+					graph.ImportBuffer(buffer);
+				}
+
+				const TShared<render::Texture> texture = graph.CreateTexture("Late texture", test.TextureInformation);
+				test.AddDispatch(graph, "Write", buffer, texture);
+				test.AddReadback(graph, "Read", buffer, texture, bufferReadback, textureReadback);
+
+				graph.Compile();
+				graph.Execute();
+			}
+
+			if(isMoved)
+				B3D_TEST_ASSERT(test.Context->GetTransientResourceAllocator().GetStatistics().Relocations >= 1)
+
+			test.FinishReadbacks({ bufferReadback, textureReadback });
+			B3D_TEST_ASSERT_MSG(test.HasDispatchValues(textureReadback, true), isMoved ? "The moved transient texture does not hold the dispatch's values."
+				: "The transient texture does not hold the dispatch's values.")
+
+			device->EndFrame();
+		}
+	}, "FrameGraphTestSuite::TestLateMemory", true);
+}
+
 #if B3D_BUILD_TYPE_DEVELOPMENT
 void FrameGraphTestSuite::TestValidation()
 {
 	const TShared<GpuDevice> device = GetTestDevice();
 	const TShared<GpuComputePipelineState> pipeline = device != nullptr ? CreateTestDispatchPipeline(*device) : nullptr;
-	if(pipeline == nullptr)
+	const TShared<GpuComputePipelineState> samplePipeline = device != nullptr ? CreateTestSamplePipeline(*device) : nullptr;
+	if(pipeline == nullptr || samplePipeline == nullptr)
 		return;
 
 	const String drawDependency = "The resource was accessed by a draw or dispatch after another draw or dispatch wrote it, without a barrier in between.";
@@ -537,10 +720,12 @@ void FrameGraphTestSuite::TestValidation()
 	logs.ExpectError(drawDependency + " Image: 'Twice texture'.");
 	logs.ExpectError(drawDependency + " Buffer: 'Undeclared buffer'.");
 	logs.ExpectError(drawDependency + " Image: 'Undeclared texture'.");
+	logs.ExpectError("The image was accessed in a different layout than its last explicit barrier declares. Image: 'Unexported texture'.");
+	logs.ExpectError("The resource was used while it is unplaced, without memory from its transient resource allocator. Place it first. Image: 'Held texture'.");
 
-	GetRenderThread().PostCommand([&device, &pipeline]()
+	GetRenderThread().PostCommand([&device, &pipeline, &samplePipeline]()
 	{
-		const FrameGraphTestContext test(*device, pipeline);
+		const FrameGraphTestContext test(*device, pipeline, samplePipeline);
 
 		// A storage slot can only hold resources of the graph
 		{
@@ -657,6 +842,77 @@ void FrameGraphTestSuite::TestValidation()
 
 			graph.Compile();
 			graph.Execute();
+		}
+
+		// Undeclared readers of a written resource rely on its export to return it to rest
+		for(const bool isExported : { true, false })
+		{
+			FrameGraph graph(*test.Context);
+			const TShared<render::GpuBuffer> buffer = test.CreateBuffer("Written buffer");
+			const TShared<render::Texture> texture = test.CreateTexture(isExported ? "Exported texture" : "Unexported texture");
+			const TShared<render::GpuBuffer> values = test.CreateBuffer("Read values");
+			graph.ImportBuffer(buffer);
+			graph.ImportTexture(texture);
+			graph.ImportBuffer(values);
+			test.AddDispatch(graph, "Write", buffer, texture, isExported);
+
+			// The pass declares its write of the values, then samples the texture through a set it did not add
+			FrameGraphComputePass pass;
+			const TShared<render::GpuParameterSet> parameters = test.Context->GetParameterSetPool().Create(samplePipeline->GetParameterLayout()->GetSet(0), 0);
+			pass.AddParameterSet(parameters);
+			parameters->SetSampledTexture("InputTexture", test.CreateTexture("Resting texture"));
+			parameters->SetStorageBuffer("OutputBuffer", values);
+
+			const TShared<render::GpuParameterSet> undeclared = test.Context->GetParameterSetPool().Create(samplePipeline->GetParameterLayout()->GetSet(0), 0);
+			undeclared->SetSampledTexture("InputTexture", texture);
+			undeclared->SetStorageBuffer("OutputBuffer", values);
+
+			const TShared<GpuComputePipelineState> dispatchPipeline = samplePipeline;
+			graph.AddComputePass("Undeclared read", std::move(pass), [dispatchPipeline, undeclared](FrameGraphPassContext& passContext)
+			{
+				render::GpuCommandBuffer& commands = passContext.GetCommandBuffer();
+				commands.SetGpuComputePipelineState(dispatchPipeline);
+				commands.SetGpuParameterSet(undeclared);
+				commands.DispatchCompute(1, 1, 1);
+			});
+
+			graph.Compile();
+			graph.Execute();
+		}
+
+		// A transient that only culled passes use goes back to its allocator unplaced, and must not be used after the graph. The first
+		// graph gives the cached texture memory and leaves it in the sampled layout, so the backends see a valid image.
+		{
+			const TShared<render::GpuBuffer> buffer = test.CreateBuffer("Held buffer");
+			const TShared<render::GpuBuffer> values = test.CreateBuffer("Held values");
+			{
+				FrameGraph graph(*test.Context);
+				graph.ImportBuffer(buffer);
+				graph.ImportBuffer(values);
+				const TShared<render::Texture> texture = graph.CreateTexture("Held texture", test.TextureInformation);
+				test.AddDispatch(graph, "Place", buffer, texture);
+				test.AddSample(graph, "Sample", texture, values);
+				graph.Compile();
+				graph.Execute();
+			}
+
+			TShared<render::Texture> held;
+			{
+				FrameGraph graph(*test.Context);
+				held = graph.CreateTexture("Held texture", test.TextureInformation);
+				test.AddDispatch(graph, "Culled", graph.CreateBuffer("Culled buffer", GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize,
+					GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU)), held);
+				graph.Compile();
+				graph.Execute();
+			}
+
+			{
+				FrameGraph graph(*test.Context);
+				graph.ImportBuffer(values);
+				test.AddSample(graph, "Held read", held, values);
+				graph.Compile();
+				graph.Execute();
+			}
 		}
 
 		device->WaitUntilIdle();

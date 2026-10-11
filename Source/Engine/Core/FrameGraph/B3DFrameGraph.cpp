@@ -241,6 +241,7 @@ namespace b3d::render
 		resource.Texture = texture;
 		resource.TextureInformation = namedInformation;
 		resource.FullRange = GpuTextureSubresourceRange(0, properties.MipMapCount + 1, 0, properties.GetFaceCount(), GpuBackendUtility::GetFormatAspects(properties.Format));
+		resource.RestingState = GpuBackendUtility::GetRestingState(*texture, GQT_GRAPHICS);
 		resource.IsHeldUnplaced = true;
 
 		AddResource(std::move(resource));
@@ -262,6 +263,7 @@ namespace b3d::render
 		resource.Type = ResourceType::Transient;
 		resource.Buffer = buffer;
 		resource.BufferInformation = information;
+		resource.RestingState = GpuBackendUtility::GetRestingState(*buffer, GQT_GRAPHICS);
 		resource.IsHeldUnplaced = true;
 
 		AddResource(std::move(resource));
@@ -1020,9 +1022,7 @@ namespace b3d::render
 			if(resource.Type == ResourceType::Transient && !resource.IsExtracted)
 				continue;
 
-			const GpuAccessState& restingState = resource.Type == ResourceType::Transient ? (resource.Texture != nullptr ? GpuBackendUtility::GetRestingState(*resource.Texture, GQT_GRAPHICS)
-				: GpuBackendUtility::GetRestingState(*resource.Buffer, GQT_GRAPHICS)) : resource.RestingState;
-
+			const GpuAccessState& restingState = resource.RestingState;
 			for(u32 subresourceIndex = 0; subresourceIndex < resource.SubresourceCount; subresourceIndex++)
 			{
 				SubresourceState& state = states[resource.FirstSubresourceIndex + subresourceIndex];

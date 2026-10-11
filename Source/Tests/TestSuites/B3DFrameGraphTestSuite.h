@@ -32,16 +32,32 @@ namespace b3d
 		 */
 		void TestSplitAliasAcquire();
 
-		/** An extracted transient survives the graph at rest in its own memory, and a later graph imports and reads it. */
+		/**
+		 * An extracted transient survives the graph at rest in its own memory, and a later graph imports and reads it. Repeated with the
+		 * transient also exported by the pass that writes it.
+		 */
 		void TestExtract();
 
 		/** An exported resource and a resource returned at the end of the graph are both at rest for the next graph that imports them. */
 		void TestExport();
 
+		/**
+		 * Resources at rest are read without an import or a barrier: a texture uploaded in an earlier frame, and a render target texture an
+		 * earlier graph wrote and returned to rest at its end.
+		 */
+		void TestRestingReads();
+
+		/**
+		 * A transient set into a parameter set before Compile places it holds the dispatch's values, also when a later graph places the
+		 * cached transient at other memory.
+		 */
+		void TestLateMemory();
+
 #if B3D_BUILD_TYPE_DEVELOPMENT
 		/**
 		 * The development checks: writes to resources at rest, conflicting declarations in one pass, writes after an export, dependencies
-		 * between dispatches of one pass, and writes through parameter sets the pass did not create.
+		 * between dispatches of one pass, writes through parameter sets the pass did not create, undeclared reads of a written resource
+		 * that was not exported, and use of a transient that was returned unplaced.
 		 */
 		void TestValidation();
 #endif

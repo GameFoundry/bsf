@@ -340,7 +340,7 @@ namespace b3d
 
 				bool IsExtracted = false;
 				TOptional<u32> ExportPassIndex; /**< Index into mPasses of the pass the resource is exported after, if any. */
-				GpuAccessState RestingState; /**< Resting state of imported resources and surfaces. */
+				GpuAccessState RestingState; /**< State the resource returns to after its export, and at the end of the graph if it outlives the graph. */
 
 				// Compile results
 				i32 FirstPassIndex = -1; /**< Index into mCompiledPassIndices of the first surviving pass that accesses the resource, or -1 if none does. */
