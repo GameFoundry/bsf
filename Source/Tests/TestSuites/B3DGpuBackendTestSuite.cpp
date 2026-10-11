@@ -423,14 +423,12 @@ GpuBackendTestSuite::GpuBackendTestSuite()
 	B3D_ADD_TEST(GpuBackendTestSuite::TestTransientResourcePlacement)
 	B3D_ADD_TEST(GpuBackendTestSuite::TestFramebufferAttachmentUsage)
 	B3D_ADD_TEST(GpuBackendTestSuite::TestRenderPassResourceTracking)
-#if B3D_GPU_EXPLICIT_BARRIERS
 	B3D_ADD_TEST(GpuBackendTestSuite::TestTrackingWithoutHazards)
 	B3D_ADD_TEST(GpuBackendTestSuite::TestExplicitBarriers)
 	B3D_ADD_TEST(GpuBackendTestSuite::TestTransientExplicitAliasing)
 #if B3D_BUILD_TYPE_DEVELOPMENT
 	B3D_ADD_TEST(GpuBackendTestSuite::TestExplicitBarrierValidation)
 	B3D_ADD_TEST(GpuBackendTestSuite::TestExplicitBarrierResourceValidation)
-#endif
 #endif
 	B3D_ADD_TEST(GpuBackendTestSuite::TestPushConstantMetadata)
 	B3D_ADD_TEST(GpuBackendTestSuite::TestPushConstantWrites)
@@ -3341,7 +3339,6 @@ void GpuBackendTestSuite::TestRenderPassResourceTracking()
 	discardTracker.Clear();
 }
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 void GpuBackendTestSuite::TestTrackingWithoutHazards()
 {
 	SubmissionTestBarrierHelper barrierHelper;
@@ -3948,7 +3945,6 @@ void GpuBackendTestSuite::TestExplicitBarrierValidation()
 		device->WaitUntilIdle();
 	}, "GpuBackendTestSuite::TestExplicitBarrierValidation", true);
 }
-#endif
 #endif
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
@@ -5226,7 +5222,6 @@ void GpuBackendTestSuite::TestTransientResourcePlacement()
 	}, "GpuBackendTestSuite::TestTransientResourcePlacement", true);
 }
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 namespace
 {
 	/** Returns the source an explicit alias acquire needs to cover the accesses @p acquire orders after. */
@@ -5786,4 +5781,3 @@ void GpuBackendTestSuite::TestTransientExplicitAliasing()
 		}
 	}, "GpuBackendTestSuite::TestTransientExplicitAliasing", true);
 }
-#endif

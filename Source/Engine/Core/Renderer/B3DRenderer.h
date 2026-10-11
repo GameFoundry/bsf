@@ -43,6 +43,7 @@ namespace b3d
 		class LightProbeVolume;
 		class Decal;
 		class RenderWindow;
+		class FrameGraph;
 
 		/** @addtogroup Renderer-Internal
 		 *  @{
@@ -98,6 +99,12 @@ namespace b3d
 
 			/** Command buffer that's currently being recorded. */
 			TShared<GpuCommandBuffer> CommandBuffer;
+
+			/**
+			 * Frame graph of the render target the view renders to. Renderer extensions add their passes to it. Null while the renderer
+			 * records the view without a frame graph.
+			 */
+			FrameGraph* Graph = nullptr;
 		};
 
 		/** Settings that control renderer scene capture. */

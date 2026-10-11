@@ -16,7 +16,6 @@
 
 using namespace b3d;
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 namespace b3d
 {
 	TConfigVariable<bool> gGpuValidateRestingStates("gpu.ValidateRestingStates",
@@ -25,7 +24,6 @@ namespace b3d
 	TConfigVariable<bool> gGpuExplicitBarriers("gpu.ExplicitBarriers",
 		"If enabled, the engine uses explicit barriers: frame graphs issue them, uploads and reads leave resources at rest, and new textures start at rest. If disabled, the resource tracker derives every barrier. Set before start-up.", false);
 } // namespace b3d
-#endif
 
 namespace b3d { namespace render
 {
@@ -92,9 +90,7 @@ GpuCommandBufferPool::GpuCommandBufferPool(GpuDevice& gpuDevice, const GpuComman
 		mMessageQueue.ScheduleRunUntilShutdown(*scheduler, true);
 	}
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	B3D_ENSURE_LOG(!mInformation.ExplicitBarriers || mGpuDevice.GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS), "The GPU backend does not support explicit barriers.");
-#endif
 }
 
 void GpuCommandBufferPool::Destroy()
@@ -107,9 +103,7 @@ void GpuCommandBufferPool::Destroy()
 
 GpuCommandBuffer::GpuCommandBuffer(GpuDevice& gpuDevice, ThreadId ownerThread, GpuQueueType queueType, [[maybe_unused]] bool explicitBarriers, const GpuCommandBufferCreateInformation& createInformation)
 	:mGpuDevice(gpuDevice), mQueueType(queueType), mOwnerThread(ownerThread), mInformation(createInformation)
-#if B3D_GPU_EXPLICIT_BARRIERS
 	, mUsesExplicitBarriers(explicitBarriers)
-#endif
 { }
 
 
@@ -117,9 +111,7 @@ GpuCommandBuffer::~GpuCommandBuffer()
 {
 	OnDestroyed(mState == GpuCommandBufferState::Executing);
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	ClearExplicitBarrierState(mState == GpuCommandBufferState::Executing || mState == GpuCommandBufferState::Done);
-#endif
 }
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
@@ -136,7 +128,7 @@ bool GpuCommandBuffer::ValidateDrawAccesses()
 
 void GpuCommandBuffer::SetGpuParameterSet([[maybe_unused]] const TShared<GpuParameterSet>& parameters)
 {
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	if(mExplicitBarrierValidator != nullptr)
 		mExplicitBarrierValidator->SetParameterSet(parameters);
 #endif
@@ -144,7 +136,7 @@ void GpuCommandBuffer::SetGpuParameterSet([[maybe_unused]] const TShared<GpuPara
 
 void GpuCommandBuffer::SetGpuGraphicsPipelineState([[maybe_unused]] const TShared<GpuGraphicsPipelineState>& pipelineState)
 {
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	if(mExplicitBarrierValidator != nullptr)
 		mExplicitBarrierValidator->SetGraphicsPipeline(pipelineState);
 #endif
@@ -152,7 +144,7 @@ void GpuCommandBuffer::SetGpuGraphicsPipelineState([[maybe_unused]] const TShare
 
 void GpuCommandBuffer::SetGpuComputePipelineState([[maybe_unused]] const TShared<GpuComputePipelineState>& pipelineState)
 {
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	if(mExplicitBarrierValidator != nullptr)
 		mExplicitBarrierValidator->SetComputePipeline(pipelineState);
 #endif
@@ -160,7 +152,7 @@ void GpuCommandBuffer::SetGpuComputePipelineState([[maybe_unused]] const TShared
 
 void GpuCommandBuffer::SetVertexBuffers([[maybe_unused]] u32 index, [[maybe_unused]] TShared<GpuBuffer>* buffers, [[maybe_unused]] u32 bufferCount)
 {
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	if(mExplicitBarrierValidator != nullptr)
 		mExplicitBarrierValidator->SetVertexBuffers(index, buffers, bufferCount);
 #endif
@@ -168,7 +160,7 @@ void GpuCommandBuffer::SetVertexBuffers([[maybe_unused]] u32 index, [[maybe_unus
 
 void GpuCommandBuffer::SetIndexBuffer([[maybe_unused]] const TShared<GpuBuffer>& buffer)
 {
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	if(mExplicitBarrierValidator != nullptr)
 		mExplicitBarrierValidator->SetIndexBuffer(buffer);
 #endif
@@ -176,7 +168,7 @@ void GpuCommandBuffer::SetIndexBuffer([[maybe_unused]] const TShared<GpuBuffer>&
 
 void GpuCommandBuffer::Draw(u32 /*vertexOffset*/, u32 /*vertexCount*/, u32 /*instanceCount*/, u32 /*firstInstance*/)
 {
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	if(mExplicitBarrierValidator != nullptr)
 		mExplicitBarrierValidator->ValidateDraw(false);
 #endif
@@ -184,7 +176,7 @@ void GpuCommandBuffer::Draw(u32 /*vertexOffset*/, u32 /*vertexCount*/, u32 /*ins
 
 void GpuCommandBuffer::DrawIndexed(u32 /*startIndex*/, u32 /*indexCount*/, u32 /*vertexOffset*/, u32 /*vertexCount*/, u32 /*instanceCount*/, u32 /*firstInstance*/)
 {
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	if(mExplicitBarrierValidator != nullptr)
 		mExplicitBarrierValidator->ValidateDraw(true);
 #endif
@@ -192,7 +184,7 @@ void GpuCommandBuffer::DrawIndexed(u32 /*startIndex*/, u32 /*indexCount*/, u32 /
 
 void GpuCommandBuffer::DispatchCompute(u32 /*groupCountX*/, u32 /*groupCountY*/, u32 /*groupCountZ*/)
 {
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	if(mExplicitBarrierValidator != nullptr)
 		mExplicitBarrierValidator->ValidateDispatch();
 #endif
@@ -200,7 +192,7 @@ void GpuCommandBuffer::DispatchCompute(u32 /*groupCountX*/, u32 /*groupCountY*/,
 
 void GpuCommandBuffer::BeginRenderPass([[maybe_unused]] const RenderPassCreateInformation& createInformation)
 {
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	if(mExplicitBarrierValidator != nullptr)
 		mExplicitBarrierValidator->ValidateRenderPass(createInformation);
 #endif
@@ -208,7 +200,7 @@ void GpuCommandBuffer::BeginRenderPass([[maybe_unused]] const RenderPassCreateIn
 
 void GpuCommandBuffer::CopyBufferToBuffer([[maybe_unused]] const TShared<GpuBuffer>& source, [[maybe_unused]] const TShared<GpuBuffer>& destination, u32 /*sourceOffset*/, u32 /*destinationOffset*/, u32 /*length*/)
 {
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	if(mExplicitBarrierValidator != nullptr && source != nullptr && destination != nullptr)
 	{
 		mExplicitBarrierValidator->ValidateBufferAccess(*source, GpuStageFlag::Transfer, GpuAccessFlag::Read);
@@ -219,7 +211,7 @@ void GpuCommandBuffer::CopyBufferToBuffer([[maybe_unused]] const TShared<GpuBuff
 
 void GpuCommandBuffer::CopyBufferToTexture([[maybe_unused]] const TShared<GpuBuffer>& source, [[maybe_unused]] const TShared<Texture>& destination, u32 /*bufferOffset*/, [[maybe_unused]] u32 mipLevel, [[maybe_unused]] u32 arrayLayer)
 {
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	if(mExplicitBarrierValidator != nullptr && source != nullptr && destination != nullptr)
 	{
 		mExplicitBarrierValidator->ValidateBufferAccess(*source, GpuStageFlag::Transfer, GpuAccessFlag::Read);
@@ -230,7 +222,7 @@ void GpuCommandBuffer::CopyBufferToTexture([[maybe_unused]] const TShared<GpuBuf
 
 void GpuCommandBuffer::CopyTextureToBuffer([[maybe_unused]] const TShared<Texture>& source, [[maybe_unused]] const TShared<GpuBuffer>& destination, [[maybe_unused]] u32 mipLevel, [[maybe_unused]] u32 arrayLayer, u32 /*bufferOffset*/)
 {
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	if(mExplicitBarrierValidator != nullptr && source != nullptr && destination != nullptr)
 	{
 		mExplicitBarrierValidator->ValidateTextureAccess(*source, GpuTextureSubresourceRange(mipLevel, 1, arrayLayer, 1, kAllImageAspects), GpuImageLayout::Undefined, GpuStageFlag::Transfer, GpuAccessFlag::Read);
@@ -250,7 +242,7 @@ void GpuCommandBuffer::SetPushConstants(u32 /*offsetInBytes*/, u32 sizeInBytes, 
 
 void GpuCommandBuffer::NotifyWillQueueForSubmit([[maybe_unused]] GpuQueueId queueId, [[maybe_unused]] GpuQueueMask syncMask)
 {
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	// The submit thread executes submissions in the order they are queued, so this sees the releases in GPU submission order
 	using ReleaseSubmission = GpuSplitBarrier::ReleaseSubmission;
 
@@ -288,7 +280,6 @@ void GpuCommandBuffer::NotifyWillQueueForSubmit([[maybe_unused]] GpuQueueId queu
 #endif
 }
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 #if B3D_BUILD_TYPE_DEVELOPMENT
 namespace
 {
@@ -476,7 +467,6 @@ void GpuCommandBuffer::PublishExplicitImageLayouts(GpuQueueId queueId)
 
 	mExplicitImageLayouts.Clear();
 }
-#endif
 
 #if B3D_PROFILING_ENABLED
 TShared<GpuCommandBufferProfiler> GpuCommandBuffer::BeginProfiling(const ProfilerString& profilingScopeName)
@@ -637,7 +627,7 @@ bool GpuCommandBuffer::CopyTexture(const TShared<Texture>& source, const TShared
 		}
 	}
 
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	if(mExplicitBarrierValidator != nullptr)
 	{
 		const GpuStageFlags stages = needsResolve ? GpuStageFlag::Resolve : GpuStageFlag::Transfer;
@@ -700,7 +690,7 @@ bool GpuCommandBuffer::BlitTexture(const TShared<Texture>& source, const TShared
 		return false;
 	}
 
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	if(mExplicitBarrierValidator != nullptr)
 	{
 		const GpuTextureSubresourceRange sourceRange(blitInformation.SourceMip, 1, blitInformation.SourceFace, blitInformation.FaceCount, kAllImageAspects);

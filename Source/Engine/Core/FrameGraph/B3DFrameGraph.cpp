@@ -2,8 +2,6 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "FrameGraph/B3DFrameGraph.h"
 
-#if B3D_GPU_EXPLICIT_BARRIERS
-
 #include "GpuBackend/Allocators/B3DGpuTransientHeapPool.h"
 #include "GpuBackend/B3DGpuBackendUtility.h"
 #include "GpuBackend/B3DGpuDevice.h"
@@ -145,6 +143,12 @@ namespace b3d::render
 	{
 		mRenderTarget = target;
 		mRenderTargetLoad = load;
+	}
+
+	void FrameGraphRasterPass::AddRenderPassParameterSet(const TShared<GpuParameterSet>& parameters)
+	{
+		if(parameters != nullptr)
+			mRenderPassParameterSets.push_back(parameters);
 	}
 
 	void FrameGraphCopyPass::AddSource(const TShared<Texture>& texture, const TextureSurface& surface)
@@ -378,6 +382,7 @@ namespace b3d::render
 	void FrameGraph::AddRasterPass(const StringView& name, FrameGraphRasterPass&& pass, Function<void(FrameGraphPassContext&)> execute)
 	{
 		Pass& output = AddPass(name, PassType::Raster, pass, std::move(execute));
+		output.RenderPassParameterSets = std::move(pass.mRenderPassParameterSets);
 		RenderPassAttachments& attachments = output.Attachments;
 
 		// Declares the subresources of an attachment texture, and adds its surfaces to the load and clear masks
@@ -1270,6 +1275,9 @@ namespace b3d::render
 				for(const TShared<GpuParameterSet>& parameters : pass.ParameterSets)
 					renderPassInformation.Parameters.Add(parameters);
 
+				for(const TShared<GpuParameterSet>& parameters : pass.RenderPassParameterSets)
+					renderPassInformation.Parameters.Add(parameters);
+
 				commandBuffer->BeginRenderPass(renderPassInformation);
 			}
 
@@ -1569,5 +1577,3 @@ namespace b3d::render
 		}
 	}
 } // namespace b3d::render
-
-#endif

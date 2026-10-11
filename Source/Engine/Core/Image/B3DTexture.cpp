@@ -15,6 +15,7 @@
 #include "Renderer/B3DRenderer.h"
 #include "GpuBackend/B3DGpuBackendUtility.h"
 #include "GpuBackend/B3DGpuDeviceCapabilities.h"
+#include "FrameGraph/B3DFrameGraph.h"
 
 using namespace b3d;
 
@@ -374,12 +375,10 @@ void Texture::SetAllocation(const GpuAllocation& allocation, GpuObjectCreateFlag
 		RecreateInternalTexture();
 }
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 bool Texture::StartsAtRest() const
 {
 	return gGpuExplicitBarriers && !mIsAliased && GetDevice().GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
 }
-#endif
 
 void Texture::Initialize()
 {
@@ -481,6 +480,48 @@ namespace
 
 		inOutPixelData.SetRowPitch(rowPitchBytes);
 		inOutPixelData.SetSlicePitch(slicePitchBytes);
+	}
+
+	/** Returns pixel data without a buffer, laid out as a staging buffer holding the subresource of @p texture. */
+	TShared<PixelData> CreateReadbackPixelData(const TShared<Texture>& texture, u32 mipLevel, u32 arrayLayer)
+	{
+		const TextureProperties& textureProperties = texture->GetProperties();
+		const u32 mipWidth = Math::Max(1u, textureProperties.Width >> mipLevel);
+		const u32 mipHeight = Math::Max(1u, textureProperties.Height >> mipLevel);
+		const u32 mipDepth = Math::Max(1u, textureProperties.Depth >> mipLevel);
+
+		const TShared<PixelData> pixelData = B3DMakeShared<PixelData>(mipWidth, mipHeight, mipDepth, texture->GetSupportedFormat());
+		ApplyRowAndSlicePitch(texture->GetStagingBufferPitchForSubresource(arrayLayer, mipLevel), *pixelData);
+		return pixelData;
+	}
+
+	/**
+	 * Completes @p operation with a copy of @p stagingBuffer's contents once @p commandBuffer completes, or with null if the command buffer
+	 * is destroyed without being submitted.
+	 */
+	void CompleteReadOnCompletion(GpuCommandBuffer& commandBuffer, const TShared<GpuBuffer>& stagingBuffer, const TShared<PixelData>& pixelData, TAsyncOp<TShared<PixelData>> operation)
+	{
+		auto fnOnCommandBufferCompleted = [stagingBuffer, operation, pixelData]() mutable
+		{
+			GpuBufferMappedScope mapping = stagingBuffer->Map(GpuMapOption::Read);
+
+			pixelData->AllocateInternalBuffer();
+			memcpy(pixelData->GetData(), mapping.GetMappedMemory(), pixelData->GetSize());
+
+			operation.CompleteOperation(pixelData);
+		};
+
+		auto fnOnCommandBufferDestroyed = [operation](bool isSubmitted) mutable
+		{
+			// In this case the completion callback will trigger.
+			if(isSubmitted)
+				return;
+
+			operation.CompleteOperation(nullptr);
+		};
+
+		commandBuffer.OnDidComplete.Connect(fnOnCommandBufferCompleted);
+		commandBuffer.OnDestroyed.Connect(fnOnCommandBufferDestroyed);
 	}
 }
 
@@ -620,7 +661,6 @@ void TextureUtility::Write(GpuWorkContext& gpuContext, const TShared<Texture>& t
 	if(commandBuffer == nullptr)
 		commandBuffer = gpuContext.GetTransferCommandBuffer();
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	// Command buffers with explicit barriers take the subresource from its resting state and return it there. The copy overwrites the
 	// whole subresource, so its old contents are discarded.
 	if(commandBuffer->UsesExplicitBarriers())
@@ -637,7 +677,6 @@ void TextureUtility::Write(GpuWorkContext& gpuContext, const TShared<Texture>& t
 		commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, transferWrite, restingState, range));
 	}
 	else
-#endif
 		commandBuffer->CopyBufferToTexture(stagingBuffer, texture, 0, mipLevel, arrayLayer);
 
 	commandBuffer->AddQueueSyncMask(syncMask);
@@ -739,40 +778,38 @@ TAsyncOp<TShared<PixelData>> TextureUtility::ReadAsync(GpuWorkContext& gpuContex
 	if(texture == nullptr)
 		return {};
 
-	const TextureProperties& textureProperties = texture->GetProperties();
-	const u32 mipWidth = Math::Max(1u, textureProperties.Width >> mipLevel);
-	const u32 mipHeight = Math::Max(1u, textureProperties.Height >> mipLevel);
-	const u32 mipDepth = Math::Max(1u, textureProperties.Depth >> mipLevel);
-
-	const TShared<PixelData> pixelData = B3DMakeShared<PixelData>(mipWidth, mipHeight, mipDepth, texture->GetSupportedFormat());
-	ApplyRowAndSlicePitch(texture->GetStagingBufferPitchForSubresource(arrayLayer, mipLevel), *pixelData);
+	const TShared<PixelData> pixelData = CreateReadbackPixelData(texture, mipLevel, arrayLayer);
 
 	// TODO - Staging buffer might not be necessary if he texture is directly mappable
 	TShared<GpuBuffer> stagingBuffer = CreateStagingBuffer(gpuContext, texture, *pixelData, true);
 	GpuBackendUtility::CopyToStagingBuffer(commandBuffer, texture, mipLevel, arrayLayer, stagingBuffer);
 
 	TAsyncOp<TShared<PixelData>> op;
-	auto fnOnCommandBufferCompleted = [stagingBuffer, op, pixelData]() mutable
+	CompleteReadOnCompletion(commandBuffer, stagingBuffer, pixelData, op);
+
+	return op;
+}
+
+TAsyncOp<TShared<PixelData>> TextureUtility::ReadAsync(FrameGraph& graph, const TShared<Texture>& texture, u32 mipLevel, u32 arrayLayer)
+{
+	if(texture == nullptr)
+		return {};
+
+	const TShared<PixelData> pixelData = CreateReadbackPixelData(texture, mipLevel, arrayLayer);
+	const TShared<GpuBuffer> stagingBuffer = CreateStagingBuffer(graph.GetWorkContext(), texture, *pixelData, true);
+	graph.ImportBuffer(stagingBuffer);
+
+	FrameGraphCopyPass pass;
+	pass.AddSource(texture, TextureSurface(mipLevel, 1, arrayLayer, 1));
+	pass.AddDestination(stagingBuffer);
+
+	TAsyncOp<TShared<PixelData>> op;
+	graph.AddCopyPass("Readback", std::move(pass), [texture, mipLevel, arrayLayer, stagingBuffer, pixelData, op](FrameGraphPassContext& passContext)
 	{
-		GpuBufferMappedScope mapping = stagingBuffer->Map(GpuMapOption::Read);
-
-		pixelData->AllocateInternalBuffer();
-		memcpy(pixelData->GetData(), mapping.GetMappedMemory(), pixelData->GetSize());
-
-		op.CompleteOperation(pixelData);
-	};
-
-	auto fnOnCommandBufferDestroyed = [op](bool isSubmitted) mutable
-	{
-		// In this case the completion callback will trigger.
-		if(isSubmitted)
-			return;
-
-		op.CompleteOperation(nullptr);
-	};
-
-	commandBuffer.OnDidComplete.Connect(fnOnCommandBufferCompleted);
-	commandBuffer.OnDestroyed.Connect(fnOnCommandBufferDestroyed);
+		GpuCommandBuffer& commandBuffer = passContext.GetCommandBuffer();
+		commandBuffer.CopyTextureToBuffer(texture, stagingBuffer, mipLevel, arrayLayer, 0);
+		CompleteReadOnCompletion(commandBuffer, stagingBuffer, pixelData, op);
+	});
 
 	return op;
 }

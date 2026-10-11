@@ -86,7 +86,7 @@ D3D12GpuDevice::D3D12GpuDevice(IDXGIAdapter4* adapter) : mAdapter(adapter)
 	if(FAILED(hr))
 		B3D_LOG(Fatal, LogRenderBackend, "ID3D12Device10 is unavailable on the selected D3D12 device (hr={0}).", (u32)hr);
 
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	// Split barriers whose halves are in different ExecuteCommandLists() calls only transition layouts, and the debug layer warns about
 	// them. Explicit barriers order such halves with queue fences instead, so the warning is expected.
 	// TODO - Replace split barriers with SignalBarrier()/WaitBarrier() fence barriers once they are out of preview (they also split global barriers)
@@ -918,9 +918,7 @@ void D3D12GpuDevice::InitializeCapabilities()
 	mCapabilities.SetCapability(RSC_BYTECODE_CACHING);
 	mCapabilities.SetCapability(RSC_TEXTURE_VIEWS);
 	mCapabilities.SetCapability(RSC_RENDER_TARGET_LAYERS);
-#if B3D_GPU_EXPLICIT_BARRIERS
 	mCapabilities.SetCapability(RSC_EXPLICIT_BARRIERS);
-#endif
 	if(options.WaveOps)
 		mCapabilities.SetCapability(RSC_WAVE_OPERATIONS);
 

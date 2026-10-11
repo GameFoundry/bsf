@@ -66,10 +66,8 @@ PFN_vkWaitSemaphores vkWaitSemaphores = nullptr;
 PFN_vkGetDeviceBufferMemoryRequirements vkGetDeviceBufferMemoryRequirements = nullptr;
 PFN_vkGetDeviceImageMemoryRequirements vkGetDeviceImageMemoryRequirements = nullptr;
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 PFN_vkCmdSetEvent2 vkCmdSetEvent2 = nullptr;
 PFN_vkCmdWaitEvents2 vkCmdWaitEvents2 = nullptr;
-#endif
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
 // Diagnostics (VK_KHR_pipeline_executable_properties): used by the optional gpu.DumpPipelineStats occupancy dump.

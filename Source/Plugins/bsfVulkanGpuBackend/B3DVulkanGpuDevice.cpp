@@ -286,10 +286,8 @@ VulkanGpuDevice::VulkanGpuDevice(VkPhysicalDevice device)
 	GET_DEVICE_PROC_ADDR(mLogicalDevice, GetDeviceBufferMemoryRequirements)
 	GET_DEVICE_PROC_ADDR(mLogicalDevice, GetDeviceImageMemoryRequirements)
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	GET_DEVICE_PROC_ADDR(mLogicalDevice, CmdSetEvent2)
 	GET_DEVICE_PROC_ADDR(mLogicalDevice, CmdWaitEvents2)
-#endif
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
 	if(supportsPipelineExecutableProperties)
@@ -515,12 +513,10 @@ TShared<GpuTimelineFence> VulkanGpuDevice::CreateTimelineFence()
 	return B3DMakeShared<VulkanGpuTimelineFence>(*this);
 }
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 TShared<GpuSplitBarrier> VulkanGpuDevice::CreateSplitBarrier(TOptional<GpuQueueType> releaseQueue, TOptional<GpuQueueType> acquireQueue)
 {
 	return B3DMakeShared<VulkanSplitBarrier>(*this, releaseQueue, acquireQueue);
 }
-#endif
 
 void VulkanGpuDevice::WaitUntilIdle()
 {
@@ -1149,9 +1145,7 @@ void VulkanGpuDevice::InitializeCapabilities()
 	mCapabilities.SetCapability(RSC_TEXTURE_VIEWS);
 	mCapabilities.SetCapability(RSC_RENDER_TARGET_LAYERS);
 	mCapabilities.SetCapability(RSC_MULTI_THREADED_CB);
-#if B3D_GPU_EXPLICIT_BARRIERS
 	mCapabilities.SetCapability(RSC_EXPLICIT_BARRIERS);
-#endif
 
 	mCapabilities.Conventions.NdcYAxis = GpuBackendConventions::Axis::Down;
 	mCapabilities.Conventions.MatrixOrder = GpuBackendConventions::MatrixOrder::ColumnMajor;

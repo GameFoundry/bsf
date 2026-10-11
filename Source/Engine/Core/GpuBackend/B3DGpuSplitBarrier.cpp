@@ -2,8 +2,6 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "GpuBackend/B3DGpuSplitBarrier.h"
 
-#if B3D_GPU_EXPLICIT_BARRIERS
-
 namespace b3d::render
 {
 	GpuSplitBarrier::GpuSplitBarrier(TOptional<GpuQueueType> releaseQueue, TOptional<GpuQueueType> acquireQueue)
@@ -41,5 +39,3 @@ namespace b3d::render
 		return B3D_ENSURE_LOG(recordedQueueType == (u32)queueType, "The halves of a split barrier were recorded on different queue types. Create the split barrier with the queue type of each half.");
 	}
 } // namespace b3d::render
-
-#endif

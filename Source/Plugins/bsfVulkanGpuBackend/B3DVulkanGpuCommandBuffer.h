@@ -133,7 +133,6 @@ namespace b3d
 			TInlineArray<SourceQueueTransitionInformation, 4> mSourceQueueTransitions;
 		};
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 		/**
 		 * Vulkan split barrier. Halves on one queue are connected by an event. The release sets it with the whole dependency, so the layout
 		 * transitions start in the release, and the acquire waits for it. Halves on different queues are ordered by the queue wait of the
@@ -154,7 +153,6 @@ namespace b3d
 			VkDevice mDevice;
 			VkEvent mEvent = VK_NULL_HANDLE;
 		};
-#endif
 
 		/** CommandBuffer implementation for Vulkan. */
 		class VulkanGpuCommandBuffer final : public GpuCommandBuffer
@@ -383,9 +381,7 @@ namespace b3d
 			friend class VulkanTexture;
 			friend class VulkanBarrierHelper;
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 			bool RecordExplicitBarriers(const GpuExplicitBarriers& barriers, GpuBarrierPhase phase, GpuSplitBarrier* split) override;
-#endif
 
 			/** Contains information about a single Vulkan resource bound/used on this command buffer. */
 			struct ResourceUseHandle

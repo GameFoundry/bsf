@@ -10,7 +10,6 @@ using namespace render;
 
 B3D_LOG_CATEGORY(LogRendererMaterial)
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 TShared<render::GpuParameterSet> RendererMaterialBase::CreateGpuParameterSet(FrameGraphPass& pass, u32 set) const
 {
 	TShared<render::GpuParameterSet> parameters = CreateGpuParameterSet(set);
@@ -18,7 +17,6 @@ TShared<render::GpuParameterSet> RendererMaterialBase::CreateGpuParameterSet(Fra
 
 	return parameters;
 }
-#endif
 
 void RendererMaterialBase::Bind(GpuCommandBuffer& commandBuffer, bool bindParameters) const
 {
@@ -32,6 +30,12 @@ void RendererMaterialBase::Bind(GpuCommandBuffer& commandBuffer, bool bindParame
 
 	if(bindParameters)
 		commandBuffer.SetGpuParameterSet(mGpuParameterSet);
+}
+
+void RendererMaterialBase::Bind(GpuCommandBuffer& commandBuffer, const TShared<GpuParameterSet>& parameters) const
+{
+	Bind(commandBuffer, false);
+	commandBuffer.SetGpuParameterSet(parameters);
 }
 
 void RendererMaterialBase::BindParameters(GpuCommandBuffer& commandBuffer) const

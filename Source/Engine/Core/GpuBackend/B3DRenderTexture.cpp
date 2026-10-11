@@ -206,7 +206,7 @@ void RenderTexture::Initialize()
 {
 	RenderTarget::Initialize();
 
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	// A frame graph places its resources late and may move them, so only the graph builds render textures from them
 	const auto fnValidateSurface = [](const RenderSurfaceInformation& surface)
 	{

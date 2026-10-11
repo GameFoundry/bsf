@@ -189,9 +189,7 @@ VulkanGpuCommandBuffer::VulkanGpuCommandBuffer(VulkanGpuDevice& device, VulkanGp
 	const VkResult result = vkCreateFence(GetVulkanGpuDevice().GetLogical(), &fenceCI, gVulkanAllocator, &mFence);
 	B3D_ASSERT(result == VK_SUCCESS);
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	mResourceTracker.SetHazardTracking(!UsesExplicitBarriers());
-#endif
 
 	SetName(createInformation.Name);
 }
@@ -1508,9 +1506,7 @@ VulkanGpuCommandBufferSubmitInformation VulkanGpuCommandBuffer::PrepareForSubmit
 	mResourceTracker.ResolveSubmissionTransitions(destinationQueueId, device.GetSubmitThread().GetFrameIndex(), transitionVisitor);
 	transitionVisitor.Finalize();
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	PublishExplicitImageLayouts(destinationQueueId);
-#endif
 
 	// Wait on present (i.e. until the back buffer becomes available) for any surfaces
 	for(IVulkanRenderWindowSurface* surface : mAcquiredSurfaces)
@@ -1599,9 +1595,7 @@ void VulkanGpuCommandBuffer::ClearRecordingState()
 	mGraphicsPushConstantsRequireBind = false;
 	mComputePushConstantsRequireBind = false;
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	ClearExplicitBarrierState(wasSubmitted);
-#endif
 
 	OnDidComplete.Clear();
 	OnDestroyed.Clear();
@@ -2295,7 +2289,6 @@ VulkanFramebuffer* VulkanGpuCommandBuffer::AcquireWindowFramebuffer(RenderWindow
 	return framebuffer;
 }
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 VulkanSplitBarrier::VulkanSplitBarrier(VulkanGpuDevice& device, TOptional<GpuQueueType> releaseQueue, TOptional<GpuQueueType> acquireQueue)
 	: GpuSplitBarrier(releaseQueue, acquireQueue), mDevice(device.GetLogical())
 {
@@ -2493,7 +2486,6 @@ bool VulkanGpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& b
 
 	return true;
 }
-#endif
 
 void VulkanGpuCommandBuffer::NotifyRenderTargetModified()
 {

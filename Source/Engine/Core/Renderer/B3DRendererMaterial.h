@@ -63,9 +63,7 @@ namespace b3d
 {
 	namespace render
 	{
-#if B3D_GPU_EXPLICIT_BARRIERS
 		class FrameGraphPass;
-#endif
 
 		/** @addtogroup Renderer-Internal
 		 *  @{
@@ -178,7 +176,6 @@ namespace b3d
 			 */
 			virtual TShared<GpuParameterSet> CreateGpuParameterSet(u32 set = 0, GpuObjectCreateFlags flags = GpuObjectCreateFlag::None) const = 0;
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 			/**
 			 * Creates a new instance of GPU parameters for this material, like CreateGpuParameterSet(u32, GpuObjectCreateFlags), and adds it
 			 * to @p pass, so the pass may bind it. See FrameGraphPass::AddParameterSet().
@@ -187,7 +184,6 @@ namespace b3d
 			 * @param set		Index of the parameter set to create.
 			 */
 			TShared<GpuParameterSet> CreateGpuParameterSet(FrameGraphPass& pass, u32 set = 0) const;
-#endif
 
 			/** Returns the material's graphics pipeline state. This will be null if the material is a compute material. */
 			TShared<GpuGraphicsPipelineState> GetGraphicsPipeline() const { return mGraphicsPipeline; }
@@ -201,6 +197,9 @@ namespace b3d
 			 * to bind material parameters (if any).
 			 */
 			void Bind(GpuCommandBuffer& commandBuffer, bool bindParameters = true) const;
+
+			/** Binds the material's pipeline and @p parameters, a parameter set created for this material. */
+			void Bind(GpuCommandBuffer& commandBuffer, const TShared<GpuParameterSet>& parameters) const;
 
 			/** Binds the material parameters to the pipeline. */
 			void BindParameters(GpuCommandBuffer& commandBuffer) const;

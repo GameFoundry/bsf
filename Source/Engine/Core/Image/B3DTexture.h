@@ -478,6 +478,8 @@ namespace b3d
 
 	namespace render
 	{
+		class FrameGraph;
+
 		/** @addtogroup Renderer
 		 *  @{
 		 */
@@ -690,7 +692,6 @@ namespace b3d
 			 */
 			bool mIsAliased = false;
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 			/**
 			 * Returns true if the native images created for the texture start at rest (see gGpuExplicitBarriers). Backends then
 			 * request a resting transition of every image they create for the texture (see IGpuImageResource::RequestRestingTransition()),
@@ -698,7 +699,6 @@ namespace b3d
 			 * their state from whoever places them, so they never start at rest.
 			 */
 			bool StartsAtRest() const;
-#endif
 
 			u32 mFrameGraphResourceIndex = ~0u; /**< See SetFrameGraphResourceIndex(). */
 
@@ -813,6 +813,19 @@ namespace b3d
 			 * @return					Operation that will be signaled when the data is ready to be read.
 			 */
 			static TAsyncOp<TShared<PixelData>> ReadAsync(GpuWorkContext& gpuContext, const TShared<Texture>& texture, GpuCommandBuffer& commandBuffer, u32 mipLevel = 0, u32 arrayLayer = 0);
+
+			/**
+			 * Performs a non-blocking read operation inside @p graph. The GPU will execute the read when the command buffer 
+			 * reaches the execution point and the asynchronous operation will be signaled with the return value.
+			 *
+			 * @param	graph			Graph to add the copy pass to. Its work context backs the internal staging buffer.
+			 * @param	texture			Texture to read the data from. Must be a resource of @p graph.
+			 * @param	mipLevel		Mipmap level to read from.
+			 * @param	arrayLayer		Texture array layer (or cubemap face or depth slice) to read from.
+			 * @return					Operation that will be signaled when the command buffer of the copy pass completes. Signaled with
+			 *							null if the command buffer is destroyed without being submitted.
+			 */
+			static TAsyncOp<TShared<PixelData>> ReadAsync(FrameGraph& graph, const TShared<Texture>& texture, u32 mipLevel = 0, u32 arrayLayer = 0);
 
 			/**
 			 * Sets all the pixels of the specified face and mip level to the provided value.

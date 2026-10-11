@@ -207,9 +207,7 @@ namespace b3d
 			friend class D3D12GpuCommandBufferPool;
 			friend class D3D12GpuQueue;
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 			bool RecordExplicitBarriers(const GpuExplicitBarriers& barriers, GpuBarrierPhase phase, GpuSplitBarrier* split) override;
-#endif
 
 			/** Creates a command buffer wrapping @p commandList. */
 			D3D12GpuCommandBuffer(D3D12GpuDevice& device, D3D12GpuCommandBufferPool& pool, u32 id, ID3D12GraphicsCommandList7* commandList, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation);

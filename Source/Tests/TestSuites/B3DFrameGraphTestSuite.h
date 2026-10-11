@@ -16,7 +16,6 @@ namespace b3d
 		FrameGraphTestSuite();
 
 	private:
-#if B3D_GPU_EXPLICIT_BARRIERS
 		/**
 		 * A producer, two unrelated passes and a consumer: the consumer's barrier is released after the producer and acquired before the
 		 * consumer, and the consumer reads what the producer wrote.
@@ -56,6 +55,18 @@ namespace b3d
 		 */
 		void TestLateMemory();
 
+		/**
+		 * TextureUtility::ReadAsync() and GpuBufferUtility::ReadAsync() read transients through copy passes into imported staging buffers.
+		 * The graph's end makes the copies visible to the host, and the reads complete with the graph's command buffer.
+		 */
+		void TestReadback();
+
+		/**
+		 * Typed parameter handles cached from one parameter set write another set of the same layout, as materials fill the sets of
+		 * frame graph passes. The pass declares the graph resources set through the handles.
+		 */
+		void TestParameterHandles();
+
 #if B3D_BUILD_TYPE_DEVELOPMENT
 		/**
 		 * The development checks: writes to resources at rest, conflicting declarations in one pass, writes after an export, dependencies
@@ -63,7 +74,6 @@ namespace b3d
 		 * that was not exported, and use of a transient that was returned unplaced.
 		 */
 		void TestValidation();
-#endif
 #endif
 	};
 } // namespace b3d

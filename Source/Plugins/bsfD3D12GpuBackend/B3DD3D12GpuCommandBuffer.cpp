@@ -193,9 +193,7 @@ D3D12GpuCommandBuffer::D3D12GpuCommandBuffer(D3D12GpuDevice& device, D3D12GpuCom
 	// Incremented by the queue just before each submit's fence signal, so it always identifies the latest submission
 	mFenceValue = 0;
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	mResourceTracker.SetHazardTracking(!UsesExplicitBarriers());
-#endif
 
 	SetName(createInformation.Name);
 }
@@ -1401,9 +1399,7 @@ D3D12GpuCommandBufferSubmitInformation D3D12GpuCommandBuffer::PrepareForSubmitOn
 	mResourceTracker.ResolveSubmissionTransitions(destinationQueueId, device.GetSubmitThread().GetFrameIndex(), visitor);
 	visitor.Finalize();
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	PublishExplicitImageLayouts(destinationQueueId);
-#endif
 
 	submitInformation.PrimaryCommandBuffer = std::static_pointer_cast<D3D12GpuCommandBuffer>(GetShared());
 	return submitInformation;
@@ -1460,9 +1456,7 @@ void D3D12GpuCommandBuffer::Reset()
 	mResourceTracker.Clear();
 	mQueueSyncMask = GpuQueueMask();
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	ClearExplicitBarrierState(wasSubmitted);
-#endif
 
 	OnDidComplete.Clear();
 	OnDestroyed.Clear();
@@ -1952,7 +1946,6 @@ D3D12Framebuffer* D3D12GpuCommandBuffer::AcquireWindowFramebuffer(RenderWindow& 
 	return surface->GetActiveFramebuffer();
 }
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 bool D3D12GpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& barriers, GpuBarrierPhase phase, GpuSplitBarrier* split)
 {
 	// What the barriers of each case record:
@@ -2209,4 +2202,3 @@ bool D3D12GpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& ba
 	batch.Record(*mCommandList.Get());
 	return true;
 }
-#endif

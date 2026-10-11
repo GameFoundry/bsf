@@ -372,9 +372,7 @@ namespace b3d
 		MetalGpuCommandBuffer::MetalGpuCommandBuffer(MetalGpuDevice& device, MetalGpuCommandBufferPool& pool, u32 id, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation)
 			: GpuCommandBuffer(device, ownerThread, queueType, pool.UsesExplicitBarriers(), createInformation), mGpuDevice(device), mPool(pool), mId(id), mBarrierHelper(&mResourceTracker)
 		{
-#if B3D_GPU_EXPLICIT_BARRIERS
 			mResourceTracker.SetHazardTracking(!UsesExplicitBarriers());
-#endif
 		}
 
 		MetalGpuCommandBuffer::~MetalGpuCommandBuffer()
@@ -2438,7 +2436,6 @@ namespace b3d
 				return;
 		}
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 		bool MetalGpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& barriers, GpuBarrierPhase phase, GpuSplitBarrier* split)
 		{
 			// Metal has no image layouts, and orders work between command buffers itself: tracked resources through its hazard
@@ -2542,7 +2539,6 @@ namespace b3d
 
 			return true;
 		}
-#endif
 
 		void MetalGpuCommandBuffer::EncodeQueueWaits(id<MTLCommandBuffer> commandBuffer, MetalGpuQueue& submitQueue, GpuQueueMask syncMask)
 		{
@@ -2683,9 +2679,7 @@ namespace b3d
 				MetalSubmissionTransitionVisitor transitionVisitor;
 				mResourceTracker.ResolveSubmissionTransitions(mSubmittedQueueId, submitThread.GetFrameIndex(), transitionVisitor);
 				syncMask |= transitionVisitor.GetRequiredWaitMask();
-#if B3D_GPU_EXPLICIT_BARRIERS
 				PublishExplicitImageLayouts(mSubmittedQueueId);
-#endif
 
 				mResourceTracker.NotifyUsed(mSubmittedQueueId);
 				mResourcesSubmitted = true;
@@ -2752,9 +2746,7 @@ namespace b3d
 			MetalSubmissionTransitionVisitor transitionVisitor;
 			mResourceTracker.ResolveSubmissionTransitions(mSubmittedQueueId, submitThread.GetFrameIndex(), transitionVisitor);
 			syncMask |= transitionVisitor.GetRequiredWaitMask();
-#if B3D_GPU_EXPLICIT_BARRIERS
 			PublishExplicitImageLayouts(mSubmittedQueueId);
-#endif
 
 			// The resolved transitions rely on the frame fence ordering this submission after all earlier frames
 			const TArrayView<const u64> frameFenceValues = submitThread.ConsumeFrameFence(submitQueue);
@@ -2865,9 +2857,7 @@ namespace b3d
 			else
 				mResourceTracker.NotifyUnbound();
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 			ClearExplicitBarrierState(mResourcesSubmitted);
-#endif
 
 			mResourceTracker.Clear();
 			mResourcesSubmitted = false;

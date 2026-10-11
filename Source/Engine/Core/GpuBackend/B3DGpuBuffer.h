@@ -537,6 +537,8 @@ namespace b3d
 
 namespace b3d::render
 {
+	class FrameGraph;
+
 	using GpuBufferSuballocation = TGpuBufferSuballocation<true>;
 	using GpuBufferMappedScope = TGpuBufferMappedScope<true>;
 
@@ -881,6 +883,19 @@ namespace b3d::render
 		 * @return					Operation that will be signaled when the data is ready to be read.
 		 */
 		static TAsyncOp<TShared<MemoryDataStream>> ReadAsync(GpuWorkContext& gpuContext, const TShared<GpuBuffer>& buffer, u32 offset, u32 length, GpuCommandBuffer& commandBuffer);
+
+		/**
+		 * Performs a non-blocking read operation inside @p graph. The GPU will execute the read when the command buffer reaches 
+		 * the execution point and the asynchronous operation will be signaled with the return value.
+		 *
+		 * @param	graph			Graph to add the copy pass to. Its work context backs the internal staging buffer.
+		 * @param	buffer			Buffer to read from. Must be a resource of @p graph.
+		 * @param	offset			Offset in bytes from which to read the data.
+		 * @param	length			Length of the area you want to read, in bytes.
+		 * @return					Operation that will be signaled when the command buffer of the copy pass completes. Signaled with
+		 *							null if the command buffer is destroyed without being submitted.
+		 */
+		static TAsyncOp<TShared<MemoryDataStream>> ReadAsync(FrameGraph& graph, const TShared<GpuBuffer>& buffer, u32 offset, u32 length);
 	};
 
 } // namespace b3d::render

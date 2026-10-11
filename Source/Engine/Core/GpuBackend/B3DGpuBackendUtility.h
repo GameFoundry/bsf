@@ -120,22 +120,24 @@ namespace b3d
 
 		/**
 		 * Records a copy of a subresource of @p texture into @p stagingBuffer, which the host can read once @p commandBuffer completes. On a
-		 * command buffer with explicit barriers the subresource leaves its resting state for the copy and returns to it.
+		 * command buffer with explicit barriers the subresource and @p stagingBuffer leave their resting states for the copy and return to
+		 * them.
 		 */
 		static void CopyToStagingBuffer(render::GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& texture, u32 mipLevel, u32 arrayLayer, const TShared<render::GpuBuffer>& stagingBuffer);
 
 		/**
 		 * Records a copy of @p length bytes of @p buffer, starting at @p offset, to the start of @p stagingBuffer, which the host can read
-		 * once @p commandBuffer completes. On a command buffer with explicit barriers the buffer leaves its resting state for the copy and
-		 * returns to it.
+		 * once @p commandBuffer completes. On a command buffer with explicit barriers @p buffer and @p stagingBuffer leave their resting
+		 * states for the copy and return to them.
 		 */
 		static void CopyToStagingBuffer(render::GpuCommandBuffer& commandBuffer, const TShared<render::GpuBuffer>& buffer, u32 offset, u32 length, const TShared<render::GpuBuffer>& stagingBuffer);
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 		/**
 		 * Returns the resting state of a buffer on queues of @p queueType. With explicit barriers, a resource outside of the work that
 		 * declares its state is at rest: it may be read in the resting state without a barrier, and whoever writes it brings it back to
-		 * rest. Buffers rest readable as vertex, index and indirect arguments, and from every shader stage.
+		 * rest. Buffers rest readable as vertex, index and indirect arguments, and from every shader stage. Readback buffers
+		 * (GpuBufferType::StagingRead) rest readable by the host, so a barrier that returns one to rest makes the GPU's writes visible
+		 * to the host.
 		 */
 		static render::GpuAccessState GetRestingState(const render::GpuBuffer& buffer, GpuQueueType queueType);
 
@@ -154,7 +156,6 @@ namespace b3d
 		 * and its depth and stencil surfaces in GpuImageLayout::DepthStencilAttachment.
 		 */
 		static render::GpuAccessState GetRestingState(const render::RenderTarget& target, RenderSurfaceMaskBits surface, GpuQueueType queueType);
-#endif
 	};
 
 	/** @} */

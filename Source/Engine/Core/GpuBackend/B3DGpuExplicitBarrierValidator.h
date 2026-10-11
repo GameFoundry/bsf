@@ -5,7 +5,7 @@
 #include "B3DPrerequisites.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 
 #include "Utility/B3DDenseMap.h"
 

@@ -9,8 +9,6 @@
 #include "GpuBackend/B3DRenderTarget.h"
 #include "Utility/B3DConfigVariable.h"
 
-#if B3D_GPU_EXPLICIT_BARRIERS
-
 namespace b3d
 {
 	class GpuWorkContext;
@@ -137,6 +135,15 @@ namespace b3d
 			 */
 			void SetRenderTarget(const TShared<RenderTarget>& target, FrameGraphAttachmentLoad load);
 
+			/**
+			 * Lets draws of the pass bind @p parameters without adding it with AddParameterSet(). The graph declares nothing for the
+			 * resources it holds, so they must be at rest and only read, such as the parameter sets of render queue draws. The graph
+			 * passes the set to the render pass in RenderPassCreateInformation::Parameters, where backends prepare its descriptors.
+			 *
+			 * TODO - Remove together with RenderPassCreateInformation::Parameters.
+			 */
+			void AddRenderPassParameterSet(const TShared<GpuParameterSet>& parameters);
+
 		private:
 			friend class FrameGraph;
 
@@ -156,6 +163,8 @@ namespace b3d
 
 			TShared<RenderTarget> mRenderTarget;
 			FrameGraphAttachmentLoad mRenderTargetLoad = FrameGraphAttachmentLoad::Load;
+
+			Vector<TShared<GpuParameterSet>> mRenderPassParameterSets;
 		};
 
 		/** Describes a pass of a FrameGraph that dispatches compute work. */
@@ -307,6 +316,9 @@ namespace b3d
 			/** Returns pass and barrier counts. Only valid after Compile(). */
 			const FrameGraphStatistics& GetStatistics() const { return mStatistics; }
 
+			/** Returns the work context the graph records with. */
+			GpuWorkContext& GetWorkContext() const { return mContext; }
+
 #if B3D_BUILD_TYPE_DEVELOPMENT
 			/** Returns true while the calling thread creates a render texture for a raster pass. Development builds only. */
 			static bool IsCreatingRenderTexture();
@@ -415,6 +427,7 @@ namespace b3d
 				Vector<SubresourceAccess> Accesses; /**< Sorted by resource and subresource, one entry per subresource. */
 				TInlineArray<u32, 2> ExportedResourceIndices; /**< Indices into mResources of the resources exported after the pass. */
 				RenderPassAttachments Attachments; /**< Only valid for raster passes. */
+				Vector<TShared<GpuParameterSet>> RenderPassParameterSets; /**< See FrameGraphRasterPass::AddRenderPassParameterSet(). */
 
 				// Compile results
 				bool IsCulled = false;
@@ -486,5 +499,3 @@ namespace b3d
 		/** @} */
 	} // namespace render
 } // namespace b3d
-
-#endif

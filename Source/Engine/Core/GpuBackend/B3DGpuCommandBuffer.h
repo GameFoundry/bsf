@@ -12,9 +12,7 @@
 #include "Threading/B3DSingleConsumerQueue.h"
 #include "Utility/B3DConfigVariable.h"
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 #include "B3DGpuSplitBarrier.h"
-#endif
 
 namespace b3d
 {
@@ -25,7 +23,6 @@ namespace b3d
 		class GpuExplicitBarrierValidator;
 	}
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	/**
 	 * If enabled, development builds check the accesses of resources that a command buffer with explicit barriers neither declared nor
 	 * barriered against the resources' resting state (see GpuBackendUtility::GetRestingState()). Enable when every resource outside of
@@ -45,7 +42,6 @@ namespace b3d
 	 * and automatic barriers cannot be mixed. Set before start-up, for the whole run. Has no effect without RSC_EXPLICIT_BARRIERS.
 	 */
 	extern B3D_EXPORT TConfigVariable<bool> gGpuExplicitBarriers;
-#endif
 }
 
 namespace b3d
@@ -172,7 +168,6 @@ namespace b3d
 			ThreadId Thread; /**< Thread on which the command buffer pool is allowed to be used on. Any created command buffers are also bound to this thread. */
 			bool UsePoolReset = false; /**< When true, command buffers are reset as a group via pool-level reset instead of individually. */
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 			/**
 			 * When true, command buffers of the pool issue no automatic barriers. The caller issues every barrier with
 			 * GpuCommandBuffer::IssueExplicitBarriers(), and the command buffers only keep their resources alive. A resource used
@@ -180,7 +175,6 @@ namespace b3d
 			 * RSC_EXPLICIT_BARRIERS.
 			 */
 			bool ExplicitBarriers = false;
-#endif
 		};
 
 		/** Descriptor structure used for initialization of a GpuCommandBufferPool. */
@@ -246,11 +240,7 @@ namespace b3d
 			/** Returns true if command buffers of the pool issue only explicit barriers. See GpuCommandBufferPoolInformation::ExplicitBarriers. */
 			bool UsesExplicitBarriers() const
 			{
-#if B3D_GPU_EXPLICIT_BARRIERS
 				return mInformation.ExplicitBarriers;
-#else
-				return false;
-#endif
 			}
 
 			/** Creates a new command buffer. */
@@ -406,7 +396,6 @@ namespace b3d
 			TArrayView<const GpuRenderTargetBarrier> RenderTargetBarriers;
 		};
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 		/**
 		 * Describes how compression metadata of an image may encode its contents, on GPUs that compress images. Lets a barrier skip
 		 * decompression the image does not need. Ignored by backends that manage compression themselves.
@@ -612,7 +601,6 @@ namespace b3d
 			Release, /**< The first half of a split barrier. See GpuCommandBuffer::ReleaseBarriers(). */
 			Acquire /**< The second half of a split barrier. See GpuCommandBuffer::AcquireBarriers(). */
 		};
-#endif
 
 		/**
 		 * Descriptor structure used for initialization of a render pass. Render pass will bind the provided
@@ -714,10 +702,8 @@ namespace b3d
 			/** Returns the current state of the command buffer. */
 			GpuCommandBufferState GetState() const { return mState; }
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 			/** Returns true if the command buffer issues only explicit barriers. See GpuCommandBufferPoolInformation::ExplicitBarriers. */
 			bool UsesExplicitBarriers() const { return mUsesExplicitBarriers; }
-#endif
 
 			/** Assigns an name to the command buffer, primarily used for easier debugging. */
 			virtual void SetName(const StringView& name) { mName = name; }
@@ -844,7 +830,6 @@ namespace b3d
 			 */
 			virtual void IssueBarriers(const GpuBarriers& barriers) = 0;
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 			/**
 			 * Issues barriers whose source and destination the caller provides. Only valid outside of a render pass, on command buffers
 			 * of a pool created with GpuCommandBufferPoolInformation::ExplicitBarriers.
@@ -888,7 +873,6 @@ namespace b3d
 			 * GpuCommandBufferPoolInformation::ExplicitBarriers. Development builds only.
 			 */
 			void SetValidator(GpuExplicitBarrierValidator* validator);
-#endif
 #endif
 
 			/**
@@ -1105,7 +1089,6 @@ namespace b3d
 
 			GpuCommandBuffer(GpuDevice& gpuDevice, ThreadId ownerThread, GpuQueueType queueType, bool explicitBarriers, const GpuCommandBufferCreateInformation& createInformation);
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 			/**
 			 * Records explicit barriers, or one half of split barriers. The base implementation reports that the backend does not
 			 * support explicit barriers. Only called outside of a render pass, on command buffers that use explicit barriers.
@@ -1156,7 +1139,6 @@ namespace b3d
 				bool IsReleasedByRecording = false; /**< For an acquire, true if the same recording released it earlier. */
 #endif
 			};
-#endif
 
 			/**
 			 * Called on the owning thread just before the command buffer is queued for submission on the submit thread, in submission
@@ -1206,14 +1188,12 @@ namespace b3d
 			GpuQueueMask mQueueSyncMask;
 			bool mIsDestroyed = false;
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 			const bool mUsesExplicitBarriers;
 			TInlineArray<RecordedSplitBarrier, 4> mSplitBarriers;
 			TInlineArray<ExplicitImageLayout, 4> mExplicitImageLayouts;
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
 			GpuExplicitBarrierValidator* mExplicitBarrierValidator = nullptr; /**< Set by SetValidator(). Null if the command buffer does not validate. */
-#endif
 #endif
 
 #if B3D_PROFILING_ENABLED

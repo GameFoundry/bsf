@@ -105,7 +105,6 @@ namespace b3d
 		/** Verifies render-pass attachment and shader usage is combined through core subresource partitions. */
 		void TestRenderPassResourceTracking();
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 		/** Verifies a tracker without hazard tracking keeps resources alive without resolving hazards, barriers or submission transitions. */
 		void TestTrackingWithoutHazards();
 
@@ -138,7 +137,6 @@ namespace b3d
 		 * without a barrier. Runs only on devices that support explicit barriers.
 		 */
 		void TestExplicitBarrierResourceValidation();
-#endif
 #endif
 
 		/** Verifies push-constant metadata merging and carrier separation across program stages. */

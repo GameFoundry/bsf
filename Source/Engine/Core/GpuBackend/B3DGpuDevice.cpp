@@ -77,12 +77,10 @@ void GpuDevice::DestroyTransientHeapPools()
 	mTransientHeapPools.Clear();
 }
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 TShared<render::GpuSplitBarrier> GpuDevice::CreateSplitBarrier(TOptional<GpuQueueType> releaseQueue, TOptional<GpuQueueType> acquireQueue)
 {
 	return B3DMakeShared<render::GpuSplitBarrier>(releaseQueue, acquireQueue);
 }
-#endif
 
 namespace
 {

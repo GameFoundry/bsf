@@ -187,7 +187,6 @@ namespace b3d
 			const bool allowConcurrentQueueReads = properties.Usage.IsSet(TextureUsageFlag::AllowConcurrentQueueReads) || GpuBackendUtility::IsSampleableOnly(properties.Usage);
 
 			D3D12TextureLayout initialLayout = D3D12TextureLayout::Undefined();
-#if B3D_GPU_EXPLICIT_BARRIERS
 			// A texture that starts at rest is created in its resting layout, so it needs no transition. Textures that are not shared between
 			// queues rest on the graphics queue. Placed render and depth-stencil targets must have their compression metadata initialized
 			// first, which a transition from the undefined layout does, so the submit thread brings those to rest instead.
@@ -200,7 +199,6 @@ namespace b3d
 
 				initialLayout = D3D12BarrierUtility::TranslateTextureLayout(GpuImageLayout::ShaderReadOnly, GQT_GRAPHICS, layoutOptions);
 			}
-#endif
 
 			ComPtr<ID3D12Resource> resource;
 			GpuAllocation allocation;
@@ -241,10 +239,8 @@ namespace b3d
 
 			mImage = device.GetResourceManager().Create<D3D12Image>(imageCreateInformation);
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 			if(startsAtRest && isTarget)
 				mImage->RequestRestingTransition(GpuImageLayout::ShaderReadOnly);
-#endif
 			if(UsesDefaultSRV())
 				mDefaultSRV = CreateView(TextureSurface::kComplete, ViewType::SRV);
 

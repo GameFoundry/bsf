@@ -5,7 +5,6 @@
 #include "CoreObject/B3DRenderThread.h"
 #include "FrameGraph/B3DFrameGraph.h"
 #include "GpuBackend/B3DGpuBackend.h"
-#include "GpuBackend/B3DGpuBackendUtility.h"
 #include "GpuBackend/B3DGpuDevice.h"
 #include "GpuBackend/B3DGpuDeviceCapabilities.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
@@ -15,8 +14,10 @@
 #include "GpuBackend/B3DGpuPipelineParameterLayout.h"
 #include "GpuBackend/B3DGpuTransientResourceAllocator.h"
 #include "GpuBackend/B3DGpuWorkContext.h"
+#include "FileSystem/B3DDataStream.h"
 #include "Image/B3DPixelData.h"
 #include "Image/B3DTexture.h"
+#include "Threading/B3DAsyncOp.h"
 
 using namespace b3d;
 using namespace b3d::render;
@@ -24,7 +25,6 @@ using namespace b3d::render;
 FrameGraphTestSuite::FrameGraphTestSuite()
 	: TestSuite("FrameGraphTestSuite")
 {
-#if B3D_GPU_EXPLICIT_BARRIERS
 	B3D_ADD_TEST(FrameGraphTestSuite::TestSplitBarriers)
 	B3D_ADD_TEST(FrameGraphTestSuite::TestCulling)
 	B3D_ADD_TEST(FrameGraphTestSuite::TestSplitAliasAcquire)
@@ -32,20 +32,20 @@ FrameGraphTestSuite::FrameGraphTestSuite()
 	B3D_ADD_TEST(FrameGraphTestSuite::TestExport)
 	B3D_ADD_TEST(FrameGraphTestSuite::TestRestingReads)
 	B3D_ADD_TEST(FrameGraphTestSuite::TestLateMemory)
+	B3D_ADD_TEST(FrameGraphTestSuite::TestReadback)
+	B3D_ADD_TEST(FrameGraphTestSuite::TestParameterHandles)
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
 	B3D_ADD_TEST(FrameGraphTestSuite::TestValidation)
 #endif
-#endif
 }
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 namespace
 {
 	constexpr u32 kSize = 16; /**< Width and height of the resources the test dispatch writes. */
 	constexpr u32 kDispatchPattern = 0x5A000000; /**< High bits the test dispatch writes into every element. */
 
-	/** D3D12 debug layer hint about the command buffers that only bring resources to rest or make readbacks visible to the host. */
+	/** D3D12 debug layer hint about the command buffers that only bring resources to rest. */
 	constexpr const char* kBarrierOnlyWarning = "references command lists that have recorded only Barrier commands";
 
 	/** Resources and helpers the frame graph tests share. Lives on the render thread. */
@@ -174,40 +174,26 @@ namespace
 		}
 
 		/**
-		 * Makes the GPU writes of the readbacks, which a graph left at rest, visible to the host, and waits for the GPU to finish. The
-		 * resource tracker makes them visible in automatic mode.
+		 * Returns true if @p readback holds the test dispatch's values, laid out as the buffer, or as a texture copy if @p isTexture is true.
+		 * A graph's end returns the readback to rest, which makes the copy visible to the host. Wait for the GPU to finish first.
 		 */
-		void FinishReadbacks(std::initializer_list<TShared<render::GpuBuffer>> readbacks) const
-		{
-			if(IsExplicit)
-			{
-				const TShared<render::GpuCommandBuffer> commands = Pool->Create(GpuCommandBufferCreateInformation::Create("Host visibility"));
-				for(const TShared<render::GpuBuffer>& readback : readbacks)
-				{
-					const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*readback, GQT_GRAPHICS);
-					commands->IssueExplicitBarriers(GpuExplicitBufferBarrier(readback, restingState, GpuAccessState(GpuStageFlag::Host, GpuAccessFlag::Read)));
-				}
-
-				Context->SubmitCommandBuffer(commands, GpuQueueMask::kNone);
-			}
-
-			Device.WaitUntilIdle();
-		}
-
-		/** Returns true if @p readback holds the test dispatch's values, laid out as the buffer, or as a texture copy if @p isTexture is true. */
 		bool HasDispatchValues(const TShared<render::GpuBuffer>& readback, bool isTexture) const
 		{
 			const render::GpuBufferMappedScope mapping = readback->Map(GpuMapOption::Read);
 			if(!mapping.IsValid())
 				return false;
 
-			const u32* elements = static_cast<const u32*>(mapping.GetMappedMemory());
+			return HasDispatchValues(static_cast<const u32*>(mapping.GetMappedMemory()), isTexture ? TextureRowPitch : kSize);
+		}
+
+		/** Returns true if @p elements hold the test dispatch's values, in rows @p rowPitch elements apart. */
+		static bool HasDispatchValues(const u32* elements, u32 rowPitch)
+		{
 			for(u32 row = 0; row < kSize; row++)
 			{
 				for(u32 column = 0; column < kSize; column++)
 				{
-					const u32 elementIndex = isTexture ? row * TextureRowPitch + column : row * kSize + column;
-					if(elements[elementIndex] != (kDispatchPattern | (row * kSize + column)))
+					if(elements[row * rowPitch + column] != (kDispatchPattern | (row * kSize + column)))
 						return false;
 				}
 			}
@@ -302,7 +288,7 @@ void FrameGraphTestSuite::TestSplitBarriers()
 			graph.Execute();
 		}
 
-		test.FinishReadbacks({ bufferReadback, textureReadback });
+		device->WaitUntilIdle();
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(bufferReadback, false), "The consumer does not read what the producer wrote into the buffer.")
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(textureReadback, true), "The consumer does not read what the producer wrote into the texture.")
 		B3D_TEST_ASSERT(producedBuffer->GetFrameGraphResourceIndex() == ~0u && producedTexture->GetFrameGraphResourceIndex() == ~0u)
@@ -375,7 +361,7 @@ void FrameGraphTestSuite::TestCulling()
 			graph.Execute();
 		}
 
-		test.FinishReadbacks({ readback });
+		device->WaitUntilIdle();
 
 		const render::GpuBufferMappedScope mapping = readback->Map(GpuMapOption::Read);
 		B3D_TEST_ASSERT(mapping.IsValid())
@@ -447,7 +433,7 @@ void FrameGraphTestSuite::TestSplitAliasAcquire()
 				B3D_TEST_ASSERT(graph.GetStatistics().SplitAliasAcquireCount >= 1)
 		}
 
-		test.FinishReadbacks({ readbacks[0], readbacks[1], readbacks[2], readbacks[3] });
+		device->WaitUntilIdle();
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(readbacks[0], false), "The first transient buffer does not hold its values.")
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(readbacks[1], true), "The first transient texture does not hold its values.")
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(readbacks[2], false), "The second transient buffer does not hold its values.")
@@ -510,7 +496,7 @@ void FrameGraphTestSuite::TestExtract()
 				graph.Execute();
 			}
 
-			test.FinishReadbacks({ bufferReadback, textureReadback });
+			device->WaitUntilIdle();
 			B3D_TEST_ASSERT_MSG(test.HasDispatchValues(bufferReadback, false), isExported ? "The extracted and exported buffer does not hold the values written before its extraction."
 				: "The extracted buffer does not hold the values written before its extraction.")
 			B3D_TEST_ASSERT_MSG(test.HasDispatchValues(textureReadback, true), isExported ? "The extracted and exported texture does not hold the values written before its extraction."
@@ -582,7 +568,7 @@ void FrameGraphTestSuite::TestExport()
 			graph.Execute();
 		}
 
-		test.FinishReadbacks({ bufferReadback, textureReadback });
+		device->WaitUntilIdle();
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(bufferReadback, false), "The buffer returned to rest at the end of the graph does not hold its values.")
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(textureReadback, true), "The exported texture does not hold its values.")
 
@@ -656,7 +642,7 @@ void FrameGraphTestSuite::TestRestingReads()
 			graph.Execute();
 		}
 
-		test.FinishReadbacks({ uploadedReadback, renderedReadback });
+		device->WaitUntilIdle();
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(uploadedReadback, false), "Sampling at rest does not read the uploaded texels.")
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(renderedReadback, false), "Sampling at rest does not read what the earlier graph wrote.")
 
@@ -711,12 +697,126 @@ void FrameGraphTestSuite::TestLateMemory()
 			if(test.IsExplicit && isMoved)
 				B3D_TEST_ASSERT(test.Context->GetTransientResourceAllocator().GetStatistics().Relocations >= 1)
 
-			test.FinishReadbacks({ bufferReadback, textureReadback });
+			device->WaitUntilIdle();
 			B3D_TEST_ASSERT_MSG(test.HasDispatchValues(textureReadback, true), isMoved ? "The moved transient texture does not hold the dispatch's values."
 				: "The transient texture does not hold the dispatch's values.")
 
 			device->EndFrame();
 		}
+	});
+}
+
+void FrameGraphTestSuite::TestReadback()
+{
+	const TShared<GpuDevice> device = GetTestDevice();
+	const TShared<GpuComputePipelineState> pipeline = device != nullptr ? CreateTestDispatchPipeline(*device) : nullptr;
+	if(pipeline == nullptr)
+		return;
+
+	LoggingScope logs(*this);
+	logs.IgnoreWarning(kBarrierOnlyWarning);
+
+	RunInModes("FrameGraphTestSuite::TestReadback", { true, false }, [this, &device, &pipeline]()
+	{
+		const FrameGraphTestContext test(*device, pipeline);
+		const GpuBufferCreateInformation bufferInformation = GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize,
+			GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU);
+
+		TAsyncOp<TShared<MemoryDataStream>> bufferRead;
+		TAsyncOp<TShared<PixelData>> textureRead;
+		{
+			FrameGraph graph(*test.Context);
+			const TShared<render::GpuBuffer> buffer = graph.CreateBuffer("Read buffer", bufferInformation);
+			const TShared<render::Texture> texture = graph.CreateTexture("Read texture", test.TextureInformation);
+			test.AddDispatch(graph, "Write", buffer, texture);
+
+			bufferRead = render::GpuBufferUtility::ReadAsync(graph, buffer, 0, kSize * kSize * sizeof(u32));
+			textureRead = render::TextureUtility::ReadAsync(graph, texture);
+
+			// The staging buffers are imported, so the copy passes and the dispatch survive
+			graph.Compile();
+			B3D_TEST_ASSERT(graph.GetStatistics().CulledPassCount == 0)
+			graph.Execute();
+		}
+
+		// The command buffer's completion callbacks run on this thread while it waits
+		device->WaitUntilIdle();
+		B3D_TEST_ASSERT_MSG(bufferRead.HasCompleted() && textureRead.HasCompleted(), "The reads did not complete with the graph's command buffer.")
+		if(!bufferRead.HasCompleted() || !textureRead.HasCompleted())
+			return;
+
+		const TShared<MemoryDataStream> bufferData = bufferRead.GetReturnValue();
+		const TShared<PixelData> textureData = textureRead.GetReturnValue();
+		B3D_TEST_ASSERT(bufferData != nullptr && textureData != nullptr)
+		if(bufferData == nullptr || textureData == nullptr)
+			return;
+
+		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(reinterpret_cast<const u32*>(bufferData->Data()), kSize), "The buffer read does not hold the dispatch's values.")
+		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(reinterpret_cast<const u32*>(textureData->GetData()), textureData->GetRowPitch() / sizeof(u32)),
+			"The texture read does not hold the dispatch's values.")
+
+		device->EndFrame();
+	});
+}
+
+void FrameGraphTestSuite::TestParameterHandles()
+{
+	const TShared<GpuDevice> device = GetTestDevice();
+	const TShared<GpuComputePipelineState> pipeline = device != nullptr ? CreateTestDispatchPipeline(*device) : nullptr;
+	if(pipeline == nullptr)
+		return;
+
+	LoggingScope logs(*this);
+	logs.IgnoreWarning(kBarrierOnlyWarning);
+
+	RunInModes("FrameGraphTestSuite::TestParameterHandles", { true, false }, [this, &device, &pipeline]()
+	{
+		const FrameGraphTestContext test(*device, pipeline);
+		const TShared<GpuPipelineParameterSetLayout> layout = pipeline->GetParameterLayout()->GetSet(0);
+
+		// The handles come from one set, as a material's do, and write the set of the pass
+		const TShared<render::GpuParameterSet> handleParameters = test.Context->GetParameterSetPool().Create(layout, 0);
+		render::GpuParameterStorageBuffer bufferParameter;
+		render::GpuParameterStorageTexture textureParameter;
+		handleParameters->GetStorageBufferParameter("OutputBuffer", bufferParameter);
+		handleParameters->GetStorageTextureParameter("OutputTexture", textureParameter);
+
+		const TShared<render::GpuBuffer> bufferReadback = test.CreateReadback(kSize * kSize * sizeof(u32));
+		const TShared<render::GpuBuffer> textureReadback = test.CreateReadback(test.TextureReadbackSize);
+		{
+			FrameGraph graph(*test.Context);
+			const TShared<render::GpuBuffer> buffer = graph.CreateBuffer("Handle buffer", GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize,
+				GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU));
+			const TShared<render::Texture> texture = graph.CreateTexture("Handle texture", test.TextureInformation);
+
+			FrameGraphComputePass pass;
+			const TShared<render::GpuParameterSet> parameters = test.Context->GetParameterSetPool().Create(layout, 0);
+			bufferParameter.Set(parameters, buffer);
+			textureParameter.Set(parameters, texture);
+			pass.AddParameterSet(parameters);
+
+			B3D_TEST_ASSERT_MSG(bufferParameter.Get() == nullptr && textureParameter.Get() == nullptr, "Setting another set changed the handles' own set.")
+
+			graph.AddComputePass("Write", std::move(pass), [pipeline, parameters](FrameGraphPassContext& passContext)
+			{
+				render::GpuCommandBuffer& commands = passContext.GetCommandBuffer();
+				commands.SetGpuComputePipelineState(pipeline);
+				commands.SetGpuParameterSet(parameters);
+				commands.DispatchCompute(1, 1, 1);
+			});
+
+			// The pass declared the transients it got through the handles, so the copy reads what the dispatch wrote
+			test.AddReadback(graph, "Read", buffer, texture, bufferReadback, textureReadback);
+			graph.Compile();
+			B3D_TEST_ASSERT(graph.GetStatistics().CulledPassCount == 0)
+			graph.Execute();
+		}
+
+		device->WaitUntilIdle();
+		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(bufferReadback, false), "The buffer set through the handle does not hold the dispatch's values.")
+		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(textureReadback, true), "The texture set through the handle does not hold the dispatch's values.")
+
+		device->EndFrame();
 	});
 }
 
@@ -940,5 +1040,4 @@ void FrameGraphTestSuite::TestValidation()
 		device->EndFrame();
 	});
 }
-#endif
 #endif

@@ -386,52 +386,51 @@ const char* GpuBackendUtility::GetImageLayoutName(GpuImageLayout layout)
 
 void GpuBackendUtility::CopyToStagingBuffer(GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& texture, u32 mipLevel, u32 arrayLayer, const TShared<render::GpuBuffer>& stagingBuffer)
 {
-#if B3D_GPU_EXPLICIT_BARRIERS
 	if(commandBuffer.UsesExplicitBarriers())
 	{
 		const GpuAccessState restingState = GetRestingState(*texture, commandBuffer.GetQueueType());
 		const GpuAccessState transferRead(GpuStageFlag::Transfer, GpuAccessFlag::Read, GpuImageLayout::TransferSource);
 		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
-		const GpuAccessState hostRead(GpuStageFlag::Host, GpuAccessFlag::Read);
+		const GpuAccessState stagingRestingState = GetRestingState(*stagingBuffer, commandBuffer.GetQueueType());
 		const GpuTextureSubresourceRange range(mipLevel, 1, arrayLayer, 1, GetFormatAspects(texture->GetProperties().Format));
 
 		commandBuffer.IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, restingState, transferRead, range));
-		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, GpuAccessState(), transferWrite));
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, stagingRestingState, transferWrite));
 		commandBuffer.CopyTextureToBuffer(texture, stagingBuffer, mipLevel, arrayLayer, 0);
 		commandBuffer.IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, transferRead, restingState, range));
-		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, transferWrite, hostRead));
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, transferWrite, stagingRestingState));
 		return;
 	}
-#endif
 
 	commandBuffer.CopyTextureToBuffer(texture, stagingBuffer, mipLevel, arrayLayer, 0);
 }
 
 void GpuBackendUtility::CopyToStagingBuffer(GpuCommandBuffer& commandBuffer, const TShared<render::GpuBuffer>& buffer, u32 offset, u32 length, const TShared<render::GpuBuffer>& stagingBuffer)
 {
-#if B3D_GPU_EXPLICIT_BARRIERS
 	if(commandBuffer.UsesExplicitBarriers())
 	{
 		const GpuAccessState restingState = GetRestingState(*buffer, commandBuffer.GetQueueType());
 		const GpuAccessState transferRead(GpuStageFlag::Transfer, GpuAccessFlag::Read);
 		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
-		const GpuAccessState hostRead(GpuStageFlag::Host, GpuAccessFlag::Read);
+		const GpuAccessState stagingRestingState = GetRestingState(*stagingBuffer, commandBuffer.GetQueueType());
 
 		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, restingState, transferRead));
-		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, GpuAccessState(), transferWrite));
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, stagingRestingState, transferWrite));
 		commandBuffer.CopyBufferToBuffer(buffer, stagingBuffer, offset, 0, length);
 		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, transferRead, restingState));
-		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, transferWrite, hostRead));
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, transferWrite, stagingRestingState));
 		return;
 	}
-#endif
 
 	commandBuffer.CopyBufferToBuffer(buffer, stagingBuffer, offset, 0, length);
 }
 
-#if B3D_GPU_EXPLICIT_BARRIERS
-GpuAccessState GpuBackendUtility::GetRestingState(const render::GpuBuffer& /*buffer*/, GpuQueueType queueType)
+GpuAccessState GpuBackendUtility::GetRestingState(const render::GpuBuffer& buffer, GpuQueueType queueType)
 {
+	// Only the host reads readback buffers, so the barrier that returns one to rest makes the GPU's writes visible to the host
+	if(buffer.GetInformation().Type == GpuBufferType::StagingRead)
+		return GpuAccessState(GetQueueStageFlags(queueType) & GpuStageFlag::Host, GpuAccessFlag::Read);
+
 	const GpuStageFlags stages = GpuStageFlag::DrawIndirect | GpuStageFlag::VertexInputAttributes | GpuStageFlag::VertexInputIndices | GpuStageFlag::AllShader;
 	return GpuAccessState(stages & GetQueueStageFlags(queueType), GpuAccessFlag::Read);
 }
@@ -468,4 +467,3 @@ GpuAccessState GpuBackendUtility::GetRestingState(const render::RenderTarget& ta
 	const GpuStageFlags depthStencilStages = GpuStageFlag::EarlyFragmentTests | GpuStageFlag::LateFragmentTests;
 	return GpuAccessState(depthStencilStages & GetQueueStageFlags(queueType), GpuAccessFlag::Read | GpuAccessFlag::Write, GpuImageLayout::DepthStencilAttachment);
 }
-#endif
