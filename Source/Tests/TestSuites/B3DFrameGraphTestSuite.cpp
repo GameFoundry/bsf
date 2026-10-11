@@ -52,10 +52,10 @@ namespace
 	struct FrameGraphTestContext
 	{
 		FrameGraphTestContext(GpuDevice& device, const TShared<GpuComputePipelineState>& pipeline, const TShared<GpuComputePipelineState>& samplePipeline = nullptr)
-			: Device(device), Pipeline(pipeline), SamplePipeline(samplePipeline), Context(GpuWorkContext::Create(device))
+			: Device(device), Pipeline(pipeline), SamplePipeline(samplePipeline), Context(GpuWorkContext::Create(device)), IsExplicit(gGpuExplicitBarriers)
 		{
 			GpuCommandBufferPoolCreateInformation poolInformation = GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS);
-			poolInformation.ExplicitBarriers = true;
+			poolInformation.ExplicitBarriers = IsExplicit;
 			Pool = device.CreateGpuCommandBufferPool(poolInformation);
 
 			TextureInformation.Width = kSize;
@@ -77,20 +77,14 @@ namespace
 			return buffer;
 		}
 
-		/** Creates a texture with @p usage, which the test dispatch can write by default, and brings it to rest. */
+		/** Creates a texture with @p usage, which the test dispatch can write by default. In explicit mode it starts at rest. */
 		TShared<render::Texture> CreateTexture(const char* name, TextureUsageFlags usage = TextureUsageFlag::AllowUnorderedAccessOnTheGPU) const
 		{
 			TextureCreateInformation information = TextureInformation;
 			information.Name = name;
 			information.Usage = usage;
 
-			const TShared<render::Texture> texture = Device.CreateTexture(information);
-			const TShared<render::GpuCommandBuffer> commands = Pool->Create(GpuCommandBufferCreateInformation::Create("Bring to rest"));
-			const GpuAccessState undefined(GpuStageFlag::None, GpuAccessFlag::None, GpuImageLayout::Undefined);
-			commands->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, undefined, GpuBackendUtility::GetRestingState(*texture, commands->GetQueueType())));
-			Context->SubmitCommandBuffer(commands, GpuQueueMask::kNone);
-
-			return texture;
+			return Device.CreateTexture(information);
 		}
 
 		/** Creates a buffer the host can read @p size bytes from. */
@@ -179,17 +173,24 @@ namespace
 			});
 		}
 
-		/** Makes the GPU writes of the readbacks, which a graph left at rest, visible to the host, and waits for the GPU to finish. */
+		/**
+		 * Makes the GPU writes of the readbacks, which a graph left at rest, visible to the host, and waits for the GPU to finish. The
+		 * resource tracker makes them visible in automatic mode.
+		 */
 		void FinishReadbacks(std::initializer_list<TShared<render::GpuBuffer>> readbacks) const
 		{
-			const TShared<render::GpuCommandBuffer> commands = Pool->Create(GpuCommandBufferCreateInformation::Create("Host visibility"));
-			for(const TShared<render::GpuBuffer>& readback : readbacks)
+			if(IsExplicit)
 			{
-				const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*readback, GQT_GRAPHICS);
-				commands->IssueExplicitBarriers(GpuExplicitBufferBarrier(readback, restingState, GpuAccessState(GpuStageFlag::Host, GpuAccessFlag::Read)));
+				const TShared<render::GpuCommandBuffer> commands = Pool->Create(GpuCommandBufferCreateInformation::Create("Host visibility"));
+				for(const TShared<render::GpuBuffer>& readback : readbacks)
+				{
+					const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*readback, GQT_GRAPHICS);
+					commands->IssueExplicitBarriers(GpuExplicitBufferBarrier(readback, restingState, GpuAccessState(GpuStageFlag::Host, GpuAccessFlag::Read)));
+				}
+
+				Context->SubmitCommandBuffer(commands, GpuQueueMask::kNone);
 			}
 
-			Context->SubmitCommandBuffer(commands, GpuQueueMask::kNone);
 			Device.WaitUntilIdle();
 		}
 
@@ -218,6 +219,7 @@ namespace
 		TShared<GpuComputePipelineState> Pipeline;
 		TShared<GpuComputePipelineState> SamplePipeline; /**< Pipeline of AddSample(). */
 		TShared<GpuWorkContext> Context;
+		bool IsExplicit; /**< True in explicit mode, false in automatic mode. Graphs and Pool record in this mode. */
 		TShared<GpuCommandBufferPool> Pool;
 		TextureCreateInformation TextureInformation;
 		u32 TextureRowPitch = 0;
@@ -233,6 +235,22 @@ namespace
 
 		return backend.GetDevice(0);
 	}
+
+	/**
+	 * Runs @p test on the render thread once for each entry of @p explicitModes: in explicit mode for true, and in automatic mode for
+	 * false. See gGpuExplicitBarriers.
+	 */
+	void RunInModes(const char* name, std::initializer_list<bool> explicitModes, const std::function<void()>& test)
+	{
+		const bool explicitBarriers = gGpuExplicitBarriers;
+		for(const bool isExplicit : explicitModes)
+		{
+			gGpuExplicitBarriers.Set(isExplicit);
+			GetRenderThread().PostCommand([&test]() { test(); }, name, true, isExplicit ? "Explicit mode" : "Automatic mode");
+		}
+
+		gGpuExplicitBarriers.Set(explicitBarriers);
+	}
 } // namespace
 
 void FrameGraphTestSuite::TestSplitBarriers()
@@ -245,7 +263,7 @@ void FrameGraphTestSuite::TestSplitBarriers()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	GetRenderThread().PostCommand([this, &device, &pipeline]()
+	RunInModes("FrameGraphTestSuite::TestSplitBarriers", { true, false }, [this, &device, &pipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline);
 		const TShared<render::GpuBuffer> producedBuffer = test.CreateBuffer("Produced buffer");
@@ -275,8 +293,11 @@ void FrameGraphTestSuite::TestSplitBarriers()
 			// The producer's writes reach the consumer through one batch of split barriers
 			const FrameGraphStatistics& statistics = graph.GetStatistics();
 			B3D_TEST_ASSERT(statistics.CulledPassCount == 0)
-			B3D_TEST_ASSERT(statistics.SplitBarrierCount >= 2)
-			B3D_TEST_ASSERT(statistics.BarrierBatchCount >= 1)
+			if(test.IsExplicit)
+			{
+				B3D_TEST_ASSERT(statistics.SplitBarrierCount >= 2)
+				B3D_TEST_ASSERT(statistics.BarrierBatchCount >= 1)
+			}
 
 			graph.Execute();
 		}
@@ -287,7 +308,7 @@ void FrameGraphTestSuite::TestSplitBarriers()
 		B3D_TEST_ASSERT(producedBuffer->GetFrameGraphResourceIndex() == ~0u && producedTexture->GetFrameGraphResourceIndex() == ~0u)
 
 		device->EndFrame();
-	}, "FrameGraphTestSuite::TestSplitBarriers", true);
+	});
 }
 
 void FrameGraphTestSuite::TestCulling()
@@ -300,7 +321,7 @@ void FrameGraphTestSuite::TestCulling()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	GetRenderThread().PostCommand([this, &device, &pipeline]()
+	RunInModes("FrameGraphTestSuite::TestCulling", { true, false }, [this, &device, &pipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline);
 
@@ -349,7 +370,7 @@ void FrameGraphTestSuite::TestCulling()
 			B3D_TEST_ASSERT(!graph.IsPassCulled(2))
 			B3D_TEST_ASSERT(graph.IsPassCulled(3))
 			B3D_TEST_ASSERT(graph.GetStatistics().CulledPassCount == 2)
-			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == 1)
+			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == (test.IsExplicit ? 1u : 0u))
 
 			graph.Execute();
 		}
@@ -372,7 +393,7 @@ void FrameGraphTestSuite::TestCulling()
 		B3D_TEST_ASSERT_MSG(isCleared, "The read does not see the clear of the surviving raster pass.")
 
 		device->EndFrame();
-	}, "FrameGraphTestSuite::TestCulling", true);
+	});
 }
 
 void FrameGraphTestSuite::TestSplitAliasAcquire()
@@ -385,7 +406,7 @@ void FrameGraphTestSuite::TestSplitAliasAcquire()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	GetRenderThread().PostCommand([this, &device, &pipeline]()
+	RunInModes("FrameGraphTestSuite::TestSplitAliasAcquire", { true, false }, [this, &device, &pipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline);
 		const GpuBufferCreateInformation bufferInformation = GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize,
@@ -417,12 +438,12 @@ void FrameGraphTestSuite::TestSplitAliasAcquire()
 			test.AddReadback(graph, "Second read", secondBuffer, secondTexture, readbacks[2], readbacks[3]);
 
 			graph.Compile();
-			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == 4)
+			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == (test.IsExplicit ? 4u : 0u))
 			graph.Execute();
 
 			// When the second pair shares memory with the first, its alias acquires are released after the first read
 			const GpuTransientStatistics transientStatistics = test.Context->GetTransientResourceAllocator().GetStatistics();
-			if(transientStatistics.LastScope.PeakUsed < transientStatistics.LastScope.RequestedBytes)
+			if(test.IsExplicit && transientStatistics.LastScope.PeakUsed < transientStatistics.LastScope.RequestedBytes)
 				B3D_TEST_ASSERT(graph.GetStatistics().SplitAliasAcquireCount >= 1)
 		}
 
@@ -433,7 +454,7 @@ void FrameGraphTestSuite::TestSplitAliasAcquire()
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(readbacks[3], true), "The second transient texture does not hold its values.")
 
 		device->EndFrame();
-	}, "FrameGraphTestSuite::TestSplitAliasAcquire", true);
+	});
 }
 
 void FrameGraphTestSuite::TestExtract()
@@ -446,7 +467,7 @@ void FrameGraphTestSuite::TestExtract()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	GetRenderThread().PostCommand([this, &device, &pipeline]()
+	RunInModes("FrameGraphTestSuite::TestExtract", { true, false }, [this, &device, &pipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline);
 		const GpuBufferCreateInformation bufferInformation = GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize,
@@ -497,7 +518,7 @@ void FrameGraphTestSuite::TestExtract()
 
 			device->EndFrame();
 		}
-	}, "FrameGraphTestSuite::TestExtract", true);
+	});
 }
 
 void FrameGraphTestSuite::TestExport()
@@ -510,7 +531,7 @@ void FrameGraphTestSuite::TestExport()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	GetRenderThread().PostCommand([this, &device, &pipeline]()
+	RunInModes("FrameGraphTestSuite::TestExport", { true, false }, [this, &device, &pipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline);
 		const TShared<render::GpuBuffer> buffer = test.CreateBuffer("Buffer at graph end");
@@ -566,7 +587,7 @@ void FrameGraphTestSuite::TestExport()
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(textureReadback, true), "The exported texture does not hold its values.")
 
 		device->EndFrame();
-	}, "FrameGraphTestSuite::TestExport", true);
+	});
 }
 
 void FrameGraphTestSuite::TestRestingReads()
@@ -584,7 +605,7 @@ void FrameGraphTestSuite::TestRestingReads()
 	const bool validateRestingStates = gGpuValidateRestingStates;
 	gGpuValidateRestingStates.Set(true);
 
-	GetRenderThread().PostCommand([this, &device, &pipeline, &samplePipeline]()
+	RunInModes("FrameGraphTestSuite::TestRestingReads", { true, false }, [this, &device, &pipeline, &samplePipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline, samplePipeline);
 
@@ -640,7 +661,7 @@ void FrameGraphTestSuite::TestRestingReads()
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(renderedReadback, false), "Sampling at rest does not read what the earlier graph wrote.")
 
 		device->EndFrame();
-	}, "FrameGraphTestSuite::TestRestingReads", true);
+	});
 
 	gGpuValidateRestingStates.Set(validateRestingStates);
 }
@@ -655,7 +676,7 @@ void FrameGraphTestSuite::TestLateMemory()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	GetRenderThread().PostCommand([this, &device, &pipeline]()
+	RunInModes("FrameGraphTestSuite::TestLateMemory", { true, false }, [this, &device, &pipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline);
 		const GpuBufferCreateInformation bufferInformation = GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize,
@@ -687,7 +708,7 @@ void FrameGraphTestSuite::TestLateMemory()
 				graph.Execute();
 			}
 
-			if(isMoved)
+			if(test.IsExplicit && isMoved)
 				B3D_TEST_ASSERT(test.Context->GetTransientResourceAllocator().GetStatistics().Relocations >= 1)
 
 			test.FinishReadbacks({ bufferReadback, textureReadback });
@@ -696,7 +717,7 @@ void FrameGraphTestSuite::TestLateMemory()
 
 			device->EndFrame();
 		}
-	}, "FrameGraphTestSuite::TestLateMemory", true);
+	});
 }
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
@@ -723,7 +744,7 @@ void FrameGraphTestSuite::TestValidation()
 	logs.ExpectError("The image was accessed in a different layout than its last explicit barrier declares. Image: 'Unexported texture'.");
 	logs.ExpectError("The resource was used while it is unplaced, without memory from its transient resource allocator. Place it first. Image: 'Held texture'.");
 
-	GetRenderThread().PostCommand([&device, &pipeline, &samplePipeline]()
+	RunInModes("FrameGraphTestSuite::TestValidation", { true }, [&device, &pipeline, &samplePipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline, samplePipeline);
 
@@ -917,7 +938,7 @@ void FrameGraphTestSuite::TestValidation()
 
 		device->WaitUntilIdle();
 		device->EndFrame();
-	}, "FrameGraphTestSuite::TestValidation", true);
+	});
 }
 #endif
 #endif

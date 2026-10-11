@@ -69,16 +69,7 @@ namespace b3d::render
 		/** Returns the frame graph data of @p context, creating it on first use. */
 		FrameGraphContextData& GetContextData(GpuWorkContext& context)
 		{
-			FrameGraphContextData& data = context.GetOrCreateLocal<FrameGraphContextData>(&kFrameGraphContextDataKey, []() { return B3DMakeUnique<FrameGraphContextData>(); });
-			if(data.CommandBufferPool == nullptr)
-			{
-				GpuCommandBufferPoolCreateInformation poolInformation = GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS);
-				poolInformation.ExplicitBarriers = true;
-
-				data.CommandBufferPool = context.GetDevice().CreateGpuCommandBufferPool(poolInformation);
-			}
-
-			return data;
+			return context.GetOrCreateLocal<FrameGraphContextData>(&kFrameGraphContextDataKey, []() { return B3DMakeUnique<FrameGraphContextData>(); });
 		}
 
 		/** Returns true if @p a and @p b describe the same surface of the same texture. */
@@ -201,12 +192,11 @@ namespace b3d::render
 
 	FrameGraph::FrameGraph(GpuWorkContext& context)
 		: mContext(context), mDevice(context.GetDevice()), mAllocator(context.GetTransientResourceAllocator())
+		, mExplicitBarriers(gGpuExplicitBarriers && mDevice.GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS))
 #if B3D_BUILD_TYPE_DEVELOPMENT
 		, mId(CreateFrameGraphId())
 #endif
-	{
-		B3D_ENSURE_LOG(mDevice.GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS), "Frame graphs require a GPU backend that supports explicit barriers.");
-	}
+	{ }
 
 	FrameGraph::~FrameGraph()
 	{
@@ -592,11 +582,12 @@ namespace b3d::render
 
 		// Placement. Extracted transients leave the allocator for memory of their own, and transients that only culled passes use go back
 		// unplaced. The rest are placed in pass order and released after their last pass, so transients whose passes do not overlap can
-		// share memory.
+		// share memory. In automatic mode they get memory of their own too, because the resource tracker does not know of aliasing.
 		{
 			for(Resource& resource : mResources)
 			{
-				if(resource.Type != ResourceType::Transient || !resource.IsExtracted)
+				const bool hasOwnMemory = resource.IsExtracted || (!mExplicitBarriers && resource.FirstPassIndex != -1);
+				if(resource.Type != ResourceType::Transient || !hasOwnMemory)
 					continue;
 
 				if(resource.Texture != nullptr)
@@ -634,9 +625,9 @@ namespace b3d::render
 				resource.IsHeldUnplaced = false;
 			}
 
-			const auto fnIsAliased = [](const Resource& resource)
+			const auto fnIsAliased = [this](const Resource& resource)
 			{
-				return resource.Type == ResourceType::Transient && !resource.IsExtracted;
+				return mExplicitBarriers && resource.Type == ResourceType::Transient && !resource.IsExtracted;
 			};
 
 			// Last accesses of each subresource of the transients: the last write, and every read after it
@@ -757,7 +748,8 @@ namespace b3d::render
 				if(!B3D_ENSURE_LOG(hasAttachments, "Raster pass '{0}' has no attachments.", pass.Name))
 					continue;
 
-				const auto found = std::find_if(entries.begin(), entries.end(), [&information](const FrameGraphContextData::RenderTextureEntry& entry)
+				// Transients are new textures in every graph in automatic mode, so their render textures are not kept for later graphs
+				const auto found = !mExplicitBarriers ? entries.end() : std::find_if(entries.begin(), entries.end(), [&information](const FrameGraphContextData::RenderTextureEntry& entry)
 				{
 					for(u32 colorIndex = 0; colorIndex < B3D_MAXIMUM_RENDER_TARGET_COUNT; colorIndex++)
 					{
@@ -794,9 +786,14 @@ namespace b3d::render
 #endif
 
 				pass.Attachments.Target = entry.Target;
-				entries.push_back(std::move(entry));
+				if(mExplicitBarriers)
+					entries.push_back(std::move(entry));
 			}
 		}
+
+		// The resource tracker derives every barrier in automatic mode
+		if(!mExplicitBarriers)
+			return;
 
 		// Barrier planning. Walking the surviving passes, each subresource tracks its current state, and the accesses since the barrier
 		// that established it. An access joins the current state when it can, and otherwise plans a barrier of the subresource into the
@@ -1214,13 +1211,24 @@ namespace b3d::render
 		B3D_ASSERT(mIsCompiled && !mIsExecuted && "A frame graph must be compiled before it is executed, and can only be executed once.");
 		mIsExecuted = true;
 
-		FrameGraphContextData& contextData = GetContextData(mContext);
-		const TShared<GpuCommandBuffer> commandBuffer = contextData.CommandBufferPool->FindOrCreate(GpuCommandBufferCreateInformation::Create("Frame graph"));
+		// The barrier mode is set before start-up, so every graph of a work context records in the same mode
+		TShared<GpuCommandBufferPool>& pool = GetContextData(mContext).CommandBufferPool;
+		if(pool == nullptr)
+		{
+			GpuCommandBufferPoolCreateInformation poolInformation = GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS);
+			poolInformation.ExplicitBarriers = mExplicitBarriers;
+
+			pool = mDevice.CreateGpuCommandBufferPool(poolInformation);
+		}
+
+		B3D_ASSERT(pool->UsesExplicitBarriers() == mExplicitBarriers && "The barrier mode changed after a work context recorded its first frame graph.");
+
+		const TShared<GpuCommandBuffer> commandBuffer = pool->FindOrCreate(GpuCommandBufferCreateInformation::Create("Frame graph"));
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
 		// One validator follows every resource across the passes. It keeps the parameter sets it saw alive until it is destroyed.
 		TUnique<GpuExplicitBarrierValidator> validator;
-		if(gFrameGraphSerialRecording)
+		if(mExplicitBarriers && gFrameGraphSerialRecording)
 		{
 			validator = B3DMakeUnique<GpuExplicitBarrierValidator>();
 			commandBuffer->SetValidator(validator.get());

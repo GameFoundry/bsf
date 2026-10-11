@@ -692,7 +692,7 @@ namespace b3d
 
 #if B3D_GPU_EXPLICIT_BARRIERS
 			/**
-			 * Returns true if the native images created for the texture start at rest (see gGpuExplicitTransferBarriers). Backends then
+			 * Returns true if the native images created for the texture start at rest (see gGpuExplicitBarriers). Backends then
 			 * request a resting transition of every image they create for the texture (see IGpuImageResource::RequestRestingTransition()),
 			 * unless the CPU maps the image, or its native layout is already the resting one. Images on memory other resources share get
 			 * their state from whoever places them, so they never start at rest.

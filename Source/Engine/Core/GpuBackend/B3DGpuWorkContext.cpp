@@ -163,7 +163,7 @@ const TShared<render::GpuCommandBuffer>& GpuWorkContext::GetTransferCommandBuffe
 
 #if B3D_GPU_EXPLICIT_BARRIERS
 		// In explicit mode the upload utilities bracket their writes with explicit barriers
-		poolCreateInformation.ExplicitBarriers = gGpuExplicitTransferBarriers && mDevice.GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
+		poolCreateInformation.ExplicitBarriers = gGpuExplicitBarriers && mDevice.GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
 #endif
 
 		mTransferPoolRing = B3DMakeUnique<render::GpuCommandBufferPoolRing>(mDevice, poolCreateInformation);

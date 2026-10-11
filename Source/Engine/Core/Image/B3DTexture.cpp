@@ -377,7 +377,7 @@ void Texture::SetAllocation(const GpuAllocation& allocation, GpuObjectCreateFlag
 #if B3D_GPU_EXPLICIT_BARRIERS
 bool Texture::StartsAtRest() const
 {
-	return gGpuExplicitTransferBarriers && !mIsAliased && GetDevice().GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
+	return gGpuExplicitBarriers && !mIsAliased && GetDevice().GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
 }
 #endif
 

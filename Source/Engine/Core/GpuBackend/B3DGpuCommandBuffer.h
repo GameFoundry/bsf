@@ -34,12 +34,17 @@ namespace b3d
 	extern B3D_EXPORT TConfigVariable<bool> gGpuValidateRestingStates;
 
 	/**
-	 * If enabled, the transfer command buffers of work contexts use explicit barriers: the upload and read utilities take resources from
-	 * their resting state and return them to it (see GpuBackendUtility::GetRestingState()). New textures also start at rest, brought there
-	 * by the first submission that uses them (see IGpuImageResource::RequestRestingTransition()). Frame graphs then issue every other
-	 * barrier. Set before start-up, for the whole run. Requires RSC_EXPLICIT_BARRIERS.
+	 * Selects explicit barriers for the whole engine. If enabled:
+	 *  - The transfer command buffers of work contexts use explicit barriers: the upload and read utilities take resources from their
+	 *    resting state and return them to it (see GpuBackendUtility::GetRestingState()).
+	 *  - New textures start at rest, brought there by the first submission that uses them (see
+	 *    IGpuImageResource::RequestRestingTransition()).
+	 *  - Frame graphs issue every other barrier.
+	 *
+	 * If disabled, the resource tracker derives every barrier, and frame graphs run in automatic mode (see render::FrameGraph). Explicit
+	 * and automatic barriers cannot be mixed. Set before start-up, for the whole run. Has no effect without RSC_EXPLICIT_BARRIERS.
 	 */
-	extern B3D_EXPORT TConfigVariable<bool> gGpuExplicitTransferBarriers;
+	extern B3D_EXPORT TConfigVariable<bool> gGpuExplicitBarriers;
 #endif
 }
 

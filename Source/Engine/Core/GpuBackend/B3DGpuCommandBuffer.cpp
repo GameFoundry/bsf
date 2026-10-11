@@ -22,8 +22,8 @@ namespace b3d
 	TConfigVariable<bool> gGpuValidateRestingStates("gpu.ValidateRestingStates",
 		"If enabled, development builds check the accesses of resources that a command buffer with explicit barriers neither declared nor barriered against the resources' resting state.", false);
 
-	TConfigVariable<bool> gGpuExplicitTransferBarriers("gpu.ExplicitTransferBarriers",
-		"If enabled, the transfer command buffers of work contexts use explicit barriers, so uploads and reads leave resources at rest, and new textures start at rest. Set before start-up.", false);
+	TConfigVariable<bool> gGpuExplicitBarriers("gpu.ExplicitBarriers",
+		"If enabled, the engine uses explicit barriers: frame graphs issue them, uploads and reads leave resources at rest, and new textures start at rest. If disabled, the resource tracker derives every barrier. Set before start-up.", false);
 } // namespace b3d
 #endif
 
