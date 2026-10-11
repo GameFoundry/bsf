@@ -73,6 +73,7 @@ Framework/
 - **Memory allocation**: `B3DNew`/`B3DDelete` instead of `new/delete`, `B3DAllocate/B3DFree` instead of `malloc/free`
  - Avoid dynamic memory allocations whenever possible
  - Use FrameAllocator for temporary heap allocations
+ - Function-local temporary containers use the frame allocator variants (FrameVector, FrameUnorderedMap, FrameSet, etc.) instead of Vector/UnorderedMap/Set, inside a FrameAllocatorScope so their memory is released when the function ends
  - Re-use temporary containers (e.g. Vector, TArray). Allocate them as class members instead of locally in functions, so their memory can be re-used.
  - Use TInlineArray when allocating past a certain count is unlikely
 - Do not introduce private or internal helper methods with only one caller; inline the code at the call site with a short implementation comment instead.
