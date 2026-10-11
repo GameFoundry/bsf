@@ -63,6 +63,10 @@ namespace b3d
 {
 	namespace render
 	{
+#if B3D_GPU_EXPLICIT_BARRIERS
+		class FrameGraphPass;
+#endif
+
 		/** @addtogroup Renderer-Internal
 		 *  @{
 		 */
@@ -166,12 +170,24 @@ namespace b3d
 			TShared<GpuParameterSet> GetGpuParameterSet() const { return mGpuParameterSet; }
 
 			/**
-			 * Creates a new instance of GPU parameters for this material.
+			 * Creates a new instance of GPU parameters for this material, with the default textures and samplers of the material's shader
+			 * assigned.
 			 *
 			 * @param set		Index of the parameter set to create.
 			 * @param flags		Creation flags. @see GpuObjectCreateFlag
 			 */
 			virtual TShared<GpuParameterSet> CreateGpuParameterSet(u32 set = 0, GpuObjectCreateFlags flags = GpuObjectCreateFlag::None) const = 0;
+
+#if B3D_GPU_EXPLICIT_BARRIERS
+			/**
+			 * Creates a new instance of GPU parameters for this material, like CreateGpuParameterSet(u32, GpuObjectCreateFlags), and adds it
+			 * to @p pass, so the pass may bind it. See FrameGraphPass::AddParameterSet().
+			 *
+			 * @param pass		Frame graph pass that binds the parameter set.
+			 * @param set		Index of the parameter set to create.
+			 */
+			TShared<GpuParameterSet> CreateGpuParameterSet(FrameGraphPass& pass, u32 set = 0) const;
+#endif
 
 			/** Returns the material's graphics pipeline state. This will be null if the material is a compute material. */
 			TShared<GpuGraphicsPipelineState> GetGraphicsPipeline() const { return mGraphicsPipeline; }
@@ -191,6 +207,9 @@ namespace b3d
 
 		protected:
 			friend class b3d::RendererMaterialManager;
+
+			/** Assigns the default textures and samplers of the material's shader to @p parameters. */
+			void ApplyShaderDefaults(GpuParameterSet& parameters) const;
 
 			TShared<GpuParameterSet> mGpuParameterSet;
 			TShared<GpuGraphicsPipelineState> mGraphicsPipeline;
@@ -318,6 +337,8 @@ namespace b3d
 
 			/** Returns a set of dynamically defined defines used when compiling this shader. */
 			static ShaderDefines GetShaderDefines() { return GetMetaData().Defines; }
+
+			using RendererMaterialBase::CreateGpuParameterSet;
 
 			/** Creates a new instance of GPU parameters for this material, allocated from the owning context's pool. */
 			TShared<GpuParameterSet> CreateGpuParameterSet(u32 set = 0, GpuObjectCreateFlags flags = GpuObjectCreateFlag::None) const override;
@@ -941,41 +962,6 @@ namespace b3d
 
 			mGpuParameterSet = CreateGpuParameterSet();
 
-			// Assign default values from the shader
-			const auto& textureParams = mShader->GetTextureParameters();
-			for(auto& param : textureParams)
-			{
-				u32 defaultValueIdx = param.second.DefaultValueIndex;
-				if(defaultValueIdx == (u32)-1)
-					continue;
-
-				for(auto& varName : param.second.GpuVariableNames)
-				{
-					if(mGpuParameterSet->HasSampledTexture(varName))
-					{
-						const TShared<Texture> texture = param.second.Type == GPOT_TEXTURE3D ? mShader->GetDefault3DTexture(defaultValueIdx) : mShader->GetDefault2DTexture(defaultValueIdx);
-						mGpuParameterSet->SetSampledTexture(varName, texture);
-					}
-				}
-			}
-
-			const auto& samplerParams = mShader->GetSamplerParameters();
-			for(auto& param : samplerParams)
-			{
-				u32 defaultValueIdx = param.second.DefaultValueIndex;
-				if(defaultValueIdx == ~0u)
-					continue;
-
-				for(auto& varName : param.second.GpuVariableNames)
-				{
-					if(mGpuParameterSet->HasSamplerState(varName))
-					{
-						TShared<SamplerState> samplerState = mShader->GetDefaultSampler(defaultValueIdx);
-						mGpuParameterSet->SetSamplerState(varName, samplerState);
-					}
-				}
-			}
-
 			Initialize();
 		}
 
@@ -985,12 +971,16 @@ namespace b3d
 			B3D_ASSERT(mOwnerContext != nullptr);
 			GpuParameterSetPool& pool = mOwnerContext->GetParameterSetPool();
 
+			TShared<GpuParameterSet> parameters;
 			if(mGraphicsPipeline != nullptr)
-				return pool.Create(mGraphicsPipeline->GetParameterLayout()->GetSet(set), set, flags);
+				parameters = pool.Create(mGraphicsPipeline->GetParameterLayout()->GetSet(set), set, flags);
 			else if(mComputePipeline != nullptr)
-				return pool.Create(mComputePipeline->GetParameterLayout()->GetSet(set), set, flags);
+				parameters = pool.Create(mComputePipeline->GetParameterLayout()->GetSet(set), set, flags);
 
-			return nullptr;
+			if(parameters != nullptr)
+				ApplyShaderDefaults(*parameters);
+
+			return parameters;
 		}
 
 		/** @} */

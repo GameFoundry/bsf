@@ -593,6 +593,19 @@ namespace b3d
 		 */
 		bool CanRest() const { return mCanRest; }
 
+		/**
+		 * Makes the first submission that uses the image bring every subresource of it from the undefined layout it is created in to
+		 * @p layout, the backend's resting layout of the image. Backends call it when they create an image that starts at rest (see
+		 * render::Texture::StartsAtRest()), before any command buffer uses the image.
+		 */
+		void RequestRestingTransition(render::GpuImageLayout layout) { mRestingTransitionLayout = layout; }
+
+		/**
+		 * Returns the layout requested by RequestRestingTransition() and forgets it, or GpuImageLayout::Undefined if there is none. Called
+		 * by the first submission that uses the image. Submit thread only.
+		 */
+		render::GpuImageLayout ConsumeRestingTransition();
+
 	protected:
 		/** Constructs an unmanaged image resource (no owner). Reserved for test mocks, see IGpuResource(). */
 		IGpuImageResource(u32 faceCount, u32 mipLevelCount, GpuTextureAspectFlags aspectMask);
@@ -611,6 +624,7 @@ namespace b3d
 		GpuTextureSubresourceRange mFullRange;
 
 		bool mCanRest = false;
+		render::GpuImageLayout mRestingTransitionLayout{}; /**< See RequestRestingTransition(). GpuImageLayout::Undefined if none is requested. */
 
 	private:
 		/** Creates the subresources and selects the initial submission state mode. */

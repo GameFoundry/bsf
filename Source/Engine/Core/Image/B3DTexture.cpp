@@ -13,6 +13,8 @@
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DGpuDevice.h"
 #include "Renderer/B3DRenderer.h"
+#include "GpuBackend/B3DGpuBackendUtility.h"
+#include "GpuBackend/B3DGpuDeviceCapabilities.h"
 
 using namespace b3d;
 
@@ -372,6 +374,13 @@ void Texture::SetAllocation(const GpuAllocation& allocation, GpuObjectCreateFlag
 		RecreateInternalTexture();
 }
 
+#if B3D_GPU_EXPLICIT_BARRIERS
+bool Texture::StartsAtRest() const
+{
+	return gGpuExplicitTransferBarriers && !mIsAliased && GetDevice().GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
+}
+#endif
+
 void Texture::Initialize()
 {
 	if(mInitData != nullptr)
@@ -611,8 +620,26 @@ void TextureUtility::Write(GpuWorkContext& gpuContext, const TShared<Texture>& t
 	if(commandBuffer == nullptr)
 		commandBuffer = gpuContext.GetTransferCommandBuffer();
 
-	// Issue copy command
-	commandBuffer->CopyBufferToTexture(stagingBuffer, texture, 0, mipLevel, arrayLayer);
+#if B3D_GPU_EXPLICIT_BARRIERS
+	// Command buffers with explicit barriers take the subresource from its resting state and return it there. The copy overwrites the
+	// whole subresource, so its old contents are discarded.
+	if(commandBuffer->UsesExplicitBarriers())
+	{
+		const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*texture, commandBuffer->GetQueueType());
+		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write, GpuImageLayout::TransferDestination);
+		const GpuTextureSubresourceRange range(mipLevel, 1, arrayLayer, 1, GpuBackendUtility::GetFormatAspects(textureProperties.Format));
+
+		GpuAccessState source = restingState;
+		source.Layout = GpuImageLayout::Undefined;
+
+		commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, source, transferWrite, range));
+		commandBuffer->CopyBufferToTexture(stagingBuffer, texture, 0, mipLevel, arrayLayer);
+		commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, transferWrite, restingState, range));
+	}
+	else
+#endif
+		commandBuffer->CopyBufferToTexture(stagingBuffer, texture, 0, mipLevel, arrayLayer);
+
 	commandBuffer->AddQueueSyncMask(syncMask);
 }
 
@@ -694,7 +721,7 @@ void TextureUtility::Read(GpuWorkContext& gpuContext, const TShared<Texture>& te
 	TShared<GpuCommandBuffer> commandBuffer = gpuContext.GetTransferCommandBuffer();
 
 	// Queue copy command
-	commandBuffer->CopyTextureToBuffer(texture, stagingBuffer, mipLevel, arrayLayer, 0);
+	GpuBackendUtility::CopyToStagingBuffer(*commandBuffer, texture, mipLevel, arrayLayer, stagingBuffer);
 
 	// Submit the command buffer and wait until it finishes
 	commandBuffer->AddQueueSyncMask(syncMask);
@@ -722,7 +749,7 @@ TAsyncOp<TShared<PixelData>> TextureUtility::ReadAsync(GpuWorkContext& gpuContex
 
 	// TODO - Staging buffer might not be necessary if he texture is directly mappable
 	TShared<GpuBuffer> stagingBuffer = CreateStagingBuffer(gpuContext, texture, *pixelData, true);
-	commandBuffer.CopyTextureToBuffer(texture, stagingBuffer, mipLevel, arrayLayer);
+	GpuBackendUtility::CopyToStagingBuffer(commandBuffer, texture, mipLevel, arrayLayer, stagingBuffer);
 
 	TAsyncOp<TShared<PixelData>> op;
 	auto fnOnCommandBufferCompleted = [stagingBuffer, op, pixelData]() mutable

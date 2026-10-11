@@ -603,6 +603,23 @@ namespace b3d
 			bool IsUnplaced() const { return mIsUnplaced.load(std::memory_order_relaxed); }
 #endif
 
+			/**
+			 * Registers the texture as resource @p resourceIndex of a frame graph, or unregisters it if @p resourceIndex is ~0u. The texture
+			 * is a resource of at most one frame graph. See FrameGraph.
+			 */
+			void SetFrameGraphResourceIndex(u32 resourceIndex) { mFrameGraphResourceIndex = resourceIndex; }
+
+			/** Returns the index of the texture among the resources of its frame graph, or ~0u if it is a resource of none. */
+			u32 GetFrameGraphResourceIndex() const { return mFrameGraphResourceIndex; }
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+			/** Sets the id of the frame graph the texture is a resource of, or zero if none, so graphs detect resources of other graphs. */
+			void SetFrameGraphId(u32 graphId) { mFrameGraphId = graphId; }
+
+			/** Returns the id set by SetFrameGraphId(). */
+			u32 GetFrameGraphId() const { return mFrameGraphId; }
+#endif
+
 			/** @} */
 
 			/**	Returns properties that contain information about the texture. */
@@ -673,7 +690,20 @@ namespace b3d
 			 */
 			bool mIsAliased = false;
 
+#if B3D_GPU_EXPLICIT_BARRIERS
+			/**
+			 * Returns true if the native images created for the texture start at rest (see gGpuExplicitTransferBarriers). Backends then
+			 * request a resting transition of every image they create for the texture (see IGpuImageResource::RequestRestingTransition()),
+			 * unless the CPU maps the image, or its native layout is already the resting one. Images on memory other resources share get
+			 * their state from whoever places them, so they never start at rest.
+			 */
+			bool StartsAtRest() const;
+#endif
+
+			u32 mFrameGraphResourceIndex = ~0u; /**< See SetFrameGraphResourceIndex(). */
+
 #if B3D_BUILD_TYPE_DEVELOPMENT
+			u32 mFrameGraphId = 0; /**< See SetFrameGraphId(). */
 			std::atomic<bool> mIsUnplaced = false;
 #endif
 		};

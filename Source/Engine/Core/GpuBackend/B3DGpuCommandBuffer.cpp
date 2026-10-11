@@ -21,6 +21,9 @@ namespace b3d
 {
 	TConfigVariable<bool> gGpuValidateRestingStates("gpu.ValidateRestingStates",
 		"If enabled, development builds check the accesses of resources that a command buffer with explicit barriers neither declared nor barriered against the resources' resting state.", false);
+
+	TConfigVariable<bool> gGpuExplicitTransferBarriers("gpu.ExplicitTransferBarriers",
+		"If enabled, the transfer command buffers of work contexts use explicit barriers, so uploads and reads leave resources at rest, and new textures start at rest. Set before start-up.", false);
 } // namespace b3d
 #endif
 
@@ -52,42 +55,10 @@ void GpuDrawAccessValidator::AddResource(const void* resource, GpuAccessFlags ac
 
 void GpuDrawAccessValidator::AddParameterSet(const GpuParameterSet& parameters, const GpuPipelineParameterSetLayout& pipelineSetLayout)
 {
-	const TShared<GpuPipelineParameterSetLayout>& parameterSetLayout = parameters.GetLayout();
-	for(u32 typeIndex = 0; typeIndex < (u32)GpuParameterType::Count; typeIndex++)
+	parameters.ForEachBoundResource(&pipelineSetLayout, [this](const GpuParameterSetResource& resource)
 	{
-		const GpuParameterType type = (GpuParameterType)typeIndex;
-		if(type == GpuParameterType::Sampler)
-			continue;
-
-		for(u32 bindingIndex = 0; bindingIndex < pipelineSetLayout.GetBindingCount(type); bindingIndex++)
-		{
-			const UniformInformation& pipelineUniform = *pipelineSetLayout.TryGetUniformInformation(type, bindingIndex);
-			const UniformInformation* parameterSetUniform = parameterSetLayout->TryGetUniformInformation(pipelineUniform.Slot);
-			if(parameterSetUniform == nullptr || parameterSetUniform->Type != type)
-				continue;
-
-			for(u32 arrayIndex = 0; arrayIndex < std::min(pipelineUniform.ArraySize, parameterSetUniform->ArraySize); arrayIndex++)
-			{
-				switch(type)
-				{
-				case GpuParameterType::UniformBuffer:
-					AddResource(parameters.GetUniformBuffer(pipelineUniform.Slot, arrayIndex).get(), GpuAccessFlag::Read);
-					break;
-				case GpuParameterType::StorageBuffer:
-					AddResource(parameters.GetStorageBuffer(pipelineUniform.Slot, arrayIndex).get(), GpuObjectParameterTypeInformation::IsReadWriteBuffer(pipelineUniform.ObjectType) ? GpuAccessFlag::Read | GpuAccessFlag::Write : GpuAccessFlags(GpuAccessFlag::Read));
-					break;
-				case GpuParameterType::SampledTexture:
-					AddResource(parameters.GetSampledTexture(pipelineUniform.Slot, arrayIndex).get(), GpuAccessFlag::Read);
-					break;
-				case GpuParameterType::StorageTexture:
-					AddResource(parameters.GetStorageTexture(pipelineUniform.Slot, arrayIndex).get(), GpuAccessFlag::Read | GpuAccessFlag::Write);
-					break;
-				default:
-					break;
-				}
-			}
-		}
-	}
+		AddResource(resource.Buffer != nullptr ? (const void*)resource.Buffer : (const void*)resource.Texture, resource.Access);
+	});
 }
 
 bool GpuDrawAccessValidator::ValidateDraw()

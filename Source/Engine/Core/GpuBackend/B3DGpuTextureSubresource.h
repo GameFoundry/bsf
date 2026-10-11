@@ -70,6 +70,28 @@ namespace b3d
 			return count;
 		}
 
+		/** Returns the number of subresources in the range. */
+		u32 GetSubresourceCount() const { return MipLevelCount * ArrayLayerCount * GetAspectCount(); }
+
+		/**
+		 * Returns the index of the subresource at @p mipLevel, @p arrayLayer and @p aspect, which must be in the range. Indices are
+		 * relative to the range's first subresource, ordered by aspect, then array layer, then mip level.
+		 */
+		u32 GetSubresourceIndex(u32 mipLevel, u32 arrayLayer, GpuTextureAspectFlag aspect) const
+		{
+			u32 aspectIndex = 0;
+			for(GpuTextureAspectFlag rangeAspect : kGpuTextureAspects)
+			{
+				if(rangeAspect == aspect)
+					break;
+
+				if(AspectMask.IsSet(rangeAspect))
+					aspectIndex++;
+			}
+
+			return (aspectIndex * ArrayLayerCount + arrayLayer - BaseArrayLayer) * MipLevelCount + mipLevel - BaseMipLevel;
+		}
+
 		/** Returns a hash value for the range. */
 		u64 GenerateHash() const
 		{

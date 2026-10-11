@@ -355,6 +355,9 @@ namespace b3d
 			/**	Returns properties that describe the render window. */
 			const RenderWindowProperties& GetRenderWindowProperties() const { return mRenderWindowProperties; }
 
+			/** Returns true if the window has a depth/stencil surface. */
+			bool HasDepthBuffer() const { return mCreateInformation.DepthBuffer; }
+
 			/** Returns the internal render window surface, if any. */
 			const TShared<IRenderWindowSurface>& GetRenderWindowSurface() const { return mRenderWindowSurface; }
 

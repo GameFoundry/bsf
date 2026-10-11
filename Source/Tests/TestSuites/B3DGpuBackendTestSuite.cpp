@@ -2,6 +2,7 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "B3DGpuBackendTestSuite.h"
 #include "Utility/B3DPushConstantShaderCompilationTest.h"
+#include "Utility/B3DUnitTestGpuPipelines.h"
 #include "CoreObject/B3DRenderThread.h"
 #include "GpuBackend/B3DGpuHazards.h"
 #include "GpuBackend/Allocators/B3DGpuResource.h"
@@ -3421,58 +3422,6 @@ void GpuBackendTestSuite::TestTrackingWithoutHazards()
 	B3D_TEST_ASSERT(!tracker.TracksHazards())
 }
 
-namespace
-{
-	/**
-	 * Creates a compute pipeline whose thread (x, y) of a 16 x 16 dispatch writes 0x5A000000 | (y * 16 + x) into element y * 16 + x of
-	 * the storage buffer OutputBuffer, and into texel (x, y) of the R32U storage texture OutputTexture. Returns null on backends that
-	 * cannot compile shaders on the host.
-	 */
-	TShared<GpuComputePipelineState> CreateExplicitBarrierDispatchPipeline(GpuDevice& device)
-	{
-#if B3D_PLATFORM_PS5
-		(void)device;
-		return nullptr;
-#else
-		const String backendName = GpuBackend::Instance().GetBackendName();
-		if(backendName != "bsfD3D12GpuBackend" && backendName != "bsfVulkanGpuBackend")
-			return nullptr;
-
-		const TShared<IShaderCompiler> compiler = ShaderCompilers::Instance().GetCompiler("bsl");
-		if(compiler == nullptr)
-			return nullptr;
-
-		const String source = R"(
-shader ExplicitBarrierDispatch
-{
-	code
-	{
-		RWStructuredBuffer<uint> OutputBuffer;
-		RWTexture2D<uint> OutputTexture;
-		[numthreads(16, 16, 1)]
-		void csmain(uint3 threadId : SV_DispatchThreadID)
-		{
-			const uint value = 0x5A000000 | (threadId.y * 16 + threadId.x);
-			OutputBuffer[threadId.y * 16 + threadId.x] = value;
-			OutputTexture[threadId.xy] = value;
-		}
-	};
-};
-)";
-		const String language = backendName == "bsfD3D12GpuBackend" ? "hlsl" : "vksl";
-
-		TShared<b3d::Shader> shader;
-		const ShaderCompilerResult result = compiler->Compile("ExplicitBarrierDispatch", source, {}, { language }, true, shader);
-		if(!result.ErrorMessage.empty() || shader == nullptr || shader->GetVariations().size() != 1 || shader->GetVariations().front()->GetPassCount() != 1)
-			return nullptr;
-
-		GpuComputePipelineStateCreateInformation pipelineInformation;
-		pipelineInformation.Program = device.CreateGpuProgram(shader->GetVariations().front()->GetPass(0)->GetGpuProgramCreateInformation(GPT_COMPUTE_PROGRAM));
-		return device.CreateGpuComputePipelineState(pipelineInformation);
-#endif
-	}
-}
-
 void GpuBackendTestSuite::TestExplicitBarriers()
 {
 	GpuBackend& backend = GpuBackend::Instance();
@@ -3481,7 +3430,7 @@ void GpuBackendTestSuite::TestExplicitBarriers()
 
 	// Shaders are resources, which are created outside of the render thread
 	const TShared<GpuDevice> device = backend.GetDevice(0);
-	const TShared<GpuComputePipelineState> pipeline = CreateExplicitBarrierDispatchPipeline(*device);
+	const TShared<GpuComputePipelineState> pipeline = CreateTestDispatchPipeline(*device);
 	GetRenderThread().PostCommand([this, &device, &pipeline]()
 	{
 		static constexpr u32 kSize = 16;
@@ -3809,7 +3758,7 @@ void GpuBackendTestSuite::TestExplicitBarrierValidation()
 	logs.IgnoreError("is not paired with a matching begin-only barrier");
 
 	const TShared<GpuDevice> device = backend.GetDevice(0);
-	const TShared<GpuComputePipelineState> pipeline = CreateExplicitBarrierDispatchPipeline(*device);
+	const TShared<GpuComputePipelineState> pipeline = CreateTestDispatchPipeline(*device);
 	if(pipeline != nullptr)
 		logs.ExpectError(undeclaredStages + " Buffer: 'DispatchCompute'.");
 
@@ -5315,7 +5264,7 @@ void GpuBackendTestSuite::TestExplicitBarrierResourceValidation()
 
 	// Shaders are resources, which are created outside of the render thread
 	const TShared<GpuDevice> device = backend.GetDevice(0);
-	const TShared<GpuComputePipelineState> pipeline = CreateExplicitBarrierDispatchPipeline(*device);
+	const TShared<GpuComputePipelineState> pipeline = CreateTestDispatchPipeline(*device);
 
 	// The D3D12 debug layer tracks layouts natively and fails to close a command list that copies into a texture in another layout
 	const bool recordsMisdeclaredLayouts = String(backend.GetBackendName()) != "bsfD3D12GpuBackend";
@@ -5566,7 +5515,7 @@ void GpuBackendTestSuite::TestTransientExplicitAliasing()
 
 	// Shaders are resources, which are created outside of the render thread
 	const TShared<GpuDevice> device = backend.GetDevice(0);
-	const TShared<GpuComputePipelineState> pipeline = CreateExplicitBarrierDispatchPipeline(*device);
+	const TShared<GpuComputePipelineState> pipeline = CreateTestDispatchPipeline(*device);
 	GetRenderThread().PostCommand([this, &device, &pipeline]()
 	{
 		static constexpr u32 kSize = 16;

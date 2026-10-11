@@ -20,9 +20,6 @@ TDerived& TGpuResourceTracker<TDerived, TBarrierHelper>::GetDerived()
 template<class TDerived, class TBarrierHelper>
 void TGpuResourceTracker<TDerived, TBarrierHelper>::ResolveSubmissionTransitions(GpuQueueId destinationQueueId, u32 frameIndex, GpuSubmissionTransitionVisitor& visitor)
 {
-	if(!mTracksHazards)
-		return;
-
 	// Tracks resting reads in the submission state if the resource is at rest, so they need no transition. Returns false if the reads need a GpuSubmissionTransition::Build().
 	auto fnTryTrackRestingRead = [destinationQueueId, frameIndex](GpuResourceSubmissionState& state, GpuStageFlags readStages)
 	{
@@ -81,6 +78,43 @@ void TGpuResourceTracker<TDerived, TBarrierHelper>::ResolveSubmissionTransitions
 
 		stateResource.SubmissionState = std::move(transition.PostTransitionSubmissionState);
 	};
+
+	// Images that start at rest get there in the first submission that uses them, ahead of the command buffer. A command buffer that
+	// tracks hazards derives its transitions from the undefined layout instead, and only consumes the request.
+	for(const auto& entry : mImages)
+	{
+		IGpuImageResource* const image = entry.first;
+		const GpuImageLayout restingLayout = image->ConsumeRestingTransition();
+		if(restingLayout == GpuImageLayout::Undefined || mTracksHazards)
+			continue;
+
+		// The image is new, so nothing accessed it before, and the submission only needs to transition its layout. The command buffer does
+		// not track its accesses, so the transition makes the image available to every stage of the queue. An image with more than one
+		// aspect keeps a state per aspect, and every subresource of the aspect gets the state of its first.
+		// TODO - Make the image available only to the first access of the command buffer, rather than to every stage of the queue. This
+		// needs the command buffer to track the initial state of every resource that is not at rest yet.
+		GpuResourceHazardState commandBufferAccesses;
+		commandBufferAccesses.RecordAccess(GpuStageFlags(GpuStageFlag::All) & GpuBackendUtility::GetQueueStageFlags(destinationQueueId.GetType()), GpuAccessFlag::Read | GpuAccessFlag::Write);
+
+		for(GpuTextureAspectFlag aspect : kGpuTextureAspects)
+		{
+			if(!image->GetRange().AspectMask.IsSet(aspect))
+				continue;
+
+			GpuTextureSubresourceRange range = image->GetRange();
+			range.AspectMask = aspect;
+
+			GpuImageSubresource& stateResource = image->GetSubmissionStateResource(0, 0, aspect);
+			fnVisitImageTransition(*image, range, stateResource, restingLayout, restingLayout, GpuBarrierFlag::DiscardContents, GpuQueueMask::kNone, commandBufferAccesses,
+				TDerived::kLayoutTransitionsAreWrites);
+
+			if(!image->HasUniformSubmissionState())
+				image->SetNativeState(range, stateResource.NativeState);
+		}
+	}
+
+	if(!mTracksHazards)
+		return;
 
 	// Selects the hazards of a tracked image partition for one submitted range, and visits the range's submission transition
 	auto fnResolveTrackedImageTransition = [this, &fnVisitImageTransition](IGpuImageResource* image, const GpuImageSubresourceTrackingState& trackingState, const GpuTextureSubresourceRange& range,

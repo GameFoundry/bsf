@@ -307,67 +307,43 @@ namespace b3d::render
 			if(parameters == nullptr || pipelineSetLayout == nullptr)
 				continue;
 
-			// Mirrors GpuDrawAccessValidator::AddParameterSet(): only the bindings the pipeline uses are accessed
-			const TShared<GpuPipelineParameterSetLayout>& parameterSetLayout = parameters->GetLayout();
-			for(u32 typeIndex = 0; typeIndex < (u32)GpuParameterType::Count; typeIndex++)
+			// Only the bindings the pipeline uses are accessed
+			parameters->ForEachBoundResource(pipelineSetLayout.get(), [this, isDraw](const GpuParameterSetResource& resource)
 			{
-				const GpuParameterType type = (GpuParameterType)typeIndex;
-				if(type == GpuParameterType::Sampler)
-					continue;
-
-				for(u32 bindingIndex = 0; bindingIndex < pipelineSetLayout->GetBindingCount(type); bindingIndex++)
+				const GpuResourceUseFlags stageUse = GpuBackendUtility::GetShaderResourceUseFlags(resource.Uniform->Usage);
+				switch(resource.Uniform->Type)
 				{
-					const UniformInformation& pipelineUniform = *pipelineSetLayout->TryGetUniformInformation(type, bindingIndex);
-					const UniformInformation* parameterSetUniform = parameterSetLayout->TryGetUniformInformation(pipelineUniform.Slot);
-					if(parameterSetUniform == nullptr || parameterSetUniform->Type != type)
-						continue;
+				case GpuParameterType::UniformBuffer:
+					ValidateBufferAccess(*resource.Buffer, GpuBackendUtility::GetStageFlags(stageUse | GpuResourceUseFlag::UniformBuffer), resource.Access);
+					break;
+				case GpuParameterType::StorageBuffer:
+					ValidateBufferAccess(*resource.Buffer, GpuBackendUtility::GetStageFlags(stageUse | GpuResourceUseFlag::ShaderAccess), resource.Access);
+					break;
+				case GpuParameterType::SampledTexture:
+				{
+					ImageSubresources image = GetTextureSubresources(*resource.Texture, GpuTextureSubresourceRange::AllSubresources());
+					image.Range = GpuBackendUtility::GetSurfaceRange(image.FullRange, resource.Surface);
 
-					const GpuResourceUseFlags stageUse = GpuBackendUtility::GetShaderResourceUseFlags(pipelineUniform.Usage);
-					for(u32 arrayIndex = 0; arrayIndex < std::min(pipelineUniform.ArraySize, parameterSetUniform->ArraySize); arrayIndex++)
-					{
-						switch(type)
-						{
-						case GpuParameterType::UniformBuffer:
-							if(const TShared<GpuBuffer>& buffer = parameters->GetUniformBuffer(pipelineUniform.Slot, arrayIndex))
-								ValidateBufferAccess(*buffer, GpuBackendUtility::GetStageFlags(stageUse | GpuResourceUseFlag::UniformBuffer), GpuAccessFlag::Read);
+					// Sampled depth/stencil views only read the depth aspect
+					if(image.Range.AspectMask.IsSet(GpuTextureAspectFlag::Depth))
+						image.Range.AspectMask = GpuTextureAspectFlag::Depth;
 
-							break;
-						case GpuParameterType::StorageBuffer:
-							if(const TShared<GpuBuffer>& buffer = parameters->GetStorageBuffer(pipelineUniform.Slot, arrayIndex))
-							{
-								const GpuAccessFlags access = GpuObjectParameterTypeInformation::IsReadWriteBuffer(pipelineUniform.ObjectType) ? GpuAccessFlag::Read | GpuAccessFlag::Write : GpuAccessFlags(GpuAccessFlag::Read);
-								ValidateBufferAccess(*buffer, GpuBackendUtility::GetStageFlags(stageUse | GpuResourceUseFlag::ShaderAccess), access);
-							}
-							break;
-						case GpuParameterType::SampledTexture:
-							if(const TShared<Texture>& texture = parameters->GetSampledTexture(pipelineUniform.Slot, arrayIndex))
-							{
-								ImageSubresources image = GetTextureSubresources(*texture, GpuTextureSubresourceRange::AllSubresources());
-								image.Range = GpuBackendUtility::GetSurfaceRange(image.FullRange, parameters->GetTextureSurface(pipelineUniform.Slot, arrayIndex));
-
-								// Sampled depth/stencil views only read the depth aspect
-								if(image.Range.AspectMask.IsSet(GpuTextureAspectFlag::Depth))
-									image.Range.AspectMask = GpuTextureAspectFlag::Depth;
-
-								// A sampled attachment is in the layout of the render pass, which checked it
-								const GpuImageLayout layout = isDraw && IsRenderPassAttachment(image) ? GpuImageLayout::Undefined : GpuImageLayout::ShaderReadOnly;
-								ValidateImageAccess(image, layout, GpuBackendUtility::GetStageFlags(stageUse | GpuResourceUseFlag::ShaderAccess), GpuAccessFlag::Read);
-							}
-							break;
-						case GpuParameterType::StorageTexture:
-							if(const TShared<Texture>& texture = parameters->GetStorageTexture(pipelineUniform.Slot, arrayIndex))
-							{
-								ImageSubresources image = GetTextureSubresources(*texture, GpuTextureSubresourceRange::AllSubresources());
-								image.Range = GpuBackendUtility::GetSurfaceRange(image.FullRange, parameters->GetStorageTextureSurface(pipelineUniform.Slot, arrayIndex));
-								ValidateImageAccess(image, GpuImageLayout::General, GpuBackendUtility::GetStageFlags(stageUse | GpuResourceUseFlag::ShaderAccess), GpuAccessFlag::Read | GpuAccessFlag::Write);
-							}
-							break;
-						default:
-							break;
-						}
-					}
+					// A sampled attachment is in the layout of the render pass, which checked it
+					const GpuImageLayout layout = isDraw && IsRenderPassAttachment(image) ? GpuImageLayout::Undefined : GpuImageLayout::ShaderReadOnly;
+					ValidateImageAccess(image, layout, GpuBackendUtility::GetStageFlags(stageUse | GpuResourceUseFlag::ShaderAccess), resource.Access);
+					break;
 				}
-			}
+				case GpuParameterType::StorageTexture:
+				{
+					ImageSubresources image = GetTextureSubresources(*resource.Texture, GpuTextureSubresourceRange::AllSubresources());
+					image.Range = GpuBackendUtility::GetSurfaceRange(image.FullRange, resource.Surface);
+					ValidateImageAccess(image, GpuImageLayout::General, GpuBackendUtility::GetStageFlags(stageUse | GpuResourceUseFlag::ShaderAccess), resource.Access);
+					break;
+				}
+				default:
+					break;
+				}
+			});
 		}
 	}
 
@@ -525,30 +501,23 @@ namespace b3d::render
 
 		Vector<ResourceState>& states = mImages[image.Key];
 		if(states.empty())
-			states.resize(fullRange.MipLevelCount * fullRange.ArrayLayerCount * fullRange.GetAspectCount());
+			states.resize(fullRange.GetSubresourceCount());
 
 		const char* firstError = nullptr;
-		u32 aspectIndex = 0;
 		for(GpuTextureAspectFlag aspect : kGpuTextureAspects)
 		{
-			if(!fullRange.AspectMask.IsSet(aspect))
+			if(!fullRange.AspectMask.IsSet(aspect) || !clampedRange.AspectMask.IsSet(aspect))
 				continue;
 
-			if(clampedRange.AspectMask.IsSet(aspect))
+			for(u32 face = clampedRange.BaseArrayLayer; face < clampedRange.BaseArrayLayer + clampedRange.ArrayLayerCount; face++)
 			{
-				for(u32 face = clampedRange.BaseArrayLayer; face < clampedRange.BaseArrayLayer + clampedRange.ArrayLayerCount; face++)
+				for(u32 mip = clampedRange.BaseMipLevel; mip < clampedRange.BaseMipLevel + clampedRange.MipLevelCount; mip++)
 				{
-					for(u32 mip = clampedRange.BaseMipLevel; mip < clampedRange.BaseMipLevel + clampedRange.MipLevelCount; mip++)
-					{
-						const u32 index = (aspectIndex * fullRange.ArrayLayerCount + face) * fullRange.MipLevelCount + mip;
-						const char* const error = function(states[index]);
-						if(firstError == nullptr)
-							firstError = error;
-					}
+					const char* const error = function(states[fullRange.GetSubresourceIndex(mip, face, aspect)]);
+					if(firstError == nullptr)
+						firstError = error;
 				}
 			}
-
-			aspectIndex++;
 		}
 
 		return firstError;

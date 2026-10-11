@@ -712,6 +712,23 @@ namespace b3d::render
 		bool IsUnplaced() const { return mIsUnplaced.load(std::memory_order_relaxed); }
 #endif
 
+		/**
+		 * Registers the buffer as resource @p resourceIndex of a frame graph, or unregisters it if @p resourceIndex is ~0u. The buffer is
+		 * a resource of at most one frame graph. See FrameGraph.
+		 */
+		void SetFrameGraphResourceIndex(u32 resourceIndex) { mFrameGraphResourceIndex = resourceIndex; }
+
+		/** Returns the index of the buffer among the resources of its frame graph, or ~0u if it is a resource of none. */
+		u32 GetFrameGraphResourceIndex() const { return mFrameGraphResourceIndex; }
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+		/** Sets the id of the frame graph the buffer is a resource of, or zero if none, so graphs detect resources of other graphs. */
+		void SetFrameGraphId(u32 graphId) { mFrameGraphId = graphId; }
+
+		/** Returns the id set by SetFrameGraphId(). */
+		u32 GetFrameGraphId() const { return mFrameGraphId; }
+#endif
+
 		/** @} */
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
@@ -758,7 +775,10 @@ namespace b3d::render
 		 */
 		GpuAllocation mRequestedAllocation;
 
+		u32 mFrameGraphResourceIndex = ~0u; /**< See SetFrameGraphResourceIndex(). */
+
 #if B3D_BUILD_TYPE_DEVELOPMENT
+		u32 mFrameGraphId = 0; /**< See SetFrameGraphId(). */
 		std::atomic<bool> mIsUnplaced = false;
 #endif
 	};

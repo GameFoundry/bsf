@@ -118,6 +118,19 @@ namespace b3d
 		/** Converts a GpuImageLayout enum value to a readable string representing the layout name. */
 		static const char* GetImageLayoutName(render::GpuImageLayout layout);
 
+		/**
+		 * Records a copy of a subresource of @p texture into @p stagingBuffer, which the host can read once @p commandBuffer completes. On a
+		 * command buffer with explicit barriers the subresource leaves its resting state for the copy and returns to it.
+		 */
+		static void CopyToStagingBuffer(render::GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& texture, u32 mipLevel, u32 arrayLayer, const TShared<render::GpuBuffer>& stagingBuffer);
+
+		/**
+		 * Records a copy of @p length bytes of @p buffer, starting at @p offset, to the start of @p stagingBuffer, which the host can read
+		 * once @p commandBuffer completes. On a command buffer with explicit barriers the buffer leaves its resting state for the copy and
+		 * returns to it.
+		 */
+		static void CopyToStagingBuffer(render::GpuCommandBuffer& commandBuffer, const TShared<render::GpuBuffer>& buffer, u32 offset, u32 length, const TShared<render::GpuBuffer>& stagingBuffer);
+
 #if B3D_GPU_EXPLICIT_BARRIERS
 		/**
 		 * Returns the resting state of a buffer on queues of @p queueType. With explicit barriers, a resource outside of the work that

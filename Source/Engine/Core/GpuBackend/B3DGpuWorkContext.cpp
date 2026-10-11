@@ -6,6 +6,7 @@
 #include "B3DGpuCommandBufferPoolRing.h"
 #include "B3DGpuParameterSetPool.h"
 #include "B3DGpuTransientResourceAllocator.h"
+#include "B3DGpuDeviceCapabilities.h"
 #include "GpuBackend/Allocators/B3DGpuResource.h"
 
 using namespace b3d;
@@ -159,6 +160,11 @@ const TShared<render::GpuCommandBuffer>& GpuWorkContext::GetTransferCommandBuffe
 		poolCreateInformation.Thread = B3D_CURRENT_THREAD_ID;
 		poolCreateInformation.Type = kTransferQueueType;
 		poolCreateInformation.UsePoolReset = true;
+
+#if B3D_GPU_EXPLICIT_BARRIERS
+		// In explicit mode the upload utilities bracket their writes with explicit barriers
+		poolCreateInformation.ExplicitBarriers = gGpuExplicitTransferBarriers && mDevice.GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
+#endif
 
 		mTransferPoolRing = B3DMakeUnique<render::GpuCommandBufferPoolRing>(mDevice, poolCreateInformation);
 	}

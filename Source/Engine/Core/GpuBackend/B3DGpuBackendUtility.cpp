@@ -2,6 +2,8 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "GpuBackend/B3DGpuBackendUtility.h"
 #include "GpuBackend/B3DRenderTexture.h"
+#include "GpuBackend/B3DGpuBuffer.h"
+#include "Image/B3DTexture.h"
 
 #include "Utility/B3DBitwise.h"
 #include "Math/B3DMath.h"
@@ -380,6 +382,51 @@ const char* GpuBackendUtility::GetImageLayoutName(GpuImageLayout layout)
 	case GpuImageLayout::Present: return "Present";
 	default: return "Unknown";
 	}
+}
+
+void GpuBackendUtility::CopyToStagingBuffer(GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& texture, u32 mipLevel, u32 arrayLayer, const TShared<render::GpuBuffer>& stagingBuffer)
+{
+#if B3D_GPU_EXPLICIT_BARRIERS
+	if(commandBuffer.UsesExplicitBarriers())
+	{
+		const GpuAccessState restingState = GetRestingState(*texture, commandBuffer.GetQueueType());
+		const GpuAccessState transferRead(GpuStageFlag::Transfer, GpuAccessFlag::Read, GpuImageLayout::TransferSource);
+		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
+		const GpuAccessState hostRead(GpuStageFlag::Host, GpuAccessFlag::Read);
+		const GpuTextureSubresourceRange range(mipLevel, 1, arrayLayer, 1, GetFormatAspects(texture->GetProperties().Format));
+
+		commandBuffer.IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, restingState, transferRead, range));
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, GpuAccessState(), transferWrite));
+		commandBuffer.CopyTextureToBuffer(texture, stagingBuffer, mipLevel, arrayLayer, 0);
+		commandBuffer.IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, transferRead, restingState, range));
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, transferWrite, hostRead));
+		return;
+	}
+#endif
+
+	commandBuffer.CopyTextureToBuffer(texture, stagingBuffer, mipLevel, arrayLayer, 0);
+}
+
+void GpuBackendUtility::CopyToStagingBuffer(GpuCommandBuffer& commandBuffer, const TShared<render::GpuBuffer>& buffer, u32 offset, u32 length, const TShared<render::GpuBuffer>& stagingBuffer)
+{
+#if B3D_GPU_EXPLICIT_BARRIERS
+	if(commandBuffer.UsesExplicitBarriers())
+	{
+		const GpuAccessState restingState = GetRestingState(*buffer, commandBuffer.GetQueueType());
+		const GpuAccessState transferRead(GpuStageFlag::Transfer, GpuAccessFlag::Read);
+		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
+		const GpuAccessState hostRead(GpuStageFlag::Host, GpuAccessFlag::Read);
+
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, restingState, transferRead));
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, GpuAccessState(), transferWrite));
+		commandBuffer.CopyBufferToBuffer(buffer, stagingBuffer, offset, 0, length);
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, transferRead, restingState));
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, transferWrite, hostRead));
+		return;
+	}
+#endif
+
+	commandBuffer.CopyBufferToBuffer(buffer, stagingBuffer, offset, 0, length);
 }
 
 #if B3D_GPU_EXPLICIT_BARRIERS

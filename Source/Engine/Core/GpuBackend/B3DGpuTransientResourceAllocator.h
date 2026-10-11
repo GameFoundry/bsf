@@ -35,8 +35,8 @@ namespace b3d
 
 		/**
 		 * Earlier uses of the texture's memory that the texture's first use must be ordered after. Must be issued before any other use
-		 * of the texture, as GpuBarrier::AliasAcquire, or as an explicit barrier with GpuBarrierFlag::AliasAcquire that refers to it with
-		 * GpuExplicitBarrier::AliasAcquire. Remains valid until the end of the scope.
+		 * of the texture, as GpuBarrier::AliasAcquire, or as an explicit barrier with GpuBarrierFlag::AliasAcquire whose source is
+		 * GpuAliasAcquire::Source. Remains valid until the end of the scope.
 		 */
 		render::GpuAliasAcquire Acquire;
 

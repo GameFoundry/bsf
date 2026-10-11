@@ -3,11 +3,22 @@
 #include "B3DRendererMaterial.h"
 
 #include "GpuBackend/B3DGpuCommandBuffer.h"
+#include "FrameGraph/B3DFrameGraph.h"
 
 using namespace b3d;
 using namespace render;
 
 B3D_LOG_CATEGORY(LogRendererMaterial)
+
+#if B3D_GPU_EXPLICIT_BARRIERS
+TShared<render::GpuParameterSet> RendererMaterialBase::CreateGpuParameterSet(FrameGraphPass& pass, u32 set) const
+{
+	TShared<render::GpuParameterSet> parameters = CreateGpuParameterSet(set);
+	pass.AddParameterSet(parameters);
+
+	return parameters;
+}
+#endif
 
 void RendererMaterialBase::Bind(GpuCommandBuffer& commandBuffer, bool bindParameters) const
 {
@@ -26,4 +37,36 @@ void RendererMaterialBase::Bind(GpuCommandBuffer& commandBuffer, bool bindParame
 void RendererMaterialBase::BindParameters(GpuCommandBuffer& commandBuffer) const
 {
 	commandBuffer.SetGpuParameterSet(mGpuParameterSet);
+}
+
+void RendererMaterialBase::ApplyShaderDefaults(GpuParameterSet& parameters) const
+{
+	for(const auto& entry : mShader->GetTextureParameters())
+	{
+		const u32 defaultValueIndex = entry.second.DefaultValueIndex;
+		if(defaultValueIndex == ~0u)
+			continue;
+
+		for(const auto& variableName : entry.second.GpuVariableNames)
+		{
+			if(parameters.HasSampledTexture(variableName))
+			{
+				const TShared<Texture> texture = entry.second.Type == GPOT_TEXTURE3D ? mShader->GetDefault3DTexture(defaultValueIndex) : mShader->GetDefault2DTexture(defaultValueIndex);
+				parameters.SetSampledTexture(variableName, texture);
+			}
+		}
+	}
+
+	for(const auto& entry : mShader->GetSamplerParameters())
+	{
+		const u32 defaultValueIndex = entry.second.DefaultValueIndex;
+		if(defaultValueIndex == ~0u)
+			continue;
+
+		for(const auto& variableName : entry.second.GpuVariableNames)
+		{
+			if(parameters.HasSamplerState(variableName))
+				parameters.SetSamplerState(variableName, mShader->GetDefaultSampler(defaultValueIndex));
+		}
+	}
 }

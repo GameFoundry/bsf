@@ -580,6 +580,17 @@ namespace b3d
 		 *  @{
 		 */
 
+		/** Buffer or texture bound to a slot of a parameter set. See GpuParameterSet::ForEachBoundResource(). */
+		struct GpuParameterSetResource
+		{
+			const UniformInformation* Uniform = nullptr; /**< Slot the resource is bound to. From the pipeline set layout, if one was provided. */
+			u32 ArrayIndex = 0; /**< Index of the resource in the slot's array. */
+			GpuBuffer* Buffer = nullptr; /**< Bound buffer of a uniform or storage buffer slot. */
+			render::Texture* Texture = nullptr; /**< Bound texture of a sampled or storage texture slot. */
+			TextureSurface Surface; /**< Surfaces of Texture the slot views. */
+			GpuAccessFlags Access; /**< Read for uniform buffers and sampled textures. Storage slots read and write, unless the shader declares a read-only buffer. */
+		};
+
 		/**
 		 * Render thread version of b3d::GpuParameterSet.
 		 *
@@ -643,6 +654,17 @@ namespace b3d
 				return TrySetUniformBuffer(name, suballocation.GetBuffer(), arrayIndex, suballocation.GetSuballocationOffset());
 			}
 
+			/**
+			 * Calls @p fnVisit with a GpuParameterSetResource for every buffer and texture bound to the set. Empty slots and samplers are
+			 * skipped.
+			 *
+			 * @param	pipelineSetLayout	If provided, only the slots of this layout that the set has with the same type are visited,
+			 *								which are the slots a pipeline with the layout accesses. Otherwise every slot of the set is.
+			 * @param	fnVisit				Callable taking a const GpuParameterSetResource&.
+			 */
+			template<class VisitFunction>
+			void ForEachBoundResource(const GpuPipelineParameterSetLayout* pipelineSetLayout, VisitFunction&& fnVisit) const;
+
 		protected:
 			friend class b3d::GpuParameterSet;
 			friend class b3d::GpuParameterSetPool;
@@ -654,6 +676,66 @@ namespace b3d
 
 			GpuParameterSetPool* mOwnerPool = nullptr;
 		};
+
+		template<class VisitFunction>
+		void GpuParameterSet::ForEachBoundResource(const GpuPipelineParameterSetLayout* pipelineSetLayout, VisitFunction&& fnVisit) const
+		{
+			const GpuPipelineParameterSetLayout& setLayout = *mParameterSetLayout;
+			const GpuPipelineParameterSetLayout& visitedLayout = pipelineSetLayout != nullptr ? *pipelineSetLayout : setLayout;
+			for(u32 typeIndex = 0; typeIndex < (u32)GpuParameterType::Count; typeIndex++)
+			{
+				const GpuParameterType type = (GpuParameterType)typeIndex;
+				if(type == GpuParameterType::Sampler)
+					continue;
+
+				for(u32 bindingIndex = 0; bindingIndex < visitedLayout.GetBindingCount(type); bindingIndex++)
+				{
+					const UniformInformation& uniform = *visitedLayout.TryGetUniformInformation(type, bindingIndex);
+					u32 arraySize = uniform.ArraySize;
+					if(pipelineSetLayout != nullptr)
+					{
+						const UniformInformation* setUniform = setLayout.TryGetUniformInformation(uniform.Slot);
+						if(setUniform == nullptr || setUniform->Type != type)
+							continue;
+
+						arraySize = std::min(arraySize, setUniform->ArraySize);
+					}
+
+					GpuParameterSetResource resource;
+					resource.Uniform = &uniform;
+					for(u32 arrayIndex = 0; arrayIndex < arraySize; arrayIndex++)
+					{
+						resource.ArrayIndex = arrayIndex;
+						switch(type)
+						{
+						case GpuParameterType::UniformBuffer:
+							resource.Buffer = GetUniformBuffer(uniform.Slot, arrayIndex).get();
+							resource.Access = GpuAccessFlag::Read;
+							break;
+						case GpuParameterType::StorageBuffer:
+							resource.Buffer = GetStorageBuffer(uniform.Slot, arrayIndex).get();
+							resource.Access = GpuObjectParameterTypeInformation::IsReadWriteBuffer(uniform.ObjectType) ? GpuAccessFlag::Read | GpuAccessFlag::Write : GpuAccessFlags(GpuAccessFlag::Read);
+							break;
+						case GpuParameterType::SampledTexture:
+							resource.Texture = GetSampledTexture(uniform.Slot, arrayIndex).get();
+							resource.Surface = GetTextureSurface(uniform.Slot, arrayIndex);
+							resource.Access = GpuAccessFlag::Read;
+							break;
+						case GpuParameterType::StorageTexture:
+							resource.Texture = GetStorageTexture(uniform.Slot, arrayIndex).get();
+							resource.Surface = GetStorageTextureSurface(uniform.Slot, arrayIndex);
+							resource.Access = GpuAccessFlag::Read | GpuAccessFlag::Write;
+							break;
+						default:
+							break;
+						}
+
+						if(resource.Buffer != nullptr || resource.Texture != nullptr)
+							fnVisit(static_cast<const GpuParameterSetResource&>(resource));
+					}
+				}
+			}
+		}
 
 		/** @} */
 	} // namespace render

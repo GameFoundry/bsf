@@ -33,7 +33,7 @@ namespace b3d
 
 		/**
 		 * Index of the last pass that used the resource on its queue, within Submission, or of any other unit of work the caller records in
-		 * order. Must not decrease with later work on the queue. Reported back as GpuAliasAcquire::LatestSourcePass, and otherwise unused.
+		 * order. Must not decrease with later work on the queue. Reported back as GpuTransientTexture::LatestSourcePass, and otherwise unused.
 		 */
 		u32 Pass = 0;
 

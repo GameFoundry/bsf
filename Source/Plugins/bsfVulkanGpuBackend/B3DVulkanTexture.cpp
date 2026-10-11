@@ -610,6 +610,12 @@ VulkanImage* VulkanTexture::CreateImage()
 	if (vulkanImage != nullptr)
 		vulkanImage->SetName(mName);
 
+#if B3D_GPU_EXPLICIT_BARRIERS
+	// Images the CPU maps start in the preinitialized layout, and are never accessed through another one
+	if (vulkanImage != nullptr && StartsAtRest() && !mDirectlyMappable)
+		vulkanImage->RequestRestingTransition(mUsesGeneralLayout ? GpuImageLayout::General : GpuImageLayout::ShaderReadOnly);
+#endif
+
 	return vulkanImage;
 }
 

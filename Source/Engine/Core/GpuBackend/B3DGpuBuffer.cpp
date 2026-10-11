@@ -8,6 +8,7 @@
 #include "CoreObject/B3DCoreObjectSync.h"
 #include "FileSystem/B3DDataStream.h"
 #include "Renderer/B3DRenderer.h"
+#include "GpuBackend/B3DGpuBackendUtility.h"
 
 using namespace b3d;
 
@@ -489,7 +490,21 @@ namespace b3d::render
 		if(commandBuffer == nullptr)
 			commandBuffer = gpuContext.GetTransferCommandBuffer();
 
-		commandBuffer->CopyBufferToBuffer(stagingBuffer, buffer, 0, offset, length);
+#if B3D_GPU_EXPLICIT_BARRIERS
+		// Command buffers with explicit barriers take the buffer from its resting state and return it there
+		if(commandBuffer->UsesExplicitBarriers())
+		{
+			const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*buffer, commandBuffer->GetQueueType());
+			const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
+
+			commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, restingState, transferWrite));
+			commandBuffer->CopyBufferToBuffer(stagingBuffer, buffer, 0, offset, length);
+			commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, transferWrite, restingState));
+		}
+		else
+#endif
+			commandBuffer->CopyBufferToBuffer(stagingBuffer, buffer, 0, offset, length);
+
 		commandBuffer->AddQueueSyncMask(syncMask);
 
 		// We don't actually flush the transfer buffer here since it's an expensive operation, but it's instead
@@ -529,8 +544,23 @@ namespace b3d::render
 				// Make any writes visible before mapping
 				if(supportsGPUWrites)
 				{
-					// Issue a barrier so the device makes the written memory available for read (read-after-write hazard)
-					commandBuffer->IssueBarriers({{ GpuBufferBarrier(buffer, GpuResourceUseFlag::Host, GpuAccessFlag::Read)}});
+#if B3D_GPU_EXPLICIT_BARRIERS
+					// Command buffers with explicit barriers make the writes visible to the host from the buffer's resting state. The buffer
+					// needs no barrier back to rest, because the host reads it after the command buffer completes, and any later GPU access is
+					// submitted after that.
+					if(commandBuffer->UsesExplicitBarriers())
+					{
+						const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*buffer, commandBuffer->GetQueueType());
+						const GpuAccessState hostRead(GpuStageFlag::Host, GpuAccessFlag::Read);
+
+						commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, restingState, hostRead));
+					}
+					else
+#endif
+					{
+						// Issue a barrier so the device makes the written memory available for read (read-after-write hazard)
+						commandBuffer->IssueBarriers({{ GpuBufferBarrier(buffer, GpuResourceUseFlag::Host, GpuAccessFlag::Read)}});
+					}
 				}
 
 				// Submit the command buffer and wait until it finishes
@@ -558,7 +588,7 @@ namespace b3d::render
 		TShared<GpuCommandBuffer> commandBuffer = gpuContext.GetTransferCommandBuffer();
 
 		// Queue copy command
-		commandBuffer->CopyBufferToBuffer(buffer, stagingBuffer, offset, 0, length);
+		GpuBackendUtility::CopyToStagingBuffer(*commandBuffer, buffer, offset, length, stagingBuffer);
 
 		// Submit the command buffer and wait until it finishes
 		commandBuffer->AddQueueSyncMask(syncMask);
@@ -579,7 +609,7 @@ namespace b3d::render
 
 		// TODO - Staging buffer might not be necessary if he texture is directly mappable
 		TShared<GpuBuffer> stagingBuffer = CreateStaging(gpuContext, buffer, true);
-		commandBuffer.CopyBufferToBuffer(buffer, stagingBuffer, offset, 0, length);
+		GpuBackendUtility::CopyToStagingBuffer(commandBuffer, buffer, offset, length, stagingBuffer);
 
 		TAsyncOp<TShared<MemoryDataStream>> op;
 		auto fnOnCommandBufferCompleted = [stagingBuffer, length, op]() mutable

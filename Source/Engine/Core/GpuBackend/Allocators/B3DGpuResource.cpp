@@ -330,6 +330,11 @@ namespace b3d
 		return useMask | GetFullRangeSubresource()->GetUseInfo(useFlags);
 	}
 
+	render::GpuImageLayout IGpuImageResource::ConsumeRestingTransition()
+	{
+		return std::exchange(mRestingTransitionLayout, render::GpuImageLayout::Undefined);
+	}
+
 	u32 IGpuImageResource::GetSubresourceBoundCount(u32 face, u32 mipLevel) const
 	{
 		u32 boundCount = 0;
