@@ -2890,7 +2890,7 @@ void RCNodeSSR::Render(const RenderCompositorNodeInputs& inputs)
 	TShared<Texture> hiZ = hiZNode->Output->Texture;
 
 	// This will be executing before scene color is resolved, so get the light accum buffer instead
-	TShared<Texture> sceneColor;
+	TShared<Texture> sceneColor = lightAccumNode->LightAccumulationTex->Texture;
 
 	// Resolve multiple samples if MSAA is used
 	TShared<PooledRenderTexture> resolvedSceneColor;
@@ -2900,10 +2900,6 @@ void RCNodeSSR::Render(const RenderCompositorNodeInputs& inputs)
 
 		GetRendererUtility().Blit(commandBuffer, BlitInformation::BlitColor(sceneColor, resolvedSceneColor->RenderTexture));
 		sceneColor = resolvedSceneColor->Texture;
-	}
-	else
-	{
-		sceneColor = lightAccumNode->LightAccumulationTex->Texture;
 	}
 
 	GBufferTextures gbuffer;
