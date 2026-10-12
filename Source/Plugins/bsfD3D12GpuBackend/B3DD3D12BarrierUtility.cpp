@@ -124,9 +124,9 @@ D3D12_BARRIER_SYNC D3D12BarrierUtility::GetStageSync(GpuStageFlags stages)
 		sync |= D3D12_BARRIER_SYNC_COPY;
 	if(stages.IsSet(GpuStageFlag::Resolve))
 		sync |= D3D12_BARRIER_SYNC_RESOLVE;
-	if(stages.IsSet(GpuStageFlag::Host))
-		sync |= D3D12_BARRIER_SYNC_ALL;
 
+	// The host stage maps to no work. Fences order the CPU against the GPU, and a command list's writes are visible to the CPU once
+	// its fence completes.
 	return sync;
 }
 
@@ -355,7 +355,7 @@ D3D12_BARRIER_ACCESS D3D12BarrierUtility::GetBufferAccess(GpuStageFlags stages, 
 	if(stages.IsSetAny(GpuStageFlag::VertexShaderNonUniform | GpuStageFlag::FragmentShaderNonUniform | GpuStageFlag::ComputeShaderNonUniform))
 		nativeAccess |= writes ? D3D12_BARRIER_ACCESS_UNORDERED_ACCESS : D3D12_BARRIER_ACCESS_SHADER_RESOURCE;
 
-	if(stages.IsSetAny(GpuStageFlag::Transfer | GpuStageFlag::Host))
+	if(stages.IsSet(GpuStageFlag::Transfer))
 	{
 		if(reads)
 			nativeAccess |= D3D12_BARRIER_ACCESS_COPY_SOURCE;
@@ -368,7 +368,8 @@ D3D12_BARRIER_ACCESS D3D12BarrierUtility::GetBufferAccess(GpuStageFlags stages, 
 	if((resourceFlags & D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS) == 0)
 		nativeAccess = (D3D12_BARRIER_ACCESS)(nativeAccess & ~D3D12_BARRIER_ACCESS_UNORDERED_ACCESS);
 
-	return nativeAccess;
+	// Host accesses map to no GPU access, and a scope without synchronization must name no access
+	return nativeAccess != D3D12_BARRIER_ACCESS_COMMON ? nativeAccess : D3D12_BARRIER_ACCESS_NO_ACCESS;
 }
 
 D3D12_BARRIER_ACCESS D3D12BarrierUtility::GetTextureAccess(GpuStageFlags stages, GpuAccessFlags access, GpuImageLayout layout, GpuTextureAspectFlags aspects)
