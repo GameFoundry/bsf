@@ -431,6 +431,10 @@ GpuAccessState GpuBackendUtility::GetRestingState(const render::GpuBuffer& buffe
 	if(buffer.GetInformation().Type == GpuBufferType::StagingRead)
 		return GpuAccessState(GetQueueStageFlags(queueType) & GpuStageFlag::Host, GpuAccessFlag::Read);
 
+	// Only copies read upload buffers, and the host writes them before the submission that reads them
+	if(buffer.GetInformation().Type == GpuBufferType::StagingWrite)
+		return GpuAccessState(GetQueueStageFlags(queueType) & GpuStageFlag::Transfer, GpuAccessFlag::Read);
+
 	const GpuStageFlags stages = GpuStageFlag::DrawIndirect | GpuStageFlag::VertexInputAttributes | GpuStageFlag::VertexInputIndices | GpuStageFlag::AllShader;
 	return GpuAccessState(stages & GetQueueStageFlags(queueType), GpuAccessFlag::Read);
 }

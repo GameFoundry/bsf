@@ -137,7 +137,7 @@ namespace b3d
 		 * declares its state is at rest: it may be read in the resting state without a barrier, and whoever writes it brings it back to
 		 * rest. Buffers rest readable as vertex, index and indirect arguments, and from every shader stage. Readback buffers
 		 * (GpuBufferType::StagingRead) rest readable by the host, so a barrier that returns one to rest makes the GPU's writes visible
-		 * to the host.
+		 * to the host. Upload buffers (GpuBufferType::StagingWrite) rest readable by copies, the only GPU work that reads them.
 		 */
 		static render::GpuAccessState GetRestingState(const render::GpuBuffer& buffer, GpuQueueType queueType);
 
