@@ -3754,6 +3754,9 @@ void GpuBackendTestSuite::TestExplicitBarrierValidation()
 	logs.IgnoreError("is pending a previous split barrier");
 	logs.IgnoreError("is not paired with a matching begin-only barrier");
 
+	// The host stage maps to no D3D12 synchronization, so the D3D12 debug layer reports commands after barriers that declare only host access
+	logs.IgnoreError("cannot be accessed after a previous barrier specifies D3D12_BARRIER_SYNC_NONE as SyncAfter");
+
 	const TShared<GpuDevice> device = backend.GetDevice(0);
 	const TShared<GpuComputePipelineState> pipeline = CreateTestDispatchPipeline(*device);
 	if(pipeline != nullptr)

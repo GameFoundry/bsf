@@ -176,6 +176,9 @@ namespace b3d
 			/**	Destroys data used by the renderer on the render thread. */
 			void DestroyOnRenderThread() override;
 
+			/** Records the queued uniform buffer updates of every scene, then executes renderer tasks as Renderer::ProcessTasks(). */
+			void ProcessTasks(bool forceAll, u64 upToFrame = std::numeric_limits<u64>::max()) override;
+
 			/** Called right after a renderer scene has been created. */
 			void NotifySceneCreated(const TShared<RenderBeastScene>& scene);
 

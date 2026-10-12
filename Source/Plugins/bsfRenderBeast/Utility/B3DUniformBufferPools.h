@@ -123,29 +123,36 @@ namespace b3d::render
 		void Release(AllocationHandle handle);
 
 		/**
-		 * Updates per-object buffer using transform data stored in the render state.
+		 * Updates per-object buffer using transform data stored in the render state. The new data reaches the buffer with the next Flush().
 		 *
 		 * @param renderState	Render state whose per-object buffer should be updated.
-		 * @param commandBuffer	Command buffer to queue the copy on. If null, uses the transfer command buffer.
 		 */
-		void UpdatePerObjectBuffer(const RenderState& renderState, const TShared<GpuCommandBuffer>& commandBuffer = nullptr);
+		void UpdatePerObjectBuffer(const RenderState& renderState);
 
 		/**
-		 * Updates decal parameter buffer using data from a decal render state and proxy.
+		 * Updates decal parameter buffer using data from a decal render state and proxy. The new data reaches the buffer with the next Flush().
 		 *
 		 * @param decal			Decal render state whose decal param buffer should be updated.
 		 * @param proxy			DecalProxy providing transform and property data.
-		 * @param commandBuffer	Command buffer to queue the copy on. If null, uses the transfer command buffer.
 		 */
-		void UpdateDecalParamBuffer(const DecalRenderState& decal, const DecalProxy& proxy, const TShared<GpuCommandBuffer>& commandBuffer = nullptr);
+		void UpdateDecalParamBuffer(const DecalRenderState& decal, const DecalProxy& proxy);
 
 		/**
-		 * Updates GPU particle parameter buffer using data from particles render state.
+		 * Updates GPU particle parameter buffer using data from particles render state. The new data reaches the buffer with the next Flush().
 		 *
 		 * @param particles		Particle render state whose GPU particle param buffer should be updated.
-		 * @param commandBuffer	Command buffer to queue the copy on. If null, uses the transfer command buffer.
 		 */
-		void UpdateGpuParticlesParamBuffer(const ParticleRenderState& particles, const TShared<GpuCommandBuffer>& commandBuffer = nullptr);
+		void UpdateGpuParticlesParamBuffer(const ParticleRenderState& particles);
+
+		/**
+		 * Records the copies of every update since the last flush. Call before recording any GPU work that reads the pool buffers.
+		 * Only the last update of each suballocation is copied.
+		 *
+		 * @param commandBuffer	Command buffer to record the copies on, outside of a render pass. It must execute before any command
+		 *						buffer that reads the updated data. If null, uses the transfer command buffer, which is submitted
+		 *						before any other command buffer.
+		 */
+		void Flush(const TShared<GpuCommandBuffer>& commandBuffer = nullptr);
 
 		/**
 		 * Advances the staging pool frame counters. Call at end of each render frame.
@@ -204,6 +211,35 @@ namespace b3d::render
 			u32 RefCount = 0;
 		};
 
+		/** A copy from a staging suballocation into a pool suballocation, waiting for Flush(). */
+		struct PendingCopy
+		{
+			GpuBufferSuballocation Source;
+			GpuBufferSuballocation Destination;
+		};
+
+		/** Identifies the destination of a PendingCopy. Suballocations of one pool buffer never overlap. */
+		struct CopyDestination
+		{
+			GpuBuffer* Buffer = nullptr;
+			u32 Offset = 0;
+
+			bool operator==(const CopyDestination& other) const { return Buffer == other.Buffer && Offset == other.Offset; }
+		};
+
+		/** Hash functor for CopyDestination. */
+		struct CopyDestinationHash
+		{
+			size_t operator()(const CopyDestination& destination) const
+			{
+				size_t hash = 0;
+				B3DCombineHash(hash, destination.Buffer);
+				B3DCombineHash(hash, destination.Offset);
+
+				return hash;
+			}
+		};
+
 		/** Internal entry tracking suballocations for a single allocation. */
 		struct AllocationEntry
 		{
@@ -254,11 +290,16 @@ namespace b3d::render
 		 */
 		BufferKey BuildBufferKey(PoolType type, const AllocationEntry& entry) const;
 
+		/** Queues a copy from @p source to @p destination for Flush(), replacing an earlier queued copy to @p destination. */
+		void QueueCopy(const GpuBufferSuballocation& source, const GpuBufferSuballocation& destination);
+
 		TInlineArray<PoolGroup, 4> mPoolGroups;
 		Vector<PoolConfiguration> mPendingConfigurations;
 		TransientGpuBufferPool mPerObjectStagingPool;
 		TransientGpuBufferPool mDecalStagingPool;
 		TransientGpuBufferPool mGpuParticlesStagingPool;
+		Vector<PendingCopy> mPendingCopies;
+		UnorderedMap<CopyDestination, u32, CopyDestinationHash> mPendingCopyIndices; /**< Index in mPendingCopies of the copy to each destination. */
 		GpuDevice* mDevice = nullptr;
 		bool mInitialized = false;
 	};

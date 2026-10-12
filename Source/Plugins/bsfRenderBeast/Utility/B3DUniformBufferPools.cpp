@@ -10,6 +10,7 @@
 #include "GpuBackend/B3DGpuDevice.h"
 #include "Renderer/B3DRenderer.h"
 #include "Shading/B3DGpuParticleSimulation.h"
+#include "GpuBackend/B3DGpuBackendUtility.h"
 
 using namespace b3d;
 using namespace b3d::render;
@@ -229,7 +230,7 @@ void UniformBufferPools::ReleaseParameterSet(PoolGroup& group, const AllocationE
 		group.ParameterSetsByBuffer.erase(iter);
 }
 
-void UniformBufferPools::UpdatePerObjectBuffer(const RenderState& renderState, const TShared<GpuCommandBuffer>& commandBuffer)
+void UniformBufferPools::UpdatePerObjectBuffer(const RenderState& renderState)
 {
 	if (!renderState.PerObjectSuballocation.IsValid())
 		return;
@@ -246,14 +247,10 @@ void UniformBufferPools::UpdatePerObjectBuffer(const RenderState& renderState, c
 
 	staging.Unmap();
 
-	const TShared<GpuCommandBuffer>& actualCommandBuffer = commandBuffer ? commandBuffer : GetRenderer()->GetGpuContext().GetTransferCommandBuffer();
-
-	const GpuBufferSuballocation& source = staging.GetSuballocation();
-	const GpuBufferSuballocation& destination = renderState.PerObjectSuballocation;
-	actualCommandBuffer->CopyBufferToBuffer(source.GetBuffer(), destination.GetBuffer(), source.GetSuballocationOffset(), destination.GetSuballocationOffset(), source.GetSize());
+	QueueCopy(staging.GetSuballocation(), renderState.PerObjectSuballocation);
 }
 
-void UniformBufferPools::UpdateDecalParamBuffer(const DecalRenderState& decal, const DecalProxy& proxy, const TShared<GpuCommandBuffer>& commandBuffer)
+void UniformBufferPools::UpdateDecalParamBuffer(const DecalRenderState& decal, const DecalProxy& proxy)
 {
 	if (!decal.DecalParamSuballocation.IsValid())
 		return;
@@ -288,14 +285,10 @@ void UniformBufferPools::UpdateDecalParamBuffer(const DecalRenderState& decal, c
 
 	staging.Unmap();
 
-	const TShared<GpuCommandBuffer>& actualCommandBuffer = commandBuffer ? commandBuffer : GetRenderer()->GetGpuContext().GetTransferCommandBuffer();
-
-	const GpuBufferSuballocation& source = staging.GetSuballocation();
-	const GpuBufferSuballocation& destination = decal.DecalParamSuballocation;
-	actualCommandBuffer->CopyBufferToBuffer(source.GetBuffer(), destination.GetBuffer(), source.GetSuballocationOffset(), destination.GetSuballocationOffset(), source.GetSize());
+	QueueCopy(staging.GetSuballocation(), decal.DecalParamSuballocation);
 }
 
-void UniformBufferPools::UpdateGpuParticlesParamBuffer(const ParticleRenderState& particles, const TShared<GpuCommandBuffer>& commandBuffer)
+void UniformBufferPools::UpdateGpuParticlesParamBuffer(const ParticleRenderState& particles)
 {
 	if (!particles.GpuParticlesParamSuballocation.IsValid())
 		return;
@@ -314,11 +307,68 @@ void UniformBufferPools::UpdateGpuParticlesParamBuffer(const ParticleRenderState
 
 	staging.Unmap();
 
-	const TShared<GpuCommandBuffer>& actualCommandBuffer = commandBuffer ? commandBuffer : GetRenderer()->GetGpuContext().GetTransferCommandBuffer();
+	QueueCopy(staging.GetSuballocation(), particles.GpuParticlesParamSuballocation);
+}
 
-	const GpuBufferSuballocation& source = staging.GetSuballocation();
-	const GpuBufferSuballocation& destination = particles.GpuParticlesParamSuballocation;
-	actualCommandBuffer->CopyBufferToBuffer(source.GetBuffer(), destination.GetBuffer(), source.GetSuballocationOffset(), destination.GetSuballocationOffset(), source.GetSize());
+void UniformBufferPools::QueueCopy(const GpuBufferSuballocation& source, const GpuBufferSuballocation& destination)
+{
+	const CopyDestination key{ destination.GetBuffer().get(), destination.GetSuballocationOffset() };
+
+	// Copies to one destination would need a barrier between them, so only the last one is kept
+	auto iterFind = mPendingCopyIndices.find(key);
+	if (iterFind != mPendingCopyIndices.end())
+	{
+		mPendingCopies[iterFind->second].Source = source;
+		return;
+	}
+
+	mPendingCopyIndices[key] = (u32)mPendingCopies.size();
+	mPendingCopies.push_back({ source, destination });
+}
+
+void UniformBufferPools::Flush(const TShared<GpuCommandBuffer>& commandBuffer)
+{
+	if (mPendingCopies.empty())
+		return;
+
+	FrameAllocatorScope frameScope;
+
+	const TShared<GpuCommandBuffer>& actualCommandBuffer = commandBuffer ? commandBuffer : GetRenderer()->GetGpuContext().GetTransferCommandBuffer();
+	const bool usesExplicitBarriers = actualCommandBuffer->UsesExplicitBarriers();
+
+	FrameVector<GpuExplicitBufferBarrier> restBarriers;
+	if (usesExplicitBarriers)
+	{
+		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
+
+		FrameVector<GpuExplicitBufferBarrier> transferWriteBarriers;
+		FrameUnorderedSet<GpuBuffer*> destinationBuffers;
+		for (const PendingCopy& copy : mPendingCopies)
+		{
+			const TShared<GpuBuffer>& buffer = copy.Destination.GetBuffer();
+			if (!destinationBuffers.insert(buffer.get()).second)
+				continue;
+
+			const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*buffer, actualCommandBuffer->GetQueueType());
+			transferWriteBarriers.push_back(GpuExplicitBufferBarrier(buffer, restingState, transferWrite));
+			restBarriers.push_back(GpuExplicitBufferBarrier(buffer, transferWrite, restingState));
+		}
+
+		actualCommandBuffer->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(transferWriteBarriers.data(), (u32)transferWriteBarriers.size())));
+	}
+
+	for (const PendingCopy& copy : mPendingCopies)
+	{
+		actualCommandBuffer->CopyBufferToBuffer(copy.Source.GetBuffer(), copy.Destination.GetBuffer(), copy.Source.GetSuballocationOffset(),
+			copy.Destination.GetSuballocationOffset(), copy.Source.GetSize());
+	}
+
+	// And return them to rest after the copies
+	if (usesExplicitBarriers)
+		actualCommandBuffer->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(restBarriers.data(), (u32)restBarriers.size())));
+
+	mPendingCopies.clear();
+	mPendingCopyIndices.clear();
 }
 
 void UniformBufferPools::AdvanceFrame()
@@ -338,6 +388,10 @@ void UniformBufferPools::Destroy()
 			B3D_ASSERT(!entry.IsAllocated && "Cannot destroy UniformBufferPools with outstanding allocations");
 	}
 #endif
+
+	// Copies that were never flushed have nothing left to update
+	mPendingCopies.clear();
+	mPendingCopyIndices.clear();
 
 	// Destroy staging pools
 	mPerObjectStagingPool.Destroy();

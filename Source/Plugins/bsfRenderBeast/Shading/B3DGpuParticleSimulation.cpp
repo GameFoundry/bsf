@@ -553,10 +553,6 @@ static TShared<GpuBuffer> CreateGpuParticleVertexInputBuffer()
 	const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 	GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
 
-	const u32 size = gGpuParticleTileVertexUniformDefinition.GetSize();
-	TShared<GpuBuffer> stagingBuffer = gpuContext.CreateScratchGpuBuffer(GpuBufferCreateInformation::CreateStagingWrite(size));
-	GpuBufferMappedScope stagingMemory = stagingBuffer->Map(GpuMapOption::Write);
-
 	TShared<GpuBuffer> inputBuffer = gGpuParticleTileVertexUniformDefinition.CreateBuffer(GpuBufferFlag::StoreOnGPU);
 
 	// [0, 1] -> [-1, 1] and flip Y
@@ -571,11 +567,8 @@ static TShared<GpuBuffer> CreateGpuParticleVertexInputBuffer()
 		uvToNdc.W = -uvToNdc.W;
 	}
 
-	gGpuParticleTileVertexUniformDefinition.gUVToNDC.Set(stagingMemory, uvToNdc);
-	stagingMemory.Unmap();
-
-	const TShared<GpuCommandBuffer>& commandBuffer = gpuContext.GetTransferCommandBuffer();
-	commandBuffer->CopyBufferToBuffer(stagingBuffer, inputBuffer, 0, 0, size);
+	// gUVToNDC is the only member of the uniform buffer, at its start
+	GpuBufferUtility::Write(gpuContext, inputBuffer, 0, sizeof(uvToNdc), &uvToNdc);
 
 	return inputBuffer;
 }
@@ -1157,6 +1150,10 @@ void GpuParticleCurves::ApplyChanges(GpuCommandBuffer& commandBuffer)
 	const auto numCurves = (u32)mPendingAllocations.size();
 	if(numCurves == 0)
 		return;
+
+	// The writes to the scratch buffer below happen inside the render pass. The buffer is CPU-visible, so they map it, and record nothing
+	// on another command buffer.
+	B3D_ASSERT(mInjectScratch->GetMappedMemory() != nullptr);
 
 	GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
 

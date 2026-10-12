@@ -340,6 +340,15 @@ void RenderBeast::RenderAll(PerFrameData perFrameData)
 	GetRenderThread().PostCommand([this, timings, perFrameData]() { RenderAllOnRenderThread(timings, perFrameData); }, "RenderBeast::RenderAll");
 }
 
+void RenderBeast::ProcessTasks(bool forceAll, u64 upToFrame)
+{
+	// Tasks may draw objects whose uniform buffers were updated during sync
+	for(RenderBeastScene* scene : mScenes)
+		scene->GetUniformBufferPools().Flush();
+
+	Renderer::ProcessTasks(forceAll, upToFrame);
+}
+
 void RenderBeast::RenderAllOnRenderThread(FrameTimings timings, PerFrameData perFrameData)
 {
 	ASSERT_IF_NOT_RENDER_THREAD
@@ -434,6 +443,9 @@ bool RenderBeast::RenderScene(RenderBeastScene& scene, const FrameInfo& frameInf
 
 	for(u32 i = 0; i < scene.GetDecalCount(); i++)
 		scene.PrepareDecal(i, frameInfo);
+
+	// Record the uniform buffer updates of sync and preparation before anything draws
+	scene.GetUniformBufferPools().Flush();
 
 	bool anythingDrawnForScene = false;
 	for(auto& rtInfo : scene.GetRenderTargets())

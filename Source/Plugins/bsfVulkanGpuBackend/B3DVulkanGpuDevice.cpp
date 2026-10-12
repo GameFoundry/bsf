@@ -576,6 +576,9 @@ void VulkanGpuDevice::RunDefragPass(GpuWorkContext& gpuContext)
 	if (transferCb == nullptr)
 		return;
 
+	// Relocation copies rely on the automatic tracker for the barriers around them, and for the new resources' transitions to rest
+	B3D_ASSERT(!transferCb->UsesExplicitBarriers() && "Defragmentation is not supported with explicit barriers.");
+
 	typename TGpuTlsfAllocator<VulkanHeapBackend>::DefragmentationInfo info;
 	info.MaxBytesPerCall = mDefragBudgetBytes;
 	info.MaxAllocationsPerCall = mDefragBudgetAllocations;

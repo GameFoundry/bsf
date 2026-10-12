@@ -726,8 +726,22 @@ void TextureUtility::Read(GpuWorkContext& gpuContext, const TShared<Texture>& te
 			// Make any writes visible before mapping
 			if(supportsGPUWrites)
 			{
-				// Issue a barrier so the device makes the written memory available for read (read-after-write hazard)
-				commandBuffer->IssueBarriers({{ GpuTextureBarrier(texture, GpuResourceUseFlag::Host, GpuAccessFlag::Read)}});
+				// Command buffers with explicit barriers make the writes visible to the host from the subresource's resting state, and keep
+				// its layout. The subresource needs no barrier back to rest, because the host reads it after the command buffer completes,
+				// and any later GPU access is submitted after that.
+				if(commandBuffer->UsesExplicitBarriers())
+				{
+					const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*texture, commandBuffer->GetQueueType());
+					const GpuTextureSubresourceRange range(mipLevel, 1, arrayLayer, 1, GpuBackendUtility::GetFormatAspects(textureProperties.Format));
+
+					const GpuAccessState hostRead(GpuStageFlag::Host, GpuAccessFlag::Read, restingState.Layout);
+					commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, restingState, hostRead, range));
+				}
+				else
+				{
+					// Issue a barrier so the device makes the written memory available for read (read-after-write hazard)
+					commandBuffer->IssueBarriers({{ GpuTextureBarrier(texture, GpuResourceUseFlag::Host, GpuAccessFlag::Read)}});
+				}
 			}
 
 			// Submit the command buffer and wait until it finishes

@@ -356,7 +356,7 @@ namespace b3d
 			 *
 			 * @note	Render thread.
 			 */
-			void ProcessTasks(bool forceAll, u64 upToFrame = std::numeric_limits<u64>::max());
+			virtual void ProcessTasks(bool forceAll, u64 upToFrame = std::numeric_limits<u64>::max());
 
 			/**
 			 * Executes the provided renderer task.
