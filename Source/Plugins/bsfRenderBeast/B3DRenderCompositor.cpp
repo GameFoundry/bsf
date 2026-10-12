@@ -1785,6 +1785,10 @@ void RCNodeFinalResolve::Render(const RenderCompositorNodeInputs& inputs)
 	blitInformation.OutputArea = viewProperties.Target.NrmViewRect;
 	blitInformation.FlipUV = viewProperties.FlipView;
 
+	// Other views and overlays may have drawn outside of this view's area
+	if(viewProperties.Target.NrmViewRect != Area2(0.0f, 0.0f, 1.0f, 1.0f))
+		blitInformation.LoadMask = RT_COLOR0;
+
 	GetRendererUtility().Blit(commandBuffer, blitInformation);
 
 	if(viewProperties.EncodeDepth)
