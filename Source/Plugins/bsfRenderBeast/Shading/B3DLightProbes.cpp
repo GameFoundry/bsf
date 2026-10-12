@@ -58,7 +58,8 @@ void TetrahedraRenderMaterial::Execute(GpuCommandBuffer& commandBuffer, const TS
 {
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(output, mGpuParameterSet);
+	// Keeps the cleared contents, which the tetrahedra only partially cover
+	RenderPassCreateInformation info(output, mGpuParameterSet, RT_NONE, RT_COLOR0 | RT_DEPTH_STENCIL);
 	commandBuffer.BeginRenderPass(info);
 
 	Bind(commandBuffer);
