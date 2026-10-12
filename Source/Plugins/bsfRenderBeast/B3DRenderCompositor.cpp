@@ -873,6 +873,7 @@ void RCNodeLightAccumulation::Render(const RenderCompositorNodeInputs& inputs)
 			surface.FaceCount = 1;
 			surface.MipLevel = 0;
 			surface.MipLevelCount = 1;
+			surface.IsBoundAs2DArray = true;
 
 			clearMat->Execute(*inputs.ActiveCommandBuffer, LightAccumulationTexArray->Texture, Color::kZero, surface);
 		}

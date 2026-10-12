@@ -3748,6 +3748,7 @@ void GpuBackendTestSuite::TestExplicitBarrierValidation()
 	// Backends that track layouts natively, such as the Vulkan validation layers, also report the misdeclared layouts
 	logs.IgnoreError("VUID-VkImageMemoryBarrier-oldLayout-01197");
 	logs.IgnoreError("VUID-vkCmdBeginRenderPass-initialLayout-00900");
+	logs.IgnoreError("does not support the required access (D3D12_BARRIER_ACCESS_RENDER_TARGET)");
 
 	// The D3D12 debug layer reports accesses and barriers between the halves of split barriers on resources that get barriers of their own
 	logs.IgnoreError("possibly pending an incomplete split barrier");

@@ -2291,9 +2291,10 @@ void TemporalFilteringMaterial::Initialize()
 
 	TShared<SamplerState> pointSampState = mGpuDevice->FindOrCreateSamplerState(pointSampDesc);
 
+	// The compiler strips samplers a variation does not use (the MSAA depth read uses Load)
 	if(mGpuParameterSet->HasSamplerState("gPointSampler"))
 		mGpuParameterSet->SetSamplerState("gPointSampler", pointSampState);
-	else
+	else if(mGpuParameterSet->HasSamplerState("gSceneDepth"))
 		mGpuParameterSet->SetSamplerState("gSceneDepth", pointSampState);
 
 	SamplerStateInformation linearSampDesc;
@@ -2309,8 +2310,11 @@ void TemporalFilteringMaterial::Initialize()
 		mGpuParameterSet->SetSamplerState("gLinearSampler", linearSampState);
 	else
 	{
-		mGpuParameterSet->SetSamplerState("gSceneColor", linearSampState);
-		mGpuParameterSet->SetSamplerState("gPrevColor", linearSampState);
+		if(mGpuParameterSet->HasSamplerState("gSceneColor"))
+			mGpuParameterSet->SetSamplerState("gSceneColor", linearSampState);
+
+		if(mGpuParameterSet->HasSamplerState("gPrevColor"))
+			mGpuParameterSet->SetSamplerState("gPrevColor", linearSampState);
 	}
 }
 

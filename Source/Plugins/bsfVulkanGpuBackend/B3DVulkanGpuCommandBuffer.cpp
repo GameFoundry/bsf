@@ -1611,7 +1611,7 @@ void VulkanGpuCommandBuffer::ClearAttachments(const Area2I& area, RenderSurfaceM
 
 	VulkanRenderPass* renderPass = mFramebuffer->GetRenderPass();
 
-	Array<VkClearAttachment, B3D_MAXIMUM_RENDER_TARGET_COUNT + 1> attachments;
+	Array<VkClearAttachment, B3D_MAXIMUM_RENDER_TARGET_COUNT + 1> attachments{};
 	u32 baseLayerIndex = 0;
 	u32 sequentialClearedAttachmentIndex = 0; // Only counts attachments that we need to clear
 
