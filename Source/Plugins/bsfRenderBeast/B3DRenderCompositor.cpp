@@ -2569,7 +2569,7 @@ void RCNodeResolvedSceneDepth::Render(const RenderCompositorNodeInputs& inputs)
 		BlitInformation blitInformation = BlitInformation::BlitDepth(sceneDepthNode->DepthTex->Texture, Output->RenderTexture);
 		blitInformation.ClearMask = RT_STENCIL;
 
-		GetRendererUtility().Blit(commandBuffer, BlitInformation::BlitDepth(sceneDepthNode->DepthTex->Texture, Output->RenderTexture));
+		GetRendererUtility().Blit(commandBuffer, blitInformation);
 	}
 	else
 		Output = sceneDepthNode->DepthTex;
