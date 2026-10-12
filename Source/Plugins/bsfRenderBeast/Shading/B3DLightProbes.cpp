@@ -141,7 +141,6 @@ void IrradianceEvaluateMaterial::Execute(GpuCommandBuffer& commandBuffer, const 
 	mSkyIrradianceTextureParameter.Set(skyIrradiance);
 	mAmbientOcclusionTextureParameter.Set(ambientOcclusion);
 
-	RenderSurfaceMask loadMask = RT_COLOR0;
 	if(!mSkyOnly)
 	{
 		mInputTextureParameter.Set(lightProbeIndices);
@@ -149,17 +148,11 @@ void IrradianceEvaluateMaterial::Execute(GpuCommandBuffer& commandBuffer, const 
 		mTetrahedraBufferParameter.Set(lightProbesInfo.Tetrahedra);
 		mTetFacesBufferParameter.Set(lightProbesInfo.Faces);
 	}
-	else
-	{
-		// No need to load depth/stencil when rendering light probes as we'll be using a newly created intermediate
-		// depth buffer
-		loadMask |= RT_DEPTH_STENCIL;
-	}
 
 	mGpuParameterSet->SetUniformBuffer("PerCamera", view.GetPerViewBuffer());
 
-	// Render
-	commandBuffer.BeginRenderPass(RenderPassCreateInformation(output, mGpuParameterSet, RT_DEPTH_STENCIL, loadMask));
+	// Adds onto the light accumulation, with the scene depth read-only
+	commandBuffer.BeginRenderPass(RenderPassCreateInformation(output, mGpuParameterSet, RT_DEPTH_STENCIL, RT_COLOR0 | RT_DEPTH_STENCIL));
 
 	Bind(commandBuffer);
 	GetRendererUtility().DrawScreenQuad(commandBuffer, Area2(0.0f, 0.0f, (float)viewProps.Target.ViewRect.Width, (float)viewProps.Target.ViewRect.Height));
