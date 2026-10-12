@@ -546,7 +546,8 @@ void RCNodeBasePass::Render(const RenderCompositorNodeInputs& inputs)
 		MSAACoverageStencilMaterial* msaaCoverageStencilMaterial = MSAACoverageStencilMaterial::Get();
 		msaaCoverageStencilMaterial->Prepare(msaaCoverageNode->Output->Texture);
 
-		RenderPassCreateInformation msaaStencilInfo(sceneDepthNode->DepthTex->RenderTexture, msaaCoverageStencilMaterial->GetGpuParameterSet());
+		// Marks samples in the stencil, keeping the depth the base pass wrote
+		RenderPassCreateInformation msaaStencilInfo(sceneDepthNode->DepthTex->RenderTexture, msaaCoverageStencilMaterial->GetGpuParameterSet(), RT_NONE, RT_DEPTH_STENCIL);
 		commandBuffer.BeginRenderPass(msaaStencilInfo);
 		msaaCoverageStencilMaterial->Execute(commandBuffer, inputs.View);
 		commandBuffer.EndRenderPass();
