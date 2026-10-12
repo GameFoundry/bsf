@@ -488,7 +488,7 @@ namespace b3d
 					kVariationLookup[2] = &GetVertexInputVariation<false, true, false>(false);
 					kVariationLookup[3] = &GetVertexInputVariation<true, true, false>(false);
 
-					RenderPassCreateInformation passCreateInformation(renderTarget);
+					RenderPassCreateInformation passCreateInformation(renderTarget, RT_NONE, Options::kLoadMask);
 					TInlineArray<TShared<GpuParameterSet>, 4> perObjectParameterSets;
 
 					// Make a list of relevant renderables and prepare them for rendering
@@ -584,6 +584,9 @@ namespace b3d
 				: ShadowRenderer(shadowRendering), Frustums(frustums), BoundingVolume(boundingVolume), ShadowUniformBuffer(shadowParamsBuffer), ShadowCubeMatricesBuffer(shadowCubeMatricesBuffer)
 			{}
 
+			/** Surfaces of the shadow map whose earlier contents the render pass keeps. */
+			static constexpr RenderSurfaceMaskBits kLoadMask = RT_NONE;
+
 			void PrepareRenderTarget(GpuCommandBuffer& commandBuffer) const
 			{
 				commandBuffer.ClearRenderTarget(RT_DEPTH);
@@ -637,6 +640,9 @@ namespace b3d
 				: ShadowRenderer(shadowRendering), BoundingVolume(boundingVolume), ShadowUniformBuffer(shadowUniformBuffer)
 			{}
 
+			/** Surfaces of the shadow map whose earlier contents the render pass keeps. */
+			static constexpr RenderSurfaceMaskBits kLoadMask = RT_NONE;
+
 			void PrepareRenderTarget(GpuCommandBuffer& commandBuffer) const
 			{
 				commandBuffer.ClearRenderTarget(RT_DEPTH);
@@ -682,6 +688,9 @@ namespace b3d
 				const GpuBufferSuballocation& shadowUniformBuffer)
 				: ShadowRenderer(shadowRendering), ViewportArea(viewportArea), BoundingVolume(boundingVolume), ShadowUniformBuffer(shadowUniformBuffer)
 			{}
+
+			/** Surfaces of the shadow map whose earlier contents the render pass keeps: the atlas regions of other spot lights. */
+			static constexpr RenderSurfaceMaskBits kLoadMask = RT_DEPTH_STENCIL;
 
 			void PrepareRenderTarget(GpuCommandBuffer& commandBuffer) const
 			{
@@ -729,6 +738,9 @@ namespace b3d
 				const GpuBufferSuballocation& shadowUniformBuffer)
 				: ShadowRenderer(shadowRendering), BoundingVolume(boundingVolume), ShadowUniformBuffer(shadowUniformBuffer)
 			{}
+
+			/** Surfaces of the shadow map whose earlier contents the render pass keeps. */
+			static constexpr RenderSurfaceMaskBits kLoadMask = RT_NONE;
 
 			void PrepareRenderTarget(GpuCommandBuffer& commandBuffer) const
 			{
