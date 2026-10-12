@@ -1023,7 +1023,8 @@ void RCNodeDeferredDirectLighting::Render(const RenderCompositorNodeInputs& inpu
 		StandardDeferred::LightBatches baches = StandardDeferred::Instance().PrepareLightBatches(unshadowedLightIds, inputs.Scene, inputs.View, gbuffer, Texture::kBlack);
 
 		// Begin render pass with pre-declared parameters
-		RenderPassCreateInformation passInfo(Output->RenderTarget, RT_DEPTH_STENCIL, RT_DEPTH_STENCIL);
+		// Lights blend onto the emissive light the base pass wrote
+		RenderPassCreateInformation passInfo(Output->RenderTarget, RT_DEPTH_STENCIL, RT_COLOR0 | RT_DEPTH_STENCIL);
 		for(const auto& [key, value] : baches.Batches)
 			passInfo.Parameters.Add(value.GpuParameters);
 
