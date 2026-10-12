@@ -31,6 +31,13 @@ namespace b3d
 	extern B3D_EXPORT TConfigVariable<bool> gGpuValidateRestingStates;
 
 	/**
+	 * If enabled, development builds clear every render target surface that a render pass neither loads nor clears, to a value that
+	 * stands out (see GpuBackendUtility::GetRenderPassClears()). A pass that relies on contents it did not load then shows them, instead
+	 * of working only on GPUs that happen to keep them. Enabled by default in debug builds.
+	 */
+	extern B3D_EXPORT TConfigVariable<bool> gGpuPoisonUnloadedAttachments;
+
+	/**
 	 * Selects explicit barriers for the whole engine. If enabled:
 	 *  - The transfer command buffers of work contexts use explicit barriers: the upload and read utilities take resources from their
 	 *    resting state and return them to it (see GpuBackendUtility::GetRestingState()).
@@ -626,7 +633,8 @@ namespace b3d
 
 			/**
 			 * Determines which surfaces to clear when the render pass starts. Surfaces are cleared to the values they
-			 * were created with, as reported by RenderTarget::GetClearValues().
+			 * were created with, as reported by RenderTarget::GetClearValues(). The contents of surfaces that are neither loaded nor
+			 * cleared are undefined.
 			 */
 			RenderSurfaceMask ClearMask = RT_NONE;
 

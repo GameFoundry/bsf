@@ -93,10 +93,18 @@ D3D12GpuDevice::D3D12GpuDevice(IDXGIAdapter4* adapter) : mAdapter(adapter)
 	ComPtr<ID3D12InfoQueue> infoQueue;
 	if(SUCCEEDED(mDevice.As(&infoQueue)))
 	{
-		D3D12_MESSAGE_ID deniedMessages[] = { D3D12_MESSAGE_ID_DEGENERATE_SPLIT_BARRIER };
+		D3D12_MESSAGE_ID deniedMessages[3] = { D3D12_MESSAGE_ID_DEGENERATE_SPLIT_BARRIER };
+		UINT deniedMessageCount = 1;
+
+		// Poisoned surfaces are cleared to values other than the ones they were created with, which the debug layer reports as slow
+		if(gGpuPoisonUnloadedAttachments)
+		{
+			deniedMessages[deniedMessageCount++] = D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE;
+			deniedMessages[deniedMessageCount++] = D3D12_MESSAGE_ID_CLEARDEPTHSTENCILVIEW_MISMATCHINGCLEARVALUE;
+		}
 
 		D3D12_INFO_QUEUE_FILTER filter = {};
-		filter.DenyList.NumIDs = (UINT)std::size(deniedMessages);
+		filter.DenyList.NumIDs = deniedMessageCount;
 		filter.DenyList.pIDList = deniedMessages;
 		infoQueue->AddStorageFilterEntries(&filter);
 	}

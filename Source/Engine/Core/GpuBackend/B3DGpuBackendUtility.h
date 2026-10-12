@@ -9,6 +9,8 @@
 
 namespace b3d
 {
+	struct RenderTargetClearValues;
+
 	/** @addtogroup GpuBackend
 	 *  @{
 	 */
@@ -156,6 +158,15 @@ namespace b3d
 		 * and its depth and stencil surfaces in GpuImageLayout::DepthStencilAttachment.
 		 */
 		static render::GpuAccessState GetRestingState(const render::RenderTarget& target, RenderSurfaceMaskBits surface, GpuQueueType queueType);
+
+		/**
+		 * Returns the surfaces that a render pass clears when it begins, and writes the values to clear them to into @p clearValues. These
+		 * are the surfaces in RenderPassCreateInformation::ClearMask, with the clear values of the render target. If
+		 * gGpuPoisonUnloadedAttachments is enabled, development builds also clear every surface the render pass neither loads nor clears:
+		 * color to magenta, depth and stencil to 0. Backends load depth and stencil together, so neither is cleared if the pass loads either.
+		 * Read-only surfaces are never cleared, and must be loaded.
+		 */
+		static RenderSurfaceMask GetRenderPassClears(const render::RenderPassCreateInformation& createInformation, RenderTargetClearValues& clearValues);
 	};
 
 	/** @} */

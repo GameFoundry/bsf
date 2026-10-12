@@ -1423,7 +1423,8 @@ namespace b3d
 			mRenderPassPipelineKey.SampleCount = (u16)std::max(1u, targetProperties.MultisampleCount);
 			mRenderPassClearValues = target->GetClearValues();
 
-			const RenderSurfaceMask clearMask = createInformation.ClearMask;
+			RenderTargetClearValues renderPassStartClearValues;
+			const RenderSurfaceMask clearMask = GpuBackendUtility::GetRenderPassClears(createInformation, renderPassStartClearValues);
 			const RenderSurfaceMask loadMask = createInformation.LoadMask;
 			const RenderSurfaceMask readOnlyMask = createInformation.ReadOnlyMask;
 			GpuRenderPassAttachmentUsageArray renderPassAttachmentUsages;
@@ -1474,7 +1475,7 @@ namespace b3d
 				renderPassAttachmentUsages = framebuffer->BuildRenderPassAttachmentUsages(readOnlyMask, loadMask, MetalFramebuffer::GetLayoutPolicy());
 			}
 
-			ConfigureAttachmentActions(descriptor, loadMask, clearMask, mRenderPassClearValues);
+			ConfigureAttachmentActions(descriptor, loadMask, clearMask, renderPassStartClearValues);
 			PackAttachmentFormats(descriptor, mRenderPassPipelineKey);
 
 #if B3D_BUILD_TYPE_DEVELOPMENT

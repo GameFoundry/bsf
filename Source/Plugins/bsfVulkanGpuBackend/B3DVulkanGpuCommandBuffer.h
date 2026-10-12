@@ -456,10 +456,10 @@ namespace b3d
 			void BindPushConstants(bool isGraphics);
 
 			/**
-			 * Creates an array of clear values for the currently bound render target, using the fixed clear values its
-			 * surfaces were created with. To be used for the explicit clear command, or render pass begin.
+			 * Creates an array of clear values for the attachments of the currently bound framebuffer, from @p targetClearValues. To be
+			 * used for the explicit clear command, or render pass begin.
 			 */
-			Array<VkClearValue, B3D_MAXIMUM_RENDER_TARGET_COUNT + 1> BuildClearValues(RenderSurfaceMask clearMask);
+			Array<VkClearValue, B3D_MAXIMUM_RENDER_TARGET_COUNT + 1> BuildClearValues(RenderSurfaceMask clearMask, const RenderTargetClearValues& targetClearValues);
 
 			/**
 			 * Executes a clear command in the command buffer, clearing every masked surface to the value it was created with.

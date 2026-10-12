@@ -651,8 +651,10 @@ void D3D12GpuCommandBuffer::BeginRenderPass(const RenderPassCreateInformation& c
 	}
 
 	// Apply clear operations requested for the render pass start
-	if (createInformation.ClearMask != RT_NONE)
-		ClearViewportArea(GetRenderPassArea(), createInformation.ClearMask);
+	RenderTargetClearValues clearValues;
+	const RenderSurfaceMask clearMask = GpuBackendUtility::GetRenderPassClears(createInformation, clearValues);
+	if (clearMask != RT_NONE)
+		ClearViewportArea(GetRenderPassArea(), clearMask, clearValues);
 }
 
 void D3D12GpuCommandBuffer::SetViewport(const Area2& area)
@@ -675,22 +677,22 @@ void D3D12GpuCommandBuffer::ClearRenderTarget(RenderSurfaceMask mask)
 {
 	EnsureValidThread();
 
-	ClearViewportArea(GetRenderPassArea(), mask);
+	if (mRenderTarget)
+		ClearViewportArea(GetRenderPassArea(), mask, mRenderTarget->GetClearValues());
 }
 
 void D3D12GpuCommandBuffer::ClearViewport(RenderSurfaceMask mask)
 {
 	EnsureValidThread();
 
-	ClearViewportArea(GetViewportArea(), mask);
+	if (mRenderTarget)
+		ClearViewportArea(GetViewportArea(), mask, mRenderTarget->GetClearValues());
 }
 
-void D3D12GpuCommandBuffer::ClearViewportArea(const Area2I& area, RenderSurfaceMask mask)
+void D3D12GpuCommandBuffer::ClearViewportArea(const Area2I& area, RenderSurfaceMask mask, const RenderTargetClearValues& clearValues)
 {
-	if (!mFramebuffer || !mRenderTarget)
+	if (!mFramebuffer)
 		return;
-
-	const RenderTargetClearValues& clearValues = mRenderTarget->GetClearValues();
 
 	D3D12_RECT rect;
 	rect.left = area.X;

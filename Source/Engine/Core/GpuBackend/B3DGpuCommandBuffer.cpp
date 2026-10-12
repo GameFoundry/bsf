@@ -21,6 +21,9 @@ namespace b3d
 	TConfigVariable<bool> gGpuValidateRestingStates("gpu.ValidateRestingStates",
 		"If enabled, development builds check the accesses of resources that a command buffer with explicit barriers neither declared nor barriered against the resources' resting state.", false);
 
+	TConfigVariable<bool> gGpuPoisonUnloadedAttachments("gpu.PoisonUnloadedAttachments",
+		"If enabled, development builds clear every render target surface that a render pass neither loads nor clears, to a value that stands out, so passes that rely on contents they did not load show them.", B3D_DEBUG != 0);
+
 	TConfigVariable<bool> gGpuExplicitBarriers("gpu.ExplicitBarriers",
 		"If enabled, the engine uses explicit barriers: frame graphs issue them, uploads and reads leave resources at rest, and new textures start at rest. If disabled, the resource tracker derives every barrier. Set before start-up.", false);
 } // namespace b3d

@@ -10,6 +10,7 @@
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DGpuPushConstants.h"
 #include "Math/B3DArea2.h"
+#include "GpuBackend/B3DRenderTarget.h"
 
 namespace b3d
 {
@@ -251,8 +252,8 @@ namespace b3d
 			 */
 			D3D12Framebuffer* AcquireWindowFramebuffer(RenderWindow& renderWindow);
 
-			/** Clears the specified area of the currently bound render target. */
-			void ClearViewportArea(const Area2I& area, RenderSurfaceMask mask);
+			/** Clears the masked surfaces of the currently bound render target within @p area, to @p clearValues. */
+			void ClearViewportArea(const Area2I& area, RenderSurfaceMask mask, const RenderTargetClearValues& clearValues);
 
 			/** Remembers a query pool written to during the current recording so its results are resolved on End(). */
 			void TrackQueryPool(const TShared<GpuQueryPool>& queryPool);

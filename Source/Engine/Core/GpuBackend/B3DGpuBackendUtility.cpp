@@ -2,6 +2,8 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "GpuBackend/B3DGpuBackendUtility.h"
 #include "GpuBackend/B3DRenderTexture.h"
+#include "GpuBackend/B3DRenderWindow.h"
+#include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DGpuBuffer.h"
 #include "Image/B3DTexture.h"
 
@@ -470,4 +472,71 @@ GpuAccessState GpuBackendUtility::GetRestingState(const render::RenderTarget& ta
 
 	const GpuStageFlags depthStencilStages = GpuStageFlag::EarlyFragmentTests | GpuStageFlag::LateFragmentTests;
 	return GpuAccessState(depthStencilStages & GetQueueStageFlags(queueType), GpuAccessFlag::Read | GpuAccessFlag::Write, GpuImageLayout::DepthStencilAttachment);
+}
+
+RenderSurfaceMask GpuBackendUtility::GetRenderPassClears(const RenderPassCreateInformation& createInformation, RenderTargetClearValues& clearValues)
+{
+	clearValues = createInformation.Target != nullptr ? createInformation.Target->GetClearValues() : RenderTargetClearValues();
+	RenderSurfaceMask clearMask = createInformation.ClearMask;
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+	if(!gGpuPoisonUnloadedAttachments)
+		return clearMask;
+
+	const TShared<render::RenderTarget>& target = createInformation.Target;
+	if(target == nullptr)
+		return clearMask;
+
+	// Surfaces the render target has
+	RenderSurfaceMask targetSurfaceMask = RT_NONE;
+	if(target->GetProperties().IsWindow)
+	{
+		targetSurfaceMask = RT_COLOR0;
+		if(static_cast<const render::RenderWindow&>(*target).HasDepthBuffer())
+			targetSurfaceMask |= RT_DEPTH_STENCIL;
+	}
+	else
+	{
+		const auto& renderTexture = static_cast<const render::RenderTexture&>(*target);
+		for(u32 colorIndex = 0; colorIndex < B3D_MAXIMUM_RENDER_TARGET_COUNT; colorIndex++)
+		{
+			if(renderTexture.GetColorSurfaceInformation(colorIndex).Texture != nullptr)
+				targetSurfaceMask |= (RenderSurfaceMaskBits)(RT_COLOR0 << colorIndex);
+		}
+
+		if(renderTexture.GetDepthStencilSurfaceInformation().Texture != nullptr)
+			targetSurfaceMask |= RT_DEPTH_STENCIL;
+	}
+
+	const RenderSurfaceMask loadMask = createInformation.LoadMask;
+	RenderSurfaceMask poisonMask = targetSurfaceMask & ~loadMask & ~clearMask;
+
+	// Backends load depth and stencil together
+	if(loadMask.IsSetAny(RT_DEPTH_STENCIL))
+		poisonMask &= ~RenderSurfaceMask(RT_DEPTH_STENCIL);
+
+	// A read-only surface keeps its contents, so the pass must load it
+	const RenderSurfaceMask unloadedReadOnlyMask = poisonMask & createInformation.ReadOnlyMask;
+	if(unloadedReadOnlyMask != RT_NONE)
+	{
+		B3D_LOG(Error, LogRenderBackend, "Render pass surfaces {0} are read-only but not loaded. Read-only surfaces must be loaded.", (u32)unloadedReadOnlyMask);
+		poisonMask &= ~unloadedReadOnlyMask;
+	}
+
+	for(u32 colorIndex = 0; colorIndex < B3D_MAXIMUM_RENDER_TARGET_COUNT; colorIndex++)
+	{
+		if(poisonMask.IsSet((RenderSurfaceMaskBits)(RT_COLOR0 << colorIndex)))
+			clearValues.Colors[colorIndex] = Color(1.0f, 0.0f, 1.0f, 1.0f);
+	}
+
+	if(poisonMask.IsSet(RT_DEPTH))
+		clearValues.Depth = 0.0f;
+
+	if(poisonMask.IsSet(RT_STENCIL))
+		clearValues.Stencil = 0;
+
+	clearMask |= poisonMask;
+#endif
+
+	return clearMask;
 }
