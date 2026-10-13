@@ -1963,6 +1963,49 @@ namespace b3d
 				options:transferInformation.Options];
 		}
 
+		void MetalGpuCommandBuffer::CopyWindowToBuffer(const TShared<RenderWindow>& source, const TShared<GpuBuffer>& destination)
+		{
+			GpuCommandBuffer::CopyWindowToBuffer(source, destination);
+			EnsureValidThread();
+			if (!source || !destination)
+				return;
+
+			auto* const surface = static_cast<IMetalRenderWindowSurface*>(source->GetRenderWindowSurface().get());
+			if (surface == nullptr)
+				return;
+
+			const TOptional<RenderWindowImageLayout> layout = surface->GetImageLayout();
+			id<MTLTexture> sourceTexture = surface->GetCurrentColorTexture();
+			auto metalDestination = std::static_pointer_cast<MetalGpuBuffer>(destination);
+			id<MTLBuffer> destinationBuffer = metalDestination->GetMetalBuffer();
+			if (!layout || sourceTexture == nil || destinationBuffer == nil)
+				return;
+
+			EnsureEncoderKind(EncoderKind::Blit);
+
+			MetalBuffer* destinationResource = metalDestination->GetMetalResource();
+			if (destinationResource != nullptr)
+				mResourceTracker.TrackBufferAccess(destinationResource, GpuStageFlag::Transfer, GpuAccessFlag::Write, mBarrierHelper, 0);
+
+			if (!ExecutePendingBarriers())
+				return;
+
+			id<MTLBlitCommandEncoder> blit = GetOrOpenBlitEncoder();
+			if (blit == nil)
+				return;
+
+			const u32 rowPitchBytes = layout->Pitch.RowPitch * PixelUtility::GetBlockSize(layout->Format);
+			[blit copyFromTexture:sourceTexture
+				sourceSlice:0
+				sourceLevel:0
+				sourceOrigin:MTLOriginMake(0, 0, 0)
+				sourceSize:MTLSizeMake(layout->Width, layout->Height, 1)
+				toBuffer:destinationBuffer
+				destinationOffset:0
+				destinationBytesPerRow:rowPitchBytes
+				destinationBytesPerImage:(NSUInteger)rowPitchBytes * layout->Pitch.SliceHeight];
+		}
+
 		bool MetalGpuCommandBuffer::CopyTexture(const TShared<Texture>& source, const TShared<Texture>& destination, const TextureCopyInformation& copyInformation)
 		{
 			if (!GpuCommandBuffer::CopyTexture(source, destination, copyInformation) || mRecordingFailed)

@@ -105,21 +105,6 @@ void D3D12GpuQueue::SubmitCommandBuffer(const GpuSubmissionInformation& informat
 	mGpuDevice.GetSubmitThread().QueueSubmit(information.CommandBuffer, *this, information.SyncMask, information.SignalFences);
 }
 
-void D3D12GpuQueue::PresentRenderWindow(const TShared<RenderWindow>& renderWindow, GpuQueueMask syncMask)
-{
-	if (renderWindow == nullptr)
-		return;
-
-	IRenderWindowSurface* surface = renderWindow->GetRenderWindowSurface().get();
-	if (surface == nullptr)
-		return;
-
-	renderWindow->NotifySwapBuffersRequested();
-	surface->SwapBuffers(*this, syncMask);
-
-	B3D_INCREMENT_RENDER_STATISTIC(NumPresents);
-}
-
 bool D3D12GpuQueue::IsExecuting() const
 {
 	AssertIfNotSubmitThread();

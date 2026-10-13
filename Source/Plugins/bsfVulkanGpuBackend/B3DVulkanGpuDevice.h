@@ -76,7 +76,6 @@ namespace b3d
 
 			u32 GetQueueCount(GpuQueueType type) const override { return (u32)mQueueInfos[(u32)type].Queues.size(); }
 			TShared<GpuQueue> GetQueue(GpuQueueType type, u32 index) const override;
-			void PresentRenderWindow(const TShared<RenderWindow>& renderWindow, GpuQueueMask syncMask = GpuQueueMask::kAll) override;
 			void WaitUntilIdle() override;
 			void BeginFrame() override;
 			void RunDefragPass(GpuWorkContext& gpuContext) override;

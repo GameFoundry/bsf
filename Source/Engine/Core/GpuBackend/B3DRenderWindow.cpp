@@ -6,7 +6,10 @@
 #include "CoreObject/B3DCoreObjectSync.h"
 #include "CoreObject/B3DRenderThread.h"
 #include "Managers/B3DRenderWindowManager.h"
+#include "GpuBackend/B3DGpuBackendUtility.h"
+#include "GpuBackend/B3DGpuBuffer.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
+#include "GpuBackend/B3DGpuDeviceCapabilities.h"
 #include "GpuBackend/B3DViewport.h"
 #include "Platform/B3DPlatform.h"
 #include "RTTI/B3DRenderTargetRTTI.h"
@@ -224,6 +227,14 @@ void RenderWindow::Initialize()
 
 void RenderWindow::Destroy()
 {
+	CancelCaptures();
+
+	if(mCaptureCommandBufferPool != nullptr)
+	{
+		mCaptureCommandBufferPool->Destroy();
+		mCaptureCommandBufferPool = nullptr;
+	}
+
 	if(mRenderWindowSurface != nullptr)
 	{
 		mRenderWindowSurface->Destroy();
@@ -289,19 +300,104 @@ void RenderWindow::SyncFromCoreObject(const CoreSyncData& data, FrameAllocator& 
 	Super::SyncFromCoreObject(data, allocator);
 }
 
-TAsyncOp<TShared<PixelData>> RenderWindow::ReadAsync(GpuWorkContext& gpuContext, GpuCommandBuffer& commandBuffer, u32 colorSurfaceIndex, u32 mipLevel, u32 arrayLayer)
+void RenderWindow::RequestCapture(TAsyncOp<TShared<PixelData>> asyncOp)
 {
-	if(!B3D_ENSURE(colorSurfaceIndex == 0 && mipLevel == 0 && arrayLayer == 0) || mRenderWindowSurface == nullptr)
-		return RenderTarget::ReadAsync(gpuContext, commandBuffer, colorSurfaceIndex, mipLevel, arrayLayer);
+	mCaptureRequests.Add(std::move(asyncOp));
+}
 
-	TAsyncOp<TShared<PixelData>> readOp = mRenderWindowSurface->ReadAsync(commandBuffer);
-	if(!mCreateInformation.Headless && readOp != nullptr)
+void RenderWindow::CancelCaptures()
+{
+	for(TAsyncOp<TShared<PixelData>>& captureOp : mCaptureRequests)
+		captureOp.CompleteOperation(nullptr);
+
+	mCaptureRequests.Clear();
+}
+
+void RenderWindow::ResolveCaptures(GpuQueue& queue, GpuQueueMask syncMask)
+{
+	if(mCaptureRequests.Empty() || mRenderWindowSurface == nullptr || !mRenderWindowSurface->HasAcquiredImage())
+		return;
+
+	const TOptional<RenderWindowImageLayout> layout = mRenderWindowSurface->GetImageLayout();
+	if(!layout)
 	{
-		const TShared<RenderTarget> renderTarget = std::static_pointer_cast<RenderTarget>(GetShared());
-		const GpuRenderTargetBarrier presentBarrier(renderTarget, RT_COLOR0, GpuResourceUseFlag::Undefined, GpuAccessFlag::None, GpuImageLayout::Present);
-		commandBuffer.IssueBarriers(GpuBarriers(presentBarrier));
+		B3D_LOG(Warning, LogRenderBackend, "Unable to capture the window. Its back-buffer images can't be copied from (on Vulkan and Metal, only "
+			"development builds can capture windows that aren't headless).");
+
+		CancelCaptures();
+		return;
 	}
 
-	return readOp;
+	GpuDevice& device = queue.GetGpuDevice();
+	if(mCaptureCommandBufferPool == nullptr)
+	{
+		GpuCommandBufferPoolCreateInformation poolCreateInformation = GpuCommandBufferPoolCreateInformation::CreateForThisThread(queue.GetType());
+		poolCreateInformation.ExplicitBarriers = gGpuExplicitBarriers && device.GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
+
+		mCaptureCommandBufferPool = device.CreateGpuCommandBufferPool(poolCreateInformation);
+	}
+
+	const TShared<GpuCommandBuffer> commandBuffer = mCaptureCommandBufferPool->FindOrCreate(GpuCommandBufferCreateInformation::Create("Window capture"));
+	const TShared<RenderWindow> window = std::static_pointer_cast<RenderWindow>(GetShared());
+
+	// The staging buffer receives the image with the backend's row pitch, which the read packs tightly
+	const u32 blockSize = PixelUtility::GetBlockSize(layout->Format);
+	const TShared<PixelData> stagingLayout = B3DMakeShared<PixelData>(layout->Width, layout->Height, 1, layout->Format);
+	stagingLayout->SetRowPitch(layout->Pitch.RowPitch * blockSize);
+	stagingLayout->SetSlicePitch(layout->Pitch.RowPitch * blockSize * layout->Pitch.SliceHeight);
+
+	GpuBufferCreateInformation stagingCreateInformation;
+	stagingCreateInformation.Type = GpuBufferType::StagingRead;
+	stagingCreateInformation.Staging.Size = stagingLayout->GetSize();
+
+	const TShared<GpuBuffer> stagingBuffer = device.CreateGpuBuffer(stagingCreateInformation);
+	if(stagingBuffer == nullptr)
+	{
+		CancelCaptures();
+		return;
+	}
+
+	GpuBackendUtility::CopyToStagingBuffer(*commandBuffer, window, stagingBuffer);
+
+	// Automatic command buffers leave the image where the copy put it, but the present expects it in the present layout
+	if(!commandBuffer->UsesExplicitBarriers() && !mCreateInformation.Headless)
+	{
+		const GpuRenderTargetBarrier presentBarrier(window, RT_COLOR0, GpuResourceUseFlag::Undefined, GpuAccessFlag::None, GpuImageLayout::Present);
+		commandBuffer->IssueBarriers(GpuBarriers(presentBarrier));
+	}
+
+	TInlineArray<TAsyncOp<TShared<PixelData>>, 1> captureOps = std::move(mCaptureRequests);
+	mCaptureRequests.Clear();
+
+	auto fnOnCommandBufferCompleted = [stagingBuffer, stagingLayout, captureOps]() mutable
+	{
+		const TShared<PixelData> pixelData = PixelData::Create(stagingLayout->GetWidth(), stagingLayout->GetHeight(), 1, stagingLayout->GetFormat());
+		{
+			GpuBufferMappedScope mapping = stagingBuffer->Map(GpuMapOption::Read);
+			stagingLayout->SetExternalBuffer((u8*)mapping.GetMappedMemory());
+			PixelUtility::BulkPixelConversion(*stagingLayout, *pixelData);
+		}
+
+		for(TAsyncOp<TShared<PixelData>>& captureOp : captureOps)
+			captureOp.CompleteOperation(pixelData);
+	};
+
+	auto fnOnCommandBufferDestroyed = [captureOps](bool isSubmitted) mutable
+	{
+		// A submitted command buffer completes the captures when it finishes executing
+		if(isSubmitted)
+			return;
+
+		for(TAsyncOp<TShared<PixelData>>& captureOp : captureOps)
+			captureOp.CompleteOperation(nullptr);
+	};
+
+	commandBuffer->OnDidComplete.Connect(std::move(fnOnCommandBufferCompleted));
+	commandBuffer->OnDestroyed.Connect(std::move(fnOnCommandBufferDestroyed));
+
+	GpuSubmissionInformation submissionInformation;
+	submissionInformation.CommandBuffer = commandBuffer;
+	submissionInformation.SyncMask = syncMask;
+	queue.SubmitCommandBuffer(submissionInformation);
 }
 }}

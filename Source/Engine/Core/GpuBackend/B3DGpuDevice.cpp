@@ -165,6 +165,15 @@ void GpuDevice::DoForEachQueue(const std::function<void(GpuQueue&)>&& callback) 
 	}
 }
 
+void GpuDevice::PresentRenderWindow(const TShared<render::RenderWindow>& renderWindow, GpuQueueMask syncMask)
+{
+	const TShared<GpuQueue> queue = GetQueue(GQT_GRAPHICS, 0);
+	if(!B3D_ENSURE(queue != nullptr))
+		return;
+
+	queue->PresentRenderWindow(renderWindow, syncMask);
+}
+
 TShared<SamplerState> GpuDevice::FindOrCreateSamplerState(const SamplerStateCreateInformation& createInformation)
 {
 	Lock lock(mSamplerStateMutex);

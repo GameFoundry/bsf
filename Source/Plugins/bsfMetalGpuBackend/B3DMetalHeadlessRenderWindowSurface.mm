@@ -93,12 +93,7 @@ namespace b3d::render
 		if (mIsDestroyed)
 			return nil;
 
-		if (mIsSwapQueued)
-		{
-			mCurrentImageIndex = (mCurrentImageIndex + 1) % kImageCount;
-			mIsSwapQueued = false;
-		}
-
+		mHasAcquiredImage = true;
 		return mColorTextures[mCurrentImageIndex];
 	}
 
@@ -109,10 +104,12 @@ namespace b3d::render
 
 	void MetalHeadlessRenderWindowSurface::SwapBuffers(GpuQueue& queue, GpuQueueMask syncMask)
 	{
-		if (mIsDestroyed || !mIsValid)
+		// Like a swap chain, only an image that was acquired for rendering is presented
+		if (mIsDestroyed || !mIsValid || !mHasAcquiredImage)
 			return;
 
-		mIsSwapQueued = true;
+		mCurrentImageIndex = (mCurrentImageIndex + 1) % kImageCount;
+		mHasAcquiredImage = false;
 	}
 
 	void MetalHeadlessRenderWindowSurface::RebuildSwapChain(u32 width, u32 height, bool vsync, u32 vsyncInterval)
@@ -128,7 +125,7 @@ namespace b3d::render
 		mWidth = width;
 		mHeight = height;
 		mVSync = vsync;
-		mIsSwapQueued = false;
+		mHasAcquiredImage = false;
 
 		DestroySwapChainImages();
 		CreateSwapChainImages();

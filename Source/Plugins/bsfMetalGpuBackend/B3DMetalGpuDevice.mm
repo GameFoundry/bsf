@@ -511,18 +511,6 @@ namespace b3d
 			return (float)((double)timestamp / ticksPerMillisecond);
 		}
 
-		void MetalGpuDevice::PresentRenderWindow(const TShared<RenderWindow>& renderWindow, GpuQueueMask syncMask)
-		{
-			if (!renderWindow)
-				return;
-
-			TShared<GpuQueue> queue = GetQueue(GQT_GRAPHICS, 0);
-			if (!queue)
-				return;
-
-			queue->PresentRenderWindow(renderWindow, syncMask);
-		}
-
 		void MetalGpuDevice::WaitUntilIdle()
 		{
 			// The submit thread only exists from the end of Initialize() to the start of destruction

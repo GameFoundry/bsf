@@ -135,6 +135,13 @@ namespace b3d
 		static void CopyToStagingBuffer(render::GpuCommandBuffer& commandBuffer, const TShared<render::GpuBuffer>& buffer, u32 offset, u32 length, const TShared<render::GpuBuffer>& stagingBuffer);
 
 		/**
+		 * Records a copy of the back-buffer image a window's surface holds into @p stagingBuffer (see GpuCommandBuffer::CopyWindowToBuffer()),
+		 * which the host can read once @p commandBuffer completes. On a command buffer with explicit barriers the image and @p stagingBuffer
+		 * leave their resting states for the copy and return to them.
+		 */
+		static void CopyToStagingBuffer(render::GpuCommandBuffer& commandBuffer, const TShared<render::RenderWindow>& window, const TShared<render::GpuBuffer>& stagingBuffer);
+
+		/**
 		 * Returns the resting state of a buffer on queues of @p queueType. With explicit barriers, a resource outside of the work that
 		 * declares its state is at rest: it may be read in the resting state without a barrier, and whoever writes it brings it back to
 		 * rest. Buffers rest readable as vertex, index and indirect arguments, and from every shader stage. Readback buffers

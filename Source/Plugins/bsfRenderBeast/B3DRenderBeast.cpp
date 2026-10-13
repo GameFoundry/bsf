@@ -378,9 +378,6 @@ void RenderBeast::RenderAllOnRenderThread(FrameTimings timings, PerFrameData per
 		entry->GetUniformBufferPools().AdvanceFrame();
 	}
 
-	// If some windows were rendered outside of the renderer, still resolve their requested screen captures
-	ResolveOutstandingScreenCaptures();
-
 	EndFrame();
 
 	// Tick pool frame
@@ -460,7 +457,7 @@ bool RenderBeast::RenderScene(RenderBeastScene& scene, const FrameInfo& frameInf
 			window = std::static_pointer_cast<RenderWindow>(rtInfo.Target);
 
 		const bool renderTargetNeedsRedraw = window != nullptr && window->IsRedrawRequested();
-		const bool screenCaptureRequested = IsScreenCaptureRequested(window);
+		const bool screenCaptureRequested = window != nullptr && window->IsCaptureRequested();
 		const bool forceRendering = mIsGPUCommandCaptureRequested || renderTargetNeedsRedraw || screenCaptureRequested;
 
 		const u32 cameraCount = (u32)cameras.size();
@@ -482,9 +479,6 @@ bool RenderBeast::RenderScene(RenderBeastScene& scene, const FrameInfo& frameInf
 		const bool anythingDrawnForView = RenderViews(*commandBuffer, scene, *mMainViewGroup, frameInfo, forceRendering);
 		if(anythingDrawnForView)
 		{
-			if(screenCaptureRequested)
-				ResolveScreenCaptures(*commandBuffer, window);
-
 #if B3D_PROFILING_ENABLED
 			commandBuffer->EndProfiling();
 #endif

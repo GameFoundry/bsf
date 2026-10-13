@@ -8,7 +8,6 @@
 #include "FileSystem/B3DDataStream.h"
 #include "Image/B3DPixelUtility.h"
 #include "GpuBackend/B3DRenderWindow.h"
-#include "Renderer/B3DRenderer.h"
 #include "Utility/B3DTime.h"
 #include "Utility/B3DCommandLine.h"
 #include "ThirdParty/json.hpp"
@@ -118,14 +117,10 @@ void SnapshotTestRunner::RequestScreenCapture()
 	TAsyncOp<TShared<PixelData>> asyncOp;
 	mScreenCaptureOp = asyncOp;
 
-	TShared<render::RenderWindow> windowProxy = B3DGetRenderProxy(primaryWindow);
-	auto fnRequestScreenCapture = [windowProxy, asyncOp]() mutable
+	mCaptureWindow = B3DGetRenderProxy(primaryWindow);
+	auto fnRequestScreenCapture = [window = mCaptureWindow, asyncOp]() mutable
 	{
-		TShared<render::Renderer> renderer = render::GetRenderer();
-		if(renderer != nullptr)
-			renderer->RequestScreenCapture(windowProxy, asyncOp);
-		else
-			asyncOp.CompleteOperation(nullptr);
+		window->RequestCapture(std::move(asyncOp));
 	};
 
 	GetRenderThread().PostCommand(std::move(fnRequestScreenCapture), "SnapshotTestRunner::RequestScreenCapture");
@@ -147,6 +142,17 @@ void SnapshotTestRunner::Finalize()
 	// Wait for capture to complete if in progress
 	if(mScreenCaptureOp != nullptr)
 	{
+		// A capture completes when the window next presents. Cancel it if no present was queued after the request, so the wait ends.
+		if(mCaptureWindow != nullptr)
+		{
+			auto fnCancelScreenCapture = [window = std::move(mCaptureWindow)]
+			{
+				window->CancelCaptures();
+			};
+
+			GetRenderThread().PostCommand(std::move(fnCancelScreenCapture), "SnapshotTestRunner::CancelScreenCapture");
+		}
+
 		mScreenCaptureOp.BlockUntilComplete();
 		TShared<PixelData> pixelData = mScreenCaptureOp.GetReturnValue();
 		if(pixelData)

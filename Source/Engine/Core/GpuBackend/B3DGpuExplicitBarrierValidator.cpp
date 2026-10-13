@@ -169,6 +169,13 @@ namespace b3d::render
 		ValidateImageAccess(GetTextureSubresources(texture, range), layout, stages, access);
 	}
 
+	void GpuExplicitBarrierValidator::ValidateRenderTargetAccess(const RenderTarget& target, RenderSurfaceMaskBits surface, GpuImageLayout layout, GpuStageFlags stages, GpuAccessFlags access)
+	{
+		const ImageSubresources image = GetSurfaceSubresources(target, surface);
+		if(image.Key.Object != nullptr)
+			ValidateImageAccess(image, layout, stages, access);
+	}
+
 	void GpuExplicitBarrierValidator::Clear()
 	{
 		mBuffers.clear();

@@ -498,7 +498,7 @@ namespace b3d
 			/** Queues a capture to be resolved the next time the view is rendered. */
 			void RequestCapture(TAsyncOp<TShared<PixelData>> asyncOp);
 
-			/** Resolves pending captures after rendering completes. */
+			/** Resolves pending captures after rendering completes. Captures of a window are handed to the window, which reads it when it is presented. */
 			void ResolveCaptures(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& target) const;
 
 			/**

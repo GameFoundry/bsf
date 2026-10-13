@@ -812,15 +812,6 @@ void D3D12GpuDevice::LogDebugLayerMessages()
 #endif
 }
 
-void D3D12GpuDevice::PresentRenderWindow(const TShared<render::RenderWindow>& renderWindow, GpuQueueMask syncMask)
-{
-	TShared<GpuQueue> queue = GetQueue(GQT_GRAPHICS, 0);
-	if (!B3D_ENSURE(queue))
-		return;
-
-	queue->PresentRenderWindow(renderWindow, syncMask);
-}
-
 void D3D12GpuDevice::ConvertProjectionMatrix(const Matrix4& input, Matrix4& outMatrix)
 {
 	outMatrix = input;

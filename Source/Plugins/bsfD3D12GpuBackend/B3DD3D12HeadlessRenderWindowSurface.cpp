@@ -118,7 +118,7 @@ void D3D12HeadlessRenderWindowSurface::CreateSurfaceResources()
 	}
 
 	mCurrentImageIndex = 0;
-	mImageAdvancePending = false;
+	mHasAcquiredImage = false;
 	mIsValid = true;
 
 	for (u32 imageIndex = 0; imageIndex < mBackBufferCount; imageIndex++)
@@ -169,21 +169,18 @@ D3D12Framebuffer* D3D12HeadlessRenderWindowSurface::GetActiveFramebuffer()
 	if (mIsDestroyed || !mIsValid)
 		return nullptr;
 
-	if (mImageAdvancePending)
-	{
-		mCurrentImageIndex = (mCurrentImageIndex + 1) % mBackBufferCount;
-		mImageAdvancePending = false;
-	}
-
+	mHasAcquiredImage = true;
 	return mFramebuffers[mCurrentImageIndex];
 }
 
 void D3D12HeadlessRenderWindowSurface::SwapBuffers(GpuQueue&, GpuQueueMask)
 {
-	if (mIsDestroyed || !mIsValid)
+	// Like a swap chain, only an image that was acquired for rendering is presented
+	if (mIsDestroyed || !mIsValid || !mHasAcquiredImage)
 		return;
 
-	mImageAdvancePending = true;
+	mCurrentImageIndex = (mCurrentImageIndex + 1) % mBackBufferCount;
+	mHasAcquiredImage = false;
 }
 
 void D3D12HeadlessRenderWindowSurface::RebuildSwapChain(u32 width, u32 height, bool vsync, u32 vsyncInterval)
@@ -198,7 +195,7 @@ void D3D12HeadlessRenderWindowSurface::RebuildSwapChain(u32 width, u32 height, b
 	mHeight = height;
 	mVSync = vsync;
 	mVsyncInterval = vsyncInterval == 0 ? 1 : vsyncInterval;
-	mImageAdvancePending = false;
+	mHasAcquiredImage = false;
 
 	DestroySurfaceResources();
 	CreateSurfaceResources();

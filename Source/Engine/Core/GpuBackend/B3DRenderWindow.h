@@ -6,6 +6,7 @@
 #include "B3DPrerequisites.h"
 #include "GpuBackend/B3DRenderTarget.h"
 #include "GpuBackend/B3DVideoModeInfo.h"
+#include "Image/B3DTexture.h"
 
 namespace b3d
 {
@@ -341,7 +342,31 @@ namespace b3d
 
 			void Initialize() override;
 			void Destroy() override;
-			TAsyncOp<TShared<PixelData>> ReadAsync(GpuWorkContext& gpuContext, GpuCommandBuffer& commandBuffer, u32 colorSurfaceIndex = 0, u32 mipLevel = 0, u32 arrayLayer = 0) override;
+
+			/**
+			 * Requests a capture of the next image presented to the window. The image is read when GpuQueue::PresentRenderWindow()
+			 * presents it, so the capture includes everything rendered to the window that frame. A present without a rendered image
+			 * leaves the request pending.
+			 *
+			 * @param	asyncOp		Operation to complete with the captured image, or with null if the capture is cancelled or fails.
+			 *
+			 * @note	Render thread only.
+			 */
+			void RequestCapture(TAsyncOp<TShared<PixelData>> asyncOp);
+
+			/**
+			 * Returns true if a capture of the next presented image was requested. See RequestCapture().
+			 *
+			 * @note	Render thread only.
+			 */
+			bool IsCaptureRequested() const { return !mCaptureRequests.Empty(); }
+
+			/**
+			 * Completes every pending capture request with a null image.
+			 *
+			 * @note	Render thread only.
+			 */
+			void CancelCaptures();
 
 			/** Called by the GPU backend after it requests swap chain back buffer to be presented. */
 			virtual void NotifySwapBuffersRequested();
@@ -370,6 +395,18 @@ namespace b3d
 		protected:
 			void SyncFromCoreObject(const CoreSyncData& data, FrameAllocator& allocator) override;
 
+		private:
+			friend class b3d::GpuQueue;
+
+			/**
+			 * Reads the image about to be presented for the pending capture requests, on a command buffer submitted to @p queue. Does
+			 * nothing if no capture is requested or the surface holds no acquired image, which leaves the requests pending.
+			 *
+			 * @param	queue		Queue the image is about to be presented on.
+			 * @param	syncMask	Synchronization mask of the present.
+			 */
+			void ResolveCaptures(GpuQueue& queue, GpuQueueMask syncMask);
+
 		protected:
 			friend class b3d::RenderWindow;
 			friend class RenderWindowManager;
@@ -383,6 +420,9 @@ namespace b3d
 			bool mShowOnSwap = false;
 			bool mIsRedrawRequested = false;
 			TShared<IRenderWindowSurface> mRenderWindowSurface;
+
+			TInlineArray<TAsyncOp<TShared<PixelData>>, 1> mCaptureRequests;
+			TShared<GpuCommandBufferPool> mCaptureCommandBufferPool; /**< Created on the first capture, on the render thread. */
 		};
 
 		/** Structure used for initializing an implementation of RenderWindowSurface. */
@@ -398,6 +438,15 @@ namespace b3d
 			bool UseHardwareSRGB = false;
 			bool Headless = false; /**< When true, creates a headless surface for offscreen rendering (no OS window is created). */
 			Color ClearColor = Color::kZero; /**< Color the surface's back buffers are cleared to. */
+		};
+
+		/** Describes the back-buffer image of a window, as GpuCommandBuffer::CopyWindowToBuffer() lays it out in a buffer. */
+		struct RenderWindowImageLayout
+		{
+			u32 Width = 0; /**< Width of the image, in pixels. */
+			u32 Height = 0; /**< Height of the image, in pixels. */
+			PixelFormat Format = PF_UNKNOWN; /**< Format of the pixels in the buffer. */
+			ImageSubresourcePitch Pitch; /**< Row pitch and slice height of the pixels in the buffer. */
 		};
 
 		/**
@@ -416,6 +465,12 @@ namespace b3d
 			/** Presents the current back-buffer image, and acquires the next swap chain image for rendering. */
 			virtual void SwapBuffers(GpuQueue& queue, GpuQueueMask syncMask) = 0;
 
+			/**
+			 * Returns true if the surface holds the back-buffer image the next SwapBuffers() presents: an image was acquired for
+			 * rendering since the last SwapBuffers(), and the swap chain is valid.
+			 */
+			virtual bool HasAcquiredImage() const = 0;
+
 			/** Marks the swap chain as invalid, so the systems knows to rebuild it on the next occasion. */
 			virtual void MarkSwapChainAsInvalid() = 0;
 
@@ -423,19 +478,10 @@ namespace b3d
 			virtual void Destroy() = 0;
 
 			/**
-			 * Reads the contents of the current swap chain image. Issues copy commands into
-			 * the command buffer and returns an async operation that triggers when read is complete.
-			 *
-			 * @param	commandBuffer	Command buffer to issue copy commands into.
-			 * @return					Async operation that completes when read is complete.
+			 * Returns the layout GpuCommandBuffer::CopyWindowToBuffer() copies the acquired back-buffer image with. Returns an empty
+			 * value if no image is acquired, or if the image can't be copied from.
 			 */
-			virtual TAsyncOp<TShared<PixelData>> ReadAsync(GpuCommandBuffer& commandBuffer)
-			{
-				TAsyncOp<TShared<PixelData>> op;
-				op.CompleteOperation(nullptr);
-
-				return op;
-			}
+			virtual TOptional<RenderWindowImageLayout> GetImageLayout() const = 0;
 		};
 
 		/** @} */

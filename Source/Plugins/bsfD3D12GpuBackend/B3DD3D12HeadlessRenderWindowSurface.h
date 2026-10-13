@@ -21,6 +21,7 @@ namespace b3d::render
 
 		void RebuildSwapChain(u32 width, u32 height, bool vsync, u32 vsyncInterval) override;
 		void SwapBuffers(GpuQueue& queue, GpuQueueMask syncMask) override;
+		bool HasAcquiredImage() const override { return mHasAcquiredImage && IsSwapChainValid(); }
 		void MarkSwapChainAsInvalid() override;
 		void Destroy() override;
 
@@ -47,7 +48,7 @@ namespace b3d::render
 		bool mCreateDepthBuffer = false;
 		DXGI_FORMAT mColorFormat = DXGI_FORMAT_UNKNOWN;
 		DXGI_FORMAT mDepthFormat = DXGI_FORMAT_UNKNOWN;
-		bool mImageAdvancePending = false;
+		bool mHasAcquiredImage = false;
 		bool mIsValid = false;
 		bool mIsDestroyed = false;
 		u32 mCurrentImageIndex = 0;

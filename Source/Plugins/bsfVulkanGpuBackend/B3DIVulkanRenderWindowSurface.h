@@ -49,10 +49,19 @@ namespace b3d::render
 		/** Returns the VulkanImage for the currently active color surface. Used for reading back the rendered frame. */
 		virtual VulkanImage* GetCurrentColorImage() const = 0;
 
+		/** Returns the width of the color surface, in pixels. */
+		virtual u32 GetWidth() const = 0;
+
+		/** Returns the height of the color surface, in pixels. */
+		virtual u32 GetHeight() const = 0;
+
 		/** Returns the pixel format of the color surface. Used for reading back the rendered frame. */
 		virtual PixelFormat GetColorPixelFormat() const = 0;
 
-		TAsyncOp<TShared<PixelData>> ReadAsync(GpuCommandBuffer& commandBuffer) override;
+		/** Returns true if the color surface images can be copied from. */
+		virtual bool SupportsReadback() const { return true; }
+
+		TOptional<RenderWindowImageLayout> GetImageLayout() const override;
 	};
 
 	/** @} */

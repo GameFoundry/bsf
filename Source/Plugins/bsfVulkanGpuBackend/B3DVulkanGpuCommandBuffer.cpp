@@ -979,6 +979,33 @@ void VulkanGpuCommandBuffer::CopyTextureToBuffer(const TShared<Texture>& source,
 	CopyImageToBuffer(sourceImage, destinationBuffer, extent, range, transferLayout, pitch.RowPitch, pitch.SliceHeight);
 }
 
+void VulkanGpuCommandBuffer::CopyWindowToBuffer(const TShared<RenderWindow>& source, const TShared<GpuBuffer>& destination)
+{
+	GpuCommandBuffer::CopyWindowToBuffer(source, destination);
+	EnsureValidThread();
+
+	if(source == nullptr || destination == nullptr)
+		return;
+
+	auto* const surface = static_cast<IVulkanRenderWindowSurface*>(source->GetRenderWindowSurface().get());
+	if(surface == nullptr)
+		return;
+
+	const TOptional<RenderWindowImageLayout> layout = surface->GetImageLayout();
+	VulkanImage* const sourceImage = surface->GetCurrentColorImage();
+	VulkanBuffer* const destinationBuffer = static_cast<VulkanGpuBuffer*>(destination.get())->GetVulkanResource();
+	if(!layout || sourceImage == nullptr || destinationBuffer == nullptr)
+		return;
+
+	VkExtent3D extent;
+	extent.width = layout->Width;
+	extent.height = layout->Height;
+	extent.depth = 1;
+
+	const GpuTextureSubresourceRange range(0, 1, 0, 1, GpuTextureAspectFlag::Color);
+	CopyImageToBuffer(sourceImage, destinationBuffer, extent, range, GpuImageLayout::TransferSource, layout->Pitch.RowPitch, layout->Pitch.SliceHeight);
+}
+
 bool VulkanGpuCommandBuffer::CopyTexture(const TShared<Texture>& source, const TShared<Texture>& destination, const TextureCopyInformation& copyInformation)
 {
 	if(!GpuCommandBuffer::CopyTexture(source, destination, copyInformation))

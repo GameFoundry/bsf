@@ -10,6 +10,11 @@
 
 namespace b3d
 {
+	namespace render
+	{
+		class RenderWindow;
+	}
+
 	/** @addtogroup Testing-Internal
 	 *  @{
 	 */
@@ -115,7 +120,7 @@ namespace b3d
 		/**
 		 * If redraw is required this frame, queues a screen capture request.
 		 *
-		 * Must be called before rendering so the renderer can record the readback before presentation.
+		 * Must be called before rendering, so the capture reads the window when the frame presents it.
 		 */
 		void RequestScreenCapture();
 
@@ -141,6 +146,7 @@ namespace b3d
 		SnapshotTestConfiguration mConfiguration;
 		SnapshotTestResult mResult;
 		TAsyncOp<TShared<PixelData>> mScreenCaptureOp;
+		TShared<render::RenderWindow> mCaptureWindow; /**< Window the capture was requested on. Render thread object. */
 
 		u64 mStartFrame = 0;
 		u64 mExitAfterNFrames = 0;

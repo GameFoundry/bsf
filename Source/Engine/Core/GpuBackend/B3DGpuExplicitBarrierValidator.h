@@ -98,6 +98,12 @@ namespace b3d::render
 		 */
 		void ValidateTextureAccess(const Texture& texture, const GpuTextureSubresourceRange& range, GpuImageLayout layout, GpuStageFlags stages, GpuAccessFlags access);
 
+		/**
+		 * Checks an access of a render target surface in @p stages against the declared state, and records it for the next barrier. @p layout
+		 * is only checked if it is not GpuImageLayout::Undefined.
+		 */
+		void ValidateRenderTargetAccess(const RenderTarget& target, RenderSurfaceMaskBits surface, GpuImageLayout layout, GpuStageFlags stages, GpuAccessFlags access);
+
 		/** Forgets every state, declaration and binding. */
 		void Clear();
 

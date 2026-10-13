@@ -1,104 +1,31 @@
 //************************************* B3D Framework - Copyright 2026 Marko Pintera *************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "B3DIMetalRenderWindowSurface.h"
-#include "B3DMetalGpuDevice.h"
-#include "B3DMetalGpuCommandBuffer.h"
 #include "B3DMetalUtility.h"
-#include "Image/B3DPixelData.h"
-#include "Debug/B3DLog.h"
+#include "Image/B3DPixelUtility.h"
 
 namespace b3d::render
 {
-	TAsyncOp<TShared<PixelData>> IMetalRenderWindowSurface::ReadAsync(GpuCommandBuffer& commandBuffer)
+	TOptional<RenderWindowImageLayout> IMetalRenderWindowSurface::GetImageLayout() const
 	{
-		TAsyncOp<TShared<PixelData>> op;
-
 		id<MTLTexture> colorTexture = GetCurrentColorTexture();
 		if (colorTexture == nil)
-		{
-			op.CompleteOperation(nullptr);
-			return op;
-		}
+			return {};
 
+		// Only development builds configure the CAMetalLayer with framebufferOnly=NO so the drawable texture can be used as a blit
+		// source. Blitting from a framebuffer-only texture silently produces undefined bytes on Apple Silicon and fails Metal API
+		// validation.
 		if (colorTexture.framebufferOnly == YES)
-		{
-			// Only development builds configure the CAMetalLayer with framebufferOnly=NO so the drawable
-			// texture can be used as a blit source. Blitting from a framebuffer-only texture silently produces
-			// undefined bytes on Apple Silicon and fails Metal API validation, so surface the error instead.
-			B3D_LOG(Error, LogRenderBackend, "ReadAsync requires a blit-sampleable color texture (framebufferOnly must be NO). Window capture is only available in development builds on Metal.");
-			op.CompleteOperation(nullptr);
-			return op;
-		}
+			return {};
 
-		auto& metalCommandBuffer = static_cast<MetalGpuCommandBuffer&>(commandBuffer);
-		id<MTLBlitCommandEncoder> blit = metalCommandBuffer.GetOrOpenBlitEncoder();
-		if (blit == nil)
-		{
-			op.CompleteOperation(nullptr);
-			return op;
-		}
+		RenderWindowImageLayout layout;
+		layout.Width = (u32)colorTexture.width;
+		layout.Height = (u32)colorTexture.height;
+		layout.Format = GetColorPixelFormat();
 
-		const u32 width = (u32)colorTexture.width;
-		const u32 height = (u32)colorTexture.height;
-		const PixelFormat pixelFormat = GetColorPixelFormat();
+		const u32 rowPitchBytes = MetalUtility::GetTextureRowPitch(layout.Format, layout.Width);
+		layout.Pitch = ImageSubresourcePitch(rowPitchBytes / PixelUtility::GetBlockSize(layout.Format), layout.Height);
 
-		TShared<PixelData> pixelData = PixelData::Create(width, height, 1, pixelFormat);
-
-		const u32 bytesPerRow = MetalUtility::GetTextureRowPitch(pixelFormat, width);
-		const NSUInteger bufferSize = (NSUInteger)bytesPerRow * height;
-
-		auto& metalDevice = static_cast<MetalGpuDevice&>(commandBuffer.GetGpuDevice());
-		// TODO - Create a GpuBufferType::StagingRead GpuBuffer instead, so the staging memory comes from the heap allocator (mirrors IVulkanRenderWindowSurface::ReadAsync).
-		id<MTLBuffer> stagingBuffer = [metalDevice.GetMetalDevice() newBufferWithLength:bufferSize options:MTLResourceStorageModeShared];
-		if (stagingBuffer == nil)
-		{
-			B3D_LOG(Error, LogRenderBackend, "ReadAsync: failed to allocate {0}-byte staging buffer.", (u64)bufferSize);
-			op.CompleteOperation(nullptr);
-			return op;
-		}
-
-		[blit copyFromTexture:colorTexture
-			sourceSlice:0
-			sourceLevel:0
-			sourceOrigin:MTLOriginMake(0, 0, 0)
-			sourceSize:MTLSizeMake(width, height, 1)
-			toBuffer:stagingBuffer
-			destinationOffset:0
-			destinationBytesPerRow:bytesPerRow
-			destinationBytesPerImage:bufferSize];
-
-		const u32 resultRowPitch = pixelData->GetRowPitch();
-		const u32 resultHeight = height;
-
-		auto fnOnCommandBufferCompleted = [stagingBuffer, op, pixelData, bytesPerRow, resultRowPitch, resultHeight]() mutable
-		{
-			const u8* src = (const u8*)[stagingBuffer contents];
-			u8* dst = pixelData->GetData();
-			if (src != nullptr && dst != nullptr)
-			{
-				if (resultRowPitch == bytesPerRow)
-					memcpy(dst, src, (size_t)bytesPerRow * resultHeight);
-				else
-				{
-					for (u32 row = 0; row < resultHeight; row++)
-						memcpy(dst + row * resultRowPitch, src + row * bytesPerRow, bytesPerRow);
-				}
-			}
-
-			op.CompleteOperation(pixelData);
-		};
-
-		auto fnOnCommandBufferDestroyed = [op](bool isSubmitted) mutable
-		{
-			if (isSubmitted)
-				return;
-
-			op.CompleteOperation(nullptr);
-		};
-
-		commandBuffer.OnDidComplete.Connect(fnOnCommandBufferCompleted);
-		commandBuffer.OnDestroyed.Connect(fnOnCommandBufferDestroyed);
-
-		return op;
+		return layout;
 	}
 } // namespace b3d::render

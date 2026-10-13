@@ -8,6 +8,7 @@
 #include "GpuBackend/B3DGpuDeviceCapabilities.h"
 #include "GpuBackend/B3DGpuExplicitBarrierValidator.h"
 #include "GpuBackend/B3DGpuSubmitThread.h"
+#include "GpuBackend/B3DRenderWindow.h"
 #include "GpuBackend/Allocators/B3DGpuResource.h"
 
 #include "Image/B3DTexture.h"
@@ -229,6 +230,17 @@ void GpuCommandBuffer::CopyTextureToBuffer([[maybe_unused]] const TShared<Textur
 	if(mExplicitBarrierValidator != nullptr && source != nullptr && destination != nullptr)
 	{
 		mExplicitBarrierValidator->ValidateTextureAccess(*source, GpuTextureSubresourceRange(mipLevel, 1, arrayLayer, 1, kAllImageAspects), GpuImageLayout::Undefined, GpuStageFlag::Transfer, GpuAccessFlag::Read);
+		mExplicitBarrierValidator->ValidateBufferAccess(*destination, GpuStageFlag::Transfer, GpuAccessFlag::Write);
+	}
+#endif
+}
+
+void GpuCommandBuffer::CopyWindowToBuffer([[maybe_unused]] const TShared<RenderWindow>& source, [[maybe_unused]] const TShared<GpuBuffer>& destination)
+{
+#if B3D_BUILD_TYPE_DEVELOPMENT
+	if(mExplicitBarrierValidator != nullptr && source != nullptr && destination != nullptr)
+	{
+		mExplicitBarrierValidator->ValidateRenderTargetAccess(*source, RT_COLOR0, GpuImageLayout::TransferSource, GpuStageFlag::Transfer, GpuAccessFlag::Read);
 		mExplicitBarrierValidator->ValidateBufferAccess(*destination, GpuStageFlag::Transfer, GpuAccessFlag::Write);
 	}
 #endif

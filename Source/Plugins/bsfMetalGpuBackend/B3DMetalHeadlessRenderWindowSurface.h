@@ -32,6 +32,7 @@ namespace b3d::render
 		void RebuildSwapChain(u32 width, u32 height, bool vsync, u32 vsyncInterval) override;
 		void MarkSwapChainAsInvalid() override;
 		void SwapBuffers(GpuQueue& queue, GpuQueueMask syncMask) override;
+		bool HasAcquiredImage() const override { return mHasAcquiredImage && !mIsDestroyed; }
 		void Destroy() override;
 
 		// IMetalRenderWindowSurface
@@ -58,7 +59,7 @@ namespace b3d::render
 		bool mUseHardwareSRGB = false;
 		bool mIsValid = true;
 		bool mIsDestroyed = false;
-		bool mIsSwapQueued = false;
+		bool mHasAcquiredImage = false;
 		u32 mCurrentImageIndex = 0;
 
 		id<MTLTexture> mColorTextures[kImageCount] = {};

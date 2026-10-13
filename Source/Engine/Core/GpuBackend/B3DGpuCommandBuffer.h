@@ -21,6 +21,7 @@ namespace b3d
 	namespace render
 	{
 		class GpuExplicitBarrierValidator;
+		class RenderWindow;
 	}
 
 	/**
@@ -958,6 +959,16 @@ namespace b3d
 			 * @param	bufferOffset	Offset into the destination buffer, in bytes.
 			 */
 			virtual void CopyTextureToBuffer(const TShared<Texture>& source, const TShared<GpuBuffer>& destination, u32 mipLevel, u32 arrayLayer, u32 bufferOffset = 0);
+
+			/**
+			 * Copies the back-buffer image a window's surface holds to the start of a buffer, laid out as IRenderWindowSurface::GetImageLayout()
+			 * describes. The surface must hold an acquired image (IRenderWindowSurface::HasAcquiredImage()) that can be copied from. Command buffer
+			 * must not currently be in a render pass.
+			 *
+			 * @param	source			Window whose back-buffer image to copy.
+			 * @param	destination		Destination buffer to receive pixel data.
+			 */
+			virtual void CopyWindowToBuffer(const TShared<RenderWindow>& source, const TShared<GpuBuffer>& destination);
 
 			/**
 			 * Copies data between texture subresources without format conversion or scaling. Both textures must have matching formats.

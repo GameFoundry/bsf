@@ -36,7 +36,7 @@ namespace b3d::render
 		/** Returns the engine pixel format used for color readback. */
 		virtual PixelFormat GetColorPixelFormat() const = 0;
 
-		TAsyncOp<TShared<PixelData>> ReadAsync(GpuCommandBuffer& commandBuffer) override;
+		TOptional<RenderWindowImageLayout> GetImageLayout() const override;
 	};
 
 	/** @} */

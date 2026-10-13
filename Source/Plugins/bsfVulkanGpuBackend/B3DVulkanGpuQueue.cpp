@@ -82,21 +82,6 @@ void VulkanGpuQueue::SubmitCommandBuffer(const GpuSubmissionInformation& informa
 	mGpuDevice.GetSubmitThread().QueueSubmit(information.CommandBuffer, *this, information.SyncMask, information.SignalFences);
 }
 
-void VulkanGpuQueue::PresentRenderWindow(const TShared<RenderWindow>& renderWindow, GpuQueueMask syncMask)
-{
-	if(renderWindow == nullptr)
-		return;
-
-	IVulkanRenderWindowSurface* surface = static_cast<IVulkanRenderWindowSurface*>(renderWindow->GetRenderWindowSurface().get());
-	if(surface == nullptr)
-		return;
-
-	renderWindow->NotifySwapBuffersRequested();
-	surface->SwapBuffers(*this, syncMask);
-
-	B3D_INCREMENT_RENDER_STATISTIC(NumPresents);
-}
-
 void VulkanGpuQueue::WaitUntilIdle()
 {
 	mGpuDevice.GetSubmitThread().WaitUntilIdle(*this);

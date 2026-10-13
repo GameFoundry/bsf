@@ -209,6 +209,9 @@ namespace b3d
 		/** Returns a unique identifier for this queue. */
 		GpuQueueId GetId() const { return GpuQueueId(mType, mIndex); }
 
+		/** Returns the device the queue belongs to. */
+		GpuDevice& GetGpuDevice() const { return mGpuDevice; }
+
 		/**
 		 * Submits a command buffer on this queue.
 		 *
@@ -217,13 +220,16 @@ namespace b3d
 		virtual void SubmitCommandBuffer(const GpuSubmissionInformation& information) = 0;
 
 		/**
-		 * Presents the back-buffer image from the provided window onto the window, using the appropriate queue that supports present operations.
+		 * Presents the back-buffer image from the provided window onto the window. Captures requested on the window read the image before
+		 * it is presented (see render::RenderWindow::RequestCapture()).
 		 *
 		 * @param	renderWindow		Window whose back-buffer to present.
 		 * @param	syncMask			Optional synchronization mask that determines if the present operation
 		 *								depends on any command buffers submitted on other queues.
+		 *
+		 * @note	Render thread only.
 		 */
-		virtual void PresentRenderWindow(const TShared<render::RenderWindow>& renderWindow, GpuQueueMask syncMask = GpuQueueMask::kAll) = 0;
+		void PresentRenderWindow(const TShared<render::RenderWindow>& renderWindow, GpuQueueMask syncMask = GpuQueueMask::kAll);
 
 		/** Blocks the calling thread until all operations on the queue finish executing on the GPU. */
 		virtual void WaitUntilIdle() = 0;

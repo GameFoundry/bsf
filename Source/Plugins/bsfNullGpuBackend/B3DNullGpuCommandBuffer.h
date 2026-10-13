@@ -51,6 +51,9 @@ namespace b3d
 			void End() override;
 			void IssueBarriers(const GpuBarriers& barriers) override {}
 
+			/** Writes a black image, the contents of every null window. */
+			void CopyWindowToBuffer(const TShared<RenderWindow>& source, const TShared<GpuBuffer>& destination) override;
+
 			/** Returns an unique identifier of this command buffer. */
 			u32 GetId() const { return mId; }
 

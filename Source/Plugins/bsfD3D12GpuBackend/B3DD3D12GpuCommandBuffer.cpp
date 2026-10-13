@@ -910,6 +910,9 @@ void D3D12GpuCommandBuffer::EndRenderPass()
 	if (mState != GpuCommandBufferState::RecordingRenderPass)
 		return;
 
+	// Ends the tracked attachment usage in the attachment layouts, before the transitions below move them on
+	mResourceTracker.EndRenderPass();
+
 	if (mFramebuffer != nullptr)
 	{
 		// Swap-chain back buffers must be in PRESENT (COMMON) state by the time the queue presents; there is no
@@ -925,8 +928,6 @@ void D3D12GpuCommandBuffer::EndRenderPass()
 
 		mBarrierHelper.Execute(*this);
 	}
-
-	mResourceTracker.EndRenderPass();
 
 	mState = GpuCommandBufferState::Recording;
 }
@@ -1886,6 +1887,28 @@ void D3D12GpuCommandBuffer::CopyTextureToBuffer(const TShared<Texture>& source, 
 	footprint.Footprint.RowPitch = d3d12Source->GetStagingRowPitchInBytes(mipLevel);
 
 	CopyTextureToBuffer(textureResource, d3d12Destination->GetD3D12Resource(), footprint, subresourceIndex);
+}
+
+void D3D12GpuCommandBuffer::CopyWindowToBuffer(const TShared<RenderWindow>& source, const TShared<GpuBuffer>& destination)
+{
+	GpuCommandBuffer::CopyWindowToBuffer(source, destination);
+	EnsureValidThread();
+
+	if (source == nullptr || destination == nullptr)
+		return;
+
+	auto* const surface = static_cast<ID3D12RenderWindowSurface*>(source->GetRenderWindowSurface().get());
+	if (surface == nullptr)
+		return;
+
+	const TOptional<RenderWindowImageLayout> layout = surface->GetImageLayout();
+	D3D12Image* const sourceImage = surface->GetCurrentColorImage();
+	D3D12Buffer* const destinationBuffer = static_cast<D3D12GpuBuffer*>(destination.get())->GetD3D12Buffer();
+	if (!layout || sourceImage == nullptr || destinationBuffer == nullptr)
+		return;
+
+	const u32 rowPitchBytes = layout->Pitch.RowPitch * PixelUtility::GetBlockSize(layout->Format);
+	CopyImageToBuffer(sourceImage, destinationBuffer, layout->Width, layout->Height, rowPitchBytes);
 }
 
 void D3D12GpuCommandBuffer::CopyImageToBuffer(D3D12Image* source, D3D12Buffer* destination, u32 width, u32 height, u32 rowPitchBytes)

@@ -149,6 +149,9 @@ namespace b3d
 			/** Swap chain that was marked as invalid cannot be used for acquiring more images, instead the caller should trigger a swap chain rebuild. */
 			bool IsValid() const { return mIsValid; }
 
+			/** Returns true if the swap chain images can be copied from, for window captures. */
+			bool SupportsReadback() const { return mSupportsReadback; }
+
 			/** Marks the swap chain as retired. Retired swap chain can still be used for presenting images that were already acquired, but you cannot acquire new images. */
 			void MarkAsRetired() { mIsRetired = true; }
 
@@ -180,6 +183,7 @@ namespace b3d
 			u32 mLastAcquiredSemaphoreIndex = 0;
 			bool mIsSwapChainOutdated = false;
 			bool mIsValid = true;
+			bool mSupportsReadback = false;
 			bool mIsRetired = false;
 
 			Mutex mImageAcquireMutex;

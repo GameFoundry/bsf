@@ -89,13 +89,16 @@ namespace b3d
 		void DoForEachQueue(const std::function<void(GpuQueue&)>&& callback) const;
 
 		/**
-		 * Presents the back-buffer image from the provided window onto the window, using the appropriate queue that supports present operations.
+		 * Presents the back-buffer image from the provided window onto the window, on the first graphics queue. See
+		 * GpuQueue::PresentRenderWindow().
 		 *
 		 * @param	renderWindow		Window whose back-buffer to present.
 		 * @param	syncMask			Optional synchronization mask that determines if the present operation
 		 *								depends on command buffers submitted on other queues.
+		 *
+		 * @note	Render thread only.
 		 */
-		virtual void PresentRenderWindow(const TShared<render::RenderWindow>& renderWindow, GpuQueueMask syncMask = GpuQueueMask::kAll) = 0;
+		void PresentRenderWindow(const TShared<render::RenderWindow>& renderWindow, GpuQueueMask syncMask = GpuQueueMask::kAll);
 
 		/** Blocks the calling thread until all operations on the device finish. */
 		virtual void WaitUntilIdle() = 0;

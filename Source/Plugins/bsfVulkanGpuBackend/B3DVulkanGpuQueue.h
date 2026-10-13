@@ -35,7 +35,6 @@ namespace b3d
 
 			void SubmitCommandBuffer(const GpuSubmissionInformation& information) override;
 			void WaitUntilIdle() override;
-			void PresentRenderWindow(const TShared<RenderWindow>& renderWindow, GpuQueueMask syncMask = GpuQueueMask::kAll) override;
 
 			/**
 			 * Submits a command buffer on the queue using information prepared by the command buffer.

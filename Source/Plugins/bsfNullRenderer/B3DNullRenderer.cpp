@@ -2,6 +2,8 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "B3DNullRenderer.h"
 #include "CoreObject/B3DRenderThread.h"
+#include "GpuBackend/B3DRenderWindow.h"
+#include "Managers/B3DRenderWindowManager.h"
 #include "Renderer/B3DGpuUniformBuffer.h"
 #include "Renderer/B3DRendererManager.h"
 #include "Renderer/B3DRendererUtility.h"
@@ -50,12 +52,22 @@ void render::NullRenderer::Destroy()
 
 void render::NullRenderer::RenderAll(PerFrameData perFrameData)
 {
-	// No scenes to render, but the frame boundary must still be pumped and screen captures resolved
-	// for windows rendered outside of the renderer (e.g. low-level rendering examples)
-	GetRenderThread().PostCommand([this]()
+	Vector<TShared<render::RenderWindow>> windows;
+	for(b3d::RenderWindow* window : b3d::RenderWindowManager::Instance().GetRenderWindows())
+		windows.push_back(B3DGetRenderProxy(window));
+
+	// No scenes to render, but the frame boundary must still be pumped. Windows with pending captures are presented, which
+	// resolves the captures.
+	GetRenderThread().PostCommand([this, windows = std::move(windows)]()
 	{
 		BeginFrame();
-		ResolveOutstandingScreenCaptures();
+
+		for(const TShared<render::RenderWindow>& window : windows)
+		{
+			if(window != nullptr && window->IsCaptureRequested())
+				mDevice->PresentRenderWindow(window);
+		}
+
 		EndFrame();
 
 		GpuUniformBufferManager::Instance().AdvanceFrame();

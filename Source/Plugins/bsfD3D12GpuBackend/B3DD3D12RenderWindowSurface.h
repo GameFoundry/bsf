@@ -21,6 +21,7 @@ namespace b3d::render
 
 		void RebuildSwapChain(u32 width, u32 height, bool vsync, u32 vsyncInterval) override;
 		void SwapBuffers(GpuQueue& queue, GpuQueueMask syncMask) override;
+		bool HasAcquiredImage() const override { return mHasAcquiredImage && IsSwapChainValid(); }
 		void MarkSwapChainAsInvalid() override;
 		void Destroy() override;
 

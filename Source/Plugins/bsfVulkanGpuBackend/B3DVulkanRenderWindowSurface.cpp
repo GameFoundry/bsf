@@ -117,6 +117,7 @@ void VulkanRenderWindowSurface::RebuildSwapChain(u32 width, u32 height, bool vsy
 	VulkanSwapChain* oldSwapChain = mSwapChain;
 	oldSwapChain->MarkAsRetired();
 
+	mHasAcquiredImage = false;
 	mSwapChain = presentDevice->GetResourceManager().Create<VulkanSwapChain>(mSurface, width, height, vsync, mColorFormat, mColorSpace, mCreateDepthBuffer, mDepthFormat, oldSwapChain);
 	oldSwapChain->Destroy();
 }
@@ -150,6 +151,16 @@ void VulkanRenderWindowSurface::SwapBuffers(GpuQueue& queue, GpuQueueMask syncMa
 	mSwapChain->WaitUntilFirstImageAcquired();
 
 	submitThread.QueueImageAcquire(*mSwapChain);
+}
+
+bool VulkanRenderWindowSurface::SupportsReadback() const
+{
+	return mSwapChain != nullptr && mSwapChain->SupportsReadback();
+}
+
+bool VulkanRenderWindowSurface::HasAcquiredImage() const
+{
+	return mHasAcquiredImage && mSwapChain != nullptr && mSwapChain->IsValid();
 }
 
 VulkanFramebuffer* VulkanRenderWindowSurface::GetActiveFramebuffer(bool acquireIfUnavailable)
@@ -192,6 +203,16 @@ bool VulkanRenderWindowSurface::IsSwapChainValid() const
 	B3D_ASSERT(mSwapChain != nullptr);
 
 	return mSwapChain->IsValid();
+}
+
+u32 VulkanRenderWindowSurface::GetWidth() const
+{
+	return mSwapChain != nullptr ? mSwapChain->GetWidth() : 0;
+}
+
+u32 VulkanRenderWindowSurface::GetHeight() const
+{
+	return mSwapChain != nullptr ? mSwapChain->GetHeight() : 0;
 }
 
 VulkanImage* VulkanRenderWindowSurface::GetCurrentColorImage() const

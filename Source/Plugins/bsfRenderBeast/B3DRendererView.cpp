@@ -14,6 +14,7 @@
 #include "Animation/B3DAnimationScene.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DRenderTarget.h"
+#include "GpuBackend/B3DRenderWindow.h"
 #include "Image/B3DTexture.h"
 
 namespace b3d {
@@ -1051,14 +1052,24 @@ void RendererView::ResolveCaptures(GpuCommandBuffer& commandBuffer, const TShare
 	Vector<TAsyncOp<TShared<PixelData>>> captureOps = std::move(mRequestedCaptures);
 	mRequestedCaptures.clear();
 
-	TAsyncOp<TShared<PixelData>> readOp = target->ReadAsync(GetRenderer()->GetGpuContext(), commandBuffer);
-
-	auto fnOnReadOpCompleted = [captureOps = std::move(captureOps), readOp]() mutable
+	// Windows can only be read when they are presented, so the capture includes everything rendered to the window that frame
+	if(target->GetProperties().IsWindow)
 	{
-		for(auto& entry : captureOps)
-			entry.CompleteOperation(readOp.GetReturnValue());
-	};
+		RenderWindow& window = static_cast<RenderWindow&>(*target);
+		for(TAsyncOp<TShared<PixelData>>& captureOp : captureOps)
+			window.RequestCapture(std::move(captureOp));
+	}
+	else
+	{
+		TAsyncOp<TShared<PixelData>> readOp = target->ReadAsync(GetRenderer()->GetGpuContext(), commandBuffer);
 
-	readOp.DoWhenComplete(std::move(fnOnReadOpCompleted));
+		auto fnOnReadOpCompleted = [captureOps = std::move(captureOps), readOp]() mutable
+		{
+			for(auto& entry : captureOps)
+				entry.CompleteOperation(readOp.GetReturnValue());
+		};
+
+		readOp.DoWhenComplete(std::move(fnOnReadOpCompleted));
+	}
 }
 }} // namespace b3d::render

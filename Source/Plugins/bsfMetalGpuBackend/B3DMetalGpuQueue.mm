@@ -159,19 +159,5 @@ namespace b3d
 			[fenceCommandBuffer waitUntilCompleted];
 		}
 
-		void MetalGpuQueue::PresentRenderWindow(const TShared<RenderWindow>& renderWindow, GpuQueueMask syncMask)
-		{
-			if (renderWindow == nullptr)
-				return;
-
-			IRenderWindowSurface* surface = renderWindow->GetRenderWindowSurface().get();
-			if (surface == nullptr)
-				return;
-
-			renderWindow->NotifySwapBuffersRequested();
-			surface->SwapBuffers(*this, syncMask);
-
-			B3D_INCREMENT_RENDER_STATISTIC(NumPresents);
-		}
 	} // namespace render
 } // namespace b3d

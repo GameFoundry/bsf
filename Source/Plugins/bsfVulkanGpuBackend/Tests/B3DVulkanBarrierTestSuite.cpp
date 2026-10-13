@@ -472,24 +472,32 @@ void VulkanBarrierTestSuite::TestSwapChainTransitions()
 				commands->EndRenderPass();
 				context->SubmitCommandBuffer(commands, GpuQueueMask::kNone);
 
-				TAsyncOp<TShared<PixelData>> readback;
-				if(readbackMode != 0)
+				const TOptional<RenderWindowImageLayout> imageLayout = surface.GetImageLayout();
+				B3D_TEST_ASSERT(imageLayout.has_value())
+
+				TShared<render::GpuBuffer> readbackBuffer;
+				if(readbackMode != 0 && imageLayout.has_value())
 				{
+					GpuBufferCreateInformation readbackBufferCreateInformation;
+					readbackBufferCreateInformation.Type = GpuBufferType::StagingRead;
+					readbackBufferCreateInformation.Staging.Size = imageLayout->Pitch.RowPitch * PixelUtility::GetBlockSize(imageLayout->Format) * imageLayout->Pitch.SliceHeight;
+					readbackBuffer = device->CreateGpuBuffer(readbackBufferCreateInformation);
+
 					const TShared<render::GpuCommandBufferPool>& readbackPool = readbackMode == 1 ? graphicsPool : computePool;
 					const TShared<render::GpuCommandBuffer> readCommands = readbackPool->Create(GpuCommandBufferCreateInformation::Create("Swapchain readback before present"));
 					// Read the surface directly so presentation must transition from TransferSource, including a queue handoff.
-					readback = surface.ReadAsync(*readCommands);
+					readCommands->CopyWindowToBuffer(window, readbackBuffer);
 					context->SubmitCommandBuffer(readCommands, GpuQueueMask::kNone);
 				}
 
 				surface.SwapBuffers(*queue, GpuQueueMask::kNone);
 				device->WaitUntilIdle();
-				if(readbackMode != 0)
+				if(readbackBuffer != nullptr)
 				{
-					const TShared<PixelData> pixels = readback.GetReturnValue();
-					B3D_TEST_ASSERT(pixels != nullptr)
-					if(pixels != nullptr)
-						B3D_TEST_ASSERT(pixels->GetColorAt(0, 0) == window->GetClearValues().Colors[0])
+					render::GpuBufferMappedScope mapping = readbackBuffer->Map(GpuMapOption::Read);
+					PixelData pixels(imageLayout->Width, imageLayout->Height, 1, imageLayout->Format);
+					pixels.SetExternalBuffer(static_cast<u8*>(mapping.GetMappedMemory()));
+					B3D_TEST_ASSERT(pixels.GetColorAt(0, 0) == window->GetClearValues().Colors[0])
 				}
 			}
 

@@ -63,7 +63,7 @@ namespace b3d::render
 		 */
 		virtual void MarkDrawableAsRendered() {}
 
-		TAsyncOp<TShared<PixelData>> ReadAsync(GpuCommandBuffer& commandBuffer) override;
+		TOptional<RenderWindowImageLayout> GetImageLayout() const override;
 	};
 
 	/** @} */

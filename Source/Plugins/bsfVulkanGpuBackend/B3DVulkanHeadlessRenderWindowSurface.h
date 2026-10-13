@@ -30,12 +30,15 @@ namespace b3d::render
 		void MarkSwapChainAsInvalid() override;
 		void Destroy() override;
 		void SwapBuffers(GpuQueue& queue, GpuQueueMask syncMask) override;
+		bool HasAcquiredImage() const override { return mHasAcquiredImage && mIsValid; }
 
 		// IVulkanRenderWindowSurface
 		VulkanFramebuffer* GetActiveFramebuffer(bool acquireIfUnavailable = true) override;
 		bool AppendWaitSemaphoresIfRequired(TInlineArray<VulkanSemaphore*, 8>& outSemaphores) override { return false; }
 		bool IsSwapChainValid() const override { return mIsValid && mFramebuffers[mCurrentImageIndex] != nullptr; }
 		VulkanImage* GetCurrentColorImage() const override { return mColorImages[mCurrentImageIndex]; }
+		u32 GetWidth() const override { return mWidth; }
+		u32 GetHeight() const override { return mHeight; }
 		PixelFormat GetColorPixelFormat() const override { return PF_RGBA8; }
 
 	private:
@@ -48,7 +51,7 @@ namespace b3d::render
 		bool mVSync = false;
 		bool mCreateDepthBuffer = false;
 		bool mUseHardwareSRGB = false;
-		bool mIsSwapQueued = false;
+		bool mHasAcquiredImage = false;
 		bool mIsValid = true;
 		bool mIsDestroyed = false;
 		u32 mCurrentImageIndex = 0;
