@@ -872,17 +872,6 @@ namespace b3d
 			 */
 			void AcquireBarriers(const GpuExplicitBarriers& barriers, const TShared<GpuSplitBarrier>& split);
 
-#if B3D_BUILD_TYPE_DEVELOPMENT
-			/**
-			 * Sets the validator that checks the explicit barriers and accesses the command buffer records. A command buffer without one
-			 * validates nothing. Resource states carry over between the command buffers that share a validator, so they must be recorded one
-			 * at a time, in the order the GPU executes them. The caller keeps the validator alive until the command buffer is reset, which
-			 * clears it. Must be called before the command buffer records anything. Only valid on command buffers of a pool created with
-			 * GpuCommandBufferPoolInformation::ExplicitBarriers. Development builds only.
-			 */
-			void SetValidator(GpuExplicitBarrierValidator* validator);
-#endif
-
 			/**
 			 * Sets the active viewport that will be used for all following render operations.
 			 *
@@ -1070,6 +1059,17 @@ namespace b3d
 
 			/** Returns the currently active GPU profiler. Only valid in-between Begin/EndProfiling calls. */
 			const TShared<GpuCommandBufferProfiler>& GetProfiler() { return mProfiler; }
+#endif
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+			/**
+			 * Sets the validator that checks the explicit barriers and accesses the command buffer records. A command buffer without one
+			 * validates nothing. Resource states carry over between the command buffers that share a validator, so they must be recorded one
+			 * at a time, in the order the GPU executes them. The caller keeps the validator alive until the command buffer is reset, which
+			 * clears it. Must be called before the command buffer records anything. Only valid on command buffers of a pool created with
+			 * GpuCommandBufferPoolInformation::ExplicitBarriers. Development builds only.
+			 */
+			void SetValidator(GpuExplicitBarrierValidator* validator);
 #endif
 
 			/** Returns the shared pointer to the current object. */
