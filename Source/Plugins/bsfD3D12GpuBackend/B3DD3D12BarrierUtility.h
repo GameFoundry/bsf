@@ -48,15 +48,13 @@ namespace b3d
 
 			/**
 			 * Builds a native global barrier for an alias acquire. Its source scope belongs to earlier resources on the memory, whose type and layout
-			 * are unknown, so accesses are derived from the stages alone. Only source writes need a flush.
+			 * are unknown, so accesses are derived from the stages alone. Accesses only textures perform (render target, depth-stencil and resolve)
+			 * are tied to a layout, which a global barrier cannot name, so they are covered by common access. The acquiring textures gain their
+			 * accesses through their own barriers.
 			 *
-			 * @param	scope						Last accesses of the earlier resources, and first accesses of the acquiring resources.
-			 * @param	flushesTextureOnlyAccess	True to include the accesses only textures perform: render target, depth-stencil and resolve.
-			 *										D3D12 rejects depth-stencil accesses in global barriers, as they are tied to a layout, so
-			 *										callers that end the lifetimes of earlier textures with barriers of their own, and whose
-			 *										acquiring textures gain their accesses through their activations, leave them out.
+			 * @param	scope	Last accesses of the earlier resources, and first accesses of the acquiring resources.
 			 */
-			static D3D12_GLOBAL_BARRIER GetAliasGlobalBarrier(const GpuBarrierScope& scope, bool flushesTextureOnlyAccess);
+			static D3D12_GLOBAL_BARRIER GetAliasGlobalBarrier(const GpuBarrierScope& scope);
 
 			/**
 			 * Extends @p target so it also orders everything @p source orders. A target with no synchronization and no access on either side

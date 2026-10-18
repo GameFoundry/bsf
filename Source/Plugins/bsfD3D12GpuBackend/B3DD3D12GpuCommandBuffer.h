@@ -45,7 +45,10 @@ namespace b3d
 		{
 			using Base = GpuCommandBufferPool;
 		public:
-			/** Creates a command-buffer pool backed by one D3D12 command allocator. */
+			/**
+			 * Creates a command-buffer pool. A pool that uses pool reset backs all its command buffers with one D3D12 command allocator,
+			 * otherwise each command buffer has an allocator of its own.
+			 */
 			D3D12GpuCommandBufferPool(D3D12GpuDevice& device, const GpuCommandBufferPoolCreateInformation& createInformation);
 			~D3D12GpuCommandBufferPool() override;
 
@@ -61,7 +64,7 @@ namespace b3d
 
 			/** @} */
 
-			/** Returns the D3D12 command allocator. */
+			/** Returns the D3D12 command allocator shared by the command buffers. Null if the pool does not use pool reset. */
 			ID3D12CommandAllocator* GetD3D12CommandAllocator() const { return mCommandAllocator.Get(); }
 
 		private:
@@ -212,7 +215,7 @@ namespace b3d
 			bool RecordExplicitBarriers(const GpuExplicitBarriers& barriers, GpuBarrierPhase phase, GpuSplitBarrier* split) override;
 
 			/** Creates a command buffer wrapping @p commandList. */
-			D3D12GpuCommandBuffer(D3D12GpuDevice& device, D3D12GpuCommandBufferPool& pool, u32 id, ID3D12GraphicsCommandList7* commandList, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation);
+			D3D12GpuCommandBuffer(D3D12GpuDevice& device, D3D12GpuCommandBufferPool& pool, u32 id, ID3D12GraphicsCommandList7* commandList, ID3D12CommandAllocator* commandAllocator, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation);
 
 			/** Returns the pool the command buffer was allocated from. */
 			D3D12GpuCommandBufferPool& GetPool() const { return mPool; }
@@ -270,6 +273,7 @@ namespace b3d
 
 			u32 mId;
 			ComPtr<ID3D12GraphicsCommandList7> mCommandList;
+			ComPtr<ID3D12CommandAllocator> mCommandAllocator; /**< Allocator of this command buffer only. Null if the pool shares one. */
 			D3D12GpuCommandBufferPool& mPool;
 			ComPtr<ID3D12Fence> mFence;
 			u64 mFenceValue = 0;

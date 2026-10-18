@@ -3135,6 +3135,42 @@ void GpuBackendTestSuite::TestAliasAcquireExecution()
 			fnCheckReadback(1, ReadbackLayout::Texture, 0);
 		}
 
+		// A depth target hands the memory over to a render target within one command buffer, on devices that place both in the same memory
+		// type. Depth and render target accesses are tied to texture layouts.
+		TextureCreateInformation depthInformation = targetInformation;
+		depthInformation.Name = "Alias acquire depth";
+		depthInformation.Format = PF_D32;
+		depthInformation.Usage = TextureUsageFlag::DepthStencil;
+
+		const GpuMemoryRequirements depthRequirements = device->GetMemoryRequirements(depthInformation);
+		SharedMemory depthMemory;
+		if(depthRequirements.MemoryType == targetRequirements.MemoryType && fnAllocateShared({ &depthRequirements, &targetRequirements }, depthMemory))
+		{
+			const TShared<render::Texture> depth = fnCreateTexture(depthInformation, depthMemory);
+			const TShared<render::Texture> target = fnCreateTexture(targetInformation, depthMemory);
+
+			GpuAliasAcquire depthAcquire;
+			depthAcquire.Source.Add(GpuStageFlag::EarlyFragmentTests | GpuStageFlag::LateFragmentTests, GpuAccessFlag::Read | GpuAccessFlag::Write);
+
+			render::RenderTextureCreateInformation depthTargetInformation;
+			depthTargetInformation.DepthStencilSurface.Texture = depth;
+
+			RenderPassCreateInformation depthPass(render::RenderTexture::Create(depthTargetInformation));
+			depthPass.ClearMask = RT_DEPTH;
+
+			const TShared<render::GpuCommandBuffer> commands = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("Alias acquire depth to target"));
+			fnAcquireTexture(*commands, depth, GpuAliasAcquire(), GpuResourceUseFlag::DepthStencilAttachment, GpuImageLayout::DepthStencilAttachment);
+			commands->BeginRenderPass(depthPass);
+			commands->EndRenderPass();
+			fnAcquireTexture(*commands, target, depthAcquire, GpuResourceUseFlag::ColorAttachment, GpuImageLayout::ColorAttachment);
+			fnClearTarget(*commands, target);
+			commands->CopyTextureToBuffer(target, readbacks[0], 0, 0);
+			context->SubmitCommandBuffer(commands, GpuQueueMask::kNone);
+			device->WaitUntilIdle();
+
+			fnCheckReadback(0, ReadbackLayout::Texture, 0);
+		}
+
 		device->WaitUntilIdle();
 		for(SharedMemory& memory : sharedMemories)
 			memory.Allocator->Free(memory.Allocation);

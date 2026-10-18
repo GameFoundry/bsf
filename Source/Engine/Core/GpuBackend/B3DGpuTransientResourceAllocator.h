@@ -75,6 +75,12 @@ namespace b3d
 		 * native resource before the placement are no longer valid.
 		 */
 		bool Recreated = false;
+
+		/**
+		 * True if the allocator keeps the resource for later scopes. A resource that is not cached is placed in persistent memory and
+		 * destroyed once released, so objects created from it are not worth keeping for later scopes.
+		 */
+		bool Cached = false;
 	};
 
 	/** Memory use and resource counts of a GpuTransientResourceAllocator. */

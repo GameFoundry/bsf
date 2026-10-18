@@ -749,6 +749,20 @@ namespace b3d::render
 				return resource.Type == ResourceType::Transient && (resource.IsExtracted || resource.Placement.Recreated);
 			};
 
+			// A transient the allocator does not cache, or that leaves it, is a new texture in every graph
+			const auto fnIsKeptAcrossGraphs = [this](const TShared<Texture>& texture)
+			{
+				if(texture == nullptr)
+					return true;
+
+				const u32 resourceIndex = FindResource(*texture);
+				if(resourceIndex == ~0u)
+					return true;
+
+				const Resource& resource = mResources[resourceIndex];
+				return resource.Type != ResourceType::Transient || (!resource.IsExtracted && resource.Placement.Cached);
+			};
+
 			Vector<FrameGraphContextData::RenderTextureEntry>& entries = contextData.RenderTextures;
 			entries.erase(std::remove_if(entries.begin(), entries.end(), [&fnIsRecreated, frameIndex](const FrameGraphContextData::RenderTextureEntry& entry)
 			{
@@ -791,7 +805,11 @@ namespace b3d::render
 					continue;
 
 				// Transients are new textures in every graph in automatic mode, so their render textures are not kept for later graphs
-				const auto found = !mExplicitBarriers ? entries.end() : std::find_if(entries.begin(), entries.end(), [&information](const FrameGraphContextData::RenderTextureEntry& entry)
+				bool isKept = mExplicitBarriers && fnIsKeptAcrossGraphs(information.DepthStencilSurface.Texture);
+				for(u32 colorIndex = 0; colorIndex < B3D_MAXIMUM_RENDER_TARGET_COUNT; colorIndex++)
+					isKept &= fnIsKeptAcrossGraphs(information.ColorSurfaces[colorIndex].Texture);
+
+				const auto found = !isKept ? entries.end() : std::find_if(entries.begin(), entries.end(), [&information](const FrameGraphContextData::RenderTextureEntry& entry)
 				{
 					for(u32 colorIndex = 0; colorIndex < B3D_MAXIMUM_RENDER_TARGET_COUNT; colorIndex++)
 					{
@@ -828,7 +846,7 @@ namespace b3d::render
 #endif
 
 				pass.Attachments.Target = entry.Target;
-				if(mExplicitBarriers)
+				if(isKept)
 					entries.push_back(std::move(entry));
 			}
 		}

@@ -529,6 +529,7 @@ GpuTransientPlacement GpuTransientResourceAllocator::PlaceResource(TArray<Resour
 	}
 
 	output.Recreated = isCached && !isAtCachedMemory;
+	output.Cached = resource.Pool != nullptr;
 
 	// A resource that was not cached has no native resource yet
 	if(!isCached)
