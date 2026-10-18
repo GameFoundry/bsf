@@ -1,22 +1,31 @@
 //************************************* B3D Framework - Copyright 2026 Marko Pintera *************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "B3DRenderDocCommandCapture.h"
-#include "Utility/B3DDynamicLibraryManager.h"
-#include "Utility/B3DDynamicLibrary.h"
 #include <RenderDoc/renderdoc_app.h>
+
+#define WIN32_LEAN_AND_MEAN
+#if !defined(NOMINMAX) && defined(_MSC_VER)
+#	define NOMINMAX // required to stop windows.h messing up std::min
+#endif
+#include <windows.h>
 
 using namespace b3d;
 
 RenderDocCommandCapture::RenderDocCommandCapture(VkInstance vulkanInstance) :
-	mVulkanInstance(vulkanInstance), mRenderDocLibrary(nullptr)
+	mVulkanInstance(vulkanInstance)
 {
-	LoadRenderDocAPI();
-}
+	// RenderDoc can only capture graphics API objects created after its library was loaded, so only a library it injected before
+	// start-up is used. Loading the library here can also deadlock with the Vulkan driver's threads on the loader lock.
+	const HMODULE renderDocModule = GetModuleHandleA("renderdoc.dll");
+	if (renderDocModule == nullptr)
+		return;
 
-RenderDocCommandCapture::~RenderDocCommandCapture()
-{
-	if (mRenderDocLibrary != nullptr)
-		DynamicLibraryManager::Instance().Unload(mRenderDocLibrary);
+	const pRENDERDOC_GetAPI fnGetAPI = reinterpret_cast<pRENDERDOC_GetAPI>(GetProcAddress(renderDocModule, "RENDERDOC_GetAPI"));
+	if (!B3D_ENSURE(fnGetAPI))
+		return;
+
+	if (!B3D_ENSURE(fnGetAPI(eRENDERDOC_API_Version_1_0_0, &mRenderDocAPIPointers) == 1))
+		mRenderDocAPIPointers = nullptr;
 }
 
 void RenderDocCommandCapture::Start()
@@ -44,31 +53,5 @@ void RenderDocCommandCapture::Stop()
 	}
 
 	mIsCaptureInProgress = false;
-}
-
-void RenderDocCommandCapture::LoadRenderDocAPI()
-{
-	if(mRenderDocLibrary != nullptr)
-	{
-		mRenderDocLibrary->Unload();
-		DynamicLibraryManager::Instance().Unload(mRenderDocLibrary);
-		mRenderDocLibrary = nullptr;
-	}
-
-	mRenderDocLibrary = DynamicLibraryManager::Instance().Load("renderdoc.dll");
-
-	if (mRenderDocLibrary == nullptr)
-	{
-		B3D_LOG(Error, LogRenderBackend, "Failed loading RenderDoc API. renderdoc.dll cannot be found/loaded.");
-		return;
-	}
-
-	pRENDERDOC_GetAPI fnGetAPI = static_cast<pRENDERDOC_GetAPI>(mRenderDocLibrary->GetSymbol("RENDERDOC_GetAPI"));
-
-	if (!B3D_ENSURE(fnGetAPI))
-		return;
-
-	if (!B3D_ENSURE(fnGetAPI(eRENDERDOC_API_Version_1_0_0, &mRenderDocAPIPointers) == 1))
-		return;
 }
 

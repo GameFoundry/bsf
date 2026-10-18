@@ -10,22 +10,20 @@
 
 namespace b3d
 {
-	/** Captures GPU commands for the RenderDoc tool. */
+	/**
+	 * Captures GPU commands for the RenderDoc tool. Captures are only made when the application runs under RenderDoc, which injects
+	 * its library before the graphics API starts. Otherwise Start() and Stop() do nothing.
+	 */
 	class RenderDocCommandCapture : public GpuCommandCapture
 	{
 	public:
 		explicit RenderDocCommandCapture(VkInstance vulkanInstance);
-		~RenderDocCommandCapture() override;
 
 		void Start() override;
 		void Stop() override;
 
 	private:
-		/** Loads the RenderDoc library and initializes the API pointers. */
-		void LoadRenderDocAPI();
-
 		const VkInstance mVulkanInstance;
-		DynamicLibrary* mRenderDocLibrary;
 		void* mRenderDocAPIPointers = nullptr;
 		bool mIsCaptureInProgress = false;
 
