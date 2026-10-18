@@ -27,7 +27,6 @@ namespace b3d
 
 		private:
 			NullGpuDevice& mDevice;
-			u32 mAllocatedSetCount = 0;
 		};
 
 		/** @} */

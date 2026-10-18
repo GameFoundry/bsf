@@ -124,16 +124,6 @@ void RendererView::SetRenderSettings(const TShared<RenderSettings>& settings)
 	if(settings != nullptr)
 		*mRenderSettings = *settings;
 
-	// Features that wait for their port to frame graphs are off
-#if !B3D_FRAME_GRAPH_PORT_PENDING(ScreenSpace)
-	mRenderSettings->AmbientOcclusion.Enabled = false;
-	mRenderSettings->ScreenSpaceReflections.Enabled = false;
-#endif
-#if !B3D_FRAME_GRAPH_PORT_PENDING(TemporalAA)
-	mRenderSettings->TemporalAa.Enabled = false;
-	mRenderSettings->EnableVelocityBuffer = false;
-#endif
-
 	mRenderSettingsHash++;
 
 	// Update compositor hierarchy (Note: Needs to be called even when viewport size (or other information) changes,

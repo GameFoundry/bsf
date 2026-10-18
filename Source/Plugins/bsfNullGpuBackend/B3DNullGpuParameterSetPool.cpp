@@ -14,9 +14,6 @@ namespace b3d::render
 
 	TShared<GpuParameterSet> NullGpuParameterSetPool::Create(const TShared<GpuPipelineParameterSetLayout>& layout, u32 setIndex, GpuObjectCreateFlags flags)
 	{
-		if (mAllocatedSetCount >= mInformation.MaxSets)
-			return nullptr;
-
 		NullGpuParameters* rawParamSet = new(B3DAllocate<NullGpuParameters>()) NullGpuParameters(mDevice, layout);
 
 		TShared<NullGpuParameters> paramSet = flags.IsSet(GpuObjectCreateFlag::RenderThreadDestroy)
@@ -26,12 +23,10 @@ namespace b3d::render
 		if (!flags.IsSet(GpuObjectCreateFlag::DeferredInitialize))
 			paramSet->Initialize();
 
-		mAllocatedSetCount++;
 		return paramSet;
 	}
 
 	void NullGpuParameterSetPool::Reset()
 	{
-		mAllocatedSetCount = 0;
 	}
 } // namespace b3d::render

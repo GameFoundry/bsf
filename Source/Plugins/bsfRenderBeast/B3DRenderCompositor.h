@@ -807,7 +807,7 @@ namespace b3d
 		class RCNodeHiZ : public RenderCompositorNode
 		{
 		public:
-			TShared<PooledRenderTexture> Output;
+			TShared<Texture> Output;
 
 			// Note: This doesn't actually use any gbuffer textures, but node is a dependency because it renders to the depth
 			// buffer. In order to avoid keeping gbuffer textures alive I could separate out the base pass into its own node
@@ -838,8 +838,6 @@ namespace b3d
 		protected:
 			void Render(const RenderCompositorNodeInputs& inputs) override;
 			void Clear() override;
-
-			TShared<PooledRenderTexture> mPooledOutput;
 		};
 
 		/** Renders screen space reflections. */
@@ -863,8 +861,12 @@ namespace b3d
 			/** Cleans up any outputs. */
 			void DeallocOutputs();
 
-			TShared<PooledRenderTexture> mPooledOutput;
-			TShared<PooledRenderTexture> mPrevFrame;
+			/** Output of the previous frame, which the temporal filter reads at rest. Null if there is none. */
+			TShared<Texture> mPreviousFrame;
+
+			/** Output extracted from this frame's graph, which becomes the previous frame when the frame ends. Null if none is kept. */
+			TShared<Texture> mHistoryOutput;
+
 			bool mUsingTemporalAA = false;
 		};
 
@@ -892,8 +894,11 @@ namespace b3d
 			/** Cleans up any outputs. */
 			void DeallocOutputs();
 
-			TShared<PooledRenderTexture> mPooledOutput;
-			TShared<PooledRenderTexture> mPrevFrame;
+			/** Output of the previous frame, which the temporal filter reads at rest. Null if there is none. */
+			TShared<Texture> mPreviousFrame;
+
+			/** Output extracted from this frame's graph, which becomes the previous frame when the frame ends. Null if none is kept. */
+			TShared<Texture> mHistoryOutput;
 		};
 
 		/** Renders the bloom effect. */

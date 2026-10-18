@@ -16,11 +16,10 @@ mixin GBufferOutput
 			float4 normal : SV_Target2; 
 			float2 metalRoughness : SV_Target3;
 			
-			#if WRITE_VELOCITY
-			float2 velocity : SV_Target4;
-			float id : SV_Target5;
-			#else
 			float id : SV_Target4;
+
+			#if WRITE_VELOCITY
+			float2 velocity : SV_Target5;
 			#endif
 		};
 	

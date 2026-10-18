@@ -322,7 +322,9 @@ void main()
 		B3D_TEST_ASSERT(parameters->SetStorageTexture(0, texture, TextureSurface(0, 1, 0, 1)))
 
 		const TShared<render::GpuBuffer> readback = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(64 * 64 * sizeof(u32)));
-		const TShared<render::GpuCommandBufferPool> commandPool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_COMPUTE));
+		// Devices without a separate compute queue family dispatch on the graphics queue
+		const GpuQueueType queueType = device->GetQueueCount(GQT_COMPUTE) > 0 ? GQT_COMPUTE : GQT_GRAPHICS;
+		const TShared<render::GpuCommandBufferPool> commandPool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(queueType));
 		const TShared<render::GpuCommandBuffer> commands = commandPool->Create(GpuCommandBufferCreateInformation::Create("Repeated storage-image dispatch"));
 		commands->SetGpuComputePipelineState(pipeline);
 		commands->SetGpuParameterSet(parameters);
