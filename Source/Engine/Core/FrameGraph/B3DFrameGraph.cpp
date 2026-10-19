@@ -1145,40 +1145,23 @@ namespace b3d::render
 			}
 		}
 
-#if 1
-		// Workaround for the Vulkan validation layer: if enabled, the depth and stencil aspects of an image use the same barrier kind. Sync
-		// validation reports a false write-after-read hazard when one aspect of an image gets a split barrier while the other aspect gets a full
-		// barrier.
-		bool anyBarrierMadeFull = true;
-		while(anyBarrierMadeFull)
+		// Workaround for the Vulkan validation layer: depth-stencil images get no split barriers. Sync validation reports a false write-after-read
+		// hazard when vkCmdWaitEvents2 transitions the layout of a depth-stencil image that an earlier submission read, such as the previous
+		// frame's render pass that loaded it, even when this frame has written the image since. The report itself says the read is already
+		// synchronized with every stage (each frame's first submission waits for the previous frame), but that the layout transition does not
+		// synchronize with them, although the barrier's source stages are among them. By the specification the split barrier is correct;
+		// pipeline barriers with the same scopes are not reported. Not reduced to a minimal repro. Seen with split barriers whose depth and
+		// stencil aspects differ in kind, and with MSAA, where the coverage stencil, the resolved scene depth and the SSR stencil get split
+		// barriers of single aspects.
+		for(PlannedBarrier& barrier : plannedBarriers)
 		{
-			anyBarrierMadeFull = false;
-			for(PlannedBarrier& barrier : plannedBarriers)
-			{
-				const Resource& resource = mResources[barrier.ResourceIndex];
-				if(!barrier.IsSplit || barrier.IsWholeResource || resource.Buffer != nullptr || resource.FullRange.GetAspectCount() != 2)
-					continue;
+			const Resource& resource = mResources[barrier.ResourceIndex];
+			if(!barrier.IsSplit || resource.Buffer != nullptr || resource.FullRange.GetAspectCount() != 2)
+				continue;
 
-				// Subresources are ordered by aspect, so the other aspect's subresource is half the subresource count away
-				const u32 aspectSubresourceCount = resource.SubresourceCount / 2;
-				const u32 otherSubresourceIndex = (barrier.SubresourceIndex + aspectSubresourceCount) % resource.SubresourceCount;
-
-				const bool hasOverlappingFullBarrier = std::any_of(plannedBarriers.begin(), plannedBarriers.end(), [&barrier, otherSubresourceIndex](const PlannedBarrier& other)
-				{
-					return other.ResourceIndex == barrier.ResourceIndex && !other.IsWholeResource && !other.IsSplit && !other.IsExport &&
-						other.SubresourceIndex == otherSubresourceIndex && other.AcquirePassIndex != ~0u &&
-						(i32)other.AcquirePassIndex > barrier.ReleasePassIndex && other.AcquirePassIndex <= barrier.AcquirePassIndex;
-				});
-
-				if(hasOverlappingFullBarrier)
-				{
-					barrier.IsSplit = false;
-					barrier.ReleasePassIndex = (i32)barrier.AcquirePassIndex - 1;
-					anyBarrierMadeFull = true;
-				}
-			}
+			barrier.IsSplit = false;
+			barrier.ReleasePassIndex = (i32)barrier.AcquirePassIndex - 1;
 		}
-#endif
 
 		// Batching. Planned barriers that differ only in their subresource merge into subresource ranges. Each range goes to the list of
 		// the call that records it: a pass's alias acquires or full barriers, the barrier batch of its split release and acquire, a pass's
