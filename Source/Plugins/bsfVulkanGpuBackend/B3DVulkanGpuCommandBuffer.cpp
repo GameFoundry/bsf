@@ -293,7 +293,6 @@ void VulkanGpuCommandBuffer::BeginRenderPass(const RenderPassCreateInformation& 
 		return;
 
 	mRenderTarget = renderTarget;
-	mRenderTargetModified = false;
 
 	// Warn if invalid load mask
 	if(loadMask.IsSet(RT_DEPTH) && !loadMask.IsSet(RT_STENCIL))
@@ -752,7 +751,6 @@ void VulkanGpuCommandBuffer::Draw(u32 vertexOffset, u32 vertexCount, u32 instanc
 #endif
 
 	vkCmdDraw(mCommandBufferHandle, vertexCount, instanceCount, vertexOffset, firstInstance);
-	NotifyRenderTargetModified();
 
 	B3D_INCREMENT_RENDER_STATISTIC(NumDrawCalls);
 	B3D_ADD_RENDER_STATISTIC(NumVertices, vertexCount);
@@ -811,7 +809,6 @@ void VulkanGpuCommandBuffer::DrawIndexed(u32 startIndex, u32 indexCount, u32 ver
 #endif
 
 	vkCmdDrawIndexed(mCommandBufferHandle, indexCount, instanceCount, startIndex, vertexOffset, firstInstance);
-	NotifyRenderTargetModified();
 
 	B3D_INCREMENT_RENDER_STATISTIC(NumDrawCalls);
 	B3D_ADD_RENDER_STATISTIC(NumVertices, vertexCount);
@@ -1254,7 +1251,6 @@ void VulkanGpuCommandBuffer::EndRenderPass()
 
 	mState = GpuCommandBufferState::Recording;
 	mRenderTarget = nullptr;
-	mRenderTargetModified = false;
 	mRenderTargetReadOnlyMask = RT_NONE;
 	mFramebuffer = nullptr;
 
@@ -1711,7 +1707,6 @@ void VulkanGpuCommandBuffer::ClearAttachments(const Area2I& area, RenderSurfaceM
 	clearRect.rect.extent.height = area.Height;
 
 	vkCmdClearAttachments(mCommandBufferHandle, attachmentsToClearCount, attachments.data(), 1, &clearRect);
-	NotifyRenderTargetModified();
 }
 
 bool VulkanGpuCommandBuffer::IsReadyForRender()
@@ -2452,15 +2447,6 @@ bool VulkanGpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& b
 		batch.Execute(mCommandBufferHandle);
 
 	return true;
-}
-
-void VulkanGpuCommandBuffer::NotifyRenderTargetModified()
-{
-	if(mRenderTarget == nullptr || mRenderTargetModified)
-		return;
-
-	mRenderTarget->TickUpdateCount();
-	mRenderTargetModified = true;
 }
 
 Area2I VulkanGpuCommandBuffer::GetViewportArea() const

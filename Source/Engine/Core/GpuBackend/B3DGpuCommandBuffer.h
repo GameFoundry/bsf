@@ -816,6 +816,8 @@ namespace b3d
 			 * command buffer and necessary barriers/layout transitions will be issued before the
 			 * render pass begins.
 			 *
+			 * Ticks the update count of the render target (RenderTarget::GetUpdateCount()) unless every surface is read-only.
+			 *
 			 * @param createInformation    Structure containing render target, masks, and all parameters
 			 *                            that will be used during the render pass.
 			 */

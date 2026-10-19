@@ -208,9 +208,6 @@ namespace b3d
 			// Main thread only fields
 			TShared<RenderBeastOptions> mOptions;
 			bool mOptionsDirty = true;
-
-			// Transient
-			Vector<RendererExtension*> mOverlayExtensions;
 		};
 
 		/**	Provides easy access to the RenderBeast renderer. */

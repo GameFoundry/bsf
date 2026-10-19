@@ -451,52 +451,49 @@ void RCNodeBasePass::Render(const RenderCompositorNodeInputs& inputs)
 	GpuParticleInputs.Import(inputs.Graph);
 	mSurfaceShaderParameterSets.SetGpuParticleInputs(GpuParticleInputs);
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Extensions)
 	Camera* sceneCamera = inputs.View.GetSceneCamera();
 
 	// Trigger prepare callbacks
 	if(sceneCamera != nullptr)
 	{
-		for(auto& extension : inputs.ExtPrepare)
-		{
-			RendererViewContext context;
-			context.CurrentTarget = inputs.View.GetCompositorRenderTarget();
-			context.CommandBuffer = inputs.ActiveCommandBuffer;
-
+		const RendererViewContext context(inputs.Graph);
+		for(RendererExtension* extension : inputs.ExtPrepare)
 			extension->Render(*sceneCamera, context);
-		}
 	}
-
-	// Trigger pre-base-pass callbacks
-	if(sceneCamera != nullptr)
-	{
-		inputs.View.NotifyCompositorTargetChanged(RenderTarget);
-
-		for(auto& extension : inputs.ExtPreBasePass)
-		{
-			RendererViewContext context;
-			context.CurrentTarget = inputs.View.GetCompositorRenderTarget();
-			context.CommandBuffer = inputs.ActiveCommandBuffer;
-
-			extension->Render(*sceneCamera, context);
-		}
-	}
-#endif
-
-	// Render all visible opaque elements that use the deferred pipeline, into a cleared G-buffer
-	FrameGraphRasterPass basePass;
-
-	u32 colorIndex = 0;
-	basePass.SetColorAttachment(colorIndex++, sceneColorNode->SceneColorTex, FrameGraphAttachmentLoad::Clear);
-	basePass.SetColorAttachment(colorIndex++, AlbedoTex, FrameGraphAttachmentLoad::Clear);
-	basePass.SetColorAttachment(colorIndex++, NormalTex, FrameGraphAttachmentLoad::Clear);
-	basePass.SetColorAttachment(colorIndex++, RoughMetalTex, FrameGraphAttachmentLoad::Clear);
-	basePass.SetColorAttachment(colorIndex++, IdTex, FrameGraphAttachmentLoad::Clear);
 
 	// Velocity follows the Id, so draws whose shader cannot write velocity still write the Id into its own target
+	TInlineArray<TShared<Texture>, 8> gbufferAttachments = { sceneColorNode->SceneColorTex, AlbedoTex, NormalTex, RoughMetalTex, IdTex };
 	if(needsVelocity)
-		basePass.SetColorAttachment(colorIndex, VelocityTex, FrameGraphAttachmentLoad::Clear);
-	basePass.SetDepthStencilAttachment(sceneDepthNode->DepthTex, FrameGraphDepthStencilMode::Write, FrameGraphAttachmentLoad::Clear);
+		gbufferAttachments.Add(VelocityTex);
+
+	// Without pre-base-pass callbacks the base pass clears the G-buffer itself. Otherwise a pass of its own clears it before the callbacks.
+	FrameGraphAttachmentLoad basePassLoad = FrameGraphAttachmentLoad::Clear;
+	if(sceneCamera != nullptr && !inputs.ExtPreBasePass.Empty())
+	{
+		FrameGraphRasterPass clearPass;
+		for(u32 colorIndex = 0; colorIndex < gbufferAttachments.Size(); colorIndex++)
+			clearPass.SetColorAttachment(colorIndex, gbufferAttachments[colorIndex], FrameGraphAttachmentLoad::Clear);
+
+		clearPass.SetDepthStencilAttachment(sceneDepthNode->DepthTex, FrameGraphDepthStencilMode::Write, FrameGraphAttachmentLoad::Clear);
+
+		inputs.Graph.AddRasterPass("BasePassClear", std::move(clearPass), [](FrameGraphPassContext&) {});
+
+		RendererViewContext context(inputs.Graph);
+		context.ColorAttachments = gbufferAttachments;
+		context.DepthStencilAttachment = sceneDepthNode->DepthTex;
+
+		for(RendererExtension* extension : inputs.ExtPreBasePass)
+			extension->Render(*sceneCamera, context);
+
+		basePassLoad = FrameGraphAttachmentLoad::Load;
+	}
+
+	// Render all visible opaque elements that use the deferred pipeline, into the G-buffer
+	FrameGraphRasterPass basePass;
+	for(u32 colorIndex = 0; colorIndex < gbufferAttachments.Size(); colorIndex++)
+		basePass.SetColorAttachment(colorIndex, gbufferAttachments[colorIndex], basePassLoad);
+
+	basePass.SetDepthStencilAttachment(sceneDepthNode->DepthTex, FrameGraphDepthStencilMode::Write, basePassLoad);
 
 	// The render queue lives until the view's frame ends, after the graph executes
 	const Vector<RenderQueueEntry>& opaqueEntries = inputs.View.GetOpaqueQueue(false)->GetSortedEntries();
@@ -573,22 +570,20 @@ void RCNodeBasePass::Render(const RenderCompositorNodeInputs& inputs)
 		});
 	}
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Extensions)
-	// Trigger post-base-pass callbacks
-	if(sceneCamera != nullptr)
+	// Trigger post-base-pass callbacks. They render into the G-buffer without the Id, with read-only depth, as decals do.
+	if(sceneCamera != nullptr && !inputs.ExtPostBasePass.Empty())
 	{
-		inputs.View.NotifyCompositorTargetChanged(RenderTargetNoMask);
+		RendererViewContext context(inputs.Graph);
+		context.ColorAttachments = { sceneColorNode->SceneColorTex, AlbedoTex, NormalTex, RoughMetalTex };
+		if(needsVelocity)
+			context.ColorAttachments.Add(VelocityTex);
 
-		for(auto& extension : inputs.ExtPostBasePass)
-		{
-			RendererViewContext context;
-			context.CurrentTarget = inputs.View.GetCompositorRenderTarget();
-			context.CommandBuffer = inputs.ActiveCommandBuffer;
+		context.DepthStencilAttachment = sceneDepthNode->DepthTex;
+		context.DepthStencilMode = FrameGraphDepthStencilMode::DepthReadOnly;
 
+		for(RendererExtension* extension : inputs.ExtPostBasePass)
 			extension->Render(*sceneCamera, context);
-		}
 	}
-#endif
 }
 
 void RCNodeBasePass::Clear()
@@ -1197,24 +1192,17 @@ void RCNodeClusteredForward::Render(const RenderCompositorNodeInputs& inputs)
 		});
 	}
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Extensions)
 	// Trigger post-lighting callbacks
 	Camera* sceneCamera = inputs.View.GetSceneCamera();
-	if(sceneCamera != nullptr)
+	if(sceneCamera != nullptr && !inputs.ExtPostLighting.Empty())
 	{
-		inputs.View.NotifyCompositorTargetChanged(renderTarget);
+		RendererViewContext context(inputs.Graph);
+		context.ColorAttachments.Add(sceneColorNode->SceneColorTex);
+		context.DepthStencilAttachment = sceneDepthNode->DepthTex;
 
-		for(auto& extension : inputs.ExtPostLighting)
-		{
-			RendererViewContext context;
-			context.CurrentTarget = inputs.View.GetCompositorRenderTarget();
-			context.CommandBuffer = inputs.ActiveCommandBuffer;
-
-			// TODO - RenderPass
+		for(RendererExtension* extension : inputs.ExtPostLighting)
 			extension->Render(*sceneCamera, context);
-		}
 	}
-#endif
 }
 
 void RCNodeClusteredForward::Clear()
@@ -1338,29 +1326,20 @@ void RCNodeFinalResolve::Render(const RenderCompositorNodeInputs& inputs)
 	}
 #endif
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Extensions)
 	// Trigger overlay callbacks
 	Camera* sceneCamera = inputs.View.GetSceneCamera();
-	if(sceneCamera != nullptr)
+	if(sceneCamera != nullptr && !inputs.ExtOverlay.Empty())
 	{
-		inputs.View.NotifyCompositorTargetChanged(target);
+		RendererViewContext context(inputs.Graph);
+		context.Target = target;
+		context.Viewport = viewArea;
 
-		for(auto& extension : inputs.ExtOverlay)
-		{
-			RendererViewContext context;
-			context.CurrentTarget = inputs.View.GetCompositorRenderTarget();
-			context.CommandBuffer = inputs.ActiveCommandBuffer;
-
-			// TODO - RenderPass
+		for(RendererExtension* extension : inputs.ExtOverlay)
 			extension->Render(*sceneCamera, context);
-		}
 	}
-#endif
 
 	// Resolve pending view captures after overlays and before clearing the target.
 	inputs.View.ResolveCaptures(inputs.Graph, target);
-
-	inputs.View.NotifyCompositorTargetChanged(nullptr);
 }
 
 void RCNodeFinalResolve::Clear()

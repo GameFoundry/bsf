@@ -209,8 +209,11 @@ namespace b3d
 		public:
 			DebugDrawMaterial() = default;
 
-			/** Executes the material using the provided parameters. */
-			void Execute(GpuCommandBuffer& commandBuffer, const GpuBufferSuballocation& uniformBuffer, const TShared<Mesh>& mesh, const SubMesh& subMesh);
+			/** Creates the parameter set of @p pass and binds @p uniformBuffer, a DebugDrawUniformDefinition buffer. Returns the set to pass to Execute(). */
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const GpuBufferSuballocation& uniformBuffer);
+
+			/** Binds the material and @p set, a set from Prepare(), and draws @p subMesh of @p mesh. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const TShared<Mesh>& mesh, const SubMesh& subMesh) const;
 
 			/** Returns the material variation matching the provided parameters. */
 			static DebugDrawMaterial* GetVariation(DebugDrawMaterialType drawMaterial);

@@ -51,7 +51,7 @@ void GpuParticleSimulateMaterial::InitDefinesInternal(ShaderDefines& defines)
 
 void GpuParticleSimulateMaterial::PopulateParameters(const TShared<GpuParameterSet>& gpuParameters, GpuParticleResources& resources, const TShared<GpuBuffer>& particleVertexInputBuffer,
 	const GpuBufferSuballocation& viewParams, const TShared<Texture>& depth, const TShared<Texture>& normals, const TShared<GpuBuffer>& tileUVs,
-	const GpuBufferSuballocation& perObjectParams, const TShared<Texture>& vectorFieldTexture, bool supportsDepthCollisions)
+	const TShared<Texture>& vectorFieldTexture, bool supportsDepthCollisions)
 {
 	GpuParticleStateTextures& prevState = resources.GetPreviousState();
 	const GpuParticleStaticTextures& staticTextures = resources.GetStaticTextures();
@@ -69,7 +69,6 @@ void GpuParticleSimulateMaterial::PopulateParameters(const TShared<GpuParameterS
 	if(supportsDepthCollisions)
 	{
 		gpuParameters->SetUniformBuffer("PerCamera", viewParams);
-		gpuParameters->SetUniformBuffer("PerObject", perObjectParams);
 
 		gpuParameters->SetSampledTexture("gSizeRotationTex", staticTextures.SizeAndRotationTex);
 		gpuParameters->SetSampledTexture("gCurvesTex", curveTexture.GetTexture());

@@ -534,15 +534,6 @@ TShared<GpuParameterSet> GpuParticleSimulation::PrepareSimulateParameters(const 
 			depthCollisionUniforms, depthCollisionSettings.RadiusScale * uniformScale);
 		gGpuParticleDepthCollisionUniformDefinition.gDampening.Set(depthCollisionUniforms, depthCollisionSettings.Dampening);
 		gGpuParticleDepthCollisionUniformDefinition.gRestitution.Set(depthCollisionUniforms, depthCollisionSettings.Restitution);
-
-		const Vector2 sizeScaleUVOffset =
-			GpuParticleCurves::GetUvOffset(renderState.SizeScaleFrameIdxCurveAlloc);
-		const float sizeScaleUVScale =
-			GpuParticleCurves::GetUvScale(renderState.SizeScaleFrameIdxCurveAlloc);
-
-		gGpuParticleDepthCollisionUniformDefinition.gSizeScaleCurveOffset.Set(depthCollisionUniforms, sizeScaleUVOffset);
-		gGpuParticleDepthCollisionUniformDefinition.gSizeScaleCurveScale.Set(
-			depthCollisionUniforms, Vector2(sizeScaleUVScale, 0.0f));
 	}
 
 	// Bind transient uniform buffers to GPU parameters
@@ -708,7 +699,7 @@ void GpuParticleSimulation::Simulate(FrameGraph& graph, const RenderBeastScene& 
 
 		// Populate remaining parameters (textures and other buffers)
 		GpuParticleSimulateMaterial::PopulateParameters(systemParams, resources, m->ParticleVertexInputBuffer, viewParams,
-			gbuffer.Depth, gbuffer.Normals, entry->GetTileUVs(), renderState.PerObjectSuballocation, vectorFieldTexture, supportsDepthCollisions
+			gbuffer.Depth, gbuffer.Normals, entry->GetTileUVs(), vectorFieldTexture, supportsDepthCollisions
 		);
 
 		simulatePass.AddParameterSet(systemParams);
@@ -728,6 +719,11 @@ void GpuParticleSimulation::Simulate(FrameGraph& graph, const RenderBeastScene& 
 		GpuParticleSimulateMaterial* Material;
 		TShared<GpuParameterSet> Parameters;
 		u32 InstanceCount;
+
+		// Per-object parameter set of the particle system, read by depth collisions, and the offsets of its buffers. Null without depth collisions.
+		TShared<GpuParameterSet> PerObjectParameters;
+		u32 PerObjectBufferOffset = 0;
+		u32 GpuParticlesParamBufferOffset = 0;
 	};
 
 	TArray<SimulateDraw> simulateDraws;
@@ -761,12 +757,34 @@ void GpuParticleSimulation::Simulate(FrameGraph& graph, const RenderBeastScene& 
 				continue;
 
 			const u32 tileCount = entry->GetTileCount();
-			simulateDraws.Add({ simulateMaterial, entry->GetSimulateParameters(), Math::DivideAndRoundUp(tileCount, GpuParticleConstants::kTilesPerInstance) });
+			SimulateDraw draw = { simulateMaterial, entry->GetSimulateParameters(), Math::DivideAndRoundUp(tileCount, GpuParticleConstants::kTilesPerInstance) };
+			if(currentDepthCollisions)
+			{
+				draw.PerObjectParameters = renderState.PerObjectParameterSet;
+				draw.PerObjectBufferOffset = renderState.PerObjectSuballocation.GetSuballocationOffset();
+				draw.GpuParticlesParamBufferOffset = renderState.GpuParticlesParamSuballocation.GetSuballocationOffset();
+			}
+
+			simulateDraws.Add(draw);
 		}
 	}
 
 	if(simulateDraws.Empty())
 		return;
+
+	// The per-object sets hold only the uniform buffer pools, which are at rest
+	TInlineArray<TShared<GpuParameterSet>, 4> perObjectParameterSets;
+	for(const SimulateDraw& draw : simulateDraws)
+	{
+		if(draw.PerObjectParameters == nullptr)
+			continue;
+
+		if(std::find(perObjectParameterSets.begin(), perObjectParameterSets.end(), draw.PerObjectParameters) == perObjectParameterSets.end())
+		{
+			simulatePass.AddRenderPassParameterSet(draw.PerObjectParameters);
+			perObjectParameterSets.Add(draw.PerObjectParameters);
+		}
+	}
 
 	const GpuParticleStateTextures& simulateState = resources.GetCurrentState();
 	simulatePass.SetColorAttachment(0, simulateState.PositionAndTimeTex, FrameGraphAttachmentLoad::Load);
@@ -784,7 +802,10 @@ void GpuParticleSimulation::Simulate(FrameGraph& graph, const RenderBeastScene& 
 		commandBuffer.SetIndexBuffer(m->HelperBuffers.SpriteIndices);
 		commandBuffer.SetDrawOperation(DOT_TRIANGLE_LIST);
 
+		const GpuParticlesParameterSetInfo& perObjectSetInfo = GetRenderBeast()->GetGpuParticlesParameterSetInfo();
+
 		const GpuParticleSimulateMaterial* boundMaterial = nullptr;
+		TShared<GpuParameterSet> boundPerObjectParameters;
 		for(const SimulateDraw& draw : simulateDraws)
 		{
 			if(draw.Material != boundMaterial)
@@ -794,6 +815,19 @@ void GpuParticleSimulation::Simulate(FrameGraph& graph, const RenderBeastScene& 
 			}
 
 			commandBuffer.SetGpuParameterSet(draw.Parameters);
+
+			if(draw.PerObjectParameters != nullptr)
+			{
+				if(draw.PerObjectParameters != boundPerObjectParameters)
+				{
+					commandBuffer.SetGpuParameterSet(draw.PerObjectParameters);
+					boundPerObjectParameters = draw.PerObjectParameters;
+				}
+
+				commandBuffer.SetDynamicBufferOffset(GpuPipelineSet::kPerObjectSetIndex, perObjectSetInfo.PerObjectDynamicOffsetIndex, draw.PerObjectBufferOffset);
+				commandBuffer.SetDynamicBufferOffset(GpuPipelineSet::kPerObjectSetIndex, perObjectSetInfo.GpuParticlesDynamicOffsetIndex, draw.GpuParticlesParamBufferOffset);
+			}
+
 			commandBuffer.DrawIndexed(0, GpuParticleConstants::kTilesPerInstance * 6, 0, GpuParticleConstants::kTilesPerInstance * 4, draw.InstanceCount);
 		}
 	});

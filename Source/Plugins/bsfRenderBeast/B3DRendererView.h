@@ -479,19 +479,6 @@ namespace b3d
 			void NotifyNeedsRedraw();
 
 			/**
-			 * Notifies the view that the render target the compositor is rendering to has changed. Note that this does not
-			 * mean the final render target, rather the current intermediate target as set by the renderer during the
-			 * rendering of a single frame. This should be set to null if the renderer is not currently rendering the
-			 * view.
-			 */
-			void NotifyCompositorTargetChanged(const TShared<RenderTarget>& target) const { mCurrentRenderTarget = target; }
-
-			/**
-			 * Returns the render target that is currently being rendered to by the render compositor.
-			 */
-			TShared<RenderTarget> GetCompositorRenderTarget() const { return mCurrentRenderTarget; }
-
-			/**
 			 * Notifies the view that a new average luminance is being calculated into @p texture, a resource of @p graph. Adds a pass that
 			 * reads it back after the passes that write it, and the view picks up the value once the graph's GPU work completes.
 			 */
@@ -544,7 +531,6 @@ namespace b3d
 			};
 
 			RendererViewProperties mProperties;
-			mutable TShared<RenderTarget> mCurrentRenderTarget;
 			Camera* mCamera;
 
 			TShared<RenderQueue> mDeferredOpaqueQueue;

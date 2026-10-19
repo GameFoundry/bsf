@@ -485,9 +485,6 @@ namespace b3d
 			/** Returns the current area of the render pass in pixels. This depends on the currently bound framebuffer. */
 			Area2I GetRenderPassArea() const;
 
-			/** Notifies the active render target that a rendering command was queued that will potentially change its contents. */
-			void NotifyRenderTargetModified();
-
 			/** Returns the owner GPU device, cast as a VulkanGpuDevice. */
 			VulkanGpuDevice& GetVulkanGpuDevice() const { return static_cast<VulkanGpuDevice&>(mGpuDevice); }
 
@@ -552,7 +549,6 @@ namespace b3d
 			UnorderedMap<GpuParameterSet*, CachedGpuParameterData> mRenderPassGpuParameterSetCache;
 
 			TShared<RenderTarget> mRenderTarget;
-			bool mRenderTargetModified = false;
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
 			Vector<QueryInformation> mOpenQueries; // Only used for validation

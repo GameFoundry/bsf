@@ -92,10 +92,15 @@ class MyRenderer : public Renderer
 {
 	// ... other renderer methods
 
-	// Performs rendering for a single camera, on the render thread
-	void Render(const TShared<Camera>& camera)
+	// Adds the passes of a single camera to the frame graph, on the render thread
+	void Render(const TShared<Camera>& camera, FrameGraph& graph)
 	{
-		// Render pre-base pass extensions
+		// Describe the attachments of the location
+		RendererViewContext viewContext(graph);
+		viewContext.ColorAttachments.Add(gbufferAlbedo);
+		viewContext.DepthStencilAttachment = sceneDepth;
+
+		// Render pre-base pass extensions, which add their passes to the graph
 		auto iter = mRendererExtensions.begin();
 		while (iter != mRendererExtensions.end())
 		{
@@ -103,7 +108,7 @@ class MyRenderer : public Renderer
 			if (extension->GetLocation() != RenderLocation::PreBasePass)
 				break;
 
-			if (extension->Check(*camera))
+			if (extension->Check(*camera) != RendererExtensionRequest::DontRender)
 				extension->Render(*camera, viewContext);
 
 			++iter;

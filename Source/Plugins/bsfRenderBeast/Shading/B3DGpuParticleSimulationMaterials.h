@@ -77,8 +77,6 @@ namespace b3d { namespace render
 		B3D_UNIFORM_BUFFER_MEMBER(float, gRestitution)
 		B3D_UNIFORM_BUFFER_MEMBER(float, gDampening)
 		B3D_UNIFORM_BUFFER_MEMBER(float, gCollisionRadiusScale)
-		B3D_UNIFORM_BUFFER_MEMBER(Vector2, gSizeScaleCurveOffset)
-		B3D_UNIFORM_BUFFER_MEMBER(Vector2, gSizeScaleCurveScale)
 	B3D_UNIFORM_BUFFER_END
 
 	inline GpuParticleDepthCollisionUniformDefinition gGpuParticleDepthCollisionUniformDefinition;
@@ -124,13 +122,12 @@ namespace b3d { namespace render
 		 * @param	depth						Depth texture for collision detection
 		 * @param	normals						Normals texture for collision detection
 		 * @param	tileUVs						Sets the UV offsets of individual tiles for a particular particle system that's being rendered.
-		 * @param	perObjectParams				General purpose particle system parameters.
 		 * @param	vectorFieldTexture			3D texture representing the vector field, or null if none.
 		 * @param	supportsDepthCollisions		True if this material variation supports depth collisions
 		 */
 		static void PopulateParameters(const TShared<GpuParameterSet>& gpuParameters, GpuParticleResources& resources, const TShared<GpuBuffer>& particleVertexInputBuffer,
 			const GpuBufferSuballocation& viewParams, const TShared<Texture>& depth, const TShared<Texture>& normals, const TShared<GpuBuffer>& tileUVs,
-			const GpuBufferSuballocation& perObjectParams, const TShared<Texture>& vectorFieldTexture, bool supportsDepthCollisions);
+			const TShared<Texture>& vectorFieldTexture, bool supportsDepthCollisions);
 
 		/** Returns the material variation matching the provided parameters. */
 		static GpuParticleSimulateMaterial* GetVariation(bool depthCollisions, bool localSpace);

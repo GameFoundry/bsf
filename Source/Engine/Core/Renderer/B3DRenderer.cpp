@@ -22,6 +22,21 @@ using namespace b3d;
 
 namespace b3d { namespace render
 {
+void RendererViewContext::SetAttachments(FrameGraphRasterPass& pass) const
+{
+	if(Target != nullptr)
+	{
+		pass.SetRenderTarget(Target, FrameGraphAttachmentLoad::Load);
+		return;
+	}
+
+	for(u32 colorIndex = 0; colorIndex < ColorAttachments.Size(); colorIndex++)
+		pass.SetColorAttachment(colorIndex, ColorAttachments[colorIndex], FrameGraphAttachmentLoad::Load);
+
+	if(DepthStencilAttachment != nullptr)
+		pass.SetDepthStencilAttachment(DepthStencilAttachment, DepthStencilMode, FrameGraphAttachmentLoad::Load);
+}
+
 void Renderer::Initialize(const TShared<GpuDevice>& gpuDevice)
 {
 	mDevice = gpuDevice;

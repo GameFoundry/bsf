@@ -461,7 +461,7 @@ namespace b3d
 			struct GUICameraRenderData
 			{
 				Vector<GUIWidgetRenderData> WidgetRenderData;
-				TShared<RenderTexture> CachedRenderTexture;
+				TShared<Texture> CachedTexture; /**< Holds the GUI of the camera, redrawn only where it changes. */
 				Vector<Area2I> DirtyRegions;
 				Vector<Area2I> LastFrameDirtyDebugDrawRegions;
 			};

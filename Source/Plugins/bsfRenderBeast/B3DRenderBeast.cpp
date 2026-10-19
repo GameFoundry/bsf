@@ -589,7 +589,6 @@ void RenderBeast::RenderView(FrameGraph& graph, RenderBeastScene& scene, Rendere
 
 	RenderCompositorNodeInputs inputs(graph, scene, viewGroup, view, *mRenderThreadOptions, frameInfo);
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Extensions)
 	// Register callbacks
 	if(viewProps.TriggerCallbacks)
 	{
@@ -624,7 +623,6 @@ void RenderBeast::RenderView(FrameGraph& graph, RenderBeastScene& scene, Rendere
 			}
 		}
 	}
-#endif
 
 	const RenderCompositor& compositor = view.GetCompositor();
 	PROFILE_CALL(compositor.Execute(inputs), "Compositor")
@@ -683,50 +681,32 @@ bool RenderBeast::RenderOverlay(FrameGraph& graph, RenderBeastScene& scene, Rend
 
 	bool needsRedraw = view.ShouldRedrawOverlay();
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Extensions)
-	const Set<RendererExtension*, RendererExtension::SortFunction>& rendererExtensions = scene.GetCombinedRendererExtensions();
-
-	// Trigger overlay callbacks
-	if(!rendererExtensions.empty())
+	// Trigger overlay callbacks. Extensions that only render into a dirty target render if any other extension or the view redraws.
+	TInlineArray<RendererExtension*, 4> overlayExtensions;
+	for(RendererExtension* extension : scene.GetCombinedRendererExtensions())
 	{
-		view.NotifyCompositorTargetChanged(target);
+		if(extension->GetLocation() != RenderLocation::Overlay)
+			continue;
 
-		mOverlayExtensions.clear();
+		const RendererExtensionRequest request = extension->Check(*camera);
+		if(request == RendererExtensionRequest::DontRender)
+			continue;
 
-		for(auto& entry : rendererExtensions)
-		{
-			if(entry->GetLocation() != RenderLocation::Overlay)
-				continue;
+		if(request == RendererExtensionRequest::ForceRender || forceRendering)
+			needsRedraw = true;
 
-			RendererExtensionRequest request = entry->Check(*camera);
-			if(request == RendererExtensionRequest::DontRender)
-				continue;
-
-			if(request == RendererExtensionRequest::ForceRender || forceRendering)
-				needsRedraw = true;
-
-			mOverlayExtensions.push_back(entry);
-		}
-
-		if(!needsRedraw)
-			mOverlayExtensions.clear();
-
-		for(auto& entry : mOverlayExtensions)
-		{
-			RendererViewContext context;
-			context.CurrentTarget = view.GetCompositorRenderTarget();
-			context.CommandBuffer = commandBuffer.GetShared();
-
-			entry->Render(*camera, context);
-		}
-
-		view.NotifyCompositorTargetChanged(nullptr);
+		overlayExtensions.Add(extension);
 	}
-#else
-	// The overlay callbacks request a redraw when rendering is forced. Until their port, the view does.
-	if(forceRendering)
-		needsRedraw = true;
-#endif
+
+	if(needsRedraw)
+	{
+		RendererViewContext context(graph);
+		context.Target = target;
+		context.Viewport = viewport->GetArea();
+
+		for(RendererExtension* extension : overlayExtensions)
+			extension->Render(*camera, context);
+	}
 
 	view.ResolveCaptures(graph, target);
 

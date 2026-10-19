@@ -16,6 +16,7 @@
 #include "Resources/B3DBuiltinResources.h"
 #include "Components/B3DCamera.h"
 #include "Profiling/B3DProfilerGPU.h"
+#include "FrameGraph/B3DFrameGraph.h"
 
 
 using namespace b3d;
@@ -143,13 +144,20 @@ namespace b3d { namespace render
 
 DebugDrawUniformDefinition gDebugDrawUniformDefinition;
 
-void DebugDrawMaterial::Execute(GpuCommandBuffer& commandBuffer, const GpuBufferSuballocation& uniformBuffer, const TShared<Mesh>& mesh, const SubMesh& subMesh)
+TShared<GpuParameterSet> DebugDrawMaterial::Prepare(FrameGraphPass& pass, const GpuBufferSuballocation& uniformBuffer)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+	set->SetUniformBuffer("Params", uniformBuffer);
+
+	return set;
+}
+
+void DebugDrawMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const TShared<Mesh>& mesh, const SubMesh& subMesh) const
+{
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	mGpuParameterSet->SetUniformBuffer("Params", uniformBuffer);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().Draw(commandBuffer, mesh, subMesh);
 }
 
@@ -186,8 +194,9 @@ RendererExtensionRequest DebugDrawRenderer::Check(const Camera& camera)
 
 void DebugDrawRenderer::Render(const Camera& camera, const RendererViewContext& viewContext)
 {
+	// Check() lets the renderer call this for every view, also when there is nothing to draw
 	TShared<RenderTarget> renderTarget = camera.GetViewport()->GetTarget();
-	if(renderTarget == nullptr)
+	if(renderTarget == nullptr || mMeshes.empty())
 		return;
 
 	Matrix4 viewMatrix = camera.GetViewMatrix();
@@ -199,10 +208,40 @@ void DebugDrawRenderer::Render(const Camera& camera, const RendererViewContext& 
 	gDebugDrawUniformDefinition.gMatViewProj.Set(uniforms, viewProjMat);
 	gDebugDrawUniformDefinition.gViewDir.Set(uniforms, (Vector4)camera.GetWorldTransform().GetForward());
 
+	/** A mesh to draw, with the set of its material variation. */
+	struct DebugDrawCall
+	{
+		DebugDrawMaterial* Material;
+		TShared<GpuParameterSet> Set;
+		TShared<Mesh> Mesh;
+		SubMesh SubMesh;
+	};
+
+	// Draws over the lit scene, testing and writing scene depth
+	FrameGraphRasterPass pass;
+	viewContext.SetAttachments(pass);
+
+	Vector<DebugDrawCall> draws;
+	draws.reserve(mMeshes.size());
+
 	for(auto& entry : mMeshes)
 	{
 		DebugDrawMaterial* material = DebugDrawMaterial::GetVariation(entry.Type);
-		material->Execute(*viewContext.CommandBuffer, uniforms, entry.Mesh, entry.SubMesh);
+
+		// One set per material variation
+		auto found = std::find_if(draws.begin(), draws.end(), [material](const DebugDrawCall& draw) { return draw.Material == material; });
+		TShared<GpuParameterSet> set = found != draws.end() ? found->Set : material->Prepare(pass, uniforms);
+
+		draws.push_back({ material, std::move(set), entry.Mesh, entry.SubMesh });
 	}
+
+	const Area2 viewport = viewContext.Viewport;
+	viewContext.Graph.AddRasterPass("DebugDraw", std::move(pass), [draws = std::move(draws), viewport](FrameGraphPassContext& context)
+	{
+		context.GetCommandBuffer().SetViewport(viewport);
+
+		for(const DebugDrawCall& draw : draws)
+			draw.Material->Execute(context, draw.Set, draw.Mesh, draw.SubMesh);
+	});
 }
 }}

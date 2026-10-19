@@ -11,6 +11,7 @@
 #include "GpuBackend/B3DGpuCommandBufferPoolRing.h"
 #include "GpuBackend/B3DGpuCompletionTracker.h"
 #include "GpuBackend/B3DGpuParameterSetPool.h"
+#include "FrameGraph/B3DFrameGraph.h"
 
 namespace b3d
 {
@@ -88,22 +89,46 @@ namespace b3d
 		};
 
 		/**
-		 * Contains information about the current state of a particular renderer view. This will be updated
-		 * during rendering of a single frame.
+		 * Describes the view a renderer extension renders for, at the extension's RenderLocation. Extensions add their passes to the graph
+		 * of the view, and render into the attachments of the location with SetAttachments().
 		 */
-		struct RendererViewContext
+		struct B3D_EXPORT RendererViewContext
 		{
-			/** Current target the view is rendering to. */
-			TShared<RenderTarget> CurrentTarget;
-
-			/** Command buffer that's currently being recorded. */
-			TShared<GpuCommandBuffer> CommandBuffer;
+			RendererViewContext(FrameGraph& graph)
+				: Graph(graph)
+			{}
 
 			/**
-			 * Frame graph of the render target the view renders to. Renderer extensions add their passes to it. Null while the renderer
-			 * records the view without a frame graph.
+			 * Attaches the attachments of the location to @p pass, loading their contents: Target if set, otherwise ColorAttachments and
+			 * DepthStencilAttachment.
 			 */
-			FrameGraph* Graph = nullptr;
+			void SetAttachments(FrameGraphRasterPass& pass) const;
+
+			/**
+			 * Graph of the view. Extensions add their passes to it. The graph executes once every view of the render target has added its
+			 * passes, so state the passes need must be captured when they are added.
+			 */
+			FrameGraph& Graph;
+
+			/**
+			 * Color attachments of the location, in order. Scene color at RenderLocation::PostLightPass. Scene color and the G-buffer at
+			 * RenderLocation::PreBasePass and RenderLocation::PostBasePass. Empty at RenderLocation::Prepare and RenderLocation::Overlay.
+			 */
+			TInlineArray<TShared<Texture>, 8> ColorAttachments;
+
+			/** Depth-stencil attachment of the location, scene depth. Null at RenderLocation::Prepare and RenderLocation::Overlay. */
+			TShared<Texture> DepthStencilAttachment;
+
+			/** How passes at the location may access DepthStencilAttachment. */
+			FrameGraphDepthStencilMode DepthStencilMode = FrameGraphDepthStencilMode::Write;
+
+			/** Render target of the view at RenderLocation::Overlay, imported into Graph. Null at the other locations. */
+			TShared<RenderTarget> Target;
+
+			/**
+			 * Normalized area of the attachments the view covers. The graph sets no viewport, so every pass sets one before it draws.
+			 */
+			Area2 Viewport = Area2(0.0f, 0.0f, 1.0f, 1.0f);
 		};
 
 		/** Settings that control renderer scene capture. */

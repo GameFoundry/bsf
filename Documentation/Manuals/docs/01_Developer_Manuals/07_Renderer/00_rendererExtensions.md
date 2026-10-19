@@ -19,13 +19,13 @@ public:
 ~~~~~~~~~~~~~
 
 Your implementation needs to pass two parameters to the base **RendererExtension** class. The first parameter is of type @b3d::RenderLocation which determines at which point during rendering will your extension be triggered. It can be any of the following values, which are executed in the order specified:
- - @b3d::RenderLocation::Prepare - Triggered before any rendering begins. Useful for preparing data or resources before the main render passes.
- - @b3d::RenderLocation::PreBasePass - Triggered before any scene objects are rendered. The renderer guarantees the render targets used for rendering scene objects will be bound (e.g. GBuffer).
- - @b3d::RenderLocation::PostBasePass - Triggered after scene objects are rendered, but before they are lit. The renderer guarantees the render targets used for rendering scene objects will be bound (e.g. GBuffer).
- - @b3d::RenderLocation::PostLightPass - Triggered after all scene objects have been rendered and their final information has been written to the final scene color buffer, without any post-processing. The renderer guarantees the final scene color render target will be bound.
- - @b3d::RenderLocation::Overlay - Triggered after all scene objects have been rendered and their final information has been written to the final scene color buffer, with post-processing. The renderer guarantees the final scene color render target will be bound.
- 
-The second parameter is the priority. It determines in what order will renderer extensions attached to the same render location be executed. Those with higher priority will execute before those with lower priority.
+ - @b3d::RenderLocation::Prepare - Triggered before the view renders any scene objects. Useful for preparing data or resources before the main render passes. There are no attachments at this location.
+ - @b3d::RenderLocation::PreBasePass - Triggered after the G-buffer is cleared, before scene objects are rendered into it. The attachments are the G-buffer and scene depth.
+ - @b3d::RenderLocation::PostBasePass - Triggered after scene objects are rendered into the G-buffer, but before they are lit. The attachments are the G-buffer and scene depth, whose depth is read-only.
+ - @b3d::RenderLocation::PostLightPass - Triggered after all scene objects have been rendered and lit into scene color, without any post-processing. The attachments are scene color and scene depth.
+ - @b3d::RenderLocation::Overlay - Triggered after post-processing, once the final image of the view is in its render target. The attachment is the render target.
+
+The second parameter is the priority, a signed number. It determines in what order will renderer extensions attached to the same render location be executed. Those with higher priority will execute before those with lower priority.
 
 ~~~~~~~~~~~~~{.cpp}
 // Renderer extension with necessary constructor arguments
@@ -40,7 +40,7 @@ public:
  
 Finally the implementation needs to implement the following methods:
  - @b3d::RendererExtension::Check() - Called every frame for every camera in the scene. The method accepts a camera as a parameter and returns @b3d::RendererExtensionRequest that signals the renderer if and under which circumstances should **RendererExtension::Render()** be called.
- - @b3d::RendererExtension::Render() - Called every frame for every camera that the **RendererExtension::Check()** method returned `RendererExtensionRequest::ForceRender` for. This is the method where you place the bulk of extension code and perform actual rendering. The rendering is performed using the low level rendering API as described previously. Note that this is the only method in the extension that you should be rendering from.
+ - @b3d::RendererExtension::Render() - Called every frame for every camera that the **RendererExtension::Check()** method returned `RendererExtensionRequest::ForceRender` for. This is the method where you place the bulk of extension code. It is called while the renderer builds the frame graph of the view, and adds the extension's passes to that graph. The passes record their commands with the low level rendering API as described previously, later, when the graph executes. Note that this is the only method in the extension that you should be rendering from.
  
 ~~~~~~~~~~~~~{.cpp}
 // Renderer extension with Check() and Render() methods
@@ -59,15 +59,31 @@ public:
 
 	void Render(const render::Camera& camera, const render::RendererViewContext& viewContext) override
 	{
-		GpuCommandBuffer& commandBuffer = ...;
-		
-		// bind pipeline state, vertex/index buffers, etc.
-		commandBuffer.DrawIndexed(0, numIndices, 0, numVertices);
+		// Draw into the attachments of the location, keeping their contents
+		render::FrameGraphRasterPass pass;
+		viewContext.SetAttachments(pass);
+
+		// Every parameter set the draws bind is added to the pass. Resources that are not resources of the graph may only be read.
+		TShared<render::GpuParameterSet> parameters = ...;
+		pass.AddParameterSet(parameters);
+
+		// Records the pass when the graph executes, with the render pass already open
+		viewContext.Graph.AddRasterPass("MyExtension", std::move(pass), [parameters, viewport = viewContext.Viewport](render::FrameGraphPassContext& context)
+		{
+			render::GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
+			commandBuffer.SetViewport(viewport);
+
+			// bind pipeline state, vertex/index buffers, etc.
+			commandBuffer.SetGpuParameterSet(parameters);
+			commandBuffer.DrawIndexed(0, numIndices, 0, numVertices);
+		});
 	}
 }
 ~~~~~~~~~~~~~
 
-@b3d::RendererViewContext is an additional parameter provided to the **Render()** method, that gives you insight in the current state of the renderer. In particular it contains the current render target set by the renderer. If you ever change the render target inside the extension (through a call to **GpuCommandBuffer::BeginRenderPass()**) you must ensure to restore the original render target before exiting the method.
+@b3d::RendererViewContext is an additional parameter provided to the **Render()** method. It holds the frame graph of the view (**RendererViewContext::Graph**) and the attachments of the extension's location. **RendererViewContext::SetAttachments()** attaches them to a raster pass, loading their contents, and **RendererViewContext::Viewport** is the area of the attachments the view covers. The graph sets no viewport, so every pass sets one before it draws.
+
+An extension may add any number of passes, including compute passes and passes that render into textures of its own. Passes must not open or close render passes or issue barriers; the graph does both. Since the passes record after **Render()** returns, and after every other view of the render target has added its passes, the pass functions must capture the state they need instead of reading the extension's members when they run.
 
 # Registering an extension
 Once extension is implemented you need to register it with the renderer by calling @b3d::RendererExtension::Create<T>, where the template parameter is the type of your extension. You must also provide initialization data that will be passed to the extension - this can be null.

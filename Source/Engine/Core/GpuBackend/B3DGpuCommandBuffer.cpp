@@ -194,12 +194,16 @@ void GpuCommandBuffer::DispatchCompute(u32 /*groupCountX*/, u32 /*groupCountY*/,
 #endif
 }
 
-void GpuCommandBuffer::BeginRenderPass([[maybe_unused]] const RenderPassCreateInformation& createInformation)
+void GpuCommandBuffer::BeginRenderPass(const RenderPassCreateInformation& createInformation)
 {
 #if B3D_BUILD_TYPE_DEVELOPMENT
 	if(mExplicitBarrierValidator != nullptr)
 		mExplicitBarrierValidator->ValidateRenderPass(createInformation);
 #endif
+
+	// The render pass may change the contents of the target unless every surface is read-only
+	if(createInformation.Target != nullptr && createInformation.ReadOnlyMask != RT_ALL)
+		createInformation.Target->TickUpdateCount();
 }
 
 void GpuCommandBuffer::CopyBufferToBuffer([[maybe_unused]] const TShared<GpuBuffer>& source, [[maybe_unused]] const TShared<GpuBuffer>& destination, u32 /*sourceOffset*/, u32 /*destinationOffset*/, u32 /*length*/)

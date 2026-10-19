@@ -201,8 +201,8 @@ namespace b3d
 			const RenderTargetClearValues& GetClearValues() const { return mClearValues; }
 
 			/**
-			 * Returns a number that increments each time the target is rendered to. External systems can use this to
-			 * determine when the target's contents changed.
+			 * Returns a number that increments each time a render pass that may write the target begins. External systems can use this
+			 * to determine when the target's contents changed.
 			 */
 			u64 GetUpdateCount() const { return mUpdateCount; }
 
