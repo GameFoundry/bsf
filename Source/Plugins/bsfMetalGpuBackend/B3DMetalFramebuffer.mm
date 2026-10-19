@@ -37,7 +37,7 @@ namespace b3d
 				AddDepthStencilAttachment(*depthStencilImage, depthStencilImage->GetRange(TextureSurface(depthStencil.MipLevel, 1, depthStencil.Face, 1)));
 		}
 
-		void MetalFramebuffer::ApplyAttachments(MTLRenderPassDescriptor* descriptor) const
+		void MetalFramebuffer::ApplyAttachments(MTL4RenderPassDescriptor* descriptor) const
 		{
 			for (const GpuFramebufferAttachment& attachment : GetAttachments())
 			{

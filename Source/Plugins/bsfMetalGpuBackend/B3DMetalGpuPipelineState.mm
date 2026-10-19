@@ -349,6 +349,9 @@ namespace b3d
 
 			MTLComputePipelineDescriptor* descriptor = [[MTLComputePipelineDescriptor alloc] init];
 			descriptor.computeFunction = function;
+#if B3D_BUILD_TYPE_DEVELOPMENT
+			descriptor.label = [NSString stringWithUTF8String:program->GetName().c_str()];
+#endif
 
 			// Every dispatch uses exactly this workgroup size (dispatchThreadgroups, never partial groups), so
 			// the promise can be made per pipeline. 32 is the SIMD-group width of every Apple-silicon GPU.

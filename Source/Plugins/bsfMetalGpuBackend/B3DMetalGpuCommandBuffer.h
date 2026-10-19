@@ -3,6 +3,7 @@
 #pragma once
 
 #include "B3DMetalPrerequisites.h"
+#include "GpuBackend/Allocators/B3DGpuResource.h"
 #include "B3DMetalGpuPipelineState.h"
 #include "B3DMetalResourceTracker.h"
 #include "B3DMetalBarrierHelper.h"
@@ -25,6 +26,7 @@ namespace b3d
 		class MetalVertexInput;
 		class MetalGpuBuffer;
 		class MetalBuffer;
+		class MetalImage;
 
 		/** @addtogroup MetalGpuBackend
 		 *  @{
@@ -33,8 +35,22 @@ namespace b3d
 		/**
 		 * Metal implementation of a GPU command buffer.
 		 *
-		 * Owns a single @c MTLCommandBuffer acquired from the owning queue. At most one encoder (render,
-		 * compute, or blit) is active at a time.
+		 * Records into a reusable @c MTL4CommandBuffer backed by the command buffer's own @c MTL4CommandAllocator. At most
+		 * one encoder is open at a time: a render encoder within render passes, and a compute encoder for dispatches and
+		 * transfers outside of them.
+		 *
+		 * Resources are untracked, so the command buffer orders all GPU work itself, through Metal 4 stage barriers:
+		 *  - Work in earlier encoders, or committed earlier on the queue, is waited on through a consumer barrier
+		 *    (@c barrierAfterQueueStages:) in the encoder that depends on it. Barriers recorded while no encoder is open are
+		 *    encoded at the start of the next encoder.
+		 *  - Work earlier in the open encoder is waited on through an intra-encoder barrier. Render encoders cannot wait for
+		 *    their own fragment work, so a dependency on it ends the encoder and continues the render pass in a new one.
+		 *  - Dependencies on command buffers submitted earlier to the same queue are resolved at submission, by committing a
+		 *    command buffer with a producer barrier (@c barrierAfterStages:beforeQueueStages:) ahead of the recorded work.
+		 *  - Dependencies on other queues are resolved by queue waits on their submission events.
+		 *
+		 * Metal 4 command buffers do not retain the objects they use, so the command buffer keeps alive every object it
+		 * encodes that the resource tracker does not, until the GPU finishes executing it.
 		 */
 		class MetalGpuCommandBuffer final : public GpuCommandBuffer
 		{
@@ -52,30 +68,51 @@ namespace b3d
 			void NotifyWillQueueForSubmit(GpuQueueId queueId, GpuQueueMask syncMask) override;
 
 			/**
-			 * Notifies the command buffer that the pool it was allocated from was reset, returning a finished command
-			 * buffer to the ready state. The pool may only be reset once all of its command buffers have finished executing.
+			 * Notifies the command buffer that the pool it was allocated from was reset, returning a finished or never
+			 * submitted command buffer to the ready state. The pool may only be reset once none of its command buffers are
+			 * executing.
 			 */
 			void NotifyParentPoolReset();
 
 			/**
-			 * Commits the recorded commands to @p submitQueue. Waits for the other queues in @p syncMask are encoded before
+			 * Commits the recorded commands to @p submitQueue. Waits for the other queues in @p syncMask are issued before
 			 * the recorded work, and the queue's own event and @p signalFences are signaled after it.
 			 *
 			 * @note	Submit thread only. The owner thread must have called NotifyWillQueueForSubmit() first.
 			 */
 			void ExecuteSubmitOnSubmitThread(MetalGpuQueue& submitQueue, GpuQueueMask syncMask, TArrayView<const GpuTimelineFenceAndValue> signalFences = {});
 
-			/** Returns the underlying MTLCommandBuffer, acquiring it on first use. */
-			id<MTLCommandBuffer> GetOrAcquireMetalCommandBuffer();
+			/**
+			 * Closes an open render encoder and returns the compute encoder, opening one if needed. Metal 4 encodes transfers
+			 * on compute encoders. Lets code outside the command buffer (e.g. window surface readback) append transfers in
+			 * order with the recorded commands. Returns nil if recording failed.
+			 */
+			id<MTL4ComputeCommandEncoder> GetOrOpenComputeEncoder();
 
 			/**
-			 * Closes any open render or compute encoder and returns a blit encoder, opening one if needed. Lets code outside
-			 * the command buffer (e.g. window surface readback) append blits in order with the recorded commands.
+			 * Orders the work recorded after the call against the work recorded or submitted before it. For accesses the
+			 * resource tracker does not see, such as of window back buffers.
 			 */
-			id<MTLBlitCommandEncoder> GetOrOpenBlitEncoder();
+			void EncodeBarrier(const GpuBarrierScope& scope);
 
-			/** Encodes an event signal at the current position in the recorded commands. */
-			bool EncodeSignalEvent(id<MTLSharedEvent> event, u64 value);
+			/**
+			 * Makes the queue signal @p event with @p value once the GPU finishes executing the command buffer. Metal 4
+			 * command buffers cannot signal events from within. Returns false if recording failed.
+			 */
+			bool QueueEventSignal(id<MTLSharedEvent> event, u64 value);
+
+			/** Keeps @p object alive until the GPU finishes executing the command buffer. */
+			void RetainUntilComplete(id object);
+
+			/** Keeps a window surface image alive until the GPU finishes executing the command buffer. */
+			void TrackSurfaceImage(MetalImage& image, GpuAccessFlags access);
+
+			/**
+			 * Makes @p drawable resident for the command buffer, through the residency set of the layer that owns it. Must be
+			 * called while the command buffer is recording, before any command that accesses the drawable's texture is
+			 * committed. Does nothing if @p drawable is nil.
+			 */
+			void UseDrawableResidency(id<CAMetalDrawable> drawable);
 
 			/**
 			 * @name GpuCommandBuffer Interface
@@ -132,35 +169,64 @@ namespace b3d
 			bool RecordExplicitBarriers(const GpuExplicitBarriers& barriers, GpuBarrierPhase phase, GpuSplitBarrier* split) override;
 #endif
 
-			enum class EncoderKind
+			/** Number of buffer slots of the argument tables, the maximum Metal supports. */
+			static constexpr u32 kArgumentTableBufferCount = 31;
+
+			/** Argument table of one shader stage, together with the addresses last bound to it. */
+			struct ArgumentTable
 			{
-				None,
-				Render,
-				Compute,
-				Blit
+				id<MTL4ArgumentTable> Table = nil;
+				Array<MTLGPUAddress, kArgumentTableBufferCount> Addresses = {};
+
+				/** Binds @p address at @p index, unless it is already bound there. */
+				void SetAddress(MTLGPUAddress address, u32 index);
 			};
 
-			/**
-			 * Remembers which parameter set, at which generation, last had its resources made resident on the open encoder,
-			 * so rebinding an unchanged set can skip the useResources: calls. The pointer is only compared, never
-			 * dereferenced. Reset whenever the encoder closes.
-			 */
-			struct ParameterSetResidencyCache
+			/** Shared buffer that small per-draw data, such as push constants, is uploaded to. */
+			struct UploadChunk
 			{
-				const MetalGpuParameters* LastBoundSet = nullptr;
-				u64 LastBoundGeneration = 0;
+				id<MTLBuffer> Buffer = nil;
+				GpuAllocation Allocation;
+				u64 Cursor = 0;
+			};
 
-				void Reset()
-				{
-					LastBoundSet = nullptr;
-					LastBoundGeneration = 0;
-				}
+			struct PendingEventSignal
+			{
+				id<MTLSharedEvent> Event = nil;
+				u64 Value = 0;
 			};
 
 			void SetState(GpuCommandBufferState state) { mState = state; }
 
 			/** Returns true if the command buffer is currently recording (with or without an open render pass). */
 			bool IsRecording() const { return mState == GpuCommandBufferState::Recording || mState == GpuCommandBufferState::RecordingRenderPass; }
+
+			/**
+			 * Begins recording into the native command buffer, unless already recording. Returns false if recording
+			 * failed.
+			 */
+			bool BeginNativeCommandBuffer();
+
+			/** Opens a compute encoder, or returns the open one. Closes an open render encoder. */
+			id<MTL4ComputeCommandEncoder> OpenComputeEncoder();
+
+			/**
+			 * Opens a render encoder for @p descriptor and binds the argument tables. Encodes the barriers recorded while no
+			 * encoder was open. Returns false on failure.
+			 */
+			bool OpenRenderEncoder(MTL4RenderPassDescriptor* descriptor);
+
+			/** Ends the open encoder, if any. */
+			void CloseEncoder();
+
+			/**
+			 * Encodes @p barrier so that it orders the rest of the open encoder and every later encoder on the queue. Without an
+			 * open encoder the barrier is encoded at the start of the next one.
+			 */
+			void EmitBarrier(const MetalStageBarrier& barrier);
+
+			/** Encodes the barriers recorded while no encoder was open at the start of the just opened encoder. */
+			void EmitPendingBarrier();
 
 			/** Tracks graphics resources when bindings change and compute resources before each dispatch. */
 			bool TrackShaderResources(bool compute);
@@ -177,76 +243,23 @@ namespace b3d
 			/** Adds @p pool to mUsedQueryPools unless it is already present. */
 			void AddUniqueUsedQueryPool(const TShared<MetalGpuQueryPool>& pool);
 
-			/**
-			 * Clears the render encoder's residency caches, so every parameter set bound afterwards makes its resources
-			 * resident again. Must be called whenever the render encoder closes.
-			 */
-			void ResetRenderResidencyCaches();
-
-			/** Compute encoder counterpart of ResetRenderResidencyCaches(). */
-			void ResetComputeResidencyCaches();
-
 			/** Converts the stored normalized viewport to this pass's pixel units and applies it to the open render encoder. */
 			void ApplyViewportToRenderEncoder();
 
-			/** Closes the open encoder unless it is of @p targetKind, resetting that encoder's residency caches. */
-			void EnsureEncoderKind(EncoderKind targetKind);
-
-			/** Returns the open encoder of any kind, or nil if none is open. */
-			id<MTLCommandEncoder> GetActiveEncoder() const;
-
-			/** Ends every open encoder. Does not reset the residency caches, callers do that when it matters to them. */
-			void CloseAllEncoders();
-
-#if B3D_METAL_USE_EXPLICIT_RESOURCE_SYNCHRONIZATION
-			/** Signals the resource fence once @p encoder's work completes, so the next encoder can wait on it. */
-			void UpdateResourceFence(id<MTLRenderCommandEncoder> encoder);
-			void UpdateResourceFence(id<MTLComputeCommandEncoder> encoder);
-			void UpdateResourceFence(id<MTLBlitCommandEncoder> encoder);
-
-			/** Makes @p encoder wait on the resource fence if an earlier encoder signaled it. */
-			void WaitForResourceFence(id<MTLRenderCommandEncoder> encoder);
-			void WaitForResourceFence(id<MTLComputeCommandEncoder> encoder);
-			void WaitForResourceFence(id<MTLBlitCommandEncoder> encoder);
-#endif
-
-			/**
-			 * Encodes waits for the last committed submission of every queue in @p syncMask. @p submitQueue itself is only
-			 * waited on with explicit resource synchronization.
-			 */
-			void EncodeQueueWaits(id<MTLCommandBuffer> commandBuffer, MetalGpuQueue& submitQueue, GpuQueueMask syncMask);
-
-			/**
-			 * Encodes the waits of the frame fence (see GpuSubmitThread::ConsumeFrameFence()): one per queue with a non-zero
-			 * value in @p frameFenceValues, @p submitQueue included. Skips other queues in @p syncMask, which
-			 * EncodeQueueWaits() already waits on at their latest committed value.
-			 */
-			void EncodeFrameFenceWaits(id<MTLCommandBuffer> commandBuffer, MetalGpuQueue& submitQueue, GpuQueueMask syncMask,
-				TArrayView<const u64> frameFenceValues);
-
-			/**
-			 * Encodes a signal of @p submitQueue's event and returns the signaled value. MetalGpuQueue::NotifySubmissionCommitted()
-			 * must still be called once the command buffer is committed.
-			 */
-			u64 EncodeQueueSignal(id<MTLCommandBuffer> commandBuffer, MetalGpuQueue& submitQueue);
-
-			/** Resolves pending tracker barriers against the open encoder. */
+			/** Executes pending tracker barriers against the open encoder, restarting the render pass if needed. */
 			bool ExecutePendingBarriers();
 
-			/** Ends and reopens the current render pass with load actions that preserve its attachments. */
-			bool RestartRenderPassForBarrier();
+			/** Ends the open render encoder and continues the render pass in a new one, which loads what the previous one stored. */
+			bool RestartRenderPass();
 
-			/** Opens a continuation render encoder and restores the state the previous encoder held. */
-			bool ResumeRenderPass(MTLRenderPassDescriptor* descriptor);
+			/** Opens a render encoder continuing the current pass, and restores the state the previous encoder held. */
+			bool ResumeRenderPass(MTL4RenderPassDescriptor* descriptor);
 
 			/**
 			 * Makes the render encoder write visibility results into @p queryPool. Metal fixes the visibility buffer when an
 			 * encoder is created, so changing pools requires a new encoder.
 			 */
 			bool ActivateOcclusionQueryPool(const TShared<MetalGpuQueryPool>& queryPool);
-
-			/** Encodes the event signals that were deferred until the render encoder ends. */
-			void EncodePendingEventSignals();
 
 			/**
 			 * Resolves the bound graphics pipeline's vertex input against the bound vertex description, and binds the null
@@ -257,18 +270,21 @@ namespace b3d
 			 */
 			TShared<MetalVertexInput> ResolveVertexInputForDraw(bool& outSkipDraw);
 
-			/**
-			 * Binds the vertex buffers that differ from what the render encoder holds. Called before barriers are executed,
-			 * so a render pass restarted for a barrier rebinds the current buffers.
-			 */
-			void ApplyVertexBuffersToRenderEncoder();
+			/** Tracks and binds the bound vertex buffers. */
+			void BindVertexBuffers();
 
-			/** Uploads the push constants to the open render or compute encoder. */
+			/**
+			 * Copies @p size bytes from @p data to upload memory that stays valid until the GPU finishes executing the
+			 * command buffer, and returns its GPU address, aligned to 256 bytes. Returns 0 on failure.
+			 */
+			MTLGPUAddress Upload(const void* data, u32 size);
+
+			/** Uploads the push constants and binds them to the stages that use them. */
 			void BindPushConstants(bool isGraphics);
 
 			/**
-			 * Binds the dynamic offset uniform buffers of every bound parameter set directly in the open encoder's argument
-			 * table, applying any SetDynamicBufferOffset() overrides. Only bindings that changed are encoded.
+			 * Binds the dynamic offset uniform buffers of every bound parameter set directly in the argument tables, applying
+			 * any SetDynamicBufferOffset() overrides.
 			 */
 			void BindDynamicUniformBuffers(bool isGraphics);
 
@@ -280,56 +296,78 @@ namespace b3d
 			 */
 			bool PrepareDraw(MetalBuffer* indexBuffer);
 
-			/**
-			 * Attaches the bound parameter sets' argument buffers to the open render or compute encoder and makes their
-			 * resources resident, skipping sets the encoder already holds at their current generation.
-			 */
-			void AttachParameterSetsToEncoder(bool isGraphics);
+			/** Records that a draw was encoded in the open render encoder. */
+			void NotifyDrawEncoded();
 
-			/** Forgets what the encoders' argument tables hold, forcing a full rebind on the next draw or dispatch. */
-			void ResetArgumentTableBindings();
+			/** Binds the bound parameter sets' argument buffers to the argument tables of the stages that use them. */
+			void BindParameterSets(bool isGraphics);
+
+			/** Sets @p pipeline on the open render encoder, unless it is already set. */
+			void SetRenderPipelineState(id<MTLRenderPipelineState> pipeline);
+
+			/** Sets @p state on the open render encoder, unless it is already set. */
+			void SetDepthStencilState(id<MTLDepthStencilState> state);
+
+			/** Sets @p value as the stencil reference of the open render encoder, unless it is already set. */
+			void SetEncoderStencilReference(u32 value);
 
 			MetalGpuDevice& mGpuDevice;
 			MetalGpuCommandBufferPool& mPool;
 			u32 mId;
 
-			struct PendingEventSignal
-			{
-				id<MTLSharedEvent> Event = nil;
-				u64 Value = 0;
-			};
+			id<MTL4CommandBuffer> mCommandBuffer = nil;
+			id<MTL4CommandAllocator> mCommandAllocator = nil;
+			bool mIsNativeRecording = false;
 
-			struct VertexBufferBinding
-			{
-				id<MTLBuffer> Buffer = nil;
-				NSUInteger Offset = 0;
-				NSUInteger Index = 0;
-			};
+			/** True once the native command buffer holds recorded commands that were never reset. */
+			bool mHasNativeCommands = false;
 
-			/** Buffer and offset last handed to an encoder's argument table at one dynamic uniform-buffer index. Buffer is compared by address only, never dereferenced. */
-			struct ArgumentTableBinding
-			{
-				__unsafe_unretained id<MTLBuffer> Buffer = nil;
-				NSUInteger Offset = 0;
-			};
+			/**
+			 * Command buffer committed ahead of the recorded one, holding the barriers that order it after earlier
+			 * submissions on the same queue. Encoded on the submit thread, so it has its own allocator.
+			 */
+			id<MTL4CommandBuffer> mPreludeCommandBuffer = nil;
+			id<MTL4CommandAllocator> mPreludeAllocator = nil;
+			bool mHasPreludeCommands = false;
 
-			id<MTLCommandBuffer> mCommandBuffer = nil;
-			id<MTLRenderCommandEncoder> mRenderEncoder = nil;
-			id<MTLComputeCommandEncoder> mComputeEncoder = nil;
-			id<MTLBlitCommandEncoder> mBlitEncoder = nil;
+			id<MTL4RenderCommandEncoder> mRenderEncoder = nil;
+			id<MTL4ComputeCommandEncoder> mComputeEncoder = nil;
 
-			MTLRenderPassDescriptor* mRestartRenderPassDescriptor = nil;
+			/** True if the open encoder encoded work that later work in the same encoder may depend on. */
+			bool mEncoderHasWork = false;
 
+			/** True if fragment shaders of draws in the open render encoder may write storage resources. */
+			bool mRenderEncoderHasFragmentWrites = false;
+
+			/** Barrier recorded while no encoder was open, encoded at the start of the next encoder. */
+			MetalStageBarrier mPendingBarrier;
+
+			ArgumentTable mVertexArgumentTable;
+			ArgumentTable mFragmentArgumentTable;
+			ArgumentTable mComputeArgumentTable;
+
+			Vector<UploadChunk> mUploadChunks;
+			u32 mUploadChunkIndex = 0;
+
+			/** Objects encoded by the command buffer that nothing else keeps alive until it finishes executing. */
+			Vector<id> mRetainedObjects;
+
+			/** Native pipeline states last set on the open render encoder, compared to skip redundant binds. */
+			__unsafe_unretained id<MTLRenderPipelineState> mCurrentRenderPipeline = nil;
+			__unsafe_unretained id<MTLDepthStencilState> mCurrentDepthStencilState = nil;
+			__unsafe_unretained id<MTLComputePipelineState> mCurrentComputePipeline = nil;
+			u32 mCurrentStencilReference = 0;
+
+			/** Drawables rendered to by the command buffer. The queue must wait for them before committing it. */
+			Vector<id<CAMetalDrawable>> mDrawables;
+
+			/** Residency sets of the layers whose drawables the command buffer accesses, attached through UseDrawableResidency(). */
+			Vector<id<MTLResidencySet>> mDrawableResidencySets;
+
+			MTL4RenderPassDescriptor* mRestartRenderPassDescriptor = nil;
+
+			/** Signals of event queries, issued by the queue once the command buffer finishes executing. */
 			Vector<PendingEventSignal> mPendingEventSignals;
-			Vector<VertexBufferBinding> mVertexBufferBindings;
-
-			/** Scratch list of the resources passed to a single useResources: call, reused to avoid per-draw allocations. */
-			Vector<__unsafe_unretained id<MTLResource>> mResidencyResources;
-
-			/** Argument-table contents of the vertex, fragment and compute stages, relative to kMetalDynamicUniformBufferIndexBase. */
-			Array<ArgumentTableBinding, kMetalDynamicUniformBufferCount> mVertexArgumentTable;
-			Array<ArgumentTableBinding, kMetalDynamicUniformBufferCount> mFragmentArgumentTable;
-			Array<ArgumentTableBinding, kMetalDynamicUniformBufferCount> mComputeArgumentTable;
 
 			MTLViewport mViewport = {};
 			Area2 mNormalizedViewport = Area2(0.0f, 0.0f, 1.0f, 1.0f); /**< Viewport in normalized [0, 1] units, converted to pixels per render pass. */
@@ -340,12 +378,8 @@ namespace b3d
 			MTLVisibilityResultMode mVisibilityMode = MTLVisibilityResultModeDisabled;
 			NSUInteger mVisibilityOffset = 0;
 
+			/** Labels pushed and not popped yet, re-pushed on the native command buffer if recording restarts. */
 			u32 mDebugGroupDepth = 0;
-
-#if B3D_METAL_USE_EXPLICIT_RESOURCE_SYNCHRONIZATION
-			id<MTLFence> mResourceFence = nil;
-			bool mFenceNeedsWait = false;
-#endif
 
 			/** Tracks every resource used by the recorded commands, deducing barriers and resource usage notifications. */
 			MetalResourceTracker mResourceTracker;
@@ -380,10 +414,6 @@ namespace b3d
 
 			/** Set when graphics parameter resources must be registered with the tracker again. */
 			bool mGraphicsResourcesRequireTracking = true;
-
-			/** Residency caches per parameter set slot, indexed by GpuParameterSet::GetSet(). */
-			TInlineArray<ParameterSetResidencyCache, 4> mRenderResidencyCaches;
-			TInlineArray<ParameterSetResidencyCache, 4> mComputeResidencyCaches;
 
 			/** Pipeline variant key fields fixed by the current render pass's attachments. TopologyClass is set per draw. */
 			MetalPipelineVariantKey mRenderPassPipelineKey;

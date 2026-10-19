@@ -3,6 +3,7 @@
 #pragma once
 
 #include "B3DMetalPrerequisites.h"
+#include "B3DMetalResidencySet.h"
 #include "GpuBackend/Allocators/B3DGpuAllocator.h"
 #include "GpuBackend/Allocators/B3DGpuLinearAllocator.h"
 #include "GpuBackend/Allocators/B3DGpuTlsfAllocator.h"
@@ -44,9 +45,8 @@ namespace b3d
 		};
 
 		/**
-		 * Metal implementation of the GpuHeapBackend trait. Creates placement heaps, so the engine-side allocators decide
-		 * resource offsets. Heap hazard tracking follows @c B3D_METAL_USE_EXPLICIT_RESOURCE_SYNCHRONIZATION, matching the
-		 * resources placed in them.
+		 * Metal implementation of the GpuHeapBackend trait. Creates untracked placement heaps, so the engine-side allocators
+		 * decide resource offsets. Heaps are made resident through the allocator's residency set for their whole lifetime.
 		 *
 		 * @note	Thread safe.
 		 */
@@ -56,7 +56,7 @@ namespace b3d
 			using HeapHandle = IGpuHeap*;
 			using HeapCreateInformation = MetalHeapCreateInformation;
 
-			explicit MetalHeapBackend(MetalGpuDevice& device);
+			MetalHeapBackend(MetalGpuDevice& device, MetalResidencySet& residencySet);
 
 			MetalHeapBackend(const MetalHeapBackend&) = delete;
 			MetalHeapBackend& operator=(const MetalHeapBackend&) = delete;
@@ -78,6 +78,7 @@ namespace b3d
 
 		private:
 			MetalGpuDevice& mDevice;
+			MetalResidencySet& mResidencySet;
 
 			/** Pool of heap objects with stable addresses. Guarded by mHeapPoolMutex, since allocators of different memory types create and destroy heaps concurrently. */
 			TPool<MetalGpuHeap> mHeapPool;
@@ -118,6 +119,13 @@ namespace b3d
 			/** Returns the memory type a buffer described by @p information allocates from. */
 			static u32 GetBufferMemoryType(const GpuBufferInformation& information);
 
+			/**
+			 * Returns the residency set covering every allocation of the allocator. The set must be attached to every queue
+			 * and committed before the command buffers that depend on its changes, but its contents are managed by the
+			 * allocator.
+			 */
+			MetalResidencySet& GetResidencySet() { return mResidencySet; }
+
 			/** Returns the persistent allocator for @p memoryType. */
 			IGpuAllocator& GetAllocator(u32 memoryType);
 
@@ -150,17 +158,22 @@ namespace b3d
 			 * Creates a buffer of @p length bytes in @p memoryType memory. If @p requestedAllocation already has memory the
 			 * buffer is placed there, otherwise it is allocated from its allocator, which must provide heaps of
 			 * @p memoryType. On success @p outAllocation receives the memory backing the buffer, or is left empty if the
-			 * buffer was allocated directly from the device. Returns nil on failure.
+			 * buffer was allocated directly from the device. Returns nil on failure. Release the buffer through Free().
 			 */
 			id<MTLBuffer> AllocateBuffer(u64 length, u32 memoryType, const GpuAllocation& requestedAllocation, GpuAllocation& outAllocation);
 
 			/**
 			 * Creates a texture described by @p descriptor, see AllocateBuffer(). The memory type is derived from the
 			 * descriptor's storage mode, and storage modes without a memory type are always allocated directly from the
-			 * device. The descriptor must carry the configured hazard tracking mode, which direct allocations use in place of
-			 * the heap's.
+			 * device. The descriptor must be untracked, like the heaps. Release the texture through Free().
 			 */
 			id<MTLTexture> AllocateTexture(MTLTextureDescriptor* descriptor, const GpuAllocation& requestedAllocation, GpuAllocation& outAllocation);
+
+			/**
+			 * Releases the memory of a buffer or texture created by AllocateBuffer() or AllocateTexture(), given the allocation
+			 * they output. The GPU must have finished every command buffer that accesses the resource.
+			 */
+			void Free(id<MTLResource> resource, GpuAllocation& allocation);
 
 		private:
 			using MemoryAllocator = TGpuTlsfAllocator<MetalHeapBackend>;
@@ -170,7 +183,11 @@ namespace b3d
 			/** Returns the scratch page pool for @p memoryType, creating it on first use. */
 			LinearPagePool& GetOrCreateLinearPagePool(u32 memoryType);
 
+			/** Adds @p texture, placed in a heap, to the residency set if it can be bound as an attachment. */
+			void AddHeapAttachmentResidency(id<MTLTexture> texture);
+
 			MetalGpuDevice& mDevice;
+			MetalResidencySet mResidencySet;
 			MetalHeapBackend mBackend;
 			TUnique<MemoryAllocator> mAllocators[kMemoryTypeCount];
 			TUnique<LinearPagePool> mLinearPagePools[kMemoryTypeCount];

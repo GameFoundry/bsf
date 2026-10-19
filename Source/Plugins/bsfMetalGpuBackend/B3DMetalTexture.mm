@@ -51,10 +51,8 @@ namespace b3d
 				mSubresourceViews.clear();
 			}
 
+			GetDevice().GetHeapAllocator().Free(mTexture, mAllocation);
 			mTexture = nullptr;
-
-			if (mAllocation.IsOwned())
-				mAllocation.Allocator->Free(mAllocation);
 		}
 
 		void MetalImage::SetName(const StringView& name)
@@ -342,13 +340,7 @@ namespace b3d
 
 			descriptor.usage = usage;
 			descriptor.storageMode = MTLStorageModePrivate;
-
-			// Direct textures and placement-heap textures use the same configured hazard policy.
-#if B3D_METAL_USE_EXPLICIT_RESOURCE_SYNCHRONIZATION
 			descriptor.hazardTrackingMode = MTLHazardTrackingModeUntracked;
-#else
-			descriptor.hazardTrackingMode = MTLHazardTrackingModeTracked;
-#endif
 
 			return descriptor;
 		}

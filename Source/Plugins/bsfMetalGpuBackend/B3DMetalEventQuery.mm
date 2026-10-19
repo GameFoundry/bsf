@@ -29,11 +29,8 @@ namespace b3d
 
 			auto& metalCB = static_cast<MetalGpuCommandBuffer&>(commandBuffer);
 
-			// Command-buffer event commands cannot be encoded while a Metal encoder is active. The
-			// command buffer therefore closes compute/blit encoders immediately, and defers signals
-			// from a render pass until its encoder ends, matching Vulkan's render-pass behavior.
 			const u64 nextValue = mExpectedValue.load(std::memory_order_relaxed) + 1;
-			if (metalCB.EncodeSignalEvent(mEvent, nextValue))
+			if (metalCB.QueueEventSignal(mEvent, nextValue))
 				mExpectedValue.store(nextValue, std::memory_order_release);
 		}
 

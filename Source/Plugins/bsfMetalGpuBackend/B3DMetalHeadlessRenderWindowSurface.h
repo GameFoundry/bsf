@@ -36,17 +36,19 @@ namespace b3d::render
 
 		// IMetalRenderWindowSurface
 		id<MTLTexture> AcquireColorTexture() override;
-		id<MTLTexture> GetCurrentColorTexture() const override { return mColorTextures[mCurrentImageIndex]; }
-		id<MTLTexture> GetDepthStencilTexture() const override { return mDepthStencilTexture; }
+		id<MTLTexture> GetCurrentColorTexture() const override;
+		MetalImage* GetCurrentColorImage() const override { return mColorImages[mCurrentImageIndex]; }
+		id<MTLTexture> GetDepthStencilTexture() const override;
+		MetalImage* GetDepthStencilImage() const override { return mDepthStencilImage; }
 		MTLPixelFormat GetColorFormat() const override;
 		PixelFormat GetColorPixelFormat() const override { return PF_BGRA8; }
-		bool IsSwapChainValid() const override { return mIsValid && mColorTextures[mCurrentImageIndex] != nullptr; }
+		bool IsSwapChainValid() const override { return mIsValid && mColorImages[mCurrentImageIndex] != nullptr; }
 
 	private:
 		/** Creates all the necessary swap chain images at the current size. Render thread only. */
 		void CreateSwapChainImages();
 
-		/** Releases all swap chain images. Render thread only. */
+		/** Releases all swap chain images, once no command buffer uses them anymore. Render thread only. */
 		void DestroySwapChainImages();
 
 		MetalGpuDevice& mGpuDevice;
@@ -61,8 +63,8 @@ namespace b3d::render
 		bool mIsSwapQueued = false;
 		u32 mCurrentImageIndex = 0;
 
-		id<MTLTexture> mColorTextures[kImageCount] = {};
-		id<MTLTexture> mDepthStencilTexture = nullptr;
+		MetalImage* mColorImages[kImageCount] = {};
+		MetalImage* mDepthStencilImage = nullptr;
 	};
 
 	/** @} */

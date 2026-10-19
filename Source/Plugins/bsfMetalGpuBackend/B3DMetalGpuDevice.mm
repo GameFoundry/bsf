@@ -39,7 +39,6 @@
 #include "GpuBackend/B3DGpuSubmitThread.h"
 #include "B3DMetalVertexInputManager.h"
 
-#include <mach/mach_time.h>
 
 namespace b3d
 {
@@ -61,28 +60,31 @@ namespace b3d
 			mClearPipeline.reset();
 			mResourceManager.reset();
 
-			// The pool creates its heaps through the heap allocator's backend
-			DestroyTransientHeapPools();
-			mHeapAllocator.reset();
-
 			if (MetalVertexInputManager::IsStarted())
 				MetalVertexInputManager::ShutDown();
+
+			// The pool creates its heaps through the heap allocator's backend
+			DestroyTransientHeapPools();
+			if (mHeapAllocator != nullptr)
+			{
+				mHeapAllocator->Free(mNullVertexBuffer, mNullVertexBufferAllocation);
+				mHeapAllocator->Free(mDummyArgumentBuffer, mDummyArgumentBufferAllocation);
+				mHeapAllocator.reset();
+			}
 
 			mNullVertexBuffer = nil;
 			mDummyArgumentBuffer = nil;
 
-			for (u32 queueTypeIndex = 0; queueTypeIndex < GQT_COUNT; queueTypeIndex++)
-			{
-				mQueueEvents[queueTypeIndex] = nil;
-				mCommandQueues[queueTypeIndex] = nil;
-			}
+			for (QueueInfo& queueInfo : mQueueInfos)
+				queueInfo.Queues.Clear();
 
 			// No blocking wait can still be registered: every fence and query pool is owned by
 			// objects torn down above, and the queues have been drained.
 			mSharedEventListener = nil;
 			mListenerDispatchQueue = nullptr;
+			mCompletionListener = nil;
+			mCompletionDispatchQueue = nullptr;
 
-			mTimestampCounterSet = nil;
 			mMetalDevice = nil;
 		}
 
@@ -108,6 +110,9 @@ namespace b3d
 			if (![mMetalDevice supportsFamily:MTLGPUFamilyApple7])
 				B3D_LOG(Fatal, LogRenderBackend, "Metal backend requires an Apple Silicon GPU (Apple family 7 or newer). Reported device '{0}' does not qualify.", deviceNameString);
 
+			if (![mMetalDevice supportsFamily:MTLGPUFamilyMetal4])
+				B3D_LOG(Fatal, LogRenderBackend, "Metal backend requires Metal 4 support. Reported device '{0}' does not qualify.", deviceNameString);
+
 			if (![mMetalDevice hasUnifiedMemory])
 				B3D_LOG(Fatal, LogRenderBackend, "Metal backend requires Apple Silicon unified memory. Reported device '{0}' does not expose unified memory.", deviceNameString);
 
@@ -126,41 +131,56 @@ namespace b3d
 			if (mSharedEventListener == nil)
 				B3D_LOG(Warning, LogRenderBackend, "Failed to create the Metal shared event listener; blocking CPU waits will poll instead.");
 
+			mCompletionDispatchQueue = dispatch_queue_create("b3d.metal.completion", DISPATCH_QUEUE_SERIAL);
+			if (mCompletionDispatchQueue != nullptr)
+				mCompletionListener = [[MTLSharedEventListener alloc] initWithDispatchQueue:mCompletionDispatchQueue];
+
+			if (mCompletionListener == nil)
+				B3D_LOG(Fatal, LogRenderBackend, "Failed to create the Metal submission completion listener.");
+
+			mHeapAllocator = B3DMakeUnique<MetalHeapAllocator>(*this);
+
 			// Create one command queue per GpuQueueType. Metal exposes a single unified queue family
 			// (every queue accepts graphics, compute, and blit work), so the per-type split mirrors
 			// the engine's abstraction without any real affinity.
 			for (u32 queueTypeIndex = 0; queueTypeIndex < GQT_COUNT; queueTypeIndex++)
 			{
-				mCommandQueues[queueTypeIndex] = [mMetalDevice newCommandQueue];
-				if (mCommandQueues[queueTypeIndex] == nil)
-					B3D_LOG(Fatal, LogRenderBackend, "Failed to create a Metal command queue for queue type {0}.", queueTypeIndex);
+				MTL4CommandQueueDescriptor* queueDescriptor = [[MTL4CommandQueueDescriptor alloc] init];
+				queueDescriptor.label = [NSString stringWithFormat:@"Banshee queue %u", queueTypeIndex];
+
+				NSError* error = nil;
+				id<MTL4CommandQueue> commandQueue = [mMetalDevice newMTL4CommandQueueWithDescriptor:queueDescriptor error:&error];
+				if (commandQueue == nil)
+				{
+					B3D_LOG(Fatal, LogRenderBackend, "Failed to create a Metal command queue for queue type {0}: {1}", queueTypeIndex,
+						error ? String([[error localizedDescription] UTF8String]) : String("No error details were provided."));
+				}
+
+				[commandQueue addResidencySet:mHeapAllocator->GetResidencySet().GetMetalResidencySet()];
 
 				id<MTLSharedEvent> queueEvent = [mMetalDevice newSharedEvent];
 				if (queueEvent == nil)
 					B3D_LOG(Fatal, LogRenderBackend, "Failed to create a Metal shared event for queue type {0}.", queueTypeIndex);
 
-				mQueueEvents[queueTypeIndex] = queueEvent;
-
 				mQueueInfos[queueTypeIndex].FamilyIndex = queueTypeIndex;
-				mQueueInfos[queueTypeIndex].Queues.Add(B3DMakeShared<MetalGpuQueue>(*this, (GpuQueueType)queueTypeIndex, 0, mCommandQueues[queueTypeIndex], queueEvent));
+				mQueueInfos[queueTypeIndex].Queues.Add(B3DMakeShared<MetalGpuQueue>(*this, (GpuQueueType)queueTypeIndex, 0, commandQueue, queueEvent));
 			}
 
 			InitializeCapabilities();
 
-			mHeapAllocator = B3DMakeUnique<MetalHeapAllocator>(*this);
 			mTransientHeapPool = AddTransientHeapPool(mHeapAllocator->CreateTransientHeapPool(mFrameCompletionTracker));
 			mResourceManager = B3DMakeUnique<MetalResourceManager>(*this);
 
 			mClearPipeline = B3DMakeUnique<MetalClearPipeline>(*this);
 
-			// TODO - Create this and the dummy argument buffer below as GpuBuffers so they come from the heap allocator (mirrors VulkanBuiltinResources).
-			mNullVertexBuffer = [mMetalDevice newBufferWithLength:kMetalNullVertexStreamStride options:MTLResourceStorageModeShared];
+			const GpuAllocation sharedAllocation = GpuAllocation::CreatePending(mHeapAllocator->GetAllocator(MetalHeapAllocator::kMemoryTypeShared));
+			mNullVertexBuffer = mHeapAllocator->AllocateBuffer(kMetalNullVertexStreamStride, MetalHeapAllocator::kMemoryTypeShared, sharedAllocation, mNullVertexBufferAllocation);
 			if (mNullVertexBuffer == nil)
 				B3D_LOG(Fatal, LogRenderBackend, "Failed to create the shared null vertex buffer.");
 			std::memset([mNullVertexBuffer contents], 0, kMetalNullVertexStreamStride);
 
 			constexpr u32 kDummyArgumentBufferSize = 65536;
-			mDummyArgumentBuffer = [mMetalDevice newBufferWithLength:kDummyArgumentBufferSize options:MTLResourceStorageModeShared];
+			mDummyArgumentBuffer = mHeapAllocator->AllocateBuffer(kDummyArgumentBufferSize, MetalHeapAllocator::kMemoryTypeShared, sharedAllocation, mDummyArgumentBufferAllocation);
 			if (mDummyArgumentBuffer == nil)
 				B3D_LOG(Fatal, LogRenderBackend, "Failed to create the shared dummy argument buffer.");
 			std::memset([mDummyArgumentBuffer contents], 0, kDummyArgumentBufferSize);
@@ -187,7 +207,7 @@ namespace b3d
 			mCapabilities.DeviceVendor = GPU_APPLE;
 			mCapabilities.BackendName = "Metal";
 
-			B3D_ASSERT([mMetalDevice supportsFamily:MTLGPUFamilyApple7]);
+			B3D_ASSERT([mMetalDevice supportsFamily:MTLGPUFamilyApple7] && [mMetalDevice supportsFamily:MTLGPUFamilyMetal4]);
 
 			// Metal has no geometry shaders. Tessellation stays unadvertised so tessellation shaders are rejected by the engine
 			// instead of failing Metal validation at pipeline creation.
@@ -208,42 +228,10 @@ namespace b3d
 			mCapabilities.SetCapability(RSC_EXPLICIT_BARRIERS);
 #endif
 
-			// Timer queries can be issued inside any encoder, so they are only advertised when the device can sample at draw,
-			// dispatch and blit boundaries. Apple Silicon usually only samples at stage boundaries, which cannot represent
-			// arbitrary markers without splitting passes.
-			mSupportsRenderEncoderTimestamps =
-				[mMetalDevice supportsCounterSampling:MTLCounterSamplingPointAtDrawBoundary];
-			mSupportsComputeEncoderTimestamps =
-				[mMetalDevice supportsCounterSampling:MTLCounterSamplingPointAtDispatchBoundary];
-			mSupportsBlitEncoderTimestamps =
-				[mMetalDevice supportsCounterSampling:MTLCounterSamplingPointAtBlitBoundary];
-
-			if (mSupportsRenderEncoderTimestamps && mSupportsComputeEncoderTimestamps && mSupportsBlitEncoderTimestamps)
-			{
-				for (id<MTLCounterSet> counterSet in [mMetalDevice counterSets])
-				{
-					if ([[counterSet name] isEqualToString:MTLCommonCounterSetTimestamp])
-					{
-						mTimestampCounterSet = counterSet;
-						break;
-					}
-				}
-
-				if (mTimestampCounterSet != nil)
-				{
-					mCapabilities.SetCapability(RSC_TIMER_QUERIES);
-
-					// First half of the GPU tick rate calibration. The second pair is sampled on the first
-					// ConvertTimestampToMilliseconds call, measuring over a long interval without blocking startup.
-					MTLTimestamp cpuTimestamp = 0, gpuTimestamp = 0;
-					[mMetalDevice sampleTimestamps:&cpuTimestamp gpuTimestamp:&gpuTimestamp];
-					mCpuBaseTimestamp = cpuTimestamp;
-					mGpuBaseTimestamp = gpuTimestamp;
-					mFirstCpuTimestamp = cpuTimestamp;
-					mFirstGpuTimestamp = gpuTimestamp;
-					mFirstTimestampPairCaptured = true;
-				}
-			}
+			// Metal 4 writes timestamps at any point of a command buffer, inside or outside of encoders
+			mTimestampFrequency = [mMetalDevice queryTimestampFrequency];
+			if (mTimestampFrequency != 0)
+				mCapabilities.SetCapability(RSC_TIMER_QUERIES);
 
 			// Metal clip space is y-up like D3D, so the MSL compiler disables SPIRV-Cross's flip_vert_y
 			mCapabilities.Conventions.NdcYAxis = GpuBackendConventions::Axis::Up;
@@ -483,34 +471,10 @@ namespace b3d
 
 		float MetalGpuDevice::ConvertTimestampToMilliseconds(u64 timestamp)
 		{
-			// No first pair means timer queries are unsupported
-			if (!mFirstTimestampPairCaptured)
+			if (mTimestampFrequency == 0)
 				return 0.0f;
 
-			// Second half of the calibration started in InitializeCapabilities
-			if (!mTimestampCalibrationDone.load(std::memory_order_acquire))
-			{
-				Lock lock(mTimestampCalibrationMutex);
-				if (!mTimestampCalibrationDone.load(std::memory_order_relaxed))
-				{
-					MTLTimestamp secondCpuTimestamp = 0, secondGpuTimestamp = 0;
-					[mMetalDevice sampleTimestamps:&secondCpuTimestamp gpuTimestamp:&secondGpuTimestamp];
-
-					mach_timebase_info_data_t timebase = {};
-					mach_timebase_info(&timebase);
-					const double cpuTicksToNanoseconds = (double)timebase.numer / (double)timebase.denom;
-					const double cpuDeltaNanoseconds = (double)(secondCpuTimestamp - mFirstCpuTimestamp) * cpuTicksToNanoseconds;
-					const double gpuDelta = (double)(secondGpuTimestamp - mFirstGpuTimestamp);
-					mGpuTicksPerNanosecond = cpuDeltaNanoseconds > 0.0 ? gpuDelta / cpuDeltaNanoseconds : 1.0;
-					mTimestampCalibrationDone.store(true, std::memory_order_release);
-				}
-			}
-
-			if (mGpuTicksPerNanosecond <= 0.0)
-				return 0.0f;
-
-			const double ticksPerMillisecond = mGpuTicksPerNanosecond * 1.0e6;
-			return (float)((double)timestamp / ticksPerMillisecond);
+			return (float)((double)timestamp * 1000.0 / (double)mTimestampFrequency);
 		}
 
 		void MetalGpuDevice::PresentRenderWindow(const TShared<RenderWindow>& renderWindow, GpuQueueMask syncMask)

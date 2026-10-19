@@ -3,6 +3,7 @@
 #include "B3DMetalGpuQueryPool.h"
 #include "B3DMetalGpuDevice.h"
 #include "B3DMetalGpuQueue.h"
+#include "B3DMetalHeapAllocator.h"
 #include "Debug/B3DLog.h"
 
 namespace b3d
@@ -21,11 +22,12 @@ namespace b3d
 				const u64 lastResultOffset = createInformation.PoolSize > 0 ? ((u64)createInformation.PoolSize - 1ull) * sizeof(u64) : 0;
 				if (createInformation.PoolSize == 0 || lastResultOffset > kMaximumVisibilityResultOffset)
 					B3D_LOG(Error, LogRenderBackend, "Metal occlusion query pool size {0} exceeds the Apple GPU visibility-buffer limit.", createInformation.PoolSize);
-				else if (device != nil)
+				else
 				{
-					const NSUInteger byteSize = (NSUInteger)createInformation.PoolSize * sizeof(u64);
-					// TODO - Allocate through MetalHeapAllocator::AllocateBuffer (D3D12 allocates its query readback buffer through its allocator).
-					mVisibilityBuffer = [device newBufferWithLength:byteSize options:MTLResourceStorageModeShared];
+					const u64 byteSize = (u64)createInformation.PoolSize * sizeof(u64);
+					const u32 memoryType = MetalHeapAllocator::kMemoryTypeShared;
+					MetalHeapAllocator& heapAllocator = gpuDevice.GetHeapAllocator();
+					mVisibilityBuffer = heapAllocator.AllocateBuffer(byteSize, memoryType, GpuAllocation::CreatePending(heapAllocator.GetAllocator(memoryType)), mVisibilityBufferAllocation);
 					mSupported = mVisibilityBuffer != nil;
 
 					if (mVisibilityBuffer == nil)
@@ -34,25 +36,21 @@ namespace b3d
 			}
 			else if (createInformation.Type == GpuQueryType::Timestamp)
 			{
-				constexpr u64 kMaximumCounterSampleBufferLength = 32ull * 1024ull;
-				const u64 resultBytes = (u64)createInformation.PoolSize * sizeof(MTLCounterResultTimestamp);
-				id<MTLCounterSet> timestampSet = gpuDevice.GetTimestampCounterSet();
-				if (createInformation.PoolSize == 0 || resultBytes > kMaximumCounterSampleBufferLength)
-					B3D_LOG(Error, LogRenderBackend, "Metal timestamp query pool size {0} exceeds the Apple GPU 32 KiB counter-buffer limit.", createInformation.PoolSize);
-				else if (device != nil && timestampSet != nil)
+				if (createInformation.PoolSize == 0)
+					B3D_LOG(Error, LogRenderBackend, "Metal timestamp query pools cannot be empty.");
+				else if (device != nil && gpuDevice.GetCapabilities().HasCapability(RSC_TIMER_QUERIES))
 				{
-					MTLCounterSampleBufferDescriptor* descriptor = [[MTLCounterSampleBufferDescriptor alloc] init];
-					descriptor.counterSet = timestampSet;
-					descriptor.storageMode = MTLStorageModeShared;
-					descriptor.sampleCount = (NSUInteger)createInformation.PoolSize;
+					MTL4CounterHeapDescriptor* descriptor = [[MTL4CounterHeapDescriptor alloc] init];
+					descriptor.type = MTL4CounterHeapTypeTimestamp;
+					descriptor.count = (NSUInteger)createInformation.PoolSize;
 
 					NSError* error = nil;
-					mCounterBuffer = [device newCounterSampleBufferWithDescriptor:descriptor error:&error];
-					mSupported = mCounterBuffer != nil;
-					if (mCounterBuffer == nil)
+					mCounterHeap = [device newCounterHeapWithDescriptor:descriptor error:&error];
+					mSupported = mCounterHeap != nil;
+					if (mCounterHeap == nil)
 					{
 						const char* reason = error ? [[error localizedDescription] UTF8String] : "unknown error";
-						B3D_LOG(Error, LogRenderBackend, "Failed to create MTLCounterSampleBuffer for timestamp pool: {0}", reason);
+						B3D_LOG(Error, LogRenderBackend, "Failed to create the MTL4CounterHeap for a timestamp pool: {0}", reason);
 					}
 				}
 				else
@@ -60,6 +58,12 @@ namespace b3d
 			}
 			else
 				B3D_LOG(Warning, LogRenderBackend, "Pipeline-statistics query pools are unsupported by the Metal backend.");
+		}
+
+		MetalGpuQueryPool::~MetalGpuQueryPool()
+		{
+			// The pool is only destroyed once no command buffer that uses it is executing
+			mGpuDevice.GetHeapAllocator().Free(mVisibilityBuffer, mVisibilityBufferAllocation);
 		}
 
 		GpuQueryId MetalGpuQueryPool::AllocateQuery()
@@ -152,15 +156,7 @@ namespace b3d
 					continue;
 				}
 
-				for (auto it = mInFlightSubmissions.begin(); it != mInFlightSubmissions.end();)
-				{
-					id<MTLSharedEvent> event = it->first->GetSharedEvent();
-					if (event != nil && (u64)[event signaledValue] >= it->second)
-						it = mInFlightSubmissions.erase(it);
-					else
-						++it;
-				}
-
+				RemoveCompletedSubmissions();
 				if (mInFlightSubmissions.empty())
 					break;
 
@@ -235,31 +231,18 @@ namespace b3d
 				if (contents != nullptr)
 					memcpy(mResolvedResults.data(), contents, (size_t)mNextQueryId * sizeof(u64));
 			}
-			else if (mQueryType == GpuQueryType::Timestamp && mCounterBuffer != nil)
+			else if (mQueryType == GpuQueryType::Timestamp && mCounterHeap != nil)
 			{
-				NSData* resolved = [mCounterBuffer resolveCounterRange:NSMakeRange(0, mNextQueryId)];
-				const size_t requiredBytes = (size_t)mNextQueryId * sizeof(MTLCounterResultTimestamp);
+				NSData* resolved = [mCounterHeap resolveCounterRange:NSMakeRange(0, mNextQueryId)];
+				const size_t requiredBytes = (size_t)mNextQueryId * sizeof(MTL4TimestampHeapEntry);
 				if (resolved != nil && [resolved length] >= requiredBytes)
 				{
-					const MTLCounterResultTimestamp* timestamps = (const MTLCounterResultTimestamp*)[resolved bytes];
-					bool invalidSampleFound = false;
+					const MTL4TimestampHeapEntry* timestamps = (const MTL4TimestampHeapEntry*)[resolved bytes];
 					for (u32 queryIndex = 0; queryIndex < mNextQueryId; queryIndex++)
-					{
-						if (timestamps[queryIndex].timestamp == MTLCounterErrorValue)
-						{
-							invalidSampleFound = true;
-							continue;
-						}
-
 						mResolvedResults[queryIndex] = timestamps[queryIndex].timestamp;
-					}
-
-					if (invalidSampleFound)
-					{
-						std::fill(mResolvedResults.begin(), mResolvedResults.end(), 0);
-						B3D_LOG(Warning, LogRenderBackend, "Metal returned an invalid timestamp counter sample.");
-					}
 				}
+				else
+					B3D_LOG(Warning, LogRenderBackend, "Failed to resolve the Metal timestamp counter heap.");
 			}
 
 			mResultsCached = true;
@@ -278,12 +261,28 @@ namespace b3d
 		void MetalGpuQueryPool::ResetAllocation()
 		{
 			Lock lock(mStateMutex);
+			RemoveCompletedSubmissions();
 			B3D_ENSURE(mPendingSubmissions == 0 && mInFlightSubmissions.empty() && mRecordedCommandBuffers <= 1);
+			if (mCounterHeap != nil && mNextQueryId > 0)
+				[mCounterHeap invalidateCounterRange:NSMakeRange(0, mNextQueryId)];
+
 			mNextQueryId = 0;
 			mResultsCached = false;
 			mSubmissionFailed = false;
 			mSubmissionFailureReported = false;
 			std::fill(mResolvedResults.begin(), mResolvedResults.end(), 0);
+		}
+
+		void MetalGpuQueryPool::RemoveCompletedSubmissions()
+		{
+			for (auto it = mInFlightSubmissions.begin(); it != mInFlightSubmissions.end();)
+			{
+				id<MTLSharedEvent> event = it->first->GetSharedEvent();
+				if (event != nil && (u64)[event signaledValue] >= it->second)
+					it = mInFlightSubmissions.erase(it);
+				else
+					++it;
+			}
 		}
 
 		bool MetalGpuQueryPool::IsQueryAllocated(GpuQueryId queryId) const

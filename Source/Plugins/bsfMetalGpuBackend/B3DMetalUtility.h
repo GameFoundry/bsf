@@ -6,6 +6,7 @@
 #include "Image/B3DPixelData.h"
 #include "Utility/B3DCommonTypes.h"
 #include "GpuBackend/B3DVertexDescription.h"
+#include "GpuBackend/B3DGpuHazards.h"
 
 namespace b3d
 {
@@ -59,12 +60,10 @@ namespace b3d
 			static MTLTextureType GetTextureType(TextureType type, u32 sampleCount, u32 arraySliceCount);
 
 			/**
-			 * Converts engine shader stages to the Metal render-encoder stages that consume them.
-			 *
-			 * @param	stages	Engine shader stages referencing the resource.
-			 * @return	Matching MTLRenderStages mask, or zero when no raster stage consumes the resource.
+			 * Converts engine pipeline stages to the Metal stages that perform them. Host accesses have no GPU stage. Attachment
+			 * accesses, including load and store actions and multisample resolves, belong to the fragment stage.
 			 */
-			static MTLRenderStages GetRenderStages(GpuProgramStageBits stages);
+			static MTLStages GetStages(GpuStageFlags stages);
 
 			/** Converts an engine filter + address mode bundle to a freshly configured MTLSamplerDescriptor. */
 			static MTLSamplerMinMagFilter GetMinMagFilter(FilterOptions filter);
@@ -121,8 +120,8 @@ namespace b3d
 
 			/**
 			 * Composes the flat @c MTLResourceOptions mask for a resource with the provided storage
-			 * mode. CPU cache mode stays at the default. Hazard tracking follows
-			 * @c B3D_METAL_USE_EXPLICIT_RESOURCE_SYNCHRONIZATION.
+			 * mode. CPU cache mode stays at the default. Resources are untracked, as Metal 4 command
+			 * buffers perform no hazard tracking.
 			 */
 			static MTLResourceOptions GetResourceOptions(MTLStorageMode storageMode);
 		};

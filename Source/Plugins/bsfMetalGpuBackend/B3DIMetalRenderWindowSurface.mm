@@ -3,12 +3,46 @@
 #include "B3DIMetalRenderWindowSurface.h"
 #include "B3DMetalGpuDevice.h"
 #include "B3DMetalGpuCommandBuffer.h"
+#include "B3DMetalHeapAllocator.h"
+#include "B3DMetalGpuBuffer.h"
+#include "B3DMetalResourceManager.h"
+#include "B3DMetalTexture.h"
 #include "B3DMetalUtility.h"
 #include "Image/B3DPixelData.h"
 #include "Debug/B3DLog.h"
 
 namespace b3d::render
 {
+	MetalImage* IMetalRenderWindowSurface::CreateSurfaceImage(MetalGpuDevice& device, MTLPixelFormat format, PixelFormat engineFormat, TextureUsageFlags usage,
+		u32 width, u32 height, const StringView& name)
+	{
+		MTLTextureDescriptor* descriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:format width:width height:height mipmapped:NO];
+		descriptor.usage = usage.IsSet(TextureUsageFlag::DepthStencil) ? MTLTextureUsageRenderTarget : (MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead);
+		descriptor.storageMode = MTLStorageModePrivate;
+		descriptor.hazardTrackingMode = MTLHazardTrackingModeUntracked;
+
+		MetalHeapAllocator& heapAllocator = device.GetHeapAllocator();
+		const GpuAllocation requestedAllocation = GpuAllocation::CreatePending(heapAllocator.GetAllocator(MetalHeapAllocator::kMemoryTypePrivate));
+
+		GpuAllocation allocation;
+		id<MTLTexture> texture = heapAllocator.AllocateTexture(descriptor, requestedAllocation, allocation);
+		if (texture == nil)
+		{
+			B3D_LOG(Error, LogRenderBackend, "Failed to create the render window surface image '{0}' ({1}x{2}).", name, width, height);
+			return nullptr;
+		}
+
+		MetalImageCreateInformation createInformation;
+		createInformation.Format = engineFormat;
+		createInformation.Usage = usage;
+		createInformation.DebugName = name;
+
+		MetalImage* image = device.GetResourceManager().Create<MetalImage>(createInformation, texture, allocation);
+		image->SetName(name);
+
+		return image;
+	}
+
 	TAsyncOp<TShared<PixelData>> IMetalRenderWindowSurface::ReadAsync(GpuCommandBuffer& commandBuffer)
 	{
 		TAsyncOp<TShared<PixelData>> op;
@@ -30,14 +64,6 @@ namespace b3d::render
 			return op;
 		}
 
-		auto& metalCommandBuffer = static_cast<MetalGpuCommandBuffer&>(commandBuffer);
-		id<MTLBlitCommandEncoder> blit = metalCommandBuffer.GetOrOpenBlitEncoder();
-		if (blit == nil)
-		{
-			op.CompleteOperation(nullptr);
-			return op;
-		}
-
 		const u32 width = (u32)colorTexture.width;
 		const u32 height = (u32)colorTexture.height;
 		const PixelFormat pixelFormat = GetColorPixelFormat();
@@ -47,22 +73,39 @@ namespace b3d::render
 		const u32 bytesPerRow = MetalUtility::GetTextureRowPitch(pixelFormat, width);
 		const NSUInteger bufferSize = (NSUInteger)bytesPerRow * height;
 
-		auto& metalDevice = static_cast<MetalGpuDevice&>(commandBuffer.GetGpuDevice());
-		// TODO - Create a GpuBufferType::StagingRead GpuBuffer instead, so the staging memory comes from the heap allocator (mirrors IVulkanRenderWindowSurface::ReadAsync).
-		id<MTLBuffer> stagingBuffer = [metalDevice.GetMetalDevice() newBufferWithLength:bufferSize options:MTLResourceStorageModeShared];
-		if (stagingBuffer == nil)
+		TShared<GpuBuffer> stagingBuffer = commandBuffer.GetGpuDevice().CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead((u32)bufferSize));
+		id<MTLBuffer> stagingMetalBuffer = stagingBuffer != nullptr ? static_cast<MetalGpuBuffer&>(*stagingBuffer).GetMetalBuffer() : nil;
+		if (stagingMetalBuffer == nil)
 		{
 			B3D_LOG(Error, LogRenderBackend, "ReadAsync: failed to allocate {0}-byte staging buffer.", (u64)bufferSize);
 			op.CompleteOperation(nullptr);
 			return op;
 		}
 
-		[blit copyFromTexture:colorTexture
+		auto& metalCommandBuffer = static_cast<MetalGpuCommandBuffer&>(commandBuffer);
+		if (MetalImage* colorImage = GetCurrentColorImage())
+			metalCommandBuffer.TrackSurfaceImage(*colorImage, GpuAccessFlag::Read);
+		else
+			metalCommandBuffer.RetainUntilComplete(colorTexture);
+
+		// The back buffer was last rendered to, possibly by an earlier command buffer
+		metalCommandBuffer.EncodeBarrier(GpuBarrierScope(GpuStageFlag::ColorAttachment, GpuAccessFlag::Write, GpuStageFlag::Transfer, GpuAccessFlag::Read));
+
+		id<MTL4ComputeCommandEncoder> encoder = metalCommandBuffer.GetOrOpenComputeEncoder();
+		if (encoder == nil)
+		{
+			op.CompleteOperation(nullptr);
+			return op;
+		}
+
+		metalCommandBuffer.UseDrawableResidency(GetCurrentDrawable());
+
+		[encoder copyFromTexture:colorTexture
 			sourceSlice:0
 			sourceLevel:0
 			sourceOrigin:MTLOriginMake(0, 0, 0)
 			sourceSize:MTLSizeMake(width, height, 1)
-			toBuffer:stagingBuffer
+			toBuffer:stagingMetalBuffer
 			destinationOffset:0
 			destinationBytesPerRow:bytesPerRow
 			destinationBytesPerImage:bufferSize];
@@ -72,7 +115,8 @@ namespace b3d::render
 
 		auto fnOnCommandBufferCompleted = [stagingBuffer, op, pixelData, bytesPerRow, resultRowPitch, resultHeight]() mutable
 		{
-			const u8* src = (const u8*)[stagingBuffer contents];
+			GpuBufferMappedScope mapping = stagingBuffer->Map(GpuMapOption::Read);
+			const u8* src = (const u8*)mapping.GetMappedMemory();
 			u8* dst = pixelData->GetData();
 			if (src != nullptr && dst != nullptr)
 			{

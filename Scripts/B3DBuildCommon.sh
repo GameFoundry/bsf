@@ -46,7 +46,7 @@ elif [[ $Platform == "darwin"* ]]; then
 	ExecutableExtension=""
 
 	# Make sure dependencies build with the same minimum macOS version as the engine
-	export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-13.0}"
+	export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-26.0}"
 elif [[ $Platform == "linux-gnu"* ]]; then
 	DefaultCMakeGenerator="Ninja Multi-Config"
 	SharedLibraryExtension=".so"

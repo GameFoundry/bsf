@@ -16,9 +16,8 @@ namespace b3d
 		 */
 
 		/**
-		 * Describes a single binding within a Metal argument buffer in C++-visible form. Used by
-		 * @c MetalGpuParameters to look up which argument-buffer slot, resource usage, and stage-mask
-		 * should be applied when making resources resident on a command encoder.
+		 * Describes a single binding within a Metal argument buffer in C++-visible form. Used by @c MetalGpuParameters to
+		 * find where in the argument buffer each bound resource is written.
 		 */
 		struct MetalArgumentBufferBinding
 		{
@@ -26,7 +25,7 @@ namespace b3d
 			u32 ByteOffset = 0; /**< Byte offset of the first resource handle within the set's argument buffer. */
 			u32 ByteStride = 0; /**< Byte distance between array elements. */
 			GpuParameterType Type = GpuParameterType::Unknown; /**< Engine parameter type. */
-			GpuParameterObjectType ObjectType = GPOT_UNKNOWN; /**< Metal object type (GPOT_*) for the binding; drives read/write usage flags. */
+			GpuParameterObjectType ObjectType = GPOT_UNKNOWN; /**< Object type (GPOT_*) of the binding; selects raw or typed views of buffers. */
 			u32 ArraySize = 1; /**< Array length of this slot; 1 for scalar bindings. */
 			u32 FirstResourceIndex = 0; /**< First element of this binding in the parameter set's dense per-element state (written values and resolved resources). */
 			GpuProgramStageBits Stages = GpuProgramStageBit::None; /**< Shader stages that reference this binding. */
@@ -88,30 +87,11 @@ namespace b3d
 			/** Finds the argument-table binding of the uniform buffer at @p slot, or null when the slot is not a dynamic-offset uniform buffer. */
 			const MetalDynamicUniformBufferBinding* FindDynamicUniformBufferBinding(u32 slot) const;
 
-			/**
-			 * Bindings pre-grouped by @c (MTLResourceUsage, MTLRenderStages) for the render path
-			 * and by @c MTLResourceUsage alone for the compute path.
-			 *
-			 * One bucket collects every binding that shares usage + stage mask so
-			 * @c useResources:count:usage:stages: (render) or @c useResources:count:usage: (compute)
-			 * can mark the whole group resident in a single Metal call at draw/dispatch time.
-			 */
-			struct ArgumentBindingBucket
-			{
-				MTLResourceUsage Usage = MTLResourceUsageRead;
-				MTLRenderStages RenderStages = (MTLRenderStages)0;
-				/** Dense resolved-resource indices in this bucket. Samplers are pre-filtered out. */
-				TArray<u32> ResourceIndices;
-			};
-
-			/** Render-path buckets — see @c ArgumentBindingBucket. */
-			const TArray<ArgumentBindingBucket>& GetRenderBuckets() const { return mRenderBuckets; }
-
-			/** Compute-path buckets — see @c ArgumentBindingBucket. */
-			const TArray<ArgumentBindingBucket>& GetComputeBuckets() const { return mComputeBuckets; }
-
 			/** Returns the union of the shader stages referencing any binding in this set. */
 			GpuProgramStageBits GetCombinedStages() const { return mCombinedStages; }
+
+			/** Returns true if a fragment shader can write a storage buffer or texture bound in this set. */
+			bool HasFragmentWrites() const { return mHasFragmentWrites; }
 
 			/** Finds the binding record for an engine @c (type, slot) pair, or null when absent. */
 			const MetalArgumentBufferBinding* FindBinding(GpuParameterType type, u32 slot) const;
@@ -126,9 +106,7 @@ namespace b3d
 			u32 mArgumentBufferAlignment = 16;
 
 			GpuProgramStageBits mCombinedStages = GpuProgramStageBit::None;
-
-			TArray<ArgumentBindingBucket> mRenderBuckets;
-			TArray<ArgumentBindingBucket> mComputeBuckets;
+			bool mHasFragmentWrites = false;
 		};
 
 		/** Holds meta-data about a set of GPU parameters used by a single pipeline state. */

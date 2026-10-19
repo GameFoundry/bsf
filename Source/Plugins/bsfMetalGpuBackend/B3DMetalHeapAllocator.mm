@@ -38,10 +38,16 @@ namespace b3d
 					return MetalHeapAllocator::kMemoryTypeCount;
 				}
 			}
+
+			/** Returns true if @p texture can be bound as a render pass attachment. */
+			bool IsAttachment(id<MTLTexture> texture)
+			{
+				return ([texture usage] & MTLTextureUsageRenderTarget) != 0;
+			}
 		} // namespace
 
-		MetalHeapBackend::MetalHeapBackend(MetalGpuDevice& device)
-			: mDevice(device)
+		MetalHeapBackend::MetalHeapBackend(MetalGpuDevice& device, MetalResidencySet& residencySet)
+			: mDevice(device), mResidencySet(residencySet)
 		{ }
 
 		MetalHeapBackend::HeapHandle MetalHeapBackend::CreateHeap(u64 sizeInBytes, const HeapCreateInformation& createInformation)
@@ -61,13 +67,7 @@ namespace b3d
 			heapDescriptor.storageMode = GetMemoryTypeStorageMode(createInformation.MemoryType);
 			heapDescriptor.cpuCacheMode = MTLCPUCacheModeDefaultCache;
 			heapDescriptor.type = MTLHeapTypePlacement;
-
-			// Must match the hazard tracking mode MetalUtility assigns to resources placed in the heap
-#if B3D_METAL_USE_EXPLICIT_RESOURCE_SYNCHRONIZATION
 			heapDescriptor.hazardTrackingMode = MTLHazardTrackingModeUntracked;
-#else
-			heapDescriptor.hazardTrackingMode = MTLHazardTrackingModeTracked;
-#endif
 
 			id<MTLHeap> heap = [device newHeapWithDescriptor:heapDescriptor];
 
@@ -80,6 +80,9 @@ namespace b3d
 			heap.label = createInformation.MemoryType == MetalHeapAllocator::kMemoryTypeShared
 				? @"Banshee shared placement heap"
 				: @"Banshee private placement heap";
+
+			// Covers every resource placed in the heap
+			mResidencySet.Add(heap);
 
 			MetalGpuHeap* heapWrapper = nullptr;
 			{
@@ -100,6 +103,7 @@ namespace b3d
 				return;
 
 			MetalGpuHeap& heap = ToMetalGpuHeap(handle);
+			mResidencySet.Remove(heap.Heap);
 
 			heap.Heap = nullptr;
 			heap.Size = 0;
@@ -110,7 +114,7 @@ namespace b3d
 		}
 
 		MetalHeapAllocator::MetalHeapAllocator(MetalGpuDevice& device)
-			: mDevice(device), mBackend(device)
+			: mDevice(device), mResidencySet(device.GetMetalDevice()), mBackend(device, mResidencySet)
 		{
 			for (u32 memoryType = 0; memoryType < kMemoryTypeCount; memoryType++)
 			{
@@ -301,7 +305,10 @@ namespace b3d
 			if (&allocator != mAllocators[memoryType].get())
 				return nil;
 
-			return [device newBufferWithLength:length options:options];
+			id<MTLBuffer> buffer = [device newBufferWithLength:length options:options];
+			mResidencySet.Add(buffer);
+
+			return buffer;
 		}
 
 		id<MTLTexture> MetalHeapAllocator::AllocateTexture(MTLTextureDescriptor* descriptor, const GpuAllocation& requestedAllocation, GpuAllocation& outAllocation)
@@ -324,13 +331,21 @@ namespace b3d
 
 				id<MTLTexture> texture = [heap.Heap newTextureWithDescriptor:descriptor offset:requestedAllocation.Offset];
 				if (texture != nil)
+				{
 					outAllocation = requestedAllocation;
+					AddHeapAttachmentResidency(texture);
+				}
 
 				return texture;
 			}
 
 			if (memoryType >= kMemoryTypeCount)
-				return [device newTextureWithDescriptor:descriptor];
+			{
+				id<MTLTexture> texture = [device newTextureWithDescriptor:descriptor];
+				mResidencySet.Add(texture);
+
+				return texture;
+			}
 
 			IGpuAllocator& allocator = *requestedAllocation.Allocator;
 			const MTLSizeAndAlign sizeAndAlign = [device heapTextureSizeAndAlignWithDescriptor:descriptor];
@@ -343,6 +358,7 @@ namespace b3d
 				if (texture != nil)
 				{
 					outAllocation = allocation;
+					AddHeapAttachmentResidency(texture);
 					return texture;
 				}
 
@@ -352,7 +368,33 @@ namespace b3d
 			if (&allocator != mAllocators[memoryType].get())
 				return nil;
 
-			return [device newTextureWithDescriptor:descriptor];
+			id<MTLTexture> texture = [device newTextureWithDescriptor:descriptor];
+			mResidencySet.Add(texture);
+			
+			return texture;
+		}
+
+		void MetalHeapAllocator::Free(id<MTLResource> resource, GpuAllocation& allocation)
+		{
+			if (!allocation.HasMemory())
+			{
+				mResidencySet.Remove(resource);
+				return;
+			}
+
+			if ([resource conformsToProtocol:@protocol(MTLTexture)] && IsAttachment((id<MTLTexture>)resource))
+				mResidencySet.Remove(resource);
+
+			if (allocation.IsOwned())
+				allocation.Allocator->Free(allocation);
+		}
+
+		void MetalHeapAllocator::AddHeapAttachmentResidency(id<MTLTexture> texture)
+		{
+			// The heap's residency covers the texture, but the validation layer warns about attachments that are not resident
+			// themselves
+			if (IsAttachment(texture))
+				mResidencySet.Add(texture);
 		}
 	} // namespace render
 } // namespace b3d

@@ -14,28 +14,43 @@ namespace b3d::render
 	 */
 
 	/**
-	 * Helper class for building and issuing Metal memory barriers.
+	 * Dependency between two sets of Metal stages, as encoded by the Metal 4 stage barriers. Work in the source stages
+	 * completes, and with a visibility other than MTL4VisibilityOptionNone its writes become visible, before work in the
+	 * destination stages starts.
+	 */
+	struct MetalStageBarrier
+	{
+		MetalStageBarrier() = default;
+
+		/**
+		 * Converts an engine barrier scope. Writes in the source scope make the barrier flush caches, and @p flags with
+		 * GpuBarrierFlag::AliasAcquire make it flush the caches of aliased memory.
+		 */
+		MetalStageBarrier(const GpuBarrierScope& scope, GpuBarrierFlags flags = GpuBarrierFlag::None);
+
+		/** Adds the stages and visibility of @p other to this barrier. */
+		void Merge(const MetalStageBarrier& other);
+
+		/** Returns true if the barrier orders nothing, because work on either side doesn't run on the GPU. */
+		bool IsEmpty() const { return SourceStages == 0 || DestinationStages == 0; }
+
+		MTLStages SourceStages = 0;
+		MTLStages DestinationStages = 0;
+		MTL4VisibilityOptions Visibility = MTL4VisibilityOptionNone;
+	};
+
+	/**
+	 * Helper class for building Metal 4 stage barriers from the barriers the resource tracker resolves.
 	 *
-	 * Translates core barriers to Metal: which @c MTLBarrierScope categories need a barrier and the union of engine pipeline
-	 * stages involved, then emits at most one @c memoryBarrierWithScope: on the currently open encoder in @c Execute.
-	 *
-	 * Design notes:
-	 *  - Barriers are scope-based rather than per-resource: Metal's @c memoryBarrierWithScope:
-	 *    synchronizes whole resource categories, which is coarse but can never under-synchronize.
-	 *    A per-resource @c memoryBarrierWithResources: refinement requires native-handle accessors
-	 *    on the tracked-resource layer. TODO(metal-tracking): refine once MetalBuffer/MetalImage
-	 *    expose their id<MTL...> handles.
-	 *  - Inter-pass synchronization belongs to @c MetalGpuCommandBuffer: explicit mode updates and
-	 *    waits on an @c MTLFence at encoder transitions. This helper owns the complementary
-	 *    intra-pass memory barriers. Tracked mode advances tracker bookkeeping without emitting
-	 *    redundant native barriers.
-	 *  - Image "layout transitions" are pure bookkeeping on Metal (there is no VkImageLayout
-	 *    analogue); the base's layout tracking still runs so the core tracker state stays coherent.
+	 * Metal 4 barriers are stage-to-stage rather than per-resource, so the helper only accumulates the union of the
+	 * resolved barriers, and leaves encoding to MetalGpuCommandBuffer, which knows what the open encoder contains.
+	 * Image layouts are pure bookkeeping on Metal, the base's layout tracking still runs so the tracker state stays
+	 * coherent.
 	 *
 	 * Typical usage (from MetalGpuCommandBuffer):
 	 * @code
 	 * mResourceTracker.TrackBufferAccess(buffer, stages, access, mBarrierHelper);
-	 * mBarrierHelper.Execute(renderEncoder, computeEncoder); // before recording the dependent command
+	 * EncodeBarrier(mBarrierHelper.Execute()); // before recording the dependent command
 	 * @endcode
 	 */
 	class MetalBarrierHelper : public TGpuBarrierHelper<MetalBarrierHelper, MetalResourceTracker>
@@ -51,19 +66,13 @@ namespace b3d::render
 		MetalBarrierHelper(MetalResourceTracker* resourceTracker);
 
 		/**
-		 * Emits the accumulated barriers on the currently open encoder, then runs the post-barrier
-		 * tracker updates (ApplyPostBarrierTracking, CommitPendingAccesses) and clears the
-		 * accumulated state. Always call this after a batch of Track*Usage / Track*Barrier calls and
-		 * before recording the dependent commands — even when HasBarriers() is false — so deferred
-		 * hazard registrations commit at the right point.
-		 *
-		 * @param renderEncoder		Currently open render encoder, or nil.
-		 * @param computeEncoder	Currently open compute encoder, or nil. Ignored when @p renderEncoder is set.
-		 *							When both are nil (no encoder, or a blit encoder is open) no intrapass barrier
-		 *							is emitted. Tracked mode delegates inter-pass hazards to Metal; explicit mode
-		 *							uses the command buffer's MTLFence and queue-event path.
+		 * Returns the barrier accumulated since the last Execute() or Clear(), then runs the post-barrier tracker updates
+		 * (ApplyPostBarrierTracking, CommitPendingAccesses) and clears the accumulated state. Always call this after a
+		 * batch of Track*Usage / Track*Barrier calls and before recording the dependent commands, even when HasBarriers()
+		 * is false, so deferred hazard registrations commit at the right point. The caller must encode the returned
+		 * barrier.
 		 */
-		void Execute(id<MTLRenderCommandEncoder> renderEncoder, id<MTLComputeCommandEncoder> computeEncoder);
+		MetalStageBarrier Execute();
 
 		/**
 		 * Clears all accumulated barriers without executing them. Useful if you need to reset the
@@ -72,36 +81,44 @@ namespace b3d::render
 		void Clear();
 
 		/** Returns true if there are any barriers accumulated and ready to execute. */
-		bool HasBarriers() const;
+		bool HasBarriers() const { return !mBarrier.IsEmpty(); }
 
 		/**
-		 * Returns true when the pending render-encoder dependency cannot be represented by an
-		 * Apple-family intrapass memory barrier and therefore requires a render-pass boundary.
+		 * Returns true if an accumulated barrier waits for fragment shader work that an open render encoder may have
+		 * encoded, which no barrier within the encoder can wait for.
+		 *
+		 * @param	encoderHasFragmentWrites	True if fragment shaders of the open render encoder may write storage resources.
 		 */
-		bool RequiresRenderPassRestart() const;
+		bool WaitsForEncoderFragmentWork(bool encoderHasFragmentWrites) const;
+
+		/**
+		 * Returns true if a barrier from @p sourceStages, to work that accesses resources with @p destinationAccess, waits
+		 * for fragment shader work that an open render encoder may have encoded.
+		 *
+		 * @param	sourceStages				Engine stages the barrier waits for.
+		 * @param	destinationAccess			Accesses of the work that waits.
+		 * @param	encoderHasFragmentWrites	True if fragment shaders of the open render encoder may write storage resources.
+		 */
+		static bool WaitsForFragmentShaderWork(GpuStageFlags sourceStages, GpuAccessFlags destinationAccess, bool encoderHasFragmentWrites);
 
 	private:
 		friend class TGpuBarrierHelper<MetalBarrierHelper, MetalResourceTracker>;
 
-		/** Accumulates the native buffer scope and stage union for a resolved barrier. */
+		/** Accumulates a resolved buffer barrier. */
 		void RecordNativeBufferBarrier(IGpuBufferResource* buffer, const GpuBarrierScope& barrier, GpuBarrierFlags barrierFlags);
 
 		/**
-		 * Accumulates the native image scope and stage union for a resolved barrier. Metal performs no native layout
-		 * transitions, so unlike the Vulkan hook @p oldLayout is taken by value and never reconciled —
-		 * the base's layout bookkeeping proceeds with the tracked value unchanged.
+		 * Accumulates a resolved image barrier. Metal performs no native layout transitions, so unlike the Vulkan hook
+		 * @p oldLayout is taken by value and never reconciled, the base's layout bookkeeping proceeds with the tracked
+		 * value unchanged.
 		 */
 		void RecordNativeImageBarrier(IGpuImageResource* image, const GpuTextureSubresourceRange& subresourceRange, const GpuBarrierScope& barrier, GpuImageLayout oldLayout, GpuImageLayout newLayout, GpuBarrierFlags barrierFlags);
 
-		bool mHasBufferBarriers = false;
-		bool mHasTextureBarriers = false;
-		bool mHasRenderTargetBarriers = false;
+		MetalStageBarrier mBarrier;
 
-		// Union of engine stages seen across the accumulated barriers. Execute maps the subset
-		// supported by Apple-family render barriers; unsupported producer dependencies are resolved
-		// by a render-pass boundary in MetalGpuCommandBuffer.
-		GpuStageFlags mCombinedSourceStages = GpuStageFlag::None;
-		GpuStageFlags mCombinedDestinationStages = GpuStageFlag::None;
+		/** Engine stages and accesses of the accumulated barriers, which tell apart work the Metal stages merge. */
+		GpuStageFlags mSourceStages = GpuStageFlag::None;
+		GpuAccessFlags mDestinationAccess = GpuAccessFlag::None;
 	};
 
 	extern template class TGpuBarrierHelper<MetalBarrierHelper, MetalResourceTracker>;

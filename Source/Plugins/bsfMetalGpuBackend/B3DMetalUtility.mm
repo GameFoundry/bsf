@@ -128,26 +128,22 @@ namespace b3d
 			}
 		}
 
-		MTLRenderStages MetalUtility::GetRenderStages(GpuProgramStageBits stages)
+		MTLStages MetalUtility::GetStages(GpuStageFlags stages)
 		{
-			// Guards the fold below against a stage bit added to the engine after this mapping was written:
-			// silently dropping one would under-declare resource usage and fault the GPU rather than fail loudly.
-			constexpr u32 kKnownStages = (u32)GpuProgramStageBit::Vertex | (u32)GpuProgramStageBit::Fragment
-				| (u32)GpuProgramStageBit::Hull | (u32)GpuProgramStageBit::Domain | (u32)GpuProgramStageBit::Geometry | (u32)GpuProgramStageBit::Compute;
-			B3D_ASSERT(((u32)stages & ~kKnownStages) == 0 && "Unhandled GpuProgramStageBit in GetRenderStages.");
+			MTLStages output = (MTLStages)0;
+			if (stages.IsSetAny(GpuStageFlag::DrawIndirect | GpuStageFlag::VertexInputAttributes | GpuStageFlag::VertexInputIndices | GpuStageFlag::VertexShaderNonUniform | GpuStageFlag::VertexShaderUniform))
+				output |= MTLStageVertex;
 
-			MTLRenderStages renderStages = (MTLRenderStages)0;
+			if (stages.IsSetAny(GpuStageFlag::FragmentShaderNonUniform | GpuStageFlag::FragmentShaderUniform | GpuStageFlag::EarlyFragmentTests | GpuStageFlag::LateFragmentTests | GpuStageFlag::ColorAttachment | GpuStageFlag::Resolve))
+				output |= MTLStageFragment;
 
-			// Hull, domain and geometry have no native Metal render stage; each is emulated by a compute
-			// pre-pass whose output is consumed by the vertex function, so the vertex stage stands in for them.
-			if (stages.IsSetAny(GpuProgramStageBit::Vertex | GpuProgramStageBit::Hull | GpuProgramStageBit::Domain | GpuProgramStageBit::Geometry))
-				renderStages |= MTLRenderStageVertex;
+			if (stages.IsSetAny(GpuStageFlag::ComputeShaderNonUniform | GpuStageFlag::ComputeShaderUniform))
+				output |= MTLStageDispatch;
 
-			if (stages.IsSet(GpuProgramStageBit::Fragment))
-				renderStages |= MTLRenderStageFragment;
+			if (stages.IsSet(GpuStageFlag::Transfer))
+				output |= MTLStageBlit;
 
-			// GpuProgramStageBit::Compute is intentionally unmapped - compute work is encoded on a compute encoder, which takes no MTLRenderStages.
-			return renderStages;
+			return output;
 		}
 
 		MTLTextureType MetalUtility::GetTextureType(TextureType type, u32 sampleCount, u32 arraySliceCount)
@@ -478,16 +474,8 @@ namespace b3d
 
 		MTLResourceOptions MetalUtility::GetResourceOptions(MTLStorageMode storageMode)
 		{
-			// Storage/cache/hazard modes share this bit mask. Keep direct resources consistent
-			// with placement heaps by selecting the configured hazard policy here.
-			MTLResourceOptions options = (MTLResourceOptions)((NSUInteger)storageMode << MTLResourceStorageModeShift);
-#if B3D_METAL_USE_EXPLICIT_RESOURCE_SYNCHRONIZATION
-			options |= MTLResourceHazardTrackingModeUntracked;
-#else
-			options |= MTLResourceHazardTrackingModeTracked;
-#endif
-
-			return options;
+			// Storage, cache and hazard modes share this bit mask
+			return (MTLResourceOptions)((NSUInteger)storageMode << MTLResourceStorageModeShift) | MTLResourceHazardTrackingModeUntracked;
 		}
 
 		bool MetalUtility::IsPixelFormatSupported(PixelFormat format, bool gamma)

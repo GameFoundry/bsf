@@ -2,6 +2,7 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "B3DMetalBarrierHelper.h"
 #include "B3DMetalResourceTracker.h"
+#include "B3DMetalUtility.h"
 #include "GpuBackend/B3DGpuBackendUtility.h"
 
 // Generic barrier-helper method definitions, followed by the explicit instantiation for the Metal
@@ -14,103 +15,54 @@ template class b3d::render::TGpuBarrierHelper<b3d::render::MetalBarrierHelper, b
 
 namespace b3d::render
 {
+	MetalStageBarrier::MetalStageBarrier(const GpuBarrierScope& scope, GpuBarrierFlags flags)
+		: SourceStages(MetalUtility::GetStages(scope.SourceStages)), DestinationStages(MetalUtility::GetStages(scope.DestinationStages))
+	{
+		if (scope.SourceAccess.IsSet(GpuAccessFlag::Write))
+			Visibility |= MTL4VisibilityOptionDevice;
+
+		if (flags.IsSet(GpuBarrierFlag::AliasAcquire))
+			Visibility |= MTL4VisibilityOptionResourceAlias;
+	}
+
+	void MetalStageBarrier::Merge(const MetalStageBarrier& other)
+	{
+		if (other.IsEmpty())
+			return;
+
+		SourceStages |= other.SourceStages;
+		DestinationStages |= other.DestinationStages;
+		Visibility |= other.Visibility;
+	}
+
 	MetalBarrierHelper::MetalBarrierHelper(MetalResourceTracker* resourceTracker)
 		: TGpuBarrierHelper<MetalBarrierHelper, MetalResourceTracker>(resourceTracker)
 	{ }
 
 	void MetalBarrierHelper::RecordNativeBufferBarrier(IGpuBufferResource* buffer, const GpuBarrierScope& barrier, GpuBarrierFlags barrierFlags)
 	{
-		// Scope-based accumulation: the native barrier synchronizes the whole buffer category, so the
-		// specific resource and access direction only matter to the base's tracker bookkeeping.
 		(void)buffer;
-		(void)barrierFlags;
 
-		mHasBufferBarriers = true;
-		mCombinedSourceStages |= barrier.SourceStages;
-		mCombinedDestinationStages |= barrier.DestinationStages;
+		mBarrier.Merge(MetalStageBarrier(barrier, barrierFlags));
+		mSourceStages |= barrier.SourceStages;
+		mDestinationAccess |= barrier.DestinationAccess;
 	}
 
-	void MetalBarrierHelper::RecordNativeImageBarrier(IGpuImageResource* image, const GpuTextureSubresourceRange& subresourceRange, const GpuBarrierScope& barrier, GpuImageLayout oldLayout, GpuImageLayout newLayout, GpuBarrierFlags)
+	void MetalBarrierHelper::RecordNativeImageBarrier(IGpuImageResource* image, const GpuTextureSubresourceRange& subresourceRange, const GpuBarrierScope& barrier, GpuImageLayout oldLayout, GpuImageLayout newLayout, GpuBarrierFlags barrierFlags)
 	{
-		// Metal has no image layouts — the transition itself is a no-op natively. The base records the
-		// layout bookkeeping (mImageLayoutTracking) and pushes it back into the tracker after Execute.
 		(void)image;
 		(void)subresourceRange;
 		(void)oldLayout;
 		(void)newLayout;
 
-		mHasTextureBarriers = true;
-
-		// Barriers touching attachment stages also need the render-target scope so in-pass
-		// attachment writes are visible to subsequent reads. Metal performs resolves as an
-		// attachment store action, so resolve hazards require the same encoder boundary.
-		const GpuStageFlags kAttachmentStages = GpuStageFlag::ColorAttachment | GpuStageFlag::EarlyFragmentTests | GpuStageFlag::LateFragmentTests | GpuStageFlag::Resolve;
-		if(barrier.SourceStages.IsSetAny(kAttachmentStages) || barrier.DestinationStages.IsSetAny(kAttachmentStages))
-			mHasRenderTargetBarriers = true;
-
-		mCombinedSourceStages |= barrier.SourceStages;
-		mCombinedDestinationStages |= barrier.DestinationStages;
+		mBarrier.Merge(MetalStageBarrier(barrier, barrierFlags));
+		mSourceStages |= barrier.SourceStages;
+		mDestinationAccess |= barrier.DestinationAccess;
 	}
 
-	void MetalBarrierHelper::Execute(id<MTLRenderCommandEncoder> renderEncoder, id<MTLComputeCommandEncoder> computeEncoder)
+	MetalStageBarrier MetalBarrierHelper::Execute()
 	{
-		if(HasBarriers())
-		{
-#if B3D_METAL_USE_EXPLICIT_RESOURCE_SYNCHRONIZATION
-			if(renderEncoder != nil)
-			{
-				B3D_ASSERT(!RequiresRenderPassRestart());
-
-				MTLBarrierScope scope = (MTLBarrierScope)0;
-				if(mHasBufferBarriers)
-					scope |= MTLBarrierScopeBuffers;
-
-				if(mHasTextureBarriers)
-					scope |= MTLBarrierScopeTextures;
-
-				const GpuStageFlags vertexStages = GpuStageFlag::DrawIndirect
-					| GpuStageFlag::VertexInputAttributes | GpuStageFlag::VertexInputIndices
-					| GpuStageFlag::VertexShaderNonUniform | GpuStageFlag::VertexShaderUniform;
-
-				const GpuStageFlags fragmentStages = GpuStageFlag::FragmentShaderNonUniform
-					| GpuStageFlag::FragmentShaderUniform | GpuStageFlag::EarlyFragmentTests
-					| GpuStageFlag::LateFragmentTests | GpuStageFlag::ColorAttachment;
-
-				MTLRenderStages beforeStages = (MTLRenderStages)0;
-				if(mCombinedDestinationStages.IsSetAny(vertexStages))
-					beforeStages |= MTLRenderStageVertex;
-
-				if(mCombinedDestinationStages.IsSetAny(fragmentStages))
-					beforeStages |= MTLRenderStageFragment;
-
-				if(beforeStages == 0)
-					beforeStages = MTLRenderStageVertex;
-
-				// Apple-family GPUs support vertex-stage producers only. Dependencies involving a
-				// fragment/tile producer or render-target scope are resolved by the command buffer
-				// through an encoder boundary before Execute is called.
-				[renderEncoder memoryBarrierWithScope:scope afterStages:MTLRenderStageVertex beforeStages:beforeStages];
-			}
-			else if(computeEncoder != nil)
-			{
-				// MTLBarrierScopeRenderTargets is invalid on compute encoders; attachment barriers
-				// recorded while a compute encoder is open resolve as texture-scope barriers.
-				MTLBarrierScope scope = (MTLBarrierScope)0;
-				if(mHasBufferBarriers)
-					scope |= MTLBarrierScopeBuffers;
-
-				if(mHasTextureBarriers || mHasRenderTargetBarriers)
-					scope |= MTLBarrierScopeTextures;
-
-				[computeEncoder memoryBarrierWithScope:scope];
-			}
-			// else: no render/compute encoder is open, so there is no intrapass barrier to emit.
-			// Explicit mode synchronizes encoder transitions with the command buffer's MTLFence.
-#endif
-			// Tracked mode deliberately emits no native barrier. Metal's tracked resources provide
-			// the dependency; the generic tracker state below is still advanced for verification and
-			// backend parity.
-		}
+		const MetalStageBarrier barrier = mBarrier;
 
 		// Post-barrier bookkeeping runs unconditionally: Track*Usage defers hazard registrations even
 		// when no native barrier was queued, and they must commit at this point (see the core
@@ -118,42 +70,32 @@ namespace b3d::render
 		ApplyPostBarrierTracking();
 		mResourceTracker->CommitPendingAccesses();
 		Clear();
+
+		return barrier;
 	}
 
 	void MetalBarrierHelper::Clear()
 	{
-		mHasBufferBarriers = false;
-		mHasTextureBarriers = false;
-		mHasRenderTargetBarriers = false;
-		mCombinedSourceStages = GpuStageFlag::None;
-		mCombinedDestinationStages = GpuStageFlag::None;
+		mBarrier = MetalStageBarrier();
+		mSourceStages = GpuStageFlag::None;
+		mDestinationAccess = GpuAccessFlag::None;
 
 		TGpuBarrierHelper<MetalBarrierHelper, MetalResourceTracker>::Clear();
 	}
 
-	bool MetalBarrierHelper::HasBarriers() const
+	bool MetalBarrierHelper::WaitsForEncoderFragmentWork(bool encoderHasFragmentWrites) const
 	{
-		return mHasBufferBarriers || mHasTextureBarriers;
+		return HasBarriers() && WaitsForFragmentShaderWork(mSourceStages, mDestinationAccess, encoderHasFragmentWrites);
 	}
 
-	bool MetalBarrierHelper::RequiresRenderPassRestart() const
+	bool MetalBarrierHelper::WaitsForFragmentShaderWork(GpuStageFlags sourceStages, GpuAccessFlags destinationAccess, bool encoderHasFragmentWrites)
 	{
-		if(!HasBarriers())
+		// Attachments of other render passes were accessed by earlier encoders, as a render pass cannot access its own
+		// attachments from shaders. Fragment shader reads within the encoder only matter if something writes after them.
+		const GpuStageFlags fragmentShaderStages = GpuStageFlag::FragmentShaderNonUniform | GpuStageFlag::FragmentShaderUniform;
+		if (!sourceStages.IsSetAny(fragmentShaderStages))
 			return false;
 
-		if(mHasRenderTargetBarriers)
-			return true;
-
-		const GpuStageFlags supportedSourceStages = GpuStageFlag::DrawIndirect
-			| GpuStageFlag::VertexInputAttributes | GpuStageFlag::VertexInputIndices
-			| GpuStageFlag::VertexShaderNonUniform | GpuStageFlag::VertexShaderUniform;
-
-		const GpuStageFlags supportedDestinationStages = supportedSourceStages
-			| GpuStageFlag::FragmentShaderNonUniform | GpuStageFlag::FragmentShaderUniform
-			| GpuStageFlag::EarlyFragmentTests | GpuStageFlag::LateFragmentTests
-			| GpuStageFlag::ColorAttachment;
-
-		return (mCombinedSourceStages & ~supportedSourceStages) != GpuStageFlag::None
-			|| (mCombinedDestinationStages & ~supportedDestinationStages) != GpuStageFlag::None;
+		return encoderHasFragmentWrites || destinationAccess.IsSet(GpuAccessFlag::Write);
 	}
 } // namespace b3d::render

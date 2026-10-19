@@ -24,11 +24,9 @@ namespace b3d
 				mTextureBufferViews.clear();
 			}
 
+			GetDevice().GetHeapAllocator().Free(mBuffer, mAllocation);
 			mBuffer = nullptr;
 			mMappedMemory = nullptr;
-
-			if (mAllocation.IsOwned())
-				mAllocation.Allocator->Free(mAllocation);
 		}
 
 		void MetalBuffer::SetName(const StringView& name)
@@ -185,15 +183,31 @@ namespace b3d
 				return nil;
 			}
 
+			const MTLTextureUsage usage = writable ? (MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite) : MTLTextureUsageShaderRead;
+
+			// Views of heap-placed buffers are placed in the heap over the buffer's memory. Shader validation can mistake
+			// views created from the buffer for released heap textures that had the same resource ID, and blocks their
+			// accesses.
 			id<MTLTexture> view = nil;
-			MTLTextureDescriptor* descriptor = [MTLTextureDescriptor
-				textureBufferDescriptorWithPixelFormat:pixelFormat
-												 width:(NSUInteger)elementCount
-									   resourceOptions:MetalUtility::GetResourceOptions([mBuffer storageMode])
-												 usage:writable ? (MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite) : MTLTextureUsageShaderRead];
-			view = [mBuffer newTextureWithDescriptor:descriptor
-											  offset:offset
-										 bytesPerRow:(NSUInteger)(elementCount * elementSize)];
+			id<MTLHeap> heap = [mBuffer heap];
+			if (heap != nil)
+			{
+				MTLTextureDescriptor* descriptor = [MTLTextureDescriptor textureBufferDescriptorWithPixelFormat:pixelFormat
+					width:(NSUInteger)elementCount resourceOptions:[mBuffer resourceOptions] usage:usage];
+
+				const MTLSizeAndAlign sizeAndAlign = [device heapTextureSizeAndAlignWithDescriptor:descriptor];
+				const u64 heapOffset = (u64)[mBuffer heapOffset] + offset;
+				if (sizeAndAlign.align != 0 && (heapOffset % sizeAndAlign.align) == 0 && heapOffset + sizeAndAlign.size <= (u64)[heap size])
+					view = [heap newTextureWithDescriptor:descriptor offset:(NSUInteger)heapOffset];
+			}
+
+			if (view == nil)
+			{
+				MTLTextureDescriptor* descriptor = [MTLTextureDescriptor textureBufferDescriptorWithPixelFormat:pixelFormat
+					width:(NSUInteger)elementCount resourceOptions:MetalUtility::GetResourceOptions([mBuffer storageMode]) usage:usage];
+
+				view = [mBuffer newTextureWithDescriptor:descriptor offset:offset bytesPerRow:(NSUInteger)(elementCount * elementSize)];
+			}
 			if (view == nil)
 			{
 				B3D_LOG(Error, LogRenderBackend, "Failed to create a Metal texture-buffer view. Format: {0}, elements: {1}.", (u32)format, elementCount);

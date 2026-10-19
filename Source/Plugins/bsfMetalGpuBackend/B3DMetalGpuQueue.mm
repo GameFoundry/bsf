@@ -13,45 +13,135 @@ namespace b3d
 {
 	namespace render
 	{
-		namespace
-		{
-			/** Logs the error of @p commandBuffer, if it failed. */
-			void LogCommandBufferError(id<MTLCommandBuffer> commandBuffer)
-			{
-				if ([commandBuffer status] != MTLCommandBufferStatusError)
-					return;
-
-				NSError* error = [commandBuffer error];
-				B3D_LOG(Fatal, LogRenderBackend, "Metal queue synchronization command buffer failed ({0}, code {1}): {2}",
-					error ? String([[error domain] UTF8String]) : String("<unknown domain>"),
-					error ? (i64)[error code] : 0,
-					error ? String([[error localizedDescription] UTF8String]) : String("No error details were provided."));
-			}
-		} // namespace
-
-		MetalGpuQueue::MetalGpuQueue(GpuDevice& device, GpuQueueType type, u32 index, id<MTLCommandQueue> commandQueue, id<MTLSharedEvent> sharedEvent)
+		MetalGpuQueue::MetalGpuQueue(GpuDevice& device, GpuQueueType type, u32 index, id<MTL4CommandQueue> commandQueue, id<MTLSharedEvent> sharedEvent)
 			: GpuQueue(device, type, index), mCommandQueue(commandQueue), mSharedEvent(sharedEvent)
 		{ }
 
-		void MetalGpuQueue::NotifySubmissionCommitted(u64 eventValue, id<MTLCommandBuffer> commandBuffer, const TShared<WaitGroup>& ownerCompletion)
+		void MetalGpuQueue::Commit(const id<MTL4CommandBuffer>* commandBuffers, u32 count)
 		{
-			u64 previousEventValue = mLastCommittedEventValue.load(std::memory_order_relaxed);
-			while (eventValue > previousEventValue)
+			if (count == 0)
+				return;
+
+			MTL4CommitOptions* options = [[MTL4CommitOptions alloc] init];
+			[options addFeedbackHandler:^(id<MTL4CommitFeedback> feedback)
 			{
-				if (mLastCommittedEventValue.compare_exchange_weak(previousEventValue, eventValue, std::memory_order_release, std::memory_order_relaxed))
+				NSError* error = feedback.error;
+				if (error == nil)
+					return;
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+				NSArray<id<MTLCommandBufferEncoderInfo>>* encoderInformationArray = [[error userInfo] objectForKey:MTLCommandBufferEncoderInfoErrorKey];
+				for (id<MTLCommandBufferEncoderInfo> encoderInformation in encoderInformationArray)
 				{
-					break;
+					B3D_LOG(Error, LogRenderBackend, "Metal encoder '{0}' failed with execution state {1}.",
+						[encoderInformation label] ? String([[encoderInformation label] UTF8String]) : String("<unnamed>"),
+						(u32)[encoderInformation errorState]);
+
+					for (NSString* signpost in [encoderInformation debugSignposts])
+						B3D_LOG(Error, LogRenderBackend, "  GPU signpost: {0}", String([signpost UTF8String]));
 				}
+#endif
+
+				B3D_LOG(Fatal, LogRenderBackend, "Metal command buffer failed during GPU execution ({0}, code {1}): {2}",
+					String([[error domain] UTF8String]), (i64)[error code], String([[error localizedDescription] UTF8String]));
+			}];
+
+			[mCommandQueue commit:commandBuffers count:count options:options];
+		}
+
+		void MetalGpuQueue::WaitForQueues(GpuQueueMask waitMask)
+		{
+			waitMask &= ~GpuQueueMask(GetId());
+			if (waitMask.IsEmpty())
+				return;
+
+			mGpuDevice.DoForEachQueue([this, waitMask](GpuQueue& queue)
+			{
+				if (!waitMask.IsSet(queue.GetId()))
+					return;
+
+				// Not the reserved value, which may belong to a submission that isn't committed yet and would never signal
+				auto& waitQueue = static_cast<MetalGpuQueue&>(queue);
+				const u64 waitValue = waitQueue.GetLastCommittedEventValue();
+				if (waitValue != 0)
+					[mCommandQueue waitForEvent:waitQueue.GetSharedEvent() value:waitValue];
+			});
+		}
+
+		void MetalGpuQueue::WaitForEvent(id<MTLSharedEvent> event, u64 value)
+		{
+			if (event != nil)
+				[mCommandQueue waitForEvent:event value:value];
+		}
+
+		void MetalGpuQueue::SignalEvent(id<MTLSharedEvent> event, u64 value)
+		{
+			if (event != nil)
+				[mCommandQueue signalEvent:event value:value];
+		}
+
+		void MetalGpuQueue::WaitForDrawable(id<CAMetalDrawable> drawable)
+		{
+			if (drawable == nil)
+				return;
+
+			mWaitedDrawables.erase(std::remove(mWaitedDrawables.begin(), mWaitedDrawables.end(), nil), mWaitedDrawables.end());
+			if (std::find(mWaitedDrawables.begin(), mWaitedDrawables.end(), drawable) != mWaitedDrawables.end())
+				return;
+
+			[mCommandQueue waitForDrawable:drawable];
+			mWaitedDrawables.push_back(drawable);
+		}
+
+		void MetalGpuQueue::SignalDrawable(id<CAMetalDrawable> drawable)
+		{
+			if (drawable == nil)
+				return;
+
+			// A drawable nothing rendered to still needs a wait before it may be released
+			WaitForDrawable(drawable);
+			[mCommandQueue signalDrawable:drawable];
+
+			mWaitedDrawables.erase(std::remove(mWaitedDrawables.begin(), mWaitedDrawables.end(), drawable), mWaitedDrawables.end());
+		}
+
+		u64 MetalGpuQueue::SignalSubmission(Function<void()> onCompleted, const TShared<WaitGroup>& ownerCompletion)
+		{
+			const u64 signalValue = ++mLastReservedEventValue;
+
+			{
+				Lock lock(mCompletionMutex);
+				mPendingCompletionCount++;
 			}
 
+			// The listener delivers notifications in order on a serial queue, so completions are reported in submission order
+			MTLSharedEventListener* listener = static_cast<MetalGpuDevice&>(mGpuDevice).GetCompletionListener();
+			[mSharedEvent notifyListener:listener atValue:signalValue block:^(id<MTLSharedEvent>, uint64_t)
+			{
+				if (onCompleted)
+					onCompleted();
+
+				{
+					Lock lock(mCompletionMutex);
+					mPendingCompletionCount--;
+				}
+
+				mCompletionCondition.notify_all();
+			}];
+
+			[mCommandQueue signalEvent:mSharedEvent value:signalValue];
+			mLastCommittedEventValue.store(signalValue, std::memory_order_release);
+
 			Lock lock(mSubmissionMutex);
-			mActiveSubmissions.push_back({ eventValue, commandBuffer, ownerCompletion });
+			mActiveSubmissions.push_back({ signalValue, ownerCompletion });
+
+			return signalValue;
 		}
 
 		void MetalGpuQueue::NotifySubmissionFailed(const TShared<WaitGroup>& ownerCompletion)
 		{
 			Lock lock(mSubmissionMutex);
-			mActiveSubmissions.push_back({ GetLastCommittedEventValue(), nil, ownerCompletion });
+			mActiveSubmissions.push_back({ GetLastCommittedEventValue(), ownerCompletion });
 		}
 
 		void MetalGpuQueue::SubmitCommandBuffer(const GpuSubmissionInformation& information)
@@ -77,7 +167,6 @@ namespace b3d
 
 			// Set before the hand-off, so the owner thread never observes a submitted buffer as recording
 			metalCommandBuffer->SetState(GpuCommandBufferState::Executing);
-
 			mGpuDevice.GetSubmitThread().QueueSubmit(information.CommandBuffer, *this, information.SyncMask, information.SignalFences);
 		}
 
@@ -96,19 +185,18 @@ namespace b3d
 
 		void MetalGpuQueue::ExecuteWaitUntilIdle()
 		{
-			if (mCommandQueue == nil)
-				return;
-
-			// A failed command buffer may never signal its shared event, so wait on a trailing command buffer instead
-			FenceCompletionHandlers();
+			Lock lock(mCompletionMutex);
+			mCompletionCondition.wait(lock, [this]() { return mPendingCompletionCount == 0; });
 		}
 
 		void MetalGpuQueue::RefreshCompletionState(bool forceWait, u64 lastEventValue)
 		{
 			AssertIfNotSubmitThread();
 
-			// Records are in ascending order, so the last command buffer up to lastEventValue covers all earlier ones
-			id<MTLCommandBuffer> waitCommandBuffer = nil;
+			// Completion is only observable once the owner-side cleanup has run, so only forced waits retire submissions
+			if (!forceWait)
+				return;
+
 			TInlineArray<TShared<WaitGroup>, 16> ownerCompletions;
 			{
 				Lock lock(mSubmissionMutex);
@@ -117,22 +205,10 @@ namespace b3d
 					if (record.EventValue > lastEventValue)
 						break;
 
-					if (record.CommandBuffer != nil)
-						waitCommandBuffer = record.CommandBuffer;
-
 					if (record.OwnerCompletion != nullptr)
 						ownerCompletions.Add(record.OwnerCompletion);
 				}
 			}
-
-			// A terminal command buffer status is observable before its completion handler returns, so only forced waits
-			// retire submissions
-			if (!forceWait)
-				return;
-
-			// Also waits for the completion handler, which posts the completion to the owner
-			if (waitCommandBuffer != nil)
-				[waitCommandBuffer waitUntilCompleted];
 
 			for (const TShared<WaitGroup>& ownerCompletion : ownerCompletions)
 				ownerCompletion->Wait();
@@ -143,20 +219,6 @@ namespace b3d
 				retiredCount++;
 
 			mActiveSubmissions.erase(mActiveSubmissions.begin(), mActiveSubmissions.begin() + retiredCount);
-		}
-
-		void MetalGpuQueue::FenceCompletionHandlers()
-		{
-			id<MTLCommandBuffer> fenceCommandBuffer = [mCommandQueue commandBuffer];
-			if (fenceCommandBuffer == nil)
-				return;
-
-			[fenceCommandBuffer addCompletedHandler:^(id<MTLCommandBuffer> completedCommandBuffer)
-			{
-				LogCommandBufferError(completedCommandBuffer);
-			}];
-			[fenceCommandBuffer commit];
-			[fenceCommandBuffer waitUntilCompleted];
 		}
 
 		void MetalGpuQueue::PresentRenderWindow(const TShared<RenderWindow>& renderWindow, GpuQueueMask syncMask)
@@ -170,7 +232,6 @@ namespace b3d
 
 			renderWindow->NotifySwapBuffersRequested();
 			surface->SwapBuffers(*this, syncMask);
-
 			B3D_INCREMENT_RENDER_STATISTIC(NumPresents);
 		}
 	} // namespace render

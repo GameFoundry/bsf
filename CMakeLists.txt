@@ -7,10 +7,13 @@ if(CMAKE_HOST_APPLE)
 		message(FATAL_ERROR "Banshee targets Apple Silicon only. Set CMAKE_OSX_ARCHITECTURES=arm64.")
 	endif()
 
+	# The Metal backend requires Metal 4, available from macOS 26. Build directories configured for an older
+	# minimum are raised rather than rejected.
 	if(NOT CMAKE_OSX_DEPLOYMENT_TARGET)
-		set(CMAKE_OSX_DEPLOYMENT_TARGET 13.0 CACHE STRING "Minimum macOS deployment version" FORCE)
-	elseif(CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS 13.0)
-		message(FATAL_ERROR "Banshee's Apple Silicon Metal target requires macOS 13.0 or newer.")
+		set(CMAKE_OSX_DEPLOYMENT_TARGET 26.0 CACHE STRING "Minimum macOS deployment version" FORCE)
+	elseif(CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS 26.0)
+		message(WARNING "Banshee's Metal 4 backend requires macOS 26.0 or newer. Raising CMAKE_OSX_DEPLOYMENT_TARGET from ${CMAKE_OSX_DEPLOYMENT_TARGET} to 26.0.")
+		set(CMAKE_OSX_DEPLOYMENT_TARGET 26.0 CACHE STRING "Minimum macOS deployment version" FORCE)
 	endif()
 endif()
 
