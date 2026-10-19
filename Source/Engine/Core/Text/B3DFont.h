@@ -338,19 +338,13 @@ namespace b3d
 	class FontAtlasRenderer : public Module<FontAtlasRenderer>
 	{
 	public:
-		void OnStartUp() override;
-		void OnShutDown() override;
-
 		/**
-		 * Queues bliy operations from the provided source textures to their destination atlases by creating an internal
-		 * command buffer and queuing it for execution on the GPU.
+		 * Queues blit operations from the provided source textures to their destination atlases. The render thread records them in a
+		 * frame graph of their own and submits it.
 		 *
 		 * @note Thread safe.
 		 */
 		void BlitGlyphs(Vector<GlyphBitmap> glyphBitmaps);
-		
-	private:
-		TShared<render::GpuCommandBufferPool> mCommandBufferPool;
 	};
 
 	/** @} */
