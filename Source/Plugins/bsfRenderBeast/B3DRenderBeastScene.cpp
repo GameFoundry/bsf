@@ -1376,11 +1376,7 @@ RendererViewCreateInformation RenderBeastScene::CreateViewDesc(Camera* camera) c
 		viewDesc.Target.TargetHeight = 0;
 	}
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Msaa)
 	viewDesc.Target.NumSamples = camera->GetSampleCount();
-#else
-	viewDesc.Target.NumSamples = 1;
-#endif
 
 	viewDesc.MainView = camera->IsMain();
 	viewDesc.TriggerCallbacks = true;

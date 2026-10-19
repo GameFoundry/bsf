@@ -101,11 +101,17 @@ namespace b3d
 			TextureArrayToMSAATexture() = default;
 			void Initialize() override;
 
-			/** Prepares the material for rendering by setting up parameter. Must be called at least once before Execute. */
-			void Prepare(const TShared<Texture>& inputArray, const TShared<Texture>& target);
+			/**
+			 * Creates the parameter set of @p pass and assigns @p inputArray to it. Returns the set to pass to Execute().
+			 *
+			 * @param	pass		Pass that writes @p target.
+			 * @param	inputArray	Texture array with one slice per sample of @p target.
+			 * @param	target		Multisampled texture to write, the size of @p inputArray.
+			 */
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& inputArray, const TShared<Texture>& target);
 
-			/** Binds the material for rendering, sets up parameters and executes it. */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& target);
+			/** Binds the material and @p set, a set from Prepare(), and draws a screen quad over every sample of @p target. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const TShared<Texture>& target) const;
 
 		private:
 			GpuParameterSampledTexture mInputParam;
@@ -145,11 +151,19 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Binds the material for rendering, sets up parameters and executes it. Only works on variations of
-			 * this material intended for textures and texture arrays. Float variations with four components require
-			 * an RGBA16F texture.
+			 * Creates the parameter set of @p pass and assigns @p target and @p clearValue to it. Only works on variations of this material
+			 * intended for textures and texture arrays. Float variations with four components require an RGBA16F texture.
+			 *
+			 * @param	pass		Pass that dispatches the material.
+			 * @param	target		Texture to clear.
+			 * @param	clearValue	Value to write into every texel. Integer variations read the bits of its components.
+			 * @param	surface		Surface of @p target to clear. Texture array variations clear one slice, bound as an array.
+			 * @return				Parameter set to pass to Execute().
 			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& target, const Color& clearValue = Color::kZero, const TextureSurface& surface = TextureSurface::kComplete);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& target, const Color& clearValue = Color::kZero, const TextureSurface& surface = TextureSurface::kComplete);
+
+			/** Binds the material and @p set, a set from the texture form of Prepare(), and dispatches over a @p width by @p height texture. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, u32 width, u32 height) const;
 
 			/**
 			 * Creates the parameter set of @p pass and assigns @p target and @p clearValue to it. Only works on variations of this material

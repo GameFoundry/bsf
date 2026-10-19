@@ -148,7 +148,7 @@ void TextureArrayToMSAATexture::Initialize()
 	mGpuParameterSet->GetSampledTextureParameter("gInput", mInputParam);
 }
 
-void TextureArrayToMSAATexture::Prepare(const TShared<Texture>& inputArray, const TShared<Texture>& target)
+TShared<GpuParameterSet> TextureArrayToMSAATexture::Prepare(FrameGraphPass& pass, const TShared<Texture>& inputArray, const TShared<Texture>& target)
 {
 	const TextureProperties& inputProps = inputArray->GetProperties();
 	const TextureProperties& targetProps = target->GetProperties();
@@ -157,16 +157,20 @@ void TextureArrayToMSAATexture::Prepare(const TShared<Texture>& inputArray, cons
 	B3D_ASSERT(inputProps.Width == targetProps.Width);
 	B3D_ASSERT(inputProps.Height == targetProps.Height);
 
-	mInputParam.Set(inputArray);
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+	mInputParam.Set(set, inputArray);
+
+	return set;
 }
 
-void TextureArrayToMSAATexture::Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& target)
+void TextureArrayToMSAATexture::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const TShared<Texture>& target) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
 	const TextureProperties& targetProps = target->GetProperties();
 
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 
 	Area2 area(0.0f, 0.0f, (float)targetProps.Width, (float)targetProps.Height);
 	GetRendererUtility().DrawScreenQuad(commandBuffer, area);
@@ -192,28 +196,31 @@ void ClearLoadStoreMaterial::InitDefinesInternal(ShaderDefines& defines)
 	defines.Set("NUM_THREADS", kNumThreads);
 }
 
-void ClearLoadStoreMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& target, const Color& clearValue, const TextureSurface& surface)
+TShared<GpuParameterSet> ClearLoadStoreMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& target, const Color& clearValue, const TextureSurface& surface)
 {
-	B3D_PROFILE_RENDERER_MATERIAL
-
 	const TextureProperties& props = target->GetProperties();
-	PixelFormat pf = props.Format;
+	B3D_ASSERT(!PixelUtility::IsCompressed(props.Format));
 
-	B3D_ASSERT(!PixelUtility::IsCompressed(pf));
-
-	mOutputTextureParam.Set(target, surface);
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+	mOutputTextureParam.Set(set, target, surface);
 
 	GpuBufferMappedScope uniforms = gClearLoadStoreUniformDefinition.AllocateTransient().Map();
 
-	u32 width = props.Width;
-	u32 height = props.Height;
-	gClearLoadStoreUniformDefinition.gSize.Set(uniforms, Vector2I((i32)width, (i32)height));
+	gClearLoadStoreUniformDefinition.gSize.Set(uniforms, Vector2I((i32)props.Width, (i32)props.Height));
 	gClearLoadStoreUniformDefinition.gFloatClearVal.Set(uniforms, Vector4(clearValue.R, clearValue.G, clearValue.B, clearValue.A));
 	gClearLoadStoreUniformDefinition.gIntClearVal.Set(uniforms, Vector4I(*(i32*)&clearValue.R, *(i32*)&clearValue.G, *(i32*)&clearValue.B, *(i32*)&clearValue.A));
 
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
 
-	Bind(commandBuffer);
+	return set;
+}
+
+void ClearLoadStoreMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, u32 width, u32 height) const
+{
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
+	B3D_PROFILE_RENDERER_MATERIAL
+
+	Bind(commandBuffer, set);
 
 	u32 numGroupsX = Math::DivideAndRoundUp(width, kNumThreads * kTileSize);
 	u32 numGroupsY = Math::DivideAndRoundUp(height, kNumThreads * kTileSize);

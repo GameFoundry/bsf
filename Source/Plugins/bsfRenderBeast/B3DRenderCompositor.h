@@ -364,26 +364,21 @@ namespace b3d
 		{
 		public:
 			// Outputs
-			/**
-			 * Contains scene color. If MSAA is used this texture will be null until the texture array data is first resolved
-			 * into this texture.
-			 */
+			/** Contains scene color. */
 			TShared<Texture> SceneColorTex;
 
 			/**
-			 * Texture array version of sceneColorTex. Only available when MSAA is used, since random writes to
-			 * multisampled texture aren't supported on all render backends.
+			 * Texture array version of SceneColorTex, with one slice per sample. Only available when MSAA is used, since random writes
+			 * to multisampled textures aren't supported on all render backends, and only until AddArrayToMSAAPass().
 			 */
 			TShared<Texture> SceneColorTexArray;
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Msaa)
-			/** Converts MSAA data from the texture array into the MSAA texture. */
-			void MsaaTexArrayToTexture(GpuCommandBuffer& commandBuffer);
-#endif
+			/** Adds a pass that copies the texture array into the multisampled scene color texture, and drops the array. */
+			void AddArrayToMSAAPass(FrameGraph& graph);
 
 			/**
-			 * Updates the internal scene color texture with the provided texture. MSAA scene color texture array must have
-			 * been resolved before this call.
+			 * Updates the internal scene color texture with the provided texture. With MSAA, AddArrayToMSAAPass() must have been called
+			 * before this call.
 			 */
 			void SetExternalTexture(const TShared<Texture>& texture);
 
@@ -431,7 +426,7 @@ namespace b3d
 		class RCNodeParticleSimulate : public RenderCompositorNode
 		{
 		public:
-			using DependencyDefinition = RCNodeDependencyDefinition<RCNodeBasePass, RCNodeSceneDepth>;
+			using DependencyDefinition = RCNodeDependencyDefinition<RCNodeBasePass, RCNodeSceneDepth, RCNodeResolvedSceneDepth>;
 
 			static StringID GetNodeId() { return "ParticleSimulate"; }
 			static DependencyDefinition GetDependencyDefinition();
@@ -466,22 +461,18 @@ namespace b3d
 		{
 		public:
 			// Outputs
-			/**
-			 * Contains lighting information accumulated from multiple lights. If MSAA is used this texture will be null until
-			 * the texture array data is first resolved into this texture.
-			 */
+			/** Contains lighting information accumulated from multiple lights. */
 			TShared<Texture> LightAccumulationTex;
 
 			/**
-			 * Texture array version of lightAccumulationTex. Only available when MSAA is used, since random writes to
-			 * multisampled texture aren't supported on all render backends.
+			 * Texture array version of LightAccumulationTex, with one slice per sample, cleared to zero. Only available when MSAA is
+			 * used, since random writes to multisampled textures aren't supported on all render backends, and only until
+			 * AddArrayToMSAAPass().
 			 */
 			TShared<Texture> LightAccumulationTexArray;
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Msaa)
-			/** Converts MSAA data from the texture array into the MSAA texture. */
-			void MsaaTexArrayToTexture(GpuCommandBuffer& commandBuffer);
-#endif
+			/** Adds a pass that copies the texture array into the multisampled light accumulation texture, and drops the array. */
+			void AddArrayToMSAAPass(FrameGraph& graph);
 
 			using DependencyDefinition = RCNodeDependencyDefinition<RCNodeSceneDepth>;
 
@@ -682,7 +673,7 @@ namespace b3d
 		class RCNodeBokehDOF : public RenderCompositorNode
 		{
 		public:
-			using DependencyDefinition = RCNodeDependencyDefinition<RCNodeClusteredForward, RCNodeSceneColor, RCNodeSceneDepth, RCNodeLightAccumulation>;
+			using DependencyDefinition = RCNodeDependencyDefinition<RCNodeClusteredForward, RCNodeSceneColor, RCNodeSceneDepth, RCNodeLightAccumulation, RCNodeResolvedSceneDepth>;
 
 			static StringID GetNodeId() { return "BokehDOF"; }
 			static DependencyDefinition GetDependencyDefinition();
@@ -716,7 +707,7 @@ namespace b3d
 		class RCNodeGaussianDOF : public RenderCompositorNode
 		{
 		public:
-			using DependencyDefinition = RCNodeDependencyDefinition<RCNodeTonemapping, RCNodeSceneDepth, RCNodePostProcess>;
+			using DependencyDefinition = RCNodeDependencyDefinition<RCNodeTonemapping, RCNodeResolvedSceneDepth, RCNodePostProcess>;
 
 			static StringID GetNodeId() { return "GaussianDOF"; }
 			static DependencyDefinition GetDependencyDefinition();

@@ -1571,32 +1571,34 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Updates GPU parameters. Must be called any time input parameters change.
+			 * Creates the parameter set of @p pass. Returns the set to pass to Execute().
 			 *
+			 * @param	pass			Pass that writes the coverage texture.
 			 * @param	view			Information about the view we're rendering from.
 			 * @param	gbuffer			GBuffer textures.
 			 */
-			void Prepare(const RendererView& view, GBufferTextures gbuffer);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const RendererView& view, const GBufferTextures& gbuffer);
 
 			/**
-			 * Renders the effect with the provided parameters, using the currently bound render target.
+			 * Binds the material and @p set, a set from Prepare(), and draws a screen quad.
 			 *
-			 * @param	commandBuffer	Command buffer to execute on.
+			 * @param	context			Context of the pass the set was prepared for.
+			 * @param	set				Parameter set from Prepare().
 			 * @param	view			Information about the view we're rendering from.
 			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const RendererView& view);
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const RendererView& view) const;
 
 			/** Returns the material variation matching the provided parameters. */
 			static MSAACoverageMaterial* GetVariation(u32 msaaCount);
 
 		private:
 			GBufferParameterBinding mGBufferParams;
+			GpuParameterUniformBuffer mPerCameraParameter;
 		};
 
 		/**
 		 * Converts the coverage texture output by MSAACoverageMaterial and writes its information in the highest bit of the
-		 * currently bound stencil buffer. This allows coverage information to be used by normal (non-compute) rendering
-		 * shaders.
+		 * stencil buffer of the pass. This allows coverage information to be used by normal (non-compute) rendering shaders.
 		 */
 		class MSAACoverageStencilMaterial : public RendererMaterial<MSAACoverageStencilMaterial>
 		{
@@ -1607,19 +1609,21 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Updates GPU parameters. Must be called any time input parameters change.
+			 * Creates the parameter set of @p pass. Returns the set to pass to Execute().
 			 *
+			 * @param	pass			Pass that marks the stencil.
 			 * @param	coverage		Coverage texture as output by MSAACoverageMaterial.
 			 */
-			void Prepare(const TShared<Texture>& coverage);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& coverage);
 
 			/**
-			 * Renders the effect with the provided parameters, using the currently bound render target.
+			 * Binds the material and @p set, a set from Prepare(), and draws a screen quad.
 			 *
-			 * @param	commandBuffer	Command buffer to execute on.
+			 * @param	context			Context of the pass the set was prepared for.
+			 * @param	set				Parameter set from Prepare().
 			 * @param	view			Information about the view we're rendering from.
 			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const RendererView& view);
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const RendererView& view) const;
 
 		private:
 			GpuParameterSampledTexture mCoverageTextureParameter;

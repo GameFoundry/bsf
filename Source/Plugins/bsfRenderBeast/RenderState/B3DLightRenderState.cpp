@@ -125,14 +125,6 @@ void GBufferParameterBinding::Initialize(GpuDevice& gpuDevice, GpuProgramType ty
 	}
 }
 
-void GBufferParameterBinding::Bind(const GBufferTextures& gbuffer)
-{
-	mGBufferA.Set(gbuffer.Albedo);
-	mGBufferB.Set(gbuffer.Normals);
-	mGBufferC.Set(gbuffer.RoughMetal);
-	mGBufferDepth.Set(gbuffer.Depth);
-}
-
 void GBufferParameterBinding::Bind(const TShared<GpuParameterSet>& set, const GBufferTextures& gbuffer) const
 {
 	mGBufferA.Set(set, gbuffer.Albedo);

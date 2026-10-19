@@ -70,6 +70,56 @@ namespace
 		});
 	}
 
+	/**
+	 * Returns the description of a texture array the size of @p view, with one slice per sample of the view. Compute shaders write the
+	 * samples of a multisampled texture into it, as not every backend can write multisampled textures from compute shaders.
+	 */
+	TextureCreateInformation CreateViewSampleArrayInformation(const RendererView& view, PixelFormat format)
+	{
+		const RendererViewProperties& viewProperties = view.GetProperties();
+
+		TextureCreateInformation information = TextureCreateInformation::Create2D(format, viewProperties.Target.ViewRect.Width, viewProperties.Target.ViewRect.Height,
+			TextureUsageFlag::AllowUnorderedAccessOnTheGPU);
+		information.ArraySliceCount = viewProperties.Target.NumSamples;
+
+		return information;
+	}
+
+	/** Adds a raster pass that copies @p inputArray, a texture array with one slice per sample, into the multisampled @p output. */
+	void AddTextureArrayToMSAAPass(FrameGraph& graph, const StringView& name, const TShared<Texture>& inputArray, const TShared<Texture>& output)
+	{
+		TextureArrayToMSAATexture* const material = TextureArrayToMSAATexture::Get();
+
+		// The material writes every sample
+		FrameGraphRasterPass pass;
+		pass.SetColorAttachment(0, output, FrameGraphAttachmentLoad::DontCare);
+
+		const TShared<GpuParameterSet> set = material->Prepare(pass, inputArray, output);
+		graph.AddRasterPass(name, std::move(pass), [material, set, output](FrameGraphPassContext& context)
+		{
+			context.GetCommandBuffer().SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
+			material->Execute(context, set, output);
+		});
+	}
+
+	/** Adds a raster pass that resolves the multisampled @p input into @p output, averaging the samples of each pixel. */
+	void AddResolvePass(FrameGraph& graph, const StringView& name, const TShared<Texture>& input, const TShared<Texture>& output)
+	{
+		const TextureProperties& inputProperties = input->GetProperties();
+		BlitMat* const material = BlitMat::GetVariation(inputProperties.SampleCount, true, false);
+
+		FrameGraphRasterPass pass;
+		pass.SetColorAttachment(0, output, FrameGraphAttachmentLoad::DontCare);
+
+		const TShared<GpuParameterSet> set = material->Prepare(pass, input);
+		const Area2 inputArea(0.0f, 0.0f, (float)inputProperties.Width, (float)inputProperties.Height);
+		graph.AddRasterPass(name, std::move(pass), [material, set, inputArea](FrameGraphPassContext& context)
+		{
+			context.GetCommandBuffer().SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
+			material->Execute(context, set, inputArea, false);
+		});
+	}
+
 	/** Adds a raster pass that downsamples @p input into @p output, created from DownsampleMaterial::GetOutputCreateInformation(). */
 	void AddDownsamplePass(FrameGraph& graph, const StringView& name, DownsampleMaterial* material, const TShared<Texture>& input, const TShared<Texture>& output)
 	{
@@ -460,36 +510,44 @@ void RCNodeBasePass::Render(const RenderCompositorNodeInputs& inputs)
 		RenderQueueEntries(commandBuffer, opaqueEntries, mSurfaceShaderParameterSets);
 	});
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Msaa)
-	// Determine MSAA coverage if required
-	if(viewProps.Target.NumSamples > 1)
+	// Determine MSAA coverage if required: the pixels whose samples differ, in the coverage texture for compute shaders and in the
+	// stencil for draws
+	const u32 sampleCount = inputs.View.GetProperties().Target.NumSamples;
+	if(sampleCount > 1)
 	{
-		auto msaaCoverageNode = static_cast<RCNodeMSAACoverage*>(inputs.InputNodes[3]);
+		RCNodeMSAACoverage* msaaCoverageNode = dependencies.Get<RCNodeMSAACoverage>();
 
 		GBufferTextures gbuffer;
-		gbuffer.Albedo = AlbedoTex->Texture;
-		gbuffer.Normals = NormalTex->Texture;
-		gbuffer.RoughMetal = RoughMetalTex->Texture;
-		gbuffer.Depth = sceneDepthNode->DepthTex->Texture;
+		gbuffer.Albedo = AlbedoTex;
+		gbuffer.Normals = NormalTex;
+		gbuffer.RoughMetal = RoughMetalTex;
+		gbuffer.Depth = sceneDepthNode->DepthTex;
 
-		MSAACoverageMaterial* const msaaCoverageMaterial = MSAACoverageMaterial::GetVariation(viewProps.Target.NumSamples);
-		msaaCoverageMaterial->Prepare(inputs.View, gbuffer);
+		MSAACoverageMaterial* const msaaCoverageMaterial = MSAACoverageMaterial::GetVariation(sampleCount);
 
-		RenderPassCreateInformation msaaCoverageInfo(msaaCoverageNode->Output->RenderTexture, msaaCoverageMaterial->GetGpuParameterSet());
-		commandBuffer.BeginRenderPass(msaaCoverageInfo);
-		msaaCoverageMaterial->Execute(commandBuffer, inputs.View);
-		commandBuffer.EndRenderPass();
+		FrameGraphRasterPass msaaCoveragePass;
+		msaaCoveragePass.SetColorAttachment(0, msaaCoverageNode->Output, FrameGraphAttachmentLoad::DontCare);
 
-		MSAACoverageStencilMaterial* msaaCoverageStencilMaterial = MSAACoverageStencilMaterial::Get();
-		msaaCoverageStencilMaterial->Prepare(msaaCoverageNode->Output->Texture);
+		const TShared<GpuParameterSet> msaaCoverageSet = msaaCoverageMaterial->Prepare(msaaCoveragePass, inputs.View, gbuffer);
+		inputs.Graph.AddRasterPass("MSAACoverage", std::move(msaaCoveragePass), [msaaCoverageMaterial, msaaCoverageSet, &view = inputs.View](FrameGraphPassContext& context)
+		{
+			context.GetCommandBuffer().SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
+			msaaCoverageMaterial->Execute(context, msaaCoverageSet, view);
+		});
 
 		// Marks samples in the stencil, keeping the depth the base pass wrote
-		RenderPassCreateInformation msaaStencilInfo(sceneDepthNode->DepthTex->RenderTexture, msaaCoverageStencilMaterial->GetGpuParameterSet(), RT_NONE, RT_DEPTH_STENCIL);
-		commandBuffer.BeginRenderPass(msaaStencilInfo);
-		msaaCoverageStencilMaterial->Execute(commandBuffer, inputs.View);
-		commandBuffer.EndRenderPass();
+		MSAACoverageStencilMaterial* const msaaCoverageStencilMaterial = MSAACoverageStencilMaterial::Get();
+
+		FrameGraphRasterPass msaaCoverageStencilPass;
+		msaaCoverageStencilPass.SetDepthStencilAttachment(sceneDepthNode->DepthTex, FrameGraphDepthStencilMode::DepthReadOnly, FrameGraphAttachmentLoad::Load);
+
+		const TShared<GpuParameterSet> msaaCoverageStencilSet = msaaCoverageStencilMaterial->Prepare(msaaCoverageStencilPass, msaaCoverageNode->Output);
+		inputs.Graph.AddRasterPass("MSAACoverageStencil", std::move(msaaCoverageStencilPass), [msaaCoverageStencilMaterial, msaaCoverageStencilSet, &view = inputs.View](FrameGraphPassContext& context)
+		{
+			context.GetCommandBuffer().SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
+			msaaCoverageStencilMaterial->Execute(context, msaaCoverageStencilSet, view);
+		});
 	}
-#endif
 
 	// Render decals after all normal objects, using a read-only depth buffer. They sample depth and the Id texture.
 	const Vector<RenderQueueEntry>& decalEntries = inputs.View.GetDecalQueue()->GetSortedEntries();
@@ -560,14 +618,10 @@ void RCNodeSceneColor::Render(const RenderCompositorNodeInputs& inputs)
 	// Note: Consider customizable HDR format via options? e.g. smaller PF_FLOAT_R11G11B10 or larger 32-bit format
 	SceneColorTex = inputs.Graph.CreateTexture("SceneColor", CreateViewTextureInformation(inputs.View, PF_RGBA16F, usageFlags));
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Msaa)
 	if(viewProps.Target.NumSamples > 1)
-	{
-		SceneColorTexArray = resPool.Get(PooledRenderTextureCreateInformation::Create2D(PF_RGBA16F, width, height, TextureUsageFlag::AllowUnorderedAccessOnTheGPU, 1, false, viewProps.Target.NumSamples));
-	}
+		SceneColorTexArray = inputs.Graph.CreateTexture("SceneColorArray", CreateViewSampleArrayInformation(inputs.View, PF_RGBA16F));
 	else
 		SceneColorTexArray = nullptr;
-#endif
 }
 
 void RCNodeSceneColor::Clear()
@@ -576,23 +630,11 @@ void RCNodeSceneColor::Clear()
 	SceneColorTexArray = nullptr;
 }
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Msaa)
-void RCNodeSceneColor::MsaaTexArrayToTexture(GpuCommandBuffer& commandBuffer)
+void RCNodeSceneColor::AddArrayToMSAAPass(FrameGraph& graph)
 {
-	TextureArrayToMSAATexture* material = TextureArrayToMSAATexture::Get();
-	material->Prepare(SceneColorTexArray->Texture, SceneColorTex->Texture);
-
-	commandBuffer.BeginRenderPass(RenderPassCreateInformation(RenderTarget, material->GetGpuParameterSet(), RT_DEPTH_STENCIL, RT_DEPTH_STENCIL));
-
-	Area2 area(0.0f, 0.0f, 1.0f, 1.0f);
-	commandBuffer.SetViewport(area);
-
-	material->Execute(commandBuffer, SceneColorTex->Texture);
-
-	commandBuffer.EndRenderPass();
+	AddTextureArrayToMSAAPass(graph, "SceneColorArrayToMSAA", SceneColorTexArray, SceneColorTex);
 	SceneColorTexArray = nullptr;
 }
-#endif
 
 void RCNodeSceneColor::Swap(RCNodeLightAccumulation* lightAccumNode)
 {
@@ -623,13 +665,9 @@ void RCNodeMSAACoverage::Render(const RenderCompositorNodeInputs& inputs)
 		return;
 	}
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Msaa)
-	u32 width = viewProps.Target.ViewRect.Width;
-	u32 height = viewProps.Target.ViewRect.Height;
-
 	// We just allocate the texture, while the base pass is responsible for filling it out
-	Output = GetGpuResourcePool().Get(PooledRenderTextureCreateInformation::Create2D(PF_R8, width, height, TextureUsageFlag::RenderTarget));
-#endif
+	Output = inputs.Graph.CreateTexture("MSAACoverage", TextureCreateInformation::Create2D(PF_R8, viewProps.Target.ViewRect.Width, viewProps.Target.ViewRect.Height,
+		TextureUsageFlag::RenderTarget));
 }
 
 void RCNodeMSAACoverage::Clear()
@@ -659,6 +697,20 @@ void RCNodeParticleSimulate::Render(const RenderCompositorNodeInputs& inputs)
 		gbuffer.Normals = gbufferNode->NormalTex;
 		gbuffer.RoughMetal = gbufferNode->RoughMetalTex;
 		gbuffer.Depth = sceneDepthNode->DepthTex;
+
+		// Depth collisions sample depth and normals, so with MSAA they read resolved ones. The graph culls the normals resolve if no
+		// particle system collides with depth.
+		const TextureProperties& normalsProperties = gbuffer.Normals->GetProperties();
+		if(normalsProperties.SampleCount > 1)
+		{
+			gbuffer.Depth = dependencies.Get<RCNodeResolvedSceneDepth>()->Output;
+
+			const TShared<Texture> resolvedNormals = inputs.Graph.CreateTexture("ParticleResolvedNormals", TextureCreateInformation::Create2D(normalsProperties.Format,
+				normalsProperties.Width, normalsProperties.Height, TextureUsageFlag::RenderTarget));
+			AddResolvePass(inputs.Graph, "ParticleNormalsResolve", gbuffer.Normals, resolvedNormals);
+
+			gbuffer.Normals = resolvedNormals;
+		}
 
 		simulation.Simulate(inputs.Graph, inputs.Scene, inputs.FrameInfo.PerSceneFrameData.Particles, inputs.View.GetPerViewBuffer(), gbuffer, inputs.FrameInfo.Timings);
 	}
@@ -766,12 +818,16 @@ void RCNodeLightAccumulation::Render(const RenderCompositorNodeInputs& inputs)
 	TextureUsageFlags usage = TextureUsageFlag::RenderTarget;
 	if(viewProps.Target.NumSamples > 1)
 	{
-#if B3D_FRAME_GRAPH_PORT_PENDING(Msaa)
-		resPool.Get(LightAccumulationTexArray, PooledRenderTextureCreateInformation::Create2D(PF_RGBA16F, width, height, TextureUsageFlag::AllowUnorderedAccessOnTheGPU, 1, false, numSamples));
+		// Tiled lighting offsets the texels it writes by the view's position in its target, so a view that doesn't start at the origin
+		// leaves some unwritten
+		LightAccumulationTexArray = inputs.Graph.CreateTexture("LightAccumulationArray", CreateViewSampleArrayInformation(inputs.View, PF_RGBA16F));
 
-		ClearLoadStoreMaterial* clearMat = ClearLoadStoreMaterial::GetVariation(ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Float, 4);
+		ClearLoadStoreMaterial* const clearMaterial = ClearLoadStoreMaterial::GetVariation(ClearLoadStoreType::TextureArray, ClearLoadStoreDataType::Float, 4);
 
-		for(u32 i = 0; i < numSamples; i++)
+		// One slice per dispatch
+		FrameGraphComputePass clearPass;
+		TInlineArray<TShared<GpuParameterSet>, 8> clearSets;
+		for(u32 i = 0; i < viewProps.Target.NumSamples; i++)
 		{
 			TextureSurface surface;
 			surface.Face = i;
@@ -780,9 +836,16 @@ void RCNodeLightAccumulation::Render(const RenderCompositorNodeInputs& inputs)
 			surface.MipLevelCount = 1;
 			surface.IsBoundAs2DArray = true;
 
-			clearMat->Execute(*inputs.ActiveCommandBuffer, LightAccumulationTexArray->Texture, Color::kZero, surface);
+			clearSets.Add(clearMaterial->Prepare(clearPass, LightAccumulationTexArray, Color::kZero, surface));
 		}
-#endif
+
+		const u32 width = viewProps.Target.ViewRect.Width;
+		const u32 height = viewProps.Target.ViewRect.Height;
+		inputs.Graph.AddComputePass("LightAccumulationArrayClear", std::move(clearPass), [clearMaterial, clearSets = std::move(clearSets), width, height](FrameGraphPassContext& context)
+		{
+			for(const TShared<GpuParameterSet>& set : clearSets)
+				clearMaterial->Execute(context, set, width, height);
+		});
 	}
 	else
 	{
@@ -793,19 +856,11 @@ void RCNodeLightAccumulation::Render(const RenderCompositorNodeInputs& inputs)
 	LightAccumulationTex = inputs.Graph.CreateTexture("LightAccumulation", CreateViewTextureInformation(inputs.View, PF_RGBA16F, usage));
 }
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Msaa)
-void RCNodeLightAccumulation::MsaaTexArrayToTexture(GpuCommandBuffer& commandBuffer)
+void RCNodeLightAccumulation::AddArrayToMSAAPass(FrameGraph& graph)
 {
-	TextureArrayToMSAATexture* material = TextureArrayToMSAATexture::Get();
-	material->Prepare(LightAccumulationTexArray->Texture, LightAccumulationTex->Texture);
-	
-	commandBuffer.BeginRenderPass(RenderPassCreateInformation(RenderTarget, material->GetGpuParameterSet(), RT_DEPTH_STENCIL, RT_DEPTH_STENCIL));
-
-	material->Execute(commandBuffer, LightAccumulationTex->Texture);
-
-	commandBuffer.EndRenderPass();
+	AddTextureArrayToMSAAPass(graph, "LightAccumulationArrayToMSAA", LightAccumulationTexArray, LightAccumulationTex);
+	LightAccumulationTexArray = nullptr;
 }
-#endif
 
 void RCNodeLightAccumulation::Clear()
 {
@@ -858,10 +913,8 @@ void RCNodeDeferredDirectLighting::Render(const RenderCompositorNodeInputs& inpu
 		tiledDeferredMat->Execute(context, tiledDeferredSet, width, height);
 	});
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Msaa)
 	if(viewProps.Target.NumSamples > 1)
-		Output->MsaaTexArrayToTexture(commandBuffer);
-#endif
+		Output->AddArrayToMSAAPass(inputs.Graph);
 
 	// With shadows disabled, tiled deferred handles all lights
 	if(inputs.View.GetRenderSettings().EnableShadows)
@@ -1062,10 +1115,8 @@ void RCNodeDeferredIndirectSpecularLighting::Render(const RenderCompositorNodeIn
 		material->Execute(context, iblSet, width, height);
 	});
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Msaa)
 	if(viewProps.Target.NumSamples > 1)
-		sceneColorNode->MsaaTexArrayToTexture(commandBuffer);
-#endif
+		sceneColorNode->AddArrayToMSAAPass(inputs.Graph);
 }
 
 void RCNodeDeferredIndirectSpecularLighting::Clear()
@@ -1528,19 +1579,18 @@ void RCNodeBokehDOF::Render(const RenderCompositorNodeInputs& inputs)
 	if(!settings.Enabled || settings.Type != DepthOfFieldType::Bokeh)
 		return;
 
-	const RendererViewProperties& viewProps = inputs.View.GetProperties();
-	const bool msaa = viewProps.Target.NumSamples > 1;
-
 	RCNodeSceneColor* sceneColorNode = dependencies.Get<RCNodeSceneColor>();
 	RCNodeSceneDepth* sceneDepthNode = dependencies.Get<RCNodeSceneDepth>();
 	RCNodeLightAccumulation* lightAccumNode = dependencies.Get<RCNodeLightAccumulation>();
 
+	// After TAA, scene color has a single sample even with MSAA, and is read with the resolved depth
+	const TShared<Texture>& sceneColor = sceneColorNode->SceneColorTex;
+	const bool msaa = sceneColor->GetProperties().SampleCount > 1;
+	const TShared<Texture>& depth = msaa ? sceneDepthNode->DepthTex : dependencies.Get<RCNodeResolvedSceneDepth>()->Output;
+
 	BokehDOFPrepareMaterial* prepareMat = BokehDOFPrepareMaterial::GetVariation(msaa);
 	BokehDOFMaterial* renderMat = BokehDOFMaterial::GetVariation(settings.BokehOcclusion);
 	BokehDOFCombineMaterial* combineMat = BokehDOFCombineMaterial::GetVariation(msaa ? MSAAMode::Full : MSAAMode::None);
-
-	const TShared<Texture>& sceneColor = sceneColorNode->SceneColorTex;
-	const TShared<Texture>& depth = sceneDepthNode->DepthTex;
 
 	// Downsample scene and store depth in .w
 	const TShared<Texture> halfResSceneAndDepth = inputs.Graph.CreateTexture("BokehDOFHalfSceneAndDepth", BokehDOFPrepareMaterial::GetOutputCreateInformation(sceneColor));
@@ -1618,17 +1668,14 @@ void RCNodeTemporalAA::Render(const RenderCompositorNodeInputs& inputs)
 	u32 width = viewProps.Target.ViewRect.Width;
 	u32 height = viewProps.Target.ViewRect.Height;
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Msaa)
 	// Resolve multiple samples if MSAA is used
-	TShared<PooledRenderTexture> resolvedSceneColor;
 	if(viewProps.Target.NumSamples > 1)
 	{
-		resolvedSceneColor = resPool.Get(PooledRenderTextureCreateInformation::Create2D(PF_RGBA16F, width, height, TextureUsageFlag::RenderTarget));
+		const TShared<Texture> resolvedSceneColor = inputs.Graph.CreateTexture("TemporalAAResolvedSceneColor", TextureCreateInformation::Create2D(PF_RGBA16F, width, height, TextureUsageFlag::RenderTarget));
+		AddResolvePass(inputs.Graph, "TemporalAAResolve", sceneColor, resolvedSceneColor);
 
-		GetRendererUtility().Blit(commandBuffer, BlitInformation::BlitColor(sceneColor->Texture, resolvedSceneColor->RenderTexture));
 		sceneColor = resolvedSceneColor;
 	}
-#endif
 
 	TShared<Texture> output;
 	if(mPreviousFrame)
@@ -1722,7 +1769,7 @@ RCNodeMotionBlur::DependencyDefinition RCNodeMotionBlur::GetDependencyDefinition
 void RCNodeGaussianDOF::Render(const RenderCompositorNodeInputs& inputs)
 {
 	auto dependencies = GetDependencyDefinition().ResolveDependencies(inputs);
-	RCNodeSceneDepth* sceneDepthNode = dependencies.Get<RCNodeSceneDepth>();
+	RCNodeResolvedSceneDepth* resolvedSceneDepthNode = dependencies.Get<RCNodeResolvedSceneDepth>();
 	RCNodePostProcess* postProcessNode = dependencies.Get<RCNodePostProcess>();
 
 	const DepthOfFieldSettings& settings = inputs.View.GetRenderSettings().DepthOfField;
@@ -1736,8 +1783,9 @@ void RCNodeGaussianDOF::Render(const RenderCompositorNodeInputs& inputs)
 	GaussianDOFSeparateMaterial* separateMat = GaussianDOFSeparateMaterial::GetVariation(near, far);
 	GaussianDOFCombineMaterial* combineMat = GaussianDOFCombineMaterial::GetVariation(near, far);
 
+	// The materials sample depth, so with MSAA they read the resolved one
 	const TShared<Texture> input = postProcessNode->GetLastOutput();
-	const TShared<Texture>& depth = sceneDepthNode->DepthTex;
+	const TShared<Texture>& depth = resolvedSceneDepthNode->Output;
 
 	// Separate the unfocused pixels, near into the first attachment if both planes are present
 	const TextureCreateInformation separateOutputInformation = GaussianDOFSeparateMaterial::GetOutputCreateInformation(input);
@@ -1877,13 +1925,12 @@ RCNodeFilmGrain::DependencyDefinition RCNodeFilmGrain::GetDependencyDefinition()
 void RCNodeHalfSceneColor::Render(const RenderCompositorNodeInputs& inputs)
 {
 	auto dependencies = GetDependencyDefinition().ResolveDependencies(inputs);
-	const RendererViewProperties& viewProps = inputs.View.GetProperties();
 
 	auto* sceneColorNode = dependencies.Get<RCNodeSceneColor>();
 	const TShared<Texture>& input = sceneColorNode->SceneColorTex;
 
-	// Downsample scene
-	const bool msaa = viewProps.Target.NumSamples > 1;
+	// Downsample scene. After TAA, scene color has a single sample even with MSAA.
+	const bool msaa = input->GetProperties().SampleCount > 1;
 	DownsampleMaterial* downsampleMat = DownsampleMaterial::GetVariation(1, msaa);
 
 	Output = inputs.Graph.CreateTexture("HalfSceneColor", DownsampleMaterial::GetOutputCreateInformation(input));
@@ -1951,19 +1998,24 @@ void RCNodeResolvedSceneDepth::Render(const RenderCompositorNodeInputs& inputs)
 
 	if(viewProps.Target.NumSamples > 1)
 	{
-#if B3D_FRAME_GRAPH_PORT_PENDING(Msaa)
-		GpuCommandBuffer& commandBuffer = *inputs.ActiveCommandBuffer;
-		u32 width = viewProps.Target.ViewRect.Width;
-		u32 height = viewProps.Target.ViewRect.Height;
+		Output = inputs.Graph.CreateTexture("ResolvedSceneDepth", TextureCreateInformation::Create2D(PF_D32_S8X24, viewProps.Target.ViewRect.Width, viewProps.Target.ViewRect.Height,
+			TextureUsageFlag::DepthStencil));
 
-		Output = GetGpuResourcePool().Get(
-			PooledRenderTextureCreateInformation::Create2D(PF_D32_S8X24, width, height, TextureUsageFlag::DepthStencil, 1, false));
+		// Keeps the minimum depth of the samples of each pixel. The clear leaves the stencil clear for the passes that mark it.
+		const TShared<Texture>& sceneDepth = sceneDepthNode->DepthTex;
+		const TextureProperties& sceneDepthProperties = sceneDepth->GetProperties();
+		BlitMat* const blitMaterial = BlitMat::GetVariation(sceneDepthProperties.SampleCount, false, false);
 
-		BlitInformation blitInformation = BlitInformation::BlitDepth(sceneDepthNode->DepthTex->Texture, Output->RenderTexture);
-		blitInformation.ClearMask = RT_STENCIL;
+		FrameGraphRasterPass resolvePass;
+		resolvePass.SetDepthStencilAttachment(Output, FrameGraphDepthStencilMode::Write, FrameGraphAttachmentLoad::Clear);
 
-		GetRendererUtility().Blit(commandBuffer, blitInformation);
-#endif
+		const TShared<GpuParameterSet> blitSet = blitMaterial->Prepare(resolvePass, sceneDepth);
+		const Area2 inputArea(0.0f, 0.0f, (float)sceneDepthProperties.Width, (float)sceneDepthProperties.Height);
+		inputs.Graph.AddRasterPass("ResolvedSceneDepth", std::move(resolvePass), [blitMaterial, blitSet, inputArea](FrameGraphPassContext& context)
+		{
+			context.GetCommandBuffer().SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
+			blitMaterial->Execute(context, blitSet, inputArea, false);
+		});
 	}
 	else
 		Output = sceneDepthNode->DepthTex;
@@ -2102,19 +2154,14 @@ void RCNodeSSAO::Render(const RenderCompositorNodeInputs& inputs)
 	TShared<Texture> sceneDepth = resolvedDepthNode->Output;
 	TShared<Texture> sceneNormals = gbufferNode->NormalTex;
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Msaa)
 	const TextureProperties& normalsProps = sceneNormals->GetProperties();
-	TShared<PooledRenderTexture> resolvedNormals;
-
-	if(sceneNormals->GetProperties().SampleCount > 1)
+	if(normalsProps.SampleCount > 1)
 	{
-		PooledRenderTextureCreateInformation desc = PooledRenderTextureCreateInformation::Create2D(normalsProps.Format, normalsProps.Width, normalsProps.Height, TextureUsageFlag::RenderTarget);
-		resolvedNormals = resPool.Get(desc);
+		const TShared<Texture> resolvedNormals = inputs.Graph.CreateTexture("SSAOResolvedNormals", TextureCreateInformation::Create2D(normalsProps.Format, normalsProps.Width, normalsProps.Height, TextureUsageFlag::RenderTarget));
+		AddResolvePass(inputs.Graph, "SSAONormalsResolve", sceneNormals, resolvedNormals);
 
-		GetRendererUtility().Blit(commandBuffer, BlitInformation::BlitColor(sceneNormals, resolvedNormals->RenderTexture));
-		sceneNormals = resolvedNormals->Texture;
+		sceneNormals = resolvedNormals;
 	}
-#endif
 
 	// Multiple downsampled AO levels are used to minimize cache trashing. Downsampled AO targets use larger radius,
 	// whose contents are then blended with the higher level.
@@ -2262,17 +2309,14 @@ void RCNodeSSR::Render(const RenderCompositorNodeInputs& inputs)
 	// This will be executing before scene color is resolved, so get the light accum buffer instead
 	TShared<Texture> sceneColor = lightAccumNode->LightAccumulationTex;
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(Msaa)
 	// Resolve multiple samples if MSAA is used
-	TShared<PooledRenderTexture> resolvedSceneColor;
-	if(viewProps.Target.NumSamples > 1)
+	if(msaa)
 	{
-		resolvedSceneColor = resPool.Get(PooledRenderTextureCreateInformation::Create2D(PF_RGBA16F, width, height, TextureUsageFlag::RenderTarget));
+		const TShared<Texture> resolvedSceneColor = inputs.Graph.CreateTexture("SSRResolvedSceneColor", TextureCreateInformation::Create2D(PF_RGBA16F, width, height, TextureUsageFlag::RenderTarget));
+		AddResolvePass(inputs.Graph, "SSRResolve", sceneColor, resolvedSceneColor);
 
-		GetRendererUtility().Blit(commandBuffer, BlitInformation::BlitColor(sceneColor, resolvedSceneColor->RenderTexture));
-		sceneColor = resolvedSceneColor->Texture;
+		sceneColor = resolvedSceneColor;
 	}
-#endif
 
 	GBufferTextures gbuffer;
 	gbuffer.Albedo = gbufferNode->AlbedoTex;

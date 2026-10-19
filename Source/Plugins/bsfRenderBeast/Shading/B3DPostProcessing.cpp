@@ -2366,23 +2366,27 @@ void EncodeDepthMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared
 void MSAACoverageMaterial::Initialize()
 {
 	mGBufferParams.Initialize(*mGpuDevice, GPT_FRAGMENT_PROGRAM, mGpuParameterSet);
+	mGpuParameterSet->TryGetUniformBufferParameter("PerCamera", mPerCameraParameter);
 }
 
-void MSAACoverageMaterial::Prepare(const RendererView& view, GBufferTextures gbuffer)
+TShared<GpuParameterSet> MSAACoverageMaterial::Prepare(FrameGraphPass& pass, const RendererView& view, const GBufferTextures& gbuffer)
 {
-	mGBufferParams.Bind(gbuffer);
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
 
-	const GpuBufferSuballocation& perView = view.GetPerViewBuffer();
-	mGpuParameterSet->SetUniformBuffer("PerCamera", perView);
+	mGBufferParams.Bind(set, gbuffer);
+	mPerCameraParameter.Set(set, view.GetPerViewBuffer());
+
+	return set;
 }
 
-void MSAACoverageMaterial::Execute(GpuCommandBuffer& commandBuffer, const RendererView& view)
+void MSAACoverageMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const RendererView& view) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
 	const Area2I& viewRect = view.GetProperties().Target.ViewRect;
 
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer, Area2(0, 0, (float)viewRect.Width, (float)viewRect.Height));
 }
 
@@ -2405,18 +2409,22 @@ void MSAACoverageStencilMaterial::Initialize()
 	mGpuParameterSet->GetSampledTextureParameter("gMSAACoverage", mCoverageTextureParameter);
 }
 
-void MSAACoverageStencilMaterial::Prepare(const TShared<Texture>& coverage)
+TShared<GpuParameterSet> MSAACoverageStencilMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& coverage)
 {
-	mCoverageTextureParameter.Set(coverage);
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+	mCoverageTextureParameter.Set(set, coverage);
+
+	return set;
 }
 
-void MSAACoverageStencilMaterial::Execute(GpuCommandBuffer& commandBuffer, const RendererView& view)
+void MSAACoverageStencilMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const RendererView& view) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
 	const Area2I& viewRect = view.GetProperties().Target.ViewRect;
 
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer, Area2(0, 0, (float)viewRect.Width, (float)viewRect.Height));
 }
 }}

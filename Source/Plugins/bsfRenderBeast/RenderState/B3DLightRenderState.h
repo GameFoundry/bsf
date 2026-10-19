@@ -79,9 +79,6 @@ namespace b3d
 			/** Initializes the required parameters. To be called once before use. */
 			void Initialize(GpuDevice& gpuDevice, GpuProgramType type, const TShared<GpuParameterSet>& gpuParams);
 
-			/** Binds the GBuffer textures to the pipeline. */
-			void Bind(const GBufferTextures& gbuffer);
-
 			/**
 			 * Assigns the GBuffer textures, and the point sampler of the depth texture, to @p set. The set must be created for the
 			 * material whose parameter set the binding was initialized with.
