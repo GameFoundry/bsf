@@ -148,10 +148,10 @@ namespace b3d
 		struct GpuAliasAcquire
 		{
 			/**
-			 * Last accesses of the earlier resources on the memory, on the queue that records the acquire. The new resource's first access is
-			 * ordered after them, and through them after every access they were ordered after. Accesses not ordered before one another, such
-			 * as reads in different stages, must all be included. Empty if there are none. Accesses on other queues must already be ordered by
-			 * queue waits.
+			 * Last accesses of the earlier resources of the scope on the memory (Predecessors), on the queue that records the acquire. The new
+			 * resource's first access is ordered after them, and through them after every access they were ordered after. Accesses not ordered
+			 * before one another, such as reads in different stages, must all be included. Empty if there are none. Accesses on other queues
+			 * must already be ordered by queue waits. The predecessors may cover only part of the memory, see HasUnknownSourceAccess.
 			 */
 			GpuAccessScope Source;
 
@@ -160,6 +160,13 @@ namespace b3d
 			 * have to be ended using a GpuBarrierFlag::AliasRelease barrier before the memory is used on a new resource.
 			 */
 			TArrayView<IGpuResource* const> Predecessors;
+
+			/**
+			 * True if earlier accesses to part of the memory are unknown: no earlier resource of the scope used it, but resources of earlier
+			 * scopes may have, and Source does not include their accesses. The new resource's first access must then also be ordered after all
+			 * earlier work on its queue. 
+			 */
+			bool HasUnknownSourceAccess = false;
 		};
 
 		/** Describes a source and destination stage & access participating in a hazard barrier. */

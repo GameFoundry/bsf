@@ -190,6 +190,9 @@ namespace b3d
 			// Render thread only fields
 			bool mIsGPUCommandCaptureRequested = false;
 
+			// Windows drawn this frame, presented once after every scene drew to them
+			Vector<TShared<RenderWindow>> mWindowsToPresent;
+
 			// Per-object parameter set layouts and dynamic offset indices
 			RenderableParameterSetInfo mRenderableParameterSetInfo;
 			DecalParameterSetInfo mDecalParameterSetInfo;

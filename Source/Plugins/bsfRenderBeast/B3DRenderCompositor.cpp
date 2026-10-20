@@ -413,8 +413,9 @@ void RCNodeBasePass::Render(const RenderCompositorNodeInputs& inputs)
 	mSurfaceShaderParameterSets.SetDecalInputs(sceneDepthNode->DepthTex, IdTex);
 
 	//// Prepare particle systems
-	// The views of a group share the draw command of a particle system, so the passes of every view draw with the inputs that the
-	// last view binds. The inputs only differ in the order that distance sorting gives the particles of each view.
+	// CPU simulated systems bound their inputs for the frame (RenderBeastScene::PrepareVisibleParticleSystems), and draw in the order of
+	// the view's particle index buffer. GPU simulated systems bind the sort offsets that the simulation computes when the first view
+	// builds its graph, which are the same in every view.
 	const EvaluatedParticleData* particleData = inputs.FrameInfo.PerSceneFrameData.Particles;
 	if(particleData)
 	{
@@ -426,25 +427,12 @@ void RCNodeBasePass::Render(const RenderCompositorNodeInputs& inputs)
 				continue;
 
 			const ParticleRenderState& renderState = inputs.Scene.GetParticleRenderState(i);
-			ParticlesDrawCommand& drawCommand = renderState.DrawCommand;
-
-			if(!drawCommand.IsValid())
-				continue;
-
-			const render::ParticleSystemProxy& proxy = inputs.Scene.GetParticleSystemProxy(i);
-
-			// Bind textures/buffers from CPU simulation
-			const auto iterFind = particleData->CpuData.find(proxy.GetId());
-			if(iterFind != particleData->CpuData.end())
-			{
-				ParticleRenderData* renderData = iterFind->second;
-				renderState.BindCpuSimulatedInputs(proxy, renderData);
-			}
-			// Bind buffers from GPU simulation
-			else if(renderState.GpuParticleSystem)
-				renderState.BindGpuSimulatedInputs(proxy);
+			if(renderState.GpuParticleSystem != nullptr && renderState.DrawCommand.IsValid())
+				renderState.BindGpuSimulatedInputs(inputs.Scene.GetParticleSystemProxy(i));
 		}
 	}
+
+	mSurfaceShaderParameterSets.SetCpuParticleIndices(dependencies.Get<RCNodeParticleSort>()->ParticleIndices);
 
 	// Draws of GPU simulated particles read the outputs of the last simulation, which ParticleSimulate writes later in the graph
 	GpuParticleInputs = GpuParticleSimulation::Instance().GetResources().GetDrawInputs();
@@ -726,24 +714,39 @@ RCNodeParticleSimulate::DependencyDefinition RCNodeParticleSimulate::GetDependen
 
 void RCNodeParticleSort::Render(const RenderCompositorNodeInputs& inputs)
 {
+	// Sets of views without CPU simulated particles still bind a buffer
+	const u32 indexCount = inputs.Scene.GetParticleIndexCount();
+	const u32 requiredSize = std::max(indexCount, 1u) * (u32)sizeof(u32);
+	if(ParticleIndices == nullptr || ParticleIndices->GetTotalSize() < requiredSize)
+	{
+		GpuBufferCreateInformation bufferCreateInformation;
+		bufferCreateInformation.Type = GpuBufferType::SimpleStorage;
+		bufferCreateInformation.SimpleStorage.Count = Bitwise::NextPow2(std::max(indexCount, 1u));
+		bufferCreateInformation.SimpleStorage.Format = BF_16X2U;
+
+		ParticleIndices = GetRenderBeast()->GetGpuDevice()->CreateGpuBuffer(bufferCreateInformation);
+	}
+
 	const EvaluatedParticleData* particleData = inputs.FrameInfo.PerSceneFrameData.Particles;
-	if(!particleData)
+	if(!particleData || indexCount == 0)
 		return;
 
 	const RendererViewProperties& viewProps = inputs.View.GetProperties();
 	const VisibilityInfo& visibility = inputs.View.GetVisibilityMasks();
 	const auto particleSystemCount = inputs.Scene.GetParticleSystemCount();
 
-	// Sort particles
+	// Write the particle indices of the visible CPU simulated systems, distance sorted for the view where the system sorts by distance.
+	// The simulation's render data is shared by every view, so it is not changed.
 	B3DMarkAllocatorFrame();
 	{
-		struct SortData
+		struct SystemIndices
 		{
 			PackedRendererId ProxyId;
-			ParticleRenderData* RenderData;
+			const ParticleRenderData* RenderData;
+			u32 Offset;
 		};
 
-		FrameVector<SortData> systemsToSort;
+		FrameVector<SystemIndices> systems;
 		for(u32 particleSystemIndex = 0; particleSystemIndex < particleSystemCount; particleSystemIndex++)
 		{
 			if(!visibility.ParticleSystems[particleSystemIndex])
@@ -754,43 +757,57 @@ void RCNodeParticleSort::Render(const RenderCompositorNodeInputs& inputs)
 			if(iterFind == particleData->CpuData.end())
 				continue;
 
-			ParticleRenderData* simulationData = iterFind->second;
-			if(proxy.GetSettings().SortMode == ParticleSortMode::Distance)
-				systemsToSort.push_back({ (PackedRendererId)particleSystemIndex, simulationData });
+			const u32 offset = inputs.Scene.GetParticleRenderState(particleSystemIndex).ParticleIndicesOffset;
+			systems.push_back({ (PackedRendererId)particleSystemIndex, iterFind->second, offset });
 		}
 
-		WaitGroup waitGroup((u32)systemsToSort.size());
-		const auto fnSortWorker = [&waitGroup, &scene = inputs.Scene, viewOrigin = viewProps.ViewOrigin](const SortData& data)
+		FrameVector<u32> indices(indexCount);
+		u32* const indicesData = indices.data();
+
+		WaitGroup waitGroup((u32)systems.size());
+		const auto fnWorker = [&waitGroup, &scene = inputs.Scene, viewOrigin = viewProps.ViewOrigin, indicesData](const SystemIndices& system)
 		{
-			Vector3 refPoint = viewOrigin;
-
-			// Transform the view point into particle system's local space
-			const render::ParticleSystemProxy& proxy = scene.GetParticleSystemProxy(data.ProxyId);
+			const render::ParticleSystemProxy& proxy = scene.GetParticleSystemProxy(system.ProxyId);
 			const render::ParticleSystemSettings& settings = proxy.GetSettings();
-			if(settings.SimulationSpace == ParticleSimulationSpace::Local)
-				refPoint = proxy.GetWorldTransform().GetInvMatrix().MultiplyAffine(refPoint);
 
-			if(settings.RenderMode == ParticleRenderMode::Billboard)
+			const bool isBillboard = settings.RenderMode == ParticleRenderMode::Billboard;
+			const PixelData& positions = isBillboard ? static_cast<const ParticleBillboardRenderData*>(system.RenderData)->PositionAndRotation
+				: static_cast<const ParticleMeshRenderData*>(system.RenderData)->Position;
+
+			const u32 particleCount = system.RenderData->NumParticles;
+			u32* const systemIndices = indicesData + system.Offset;
+			if(settings.SortMode == ParticleSortMode::Distance)
 			{
-				auto renderData = static_cast<ParticleBillboardRenderData*>(data.RenderData);
-				ParticleRenderer::SortByDistance(refPoint, renderData->PositionAndRotation, renderData->NumParticles, 4, renderData->Indices);
+				// Transform the view point into particle system's local space
+				Vector3 refPoint = viewOrigin;
+				if(settings.SimulationSpace == ParticleSimulationSpace::Local)
+					refPoint = proxy.GetWorldTransform().GetInvMatrix().MultiplyAffine(refPoint);
+
+				ParticleRenderer::SortByDistance(refPoint, positions, particleCount, isBillboard ? 4 : 3, systemIndices);
 			}
-			else
+			else if(particleCount > 0)
+				memcpy(systemIndices, system.RenderData->Indices.data(), particleCount * sizeof(u32));
+
+			// The shader reads the particles at texel coordinates of the system's textures
+			const u32 textureSize = positions.GetWidth();
+			for(u32 i = 0; i < particleCount; i++)
 			{
-				auto renderData = static_cast<ParticleMeshRenderData*>(data.RenderData);
-				ParticleRenderer::SortByDistance(refPoint, renderData->Position, renderData->NumParticles, 3, renderData->Indices);
+				const u32 particleIndex = systemIndices[i];
+				systemIndices[i] = ((particleIndex % textureSize) & 0xFFFF) | ((particleIndex / textureSize) << 16);
 			}
 
 			waitGroup.NotifyDone();
 		};
 
 		Scheduler& taskScheduler = GetApplication().GetTaskScheduler();
-		for (const auto& data : systemsToSort)
+		for (const auto& system : systems)
 		{
-			taskScheduler.Post(SchedulerTask([&fnSortWorker, &data] { fnSortWorker(data); }, "ParticleSort"));
+			taskScheduler.Post(SchedulerTask([&fnWorker, &system] { fnWorker(system); }, "ParticleSort"));
 		}
 
 		waitGroup.Wait();
+
+		GpuBufferUtility::Write(GetRenderer()->GetGpuContext(), ParticleIndices, 0, indexCount * (u32)sizeof(u32), indicesData, GpuBufferWriteFlag::Discard);
 	}
 	B3DClearAllocatorFrame();
 }
@@ -1151,6 +1168,7 @@ void RCNodeClusteredForward::Render(const RenderCompositorNodeInputs& inputs)
 
 	// Forward draws of GPU simulated particles read what the base pass draws read, from before the simulation swapped its state
 	mSurfaceShaderParameterSets.SetGpuParticleInputs(dependencies.Get<RCNodeBasePass>()->GpuParticleInputs);
+	mSurfaceShaderParameterSets.SetCpuParticleIndices(dependencies.Get<RCNodeParticleSort>()->ParticleIndices);
 
 	// TODO: Forward pipeline rendering doesn't support shadows. In order to support this I'd have to render the light
 	// occlusion for all lights affecting this object into a single (or a few) textures. I can likely use texture

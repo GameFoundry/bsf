@@ -441,6 +441,14 @@ namespace b3d
 		class RCNodeParticleSort : public RenderCompositorNode
 		{
 		public:
+			// Outputs
+			/**
+			 * Indices of the particles of the CPU simulated systems the view sees, as texel coordinates packed in two 16-bit values. Each
+			 * system's are at its ParticleRenderState::ParticleIndicesOffset, distance sorted for the view if the system sorts by distance.
+			 * Kept across frames and rewritten every frame. Holds at least one element.
+			 */
+			TShared<GpuBuffer> ParticleIndices;
+
 			using DependencyDefinition = RCNodeDependencyDefinition<>;
 
 			static StringID GetNodeId() { return "ParticleSort"; }

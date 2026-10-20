@@ -64,7 +64,7 @@ GpuTransientTexture GpuTransientScope::AllocateTexture(const TextureCreateInform
 		return resource.Texture != nullptr;
 	};
 
-	const GpuTransientResourceAllocator::Resource* resource = allocator.AllocateResource(allocator.mCachedTextures, memoryRequirements, firstSubmission, output.Acquire, output.LatestSourcePass, fnCreate, fnIsSame);
+	const GpuTransientResourceAllocator::Resource* resource = allocator.AllocateResource(allocator.mCachedTextures, memoryRequirements, firstSubmission, output.Acquire, output.LatestPredecessorPassIndex, fnCreate, fnIsSame);
 	if(resource == nullptr)
 		return GpuTransientTexture();
 
@@ -104,7 +104,7 @@ GpuTransientBuffer GpuTransientScope::AllocateBuffer(const GpuBufferCreateInform
 		return resource.Buffer != nullptr;
 	};
 
-	const GpuTransientResourceAllocator::Resource* resource = allocator.AllocateResource(allocator.mCachedBuffers, memoryRequirements, firstSubmission, output.Acquire, output.LatestSourcePass, fnCreate, fnIsSame);
+	const GpuTransientResourceAllocator::Resource* resource = allocator.AllocateResource(allocator.mCachedBuffers, memoryRequirements, firstSubmission, output.Acquire, output.LatestPredecessorPassIndex, fnCreate, fnIsSame);
 	if(resource == nullptr)
 		return GpuTransientBuffer();
 
@@ -286,7 +286,7 @@ void GpuTransientResourceAllocator::EndScope()
 {
 	B3D_ASSERT(mTimeline != nullptr && "No transient resource scope is open.");
 
-	// The scope's work is synchronized once the scope ends, so a resource that was not released no longer uses its memory
+	// A resource the scope did not release gives up its memory, whose first use in a later scope waits for all earlier work
 	for(const auto& entry : mPlacedResources)
 	{
 		Resource* resource = entry.second;
@@ -357,7 +357,7 @@ GpuTransientStatistics GpuTransientResourceAllocator::GetStatistics() const
 
 template<class CreateFunction, class IsSameFunction>
 GpuTransientResourceAllocator::Resource* GpuTransientResourceAllocator::AllocateResource(TArray<Resource*>& cachedResources, const GpuMemoryRequirements& memoryRequirements,
-	u32 firstSubmission, render::GpuAliasAcquire& outAcquire, TOptional<u32>& outLatestSourcePass, CreateFunction&& fnCreate, IsSameFunction&& fnIsSame)
+	u32 firstSubmission, render::GpuAliasAcquire& outAcquire, TOptional<u32>& outLatestPredecessorPassIndex, CreateFunction&& fnCreate, IsSameFunction&& fnIsSame)
 {
 	mPlacementCount++;
 
@@ -378,14 +378,14 @@ GpuTransientResourceAllocator::Resource* GpuTransientResourceAllocator::Allocate
 			if(cachedResource->IsHeld || cachedResource->Pool != pool || !fnIsSame(*cachedResource))
 				continue;
 
-			if(mAliasingAllocator.TryAllocateAt(*pool, cachedResource->Allocation, firstSubmission, allocation, outAcquire, &outLatestSourcePass))
+			if(mAliasingAllocator.TryAllocateAt(*pool, cachedResource->Allocation, firstSubmission, allocation, outAcquire, &outLatestPredecessorPassIndex))
 			{
 				resource = cachedResource;
 				break;
 			}
 		}
 
-		if(resource == nullptr && !mAliasingAllocator.TryAllocate(*pool, memoryRequirements.Size, memoryRequirements.Alignment, firstSubmission, allocation, outAcquire, &outLatestSourcePass))
+		if(resource == nullptr && !mAliasingAllocator.TryAllocate(*pool, memoryRequirements.Size, memoryRequirements.Alignment, firstSubmission, allocation, outAcquire, &outLatestPredecessorPassIndex))
 		{
 			B3D_LOG(Error, LogRenderBackend, "Failed to allocate {0} bytes of transient memory of type {1}. Using persistent memory instead.", memoryRequirements.Size, memoryRequirements.MemoryType);
 			pool = nullptr;
@@ -492,8 +492,8 @@ GpuTransientPlacement GpuTransientResourceAllocator::PlaceResource(TArray<Resour
 	GpuAllocation allocation;
 	if(pool != nullptr)
 	{
-		isAtCachedMemory = resource.Pool == pool && mAliasingAllocator.TryAllocateAt(*pool, resource.Allocation, firstSubmission, allocation, output.Acquire, &output.LatestSourcePass);
-		hasMemory = isAtCachedMemory || mAliasingAllocator.TryAllocate(*pool, memoryRequirements.Size, memoryRequirements.Alignment, firstSubmission, allocation, output.Acquire, &output.LatestSourcePass);
+		isAtCachedMemory = resource.Pool == pool && mAliasingAllocator.TryAllocateAt(*pool, resource.Allocation, firstSubmission, allocation, output.Acquire, &output.LatestPredecessorPassIndex);
+		hasMemory = isAtCachedMemory || mAliasingAllocator.TryAllocate(*pool, memoryRequirements.Size, memoryRequirements.Alignment, firstSubmission, allocation, output.Acquire, &output.LatestPredecessorPassIndex);
 
 		if(!hasMemory)
 			B3D_LOG(Error, LogRenderBackend, "Failed to allocate {0} bytes of transient memory of type {1}. Using persistent memory instead.", memoryRequirements.Size, memoryRequirements.MemoryType);

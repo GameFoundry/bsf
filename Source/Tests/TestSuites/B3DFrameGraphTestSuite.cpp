@@ -30,6 +30,7 @@ FrameGraphTestSuite::FrameGraphTestSuite()
 	B3D_ADD_TEST(FrameGraphTestSuite::TestSplitBarriers)
 	B3D_ADD_TEST(FrameGraphTestSuite::TestCulling)
 	B3D_ADD_TEST(FrameGraphTestSuite::TestSplitAliasAcquire)
+	B3D_ADD_TEST(FrameGraphTestSuite::TestCrossGraphOrdering)
 	B3D_ADD_TEST(FrameGraphTestSuite::TestExtract)
 	B3D_ADD_TEST(FrameGraphTestSuite::TestExport)
 	B3D_ADD_TEST(FrameGraphTestSuite::TestRestingReads)
@@ -39,6 +40,7 @@ FrameGraphTestSuite::FrameGraphTestSuite()
 	B3D_ADD_TEST(FrameGraphTestSuite::TestProfiling)
 	B3D_ADD_TEST(FrameGraphTestSuite::TestRasterPass)
 	B3D_ADD_TEST(FrameGraphTestSuite::TestDepthReadOnly)
+	B3D_ADD_TEST(FrameGraphTestSuite::TestTwoAspectAliasAcquire)
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
 	B3D_ADD_TEST(FrameGraphTestSuite::TestValidation)
@@ -435,10 +437,9 @@ void FrameGraphTestSuite::TestSplitAliasAcquire()
 			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == (test.IsExplicit ? 4u : 0u))
 			graph.Execute();
 
-			// When the second pair shares memory with the first, its alias acquires are released after the first read
-			const GpuTransientStatistics transientStatistics = test.Context->GetTransientResourceAllocator().GetStatistics();
-			if(test.IsExplicit && transientStatistics.LastScope.PeakUsed < transientStatistics.LastScope.RequestedBytes)
-				B3D_TEST_ASSERT(graph.GetStatistics().SplitAliasAcquireCount >= 1)
+			// The second pair's alias acquires are released after the first read where it shares memory with the first pair, and at the
+			// start of the graph otherwise
+			B3D_TEST_ASSERT(graph.GetStatistics().SplitAliasAcquireCount == (test.IsExplicit ? 2u : 0u))
 		}
 
 		device->WaitUntilIdle();
@@ -446,6 +447,73 @@ void FrameGraphTestSuite::TestSplitAliasAcquire()
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(readbacks[1], true), "The first transient texture does not hold its values.")
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(readbacks[2], false), "The second transient buffer does not hold its values.")
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(readbacks[3], true), "The second transient texture does not hold its values.")
+
+		device->EndFrame();
+	});
+}
+
+void FrameGraphTestSuite::TestCrossGraphOrdering()
+{
+	const TShared<GpuDevice> device = GetTestDevice();
+	const TShared<GpuComputePipelineState> pipeline = device != nullptr ? CreateTestDispatchPipeline(*device) : nullptr;
+	if(pipeline == nullptr)
+		return;
+
+	LoggingScope logs(*this);
+	logs.IgnoreWarning(kBarrierOnlyWarning);
+
+	RunInModes("FrameGraphTestSuite::TestCrossGraphOrdering", { true, false }, [this, &device, &pipeline]()
+	{
+		const FrameGraphTestContext test(*device, pipeline);
+		const GpuBufferCreateInformation bufferInformation = GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize,
+			GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU);
+
+		TShared<render::GpuBuffer> readbacks[4];
+		for(u32 readbackIndex = 0; readbackIndex < 4; readbackIndex++)
+			readbacks[readbackIndex] = test.CreateReadback(readbackIndex % 2 == 0 ? kSize * kSize * (u32)sizeof(u32) : test.TextureReadbackSize);
+
+		const TShared<render::GpuBuffer> unrelatedBuffer = test.CreateBuffer("Unrelated buffer");
+		const TShared<render::Texture> unrelatedTexture = test.CreateTexture("Unrelated texture");
+
+		// The first graph's last pass reads its transients. Their first use is the graph's first pass, so their acquires wait for earlier work
+		// right there.
+		{
+			FrameGraph graph(*test.Context, kGraphName);
+			const TShared<render::GpuBuffer> buffer = graph.CreateBuffer("First buffer", bufferInformation);
+			const TShared<render::Texture> texture = graph.CreateTexture("First texture", test.TextureInformation);
+			test.AddDispatch(graph, "First write", buffer, texture);
+			test.AddReadback(graph, "First read", buffer, texture, readbacks[0], readbacks[1]);
+
+			graph.Compile();
+			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == (test.IsExplicit ? 2u : 0u))
+			B3D_TEST_ASSERT(graph.GetStatistics().SplitAliasAcquireCount == 0)
+			graph.Execute();
+		}
+
+		// The second graph, submitted right after, gets the cached transients back on the same memory, and writes them after an unrelated pass.
+		// Nothing orders the submissions, so the acquires wait for all earlier work, released at the start of the graph.
+		{
+			FrameGraph graph(*test.Context, kGraphName);
+			graph.ImportBuffer(unrelatedBuffer);
+			graph.ImportTexture(unrelatedTexture);
+			test.AddDispatch(graph, "Unrelated", unrelatedBuffer, unrelatedTexture);
+
+			const TShared<render::GpuBuffer> buffer = graph.CreateBuffer("Second buffer", bufferInformation);
+			const TShared<render::Texture> texture = graph.CreateTexture("Second texture", test.TextureInformation);
+			test.AddDispatch(graph, "Second write", buffer, texture);
+			test.AddReadback(graph, "Second read", buffer, texture, readbacks[2], readbacks[3]);
+
+			graph.Compile();
+			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == (test.IsExplicit ? 2u : 0u))
+			B3D_TEST_ASSERT(graph.GetStatistics().SplitAliasAcquireCount == (test.IsExplicit ? 2u : 0u))
+			graph.Execute();
+		}
+
+		device->WaitUntilIdle();
+		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(readbacks[0], false), "The first graph's transient buffer does not hold its values.")
+		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(readbacks[1], true), "The first graph's transient texture does not hold its values.")
+		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(readbacks[2], false), "The second graph's transient buffer does not hold its values.")
+		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(readbacks[3], true), "The second graph's transient texture does not hold its values.")
 
 		device->EndFrame();
 	});
@@ -1059,6 +1127,81 @@ void FrameGraphTestSuite::TestDepthReadOnly()
 		}
 
 		B3D_TEST_ASSERT_MSG(isCleared, "The color attachment does not hold its clear value.")
+
+		device->EndFrame();
+	});
+}
+
+void FrameGraphTestSuite::TestTwoAspectAliasAcquire()
+{
+	const TShared<GpuDevice> device = GetTestDevice();
+	if(device == nullptr)
+		return;
+
+	LoggingScope logs(*this);
+	logs.IgnoreWarning(kBarrierOnlyWarning);
+
+	RunInModes("FrameGraphTestSuite::TestTwoAspectAliasAcquire", { true, false }, [this, &device]()
+	{
+		const TShared<GpuWorkContext> context = GpuWorkContext::Create(*device);
+		const bool isExplicit = gGpuExplicitBarriers;
+
+		TextureCreateInformation colorInformation;
+		colorInformation.Width = kSize;
+		colorInformation.Height = kSize;
+		colorInformation.Format = PF_RGBA8;
+		colorInformation.Usage = TextureUsageFlag::RenderTarget;
+
+		TextureCreateInformation depthInformation = colorInformation;
+		depthInformation.Format = PF_D32_S8X24;
+		depthInformation.Usage = TextureUsageFlag::DepthStencil;
+
+		TAsyncOp<TShared<PixelData>> reads[2];
+		{
+			FrameGraph graph(*context, kGraphName);
+
+			// The first color texture lives until the end of the graph, so no memory is released within it
+			const TShared<render::Texture> firstColor = graph.CreateTexture("First color", colorInformation);
+			FrameGraphRasterPass firstPass;
+			firstPass.SetColorAttachment(0, firstColor, FrameGraphAttachmentLoad::Clear);
+			graph.AddRasterPass("Clear first color", std::move(firstPass), nullptr);
+
+			const TShared<render::Texture> secondColor = graph.CreateTexture("Second color", colorInformation);
+			const TShared<render::Texture> depth = graph.CreateTexture("Depth", depthInformation);
+			FrameGraphRasterPass secondPass;
+			secondPass.SetColorAttachment(0, secondColor, FrameGraphAttachmentLoad::Clear);
+			secondPass.SetDepthStencilAttachment(depth, FrameGraphDepthStencilMode::Write, FrameGraphAttachmentLoad::Clear);
+			graph.AddRasterPass("Clear second color and depth", std::move(secondPass), nullptr);
+
+			reads[0] = TextureUtility::ReadAsync(graph, firstColor);
+			reads[1] = TextureUtility::ReadAsync(graph, secondColor);
+
+			graph.Compile();
+			B3D_TEST_ASSERT(graph.GetStatistics().CulledPassCount == 0)
+			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == (isExplicit ? 3u : 0u))
+			B3D_TEST_ASSERT(graph.GetStatistics().SplitAliasAcquireCount == (isExplicit ? 1u : 0u))
+			graph.Execute();
+		}
+
+		// The command buffer's completion callbacks run on this thread while it waits
+		device->WaitUntilIdle();
+		for(const TAsyncOp<TShared<PixelData>>& read : reads)
+		{
+			B3D_TEST_ASSERT_MSG(read.HasCompleted(), "The read did not complete with the graph's command buffer.")
+			if(!read.HasCompleted())
+				return;
+
+			const TShared<PixelData> colorData = read.GetReturnValue();
+			bool isCleared = colorData != nullptr;
+			for(u32 row = 0; row < kSize && isCleared; row++)
+			{
+				const u32* const rowTexels = reinterpret_cast<const u32*>(colorData->GetData() + row * colorData->GetRowPitch());
+				for(u32 column = 0; column < kSize; column++)
+					isCleared &= rowTexels[column] == 0;
+			}
+
+			B3D_TEST_ASSERT_MSG(isCleared, "The color attachment does not hold its clear value.")
+		}
 
 		device->EndFrame();
 	});

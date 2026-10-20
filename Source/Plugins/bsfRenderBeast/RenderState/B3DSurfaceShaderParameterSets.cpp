@@ -50,6 +50,7 @@ namespace
 		constexpr u32 kGpuParticleCurves = 24;
 		constexpr u32 kGpuParticleCurvesSampler = 25;
 		constexpr u32 kGpuParticleSortedIndices = 26;
+		constexpr u32 kParticleIndices = 27;
 	}
 
 	/** Returns the binding of the renderer input at @p registerIndex of @p registerClass in set 2. */
@@ -167,6 +168,12 @@ namespace
 		builder.AddBuffer("gSortedIndices", InputRegister::kGpuParticleSortedIndices, GPOT_BYTE_BUFFER, BF_32X2U);
 	}
 
+	/** Adds the view's indices of CPU simulated particles, which the CPU particle layouts add to their base layout. */
+	void AddCpuParticleInputs(InputLayoutBuilder& builder)
+	{
+		builder.AddBuffer("gParticleIndices", InputRegister::kParticleIndices, GPOT_BYTE_BUFFER, BF_16X2U);
+	}
+
 	/** Creates a table mapping each SurfaceShaderType to its position in @p types, or to -1 for types not in it. */
 	template<size_t N>
 	constexpr Array<i8, (u32)SurfaceShaderType::Count> CreateIndexTable(const SurfaceShaderType (&types)[N])
@@ -196,6 +203,7 @@ namespace
 
 constexpr Array<i8, (u32)SurfaceShaderType::Count> SurfaceShaderParameterSets::kUnlitParticleIndices = CreateIndexTable(kUnlitParticleTypes);
 constexpr Array<i8, (u32)SurfaceShaderType::Count> SurfaceShaderParameterSets::kLitForwardIndices = CreateIndexTable(kLitForwardTypes);
+constexpr Array<i8, (u32)SurfaceShaderType::Count> SurfaceShaderParameterSets::kCpuParticleIndices = CreateIndexTable(kCpuParticleTypes);
 constexpr Array<i8, (u32)SurfaceShaderType::Count> SurfaceShaderParameterSets::kGpuParticleIndices = CreateIndexTable(kGpuParticleTypes);
 
 void SurfaceShaderParameterSetInfo::Initialize(GpuDevice& device)
@@ -220,7 +228,23 @@ void SurfaceShaderParameterSetInfo::Initialize(GpuDevice& device)
 		InputLayoutBuilder builder(device);
 		AddBasicInputs(builder);
 		AddSceneDepthInput(builder, false);
-		mLayouts[(u32)SurfaceShaderType::UnlitParticle] = builder.Create();
+		AddCpuParticleInputs(builder);
+		mLayouts[(u32)SurfaceShaderType::CpuParticleUnlit] = builder.Create();
+	}
+
+	{
+		InputLayoutBuilder builder(device);
+		AddBasicInputs(builder);
+		AddCpuParticleInputs(builder);
+		mLayouts[(u32)SurfaceShaderType::CpuParticleLitDeferred] = builder.Create();
+	}
+
+	{
+		InputLayoutBuilder builder(device);
+		AddBasicInputs(builder);
+		AddLightingInputs(builder);
+		AddCpuParticleInputs(builder);
+		mLayouts[(u32)SurfaceShaderType::CpuParticleLitForward] = builder.Create();
 	}
 
 	mLayouts[(u32)SurfaceShaderType::Decal] = CreateDecalLayout(device, false);
@@ -281,6 +305,7 @@ void SurfaceShaderParameterSets::Prepare(const RendererView& view, const RenderB
 			const i8 unlitParticleIndex = kUnlitParticleIndices[typeIndex];
 			const i8 litForwardIndex = kLitForwardIndices[typeIndex];
 			const i8 gpuParticleIndex = kGpuParticleIndices[typeIndex];
+			const i8 cpuParticleIndex = kCpuParticleIndices[typeIndex];
 
 			if(unlitParticleIndex >= 0)
 			{
@@ -331,6 +356,9 @@ void SurfaceShaderParameterSets::Prepare(const RendererView& view, const RenderB
 				GpuParameterSampler(GetInputBinding(device, ShaderRegisterClass::Sampler, InputRegister::kPreintegratedEnvBRDFSampler), set).Set(linearClampState);
 			}
 
+			if(cpuParticleIndex >= 0)
+				mCpuParticleIndicesParameters[cpuParticleIndex] = GpuParameterStorageBuffer(GetInputBinding(device, ShaderRegisterClass::ShaderResource, InputRegister::kParticleIndices), set);
+
 			if(gpuParticleIndex >= 0)
 			{
 				GpuParticleParameters& parameters = mGpuParticleParameters[gpuParticleIndex];
@@ -365,6 +393,12 @@ void SurfaceShaderParameterSets::SetGpuParticleInputs(const GpuParticleDrawInput
 		parameters.Curves.Set(inputs.Curves);
 		parameters.SortedIndices.Set(inputs.SortedIndices);
 	}
+}
+
+void SurfaceShaderParameterSets::SetCpuParticleIndices(const TShared<GpuBuffer>& indices)
+{
+	for(const GpuParameterStorageBuffer& parameter : mCpuParticleIndicesParameters)
+		parameter.Set(indices);
 }
 
 void SurfaceShaderParameterSets::SetDecalInputs(const TShared<Texture>& depth, const TShared<Texture>& mask)

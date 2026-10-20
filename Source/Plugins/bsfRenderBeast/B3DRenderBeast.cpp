@@ -381,6 +381,11 @@ void RenderBeast::RenderAllOnRenderThread(FrameTimings timings, PerFrameData per
 		entry->GetUniformBufferPools().AdvanceFrame();
 	}
 
+	for(const TShared<RenderWindow>& window : mWindowsToPresent)
+		mDevice->PresentRenderWindow(window);
+
+	mWindowsToPresent.clear();
+
 	EndFrame();
 
 	// Tick pool frame
@@ -429,14 +434,15 @@ bool RenderBeast::RenderScene(RenderBeastScene& scene, const FrameInfo& frameInf
 	for(u32 i = 0; i < renderableStorage.GetRenderableCount(); i++)
 		renderableStorage.PrepareRenderable(i, frameInfo);
 
-	for(u32 i = 0; i < scene.GetParticleSystemCount(); i++)
-		scene.PrepareParticleSystem(i, frameInfo);
+	scene.PrepareParticleSystems(frameInfo);
 
 	for(u32 i = 0; i < scene.GetDecalCount(); i++)
 		scene.PrepareDecal(i, frameInfo);
 
 	// Record the uniform buffer updates of sync and preparation before anything draws
 	scene.GetUniformBufferPools().Flush();
+
+	scene.SortRenderTargets();
 
 	bool anythingDrawnForScene = false;
 	for(auto& rtInfo : scene.GetRenderTargets())
@@ -468,13 +474,15 @@ bool RenderBeast::RenderScene(RenderBeastScene& scene, const FrameInfo& frameInf
 
 		mMainViewGroup->SetViews(views.data(), (u32)views.size());
 		PROFILE_CALL(mMainViewGroup->DetermineVisibility(scene), "Determine visibility")
+		scene.PrepareVisibleParticleSystems(mMainViewGroup->GetVisibilityInfo(), frameInfo);
 
 		// Render everything. The graph of the group has executed once this returns.
 		const bool anythingDrawnForView = RenderViews(scene, *mMainViewGroup, frameInfo, forceRendering);
 		if(anythingDrawnForView)
 		{
-			if(isWindow)
-				mDevice->PresentRenderWindow(window);
+			// Cameras of other scenes may draw to the window too. Its redraw and capture requests stay pending until it is presented.
+			if(isWindow && std::find(mWindowsToPresent.begin(), mWindowsToPresent.end(), window) == mWindowsToPresent.end())
+				mWindowsToPresent.push_back(window);
 
 			anythingDrawnForScene = true;
 		}
@@ -569,10 +577,6 @@ bool RenderBeast::RenderViews(RenderBeastScene& scene, RendererViewGroup& viewGr
 	// After the graph's execution, because the pass functions read the render queues this clears
 	for(RendererView* view : drawnViews)
 		view->EndFrame();
-
-	// After the graph's execution, so the views of the group draw from particle textures of their own. Once the draws are recorded, writes
-	// to a reused texture give it new memory, and the recorded draws keep reading the old.
-	ParticleRenderer::Instance().GetTexturePool().Clear();
 
 	return anythingDrawn;
 }

@@ -5673,13 +5673,13 @@ void GpuBackendTestSuite::TestTransientExplicitAliasing()
 		if(isBufferAliased)
 		{
 			B3D_TEST_ASSERT(secondBuffer.Acquire.Source.GetStages() == GpuStageFlag::Transfer)
-			B3D_TEST_ASSERT(secondBuffer.LatestSourcePass == 1u)
+			B3D_TEST_ASSERT(secondBuffer.LatestPredecessorPassIndex == 1u)
 		}
 
 		if(isTextureAliased)
 		{
 			B3D_TEST_ASSERT(secondTexture.Acquire.Source.GetStages() == GpuStageFlag::Transfer)
-			B3D_TEST_ASSERT(secondTexture.LatestSourcePass == 3u)
+			B3D_TEST_ASSERT(secondTexture.LatestPredecessorPassIndex == 3u)
 		}
 
 		const TShared<render::GpuBuffer> unrelated = device->CreateGpuBuffer(bufferInformation);

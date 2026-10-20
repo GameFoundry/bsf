@@ -1002,19 +1002,54 @@ namespace b3d::render
 					barrier.Destination = access.State;
 					barrier.AcquirePassIndex = compiledIndex;
 					barrier.ReleasePassIndex = (i32)compiledIndex - 1;
+
 					if(isAliased)
 					{
-						// The alias acquire waits on the last accesses of the earlier resources on the transient's memory
+						// The transient's memory may span two kinds of memory. Memory that earlier transients of this graph released (its
+						// predecessors), whose last accesses are acquire.Source, the latest in pass latestPredecessorPassIndex. And memory that no
+						// transient of this graph used, which graphs submitted earlier may still use (acquire.HasUnknownSourceAccess).
 						const GpuAliasAcquire& acquire = resource.Placement.Acquire;
-						barrier.Source = GpuAccessState(acquire.Source.GetStages(), acquire.Source.GetAccess());
-						barrier.Flags = GpuBarrierFlag::AliasAcquire;
+						const TOptional<u32>& latestPredecessorPassIndex = resource.Placement.LatestPredecessorPassIndex;
+						const bool hasPredecessors = latestPredecessorPassIndex.has_value();
+						const bool hasUnusedMemory = acquire.HasUnknownSourceAccess;
 
-						// The release discards the old contents while the passes between the earlier resources' last pass and this one run
-						const TOptional<u32>& latestSourcePass = resource.Placement.LatestSourcePass;
-						if(latestSourcePass.has_value() && (i32)*latestSourcePass < (i32)compiledIndex - 1)
+						barrier.Flags = GpuBarrierFlag::AliasAcquire;
+						barrier.Source = GpuAccessState(acquire.Source.GetStages(), acquire.Source.GetAccess());
+
+						// Nothing else orders this graph after the graphs submitted earlier, and their accesses to the unused memory are unknown,
+						// so the acquire waits for all earlier work on the queue
+						if(hasUnusedMemory)
 						{
-							barrier.IsSplit = true;
-							barrier.ReleasePassIndex = (i32)*latestSourcePass;
+							barrier.Source.Stages |= GpuStageFlags(GpuStageFlag::All) & ~GpuStageFlags(GpuStageFlag::Host);
+							barrier.Source.Access |= GpuAccessFlag::Write;
+						}
+
+						if(hasPredecessors)
+						{
+							// Released after the predecessors' last pass if passes run between it and this one, which discards the old contents
+							// while they run. A release there also waits for the graphs submitted earlier.
+							if((i32)*latestPredecessorPassIndex < (i32)compiledIndex - 1)
+							{
+								barrier.IsSplit = true;
+								barrier.ReleasePassIndex = (i32)*latestPredecessorPassIndex;
+							}
+						}
+						else if(hasUnusedMemory && compiledIndex > 0)
+						{
+							// Only earlier graphs used the memory, so the release goes at the start of the graph, where it waits for no pass of
+							// this graph, and the acquire rarely waits. Images with two aspects get no split barriers (see the workaround below),
+							// so theirs is a full barrier at the start of the graph instead. No pass of this graph uses the memory before it,
+							// because a graph is one submission on one queue, and acquire.Source and the predecessors cover that queue.
+							if(resource.Texture != nullptr && resource.FullRange.GetAspectCount() == 2)
+							{
+								barrier.AcquirePassIndex = 0;
+								barrier.ReleasePassIndex = -1;
+							}
+							else
+							{
+								barrier.IsSplit = true;
+								barrier.ReleasePassIndex = -1;
+							}
 						}
 					}
 
@@ -1038,6 +1073,8 @@ namespace b3d::render
 
 						// The textures on the memory before end their lifetimes with the acquire, in the same call or split, so backends can
 						// flush their writes before the memory is discarded. A texture that several acquires supersede ends it with the first.
+						// For resources that are unknown (from prior scopes) this is not necessary as it's expected the backed will do the 
+						// synchronization on command buffer boundary. This whole block is mainly for D3D12.
 						const GpuAccessState releaseDestination(barrier.Destination.Stages, GpuAccessFlag::None, GpuImageLayout::Undefined);
 						for(IGpuResource* predecessor : resource.Placement.Acquire.Predecessors)
 						{

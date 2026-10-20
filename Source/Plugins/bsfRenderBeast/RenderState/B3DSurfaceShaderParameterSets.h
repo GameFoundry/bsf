@@ -27,19 +27,25 @@ namespace b3d
 		 */
 		enum class SurfaceShaderType
 		{
-			/** Surfaces and particles that write the G-buffer, which the renderer lights later. PerCamera and PerFrame. */
+			/** Surfaces that write the G-buffer, which the renderer lights later. PerCamera and PerFrame. */
 			LitDeferred,
 
-			/** Surfaces and particles with forward lighting. LitDeferred's inputs, plus clustered forward lighting and image based lighting. */
+			/** Surfaces with forward lighting. LitDeferred's inputs, plus clustered forward lighting and image based lighting. */
 			LitForward,
 
 			/** Transparent surfaces without lighting. LitDeferred's inputs. */
 			Unlit,
 
-			/** Transparent particles without lighting. LitDeferred's inputs, plus scene depth. */
-			UnlitParticle,
+			/** Transparent CPU simulated particles without lighting. LitDeferred's inputs, plus scene depth and the particle indices. */
+			CpuParticleUnlit,
 
-			/** Decals. UnlitParticle's inputs, plus the G-buffer mask. Multisampled when the view is. */
+			/** CPU simulated particles that write the G-buffer. LitDeferred's inputs, plus the particle indices. */
+			CpuParticleLitDeferred,
+
+			/** CPU simulated particles with forward lighting. LitForward's inputs, plus the particle indices. */
+			CpuParticleLitForward,
+
+			/** Decals. LitDeferred's inputs, plus scene depth and the G-buffer mask. Multisampled when the view is. */
 			Decal,
 
 			/** GPU simulated particles that write the G-buffer. LitDeferred's inputs, plus the outputs of the GPU simulation. */
@@ -48,7 +54,7 @@ namespace b3d
 			/** GPU simulated particles with forward lighting. LitForward's inputs, plus the outputs of the GPU simulation. */
 			GpuParticleLitForward,
 
-			/** Transparent GPU simulated particles without lighting. UnlitParticle's inputs, plus the outputs of the GPU simulation. */
+			/** Transparent GPU simulated particles without lighting. LitDeferred's inputs, plus scene depth and the outputs of the GPU simulation. */
 			GpuParticleUnlit,
 
 			Count
@@ -82,22 +88,25 @@ namespace b3d
 			/**
 			 * Creates the sets and their parameter handles on first use, and recreates the multisampled ones when the view's
 			 * sample count changes. Assigns the view's PerCamera and the scene's PerFrame buffers to every set, and the
-			 * samplers to newly created LitForward and GPU particle sets.
+			 * samplers to newly created forward lit and GPU particle sets.
 			 */
 			void Prepare(const RendererView& view, const RenderBeastScene& scene);
 
-			/** Assigns the scene depth that the UnlitParticle and GpuParticleUnlit sets read. */
+			/** Assigns the scene depth that the CpuParticleUnlit and GpuParticleUnlit sets read. */
 			void SetSceneDepth(const TShared<Texture>& depth);
 
 			/** Assigns the outputs of the GPU particle simulation that the GPU particle sets read. */
 			void SetGpuParticleInputs(const GpuParticleDrawInputs& inputs);
 
+			/** Assigns the indices of CPU simulated particles (RCNodeParticleSort::ParticleIndices) that the CPU particle sets read. */
+			void SetCpuParticleIndices(const TShared<GpuBuffer>& indices);
+
 			/** Assigns the scene depth and the G-buffer mask that the Decal set reads. */
 			void SetDecalInputs(const TShared<Texture>& depth, const TShared<Texture>& mask);
 
 			/**
-			 * Assigns the clustered forward lighting and image based lighting inputs that the LitForward and GpuParticleLitForward sets
-			 * read.
+			 * Assigns the clustered forward lighting and image based lighting inputs that the LitForward, CpuParticleLitForward and
+			 * GpuParticleLitForward sets read.
 			 *
 			 * @param	view				View to render.
 			 * @param	lightGrid			Light grid of the view.
@@ -150,10 +159,15 @@ namespace b3d
 			};
 
 			/** Types of transparent particles, whose sets hold the scene depth. */
-			static constexpr SurfaceShaderType kUnlitParticleTypes[] = { SurfaceShaderType::UnlitParticle, SurfaceShaderType::GpuParticleUnlit };
+			static constexpr SurfaceShaderType kUnlitParticleTypes[] = { SurfaceShaderType::CpuParticleUnlit, SurfaceShaderType::GpuParticleUnlit };
 
 			/** Types whose sets hold the forward lighting inputs. */
-			static constexpr SurfaceShaderType kLitForwardTypes[] = { SurfaceShaderType::LitForward, SurfaceShaderType::GpuParticleLitForward };
+			static constexpr SurfaceShaderType kLitForwardTypes[] = { SurfaceShaderType::LitForward, SurfaceShaderType::CpuParticleLitForward,
+				SurfaceShaderType::GpuParticleLitForward };
+
+			/** Types of CPU simulated particles, whose sets hold the particle indices. */
+			static constexpr SurfaceShaderType kCpuParticleTypes[] = { SurfaceShaderType::CpuParticleUnlit, SurfaceShaderType::CpuParticleLitDeferred,
+				SurfaceShaderType::CpuParticleLitForward };
 
 			/** Types of GPU simulated particles, whose sets hold the outputs of the GPU simulation. */
 			static constexpr SurfaceShaderType kGpuParticleTypes[] = { SurfaceShaderType::GpuParticleLitDeferred, SurfaceShaderType::GpuParticleLitForward,
@@ -164,6 +178,9 @@ namespace b3d
 
 			/** Position of each SurfaceShaderType in kLitForwardTypes, or -1 for types not in it. */
 			static const Array<i8, (u32)SurfaceShaderType::Count> kLitForwardIndices;
+
+			/** Position of each SurfaceShaderType in kCpuParticleTypes, or -1 for types not in it. */
+			static const Array<i8, (u32)SurfaceShaderType::Count> kCpuParticleIndices;
 
 			/** Position of each SurfaceShaderType in kGpuParticleTypes, or -1 for types not in it. */
 			static const Array<i8, (u32)SurfaceShaderType::Count> kGpuParticleIndices;
@@ -179,6 +196,9 @@ namespace b3d
 
 			/** Forward lighting handles of the forward lit sets, in kLitForwardTypes order. */
 			Array<LitForwardParameters, B3DSize(kLitForwardTypes)> mLitForwardParameters;
+
+			/** Particle index handles of the CPU particle sets, in kCpuParticleTypes order. */
+			Array<GpuParameterStorageBuffer, B3DSize(kCpuParticleTypes)> mCpuParticleIndicesParameters;
 
 			/** GPU simulation handles of the GPU particle sets, in kGpuParticleTypes order. */
 			Array<GpuParticleParameters, B3DSize(kGpuParticleTypes)> mGpuParticleParameters;

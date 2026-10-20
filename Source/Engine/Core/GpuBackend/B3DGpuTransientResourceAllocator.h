@@ -35,17 +35,19 @@ namespace b3d
 
 		/**
 		 * Earlier uses of the texture's memory that the texture's first use must be ordered after. Must be issued before any other use
-		 * of the texture, as GpuBarrier::AliasAcquire, or as an explicit barrier with GpuBarrierFlag::AliasAcquire whose source is
-		 * GpuAliasAcquire::Source. Remains valid until the end of the scope.
+		 * of the texture, as GpuBarrier::AliasAcquire, or as an explicit barrier with GpuBarrierFlag::AliasAcquire whose source covers
+		 * GpuAliasAcquire::Source, and all earlier work on its queue if GpuAliasAcquire::HasUnknownSourceAccess is set. Remains valid
+		 * until the end of the scope.
 		 */
 		render::GpuAliasAcquire Acquire;
 
 		/**
-		 * Latest pass among the accesses of Acquire, as reported by GpuTransientLastUse::Pass when the earlier resources on the memory
-		 * were released. When the alias acquire is issued as a split barrier, its release half can go right after this pass, and its
-		 * acquire half before the first use. Empty if Acquire has no accesses.
+		 * Latest pass among the last accesses of the texture's predecessors (GpuAliasAcquire::Source of Acquire), as their
+		 * GpuTransientLastUse::Pass reported when they were released. Says nothing about the texture itself, whose first use comes later.
+		 * When the alias acquire is issued as a split barrier, its release half can go right after this pass, and its acquire half before
+		 * the first use. Empty if Source has no accesses.
 		 */
-		TOptional<u32> LatestSourcePass;
+		TOptional<u32> LatestPredecessorPassIndex;
 	};
 
 	/** Transient buffer, and the barrier information its first use requires. */
@@ -57,8 +59,8 @@ namespace b3d
 		/** Earlier uses of the buffer's memory that the buffer's first use must be ordered after. See GpuTransientTexture::Acquire. */
 		render::GpuAliasAcquire Acquire;
 
-		/** See GpuTransientTexture::LatestSourcePass. */
-		TOptional<u32> LatestSourcePass;
+		/** See GpuTransientTexture::LatestPredecessorPassIndex. */
+		TOptional<u32> LatestPredecessorPassIndex;
 	};
 
 	/** Result of placing memory for a transient resource returned by GpuTransientResourceAllocator::GetOrCreateTexture() or GetOrCreateBuffer(). */
@@ -67,8 +69,8 @@ namespace b3d
 		/** Earlier uses of the resource's memory that the resource's first use must be ordered after. See GpuTransientTexture::Acquire. */
 		render::GpuAliasAcquire Acquire;
 
-		/** See GpuTransientTexture::LatestSourcePass. */
-		TOptional<u32> LatestSourcePass;
+		/** See GpuTransientTexture::LatestPredecessorPassIndex. */
+		TOptional<u32> LatestPredecessorPassIndex;
 
 		/**
 		 * True if the resource recreated its native resource at new memory. Views, render targets and other objects created from the
@@ -158,9 +160,9 @@ namespace b3d
 	 *
 	 * Memory comes from the device's transient heap pools, which every allocator shares. Each scope starts with all of the
 	 * pools' memory free, so scopes of different allocators may be open at the same time, and share memory with each other.
-	 * The system that schedules scopes must guarantee that no two scopes execute on the GPU at the same time, that the work of
-	 * a scope is ordered after the work of every earlier scope, and that the work of a scope is submitted within the frame
-	 * the scope ended in.
+	 * The first use of memory that no earlier resource of the scope used (GpuAliasAcquire::HasUnknownSourceAccess) must be
+	 * ordered after all earlier work on its queue, which also orders it after earlier scopes. The work of a scope must be
+	 * submitted within the frame the scope ended in.
 	 *
 	 * Resources are cached by their description and memory location, so a scope that places the same resources in the
 	 * same order as an earlier scope reuses the earlier resources. A cached resource's state from an earlier placement is
@@ -272,7 +274,7 @@ namespace b3d
 		 */
 		template<class CreateFunction, class IsSameFunction>
 		Resource* AllocateResource(TArray<Resource*>& cachedResources, const GpuMemoryRequirements& memoryRequirements, u32 firstSubmission,
-			render::GpuAliasAcquire& outAcquire, TOptional<u32>& outLatestSourcePass, CreateFunction&& fnCreate, IsSameFunction&& fnIsSame);
+			render::GpuAliasAcquire& outAcquire, TOptional<u32>& outLatestPredecessorPassIndex, CreateFunction&& fnCreate, IsSameFunction&& fnIsSame);
 
 		/**
 		 * Returns the first cached resource that @p fnIsSame accepts and that is not held, or creates an uninitialized resource

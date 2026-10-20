@@ -126,7 +126,10 @@ namespace b3d
 			/** Parameter for binding the particle params uniform buffer. */
 			GpuParameterUniformBuffer ParticlesUniformBufferParameter;
 
-			/** Binding spot for the buffer containing instance id -> particle index mapping. */
+			/**
+			 * Binding spot for the buffer containing instance id -> particle index mapping. GPU simulated only, CPU simulated systems read
+			 * theirs from RCNodeParticleSort::ParticleIndices.
+			 */
 			GpuParameterStorageBuffer IndicesBuffer;
 
 			/** Parameters relevant for billboard rendering of the outputs of the particle CPU simulation. */
@@ -165,6 +168,18 @@ namespace b3d
 			/** Element used for sorting and rendering the particle system. */
 			mutable ParticlesDrawCommand DrawCommand;
 
+			/**
+			 * Offset of the system's particle indices in each view's particle index buffer (RCNodeParticleSort::ParticleIndices), the same
+			 * in every view. CPU simulated only, assigned when the inputs are bound.
+			 */
+			u32 ParticleIndicesOffset = 0;
+
+			/**
+			 * True if the inputs of the CPU simulated system are bound for the current frame. Set when a view first sees the system in the
+			 * frame (RenderBeastScene::PrepareVisibleParticleSystems()).
+			 */
+			bool AreCpuInputsBound = false;
+
 			/** Suballocation for GPU particle parameters (GPU-simulated only). */
 			GpuBufferSuballocation GpuParticlesParamSuballocation;
 
@@ -178,7 +193,7 @@ namespace b3d
 			void UpdatePerObjectData(const ParticleSystemProxy& proxy);
 
 			/**
-			 * Binds all the GPU program inputs required for rendering a particle system that is being simulated by the CPU.
+			 * Binds the GPU program inputs of a particle system that is being simulated by the CPU, once per frame.
 			 *
 			 * @param renderData	Render data representing the state of a CPU simulated particle system.
 			 */
@@ -195,7 +210,9 @@ namespace b3d
 			 * Allocates a transient uniform buffer and populates it with particle parameters.
 			 *
 			 * @param texSize			Size of the particle data texture.
-			 * @param bufferOffset		Offset into the particle index buffer, or into the sorted index buffer if @p useSortedIndices.
+			 * @param bufferOffset		Offset into RCNodeParticleSort::ParticleIndices for CPU simulated systems. For GPU simulated
+			 *							systems, offset into the particle index buffer, or into the sorted index buffer if
+			 *							@p useSortedIndices.
 			 * @param useSortedIndices	True if the vertex shader reads the particle indices from the sorted index buffer of the GPU
 			 *							particle simulation, rather than from the index buffer of the particle system.
 			 */
@@ -217,7 +234,6 @@ namespace b3d
 			TShared<Texture> PositionAndRotation;
 			TShared<Texture> Color;
 			TShared<Texture> SizeAndFrameIdx;
-			TShared<GpuBuffer> Indices;
 		};
 
 		/**
@@ -230,7 +246,6 @@ namespace b3d
 			TShared<Texture> Color;
 			TShared<Texture> Size;
 			TShared<Texture> Rotation;
-			TShared<GpuBuffer> Indices;
 		};
 
 		/** Keeps a pool of textures used for the purposes of the particle system. */
@@ -304,15 +319,15 @@ namespace b3d
 			 * Updates the provided indices buffer so they particles are sorted from further to nearest with respect to
 			 * some reference point.
 			 *
-			 * @param[in]	refPoint		Reference point respect to which to determine the distance of individual particles.
-			 *								Should be in the simulation space of the particle system.
-			 * @param[in]	positions		Buffer containing positions of individual particles.
-			 * @param[in]	numParticles	Number of particles in the provided position and indices buffers.
-			 * @param[in]	stride			Offset between positions in the @p positions buffer, in number of floats.
-			 * @param[out]	indices			Index buffer that will be sorted according to the particle distance, in descending
-			 *								order.
+			 * @param	refPoint		Reference point respect to which to determine the distance of individual particles.
+			 *							Should be in the simulation space of the particle system.
+			 * @param	positions		Buffer containing positions of individual particles.
+			 * @param	numParticles	Number of particles in the provided position and indices buffers.
+			 * @param	stride			Offset between positions in the @p positions buffer, in number of floats.
+			 * @param	indices			Receives @p numParticles particle indices, sorted according to the particle distance, in
+			 *							descending order.
 			 */
-			static void SortByDistance(const Vector3& refPoint, const PixelData& positions, u32 numParticles, u32 stride, Vector<u32>& indices);
+			static void SortByDistance(const Vector3& refPoint, const PixelData& positions, u32 numParticles, u32 stride, u32* indices);
 
 		private:
 			ParticleTexturePool mTexturePool;

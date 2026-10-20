@@ -212,8 +212,13 @@ mixin ParticleVertex
 		}
 		#endif
 		
+		#if GPU
 		[internal]
 		Buffer<uint2> gIndices;
+		#else
+		// Indices of the particles to draw, as texel coordinates, the system's at gBufferOffset
+		B3D_RENDERER_PASS_INPUT(Buffer<uint2> gParticleIndices, t27);
+		#endif
 
 		[internal]
 		cbuffer ParticleParams
@@ -269,7 +274,7 @@ mixin ParticleVertex
 
 			ParticleInput pi = getParticleInput(particleIndex);
 			#else
-			ParticleInput pi = getParticleInput(gIndices[gBufferOffset + input.instanceId]);
+			ParticleInput pi = getParticleInput(gParticleIndices[gBufferOffset + input.instanceId]);
 			#endif
 			
 			VStoFS output;

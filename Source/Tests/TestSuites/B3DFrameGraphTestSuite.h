@@ -35,6 +35,12 @@ namespace b3d
 		void TestSplitAliasAcquire();
 
 		/**
+		 * A graph's transients reuse the memory of an earlier graph's transients, which the earlier graph's last pass still reads when the
+		 * later graph starts. Their first use waits for the earlier graph's work.
+		 */
+		void TestCrossGraphOrdering();
+
+		/**
 		 * An extracted transient survives the graph at rest in its own memory, and a later graph imports and reads it. Repeated with the
 		 * transient also exported by the pass that writes it.
 		 */
@@ -84,6 +90,13 @@ namespace b3d
 		 * (FrameGraphDepthStencilMode::DepthReadOnly), after a pass that cleared both.
 		 */
 		void TestDepthReadOnly();
+
+		/**
+		 * A depth-stencil transient and a color transient are first used by a later pass, on memory no earlier transient of the graph
+		 * used. The color transient's alias acquire is a split barrier released at the start of the graph; the depth-stencil one, which
+		 * gets no split barriers, is a full barrier at the start of the graph.
+		 */
+		void TestTwoAspectAliasAcquire();
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
 		/**

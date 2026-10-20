@@ -845,10 +845,12 @@ void ParticleSystemObjectStorage::CreateRenderState(TArrayView<const PackedRende
 
 		// Bind additional parameters
 		gpuParameterSet->TryGetUniformBufferParameter("ParticleParams", drawCommand.ParticlesUniformBufferParameter);
-		gpuParameterSet->GetStorageBufferParameter("gIndices", drawCommand.IndicesBuffer);
 
 		if(gpu)
+		{
+			gpuParameterSet->GetStorageBufferParameter("gIndices", drawCommand.IndicesBuffer);
 			drawCommand.Is3D = false;
+		}
 		else
 		{
 			switch(settings.RenderMode)
@@ -878,11 +880,11 @@ void ParticleSystemObjectStorage::CreateRenderState(TArrayView<const PackedRende
 		// read the outputs of the simulation.
 		SurfaceShaderType shaderType;
 		if(requiresForwardLighting)
-			shaderType = gpu ? SurfaceShaderType::GpuParticleLitForward : SurfaceShaderType::LitForward;
+			shaderType = gpu ? SurfaceShaderType::GpuParticleLitForward : SurfaceShaderType::CpuParticleLitForward;
 		else if(shaderFlags.IsSet(ShaderFlag::Transparent))
-			shaderType = gpu ? SurfaceShaderType::GpuParticleUnlit : SurfaceShaderType::UnlitParticle;
+			shaderType = gpu ? SurfaceShaderType::GpuParticleUnlit : SurfaceShaderType::CpuParticleUnlit;
 		else
-			shaderType = gpu ? SurfaceShaderType::GpuParticleLitDeferred : SurfaceShaderType::LitDeferred;
+			shaderType = gpu ? SurfaceShaderType::GpuParticleLitDeferred : SurfaceShaderType::CpuParticleLitDeferred;
 
 		drawCommand.SurfaceShaderType = (u32)shaderType;
 
@@ -1461,20 +1463,28 @@ void RenderBeastScene::UpdateCameraRenderTargets(Camera* camera, bool remove)
 			renderTargetData.Target = renderTarget;
 			renderTargetData.Cameras.push_back(camera);
 		}
+	}
+}
 
-		// Sort render targets based on priority
-		auto cameraComparer = [&](const Camera* a, const Camera* b)
-		{ return a->GetPriority() > b->GetPriority(); };
-		auto renderTargetInfoComparer = [&](const RendererRenderTarget& a, const RendererRenderTarget& b)
-		{ return a.Target->GetProperties().Priority > b.Target->GetProperties().Priority; };
-		std::sort(begin(mRenderTargets), end(mRenderTargets), renderTargetInfoComparer);
+void RenderBeastScene::SortRenderTargets()
+{
+	// Priorities can change at any time, so the order is refreshed every frame. Windows may show render textures, so these render first.
+	auto renderTargetComparer = [](const RendererRenderTarget& a, const RendererRenderTarget& b)
+	{
+		const RenderTargetProperties& aProperties = a.Target->GetProperties();
+		const RenderTargetProperties& bProperties = b.Target->GetProperties();
+		if(aProperties.Priority != bProperties.Priority)
+			return aProperties.Priority > bProperties.Priority;
 
-		for(auto& camerasPerTarget : mRenderTargets)
-		{
-			Vector<Camera*>& cameras = camerasPerTarget.Cameras;
+		return !aProperties.IsWindow && bProperties.IsWindow;
+	};
 
-			std::sort(begin(cameras), end(cameras), cameraComparer);
-		}
+	std::stable_sort(mRenderTargets.begin(), mRenderTargets.end(), renderTargetComparer);
+
+	for(RendererRenderTarget& renderTarget : mRenderTargets)
+	{
+		std::stable_sort(renderTarget.Cameras.begin(), renderTarget.Cameras.end(), [](const Camera* a, const Camera* b)
+		{ return a->GetPriority() > b->GetPriority(); });
 	}
 }
 
@@ -1568,26 +1578,71 @@ void RenderBeastScene::SetParamFrameParams(float time)
 	gPerFrameUniformDefinition.gTime.Set(mappedScope, time);
 }
 
-void RenderBeastScene::PrepareParticleSystem(u32 idx, const FrameInfo& frameInfo)
+void RenderBeastScene::PrepareParticleSystems(const FrameInfo& frameInfo)
 {
 	ParticleSystemObjectStorage& storage = GetParticleSystemStorage();
-	ParticleRenderState& renderState = storage.GetParticleRenderState(idx);
+	const EvaluatedParticleData* particleData = frameInfo.PerSceneFrameData.Particles;
 
-	if(renderState.PrevFrameDirtyState != PrevFrameDirtyState::Clean)
+	// The graphs of the last frame recorded their draws, so writes to reused textures give them new memory
+	ParticleRenderer::Instance().GetTexturePool().Clear();
+
+	mParticleIndexCount = 0;
+	for(u32 idx = 0; idx < storage.GetParticleSystemCount(); idx++)
 	{
-		if(renderState.PrevFrameDirtyState == PrevFrameDirtyState::Updated)
-			renderState.PrevFrameDirtyState = PrevFrameDirtyState::CopyMostRecent;
-		else if(renderState.PrevFrameDirtyState == PrevFrameDirtyState::CopyMostRecent)
+		ParticleRenderState& renderState = storage.GetParticleRenderState(idx);
+
+		if(renderState.PrevFrameDirtyState != PrevFrameDirtyState::Clean)
 		{
-			renderState.PrevWorldTransform = renderState.WorldTransform;
-			renderState.PrevFrameDirtyState = PrevFrameDirtyState::Clean;
+			if(renderState.PrevFrameDirtyState == PrevFrameDirtyState::Updated)
+				renderState.PrevFrameDirtyState = PrevFrameDirtyState::CopyMostRecent;
+			else if(renderState.PrevFrameDirtyState == PrevFrameDirtyState::CopyMostRecent)
+			{
+				renderState.PrevWorldTransform = renderState.WorldTransform;
+				renderState.PrevFrameDirtyState = PrevFrameDirtyState::Clean;
 
-			mUniformBufferPools.UpdatePerObjectBuffer(renderState);
+				mUniformBufferPools.UpdatePerObjectBuffer(renderState);
+			}
 		}
-	}
 
-	ParticlesDrawCommand& drawCommand = renderState.DrawCommand;
-	drawCommand.ParameterAdapter->Update(drawCommand.Material, 0.0f);
+		ParticlesDrawCommand& drawCommand = renderState.DrawCommand;
+		drawCommand.ParameterAdapter->Update(drawCommand.Material, 0.0f);
+
+		renderState.AreCpuInputsBound = false;
+		if(particleData == nullptr || renderState.GpuParticleSystem != nullptr)
+			continue;
+
+		const ParticleSystemProxy& proxy = storage.GetParticleSystemProxy(idx);
+		if(particleData->CpuData.find(proxy.GetId()) == particleData->CpuData.end())
+			drawCommand.NumParticles = 0;
+	}
+}
+
+void RenderBeastScene::PrepareVisibleParticleSystems(const VisibilityInfo& visibility, const FrameInfo& frameInfo)
+{
+	const EvaluatedParticleData* particleData = frameInfo.PerSceneFrameData.Particles;
+	if(particleData == nullptr)
+		return;
+
+	ParticleSystemObjectStorage& storage = GetParticleSystemStorage();
+	for(u32 idx = 0; idx < storage.GetParticleSystemCount(); idx++)
+	{
+		ParticleRenderState& renderState = storage.GetParticleRenderState(idx);
+		if(!visibility.ParticleSystems[idx] || renderState.GpuParticleSystem != nullptr || renderState.AreCpuInputsBound)
+			continue;
+
+		const ParticleSystemProxy& proxy = storage.GetParticleSystemProxy(idx);
+		const auto found = particleData->CpuData.find(proxy.GetId());
+		if(found == particleData->CpuData.end())
+			continue;
+
+		// The inputs of CPU simulated systems are the same in every view, except the particle order, which each view's particle index
+		// buffer (RCNodeParticleSort::ParticleIndices) holds at the system's offset. Systems no view sees are not uploaded.
+		renderState.ParticleIndicesOffset = mParticleIndexCount;
+		mParticleIndexCount += found->second->NumParticles;
+
+		renderState.BindCpuSimulatedInputs(proxy, found->second);
+		renderState.AreCpuInputsBound = true;
+	}
 }
 
 void RenderBeastScene::PrepareDecal(u32 idx, const FrameInfo& frameInfo)

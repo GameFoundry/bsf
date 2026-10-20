@@ -317,13 +317,28 @@ namespace b3d
 			const GpuBufferSuballocation& GetPerFrameSuballocation() const { return mPerFrameSuballocation; }
 
 			/**
-			 * Performs necessary steps to make a particle system ready for rendering. This must be called at least once every
-			 * frame for every particle system that will be drawn.
+			 * Makes the particle systems ready for rendering. Must be called once every frame, before any view determines its visibility.
+			 * The inputs of CPU simulated systems are bound later, by PrepareVisibleParticleSystems().
 			 *
-			 * @param[in]	idx			Index of the particle system to prepare.
-			 * @param[in]	frameInfo	Global information describing the current frame.
+			 * @param	frameInfo	Global information describing the current frame.
 			 */
-			void PrepareParticleSystem(u32 idx, const FrameInfo& frameInfo);
+			void PrepareParticleSystems(const FrameInfo& frameInfo);
+
+			/**
+			 * Binds the inputs of the CPU simulated systems that a view group sees, unless an earlier group of the frame saw them, and
+			 * assigns their ranges of the particle index buffers, one per view (RCNodeParticleSort::ParticleIndices). Must be called
+			 * after the group determines its visibility, and before its views build their graphs.
+			 *
+			 * @param	visibility	Visibility of the scene's objects in any view of the group.
+			 * @param	frameInfo	Global information describing the current frame.
+			 */
+			void PrepareVisibleParticleSystems(const VisibilityInfo& visibility, const FrameInfo& frameInfo);
+
+			/**
+			 * Returns the number of particle indices in each view's particle index buffer this frame (RCNodeParticleSort::ParticleIndices),
+			 * of the systems bound so far. Valid after PrepareVisibleParticleSystems().
+			 */
+			u32 GetParticleIndexCount() const { return mParticleIndexCount; }
 
 			/**
 			 * Performs necessary steps to make a decal ready for rendering. This must be called at least once every frame
@@ -442,6 +457,12 @@ namespace b3d
 			// Cameras and render targets
 			const Vector<RendererRenderTarget>& GetRenderTargets() const { return mRenderTargets; }
 
+			/**
+			 * Sorts the render targets in the order to render them: by priority, and render textures before windows of the same priority.
+			 * Sorts the cameras of each target by priority. Targets and cameras of the same priority keep the order they were registered in.
+			 */
+			void SortRenderTargets();
+
 			/** Returns the view associated with the given camera, or nullptr if the camera has no registered view. */
 			RendererView* TryGetView(const Camera* camera) const
 			{
@@ -476,6 +497,7 @@ namespace b3d
 			TShared<GpuDevice> mGpuDevice;
 			GpuBufferSuballocation mPerFrameSuballocation;
 			UniformBufferPools mUniformBufferPools;
+			u32 mParticleIndexCount = 0;
 			TShared<RenderBeastOptions> mOptions;
 			UnorderedMap<SamplerOverrideKey, MaterialSamplerOverrides*> mSamplerOverrides;
 
