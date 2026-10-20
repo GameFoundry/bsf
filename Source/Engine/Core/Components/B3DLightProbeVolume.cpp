@@ -243,26 +243,9 @@ void LightProbeVolume::RunRenderProbeTask()
 	};
 
 	TShared<render::LightProbeVolume> renderProxy = B3DGetRenderProxy(this);
-	auto fnRenderProbes = [renderProxy](render::GpuCommandBufferPool& commandBufferPool)
+	auto fnRenderProbes = [renderProxy](render::FrameGraph& graph)
 	{
-		TShared<render::GpuCommandBuffer> commandBuffer = commandBufferPool.FindOrCreate(render::GpuCommandBufferCreateInformation::Create("LightProbeRendering"));
-		TShared<GpuCommandBufferProfiler> commandBufferProfiler = GetGpuProfiler().CreateCommandBufferProfiler(*commandBuffer);
-
-		GpuWorkContext& gpuContext = render::GetRenderer()->GetGpuContext();
-		render::FrameGraph graph(gpuContext, "FilterLightProbes");
-
-		commandBufferProfiler->BeginSample(*commandBuffer, "LightProbeRendering");
-		const bool isDone = renderProxy->RenderProbes(*commandBuffer, graph, 3);
-		commandBufferProfiler->EndSample(*commandBuffer);
-
-		GetGpuProfiler().ResolveProfileWhenReady("LightProbeRendering", commandBufferProfiler);
-		gpuContext.SubmitCommandBuffer(commandBuffer);
-
-		// Filters the captures, so its graph executes after the captures' submission
-		graph.Compile();
-		graph.Execute();
-
-		return isDone;
+		return renderProxy->RenderProbes(graph, 3);
 	};
 
 	mRendererTask = render::RendererTask::Create("RenderLightProbes", fnRenderProbes);
@@ -442,7 +425,7 @@ void LightProbeVolume::Initialize()
 	RenderProxy::Initialize();
 }
 
-bool LightProbeVolume::RenderProbes(GpuCommandBuffer& captureCommandBuffer, FrameGraph& graph, u32 maxProbeCount)
+bool LightProbeVolume::RenderProbes(FrameGraph& graph, u32 maxProbeCount)
 {
 	// Probe map only contains active probes
 	u32 usedProbeCount = (u32)mProbeMap.size();
@@ -494,7 +477,7 @@ bool LightProbeVolume::RenderProbes(GpuCommandBuffer& captureCommandBuffer, Fram
 			const Quaternion& rotation = mTransform.GetRotation();
 			Vector3 transformedPos = rotation.Rotate(localPos) + position;
 
-			GetRenderer()->CaptureSceneCubeMap(*rendererScene, captureCommandBuffer, cubemap, transformedPos, CaptureSettings());
+			GetRenderer()->CaptureSceneCubeMap(*rendererScene, graph, cubemap, transformedPos, CaptureSettings());
 			GetIBLUtility().FilterCubemapForIrradiance(graph, cubemap, mCoefficients, probeInfo.BufferIdx);
 
 			probeInfo.Flags = LightProbeFlags::Clean;

@@ -98,6 +98,12 @@ namespace b3d
 		 */
 		void TestTwoAspectAliasAcquire();
 
+		/**
+		 * Execute callbacks run once each during Execute(), in the order they were added, after the pass functions recorded the passes.
+		 * A graph without passes runs them too.
+		 */
+		void TestExecuteCallbacks();
+
 #if B3D_BUILD_TYPE_DEVELOPMENT
 		/**
 		 * The development checks: writes to resources at rest, conflicting declarations in one pass, writes after an export, dependencies

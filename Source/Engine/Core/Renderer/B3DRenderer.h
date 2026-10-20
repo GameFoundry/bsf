@@ -261,14 +261,15 @@ namespace b3d
 			 * Captures the scene at the specified location into a cubemap.
 			 *
 			 * @param	scene			Scene to capture.
-			 * @param	commandBuffer	Command buffer on which to encode the capture.
+			 * @param	graph			Graph to add the capture's passes to. The cubemap holds the capture once the graph executes,
+			 *							and later passes of the graph may read it.
 			 * @param	cubemap			Cubemap to store the results in.
 			 * @param	position		Position to capture the scene at.
 			 * @param	settings		Settings that allow you to customize the capture.
 			 *
 			 * @note	Render thread.
 			 */
-			virtual void CaptureSceneCubeMap(RendererScene& scene, GpuCommandBuffer& commandBuffer, const TShared<Texture>& cubemap, const Vector3& position, const CaptureSettings& settings) = 0;
+			virtual void CaptureSceneCubeMap(RendererScene& scene, FrameGraph& graph, const TShared<Texture>& cubemap, const Vector3& position, const CaptureSettings& settings) = 0;
 
 			virtual TShared<RendererScene> CreateScene() = 0;
 
@@ -362,7 +363,8 @@ namespace b3d
 			virtual void DestroyOnRenderThread();
 
 			/**
-			 * Executes all renderer tasks queued for this frame.
+			 * Executes all renderer tasks queued for this frame. The tasks of each round add their work to one frame graph, which is
+			 * compiled and executed at the end of the round.
 			 *
 			 * @param[in]	forceAll	If true, multi-frame tasks will be forced to execute fully within this call.
 			 * @param[in]	upToFrame	Only tasks that were queued before or during the frame with the provided index will
@@ -373,7 +375,7 @@ namespace b3d
 			virtual void ProcessTasks(bool forceAll, u64 upToFrame = std::numeric_limits<u64>::max());
 
 			/**
-			 * Executes the provided renderer task.
+			 * Executes the provided renderer task. Each round of the task adds its work to a frame graph of its own.
 			 *
 			 * @param[in]	task		Task to execute.
 			 * @param[in]	forceAll	If true, multi-frame tasks will be forced to execute fully within this call.
@@ -425,19 +427,21 @@ namespace b3d
 			{};
 
 		public:
-			RendererTask(const PrivatelyConstruct& dummy, String name, std::function<bool(GpuCommandBufferPool&)> taskWorker);
+			RendererTask(const PrivatelyConstruct& dummy, String name, std::function<bool(FrameGraph&)> taskWorker);
 
 			/**
 			 * Creates a new task. Task should be provided to Renderer in order for it to start.
 			 *
 			 * @param[in]	name		Name you can use to more easily identify the task.
-			 * @param[in]	taskWorker	Worker method that does all of the work in the task. Tasks can run over the course of
-			 *							multiple frames, in which case this method should return false (if there's more
-			 *							work to be done), or true (if the task has completed).
+			 * @param[in]	taskWorker	Worker method that does all of the work in the task, by adding passes to the frame graph it
+			 *							is given. The renderer compiles and executes the graph, together with the work of the
+			 *							other tasks that run in the same frame. Tasks can run over the course of multiple
+			 *							frames, in which case this method should return false (if there's more work to be
+			 *							done), or true (if the task has completed).
 			 */
-			static TShared<RendererTask> Create(String name, std::function<bool(GpuCommandBufferPool&)> taskWorker);
+			static TShared<RendererTask> Create(String name, std::function<bool(FrameGraph&)> taskWorker);
 
-			/** Returns true if the task has completed. */
+			/** Returns true if the task has completed, and the graph holding its work has executed. */
 			bool IsComplete() const;
 
 			/**	Returns true if the task has been canceled. */
@@ -460,7 +464,7 @@ namespace b3d
 			friend class Renderer;
 
 			String mName;
-			std::function<bool(GpuCommandBufferPool&)> mTaskWorker;
+			std::function<bool(FrameGraph&)> mTaskWorker;
 			std::atomic<u32> mState{ 0 }; /**< 0 - Inactive, 1 - In progress, 2 - Completed, 3 - Canceled */
 		};
 

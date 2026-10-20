@@ -2326,6 +2326,7 @@ EncodeDepthUniformDefinition gEncodeDepthUniformDefinition;
 void EncodeDepthMaterial::Initialize()
 {
 	mGpuParameterSet->GetUniformBufferParameter("Params", mUniformBufferParameter);
+	mGpuParameterSet->GetUniformBufferParameter("PerCamera", mPerCameraParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gInputTex", mInputTextureParameter);
 
 	SamplerStateInformation sampDesc;
@@ -2340,27 +2341,28 @@ void EncodeDepthMaterial::Initialize()
 	SetSamplerState(mGpuParameterSet, "gInputSamp", "gInputTex", samplerState);
 }
 
-void EncodeDepthMaterial::Prepare(const TShared<Texture>& depth, float near, float far)
+TShared<GpuParameterSet> EncodeDepthMaterial::Prepare(FrameGraphPass& pass, const RendererView& view, const TShared<Texture>& depth, float near, float far)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	GpuBufferMappedScope uniforms = gEncodeDepthUniformDefinition.AllocateTransient().Map();
 	gEncodeDepthUniformDefinition.gNear.Set(uniforms, near);
 	gEncodeDepthUniformDefinition.gFar.Set(uniforms, far);
 
-	mInputTextureParameter.Set(depth);
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
+	mPerCameraParameter.Set(set, view.GetPerViewBuffer());
+	mInputTextureParameter.Set(set, depth);
+
+	return set;
 }
 
-void EncodeDepthMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output)
+void EncodeDepthMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(output, mGpuParameterSet, RT_NONE, RT_COLOR0);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
 void MSAACoverageMaterial::Initialize()

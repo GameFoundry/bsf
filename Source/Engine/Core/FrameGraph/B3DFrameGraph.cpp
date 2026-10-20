@@ -1484,6 +1484,17 @@ namespace b3d::render
 		mScope = nullptr;
 
 		ReleaseResources();
+
+		for(Function<void()>& callback : mExecuteCallbacks)
+			callback();
+
+		mExecuteCallbacks.clear();
+	}
+
+	void FrameGraph::AddExecuteCallback(Function<void()> callback)
+	{
+		B3D_ASSERT(!mIsExecuted && "Execute callbacks cannot be added after Execute().");
+		mExecuteCallbacks.push_back(std::move(callback));
 	}
 
 	bool FrameGraph::IsPassCulled(u32 passIndex) const

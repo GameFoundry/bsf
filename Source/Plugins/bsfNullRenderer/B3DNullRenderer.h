@@ -52,7 +52,7 @@ namespace b3d
 			void Activate() override;
 			void Destroy() override;
 			void RenderAll(PerFrameData perFrameData) override;
-			void CaptureSceneCubeMap(RendererScene& scene, GpuCommandBuffer& commandBuffer, const TShared<Texture>& cubemap, const Vector3& position, const CaptureSettings& settings) override {}
+			void CaptureSceneCubeMap(RendererScene& scene, FrameGraph& graph, const TShared<Texture>& cubemap, const Vector3& position, const CaptureSettings& settings) override {}
 			TShared<RendererScene> CreateScene() override;
 		};
 

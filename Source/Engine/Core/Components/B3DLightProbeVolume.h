@@ -291,15 +291,13 @@ namespace b3d
 			/**
 			 * Renders dirty probes and updates their SH coefficients in the local GPU buffer.
 			 *
-			 * @param	captureCommandBuffer	Command buffer to capture the probes' radiance on. Must be submitted before
-			 *									@p graph executes.
-			 * @param	graph					Graph to add the passes that compute the SH coefficients to.
-			 * @param	maxProbeCount			Maximum number of probes to render. Set to zero to render all dirty probes.
-			 *									Limiting the number of probes allows the rendering to be distributed over
-			 *									multiple frames.
-			 * @return							True if there are no more dirty probes to process.
+			 * @param	graph			Graph to add the probes' captures, and the passes that compute their SH coefficients, to.
+			 * @param	maxProbeCount	Maximum number of probes to render. Set to zero to render all dirty probes.
+			 *							Limiting the number of probes allows the rendering to be distributed over
+			 *							multiple frames.
+			 * @return					True if there are no more dirty probes to process.
 			 */
-			bool RenderProbes(GpuCommandBuffer& captureCommandBuffer, FrameGraph& graph, u32 maxProbeCount);
+			bool RenderProbes(FrameGraph& graph, u32 maxProbeCount);
 
 			/**
 			 * Resizes the internal texture that stores light probe SH coefficients, to the specified size (in the number

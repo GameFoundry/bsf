@@ -41,6 +41,7 @@ FrameGraphTestSuite::FrameGraphTestSuite()
 	B3D_ADD_TEST(FrameGraphTestSuite::TestRasterPass)
 	B3D_ADD_TEST(FrameGraphTestSuite::TestDepthReadOnly)
 	B3D_ADD_TEST(FrameGraphTestSuite::TestTwoAspectAliasAcquire)
+	B3D_ADD_TEST(FrameGraphTestSuite::TestExecuteCallbacks)
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
 	B3D_ADD_TEST(FrameGraphTestSuite::TestValidation)
@@ -1264,6 +1265,70 @@ void FrameGraphTestSuite::TestParameterHandles()
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(bufferReadback, false), "The buffer set through the handle does not hold the dispatch's values.")
 		B3D_TEST_ASSERT_MSG(test.HasDispatchValues(textureReadback, true), "The texture set through the handle does not hold the dispatch's values.")
 
+		device->EndFrame();
+	});
+}
+
+void FrameGraphTestSuite::TestExecuteCallbacks()
+{
+	const TShared<GpuDevice> device = GetTestDevice();
+	const TShared<GpuComputePipelineState> pipeline = device != nullptr ? CreateTestDispatchPipeline(*device) : nullptr;
+	if(pipeline == nullptr)
+		return;
+
+	LoggingScope logs(*this);
+	logs.IgnoreWarning(kBarrierOnlyWarning);
+
+	RunInModes("FrameGraphTestSuite::TestExecuteCallbacks", { true, false }, [this, &device, &pipeline]()
+	{
+		const FrameGraphTestContext test(*device, pipeline);
+		const TShared<render::GpuBuffer> buffer = test.CreateBuffer("Buffer");
+		const TShared<render::GpuBuffer> readback = test.CreateReadback(kSize * kSize * (u32)sizeof(u32));
+
+		{
+			bool isPassRecorded = false;
+			Vector<u32> callbackOrder;
+
+			FrameGraph graph(*test.Context, kGraphName);
+			graph.ImportBuffer(buffer);
+			graph.ImportBuffer(readback);
+
+			FrameGraphCopyPass pass;
+			pass.AddSource(buffer);
+			pass.AddDestination(readback);
+			graph.AddCopyPass("Copy", std::move(pass), [buffer, readback, &isPassRecorded](FrameGraphPassContext& passContext)
+			{
+				passContext.GetCommandBuffer().CopyBufferToBuffer(buffer, readback, 0, 0, kSize * kSize * sizeof(u32));
+				isPassRecorded = true;
+			});
+
+			for(u32 callbackIndex = 0; callbackIndex < 2; callbackIndex++)
+			{
+				graph.AddExecuteCallback([this, callbackIndex, &isPassRecorded, &callbackOrder]()
+				{
+					B3D_TEST_ASSERT_MSG(isPassRecorded, "An execute callback ran before the pass functions.")
+					callbackOrder.push_back(callbackIndex);
+				});
+			}
+
+			graph.Compile();
+			B3D_TEST_ASSERT(callbackOrder.empty())
+
+			graph.Execute();
+			B3D_TEST_ASSERT(callbackOrder.size() == 2 && callbackOrder[0] == 0 && callbackOrder[1] == 1)
+		}
+
+		{
+			u32 callbackCount = 0;
+
+			FrameGraph graph(*test.Context, kGraphName);
+			graph.AddExecuteCallback([&callbackCount]() { callbackCount++; });
+			graph.Compile();
+			graph.Execute();
+			B3D_TEST_ASSERT(callbackCount == 1)
+		}
+
+		device->WaitUntilIdle();
 		device->EndFrame();
 	});
 }

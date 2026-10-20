@@ -96,7 +96,7 @@ namespace b3d
 
 			void Activate() override;
 			void Destroy() override;
-			void CaptureSceneCubeMap(RendererScene& scene, GpuCommandBuffer& commandBuffer, const TShared<Texture>& cubemap, const Vector3& position, const CaptureSettings& settings) override;
+			void CaptureSceneCubeMap(RendererScene& scene, FrameGraph& graph, const TShared<Texture>& cubemap, const Vector3& position, const CaptureSettings& settings) override;
 			void RequestGPUCommandCapture() override { mIsGPUCommandCaptureRequested = true; }
 			void RequestViewCapture(Camera* camera, TAsyncOp<TShared<PixelData>> asyncOp) override;
 			TShared<GpuDevice> GetGpuDevice() const { return mDevice; }
@@ -143,6 +143,22 @@ namespace b3d
 			 * @note	Render thread only.
 			 */
 			bool RenderViews(RenderBeastScene& scene, RendererViewGroup& viewGroup, const FrameInfo& frameInfo, bool forceRendering);
+
+			/**
+			 * Adds the passes that render all views in the provided view group to @p graph. Returns true if anything has been drawn to
+			 * any of the views.
+			 *
+			 * @param	graph					Frame graph to add the passes to.
+			 * @param	scene					Owner scene of the view being drawn.
+			 * @param	viewGroup				Group of views to render. Its visibility must have been determined.
+			 * @param	frameInfo				Information about the current frame. Must stay valid until @p graph executes.
+			 * @param	forceRendering			Forces the overlay to render even if the views and extensions don't request a render.
+			 * @param	drawnViews				Receives the views whose frames began. Their frames must end after @p graph executes,
+			 *									because the passes read their render queues.
+			 *
+			 * @note	Render thread only.
+			 */
+			bool BuildViewGroup(FrameGraph& graph, RenderBeastScene& scene, RendererViewGroup& viewGroup, const FrameInfo& frameInfo, bool forceRendering, TInlineArray<RendererView*, 6>& drawnViews);
 
 			/**
 			 * Adds the passes that render all objects visible by the provided view to @p graph. Begins the frame of @p view, which must

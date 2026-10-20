@@ -141,10 +141,8 @@ void Skybox::FilterTexture()
 	TShared<render::Texture> filteredRadianceRenderProxy = B3DGetRenderProxy(mFilteredRadiance);
 	TShared<render::Texture> irradianceRenderProxy = B3DGetRenderProxy(mIrradiance);
 
-	auto fnFilterSkybox = [filteredRadianceRenderProxy, irradianceRenderProxy, skyboxRenderProxy](render::GpuCommandBufferPool& commandBufferPool)
+	auto fnFilterSkybox = [filteredRadianceRenderProxy, irradianceRenderProxy, skyboxRenderProxy](render::FrameGraph& graph)
 	{
-		render::FrameGraph graph(render::GetRenderer()->GetGpuContext(), "FilterSkybox");
-
 		// Filter radiance
 		render::GetIBLUtility().ScaleCubemap(graph, skyboxRenderProxy->GetTexture(), 0, filteredRadianceRenderProxy, 0);
 		render::GetIBLUtility().FilterCubemapForSpecular(graph, filteredRadianceRenderProxy);
@@ -154,9 +152,6 @@ void Skybox::FilterTexture()
 		// Generate irradiance
 		render::GetIBLUtility().FilterCubemapForIrradiance(graph, skyboxRenderProxy->GetTexture(), irradianceRenderProxy);
 		skyboxRenderProxy->mIrradiance = irradianceRenderProxy;
-
-		graph.Compile();
-		graph.Execute();
 
 		return true;
 	};

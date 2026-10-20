@@ -595,7 +595,7 @@ void RendererView::CalculateVisibility(const Vector<AABox>& bounds, Vector<bool>
 	}
 }
 
-void RendererView::QueueDrawCommands(const RenderBeastScene& scene)
+void RendererView::QueueDrawCommands(const RenderBeastScene& scene, bool hasCpuParticleData)
 {
 	B3D_ENSURE(mDeferredOpaqueQueue->GetSortedEntries().empty());
 	B3D_ENSURE(mForwardOpaqueQueue->GetSortedEntries().empty());
@@ -642,7 +642,11 @@ void RendererView::QueueDrawCommands(const RenderBeastScene& scene)
 		if(!mVisibility.ParticleSystems[i])
 			continue;
 
-		const ParticlesDrawCommand& drawCommand = scene.GetParticleRenderState(i).DrawCommand;
+		const ParticleRenderState& renderState = scene.GetParticleRenderState(i);
+		if(!hasCpuParticleData && renderState.GpuParticleSystem == nullptr)
+			continue;
+
+		const ParticlesDrawCommand& drawCommand = renderState.DrawCommand;
 		if(!drawCommand.IsValid())
 			continue;
 
@@ -936,7 +940,7 @@ void RendererViewGroup::SetViews(RendererView** views, u32 numViews)
 	}
 }
 
-void RendererViewGroup::DetermineVisibility(const RenderBeastScene& scene)
+void RendererViewGroup::DetermineVisibility(const RenderBeastScene& scene, const FrameInfo& frameInfo)
 {
 	const auto viewCount = (u32)mViews.size();
 
@@ -975,7 +979,7 @@ void RendererViewGroup::DetermineVisibility(const RenderBeastScene& scene)
 	for(u32 i = 0; i < viewCount; i++)
 	{
 		if(mViews[i]->ShouldDraw3D())
-			mViews[i]->QueueDrawCommands(scene);
+			mViews[i]->QueueDrawCommands(scene, frameInfo.PerSceneFrameData.Particles != nullptr);
 	}
 
 	// Calculate light visibility for all views

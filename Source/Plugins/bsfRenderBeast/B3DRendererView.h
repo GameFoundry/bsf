@@ -404,8 +404,12 @@ namespace b3d
 			 * Inserts all draw commands for all visible objects into render queues. Assumes visibility has been calculated beforehand
 			 * by calling DetermineVisible(). After the call render elements can be retrieved from the queues using
 			 * GetOpaqueQueue or GetTransparentQueue() calls.
+			 *
+			 * @param	scene						Scene the view renders.
+			 * @param	hasCpuParticleData			False if the frame has no CPU particle simulation data (scene captures), in which
+			 *										case CPU simulated particle systems are not queued, as they have nothing to draw.
 			 */
-			void QueueDrawCommands(const RenderBeastScene& scene);
+			void QueueDrawCommands(const RenderBeastScene& scene, bool hasCpuParticleData);
 
 			/** Returns the visibility mask calculated with the last call to determineVisible(). */
 			const VisibilityInfo& GetVisibilityMasks() const { return mVisibility; }
@@ -618,9 +622,9 @@ namespace b3d
 			/**
 			 * Updates visibility information for the provided scene objects, from the perspective of all views in this group,
 			 * and updates the render queues of each individual view. Use getVisibilityInfo() to retrieve the calculated
-			 * visibility information.
+			 * visibility information. @p frameInfo is the frame the views render.
 			 */
-			void DetermineVisibility(const RenderBeastScene& scene);
+			void DetermineVisibility(const RenderBeastScene& scene, const FrameInfo& frameInfo);
 
 		private:
 			Vector<RendererView*> mViews;

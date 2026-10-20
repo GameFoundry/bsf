@@ -322,6 +322,12 @@ namespace b3d
 			 */
 			void Execute();
 
+			/**
+			 * Registers @p callback to run once at the end of Execute(), after the graph's work is submitted. Callbacks run in the order
+			 * they were registered. Callbacks of a graph that is never executed are destroyed without running.
+			 */
+			void AddExecuteCallback(Function<void()> callback);
+
 			/** Returns true if the pass at @p passIndex, in the order passes were added, was culled. Only valid after Compile(). */
 			bool IsPassCulled(u32 passIndex) const;
 
@@ -501,6 +507,8 @@ namespace b3d
 
 			/** Index into mResources of the first surface of each imported render target that is not a texture. */
 			UnorderedMap<const RenderTarget*, u32> mImportedTargetResourceIndices;
+
+			Vector<Function<void()>> mExecuteCallbacks;
 
 			GpuSubmissionTimeline mTimeline;
 			GpuTransientScope* mScope = nullptr;

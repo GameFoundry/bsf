@@ -173,33 +173,49 @@ void Renderer::ProcessTasks(bool forceAll, u64 upToFrame)
 		}
 	}
 
-	do
+	while(!mRunningTasks.empty())
 	{
+		// Covers the graph's execution, because pass functions may read data the tasks allocated from the frame allocator
+		FrameAllocatorScope frameScope;
+
+		// The tasks of the round add their work to one graph
+		FrameGraph graph(*mGpuContext, "RendererTasks");
+
+		bool anyTaskRan = false;
+		FrameVector<TShared<RendererTask>> completedTasks;
 		for(auto& entry : mRunningTasks)
 		{
 			if(entry->IsCanceled() || entry->IsComplete())
 				continue;
 
 			entry->mState.store(1);
+			anyTaskRan = true;
 
-			const bool complete = [this, &entry]()
-			{
-				return entry->mTaskWorker(mCommandBufferPoolRing->GetCurrentPool());
-			}();
-
-			if(!complete)
-				mRemainingTasks.push_back(entry);
+			if(entry->mTaskWorker(graph))
+				completedTasks.push_back(entry);
 			else
-			{
-				entry->mState.store(2);
-				entry->mTaskWorker = nullptr;
-			}
+				mRemainingTasks.push_back(entry);
+		}
+
+		if(anyTaskRan)
+		{
+			graph.Compile();
+			graph.Execute();
+		}
+
+		// Once the graph holding their work has executed
+		for(auto& entry : completedTasks)
+		{
+			entry->mState.store(2);
+			entry->mTaskWorker = nullptr;
 		}
 
 		mRunningTasks.clear();
 		std::swap(mRemainingTasks, mRunningTasks);
+
+		if(!forceAll)
+			break;
 	}
-	while(forceAll && !mRunningTasks.empty());
 }
 
 void Renderer::ProcessTask(RendererTask& task, bool forceAll)
@@ -227,7 +243,12 @@ void Renderer::ProcessTask(RendererTask& task, bool forceAll)
 
 		GetProfilerCPU().BeginThread("RenderTask");
 		{
-			complete = task.mTaskWorker(mCommandBufferPoolRing->GetCurrentPool());
+			FrameAllocatorScope frameScope;
+			FrameGraph graph(*mGpuContext, "RendererTasks");
+			complete = task.mTaskWorker(graph);
+
+			graph.Compile();
+			graph.Execute();
 		}
 		GetProfilerCPU().EndThread();
 
@@ -247,11 +268,11 @@ TShared<Renderer> GetRenderer()
 	return std::static_pointer_cast<Renderer>(RendererManager::Instance().GetActive());
 }
 
-RendererTask::RendererTask(const PrivatelyConstruct& dummy, String name, std::function<bool(GpuCommandBufferPool&)> taskWorker)
+RendererTask::RendererTask(const PrivatelyConstruct& dummy, String name, std::function<bool(FrameGraph&)> taskWorker)
 	: mName(std::move(name)), mTaskWorker(std::move(taskWorker))
 {}
 
-TShared<RendererTask> RendererTask::Create(String name, std::function<bool(GpuCommandBufferPool&)> taskWorker)
+TShared<RendererTask> RendererTask::Create(String name, std::function<bool(FrameGraph&)> taskWorker)
 {
 	return B3DMakeShared<RendererTask>(PrivatelyConstruct(), std::move(name), std::move(taskWorker));
 }

@@ -1525,26 +1525,26 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Updates GPU parameters. Must be called any time input parameters change.
+			 * Creates the material's parameter set for @p pass, and fills it.
 			 *
+			 * @param	pass			Raster pass the material draws in, whose color attachment receives the encoded depth in
+			 *							its alpha channel.
+			 * @param	view			View whose depth is encoded.
 			 * @param	depth			Resolved (non-MSAA) depth texture to encode.
 			 * @param	near			Near range (in view space) to start encoding the depth. Any depth lower than this will
 			 *							be encoded to 1.
 			 * @param	far				Far range (in view space) to end encoding the depth. Any depth higher than this will
 			 *							be encoded to 0.
+			 * @return					Parameter set to pass to Execute().
 			 */
-			void Prepare(const TShared<Texture>& depth, float near, float far);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const RendererView& view, const TShared<Texture>& depth, float near, float far);
 
-			/**
-			 * Renders the post-process effect with the provided parameters.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	output			Output texture to write the results in. Results will be written in the alpha channel.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
+			GpuParameterUniformBuffer mPerCameraParameter;
 			GpuParameterSampledTexture mInputTextureParameter;
 		};
 

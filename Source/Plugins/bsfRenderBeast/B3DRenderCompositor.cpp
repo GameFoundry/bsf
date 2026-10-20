@@ -1332,17 +1332,24 @@ void RCNodeFinalResolve::Render(const RenderCompositorNodeInputs& inputs)
 		blitMaterial->Execute(context, blitSet, inputArea, flipUV);
 	});
 
-#if B3D_FRAME_GRAPH_PORT_PENDING(RendererTasks)
-	GpuCommandBuffer& commandBuffer = *inputs.ActiveCommandBuffer;
+	// Writes only the alpha of the target, so it keeps what the resolve wrote
 	if(viewProperties.EncodeDepth)
 	{
 		RCNodeResolvedSceneDepth* resolvedSceneDepthNode = dependencies.Get<RCNodeResolvedSceneDepth>();
 
-		EncodeDepthMaterial* const encodeDepthMat = EncodeDepthMaterial::Get();
-		encodeDepthMat->Prepare(resolvedSceneDepthNode->Output->Texture, viewProperties.DepthEncodeNear, viewProperties.DepthEncodeFar);
-		encodeDepthMat->Execute(commandBuffer, target);
+		FrameGraphRasterPass encodeDepthPass;
+		encodeDepthPass.SetRenderTarget(target, FrameGraphAttachmentLoad::Load);
+
+		EncodeDepthMaterial* const encodeDepthMaterial = EncodeDepthMaterial::Get();
+		const TShared<GpuParameterSet> encodeDepthSet = encodeDepthMaterial->Prepare(encodeDepthPass, inputs.View, resolvedSceneDepthNode->Output,
+			viewProperties.DepthEncodeNear, viewProperties.DepthEncodeFar);
+
+		inputs.Graph.AddRasterPass("EncodeDepth", std::move(encodeDepthPass), [encodeDepthMaterial, encodeDepthSet, viewArea](FrameGraphPassContext& context)
+		{
+			context.GetCommandBuffer().SetViewport(viewArea);
+			encodeDepthMaterial->Execute(context, encodeDepthSet);
+		});
 	}
-#endif
 
 	// Trigger overlay callbacks
 	Camera* sceneCamera = inputs.View.GetSceneCamera();

@@ -268,7 +268,7 @@ void ReflectionProbeUtility::CaptureAndFilter(ecs::Registry& registry, ecs::Enti
 	TShared<render::RendererTask> task;
 	if(fragment.CustomTexture == nullptr)
 	{
-		auto fnRenderReflectionProbe = [textureRenderProxy, renderSceneProxy, probeId](render::GpuCommandBufferPool& commandBufferPool)
+		auto fnRenderReflectionProbe = [textureRenderProxy, renderSceneProxy, probeId](render::FrameGraph& graph)
 		{
 			const TShared<ReflectionProbeObjectStorageBase>& reflProbeStorage = renderSceneProxy->GetReflectionProbeStorage();
 			PackedRendererId packedId = reflProbeStorage->GetPackedRendererId(probeId);
@@ -279,31 +279,14 @@ void ReflectionProbeUtility::CaptureAndFilter(ecs::Registry& registry, ecs::Enti
 			float probeRadius = proxy.GetType() == ReflectionProbeType::Sphere ? proxy.GetRadius() : proxy.GetExtents().Length();
 			Vector3 probePosition = proxy.GetWorldTransform().GetPosition();
 
-			const TShared<render::GpuCommandBuffer> commandBuffer = commandBufferPool.FindOrCreate(render::GpuCommandBufferCreateInformation::Create("RenderReflectionProbe"));
-			TShared<GpuCommandBufferProfiler> commandBufferProfiler = GetGpuProfiler().CreateCommandBufferProfiler(*commandBuffer);
-
-			commandBufferProfiler->BeginSample(*commandBuffer, "RenderReflectionProbe");
-
 			render::CaptureSettings settings;
 			settings.EncodeDepth = true;
 			settings.DepthEncodeNear = probeRadius;
 			settings.DepthEncodeFar = probeRadius + 1; // + 1 arbitrary, make it a customizable value?
 
-			render::GetRenderer()->CaptureSceneCubeMap(*renderSceneProxy, *commandBuffer, textureRenderProxy, probePosition, settings);
-
-			commandBufferProfiler->EndSample(*commandBuffer);
-
-			GetGpuProfiler().ResolveProfileWhenReady("RenderReflectionProbe", commandBufferProfiler);
-
-			GpuWorkContext& gpuContext = render::GetRenderer()->GetGpuContext();
-			gpuContext.SubmitCommandBuffer(commandBuffer);
-
-			// Filters the capture, so its graph executes after the capture's submission
-			render::FrameGraph graph(gpuContext, "FilterReflectionProbe");
+			// The filter's passes follow the capture's in the graph, so they read the captured faces
+			render::GetRenderer()->CaptureSceneCubeMap(*renderSceneProxy, graph, textureRenderProxy, probePosition, settings);
 			render::GetIBLUtility().FilterCubemapForSpecular(graph, textureRenderProxy);
-
-			graph.Compile();
-			graph.Execute();
 
 			reflProbeStorage->UpdateFilteredTexture(probeId, textureRenderProxy);
 
@@ -315,15 +298,10 @@ void ReflectionProbeUtility::CaptureAndFilter(ecs::Registry& registry, ecs::Enti
 	else
 	{
 		TShared<render::Texture> customTextureRenderProxy = B3DGetRenderProxy(fragment.CustomTexture);
-		auto fnFilterReflectionProbe = [customTextureRenderProxy, textureRenderProxy, renderSceneProxy, probeId](render::GpuCommandBufferPool& commandBufferPool)
+		auto fnFilterReflectionProbe = [customTextureRenderProxy, textureRenderProxy, renderSceneProxy, probeId](render::FrameGraph& graph)
 		{
-			render::FrameGraph graph(render::GetRenderer()->GetGpuContext(), "FilterReflectionProbe");
-
 			render::GetIBLUtility().ScaleCubemap(graph, customTextureRenderProxy, 0, textureRenderProxy, 0);
 			render::GetIBLUtility().FilterCubemapForSpecular(graph, textureRenderProxy);
-
-			graph.Compile();
-			graph.Execute();
 
 			renderSceneProxy->GetReflectionProbeStorage()->UpdateFilteredTexture(probeId, textureRenderProxy);
 

@@ -473,7 +473,7 @@ bool RenderBeast::RenderScene(RenderBeastScene& scene, const FrameInfo& frameInf
 		}
 
 		mMainViewGroup->SetViews(views.data(), (u32)views.size());
-		PROFILE_CALL(mMainViewGroup->DetermineVisibility(scene), "Determine visibility")
+		PROFILE_CALL(mMainViewGroup->DetermineVisibility(scene, frameInfo), "Determine visibility")
 		scene.PrepareVisibleParticleSystems(mMainViewGroup->GetVisibilityInfo(), frameInfo);
 
 		// Render everything. The graph of the group has executed once this returns.
@@ -493,7 +493,33 @@ bool RenderBeast::RenderScene(RenderBeastScene& scene, const FrameInfo& frameInf
 
 bool RenderBeast::RenderViews(RenderBeastScene& scene, RendererViewGroup& viewGroup, const FrameInfo& frameInfo, bool forceRendering)
 {
+	// Covers the graph's execution, because pass functions may read data the nodes allocated from the frame allocator
+	FrameAllocatorScope frameScope;
+
+	// Named for the profiler overlay, which shows the results of this name
+	FrameGraph graph(GetGpuContext(), "RenderScene");
+
+	TInlineArray<RendererView*, 6> drawnViews;
+	const bool anythingDrawn = BuildViewGroup(graph, scene, viewGroup, frameInfo, forceRendering, drawnViews);
+
+	if(!drawnViews.Empty())
+	{
+		graph.Compile();
+		graph.Execute();
+	}
+
+	// After the graph's execution, because the pass functions read the render queues this clears
+	for(RendererView* view : drawnViews)
+		view->EndFrame();
+
+	return anythingDrawn;
+}
+
+bool RenderBeast::BuildViewGroup(FrameGraph& graph, RenderBeastScene& scene, RendererViewGroup& viewGroup, const FrameInfo& frameInfo, bool forceRendering,
+	TInlineArray<RendererView*, 6>& drawnViews)
+{
 	bool needs3DRender = false;
+	bool needsReflectionProbes = false;
 	bool needsLightProbes = false;
 	u32 viewCount = viewGroup.GetViewCount();
 	for(u32 viewIndex = 0; viewIndex < viewCount; viewIndex++)
@@ -503,6 +529,10 @@ bool RenderBeast::RenderViews(RenderBeastScene& scene, RendererViewGroup& viewGr
 		if(view->ShouldDraw3D())
 		{
 			needs3DRender = true;
+
+			// Views that capture reflections do not sample the reflection probes
+			if(!view->GetProperties().CapturingReflections)
+				needsReflectionProbes = true;
 
 			if(view->GetRenderSettings().EnableIndirectLighting)
 				needsLightProbes = true;
@@ -523,18 +553,11 @@ bool RenderBeast::RenderViews(RenderBeastScene& scene, RendererViewGroup& viewGr
 
 			renderableStorage.PrepareVisibleRenderable(i, frameInfo);
 		}
-	}
 
-	// Covers the graph's execution, because pass functions may read data the nodes allocated from the frame allocator
-	FrameAllocatorScope frameScope;
-
-	// Named for the profiler overlay, which shows the results of this name
-	FrameGraph graph(GetGpuContext(), "RenderScene");
-
-	if(needs3DRender)
-	{
-		// If any reflection probes were updated or added, we need to copy them over in the global reflection probe array
-		scene.UpdateReflectionProbes(graph);
+		// If any reflection probes were updated or added, we need to copy them over in the global reflection probe array. Not in
+		// captures: the copy would read the cubemaps of probes that later captures of the same graph render into.
+		if(needsReflectionProbes)
+			scene.UpdateReflectionProbes(graph);
 
 		// Make sure light probe data is up to date
 		if(needsLightProbes)
@@ -545,7 +568,6 @@ bool RenderBeast::RenderViews(RenderBeastScene& scene, RendererViewGroup& viewGr
 	}
 
 	bool anythingDrawn = false;
-	TInlineArray<RendererView*, 4> drawnViews;
 	for(u32 viewIndex = 0; viewIndex < viewCount; viewIndex++)
 	{
 		RendererView* view = viewGroup.GetView(viewIndex);
@@ -567,16 +589,6 @@ bool RenderBeast::RenderViews(RenderBeastScene& scene, RendererViewGroup& viewGr
 
 		drawnViews.Add(view);
 	}
-
-	if(!drawnViews.Empty())
-	{
-		graph.Compile();
-		graph.Execute();
-	}
-
-	// After the graph's execution, because the pass functions read the render queues this clears
-	for(RendererView* view : drawnViews)
-		view->EndFrame();
 
 	return anythingDrawn;
 }
@@ -718,9 +730,22 @@ bool RenderBeast::RenderOverlay(FrameGraph& graph, RenderBeastScene& scene, Rend
 	return needsRedraw;
 }
 
-void RenderBeast::CaptureSceneCubeMap(RendererScene& scene, GpuCommandBuffer& commandBuffer, const TShared<Texture>& cubemap, const Vector3& position, const CaptureSettings& settings)
+namespace
 {
-#if B3D_FRAME_GRAPH_PORT_PENDING(RendererTasks)
+	/** Views of a cube map capture. They live until the graph that renders them has executed, because its passes read them. */
+	struct CubeMapCapture
+	{
+		RendererView Views[6];
+		TUnique<RendererViewGroup> ViewGroup;
+		TInlineArray<RendererView*, 6> DrawnViews;
+
+		// Captures render without the frame's animation and particle data
+		FrameInfo Frame = FrameInfo({ 0.0f, 1.0f / 60.0f, 0 }, false, PerSceneFrameData());
+	};
+}
+
+void RenderBeast::CaptureSceneCubeMap(RendererScene& scene, FrameGraph& graph, const TShared<Texture>& cubemap, const Vector3& position, const CaptureSettings& settings)
+{
 	RenderBeastScene& renderBeastScene = static_cast<RenderBeastScene&>(scene);
 
 	auto& texProps = cubemap->GetProperties();
@@ -728,8 +753,7 @@ void RenderBeast::CaptureSceneCubeMap(RendererScene& scene, GpuCommandBuffer& co
 	Matrix4 projTransform = Matrix4::ProjectionPerspective(Degree(90.0f), 1.0f, 0.05f, 1000.0f);
 	ConvexVolume localFrustum(projTransform);
 
-	GpuDevice& gpuDevice = commandBuffer.GetGpuDevice();
-	gpuDevice.ConvertProjectionMatrix(projTransform, projTransform);
+	mDevice->ConvertProjectionMatrix(projTransform, projTransform);
 
 	RendererViewCreateInformation viewDesc;
 	viewDesc.Target.ClearFlags = FBT_COLOR | FBT_DEPTH;
@@ -771,10 +795,12 @@ void RenderBeast::CaptureSceneCubeMap(RendererScene& scene, GpuCommandBuffer& co
 
 	Matrix4 viewOffsetMat = Matrix4::Translation(-position);
 
+	const TShared<CubeMapCapture> capture = B3DMakeShared<CubeMapCapture>();
+	RendererView* const views = capture->Views;
+
 	// Note: We render upside down, then flip the image vertically, which results in a horizontal flip. The horizontal
 	// flip is required due to the fact how cubemap faces are defined. Another option would be to change the view
 	// orientation matrix, but that also requires a culling mode flip which is inconvenient to do globally.
-	RendererView views[6];
 	for(u32 i = 0; i < 6; i++)
 	{
 		// Calculate view matrix
@@ -845,15 +871,24 @@ void RenderBeast::CaptureSceneCubeMap(RendererScene& scene, GpuCommandBuffer& co
 
 	RendererView* viewPtrs[] = { &views[0], &views[1], &views[2], &views[3], &views[4], &views[5] };
 
-	RendererViewGroup viewGroup(viewPtrs, 6, false, mRenderThreadOptions->ShadowMapSize);
-	viewGroup.DetermineVisibility(commandBuffer, renderBeastScene);
+	capture->ViewGroup = B3DMakeUnique<RendererViewGroup>(viewPtrs, 6, false, mRenderThreadOptions->ShadowMapSize);
+	capture->ViewGroup->DetermineVisibility(renderBeastScene, capture->Frame);
 
-	FrameInfo frameInfo({ 0.0f, 1.0f / 60.0f, 0 }, false, PerSceneFrameData());
-	RenderViews(commandBuffer, renderBeastScene, viewGroup, frameInfo, false);
+	// Tasks run before the scene's frame begins, so the scene's per-frame state is still that of the last frame: a per-frame uniform
+	// buffer allocated for that frame, and ready flags sized for the renderables it had then. The capture sets up both for itself, and
+	// prepares the renderables it sees anew. The scene's frame sets them up again.
+	renderBeastScene.SetParamFrameParams(capture->Frame.Timings.Time);
+	renderBeastScene.ResetRenderableReady();
 
-	// Make sure the render texture is available for reads
-	commandBuffer.EndRenderPass();
-#endif
+	// The faces' render textures share the cubemap, so later passes of the graph that read the cubemap follow the capture
+	BuildViewGroup(graph, renderBeastScene, *capture->ViewGroup, capture->Frame, false, capture->DrawnViews);
+
+	// The passes read the views' render queues, so the views live, and their frames last, until the graph has executed
+	graph.AddExecuteCallback([capture]()
+	{
+		for(RendererView* view : capture->DrawnViews)
+			view->EndFrame();
+	});
 }
 
 TShared<RendererScene> RenderBeast::CreateScene()
