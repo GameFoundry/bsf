@@ -265,6 +265,7 @@ UtilityTestSuite::UtilityTestSuite()
 	B3D_ADD_TEST(UtilityTestSuite::TestPool)
 	B3D_ADD_TEST(UtilityTestSuite::TestSegregatedFitAllocator)
 	B3D_ADD_TEST(UtilityTestSuite::TestTlsfAllocator)
+	B3D_ADD_TEST(UtilityTestSuite::TestEvent)
 }
 
 void UtilityTestSuite::TestAutomaticStackAllocator()
@@ -2176,5 +2177,207 @@ void UtilityTestSuite::TestSingleConsumerQueueShutdown()
 
 		consumer.WaitUntilComplete();
 		B3D_TEST_ASSERT(commandCount == 1);
+	}
+}
+
+void UtilityTestSuite::TestEvent()
+{
+	TestEventWithPolicy<ThreadSafe>();
+	TestEventWithPolicy<ThreadUnsafe>();
+}
+
+template<ThreadSafetyPolicy Policy>
+void UtilityTestSuite::TestEventWithPolicy()
+{
+	{
+		using TestEventType = Event<void(), Policy>;
+		using TestHandleType = THEvent<Policy>;
+
+		// A handle disconnecting after the event was cleared must not unlink connections formed after the clear
+		{
+			TestEventType event;
+			u32 firstCallCount = 0;
+			u32 secondCallCount = 0;
+			u32 thirdCallCount = 0;
+
+			TestHandleType firstHandle = event.Connect([&firstCallCount]() { firstCallCount++; });
+			event.Clear();
+
+			TestHandleType secondHandle = event.Connect([&secondCallCount]() { secondCallCount++; });
+			TestHandleType thirdHandle = event.Connect([&thirdCallCount]() { thirdCallCount++; });
+			firstHandle.Disconnect();
+
+			event();
+			B3D_TEST_ASSERT(firstCallCount == 0)
+			B3D_TEST_ASSERT(secondCallCount == 1)
+			B3D_TEST_ASSERT(thirdCallCount == 1)
+			B3D_TEST_ASSERT(!event.Empty())
+
+			secondHandle.Disconnect();
+			event();
+			B3D_TEST_ASSERT(secondCallCount == 1)
+			B3D_TEST_ASSERT(thirdCallCount == 2)
+		}
+
+		// Connections formed while triggering fire from the next trigger on, in the order they were formed
+		{
+			TestEventType event;
+			Vector<u32> callOrder;
+			Vector<TestHandleType> handles;
+
+			handles.push_back(event.Connect([&event, &callOrder, &handles]()
+			{
+				callOrder.push_back(0);
+
+				if(handles.size() == 1)
+				{
+					handles.push_back(event.Connect([&callOrder]() { callOrder.push_back(1); }));
+					handles.push_back(event.Connect([&callOrder]() { callOrder.push_back(2); }));
+				}
+			}));
+
+			event();
+			B3D_TEST_ASSERT(callOrder.size() == 1)
+
+			callOrder.clear();
+			event();
+			B3D_TEST_ASSERT(callOrder.size() == 3)
+			B3D_TEST_ASSERT(callOrder[0] == 0 && callOrder[1] == 1 && callOrder[2] == 2)
+		}
+
+		// Disconnecting a connection formed during the same trigger keeps the other new connections
+		{
+			TestEventType event;
+			u32 removedCallCount = 0;
+			u32 keptCallCount = 0;
+			TestHandleType removedHandle;
+			TestHandleType keptHandle;
+
+			TestHandleType triggerHandle = event.Connect([&]()
+			{
+				if(!keptHandle)
+				{
+					removedHandle = event.Connect([&removedCallCount]() { removedCallCount++; });
+					keptHandle = event.Connect([&keptCallCount]() { keptCallCount++; });
+					removedHandle.Disconnect();
+				}
+			});
+
+			event();
+			event();
+			B3D_TEST_ASSERT(removedCallCount == 0)
+			B3D_TEST_ASSERT(keptCallCount == 1)
+		}
+
+		// A callback disconnecting itself and a later connection: its captures stay alive until it returns, and the
+		// later connection no longer fires
+		{
+			TestEventType event;
+			TShared<u32> sharedState = B3DMakeShared<u32>(0);
+			u32 laterCallCount = 0;
+			TestHandleType selfHandle;
+			TestHandleType laterHandle;
+
+			selfHandle = event.Connect([&selfHandle, &laterHandle, sharedState]()
+			{
+				selfHandle.Disconnect();
+				laterHandle.Disconnect();
+				(*sharedState)++;
+			});
+			laterHandle = event.Connect([&laterCallCount]() { laterCallCount++; });
+
+			event();
+			B3D_TEST_ASSERT(*sharedState == 1)
+			B3D_TEST_ASSERT(laterCallCount == 0)
+			B3D_TEST_ASSERT(sharedState.use_count() == 1)
+			B3D_TEST_ASSERT(event.Empty())
+		}
+
+		// Clearing while triggering stops the remaining callbacks, and keeps connections formed after the clear
+		{
+			TestEventType event;
+			u32 laterCallCount = 0;
+			u32 newCallCount = 0;
+			TestHandleType newHandle;
+
+			TestHandleType clearHandle = event.Connect([&]()
+			{
+				event.Clear();
+				newHandle = event.Connect([&newCallCount]() { newCallCount++; });
+			});
+			TestHandleType laterHandle = event.Connect([&laterCallCount]() { laterCallCount++; });
+
+			event();
+			B3D_TEST_ASSERT(laterCallCount == 0)
+			B3D_TEST_ASSERT(newCallCount == 0)
+
+			event();
+			B3D_TEST_ASSERT(newCallCount == 1)
+			B3D_TEST_ASSERT(laterCallCount == 0)
+
+			// Handles of connections released by the clear disconnect harmlessly
+			clearHandle.Disconnect();
+			laterHandle.Disconnect();
+			event();
+			B3D_TEST_ASSERT(newCallCount == 2)
+		}
+
+		// Triggering again from a callback: connections formed in the nested trigger join once the outer one ends
+		{
+			TestEventType event;
+			u32 outerCallCount = 0;
+			u32 newCallCount = 0;
+			TestHandleType newHandle;
+
+			TestHandleType outerHandle = event.Connect([&]()
+			{
+				outerCallCount++;
+				if(outerCallCount == 1)
+				{
+					event();
+					newHandle = event.Connect([&newCallCount]() { newCallCount++; });
+				}
+			});
+
+			event();
+			B3D_TEST_ASSERT(outerCallCount == 2)
+			B3D_TEST_ASSERT(newCallCount == 0)
+
+			event();
+			B3D_TEST_ASSERT(outerCallCount == 3)
+			B3D_TEST_ASSERT(newCallCount == 1)
+		}
+
+		// Copied handles each reference the connection. Releasing one copy must not free the connection for re-use by a
+		// later connection, which the remaining copy would then disconnect.
+		{
+			TestEventType event;
+			u32 firstCallCount = 0;
+			u32 secondCallCount = 0;
+
+			TestHandleType originalHandle = event.Connect([&firstCallCount]() { firstCallCount++; });
+			TestHandleType copiedHandle(originalHandle);
+			TestHandleType assignedHandle;
+			assignedHandle = originalHandle;
+			const TestHandleType& assignedHandleAlias = assignedHandle;
+			assignedHandle = assignedHandleAlias;
+
+			originalHandle.Disconnect();
+			copiedHandle.Disconnect();
+
+			TestHandleType secondHandle = event.Connect([&secondCallCount]() { secondCallCount++; });
+			assignedHandle.Disconnect();
+
+			event();
+			B3D_TEST_ASSERT(firstCallCount == 0)
+			B3D_TEST_ASSERT(secondCallCount == 1)
+
+			// Moving keeps a single reference, and assigning over a handle releases the connection it referenced
+			TestHandleType movedHandle(std::move(secondHandle));
+			B3D_TEST_ASSERT(!secondHandle)
+			movedHandle = event.Connect([]() { });
+			event.Clear();
+			B3D_TEST_ASSERT(event.Empty())
+		}
 	}
 }

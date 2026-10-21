@@ -33,5 +33,10 @@ namespace b3d
 		void TestPool();
 		void TestSegregatedFitAllocator();
 		void TestTlsfAllocator();
+		void TestEvent();
+
+		/** Runs the event tests on events with the provided thread safety policy. */
+		template<ThreadSafetyPolicy Policy>
+		void TestEventWithPolicy();
 	};
 } // namespace b3d
