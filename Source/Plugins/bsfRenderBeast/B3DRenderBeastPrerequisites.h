@@ -83,7 +83,6 @@ namespace b3d
 		/** @} */
 
 		struct RenderBeastOptions;
-		struct PooledRenderTexture;
 		class RenderTargets;
 		class RendererView;
 		struct LightData;

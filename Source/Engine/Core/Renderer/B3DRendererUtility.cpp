@@ -291,61 +291,6 @@ void RendererUtility::DrawMorph(GpuCommandBuffer& commandBuffer, const TShared<M
 	mesh->NotifyUsedOnGPU();
 }
 
-void RendererUtility::Blit(GpuCommandBuffer& commandBuffer, const BlitInformation& blitInformation)
-{
-	if(!B3D_ENSURE(blitInformation.InputTexture != nullptr))
-		return;
-
-	if(!B3D_ENSURE(blitInformation.OutputRenderTarget != nullptr))
-		return;
-
-	// Convert input area to float coordinates
-	auto& textureProperties = blitInformation.InputTexture->GetProperties();
-	const Area2I& area = blitInformation.InputArea;
-
-	Area2 inputAreaFloat((float)area.X, (float)area.Y, (float)area.Width, (float)area.Height);
-	if(area.Width == 0 || area.Height == 0)
-	{
-		inputAreaFloat.X = 0.0f;
-		inputAreaFloat.Y = 0.0f;
-		inputAreaFloat.Width = (float)textureProperties.Width;
-		inputAreaFloat.Height = (float)textureProperties.Height;
-	}
-
-	bool output32Bit = false;
-	if(!blitInformation.IsDepth && !blitInformation.OutputRenderTarget->GetProperties().IsWindow)
-	{
-		const RenderSurfaceInformation& colorSurface = static_cast<RenderTexture&>(*blitInformation.OutputRenderTarget).GetColorSurfaceInformation(0);
-		if(colorSurface.Texture != nullptr)
-			output32Bit = PixelUtility::GetElementType(colorSurface.Texture->GetProperties().Format) == PCT_FLOAT32;
-	}
-
-	// Get appropriate material variation
-	BlitMat* const blitMaterial = BlitMat::GetVariation(textureProperties.SampleCount, !blitInformation.IsDepth, blitInformation.UseFiltering, blitInformation.UseBlend, blitInformation.PremultipliedAlpha, blitInformation.WriteAlpha, blitInformation.SrgbEncode, output32Bit);
-
-	// Get GPU parameters and configure source texture
-	const TShared<GpuParameterSet> gpuParameters = blitMaterial->Prepare(blitInformation.InputTexture);
-
-	// Begin render pass
-	RenderPassCreateInformation renderPassInfo(blitInformation.OutputRenderTarget, gpuParameters, blitInformation.ReadOnlyMask, blitInformation.LoadMask);
-	commandBuffer.BeginRenderPass(renderPassInfo);
-
-	if(blitInformation.OutputArea.has_value())
-		commandBuffer.SetViewport(blitInformation.OutputArea.value());
-
-	if(blitInformation.ClearMask != RT_NONE)
-	{
-		if(blitInformation.OutputArea.has_value())
-			commandBuffer.ClearViewport(blitInformation.ClearMask);
-		else
-			commandBuffer.ClearRenderTarget(blitInformation.ClearMask);
-	}
-
-	blitMaterial->Execute(commandBuffer, gpuParameters, inputAreaFloat, blitInformation.FlipUV);
-
-	commandBuffer.EndRenderPass();
-}
-
 void RendererUtility::DrawScreenQuad(GpuCommandBuffer& commandBuffer, const Area2& uv, const Vector2I& textureSize, u32 numInstances, bool flipUV)
 {
 	// Note: Consider drawing the quad using a single large triangle for possibly better performance
@@ -441,19 +386,6 @@ TShared<GpuParameterSet> BlitMat::Prepare(FrameGraphPass& pass, const TShared<Te
 	mSourceParameter.Set(set, source);
 
 	return set;
-}
-
-void BlitMat::Execute(GpuCommandBuffer& commandBuffer, const TShared<GpuParameterSet>& gpuParameters, const Area2& area, bool flipUV)
-{
-	B3D_PROFILE_RENDERER_MATERIAL
-
-	Bind(commandBuffer, false);
-	commandBuffer.SetGpuParameterSet(gpuParameters);
-
-	if(!mIsFiltered)
-		GetRendererUtility().DrawScreenQuad(commandBuffer, area, Vector2I(1, 1), 1, flipUV);
-	else
-		GetRendererUtility().DrawScreenQuad(commandBuffer, Area2(0, 0, 1, 1), Vector2I(1, 1), 1, flipUV);
 }
 
 void BlitMat::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const Area2& area, bool flipUV) const

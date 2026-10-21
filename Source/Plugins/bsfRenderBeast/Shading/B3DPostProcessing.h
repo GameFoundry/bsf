@@ -6,7 +6,6 @@
 #include "Renderer/B3DRendererMaterial.h"
 #include "Renderer/B3DGpuUniformBuffer.h"
 #include "Renderer/B3DRenderSettings.h"
-#include "Renderer/B3DGpuResourcePool.h"
 #include "RenderState/B3DLightRenderState.h"
 
 namespace b3d

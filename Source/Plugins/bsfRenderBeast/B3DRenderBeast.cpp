@@ -23,7 +23,6 @@
 #include "Components/B3DCamera.h"
 #include "Renderer/B3DRendererUtility.h"
 #include "Utility/B3DRendererTextures.h"
-#include "Renderer/B3DGpuResourcePool.h"
 #include "Renderer/B3DRendererManager.h"
 #include "Shading/B3DShadowRendering.h"
 #include "Shading/B3DStandardDeferred.h"
@@ -204,7 +203,6 @@ void RenderBeast::ActivateOnRenderThread(const LoadedRendererTextures& rendererT
 
 	RendererUtility::StartUp();
 	GpuSort::StartUp();
-	GpuResourcePool::StartUp();
 	IBLUtility::StartUp<RenderBeastIBLUtility>();
 	RendererTextures::StartUp(rendererTextures);
 
@@ -269,7 +267,6 @@ void RenderBeast::DestroyOnRenderThread()
 
 	RendererTextures::ShutDown();
 	IBLUtility::ShutDown();
-	GpuResourcePool::ShutDown();
 	GpuSort::ShutDown();
 	RendererUtility::ShutDown();
 
@@ -387,9 +384,6 @@ void RenderBeast::RenderAllOnRenderThread(FrameTimings timings, PerFrameData per
 	mWindowsToPresent.clear();
 
 	EndFrame();
-
-	// Tick pool frame
-	GpuResourcePool::Instance().Update();
 
 	GetProfilerCPU().EndSample("Render");
 

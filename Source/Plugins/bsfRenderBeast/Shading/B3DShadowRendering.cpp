@@ -315,11 +315,39 @@ namespace b3d
 			NormArea.Height = Area.Height / (float)atlasSize;
 		}
 
-		ShadowMapAtlas::ShadowMapAtlas(u32 size)
+		namespace
+		{
+			/** Creates a shadow map depth texture with faces @p size pixels wide and high. */
+			TShared<Texture> CreateShadowMapTexture(GpuDevice& device, const String& name, TextureType type, u32 size, u32 arraySliceCount = 1)
+			{
+				TextureCreateInformation textureCreateInformation;
+				textureCreateInformation.Name = name;
+				textureCreateInformation.Type = type;
+				textureCreateInformation.Format = kShadowMapFormat;
+				textureCreateInformation.Width = size;
+				textureCreateInformation.Height = size;
+				textureCreateInformation.ArraySliceCount = arraySliceCount;
+				textureCreateInformation.Usage = TextureUsageFlag::DepthStencil;
+
+				return device.CreateTexture(textureCreateInformation);
+			}
+
+			/** Creates a render target covering every face of the shadow map @p texture. */
+			TShared<RenderTexture> CreateShadowMapTarget(const TShared<Texture>& texture)
+			{
+				RenderTextureCreateInformation renderTextureCreateInformation;
+				renderTextureCreateInformation.DepthStencilSurface.Texture = texture;
+				renderTextureCreateInformation.DepthStencilSurface.FaceCount = texture->GetProperties().GetFaceCount();
+
+				return RenderTexture::Create(renderTextureCreateInformation);
+			}
+		} // namespace
+
+		ShadowMapAtlas::ShadowMapAtlas(GpuDevice& device, u32 size)
 			: mLayout(0, 0, size, size, true), mLastUsedCounter(0)
 		{
-			mAtlas = GpuResourcePool::Instance().Get(
-				PooledRenderTextureCreateInformation::Create2D(kShadowMapFormat, size, size, TextureUsageFlag::DepthStencil));
+			mTexture = CreateShadowMapTexture(device, "ShadowMapAtlas", TEX_TYPE_2D, size);
+			mTarget = CreateShadowMapTarget(mTexture);
 		}
 
 		bool ShadowMapAtlas::AddMap(u32 size, Area2I& area, u32 border)
@@ -351,12 +379,12 @@ namespace b3d
 
 		TShared<Texture> ShadowMapAtlas::GetTexture() const
 		{
-			return mAtlas->Texture;
+			return mTexture;
 		}
 
 		TShared<RenderTexture> ShadowMapAtlas::GetTarget() const
 		{
-			return mAtlas->RenderTexture;
+			return mTarget;
 		}
 
 		ShadowMapBase::ShadowMapBase(u32 size)
@@ -365,28 +393,28 @@ namespace b3d
 
 		TShared<Texture> ShadowMapBase::GetTexture() const
 		{
-			return mShadowMap->Texture;
+			return mTexture;
 		}
 
-		ShadowCubemap::ShadowCubemap(u32 size)
+		ShadowCubemap::ShadowCubemap(GpuDevice& device, u32 size)
 			: ShadowMapBase(size)
 		{
-			mShadowMap = GpuResourcePool::Instance().Get(
-				PooledRenderTextureCreateInformation::CreateCube(kShadowMapFormat, size, size, TextureUsageFlag::DepthStencil));
+			mTexture = CreateShadowMapTexture(device, "ShadowCubemap", TEX_TYPE_CUBE_MAP, size);
+			mTarget = CreateShadowMapTarget(mTexture);
 		}
 
 		TShared<RenderTexture> ShadowCubemap::GetTarget() const
 		{
-			return mShadowMap->RenderTexture;
+			return mTarget;
 		}
 
-		ShadowCascadedMap::ShadowCascadedMap(u32 size, u32 numCascades)
+		ShadowCascadedMap::ShadowCascadedMap(GpuDevice& device, u32 size, u32 numCascades)
 			: ShadowMapBase(size), mNumCascades(numCascades), mTargets(numCascades), mShadowInfos(numCascades)
 		{
-			mShadowMap = GpuResourcePool::Instance().Get(PooledRenderTextureCreateInformation::Create2D(kShadowMapFormat, size, size, TextureUsageFlag::DepthStencil, 0, false, numCascades));
+			mTexture = CreateShadowMapTexture(device, "ShadowCascadedMap", TEX_TYPE_2D, size, numCascades);
 
 			RenderTextureCreateInformation rtDesc;
-			rtDesc.DepthStencilSurface.Texture = mShadowMap->Texture;
+			rtDesc.DepthStencilSurface.Texture = mTexture;
 			rtDesc.DepthStencilSurface.FaceCount = 1;
 
 			for(u32 i = 0; i < mNumCascades; ++i)
@@ -1493,7 +1521,7 @@ namespace b3d
 			if(shadowInfo.TextureIdx == (u32)-1)
 			{
 				shadowInfo.TextureIdx = (u32)mCascadedShadowMaps.size();
-				mCascadedShadowMaps.push_back(ShadowCascadedMap(mapSize, numCascades));
+				mCascadedShadowMaps.push_back(ShadowCascadedMap(graph.GetWorkContext().GetDevice(), mapSize, numCascades));
 
 				ShadowCascadedMap& shadowMap = mCascadedShadowMaps.back();
 				shadowMap.MarkAsUsed();
@@ -1605,7 +1633,7 @@ namespace b3d
 			if(!foundSpace)
 			{
 				mapInfo.TextureIdx = (u32)mAtlasShadowMaps.size();
-				mAtlasShadowMaps.push_back(ShadowMapAtlas(kMaxAtlasSize));
+				mAtlasShadowMaps.push_back(ShadowMapAtlas(graph.GetWorkContext().GetDevice(), kMaxAtlasSize));
 
 				ShadowMapAtlas& atlas = mAtlasShadowMaps.back();
 				atlas.AddMap(options.MapSize, mapInfo.Area, kShadowMapBorder);
@@ -1697,7 +1725,7 @@ namespace b3d
 			if(shadowInfo.TextureIdx == (u32)-1)
 			{
 				shadowInfo.TextureIdx = (u32)mShadowCubemaps.size();
-				mShadowCubemaps.push_back(ShadowCubemap(options.MapSize));
+				mShadowCubemaps.push_back(ShadowCubemap(graph.GetWorkContext().GetDevice(), options.MapSize));
 
 				ShadowCubemap& cubemap = mShadowCubemaps.back();
 				cubemap.MarkAsUsed();

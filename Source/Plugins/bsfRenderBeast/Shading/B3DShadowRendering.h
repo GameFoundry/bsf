@@ -363,7 +363,8 @@ namespace b3d
 		class ShadowMapAtlas
 		{
 		public:
-			ShadowMapAtlas(u32 size);
+			/** Creates the atlas texture, @p size pixels wide and high, on @p device. */
+			ShadowMapAtlas(GpuDevice& device, u32 size);
 
 			/**
 			 * Registers a new map in the shadow map atlas. Returns true if the map fits in the atlas, or false otherwise.
@@ -390,7 +391,8 @@ namespace b3d
 			TShared<RenderTexture> GetTarget() const;
 
 		private:
-			TShared<PooledRenderTexture> mAtlas;
+			TShared<Texture> mTexture;
+			TShared<RenderTexture> mTarget;
 
 			StaticTextureAtlasLayout mLayout;
 			u32 mLastUsedCounter;
@@ -434,7 +436,7 @@ namespace b3d
 			u32 GetLastUsedCounter() const { return mLastUsedCounter; }
 
 		protected:
-			TShared<PooledRenderTexture> mShadowMap;
+			TShared<Texture> mTexture;
 			u32 mSize;
 
 			bool mIsUsed;
@@ -445,17 +447,22 @@ namespace b3d
 		class ShadowCubemap : public ShadowMapBase
 		{
 		public:
-			ShadowCubemap(u32 size);
+			/** Creates the cubemap, with faces @p size pixels wide and high, on @p device. */
+			ShadowCubemap(GpuDevice& device, u32 size);
 
 			/** Returns a render target encompassing all six faces of the shadow cubemap. */
 			TShared<RenderTexture> GetTarget() const;
+
+		private:
+			TShared<RenderTexture> mTarget;
 		};
 
 		/** Contains a texture required for rendering cascaded shadow maps. */
 		class ShadowCascadedMap : public ShadowMapBase
 		{
 		public:
-			ShadowCascadedMap(u32 size, u32 numCascades);
+			/** Creates the texture array of @p numCascades cascades, each @p size pixels wide and high, on @p device. */
+			ShadowCascadedMap(GpuDevice& device, u32 size, u32 numCascades);
 
 			/** Returns the total number of cascades in the cascade shadow map. */
 			u32 GetNumCascades() const { return mNumCascades; }

@@ -7,7 +7,6 @@
 #include "Math/B3DMatrix4.h"
 #include "Math/B3DMatrixNxM.h"
 #include "Renderer/B3DRendererMaterial.h"
-#include "Renderer/B3DGpuResourcePool.h"
 #include "Renderer/B3DGpuUniformBuffer.h"
 #include "RenderState/B3DLightRenderState.h"
 

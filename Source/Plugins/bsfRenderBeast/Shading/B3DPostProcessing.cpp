@@ -8,7 +8,6 @@
 #include "Material/B3DMaterialParameterAdapter.h"
 #include "Image/B3DPixelUtility.h"
 #include "Utility/B3DBitwise.h"
-#include "Renderer/B3DGpuResourcePool.h"
 #include "B3DRendererView.h"
 #include "B3DRenderBeast.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"

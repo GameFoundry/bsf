@@ -3,7 +3,6 @@
 #include "B3DGpuParticleSimulation.h"
 #include "Renderer/B3DGpuUniformBuffer.h"
 #include "Renderer/B3DRendererMaterial.h"
-#include "Renderer/B3DGpuResourcePool.h"
 #include "Renderer/B3DRenderer.h"
 #include "GpuBackend/B3DVertexDescription.h"
 #include "GpuBackend/B3DGpuPipelineParameterLayout.h"

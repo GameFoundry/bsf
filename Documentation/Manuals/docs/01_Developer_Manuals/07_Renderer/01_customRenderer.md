@@ -127,7 +127,6 @@ While what we have shown so far is enough to create a custom renderer, there are
  - @b3d::render::RendererUtility::SetPass - Binds a pass from a specific **Material** for rendering. Any further draw calls will be rendered using this pass.
  - @b3d::render::RendererUtility::SetPassParams - Binds parameters (textures, samplers, etc.) from a **Material**, in the form of **MaterialParameterAdapter**. Any further draw calls will be rendered using these parameters.
  - @b3d::render::RendererUtility::Draw - Draws a specific sub-mesh of the provided **render::Mesh**, using the currently bound pass.
- - @b3d::render::RendererUtility::Blit - Copies the contents of the provided texture into the currently bound render target.
  - @b3d::render::RendererUtility::DrawScreenQuad - Draws a quad covering the screen using the currently bound pass.
 
 ~~~~~~~~~~~~~{.cpp}
@@ -422,28 +421,8 @@ for (auto& entry : texParams)
 }
 ~~~~~~~~~~~~~
 
-## GpuResourcePool
-Although you can create textures and buffers manually as described in the low level rendering API manual, @b3d::render::GpuResourcePool provides a simpler and more efficient way of doing it. It will keep alive any referenced textures and buffers, so that other systems may re-use them if their size/formats match. This can improve performance when using many temporary/intermediary render textures (like in post-processing) or load-store buffers.
-
-To request a render texture, first populate the @b3d::render::PooledRenderTextureCreateInformation descriptor, by calling any of @b3d::render::PooledRenderTextureCreateInformation::Create2D, @b3d::render::PooledRenderTextureCreateInformation::Create3D or @b3d::render::PooledRenderTextureCreateInformation::CreateCube.
-
-To request a buffer, populate the @b3d::render::POOLED_STORAGE_BUFFER_DESC descriptor by calling either @b3d::render::POOLED_STORAGE_BUFFER_DESC::createStandard or @b3d::render::POOLED_STORAGE_BUFFER_DESC::createStructured.
-
-Then call @b3d::render::GpuResourcePool::Get with the provided descriptor. This will either create a new render texture/buffer, or return one from the pool. The returned object is @b3d::render::PooledRenderTexture for textures and @b3d::render::PooledStorageBuffer for buffers.
-
-Once you are done using the texture or buffer, it will be automatically returned to the pool when your reference goes out of scope. If you plan on using this object again, make sure to keep a reference to the **render::PooledRenderTexture** / **render::PooledStorageBuffer** object. This will prevent the pool from fully destroying the object so it may be reused.
-
-~~~~~~~~~~~~~{.cpp}
-// An example creating a pooled render texture
-PooledRenderTextureCreateInformation desc = PooledRenderTextureCreateInformation::Create2D(PF_R8G8B8A8, 1024, 1024, TextureUsageFlag::RenderTarget);
-TShared<PooledRenderTexture> pooledRT = GpuResourcePool::Instance().Get(desc);
-
-GpuCommandBuffer& commandBuffer = ...;
-commandBuffer.BeginRenderPass(RenderPassCreateInformation(pooledRT->RenderTexture));
-... render to target ...
-commandBuffer.EndRenderPass();
-// Keep a reference to pooledRT if we plan on re-using it, then next time just call Get() using the same descriptor
-~~~~~~~~~~~~~
+## Temporary textures and buffers
+Textures and buffers that are only needed within a frame are transients of the frame graph, created with @b3d::render::FrameGraph::CreateTexture and @b3d::render::FrameGraph::CreateBuffer. The graph shares their memory with other transients whose lifetimes don't overlap. Textures and buffers kept across frames, such as shadow maps or history buffers, are created on the **GpuDevice** by the system that keeps them.
 
 ## UniformBufferPools
 @b3d::render::UniformBufferPools is a high-level manager used by the renderer to efficiently handle per-object uniform buffer allocations. It suballocates from large **GpuBuffer** objects via @b3d::render::GpuBufferPool, and shares **GpuParameterSet** instances across objects that happen to land in the same underlying buffer. At draw time only the dynamic buffer offset changes between draws, while the parameter set binding stays the same — minimizing descriptor set switches.

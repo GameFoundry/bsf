@@ -17,7 +17,6 @@ namespace b3d
 		class RenderBeastScene;
 		class RendererViewGroup;
 		class RenderCompositorNode;
-		struct PooledStorageBuffer;
 		struct FrameInfo;
 
 		/** @addtogroup RenderBeast
