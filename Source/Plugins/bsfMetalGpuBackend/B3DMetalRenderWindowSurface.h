@@ -74,6 +74,9 @@ namespace b3d::render
 		/** Returns the color texture of the currently held drawable, or null if no drawable is held. */
 		id<MTLTexture> GetCurrentTexture() const;
 
+		/** Returns the currently held drawable, or null if no drawable is held. */
+		id<CAMetalDrawable> GetCurrentDrawable() const;
+
 		/**
 		 * Releases the currently held drawable without presenting it, if any. Used when the render pass that acquired
 		 * it failed to open its encoder, when the surface is invalidated, or when SwapBuffers() finds nothing was
@@ -125,7 +128,9 @@ namespace b3d::render
 		// IMetalRenderWindowSurface
 		id<MTLTexture> AcquireColorTexture() override;
 		id<MTLTexture> GetCurrentColorTexture() const override;
-		id<MTLTexture> GetDepthStencilTexture() const override { return mDepthStencilTexture; }
+		id<CAMetalDrawable> GetCurrentDrawable() const override;
+		id<MTLTexture> GetDepthStencilTexture() const override;
+		MetalImage* GetDepthStencilImage() const override { return mDepthStencilImage; }
 		MTLPixelFormat GetColorFormat() const override;
 		PixelFormat GetColorPixelFormat() const override { return PF_BGRA8; }
 		bool IsSwapChainValid() const override
@@ -144,7 +149,10 @@ namespace b3d::render
 		 */
 		void ApplyPendingStateIfNeeded();
 
-		/** (Re)creates the depth/stencil texture at the current surface size, if one was requested. Render thread only. */
+		/**
+		 * (Re)creates the depth/stencil image at the current surface size, if one was requested. The replaced image is
+		 * released once no command buffer uses it. Render thread only.
+		 */
 		void RecreateDepthStencilTextureIfNeeded();
 
 		/** Releases the currently-held drawable (if any) and resets the rendered-into flag. */
@@ -153,7 +161,7 @@ namespace b3d::render
 		MetalGpuDevice& mGpuDevice;
 
 		CAMetalLayer* mLayer = nullptr;
-		id<MTLTexture> mDepthStencilTexture = nullptr;
+		MetalImage* mDepthStencilImage = nullptr;
 		MetalSwapChain* mSwapChain = nullptr;
 
 		// These fields are render-thread-only after construction. @c RebuildSwapChain / @c MarkSwapChainAsInvalid

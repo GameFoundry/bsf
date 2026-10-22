@@ -250,26 +250,7 @@ GpuTransientScope& GpuTransientResourceAllocator::BeginScope(const GpuSubmission
 {
 	B3D_ASSERT(mTimeline == nullptr && "Only one transient resource scope may be open at a time.");
 
-	// Release cached resources that went unused for too long, along with their heap references
-	const u64 frameIndex = mDevice.GetFrameIndex();
-	const u32 idleFrames = gGpuTransientIdleFrames;
-	auto fnEvictIdleResources = [this, frameIndex, idleFrames](TArray<Resource*>& cachedResources)
-	{
-		u32 keptCount = 0;
-		for(u32 resourceIndex = 0; resourceIndex < cachedResources.Size(); resourceIndex++)
-		{
-			Resource* resource = cachedResources[resourceIndex];
-			if(!resource->IsHeld && frameIndex - resource->LastRequestFrame >= idleFrames)
-				EvictResource(resource);
-			else
-				cachedResources[keptCount++] = resource;
-		}
-
-		cachedResources.Erase(cachedResources.Begin() + keptCount, cachedResources.End());
-	};
-
-	fnEvictIdleResources(mCachedTextures);
-	fnEvictIdleResources(mCachedBuffers);
+	EvictIdleResources();
 
 	mTimeline = &timeline;
 	mScopeIndex++;
@@ -344,6 +325,29 @@ void GpuTransientResourceAllocator::EndScope()
 
 	fnEvictExcessResources(mCachedTextures, gGpuTransientMaxCachedTextures);
 	fnEvictExcessResources(mCachedBuffers, gGpuTransientMaxCachedBuffers);
+}
+
+void GpuTransientResourceAllocator::EvictIdleResources()
+{
+	const u64 frameIndex = mDevice.GetFrameIndex();
+	const u32 idleFrames = gGpuTransientIdleFrames;
+	auto fnEvictIdleResources = [this, frameIndex, idleFrames](TArray<Resource*>& cachedResources)
+	{
+		u32 keptCount = 0;
+		for(u32 resourceIndex = 0; resourceIndex < cachedResources.Size(); resourceIndex++)
+		{
+			Resource* resource = cachedResources[resourceIndex];
+			if(!resource->IsHeld && frameIndex - resource->LastRequestFrame >= idleFrames)
+				EvictResource(resource);
+			else
+				cachedResources[keptCount++] = resource;
+		}
+
+		cachedResources.Erase(cachedResources.Begin() + keptCount, cachedResources.End());
+	};
+
+	fnEvictIdleResources(mCachedTextures);
+	fnEvictIdleResources(mCachedBuffers);
 }
 
 GpuTransientStatistics GpuTransientResourceAllocator::GetStatistics() const

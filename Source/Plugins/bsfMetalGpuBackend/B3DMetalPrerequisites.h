@@ -4,20 +4,12 @@
 
 #include "B3DPrerequisites.h"
 
-/**
- * Enables the explicit Metal resource-synchronization path. When disabled, resources must use
- * Metal's tracked hazard mode and the driver provides the primary resource dependency tracking.
- */
-#ifndef B3D_METAL_USE_EXPLICIT_RESOURCE_SYNCHRONIZATION
-#define B3D_METAL_USE_EXPLICIT_RESOURCE_SYNCHRONIZATION 0
-#endif
-
 /** @addtogroup Plugins
  *  @{
  */
 
 /** @defgroup MetalGpuBackend MetalGpuBackend
- *	Metal render API implementation for Apple Silicon macOS.
+ *	Metal 4 render API implementation for Apple Silicon macOS 26 or newer.
  */
 
 /** @} */
@@ -33,4 +25,5 @@ namespace b3d::render
 	class MetalGpuDevice;
 	class MetalGpuQueue;
 	class MetalGpuCommandBuffer;
+	class MetalResidencySet;
 } // namespace b3d::render

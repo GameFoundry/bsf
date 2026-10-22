@@ -20,8 +20,8 @@ namespace b3d
 		 * Metal event query.
 		 *
 		 * Uses an @c MTLSharedEvent to signal a monotonically-increasing value from the GPU, which the
-		 * CPU can poll via @c signaledValue. Begin() schedules the signal on the provided command
-		 * buffer's underlying @c MTLCommandBuffer.
+		 * CPU can poll via @c signaledValue. Begin() makes the queue signal it once the command buffer it
+		 * was recorded on finishes executing, as Metal 4 command buffers cannot signal events themselves.
 		 */
 		class MetalEventQuery final : public EventQuery
 		{

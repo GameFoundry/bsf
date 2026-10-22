@@ -116,6 +116,23 @@ namespace b3d
 		void TestExplicitBarriers();
 
 		/**
+		 * Verifies that split barriers order a long-running compute write before a copy that reads it, within a command buffer and
+		 * across command buffers on one queue. The write runs long enough that, within a command buffer, a backend that drops the
+		 * barrier lets the copy read stale data. Runs only on devices that support explicit barriers, with backends that compile
+		 * shaders on the host.
+		 */
+		void TestSplitBarrierExecution();
+
+		/**
+		 * Verifies that a barrier orders a long-running compute write before a copy recorded after a render pass that follows the
+		 * barrier, and before a copy in a later command buffer on the same queue. On backends that record passes as separate
+		 * encoders the copy runs in a later pass than the barrier, so a backend that only orders the pass the barrier was issued in
+		 * lets the copy read stale data. Runs only on devices that support explicit barriers, with backends that compile shaders on
+		 * the host.
+		 */
+		void TestBarrierAcrossPasses();
+
+		/**
 		 * Places transient resources over each other's memory and hands the memory between them with explicit alias acquires, issued as full
 		 * and as split barriers. Then binds resources before they are placed, recreates them at other memory and writes them with a dispatch.
 		 * Verifies the contents each resource reads back. Runs only on devices that support explicit barriers.

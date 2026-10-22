@@ -1141,6 +1141,9 @@ void VulkanGpuDevice::InitializeCapabilities()
 	mCapabilities.SetCapability(RSC_MULTI_THREADED_CB);
 	mCapabilities.SetCapability(RSC_EXPLICIT_BARRIERS);
 
+	if(deviceLimits.timestampComputeAndGraphics && deviceLimits.timestampPeriod > 0.0f)
+		mCapabilities.SetCapability(RSC_TIMER_QUERIES);
+
 	mCapabilities.Conventions.NdcYAxis = GpuBackendConventions::Axis::Down;
 	mCapabilities.Conventions.MatrixOrder = GpuBackendConventions::MatrixOrder::ColumnMajor;
 

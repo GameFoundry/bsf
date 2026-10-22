@@ -52,7 +52,7 @@ namespace b3d
 		 *
 		 * Each set owns one Tier-2 argument-buffer allocation shared by every shader stage. Bound resources are held by
 		 * the base class; @c PrepareForBind resolves them to Metal handles and writes whichever argument-buffer entries
-		 * changed, so the command buffer can then mark the resources resident (via @c useResources:usage:stages:).
+		 * changed. The resources must be resident through the device's residency set.
 		 *
 		 * Uniform buffers declared with a dynamic offset are not written into the argument buffer; the command buffer
 		 * binds them directly in the encoder's argument table (see @c GetBoundUniformBuffer) so per-draw offset changes
@@ -95,10 +95,9 @@ namespace b3d
 			 * checks whether any bound buffer or texture swapped its backing Metal resource.
 			 *
 			 * If the argument buffer is still bound to a recording or in-flight command buffer, the writes go to a fresh
-			 * copy (copy-on-write) and the generation is bumped so the command buffer re-attaches it.
+			 * copy (copy-on-write) and the generation is bumped, so the command buffer binds the new copy.
 			 *
-			 * @return	Current generation, which changes whenever the command buffer must re-attach the argument
-			 *			buffer and re-emit residency.
+			 * @return	Current generation, which changes whenever the argument buffer or a resolved resource changes.
 			 */
 			u64 PrepareForBind();
 
@@ -136,8 +135,8 @@ namespace b3d
 
 			/**
 			 * Returns the Metal resource resolved for the layout's dense @p resourceIndex, or @c nil when the binding has
-			 * no resource or the index is out of range. Maintained by @c PrepareForBind so command-buffer
-			 * @c useResource: emission avoids re-resolving the underlying @c id<MTLResource> per bind.
+			 * no resource or the index is out of range. Maintained by @c PrepareForBind, so command buffers can validate
+			 * the residency of bound resources without re-resolving them.
 			 */
 			id<MTLResource> GetCachedResource(u32 resourceIndex) const;
 
@@ -155,7 +154,7 @@ namespace b3d
 				u64 Value = 0;
 
 				/**
-				 * Resource the element resolved to, for residency: the buffer, texture view or texture-buffer view.
+				 * Resource the element resolved to, for residency validation: the buffer, texture view or texture-buffer view.
 				 * Null for samplers, which need no residency. Not retained.
 				 */
 				__unsafe_unretained id<MTLResource> ResolvedResource = nil;
@@ -201,8 +200,8 @@ namespace b3d
 
 			/**
 			 * Generation counter. Bumped whenever PrepareForBind changes a resolved resource, and when it moves the
-			 * argument buffer to a fresh slice (copy-on-write), so the command buffer re-attaches the argument buffer
-			 * and re-emits residency. Starts at 1 so a freshly-default-constructed cache slot (value 0) never matches.
+			 * argument buffer to a fresh slice (copy-on-write). Starts at 1 so a freshly-default-constructed cache slot
+			 * (value 0) never matches.
 			 */
 			u64 mGeneration = 1;
 		};

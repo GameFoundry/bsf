@@ -42,7 +42,7 @@ namespace b3d
 			explicit MetalFramebuffer(const MetalFramebufferCreateInformation& createInformation);
 
 			/** Assigns the attachment textures and subresources to @p descriptor. Load and store actions are left to the caller. */
-			void ApplyAttachments(MTLRenderPassDescriptor* descriptor) const;
+			void ApplyAttachments(MTL4RenderPassDescriptor* descriptor) const;
 
 			/** Returns the layout policy used for Metal render-pass tracking. */
 			static const GpuFramebufferLayoutPolicy& GetLayoutPolicy();

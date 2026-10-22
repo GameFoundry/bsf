@@ -4,6 +4,7 @@
 
 #include "B3DMetalPrerequisites.h"
 #include "GpuBackend/B3DGpuQueries.h"
+#include "GpuBackend/Allocators/B3DGpuResource.h"
 
 namespace b3d
 {
@@ -20,13 +21,14 @@ namespace b3d
 		 * Metal implementation of a query pool.
 		 *
 		 * Occlusion pools allocate a shared @c MTLBuffer used as the visibility result buffer; each
-		 * query gets an 8-byte slot. Timestamp pools use an @c MTLCounterSampleBuffer.
+		 * query gets an 8-byte slot. Timestamp pools use an @c MTL4CounterHeap, resolved on the CPU.
 		 * Pipeline-statistics pools are not implemented (needs a core API change).
 		 */
 		class MetalGpuQueryPool final : public GpuQueryPool
 		{
 		public:
 			MetalGpuQueryPool(MetalGpuDevice& gpuDevice, const GpuQueryPoolCreateInformation& createInformation);
+			~MetalGpuQueryPool() override;
 
 			GpuQueryId AllocateQuery() override;
 			bool TryResolve(bool wait = false) override;
@@ -35,8 +37,8 @@ namespace b3d
 			/** Returns the underlying visibility-result buffer for occlusion queries. */
 			id<MTLBuffer> GetVisibilityBuffer() const { return mVisibilityBuffer; }
 
-			/** Returns the underlying counter sample buffer for timestamp queries, or nil if unsupported. */
-			id<MTLCounterSampleBuffer> GetCounterBuffer() const { return mCounterBuffer; }
+			/** Returns the underlying counter heap for timestamp queries, or nil if unsupported. */
+			id<MTL4CounterHeap> GetCounterHeap() const { return mCounterHeap; }
 
 			/** Returns the byte offset of a query's result slot inside the visibility buffer. */
 			u32 GetQueryOffset(GpuQueryId queryId) const { return queryId.Id * sizeof(u64); }
@@ -86,7 +88,8 @@ namespace b3d
 			void MarkRecordingAbandoned();
 
 			/**
-			 * Resets query allocation and invalidates cached results. Matches @c ResetQueries.
+			 * Resets query allocation and invalidates cached results. Matches @c ResetQueries. Submissions the GPU has finished
+			 * no longer count as in flight, so pools can be reset without resolving their results first.
 			 *
 			 * @note	Called on the thread recording the command buffer.
 			 */
@@ -100,9 +103,13 @@ namespace b3d
 			bool IsQueryAllocated(GpuQueryId queryId) const;
 
 		private:
+			/** Removes the in-flight submissions whose queue has signaled their event value. Caller must hold mStateMutex. */
+			void RemoveCompletedSubmissions();
+
 			MetalGpuDevice& mGpuDevice;
 			id<MTLBuffer> mVisibilityBuffer = nil;
-			id<MTLCounterSampleBuffer> mCounterBuffer = nil;
+			GpuAllocation mVisibilityBufferAllocation;
+			id<MTL4CounterHeap> mCounterHeap = nil;
 			u32 mNextQueryId = 0;
 			u32 mRecordedCommandBuffers = 0;
 			u32 mPendingSubmissions = 0;
@@ -117,8 +124,8 @@ namespace b3d
 
 			// Tracks every (queue, eventValue) pair this pool was written from that has not yet been
 			// resolved. Appended to by MarkSubmitted (or the existing entry's value is replaced with the
-			// max, since event values within a queue are monotonic). Entries are removed by TryResolve
-			// once the queue's signaled value catches up.
+			// max, since event values within a queue are monotonic). Entries are removed by TryResolve and
+			// ResetAllocation once the queue's signaled value catches up.
 			Vector<std::pair<MetalGpuQueue*, u64>> mInFlightSubmissions;
 		};
 

@@ -4,6 +4,7 @@
 #include "B3DMetalGpuDevice.h"
 #include "B3DMetalGpuQueue.h"
 #include "B3DMetalResourceManager.h"
+#include "B3DMetalTexture.h"
 #include "Debug/B3DLog.h"
 #include "Threading/B3DScheduler.h"
 #define BS_COCOA_INTERNALS 1
@@ -12,21 +13,6 @@
 
 namespace b3d::render
 {
-	namespace
-	{
-		void LogPresentCommandBufferError(id<MTLCommandBuffer> commandBuffer)
-		{
-			if ([commandBuffer status] != MTLCommandBufferStatusError)
-				return;
-
-			NSError* error = [commandBuffer error];
-			B3D_LOG(Fatal, LogRenderBackend, "Metal presentation command buffer failed ({0}, code {1}): {2}",
-				error ? String([[error domain] UTF8String]) : String("<unknown domain>"),
-				error ? (i64)[error code] : 0,
-				error ? String([[error localizedDescription] UTF8String]) : String("No error details were provided."));
-		}
-	}
-
 	MetalSwapChain::MetalSwapChain(MetalResourceManager* owner, MetalRenderWindowSurface& surface)
 		: Super(owner, "Metal render-window swap chain"), mSurface(surface)
 	{
@@ -66,6 +52,12 @@ namespace b3d::render
 	{
 		Lock lock(mMutex);
 		return mCurrentDrawable != nil ? mCurrentDrawable.texture : nil;
+	}
+
+	id<CAMetalDrawable> MetalSwapChain::GetCurrentDrawable() const
+	{
+		Lock lock(mMutex);
+		return mCurrentDrawable;
 	}
 
 	void MetalSwapChain::AbortCurrentDrawable()
@@ -123,55 +115,23 @@ namespace b3d::render
 		if (claimedDrawable.Drawable == nil)
 			return;
 
+		// The queue already waits for the drawable since the submission that rendered to it
 		auto& metalQueue = static_cast<MetalGpuQueue&>(queue);
-		id<MTLCommandQueue> commandQueue = metalQueue.GetMetalQueue();
-		id<MTLCommandBuffer> commandBuffer = commandQueue != nil ? [commandQueue commandBuffer] : nil;
-		if (commandBuffer == nil)
-		{
-			B3D_LOG(Error, LogRenderBackend, "Failed to allocate the Metal presentation command buffer.");
-			return;
-		}
-
-		GpuQueueMask waitMask = syncMask & ~GpuQueueMask(queue.GetId());
-		for (u32 queueTypeIndex = 0; queueTypeIndex < GQT_COUNT; queueTypeIndex++)
-		{
-			const GpuQueueType queueType = (GpuQueueType)queueTypeIndex;
-			for (u32 queueIndex = 0; queueIndex < mSurface.mGpuDevice.GetQueueCount(queueType); queueIndex++)
-			{
-				const GpuQueueId waitQueueId(queueType, queueIndex);
-				if (!waitMask.IsSet(waitQueueId))
-					continue;
-
-				auto waitQueue = std::static_pointer_cast<MetalGpuQueue>(mSurface.mGpuDevice.GetQueue(queueType, queueIndex));
-				const u64 waitValue = waitQueue->GetLastCommittedEventValue();
-				if (waitValue != 0)
-					[commandBuffer encodeWaitForEvent:waitQueue->GetSharedEvent() value:waitValue];
-			}
-		}
+		metalQueue.WaitForQueues(syncMask);
+		metalQueue.SignalDrawable(claimedDrawable.Drawable);
 
 		const bool useTimedPresent = claimedDrawable.VSync && claimedDrawable.VSyncInterval > 1;
 		if (useTimedPresent)
 		{
 			const double refreshRate = claimedDrawable.RefreshRate > 0.0f ? claimedDrawable.RefreshRate : 60.0;
-			[commandBuffer presentDrawable:claimedDrawable.Drawable
-				afterMinimumDuration:(double)claimedDrawable.VSyncInterval / refreshRate];
+			[claimedDrawable.Drawable presentAfterMinimumDuration:(double)claimedDrawable.VSyncInterval / refreshRate];
 		}
 		else
-			[commandBuffer presentDrawable:claimedDrawable.Drawable];
-
-		const u64 signalValue = metalQueue.ReserveNextEventValue();
-		[commandBuffer encodeSignalEvent:metalQueue.GetSharedEvent() value:signalValue];
+			[claimedDrawable.Drawable present];
 
 		TShared<WaitGroup> ownerCompletion = B3DMakeShared<WaitGroup>();
 		ownerCompletion->Increment();
-		[commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> completedBuffer)
-		{
-			LogPresentCommandBufferError(completedBuffer);
-			ownerCompletion->NotifyDone();
-		}];
-
-		[commandBuffer commit];
-		metalQueue.NotifySubmissionCommitted(signalValue, commandBuffer, ownerCompletion);
+		metalQueue.SignalSubmission([ownerCompletion]() { ownerCompletion->NotifyDone(); }, ownerCompletion);
 	}
 
 	void MetalSwapChain::AcquireImage()
@@ -313,25 +273,24 @@ namespace b3d::render
 		if (!mCreateDepthBuffer || mWidth == 0 || mHeight == 0)
 			return;
 
-		if (mDepthStencilTexture != nil && (u32)mDepthStencilTexture.width == mWidth && (u32)mDepthStencilTexture.height == mHeight)
-			return;
-
-		// Depth32Float_Stencil8 is the universally supported depth/stencil format on Apple GPUs (Depth24Unorm_Stencil8 is unavailable on Apple silicon).
-		MTLTextureDescriptor* descriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatDepth32Float_Stencil8 width:mWidth height:mHeight mipmapped:NO];
-		descriptor.usage = MTLTextureUsageRenderTarget;
-		descriptor.storageMode = MTLStorageModePrivate;
-
-		// TODO - Allocate through MetalHeapAllocator::AllocateTexture. Needs a tracked MetalImage so the resize path defers the old texture's release until in-flight command buffers retire.
-		id<MTLTexture> newDepthStencil = [mGpuDevice.GetMetalDevice() newTextureWithDescriptor:descriptor];
-		if (newDepthStencil == nil)
+		if (mDepthStencilImage != nullptr)
 		{
-			B3D_LOG(Error, LogRenderBackend, "Failed to create the render window depth/stencil texture ({0}x{1}).", mWidth, mHeight);
-			return;
+			id<MTLTexture> depthStencilTexture = mDepthStencilImage->GetMetalHandle();
+			if ((u32)depthStencilTexture.width == mWidth && (u32)depthStencilTexture.height == mHeight)
+				return;
+
+			// Released once the command buffers that render to it finish executing
+			mDepthStencilImage->Destroy();
+			mDepthStencilImage = nullptr;
 		}
 
-		newDepthStencil.label = @"RenderWindowDepthStencil";
+		// Depth32Float_Stencil8 is the universally supported depth/stencil format on Apple GPUs (Depth24Unorm_Stencil8 is unavailable on Apple silicon).
+		mDepthStencilImage = CreateSurfaceImage(mGpuDevice, MTLPixelFormatDepth32Float_Stencil8, PF_D32_S8X24, TextureUsageFlag::DepthStencil, mWidth, mHeight, "RenderWindowDepthStencil");
+	}
 
-		mDepthStencilTexture = newDepthStencil;
+	id<MTLTexture> MetalRenderWindowSurface::GetDepthStencilTexture() const
+	{
+		return mDepthStencilImage != nullptr ? mDepthStencilImage->GetMetalHandle() : nil;
 	}
 
 	id<MTLTexture> MetalRenderWindowSurface::AcquireColorTexture()
@@ -347,6 +306,11 @@ namespace b3d::render
 	id<MTLTexture> MetalRenderWindowSurface::GetCurrentColorTexture() const
 	{
 		return mSwapChain != nullptr ? mSwapChain->GetCurrentTexture() : nil;
+	}
+
+	id<CAMetalDrawable> MetalRenderWindowSurface::GetCurrentDrawable() const
+	{
+		return mSwapChain != nullptr ? mSwapChain->GetCurrentDrawable() : nil;
 	}
 
 	void MetalRenderWindowSurface::AbortCurrentDrawable()
@@ -427,7 +391,12 @@ namespace b3d::render
 			mSwapChain = nullptr;
 		}
 
-		mDepthStencilTexture = nil;
+		if (mDepthStencilImage != nullptr)
+		{
+			mDepthStencilImage->Destroy();
+			mDepthStencilImage = nullptr;
+		}
+
 		mLayer = nil;
 
 		mValid = false;

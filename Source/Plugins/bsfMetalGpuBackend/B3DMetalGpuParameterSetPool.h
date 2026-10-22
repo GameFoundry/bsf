@@ -62,8 +62,15 @@ namespace b3d
 			struct Block
 			{
 				id<MTLBuffer> Buffer = nullptr;
+				GpuAllocation Allocation;
 				u64 Size = 0;
 				u64 Cursor = 0;
+			};
+
+			struct DirectBuffer
+			{
+				id<MTLBuffer> Buffer = nullptr;
+				GpuAllocation Allocation;
 			};
 
 			/**
@@ -72,12 +79,18 @@ namespace b3d
 			 */
 			Block* GrowByBlock(u64 minimumSize);
 
+			/**
+			 * Allocates a shared-storage buffer of @p size bytes through the heap allocator, outputting its memory in
+			 * @p outAllocation. Returns nil on failure.
+			 */
+			id<MTLBuffer> AllocateBuffer(u64 size, GpuAllocation& outAllocation);
+
 			MetalGpuDevice& mDevice;
 			u32 mAllocatedSetCount = 0;
 			Vector<Block> mBlocks;
 
 			// Dedicated buffers for requests above kLargeSliceThreshold. Released on Reset, like the ring's slices.
-			Vector<id<MTLBuffer>> mDirectBuffers;
+			Vector<DirectBuffer> mDirectBuffers;
 		};
 
 		/** @} */

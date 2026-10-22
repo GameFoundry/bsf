@@ -46,7 +46,7 @@ You can choose to use a different *CMake* generator than those specified above, 
   - Supported platforms:
     - Windows 10/11
     - Linux (currently non functional while major refactor is in progress)
-    - macOS 13.0 or newer on Apple Silicon (arm64)
+    - macOS 26.0 or newer on Apple Silicon (arm64), with a Metal 4 capable GPU
   - Supported compilers:
     - MSVC 14.50 or newer with the v145 platform toolset (Visual Studio 2026)
     - GCC 7.0 (or newer) (currently non functional while major refactor is in progress)

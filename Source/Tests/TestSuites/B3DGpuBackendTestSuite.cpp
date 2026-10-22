@@ -26,6 +26,7 @@
 #include "GpuBackend/B3DGpuPushConstants.h"
 #include "GpuBackend/B3DRenderTexture.h"
 #include "GpuBackend/B3DGpuTransientResourceAllocator.h"
+#include "Renderer/B3DRenderer.h"
 #include "Material/B3DShaderCompiler.h"
 #include "Material/B3DShader.h"
 #include "Material/B3DVariation.h"
@@ -425,6 +426,8 @@ GpuBackendTestSuite::GpuBackendTestSuite()
 	B3D_ADD_TEST(GpuBackendTestSuite::TestRenderPassResourceTracking)
 	B3D_ADD_TEST(GpuBackendTestSuite::TestTrackingWithoutHazards)
 	B3D_ADD_TEST(GpuBackendTestSuite::TestExplicitBarriers)
+	B3D_ADD_TEST(GpuBackendTestSuite::TestSplitBarrierExecution)
+	B3D_ADD_TEST(GpuBackendTestSuite::TestBarrierAcrossPasses)
 	B3D_ADD_TEST(GpuBackendTestSuite::TestTransientExplicitAliasing)
 #if B3D_BUILD_TYPE_DEVELOPMENT
 	B3D_ADD_TEST(GpuBackendTestSuite::TestExplicitBarrierValidation)
@@ -3753,6 +3756,188 @@ void GpuBackendTestSuite::TestExplicitBarriers()
 	}, "GpuBackendTestSuite::TestExplicitBarriers", true);
 }
 
+void GpuBackendTestSuite::TestSplitBarrierExecution()
+{
+	GpuBackend& backend = GpuBackend::Instance();
+	if(backend.GetDeviceCount() == 0 || !backend.GetDevice(0)->GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS))
+		return;
+
+	// Shaders are resources, which are created outside of the render thread
+	const TShared<GpuDevice> device = backend.GetDevice(0);
+	const TShared<GpuComputePipelineState> pipeline = CreateTestSlowWritePipeline(*device);
+	if(pipeline == nullptr)
+		return;
+
+	GetRenderThread().PostCommand([this, &device, &pipeline]()
+	{
+		static constexpr u32 kThreadCount = 64 * 1024;
+		static constexpr u32 kPattern = 0x5A000000;
+		static constexpr u32 kBufferBytes = kThreadCount * 2 * sizeof(u32);
+		const GpuAccessState computeReadWrite(GpuStageFlag::ComputeShaderNonUniform, GpuAccessFlag::Read | GpuAccessFlag::Write);
+		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
+		const GpuAccessState transferRead(GpuStageFlag::Transfer, GpuAccessFlag::Read);
+		const GpuAccessState hostRead(GpuStageFlag::Host, GpuAccessFlag::Read);
+
+		GpuCommandBufferPoolCreateInformation poolInformation = GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS);
+		poolInformation.ExplicitBarriers = true;
+		const TShared<GpuCommandBufferPool> pool = device->CreateGpuCommandBufferPool(poolInformation);
+		const TShared<GpuCommandBufferPool> otherPool = device->CreateGpuCommandBufferPool(poolInformation);
+		const TShared<GpuWorkContext> context = GpuWorkContext::Create(*device);
+
+		const TShared<render::GpuBuffer> unrelatedSource = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), 256));
+		const TShared<render::GpuBuffer> unrelatedDestination = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), 256));
+
+		// The dispatch writes the buffer, the split barrier orders the write before the copy into the readback, and unrelated work
+		// is recorded between the halves. With @p separateCommandBuffers the acquire and the copy are on a second command buffer.
+		auto fnTest = [&](bool separateCommandBuffers, const String& caseName)
+		{
+			const TShared<render::GpuBuffer> buffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kThreadCount * 2, GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU));
+			const TShared<render::GpuBuffer> readback = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(kBufferBytes));
+			const TShared<GpuSplitBarrier> split = device->CreateSplitBarrier();
+
+			const TShared<render::GpuParameterSet> parameters = context->GetParameterSetPool().Create(pipeline->GetParameterLayout()->GetSet(0), 0);
+			parameters->SetStorageBuffer("OutputBuffer", buffer);
+
+			const TShared<GpuCommandBuffer> writeCommands = pool->Create(GpuCommandBufferCreateInformation::Create("Split barrier slow write"));
+			const TShared<GpuCommandBuffer> readCommands = separateCommandBuffers ? otherPool->Create(GpuCommandBufferCreateInformation::Create("Split barrier read")) : writeCommands;
+
+			const GpuExplicitBufferBarrier writeBarriers[] = { GpuExplicitBufferBarrier(buffer, GpuAccessState(), computeReadWrite), GpuExplicitBufferBarrier(readback, GpuAccessState(), transferWrite),
+				GpuExplicitBufferBarrier(unrelatedSource, GpuAccessState(), transferRead), GpuExplicitBufferBarrier(unrelatedDestination, GpuAccessState(), transferWrite) };
+			writeCommands->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(writeBarriers, 4)));
+			writeCommands->SetGpuComputePipelineState(pipeline);
+			writeCommands->SetGpuParameterSet(parameters);
+			writeCommands->DispatchCompute(kThreadCount / 64, 1, 1);
+
+			const GpuExplicitBufferBarrier splitBarrier(buffer, computeReadWrite, transferRead);
+			const GpuExplicitBarriers splitBarriers(TArrayView<const GpuExplicitBufferBarrier>(&splitBarrier, 1));
+			writeCommands->ReleaseBarriers(splitBarriers, split);
+			writeCommands->CopyBufferToBuffer(unrelatedSource, unrelatedDestination, 0, 0, 256 * sizeof(u32));
+
+			readCommands->AcquireBarriers(splitBarriers, split);
+			readCommands->CopyBufferToBuffer(buffer, readback, 0, 0, kBufferBytes);
+
+			const GpuExplicitBufferBarrier readbackBarrier(readback, transferWrite, hostRead);
+			readCommands->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(&readbackBarrier, 1)));
+
+			context->SubmitCommandBuffer(writeCommands, GpuQueueMask::kNone);
+			if(separateCommandBuffers)
+				context->SubmitCommandBuffer(readCommands, GpuQueueMask::kNone);
+
+			device->WaitUntilIdle();
+
+			const render::GpuBufferMappedScope mapping = readback->Map(GpuMapOption::Read);
+			B3D_TEST_ASSERT(mapping.IsValid())
+			if(!mapping.IsValid())
+				return;
+
+			const u32* elements = static_cast<const u32*>(mapping.GetMappedMemory());
+			bool matches = true;
+			for(u32 threadIndex = 0; threadIndex < kThreadCount; threadIndex++)
+				matches &= elements[threadIndex * 2] == (kPattern | threadIndex);
+
+			B3D_TEST_ASSERT_MSG(matches, caseName + ": the readback does not hold the values the dispatch wrote.")
+		};
+
+		fnTest(false, "Split barrier within a command buffer");
+		fnTest(true, "Split barrier across command buffers");
+	}, "GpuBackendTestSuite::TestSplitBarrierExecution", true);
+}
+
+void GpuBackendTestSuite::TestBarrierAcrossPasses()
+{
+	GpuBackend& backend = GpuBackend::Instance();
+	if(backend.GetDeviceCount() == 0 || !backend.GetDevice(0)->GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS))
+		return;
+
+	// Shaders are resources, which are created outside of the render thread
+	const TShared<GpuDevice> device = backend.GetDevice(0);
+	const TShared<GpuComputePipelineState> pipeline = CreateTestSlowWritePipeline(*device);
+	if(pipeline == nullptr)
+		return;
+
+	GetRenderThread().PostCommand([this, &device, &pipeline]()
+	{
+		static constexpr u32 kThreadCount = 64 * 1024;
+		static constexpr u32 kPattern = 0x5A000000;
+		static constexpr u32 kBufferBytes = kThreadCount * 2 * sizeof(u32);
+		const GpuAccessState computeReadWrite(GpuStageFlag::ComputeShaderNonUniform, GpuAccessFlag::Read | GpuAccessFlag::Write);
+		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
+		const GpuAccessState transferRead(GpuStageFlag::Transfer, GpuAccessFlag::Read);
+		const GpuAccessState hostRead(GpuStageFlag::Host, GpuAccessFlag::Read);
+		const GpuAccessState colorAttachment(GpuStageFlag::ColorAttachment, GpuAccessFlag::Read | GpuAccessFlag::Write, GpuImageLayout::ColorAttachment);
+
+		GpuCommandBufferPoolCreateInformation poolInformation = GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS);
+		poolInformation.ExplicitBarriers = true;
+		const TShared<GpuCommandBufferPool> pool = device->CreateGpuCommandBufferPool(poolInformation);
+		const TShared<GpuWorkContext> context = GpuWorkContext::Create(*device);
+
+		TextureCreateInformation targetInformation;
+		targetInformation.Name = "BarrierAcrossPassesTarget";
+		targetInformation.Width = 16;
+		targetInformation.Height = 16;
+		targetInformation.Format = PF_RGBA8;
+		targetInformation.Usage = TextureUsageFlag::RenderTarget;
+
+		// The dispatch writes the buffer, and the barrier ordering the write before the copy is issued right after it. With
+		// @p separateCommandBuffers the copy is on a second command buffer, otherwise it follows a render pass.
+		auto fnTest = [&](bool separateCommandBuffers, const String& caseName)
+		{
+			const TShared<render::GpuBuffer> buffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kThreadCount * 2, GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU));
+			const TShared<render::GpuBuffer> readback = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(kBufferBytes));
+
+			const TShared<render::GpuParameterSet> parameters = context->GetParameterSetPool().Create(pipeline->GetParameterLayout()->GetSet(0), 0);
+			parameters->SetStorageBuffer("OutputBuffer", buffer);
+
+			const TShared<GpuCommandBuffer> writeCommands = pool->Create(GpuCommandBufferCreateInformation::Create("Barrier across passes write"));
+			const TShared<GpuCommandBuffer> readCommands = separateCommandBuffers ? pool->Create(GpuCommandBufferCreateInformation::Create("Barrier across passes read")) : writeCommands;
+
+			const GpuExplicitBufferBarrier writeBarriers[] = { GpuExplicitBufferBarrier(buffer, GpuAccessState(), computeReadWrite), GpuExplicitBufferBarrier(readback, GpuAccessState(), transferWrite) };
+			writeCommands->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(writeBarriers, 2)));
+			writeCommands->SetGpuComputePipelineState(pipeline);
+			writeCommands->SetGpuParameterSet(parameters);
+			writeCommands->DispatchCompute(kThreadCount / 64, 1, 1);
+			writeCommands->IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, computeReadWrite, transferRead));
+
+			if(!separateCommandBuffers)
+			{
+				render::RenderTextureCreateInformation renderTextureInformation;
+				renderTextureInformation.ColorSurfaces[0].Texture = device->CreateTexture(targetInformation);
+
+				RenderPassCreateInformation pass(render::RenderTexture::Create(renderTextureInformation));
+				pass.ClearMask = RT_COLOR0;
+
+				writeCommands->IssueExplicitBarriers(GpuExplicitTextureBarrier(renderTextureInformation.ColorSurfaces[0].Texture, GpuAccessState(), colorAttachment));
+				writeCommands->BeginRenderPass(pass);
+				writeCommands->EndRenderPass();
+			}
+
+			readCommands->CopyBufferToBuffer(buffer, readback, 0, 0, kBufferBytes);
+			readCommands->IssueExplicitBarriers(GpuExplicitBufferBarrier(readback, transferWrite, hostRead));
+
+			context->SubmitCommandBuffer(writeCommands, GpuQueueMask::kNone);
+			if(separateCommandBuffers)
+				context->SubmitCommandBuffer(readCommands, GpuQueueMask::kNone);
+
+			device->WaitUntilIdle();
+
+			const render::GpuBufferMappedScope mapping = readback->Map(GpuMapOption::Read);
+			B3D_TEST_ASSERT(mapping.IsValid())
+			if(!mapping.IsValid())
+				return;
+
+			const u32* elements = static_cast<const u32*>(mapping.GetMappedMemory());
+			bool matches = true;
+			for(u32 threadIndex = 0; threadIndex < kThreadCount; threadIndex++)
+				matches &= elements[threadIndex * 2] == (kPattern | threadIndex);
+
+			B3D_TEST_ASSERT_MSG(matches, caseName + ": the readback does not hold the values the dispatch wrote.")
+		};
+
+		fnTest(false, "Copy after a render pass");
+		fnTest(true, "Copy in a later command buffer");
+	}, "GpuBackendTestSuite::TestBarrierAcrossPasses", true);
+}
+
 #if B3D_BUILD_TYPE_DEVELOPMENT
 void GpuBackendTestSuite::TestExplicitBarrierValidation()
 {
@@ -4732,6 +4917,12 @@ void GpuBackendTestSuite::TestTransientResourceAllocator()
 			allocator.BeginScope(timeline);
 			allocator.EndScope();
 			B3D_TEST_ASSERT(allocator.GetStatistics().CachedTextures == 0)
+
+			// The renderer's context releases the transient resources of the renderer's start-up frame graphs as its frames advance,
+			// which they do not in this test
+			GpuWorkContext& rendererContext = render::GetRenderer()->GetGpuContext();
+			rendererContext.SubmitTransferCommandBuffers();
+			rendererContext.AdvanceFrame();
 
 			for(u32 frameIndex = 0; frameIndex <= gGpuTransientIdleFrames; frameIndex++)
 				device->EndFrame();

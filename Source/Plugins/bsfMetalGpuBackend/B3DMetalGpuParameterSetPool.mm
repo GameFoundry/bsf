@@ -2,6 +2,7 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "B3DMetalGpuParameterSetPool.h"
 #include "B3DMetalGpuDevice.h"
+#include "B3DMetalHeapAllocator.h"
 #include "B3DMetalGpuParameterSet.h"
 #include "B3DMetalGpuPipelineParameterLayout.h"
 #include "B3DMetalShaderABI.h"
@@ -20,6 +21,13 @@ namespace b3d
 		MetalGpuParameterSetPool::~MetalGpuParameterSetPool()
 		{
 			// The owning work context drains its GPU work before tearing down the pool, so nothing can still read these.
+			MetalHeapAllocator& heapAllocator = mDevice.GetHeapAllocator();
+			for (Block& block : mBlocks)
+				heapAllocator.Free(block.Buffer, block.Allocation);
+
+			for (DirectBuffer& buffer : mDirectBuffers)
+				heapAllocator.Free(buffer.Buffer, buffer.Allocation);
+
 			mBlocks.clear();
 			mDirectBuffers.clear();
 		}
@@ -72,6 +80,10 @@ namespace b3d
 				block.Cursor = 0;
 
 			// Dedicated buffers are not part of the ring. Reset invalidates every set the pool handed out, so they can go.
+			MetalHeapAllocator& heapAllocator = mDevice.GetHeapAllocator();
+			for (DirectBuffer& buffer : mDirectBuffers)
+				heapAllocator.Free(buffer.Buffer, buffer.Allocation);
+
 			mDirectBuffers.clear();
 		}
 
@@ -81,23 +93,19 @@ namespace b3d
 			if (size == 0)
 				return nil;
 
-			id<MTLDevice> device = mDevice.GetMetalDevice();
-			if (device == nil)
-				return nil;
-
-			// TODO - Allocate ring blocks (GrowByBlock) and the dedicated buffers below through MetalHeapAllocator::AllocateBuffer.
 			// Oversized requests get a dedicated buffer rather than pinning most of a block.
 			if (size > kLargeSliceThreshold)
 			{
-				id<MTLBuffer> direct = [device newBufferWithLength:(NSUInteger)size options:MTLResourceStorageModeShared];
-				if (direct == nil)
+				DirectBuffer direct;
+				direct.Buffer = AllocateBuffer(size, direct.Allocation);
+				if (direct.Buffer == nil)
 				{
 					B3D_LOG(Error, LogRenderBackend, "MetalGpuParameterSetPool: direct-path argument buffer allocation failed for {0} bytes.", size);
 					return nil;
 				}
 
 				mDirectBuffers.push_back(direct);
-				return direct;
+				return direct.Buffer;
 			}
 
 			// Scan from oldest to newest so allocations cluster in the first block and later blocks only light up
@@ -125,24 +133,26 @@ namespace b3d
 
 		MetalGpuParameterSetPool::Block* MetalGpuParameterSetPool::GrowByBlock(u64 minimumSize)
 		{
-			id<MTLDevice> device = mDevice.GetMetalDevice();
-			if (device == nil)
-				return nullptr;
-
-			id<MTLBuffer> buffer = [device newBufferWithLength:(NSUInteger)minimumSize options:MTLResourceStorageModeShared];
-			if (buffer == nil)
+			Block block;
+			block.Buffer = AllocateBuffer(minimumSize, block.Allocation);
+			if (block.Buffer == nil)
 			{
 				B3D_LOG(Error, LogRenderBackend, "MetalGpuParameterSetPool: failed to grow ring by a {0}-byte block.", minimumSize);
 				return nullptr;
 			}
 
-			Block block;
-			block.Buffer = buffer;
 			block.Size = minimumSize;
-			block.Cursor = 0;
 			mBlocks.push_back(block);
 
 			return &mBlocks.back();
+		}
+
+		id<MTLBuffer> MetalGpuParameterSetPool::AllocateBuffer(u64 size, GpuAllocation& outAllocation)
+		{
+			MetalHeapAllocator& heapAllocator = mDevice.GetHeapAllocator();
+			const u32 memoryType = MetalHeapAllocator::kMemoryTypeShared;
+
+			return heapAllocator.AllocateBuffer(size, memoryType, GpuAllocation::CreatePending(heapAllocator.GetAllocator(memoryType)), outAllocation);
 		}
 	} // namespace render
 } // namespace b3d

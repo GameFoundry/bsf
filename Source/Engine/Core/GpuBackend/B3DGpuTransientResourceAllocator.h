@@ -238,6 +238,12 @@ namespace b3d
 		 */
 		void EndScope();
 
+		/**
+		 * Releases cached resources that are not held and went unused for gGpuTransientIdleFrames frames, along with their heap
+		 * references.
+		 */
+		void EvictIdleResources();
+
 		/** Returns memory use and resource counts of the allocator. */
 		GpuTransientStatistics GetStatistics() const;
 

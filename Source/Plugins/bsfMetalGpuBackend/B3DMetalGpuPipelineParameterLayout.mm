@@ -14,27 +14,6 @@ namespace b3d
 {
 	namespace render
 	{
-		namespace
-		{
-			/**
-			 * Metal resource-usage flags for a single argument-buffer binding. Writable storage
-			 * resources get Read|Write; everything else gets Read.
-			 */
-			MTLResourceUsage BucketUsageForBinding(const MetalArgumentBufferBinding& binding)
-			{
-				switch (binding.Type)
-				{
-				case GpuParameterType::StorageBuffer:
-					return GpuObjectParameterTypeInformation::IsReadWriteBuffer(binding.ObjectType) ? (MTLResourceUsageRead | MTLResourceUsageWrite) : MTLResourceUsageRead;
-				case GpuParameterType::StorageTexture:
-					return GpuObjectParameterTypeInformation::IsReadWriteTexture(binding.ObjectType) ? (MTLResourceUsageRead | MTLResourceUsageWrite) : MTLResourceUsageRead;
-				default:
-					return MTLResourceUsageRead;
-				}
-			}
-
-		} // namespace
-
 		MetalGpuPipelineParameterSetLayout::MetalGpuPipelineParameterSetLayout(
 			const GpuProgramParameterDescription& parameterDescription,
 			const TShared<GpuResourceTableLayout>& /*resourceTableLayout*/, u32 /*tableIndex*/)
@@ -47,8 +26,6 @@ namespace b3d
 		{
 			mBindings.Clear();
 			mDynamicUniformBufferBindings.Clear();
-			mRenderBuckets.Clear();
-			mComputeBuckets.Clear();
 			mArgumentBufferSize = 0;
 			mCombinedStages = GpuProgramStageBit::None;
 
@@ -87,7 +64,7 @@ namespace b3d
 					record.ObjectType = entry->ObjectType;
 					record.ArraySize = entry->ArraySize;
 					record.Stages = entry->Usage;
-					
+
 					mBindings.Add(record);
 				}
 
@@ -249,63 +226,15 @@ namespace b3d
 			mArgumentBufferSize = Bitwise::AlignUp<u64>(argumentBufferSize, mArgumentBufferAlignment);
 
 			mCombinedStages = GpuProgramStageBit::None;
+			mHasFragmentWrites = false;
 			for (const MetalArgumentBufferBinding& binding : mBindings)
+			{
 				mCombinedStages |= binding.Stages;
 
-			// Group bindings by (usage, render-stage-mask) so the command-buffer residency emission at draw time becomes one @c useResources:count:usage:stages: call per bucket
-			auto fnFindOrAddRenderBucket = [&](MTLResourceUsage usage, MTLRenderStages renderStages) -> ArgumentBindingBucket*
-			{
-				for (auto& bucket : mRenderBuckets)
-				{
-					if (bucket.Usage == usage && bucket.RenderStages == renderStages)
-						return &bucket;
-				}
-
-				ArgumentBindingBucket fresh;
-				fresh.Usage = usage;
-				fresh.RenderStages = renderStages;
-				mRenderBuckets.Add(std::move(fresh));
-
-				return &mRenderBuckets[mRenderBuckets.Size() - 1];
-			};
-
-			auto fnFindOrAddComputeBucket = [&](MTLResourceUsage usage) -> ArgumentBindingBucket*
-			{
-				for (auto& bucket : mComputeBuckets)
-				{
-					if (bucket.Usage == usage)
-						return &bucket;
-				}
-
-				ArgumentBindingBucket fresh;
-				fresh.Usage = usage;
-				fresh.RenderStages = (MTLRenderStages)0;
-				mComputeBuckets.Add(std::move(fresh));
-
-				return &mComputeBuckets[mComputeBuckets.Size() - 1];
-			};
-
-			for (const MetalArgumentBufferBinding& binding : mBindings)
-			{
-				if (binding.Type == GpuParameterType::Sampler)
-					continue;
-
-				const MTLResourceUsage usage = BucketUsageForBinding(binding);
-				const MTLRenderStages renderStages = MetalUtility::GetRenderStages(binding.Stages);
-
-				if (renderStages != (MTLRenderStages)0)
-				{
-					ArgumentBindingBucket* renderBucket = fnFindOrAddRenderBucket(usage, renderStages);
-					for (u32 arrayIndex = 0; arrayIndex < binding.ArraySize; arrayIndex++)
-						renderBucket->ResourceIndices.Add(binding.FirstResourceIndex + arrayIndex);
-				}
-
-				if (binding.Stages.IsSet(GpuProgramStageBit::Compute))
-				{
-					ArgumentBindingBucket* computeBucket = fnFindOrAddComputeBucket(usage);
-					for (u32 arrayIndex = 0; arrayIndex < binding.ArraySize; arrayIndex++)
-						computeBucket->ResourceIndices.Add(binding.FirstResourceIndex + arrayIndex);
-				}
+				const bool isWritable = (binding.Type == GpuParameterType::StorageBuffer && GpuObjectParameterTypeInformation::IsReadWriteBuffer(binding.ObjectType))
+					|| (binding.Type == GpuParameterType::StorageTexture && GpuObjectParameterTypeInformation::IsReadWriteTexture(binding.ObjectType));
+				if (isWritable && binding.Stages.IsSet(GpuProgramStageBit::Fragment))
+					mHasFragmentWrites = true;
 			}
 		}
 

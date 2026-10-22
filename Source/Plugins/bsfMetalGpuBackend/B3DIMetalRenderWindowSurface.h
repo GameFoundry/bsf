@@ -4,9 +4,13 @@
 
 #include "B3DMetalPrerequisites.h"
 #include "GpuBackend/B3DRenderWindow.h"
+#include "Image/B3DTexture.h"
 
 namespace b3d::render
 {
+	class MetalGpuDevice;
+	class MetalImage;
+
 	/** @addtogroup MetalGpuBackend
 	 *  @{
 	 */
@@ -33,10 +37,26 @@ namespace b3d::render
 		virtual id<MTLTexture> GetCurrentColorTexture() const = 0;
 
 		/**
+		 * Returns the image of the current back buffer, or null if none is held or the back buffer is not an engine image
+		 * (e.g. a CAMetalLayer drawable). Command buffers that access the back buffer track the image, so its release is
+		 * deferred until they finish executing.
+		 */
+		virtual MetalImage* GetCurrentColorImage() const { return nullptr; }
+
+		/**
+		 * Returns the drawable of the current back buffer, or null if none is held or the surface has no drawables. Queues
+		 * must wait for the drawable before committing work that renders to it.
+		 */
+		virtual id<CAMetalDrawable> GetCurrentDrawable() const { return nil; }
+
+		/**
 		 * Returns the depth/stencil texture associated with the surface, or null if the surface was created without
 		 * a depth buffer.
 		 */
 		virtual id<MTLTexture> GetDepthStencilTexture() const = 0;
+
+		/** Returns the image of GetDepthStencilTexture(), or null if the surface has no depth buffer. */
+		virtual MetalImage* GetDepthStencilImage() const = 0;
 
 		/** Returns the native pixel format (MTLPixelFormat) of the color surface. Used for pipeline state keying. */
 		virtual MTLPixelFormat GetColorFormat() const = 0;
@@ -64,6 +84,14 @@ namespace b3d::render
 		virtual void MarkDrawableAsRendered() {}
 
 		TOptional<RenderWindowImageLayout> GetImageLayout() const override;
+
+	protected:
+		/**
+		 * Creates a private 2D image of the surface through the device's heap allocator. Returns null on failure. Release
+		 * the image through IGpuResource::Destroy(), which defers the release until no command buffer uses it.
+		 */
+		static MetalImage* CreateSurfaceImage(MetalGpuDevice& device, MTLPixelFormat format, PixelFormat engineFormat, TextureUsageFlags usage,
+			u32 width, u32 height, const StringView& name);
 	};
 
 	/** @} */

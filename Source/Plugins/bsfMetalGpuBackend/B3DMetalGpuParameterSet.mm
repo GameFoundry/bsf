@@ -24,10 +24,8 @@ namespace b3d
 
 		MetalArgumentBuffer::~MetalArgumentBuffer()
 		{
+			GetDevice().GetHeapAllocator().Free(mBuffer, mAllocation);
 			mBuffer = nullptr;
-
-			if (mAllocation.IsOwned())
-				mAllocation.Allocator->Free(mAllocation);
 		}
 
 		namespace
@@ -479,7 +477,7 @@ namespace b3d
 				}
 			}
 
-			// The resident resource set changed — force the command buffer to re-emit useResources:
+			// The resolved resource set changed
 			if (resolvedResourcesChanged)
 				++mGeneration;
 

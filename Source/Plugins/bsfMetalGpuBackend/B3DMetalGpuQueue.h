@@ -17,42 +17,68 @@ namespace b3d
 		 */
 
 		/**
-		 * Metal implementation of a GPU queue, wrapping an @c MTLCommandQueue. Metal queues accept every encoder type, so
+		 * Metal implementation of a GPU queue, wrapping an @c MTL4CommandQueue. Metal queues accept every encoder type, so
 		 * queue types only exist to match the engine's abstraction.
 		 *
-		 * Every committed submission signals the queue's @c MTLSharedEvent with a new value. Cross-queue dependencies wait on
-		 * the other queue's last committed value.
+		 * Work committed to the queue is not ordered by Metal, only by the barriers it encodes. Every submission ends with
+		 * a signal of the queue's @c MTLSharedEvent with a new value, which Metal performs once all previously committed work
+		 * has finished. Other queues wait on the last committed value.
+		 *
+		 * @note	Commit, wait and signal methods may only be called on the submit thread.
 		 */
 		class MetalGpuQueue : public GpuQueue
 		{
 		public:
-			MetalGpuQueue(GpuDevice& device, GpuQueueType type, u32 index, id<MTLCommandQueue> commandQueue, id<MTLSharedEvent> sharedEvent);
+			MetalGpuQueue(GpuDevice& device, GpuQueueType type, u32 index, id<MTL4CommandQueue> commandQueue, id<MTLSharedEvent> sharedEvent);
 
-			/** Returns the underlying MTLCommandQueue. */
-			id<MTLCommandQueue> GetMetalQueue() const { return mCommandQueue; }
+			/** Returns the underlying MTL4CommandQueue. */
+			id<MTL4CommandQueue> GetMetalQueue() const { return mCommandQueue; }
 
 			/** Returns the shared event signaled by submissions on this queue. */
 			id<MTLSharedEvent> GetSharedEvent() const { return mSharedEvent; }
 
-			/** Returns the highest event value whose command buffer has been committed on this queue. */
+			/** Returns the highest event value whose submission has been committed on this queue. */
 			u64 GetLastCommittedEventValue() const { return mLastCommittedEventValue.load(std::memory_order_acquire); }
 
-			/** Reserves and returns the event value the next submission on this queue will signal. */
-			u64 ReserveNextEventValue() { return mLastReservedEventValue.fetch_add(1, std::memory_order_acq_rel) + 1; }
-
 			/**
-			 * Records that the command buffer signaling @p eventValue has been committed. Submissions may commit out of
-			 * reservation order, so the last committed event value only ever increases.
-			 *
-			 * @param	eventValue			Event value reserved through ReserveNextEventValue().
-			 * @param	commandBuffer		Committed command buffer, waited on by RefreshCompletionState().
-			 * @param	ownerCompletion		Optional wait group signaled once the owner-side cleanup for the submission has run.
+			 * Commits @p commandBuffers, in order. Metal does not order their execution, the barriers they encode do. Execution
+			 * errors are reported once the GPU finishes them.
 			 */
-			void NotifySubmissionCommitted(u64 eventValue, id<MTLCommandBuffer> commandBuffer, const TShared<WaitGroup>& ownerCompletion = nullptr);
+			void Commit(const id<MTL4CommandBuffer>* commandBuffers, u32 count);
 
 			/**
-			 * Records a submission that failed before its command buffer was committed. It signals no event value, and
-			 * retires together with the previously committed submission.
+			 * Makes work committed afterwards wait for the last committed submission of every queue in @p waitMask, other than
+			 * this one.
+			 */
+			void WaitForQueues(GpuQueueMask waitMask);
+
+			/** Makes work committed afterwards wait until @p event reaches @p value. */
+			void WaitForEvent(id<MTLSharedEvent> event, u64 value);
+
+			/** Signals @p event with @p value once all work committed before has finished. */
+			void SignalEvent(id<MTLSharedEvent> event, u64 value);
+
+			/**
+			 * Makes work committed afterwards wait until @p drawable can be rendered to. Must precede the commit of the first
+			 * command buffer that accesses the drawable's texture. Waits issued earlier for the same drawable are not repeated.
+			 */
+			void WaitForDrawable(id<CAMetalDrawable> drawable);
+
+			/** Releases @p drawable for presentation once all work committed before has finished. */
+			void SignalDrawable(id<CAMetalDrawable> drawable);
+
+			/**
+			 * Ends a submission by signaling the queue's event with a new value, once all work committed before has finished.
+			 *
+			 * @param	onCompleted			Called on a Metal callback thread once the GPU has finished the submission.
+			 * @param	ownerCompletion		Optional wait group signaled once the owner-side cleanup for the submission has run.
+			 * @return						Signaled event value.
+			 */
+			u64 SignalSubmission(Function<void()> onCompleted, const TShared<WaitGroup>& ownerCompletion = nullptr);
+
+			/**
+			 * Records a submission that failed before its work was committed. It signals no event value, and retires together
+			 * with the previously committed submission.
 			 */
 			void NotifySubmissionFailed(const TShared<WaitGroup>& ownerCompletion);
 
@@ -62,8 +88,8 @@ namespace b3d
 			 */
 
 			/**
-			 * Blocks until every submission committed on this queue has finished executing, and their completion handlers
-			 * have run. Unlike WaitUntilIdle() this never goes through the submit thread, so it can also be used during device
+			 * Blocks until every submission signaled on this queue has finished executing, and their completion callbacks have
+			 * run. Unlike WaitUntilIdle() this never goes through the submit thread, so it can also be used during device
 			 * teardown.
 			 */
 			void ExecuteWaitUntilIdle();
@@ -87,33 +113,33 @@ namespace b3d
 			void WaitUntilIdle() override;
 
 		private:
-			/**
-			 * Commits an empty command buffer and blocks until it completes. Completion handlers run in submission order, so
-			 * once this returns the handlers of every earlier submission have run. Waiting on the shared event is not enough,
-			 * since it is signaled from within the command buffer, before its completion handler runs.
-			 */
-			void FenceCompletionHandlers();
-
 			/** Submission on this queue that has not been retired yet. */
 			struct SubmissionRecord
 			{
 				u64 EventValue = 0; /**< Signaled event value, or the last committed value for a failed submission. */
-				id<MTLCommandBuffer> CommandBuffer = nil; /**< Committed command buffer, or nil for a failed submission. */
 				TShared<WaitGroup> OwnerCompletion; /**< Signaled after the owner-side cleanup runs. */
 			};
 
-			id<MTLCommandQueue> mCommandQueue = nil;
+			id<MTL4CommandQueue> mCommandQueue = nil;
 			id<MTLSharedEvent> mSharedEvent = nil;
 
 			/** Event value reserved by the most recent submission. The shared event's signaled value tracks completion. */
-			std::atomic<u64> mLastReservedEventValue { 0 };
+			u64 mLastReservedEventValue = 0;
 
-			/** Highest event value whose command buffer has been committed. */
+			/** Highest event value whose submission has been committed. */
 			std::atomic<u64> mLastCommittedEventValue { 0 };
 
 			/** Submissions not yet retired, in ascending event value order. Guarded by mSubmissionMutex. */
 			Vector<SubmissionRecord> mActiveSubmissions;
 			Mutex mSubmissionMutex;
+
+			/** Number of signaled submissions whose completion callback has not run yet. Guarded by mCompletionMutex. */
+			u32 mPendingCompletionCount = 0;
+			Mutex mCompletionMutex;
+			ConditionVariable mCompletionCondition;
+
+			/** Drawables waited on and not signaled yet. Entries become nil once their drawable is released. */
+			Vector<__weak id<CAMetalDrawable>> mWaitedDrawables;
 		};
 
 		/** @} */
