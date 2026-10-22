@@ -5,6 +5,7 @@
 #include "B3DPrerequisites.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DGpuSubmissionTimeline.h"
+#include "GpuBackend/B3DGpuTimelineFence.h"
 #include "GpuBackend/B3DGpuTransientResourceAllocator.h"
 #include "GpuBackend/B3DRenderTarget.h"
 #include "Utility/B3DConfigVariable.h"
@@ -328,6 +329,12 @@ namespace b3d
 			 */
 			void AddExecuteCallback(Function<void()> callback);
 
+			/**
+			 * Makes the submission of Execute() signal @p fence with @p value once the graph's work completes on the GPU. Wait for it with
+			 * GpuQueue::WaitUntilFence() on the first graphics queue, which the graph submits to.
+			 */
+			void AddSignalFence(const TShared<GpuTimelineFence>& fence, u64 value);
+
 			/** Returns true if the pass at @p passIndex, in the order passes were added, was culled. Only valid after Compile(). */
 			bool IsPassCulled(u32 passIndex) const;
 
@@ -509,6 +516,7 @@ namespace b3d
 			UnorderedMap<const RenderTarget*, u32> mImportedTargetResourceIndices;
 
 			Vector<Function<void()>> mExecuteCallbacks;
+			TInlineArray<GpuTimelineFenceAndValue, 1> mSignalFences;
 
 			GpuSubmissionTimeline mTimeline;
 			GpuTransientScope* mScope = nullptr;

@@ -7,10 +7,13 @@
 #include "Math/B3DVector2.h"
 #include "Math/B3DVector4I.h"
 #include "GpuBackend/B3DGpuBuffer.h"
+#include "GpuBackend/B3DGpuParameter.h"
 
 namespace b3d::render
 {
 	class RendererMaterialBase;
+	class FrameGraphPass;
+	class FrameGraphPassContext;
 
 	/** @addtogroup Image-Internal
 	 *  @{
@@ -108,13 +111,19 @@ namespace b3d::render
 		TextureCompressStage(String name, GetMaterialFunction fnGetMaterial, const Vector2I& blocksPerGroup, const TextureCompressStageRequirements& requirements);
 
 		/**
-		 * Fetches the stage's material, compiling its shader variation if needed. Returns false if the shader is not
-		 * available. Must be called on the render thread, before Dispatch().
+		 * Fetches the stage's material, compiling its shader variation if needed, and looks up its parameters. Returns false
+		 * if the shader is not available. Must be called on the render thread, before PrepareDispatch().
 		 */
 		bool Prepare();
 
-		/** Records the dispatch of the stage over one chunk of blocks. */
-		void Dispatch(GpuCommandBuffer& commandBuffer, const TextureCompressBindings& bindings) const;
+		/**
+		 * Creates the parameter set of @p pass, which dispatches the stage over one chunk of blocks with @p bindings. Returns
+		 * the set to pass to Dispatch().
+		 */
+		TShared<GpuParameterSet> PrepareDispatch(FrameGraphPass& pass, const TextureCompressBindings& bindings) const;
+
+		/** Binds @p set, from PrepareDispatch(), and records the dispatch of the stage over a chunk of @p chunkBlockCount blocks. */
+		void Dispatch(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const Vector2I& chunkBlockCount) const;
 
 		/** Name the stage is logged with. */
 		const String& GetName() const { return mName; }
@@ -128,6 +137,13 @@ namespace b3d::render
 		Vector2I mBlocksPerGroup;
 		TextureCompressStageRequirements mRequirements;
 		RendererMaterialBase* mMaterial = nullptr;
+
+		GpuParameterSampledTexture mInputParameter;
+		GpuParameterStorageTexture mOutputParameter;
+		GpuParameterStorageTexture mBestErrorParameter;
+		GpuParameterStorageBuffer mScratchBufferParameters[(u32)TextureCompressScratchBuffer::Count];
+		GpuParameterStorageBuffer mTableParameters[(u32)TextureCompressTable::Count];
+		GpuParameterUniformBuffer mParametersBuffer;
 	};
 
 	/** Stages a format is compressed with. */

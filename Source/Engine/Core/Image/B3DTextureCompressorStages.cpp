@@ -4,6 +4,7 @@
 
 #include "Image/B3DTexture.h"
 #include "Renderer/B3DRendererMaterial.h"
+#include "FrameGraph/B3DFrameGraph.h"
 #include "GpuBackend/B3DGpuDevice.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DGpuParameterSet.h"
@@ -320,40 +321,58 @@ namespace b3d::render
 	bool TextureCompressStage::Prepare()
 	{
 		mMaterial = mFnGetMaterial();
-		return mMaterial != nullptr && mMaterial->GetComputePipeline() != nullptr;
+		if(mMaterial == nullptr || mMaterial->GetComputePipeline() == nullptr)
+			return false;
+
+		// One stage class serves every kernel, so the parameters a kernel doesn't declare are left unset
+		const TShared<GpuParameterSet>& parameterSet = mMaterial->GetGpuParameterSet();
+		parameterSet->GetSampledTextureParameter("gInput", mInputParameter);
+		parameterSet->TryGetStorageTextureParameter("gOutput", mOutputParameter);
+		parameterSet->TryGetStorageTextureParameter("gBestErr", mBestErrorParameter);
+
+		for(u32 bufferIndex = 0; bufferIndex < (u32)TextureCompressScratchBuffer::Count; ++bufferIndex)
+			parameterSet->TryGetStorageBufferParameter(kScratchBufferNames[bufferIndex], mScratchBufferParameters[bufferIndex]);
+
+		for(u32 tableIndex = 0; tableIndex < (u32)TextureCompressTable::Count; ++tableIndex)
+			parameterSet->TryGetStorageBufferParameter(kTableNames[tableIndex], mTableParameters[tableIndex]);
+
+		parameterSet->TryGetUniformBufferParameter("Parameters", mParametersBuffer);
+		return true;
 	}
 
-	void TextureCompressStage::Dispatch(GpuCommandBuffer& commandBuffer, const TextureCompressBindings& bindings) const
+	TShared<GpuParameterSet> TextureCompressStage::PrepareDispatch(FrameGraphPass& pass, const TextureCompressBindings& bindings) const
 	{
 		B3D_ASSERT(mMaterial != nullptr);
 
-		GpuParameterSet& parameterSet = *mMaterial->GetGpuParameterSet();
-		parameterSet.SetSampledTexture("gInput", bindings.Input);
+		const TShared<GpuParameterSet> set = mMaterial->CreateGpuParameterSet(pass);
+		mInputParameter.Set(set, bindings.Input);
+		mOutputParameter.Set(set, bindings.Output, TextureSurface::kComplete);
 
-		if(parameterSet.HasStorageTexture("gOutput"))
-			parameterSet.SetStorageTexture("gOutput", bindings.Output, TextureSurface::kComplete);
-
-		if(bindings.BestError != nullptr && parameterSet.HasStorageTexture("gBestErr"))
-			parameterSet.SetStorageTexture("gBestErr", bindings.BestError, TextureSurface::kComplete);
+		if(bindings.BestError != nullptr)
+			mBestErrorParameter.Set(set, bindings.BestError, TextureSurface::kComplete);
 
 		for(u32 bufferIndex = 0; bufferIndex < (u32)TextureCompressScratchBuffer::Count; ++bufferIndex)
 		{
-			if(bindings.ScratchBuffers[bufferIndex] != nullptr && parameterSet.HasStorageBuffer(kScratchBufferNames[bufferIndex]))
-				parameterSet.SetStorageBuffer(kScratchBufferNames[bufferIndex], bindings.ScratchBuffers[bufferIndex]);
+			if(bindings.ScratchBuffers[bufferIndex] != nullptr)
+				mScratchBufferParameters[bufferIndex].Set(set, bindings.ScratchBuffers[bufferIndex]);
 		}
 
 		for(u32 tableIndex = 0; tableIndex < (u32)TextureCompressTable::Count; ++tableIndex)
 		{
-			if(bindings.Tables[tableIndex] != nullptr && parameterSet.HasStorageBuffer(kTableNames[tableIndex]))
-				parameterSet.SetStorageBuffer(kTableNames[tableIndex], bindings.Tables[tableIndex]);
+			if(bindings.Tables[tableIndex] != nullptr)
+				mTableParameters[tableIndex].Set(set, bindings.Tables[tableIndex]);
 		}
 
-		GpuParameterUniformBuffer parametersBuffer;
-		if(parameterSet.TryGetUniformBufferParameter("Parameters", parametersBuffer))
-			parametersBuffer.Set(*bindings.Parameters);
+		mParametersBuffer.Set(set, *bindings.Parameters);
+		return set;
+	}
 
-		mMaterial->Bind(commandBuffer);
-		commandBuffer.DispatchCompute((u32)Math::DivideAndRoundUp(bindings.ChunkBlockCount.X, mBlocksPerGroup.X), (u32)Math::DivideAndRoundUp(bindings.ChunkBlockCount.Y, mBlocksPerGroup.Y));
+	void TextureCompressStage::Dispatch(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const Vector2I& chunkBlockCount) const
+	{
+		GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
+
+		mMaterial->Bind(commandBuffer, set);
+		commandBuffer.DispatchCompute((u32)Math::DivideAndRoundUp(chunkBlockCount.X, mBlocksPerGroup.X), (u32)Math::DivideAndRoundUp(chunkBlockCount.Y, mBlocksPerGroup.Y));
 	}
 
 	bool GetTextureCompressFormatInformation(PixelFormat format, PixelFormat& outBlockTextureFormat, bool& outIsHDR)

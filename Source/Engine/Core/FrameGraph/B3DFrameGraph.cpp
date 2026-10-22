@@ -1478,7 +1478,13 @@ namespace b3d::render
 #endif
 
 		// The first submission of a graph waits on every queue, which orders it after the uploads its resources depend on
-		mContext.SubmitCommandBuffer(commandBuffer, GpuQueueMask::kAll);
+		GpuSubmissionInformation submissionInformation;
+		submissionInformation.CommandBuffer = commandBuffer;
+		submissionInformation.SyncMask = GpuQueueMask::kAll;
+		for(const GpuTimelineFenceAndValue& signalFence : mSignalFences)
+			submissionInformation.SignalFences.Add(signalFence);
+
+		mContext.SubmitCommandBuffer(submissionInformation);
 
 		mAllocator.EndScope();
 		mScope = nullptr;
@@ -1495,6 +1501,12 @@ namespace b3d::render
 	{
 		B3D_ASSERT(!mIsExecuted && "Execute callbacks cannot be added after Execute().");
 		mExecuteCallbacks.push_back(std::move(callback));
+	}
+
+	void FrameGraph::AddSignalFence(const TShared<GpuTimelineFence>& fence, u64 value)
+	{
+		B3D_ASSERT(!mIsExecuted && "Signal fences cannot be added after Execute().");
+		mSignalFences.Add(GpuTimelineFenceAndValue{ fence, value });
 	}
 
 	bool FrameGraph::IsPassCulled(u32 passIndex) const

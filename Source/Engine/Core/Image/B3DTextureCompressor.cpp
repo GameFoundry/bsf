@@ -12,6 +12,7 @@
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DGpuBuffer.h"
 #include "GpuBackend/B3DGpuQueries.h"
+#include "FrameGraph/B3DFrameGraph.h"
 #include "CoreObject/B3DRenderThread.h"
 #include "Threading/B3DAsyncOp.h"
 #include "Utility/B3DConfigVariable.h"
@@ -69,10 +70,10 @@ namespace b3d
 		constexpr u32 kMaximumParameterVariants = 8;
 
 		/**
-		 * Records the GPU compression on the render thread and sets up an asynchronous read-back. Must be called on the
-		 * render thread: it creates the shared GPU resources, dispatches the stages chunk by chunk, then queues a
-		 * non-blocking read-back of the packed blocks into @p destination. Completes @p op with @p destination once the GPU
-		 * finishes and the blocks have been copied back, or with null on failure.
+		 * Runs the GPU compression. Must be called on the render thread: it creates the shared GPU resources, dispatches the
+		 * stages chunk by chunk, one frame graph per chunk, then reads the packed blocks back into @p destination. Completes
+		 * @p op with @p destination once the GPU finishes and the blocks have been copied back, or with null on failure.
+		 * Returns once the read-back completes.
 		 */
 		void CompressOnRenderThread(const render::TextureCompressStageList& stages, const TShared<PixelData>& source, PixelFormat inputTexFormat, PixelFormat outputTexFormat, const TShared<PixelData>& destination, u32 maxChunkSize, TAsyncOp<TShared<PixelData>> op)
 		{
@@ -107,9 +108,6 @@ namespace b3d
 				op.CompleteOperation(nullptr);
 				return;
 			}
-
-			// Command buffer pool for the whole operation (uploads, chunk dispatches, read-back)
-			const TShared<render::GpuCommandBufferPool> pool = gpuDevice->CreateGpuCommandBufferPool(render::GpuCommandBufferPoolCreateInformation::CreateForThisThread());
 
 			// Upload the whole source once into one sampled input texture, read as float4 in the shader. LDR formats use a
 			// normalized RGBA8 texture; BC6H uses a full-float RGBA32F texture so HDR values survive. A 2D texture (rather
@@ -222,6 +220,22 @@ namespace b3d
 				}
 			}
 
+			// Upload the data shared by all chunks. Without a command buffer the uploads go on the transfer command buffer, which
+			// is submitted before the first chunk's graph, and leave the resources at rest.
+			render::TextureUtility::Write(gpuContext, inputTexture, *source);
+
+			if(bestErrorTexture != nullptr)
+				render::TextureUtility::Write(gpuContext, bestErrorTexture, *bestErrorTextureInitialData);
+
+			for(u32 tableIndex = 0; tableIndex < (u32)render::TextureCompressTable::Count; ++tableIndex)
+			{
+				if(tables[tableIndex] == nullptr)
+					continue;
+
+				const TArrayView<const u32> tableData = render::GetTextureCompressTableData((render::TextureCompressTable)tableIndex);
+				render::GpuBufferUtility::Write(gpuContext, tables[tableIndex], 0, (u32)(tableData.Size() * sizeof(u32)), tableData.Data());
+			}
+
 			// Resources of one chunk submission in flight. A chunk reuses them only after the previous chunk using them completes.
 			struct ChunkSlot
 			{
@@ -260,21 +274,11 @@ namespace b3d
 				canMeasureChunks &= chunkSlot.TimestampQueryPool != nullptr;
 			}
 
-			// Every submission signals the next value of the fence, so waiting for a chunk doesn't wait for the ones after it.
-			// The command buffers are graphics ones, submitted on the first graphics queue.
+			// Every graph signals the next value of the fence, so waiting for a chunk doesn't wait for the ones after it. Graphs
+			// submit on the first graphics queue.
 			const TShared<GpuQueue> queue = gpuDevice->GetQueue(GQT_GRAPHICS, 0);
 			const TShared<GpuTimelineFence> fence = gpuDevice->CreateTimelineFence();
 			u64 lastFenceValue = 0;
-
-			auto fnSubmit = [&gpuContext, &fence, &lastFenceValue](const TShared<render::GpuCommandBuffer>& commandBuffer)
-			{
-				GpuSubmissionInformation submissionInformation;
-				submissionInformation.CommandBuffer = commandBuffer;
-				submissionInformation.SignalFences.Add(GpuTimelineFenceAndValue{ fence, ++lastFenceValue });
-
-				gpuContext.SubmitCommandBuffer(submissionInformation);
-				return lastFenceValue;
-			};
 			float chunkBlockBudget = (float)(canMeasureChunks ? kInitialChunkBlockCount : kUnmeasuredChunkBlockCount);
 
 			double stageMilliseconds[32];
@@ -326,6 +330,22 @@ namespace b3d
 			for(u32 tableIndex = 0; tableIndex < (u32)render::TextureCompressTable::Count; ++tableIndex)
 				bindings.Tables[tableIndex] = tables[tableIndex];
 
+			// Imports the resources every chunk's graph reads or writes. They are at rest between graphs.
+			auto fnImportSharedResources = [&inputTexture, &outputTexture, &bestErrorTexture, &tables](render::FrameGraph& graph)
+			{
+				graph.ImportTexture(inputTexture);
+				graph.ImportTexture(outputTexture);
+
+				if(bestErrorTexture != nullptr)
+					graph.ImportTexture(bestErrorTexture);
+
+				for(const TShared<render::GpuBuffer>& table : tables)
+				{
+					if(table != nullptr)
+						graph.ImportBuffer(table);
+				}
+			};
+
 			// Chunks are laid out in strips of block rows, with every strip and chunk sized to the current block budget
 			u32 chunkIndex = 0;
 			u32 stripStartRow = 0;
@@ -345,36 +365,16 @@ namespace b3d
 					const Vector2I chunkBlockCount((i32)chunkColumnCount, (i32)stripRowCount);
 					const Vector2I chunkBlockOffset((i32)chunkStartColumn, (i32)stripStartRow);
 
-					render::GpuCommandBufferCreateInformation commandBufferCreateInformation;
-					commandBufferCreateInformation.Name = "TextureCompress";
+					render::FrameGraph graph(gpuContext, "TextureCompress");
+					fnImportSharedResources(graph);
 
-					const TShared<render::GpuCommandBuffer> commandBuffer = pool->FindOrCreate(commandBufferCreateInformation);
-
-					// The first chunk uploads the data shared by all chunks. The dispatch barriers make it visible to the stages.
-					if(chunkIndex == 0)
+					for(const TShared<render::GpuBuffer>& scratchBuffer : chunkSlot.ScratchBuffers)
 					{
-						render::TextureUtility::Write(gpuContext, inputTexture, *source, 0, 0, render::TextureWriteFlag::Normal, commandBuffer);
-
-						if(bestErrorTexture != nullptr)
-							render::TextureUtility::Write(gpuContext, bestErrorTexture, *bestErrorTextureInitialData, 0, 0, render::TextureWriteFlag::Normal, commandBuffer);
-
-						for(u32 tableIndex = 0; tableIndex < (u32)render::TextureCompressTable::Count; ++tableIndex)
-						{
-							if(tables[tableIndex] == nullptr)
-								continue;
-
-							const TArrayView<const u32> tableData = render::GetTextureCompressTableData((render::TextureCompressTable)tableIndex);
-							render::GpuBufferUtility::Write(gpuContext, tables[tableIndex], 0, (u32)(tableData.Size() * sizeof(u32)), tableData.Data(), render::GpuBufferWriteFlag::Normal, commandBuffer);
-						}
+						if(scratchBuffer != nullptr)
+							graph.ImportBuffer(scratchBuffer);
 					}
 
 					chunkSlot.TimestampQueryIds.Clear();
-					if(canMeasureChunks)
-					{
-						commandBuffer->ResetQueries(chunkSlot.TimestampQueryPool);
-						chunkSlot.TimestampQueryIds.Add(chunkSlot.TimestampQueryPool->AllocateQuery());
-						commandBuffer->WriteTimestamp(chunkSlot.TimestampQueryIds.Back(), chunkSlot.TimestampQueryPool);
-					}
 
 					// Stages only differ in their stage parameters, so stages with the same ones share a uniform buffer
 					render::GpuBufferMappedScope chunkParameters[kMaximumParameterVariants];
@@ -401,21 +401,41 @@ namespace b3d
 					for(u32 bufferIndex = 0; bufferIndex < (u32)render::TextureCompressScratchBuffer::Count; ++bufferIndex)
 						bindings.ScratchBuffers[bufferIndex] = chunkSlot.ScratchBuffers[bufferIndex];
 
-					for(const TShared<render::TextureCompressStage>& stage : stages)
+					// One pass per stage. The first resets the chunk's timestamp queries and writes the one before the first stage, and
+					// every pass writes the one after its stage.
+					for(u32 stageIndex = 0; stageIndex < stages.Size(); ++stageIndex)
 					{
+						const TShared<render::TextureCompressStage>& stage = stages[stageIndex];
 						const u32 variantIndex = (u32)(std::find(stageParameters.begin(), stageParameters.end(), stage->GetRequirements().StageParameters) - stageParameters.begin());
 						bindings.Parameters = &chunkParameters[variantIndex];
 
-						stage->Dispatch(*commandBuffer, bindings);
+						render::FrameGraphComputePass pass;
+						const TShared<render::GpuParameterSet> set = stage->PrepareDispatch(pass, bindings);
 
-						if(canMeasureChunks)
+						graph.AddComputePass(stage->GetName(), std::move(pass), [&chunkSlot, stage, set, chunkBlockCount, canMeasureChunks, stageIndex](render::FrameGraphPassContext& context)
 						{
-							chunkSlot.TimestampQueryIds.Add(chunkSlot.TimestampQueryPool->AllocateQuery());
-							commandBuffer->WriteTimestamp(chunkSlot.TimestampQueryIds.Back(), chunkSlot.TimestampQueryPool);
-						}
+							render::GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
+							if(canMeasureChunks && stageIndex == 0)
+							{
+								commandBuffer.ResetQueries(chunkSlot.TimestampQueryPool);
+								chunkSlot.TimestampQueryIds.Add(chunkSlot.TimestampQueryPool->AllocateQuery());
+								commandBuffer.WriteTimestamp(chunkSlot.TimestampQueryIds.Back(), chunkSlot.TimestampQueryPool);
+							}
+
+							stage->Dispatch(context, set, chunkBlockCount);
+
+							if(canMeasureChunks)
+							{
+								chunkSlot.TimestampQueryIds.Add(chunkSlot.TimestampQueryPool->AllocateQuery());
+								commandBuffer.WriteTimestamp(chunkSlot.TimestampQueryIds.Back(), chunkSlot.TimestampQueryPool);
+							}
+						});
 					}
 
-					chunkSlot.FenceValue = fnSubmit(commandBuffer);
+					chunkSlot.FenceValue = ++lastFenceValue;
+					graph.AddSignalFence(fence, chunkSlot.FenceValue);
+					graph.Compile();
+					graph.Execute();
 					chunkSlot.BlockCount = chunkColumnCount * stripRowCount;
 
 					chunkStartColumn += chunkColumnCount;
@@ -442,44 +462,40 @@ namespace b3d
 			}
 #endif
 
-			// Final command buffer: a single non-blocking read-back of the whole output texture
-			render::GpuCommandBufferCreateInformation readbackInfo;
-			readbackInfo.Name = "TextureCompressReadback";
+			// A last graph reads the whole output texture back
+			render::FrameGraph readbackGraph(gpuContext, "TextureCompressReadback");
+			readbackGraph.ImportTexture(outputTexture);
 
-			const TShared<render::GpuCommandBuffer> readbackCommandBuffer = pool->FindOrCreate(readbackInfo);
+			TAsyncOp<TShared<PixelData>> readOp = render::TextureUtility::ReadAsync(readbackGraph, outputTexture);
 
-			const u32 readSize = destination->GetConsecutiveSize();
-			TAsyncOp<TShared<PixelData>> readOp = render::TextureUtility::ReadAsync(gpuContext, outputTexture, *readbackCommandBuffer);
+			const u64 readbackFenceValue = ++lastFenceValue;
+			readbackGraph.AddSignalFence(fence, readbackFenceValue);
+			readbackGraph.Compile();
+			readbackGraph.Execute();
 
-			// Copy the packed blocks into the destination surface and complete the op once the GPU finishes
-			readbackCommandBuffer->OnDidComplete.Connect(
-				[op, readOp, destination, readSize]() mutable
-				{
-					const TShared<PixelData> data = readOp.GetReturnValue();
-					if(data == nullptr)
-					{
-						op.CompleteOperation(nullptr);
-						return;
-					}
-
-					const u32 rows = data->GetHeight();
-					const u32 destinationRowByteCount = (rows != 0) ? (readSize / rows) : readSize; // tightly-packed block row
-					const u32 sourceRowPitch = data->GetRowPitch();
-					const u8* const sourceData = (const u8*)data->GetData();
-
-					u8* const destinationData = destination->GetData();
-					for(u32 y = 0; y < rows; ++y)
-						memcpy(destinationData + (u64)y * destinationRowByteCount, sourceData + (u64)y * sourceRowPitch, destinationRowByteCount);
-
-					op.CompleteOperation(destination);
-				});
-
-			const u64 readbackFenceValue = fnSubmit(readbackCommandBuffer);
-
-			// Retire the remaining chunks and the read-back before the command buffer pool is destroyed on return. A pool
-			// destroyed with buffers still executing waits for the whole device to go idle, stalling unrelated work on
-			// every queue. This only waits for this compression's own submissions, and completes the op.
+			// Completion of the read-back is otherwise only processed at the end of a frame. This only waits for this
+			// compression's own submissions, and completes the read.
 			queue->WaitUntilFence(fence, readbackFenceValue);
+
+			const TShared<PixelData> data = readOp.HasCompleted() ? readOp.GetReturnValue() : nullptr;
+			if(data == nullptr)
+			{
+				op.CompleteOperation(nullptr);
+				return;
+			}
+
+			// Copy the packed blocks into the destination surface
+			const u32 readSize = destination->GetConsecutiveSize();
+			const u32 rows = data->GetHeight();
+			const u32 destinationRowByteCount = (rows != 0) ? (readSize / rows) : readSize; // tightly-packed block row
+			const u32 sourceRowPitch = data->GetRowPitch();
+			const u8* const sourceData = (const u8*)data->GetData();
+
+			u8* const destinationData = destination->GetData();
+			for(u32 y = 0; y < rows; ++y)
+				memcpy(destinationData + (u64)y * destinationRowByteCount, sourceData + (u64)y * sourceRowPitch, destinationRowByteCount);
+
+			op.CompleteOperation(destination);
 		}
 
 	} // anonymous namespace
