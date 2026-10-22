@@ -76,7 +76,6 @@ namespace b3d
 
 			u32 GetQueueCount(GpuQueueType type) const override { return (u32)mQueueInfos[(u32)type].Queues.size(); }
 			TShared<GpuQueue> GetQueue(GpuQueueType type, u32 index) const override;
-			void PresentRenderWindow(const TShared<RenderWindow>& renderWindow, GpuQueueMask syncMask = GpuQueueMask::kAll) override;
 			void WaitUntilIdle() override;
 			void BeginFrame() override;
 			void RunDefragPass(GpuWorkContext& gpuContext) override;
@@ -94,9 +93,7 @@ namespace b3d
 			TShared<GpuPipelineParameterSetLayout> CreateGpuPipelineParameterSetLayout(const GpuProgramParameterDescription& parameterDescription, const TShared<GpuResourceTableLayout>& resourceTableLayout, u32 tableIndex) override;
 			TUnique<GpuParameterSetPool> CreateParameterSetPool(const GpuParameterSetPoolCreateInformation& createInformation) override;
 			TShared<GpuTimelineFence> CreateTimelineFence() override;
-#if B3D_GPU_EXPLICIT_BARRIERS
 			TShared<GpuSplitBarrier> CreateSplitBarrier(TOptional<GpuQueueType> releaseQueue, TOptional<GpuQueueType> acquireQueue) override;
-#endif
 			TUnique<IGpuAllocator> CreateScratchAllocator(u32 memoryType, IGpuCompletionTracker& completionTracker) override;
 			IGpuTransientHeapPool* GetTransientHeapPool(u32 memoryType) override;
 

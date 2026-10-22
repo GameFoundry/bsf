@@ -120,6 +120,7 @@ namespace b3d::render
 
 		// IRenderWindowSurface
 		void SwapBuffers(GpuQueue& queue, GpuQueueMask syncMask) override;
+		bool HasAcquiredImage() const override;
 		void RebuildSwapChain(u32 width, u32 height, bool vsync, u32 vsyncInterval) override;
 		void MarkSwapChainAsInvalid() override;
 		void Destroy() override;

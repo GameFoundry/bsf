@@ -48,8 +48,25 @@ namespace b3d
 			TiledDeferredLightingMaterial() = default;
 			void Initialize() override;
 
-			/** Binds the material for rendering, sets up parameters and executes it. */
-			void Execute(GpuCommandBuffer& commandBuffer, const RendererView& view, const VisibleLightData& lightData, const GBufferTextures& gbuffer, const TShared<Texture>& inputTexture, const TShared<Texture>& lightAccumTex, const TShared<Texture>& lightAccumTexArray, const TShared<Texture>& msaaCoverage);
+			/**
+			 * Creates the parameter set of @p pass and assigns the lighting inputs of @p view to it.
+			 *
+			 * @param	pass				Pass that dispatches the material.
+			 * @param	view				View to light.
+			 * @param	lightData			Lights visible in the view.
+			 * @param	gbuffer				G-buffer of the view.
+			 * @param	inputTexture		Scene color, holding the emissive light of the G-buffer.
+			 * @param	lightAccumTex		Texture to write the lit result to, without MSAA.
+			 * @param	lightAccumTexArray	Texture array to write the lit samples to, with MSAA.
+			 * @param	msaaCoverage		Texture marking the pixels whose samples differ, with MSAA.
+			 * @return						Parameter set to pass to Execute().
+			 */
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const RendererView& view, const VisibleLightData& lightData, const GBufferTextures& gbuffer,
+				const TShared<Texture>& inputTexture, const TShared<Texture>& lightAccumTex, const TShared<Texture>& lightAccumTexArray,
+				const TShared<Texture>& msaaCoverage);
+
+			/** Binds the material and @p set, a set from Prepare(), and dispatches one group per tile of a @p width by @p height view. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, u32 width, u32 height) const;
 
 			/** Returns the material variation matching the provided parameters. */
 			static TiledDeferredLightingMaterial* GetVariation(u32 msaaCount);
@@ -65,6 +82,7 @@ namespace b3d
 			GpuParameterSampledTexture mMSAACoverageTexParam;
 
 			GpuParameterUniformBuffer mUniformBufferParameter;
+			GpuParameterUniformBuffer mPerCameraParameter;
 
 			static const u32 kTileSize;
 		};
@@ -83,11 +101,17 @@ namespace b3d
 			TextureArrayToMSAATexture() = default;
 			void Initialize() override;
 
-			/** Prepares the material for rendering by setting up parameter. Must be called at least once before Execute. */
-			void Prepare(const TShared<Texture>& inputArray, const TShared<Texture>& target);
+			/**
+			 * Creates the parameter set of @p pass and assigns @p inputArray to it. Returns the set to pass to Execute().
+			 *
+			 * @param	pass		Pass that writes @p target.
+			 * @param	inputArray	Texture array with one slice per sample of @p target.
+			 * @param	target		Multisampled texture to write, the size of @p inputArray.
+			 */
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& inputArray, const TShared<Texture>& target);
 
-			/** Binds the material for rendering, sets up parameters and executes it. */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& target);
+			/** Binds the material and @p set, a set from Prepare(), and draws a screen quad over every sample of @p target. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const TShared<Texture>& target) const;
 
 		private:
 			GpuParameterSampledTexture mInputParam;
@@ -127,16 +151,33 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Binds the material for rendering, sets up parameters and executes it. Only works on variations of
-			 * this material intended for textures and texture arrays.
+			 * Creates the parameter set of @p pass and assigns @p target and @p clearValue to it. Only works on variations of this material
+			 * intended for textures and texture arrays. Float variations with four components require an RGBA16F texture.
+			 *
+			 * @param	pass		Pass that dispatches the material.
+			 * @param	target		Texture to clear.
+			 * @param	clearValue	Value to write into every texel. Integer variations read the bits of its components.
+			 * @param	surface		Surface of @p target to clear. Texture array variations clear one slice, bound as an array.
+			 * @return				Parameter set to pass to Execute().
 			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& target, const Color& clearValue = Color::kZero, const TextureSurface& surface = TextureSurface::kComplete);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& target, const Color& clearValue = Color::kZero, const TextureSurface& surface = TextureSurface::kComplete);
+
+			/** Binds the material and @p set, a set from the texture form of Prepare(), and dispatches over a @p width by @p height texture. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, u32 width, u32 height) const;
 
 			/**
-			 * Binds the material for rendering, sets up parameters and executes it. Only works on variations of
-			 * this material intended for buffers.
+			 * Creates the parameter set of @p pass and assigns @p target and @p clearValue to it. Only works on variations of this material
+			 * intended for buffers.
+			 *
+			 * @param	pass		Pass that dispatches the material.
+			 * @param	target		Buffer to clear.
+			 * @param	clearValue	Value to write into every element. Integer variations read the bits of its components.
+			 * @return				Parameter set to pass to Execute().
 			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<GpuBuffer>& target, const Color& clearValue = Color::kZero);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<GpuBuffer>& target, const Color& clearValue = Color::kZero);
+
+			/** Binds the material and @p set, a set from Prepare(), and dispatches over @p elementCount elements of its buffer. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, u32 elementCount) const;
 
 			/**
 			 * Returns the material variation matching the provided parameters.
@@ -199,8 +240,21 @@ namespace b3d
 			TiledDeferredImageBasedLightingMaterial() = default;
 			void Initialize() override;
 
-			/** Binds the material for rendering, sets up parameters and executes it. */
-			void Execute(GpuCommandBuffer& commandBuffer, const RendererView& view, const RenderBeastScene& scene, const VisibleReflectionProbeData& probeData, const Inputs& inputs);
+			/**
+			 * Creates the parameter set of @p pass and assigns the image based lighting inputs of @p view to it.
+			 *
+			 * @param	pass		Pass that dispatches the material.
+			 * @param	view		View to light.
+			 * @param	scene		Scene holding the sky and the reflection probe cubemaps.
+			 * @param	probeData	Reflection probes visible in the view.
+			 * @param	inputs		Textures to read and write.
+			 * @return				Parameter set to pass to Execute().
+			 */
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const RendererView& view, const RenderBeastScene& scene, const VisibleReflectionProbeData& probeData,
+				const Inputs& inputs);
+
+			/** Binds the material and @p set, a set from Prepare(), and dispatches one group per tile of a @p width by @p height view. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, u32 width, u32 height) const;
 
 			/** Returns the material variation matching the provided parameters. */
 			static TiledDeferredImageBasedLightingMaterial* GetVariation(u32 msaaCount);
@@ -222,6 +276,7 @@ namespace b3d
 
 			GpuParameterUniformBuffer mUniformBufferParameter;
 			GpuParameterUniformBuffer mReflProbeParamsUniformBufferParameter;
+			GpuParameterUniformBuffer mPerCameraParameter;
 
 			static const u32 kTileSize;
 		};

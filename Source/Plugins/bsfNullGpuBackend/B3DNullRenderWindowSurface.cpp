@@ -1,8 +1,6 @@
 //************************************* B3D Framework - Copyright 2026 Marko Pintera *************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "B3DNullRenderWindowSurface.h"
-#include "Image/B3DColor.h"
-#include "Image/B3DPixelData.h"
 
 namespace b3d::render
 {
@@ -26,15 +24,15 @@ namespace b3d::render
 		// No-op implementation
 	}
 
-	TAsyncOp<TShared<PixelData>> NullRenderWindowSurface::ReadAsync(GpuCommandBuffer& commandBuffer)
+	TOptional<RenderWindowImageLayout> NullRenderWindowSurface::GetImageLayout() const
 	{
-		TShared<PixelData> pixelData = PixelData::Create(mWidth, mHeight, 1, PF_RGBA8);
-		pixelData->SetColors(Color::kBlack);
+		RenderWindowImageLayout layout;
+		layout.Width = mWidth;
+		layout.Height = mHeight;
+		layout.Format = PF_RGBA8;
+		layout.Pitch = ImageSubresourcePitch(mWidth, mHeight);
 
-		TAsyncOp<TShared<PixelData>> op;
-		op.CompleteOperation(pixelData);
-
-		return op;
+		return layout;
 	}
 
 	void NullRenderWindowSurface::Destroy()

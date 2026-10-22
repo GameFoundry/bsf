@@ -247,6 +247,12 @@ namespace b3d
 		void TestAliasing_InheritedTags();
 
 		/**
+		 * An acquire reports the latest pass of the last uses it orders after, on the queue of the first use. Memory never used
+		 * before reports none, and memory released without accesses keeps the passes it was placed over.
+		 */
+		void TestAliasing_Passes();
+
+		/**
 		 * Scopes of different allocators open at the same time each see the pool's heaps as free, and share the heaps that
 		 * either of them creates. Only the first of two requests for a new heap in the same slot creates one, so the pool holds
 		 * the memory of the largest scope. A scope starts without the accesses of earlier scopes.

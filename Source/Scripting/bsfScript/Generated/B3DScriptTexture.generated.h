@@ -7,7 +7,7 @@
 #include "../../../Engine/Core/Utility/B3DCommonTypes.h"
 #include "../../../Engine/Utility/Image/B3DColor.h"
 #include "../../../Engine/Core/Image/B3DPixelData.h"
-#include "../../../Engine/Core/Image/B3DPixelUtility.h"
+#include "../../../Engine/Core/Image/B3DTexture.h"
 
 namespace b3d { class Texture; }
 namespace b3d { class TextureEx; }

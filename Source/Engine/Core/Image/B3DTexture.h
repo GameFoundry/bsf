@@ -133,6 +133,9 @@ namespace b3d
 		/** Initializes the structure so that is creates a texture that can fit the provided pixel data. */
 		static TextureCreateInformation CreateFromPixelData(const TShared<PixelData>& pixelData);
 
+		/** Returns the information of a 2D texture with a single sample and no mipmaps. */
+		static TextureCreateInformation Create2D(PixelFormat format, u32 width, u32 height, TextureUsageFlags usage = TextureUsageFlag::Default);
+
 		TShared<PixelData> InitialData;
 	};
 
@@ -478,6 +481,8 @@ namespace b3d
 
 	namespace render
 	{
+		class FrameGraph;
+
 		/** @addtogroup Renderer
 		 *  @{
 		 */
@@ -493,10 +498,10 @@ namespace b3d
 		{
 		public:
 			/**
-			 * Constructs a texture whose native resource is created at @p allocation. See
+			 * Constructs a texture whose native resource is created at @p allocation, with the creation @p flags. See
 			 * GpuDevice::CreateTexture(const TextureCreateInformation&, const GpuAllocation&, GpuObjectCreateFlags).
 			 */
-			Texture(const TextureCreateInformation& createInformation, const GpuAllocation& allocation);
+			Texture(const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags);
 			virtual ~Texture() {}
 
 			void Initialize() override;
@@ -576,6 +581,52 @@ namespace b3d
 			 */
 			bool HasFixedLocation() const { return !mRequestedAllocation.IsPending(); }
 
+			/**
+			 * @name Internal
+			 * @{
+			 */
+
+			/**
+			 * Moves the texture to @p allocation. An initialized texture recreates its native resource there and loses its contents, and
+			 * views of the old native resource are no longer valid. The old native resource is released once the GPU finishes using it.
+			 * An uninitialized texture is created there once initialized.
+			 *
+			 * @param	allocation	Memory to create the native resource at. Rules match GpuDevice::CreateTexture(const TextureCreateInformation&,
+			 *						const GpuAllocation&, GpuObjectCreateFlags), except that the memory requirements are not checked.
+			 * @param	flags		GpuObjectCreateFlag::Aliased if the memory is shared with other resources over time. Other flags are ignored.
+			 */
+			void SetAllocation(const GpuAllocation& allocation, GpuObjectCreateFlags flags);
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+			/**
+			 * Marks the texture as unplaced: a transient resource allocator returned it without memory for its next use. Accessing a marked texture
+			 * on the GPU is invalid. Development builds only.
+			 */
+			void SetUnplaced(bool unplaced) { mIsUnplaced.store(unplaced, std::memory_order_relaxed); }
+
+			/** Returns true if the texture is marked with SetUnplaced(). Development builds only. */
+			bool IsUnplaced() const { return mIsUnplaced.load(std::memory_order_relaxed); }
+#endif
+
+			/**
+			 * Registers the texture as resource @p resourceIndex of a frame graph, or unregisters it if @p resourceIndex is ~0u. The texture
+			 * is a resource of at most one frame graph. See FrameGraph.
+			 */
+			void SetFrameGraphResourceIndex(u32 resourceIndex) { mFrameGraphResourceIndex = resourceIndex; }
+
+			/** Returns the index of the texture among the resources of its frame graph, or ~0u if it is a resource of none. */
+			u32 GetFrameGraphResourceIndex() const { return mFrameGraphResourceIndex; }
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+			/** Sets the id of the frame graph the texture is a resource of, or zero if none, so graphs detect resources of other graphs. */
+			void SetFrameGraphId(u32 graphId) { mFrameGraphId = graphId; }
+
+			/** Returns the id set by SetFrameGraphId(). */
+			u32 GetFrameGraphId() const { return mFrameGraphId; }
+#endif
+
+			/** @} */
+
 			/**	Returns properties that contain information about the texture. */
 			const TextureProperties& GetProperties() const { return mProperties; }
 
@@ -637,6 +688,28 @@ namespace b3d
 			 * by the proxy itself.
 			 */
 			GpuAllocation mRequestedAllocation;
+
+			/**
+			 * True if mRequestedAllocation is memory shared with other resources over time (see GpuObjectCreateFlag::Aliased), so creating the
+			 * native resource must not write to it.
+			 */
+			bool mIsAliased = false;
+
+			/**
+			 * Returns true if the native images created for the texture start at rest (see gGpuExplicitBarriers). Backends then
+			 * request a resting transition of every image they create for the texture (see IGpuImageResource::RequestRestingTransition()),
+			 * unless its native layout is already the resting one. Images on memory other resources share get their state from whoever
+			 * places them, and images created while the texture is a frame graph resource (see SetFrameGraphResourceIndex()) from the
+			 * graph's first barrier of it, so they never start at rest.
+			 */
+			bool StartsAtRest() const;
+
+			u32 mFrameGraphResourceIndex = ~0u; /**< See SetFrameGraphResourceIndex(). */
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+			u32 mFrameGraphId = 0; /**< See SetFrameGraphId(). */
+			std::atomic<bool> mIsUnplaced = false;
+#endif
 		};
 
 		/** Flags controlling texture write behavior. */
@@ -744,6 +817,19 @@ namespace b3d
 			 * @return					Operation that will be signaled when the data is ready to be read.
 			 */
 			static TAsyncOp<TShared<PixelData>> ReadAsync(GpuWorkContext& gpuContext, const TShared<Texture>& texture, GpuCommandBuffer& commandBuffer, u32 mipLevel = 0, u32 arrayLayer = 0);
+
+			/**
+			 * Performs a non-blocking read operation inside @p graph. The GPU will execute the read when the command buffer 
+			 * reaches the execution point and the asynchronous operation will be signaled with the return value.
+			 *
+			 * @param	graph			Graph to add the copy pass to. Its work context backs the internal staging buffer.
+			 * @param	texture			Texture to read the data from. Must be a resource of @p graph.
+			 * @param	mipLevel		Mipmap level to read from.
+			 * @param	arrayLayer		Texture array layer (or cubemap face or depth slice) to read from.
+			 * @return					Operation that will be signaled when the command buffer of the copy pass completes. Signaled with
+			 *							null if the command buffer is destroyed without being submitted.
+			 */
+			static TAsyncOp<TShared<PixelData>> ReadAsync(FrameGraph& graph, const TShared<Texture>& texture, u32 mipLevel = 0, u32 arrayLayer = 0);
 
 			/**
 			 * Sets all the pixels of the specified face and mip level to the provided value.

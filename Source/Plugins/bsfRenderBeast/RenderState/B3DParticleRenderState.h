@@ -42,6 +42,7 @@ namespace b3d
 			B3D_UNIFORM_BUFFER_MEMBER(i32, gTexSize)
 			B3D_UNIFORM_BUFFER_MEMBER(Vector3, gAxisRight)
 			B3D_UNIFORM_BUFFER_MEMBER(i32, gBufferOffset)
+			B3D_UNIFORM_BUFFER_MEMBER(i32, gUseSortedIndices)
 		B3D_UNIFORM_BUFFER_END
 
 		extern ParticlesUniformDefinition gParticlesUniformDefinition;
@@ -55,19 +56,6 @@ namespace b3d
 
 		extern GpuParticlesUniformDefinition gGpuParticlesUniformDefinition;
 
-		/** Types of forward lighting supported on particle shaders. */
-		enum class ParticleForwardLightingType
-		{
-			/** No forward lighting. */
-			None,
-
-			/** Using the modern clustered forward lighting approach (requires compute). */
-			Clustered,
-
-			/** Using the old-school standard forward lighting approach. */
-			Standard
-		};
-
 		/**
 		 * Returns a specific particle rendering shader variation.
 		 *
@@ -75,37 +63,17 @@ namespace b3d
 		 * @tparam LOCK_Y	If true, billboard rotation will be locked around the Y axis, otherwise the rotation is free.
 		 * @tparam GPU		If true, the particle shader expects input from the GPU simulation instead of the CPU simulation.
 		 * @tparam IS_3D	If true, the particle shader will render meshes instead of billboards.
-		 * @tparam FWD		Determines what form of forward lighting should the shader support.
 		 */
-		template <ParticleOrientation ORIENT, bool LOCK_Y, bool GPU, bool IS_3D, ParticleForwardLightingType FWD>
+		template <ParticleOrientation ORIENT, bool LOCK_Y, bool GPU, bool IS_3D>
 		static const ShaderVariationParameters& GetParticleShaderVariation()
 		{
-			static bool initialized = false;
-			static TInlineArray<ShaderVariationParameter, 4> params({
+			static ShaderVariationParameters variation = ShaderVariationParameters({
 				ShaderVariationParameter("ORIENT", (u32)ORIENT),
 				ShaderVariationParameter("LOCK_Y", LOCK_Y),
 				ShaderVariationParameter("GPU", GPU),
 				ShaderVariationParameter("IS_3D", IS_3D),
 			});
 
-			if(!initialized)
-			{
-				switch(FWD)
-				{
-				case ParticleForwardLightingType::Clustered:
-					params.Add(ShaderVariationParameter("CLUSTERED", true));
-					break;
-				case ParticleForwardLightingType::Standard:
-					params.Add(ShaderVariationParameter("CLUSTERED", false));
-					break;
-				case ParticleForwardLightingType::None:
-					break;
-				}
-
-				initialized = true;
-			}
-
-			static ShaderVariationParameters variation = ShaderVariationParameters(params);
 			return variation;
 		}
 
@@ -118,10 +86,9 @@ namespace b3d
 		 * @param[in]	gpu					If true, the particle shader expects input from the GPU simulation instead of the
 		 *									CPU simulation.
 		 * @param[in]	is3d				If true, the particle shader will render meshes instead of billboards.
-		 * @param[in]	forwardLighting		Form of forward lighting the shader should support.
 		 * @return							Object that can be used for looking up the variations in the material.
 		 */
-		const ShaderVariationParameters& GetParticleShaderVariationParameters(ParticleOrientation orient, bool lockY, bool gpu, bool is3d, ParticleForwardLightingType forwardLighting);
+		const ShaderVariationParameters& GetParticleShaderVariationParameters(ParticleOrientation orient, bool lockY, bool gpu, bool is3d);
 
 		/** Contains information required for drawing a particle system. */
 		class ParticlesDrawCommand : public DrawCommand
@@ -156,45 +123,20 @@ namespace b3d
 				GpuParameterSampledTexture SizeTexture;
 			};
 
-			/** Parameters relevant for rendering the outputs of the particle GPU simulation. */
-			struct GpuSimulationParams
-			{
-				/** Binding spot for the texture containing position (.xyz) and time (.w) information. */
-				GpuParameterSampledTexture PositionTimeTexture;
-
-				/** Binding spot for the texture containing 2D size (.xy) and rotation (.z) information. */
-				GpuParameterSampledTexture SizeRotationTexture;
-
-				/** Binding spot for the texture containing quantized curves used for evaluating various particle properties. */
-				GpuParameterSampledTexture CurvesTexture;
-			};
-
-			/** Parameter for binding the per-camera uniform buffer. */
-			GpuParameterUniformBuffer PerCameraUniformBufferParameter;
-
 			/** Parameter for binding the particle params uniform buffer. */
 			GpuParameterUniformBuffer ParticlesUniformBufferParameter;
 
-			/** Binding spot for the buffer containing instance id -> particle index mapping. */
+			/**
+			 * Binding spot for the buffer containing instance id -> particle index mapping. GPU simulated only, CPU simulated systems read
+			 * theirs from RCNodeParticleSort::ParticleIndices.
+			 */
 			GpuParameterStorageBuffer IndicesBuffer;
-
-			/** Optional texture input for the depth buffer. */
-			GpuParameterSampledTexture DepthInputTexture;
 
 			/** Parameters relevant for billboard rendering of the outputs of the particle CPU simulation. */
 			CpuBillboardSimulationParams ParamsCpuBillboard;
 
 			/** Parameters relevant for mesh rendering of the outputs of the particle CPU simulation. */
 			CpuMeshSimulationParams ParamsCpuMesh;
-
-			/** Parameters relevant for rendering the outputs of the particle GPU simulation. */
-			GpuSimulationParams ParamsGpu;
-
-			/** Collection of parameters used for direct lighting using the forward rendering path. */
-			ForwardLightingParams ForwardLightingParams;
-
-			/** Collection of parameters used for image based lighting. */
-			ImageBasedLightingParameterBinding ImageBasedParams;
 
 			/** Number of particles to render. */
 			u32 NumParticles = 0;
@@ -226,6 +168,18 @@ namespace b3d
 			/** Element used for sorting and rendering the particle system. */
 			mutable ParticlesDrawCommand DrawCommand;
 
+			/**
+			 * Offset of the system's particle indices in each view's particle index buffer (RCNodeParticleSort::ParticleIndices), the same
+			 * in every view. CPU simulated only, assigned when the inputs are bound.
+			 */
+			u32 ParticleIndicesOffset = 0;
+
+			/**
+			 * True if the inputs of the CPU simulated system are bound for the current frame. Set when a view first sees the system in the
+			 * frame (RenderBeastScene::PrepareVisibleParticleSystems()).
+			 */
+			bool AreCpuInputsBound = false;
+
 			/** Suballocation for GPU particle parameters (GPU-simulated only). */
 			GpuBufferSuballocation GpuParticlesParamSuballocation;
 
@@ -239,29 +193,30 @@ namespace b3d
 			void UpdatePerObjectData(const ParticleSystemProxy& proxy);
 
 			/**
-			 * Binds all the GPU program inputs required for rendering a particle system that is being simulated by the CPU.
+			 * Binds the GPU program inputs of a particle system that is being simulated by the CPU, once per frame.
 			 *
 			 * @param renderData	Render data representing the state of a CPU simulated particle system.
-			 * @param view			View the particle system is being rendered from.
 			 */
-			void BindCpuSimulatedInputs(const ParticleSystemProxy& proxy, const ParticleRenderData* renderData, const RendererView& view) const;
+			void BindCpuSimulatedInputs(const ParticleSystemProxy& proxy, const ParticleRenderData* renderData) const;
 
 			/**
-			 * Binds all the GPU program inputs required for rendering a particle system that is being simulated by the GPU.
-			 *
-			 * @param gpuSimResources	Resources containing global data for all GPU simulated particle systems.
-			 * @param view				View the particle system is being rendered from.
+			 * Binds the GPU program inputs of a particle system that is being simulated by the GPU. Does not bind the outputs of the
+			 * simulation that all such systems share: the particle state textures, the curve texture and the sorted index buffer.
 			 */
-			void BindGpuSimulatedInputs(const ParticleSystemProxy& proxy, const GpuParticleResources& gpuSimResources, const RendererView& view) const;
+			void BindGpuSimulatedInputs(const ParticleSystemProxy& proxy) const;
 
 		private:
 			/**
 			 * Allocates a transient uniform buffer and populates it with particle parameters.
 			 *
-			 * @param texSize		Size of the particle data texture.
-			 * @param bufferOffset	Offset into the particle index buffer.
+			 * @param texSize			Size of the particle data texture.
+			 * @param bufferOffset		Offset into RCNodeParticleSort::ParticleIndices for CPU simulated systems. For GPU simulated
+			 *							systems, offset into the particle index buffer, or into the sorted index buffer if
+			 *							@p useSortedIndices.
+			 * @param useSortedIndices	True if the vertex shader reads the particle indices from the sorted index buffer of the GPU
+			 *							particle simulation, rather than from the index buffer of the particle system.
 			 */
-			void PopulateAndBindParticlesUniformBuffer(const ParticleSystemProxy& proxy, i32 texSize, i32 bufferOffset) const;
+			void PopulateAndBindParticlesUniformBuffer(const ParticleSystemProxy& proxy, i32 texSize, i32 bufferOffset, bool useSortedIndices) const;
 		};
 
 		/** Default material used for rendering particles, when no other is available. */
@@ -279,7 +234,6 @@ namespace b3d
 			TShared<Texture> PositionAndRotation;
 			TShared<Texture> Color;
 			TShared<Texture> SizeAndFrameIdx;
-			TShared<GpuBuffer> Indices;
 		};
 
 		/**
@@ -292,7 +246,6 @@ namespace b3d
 			TShared<Texture> Color;
 			TShared<Texture> Size;
 			TShared<Texture> Rotation;
-			TShared<GpuBuffer> Indices;
 		};
 
 		/** Keeps a pool of textures used for the purposes of the particle system. */
@@ -366,15 +319,15 @@ namespace b3d
 			 * Updates the provided indices buffer so they particles are sorted from further to nearest with respect to
 			 * some reference point.
 			 *
-			 * @param[in]	refPoint		Reference point respect to which to determine the distance of individual particles.
-			 *								Should be in the simulation space of the particle system.
-			 * @param[in]	positions		Buffer containing positions of individual particles.
-			 * @param[in]	numParticles	Number of particles in the provided position and indices buffers.
-			 * @param[in]	stride			Offset between positions in the @p positions buffer, in number of floats.
-			 * @param[out]	indices			Index buffer that will be sorted according to the particle distance, in descending
-			 *								order.
+			 * @param	refPoint		Reference point respect to which to determine the distance of individual particles.
+			 *							Should be in the simulation space of the particle system.
+			 * @param	positions		Buffer containing positions of individual particles.
+			 * @param	numParticles	Number of particles in the provided position and indices buffers.
+			 * @param	stride			Offset between positions in the @p positions buffer, in number of floats.
+			 * @param	indices			Receives @p numParticles particle indices, sorted according to the particle distance, in
+			 *							descending order.
 			 */
-			static void SortByDistance(const Vector3& refPoint, const PixelData& positions, u32 numParticles, u32 stride, Vector<u32>& indices);
+			static void SortByDistance(const Vector3& refPoint, const PixelData& positions, u32 numParticles, u32 stride, u32* indices);
 
 		private:
 			ParticleTexturePool mTexturePool;

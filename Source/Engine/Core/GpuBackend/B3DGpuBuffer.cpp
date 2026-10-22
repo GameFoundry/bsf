@@ -8,6 +8,8 @@
 #include "CoreObject/B3DCoreObjectSync.h"
 #include "FileSystem/B3DDataStream.h"
 #include "Renderer/B3DRenderer.h"
+#include "GpuBackend/B3DGpuBackendUtility.h"
+#include "FrameGraph/B3DFrameGraph.h"
 
 using namespace b3d;
 
@@ -266,6 +268,19 @@ namespace b3d::render
 	GpuBuffer::~GpuBuffer()
 	{ }
 
+	void GpuBuffer::SetAllocation(const GpuAllocation& allocation, GpuObjectCreateFlags flags)
+	{
+		if(!B3D_ENSURE_LOG(allocation.HasMemory() || allocation.IsPending(), "Cannot move buffer '{0}' to an empty allocation.", mName))
+			return;
+
+		if(!B3D_ENSURE_LOG(!flags.IsSet(GpuObjectCreateFlag::Aliased) || allocation.HasMemory(), "Only a buffer moved to a fixed memory location can be aliased. Buffer: '{0}'.", mName))
+			return;
+
+		mRequestedAllocation = allocation;
+		if(IsInitialized())
+			RecreateInternalBuffer();
+	}
+
 #if B3D_BUILD_TYPE_DEVELOPMENT
 	void GpuBuffer::ValidateMap(u32 offset, u32 size, GpuMapOptions options)
 	{
@@ -476,7 +491,19 @@ namespace b3d::render
 		if(commandBuffer == nullptr)
 			commandBuffer = gpuContext.GetTransferCommandBuffer();
 
-		commandBuffer->CopyBufferToBuffer(stagingBuffer, buffer, 0, offset, length);
+		// Command buffers with explicit barriers take the buffer from its resting state and return it there
+		if(commandBuffer->UsesExplicitBarriers())
+		{
+			const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*buffer, commandBuffer->GetQueueType());
+			const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
+
+			commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, restingState, transferWrite));
+			commandBuffer->CopyBufferToBuffer(stagingBuffer, buffer, 0, offset, length);
+			commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, transferWrite, restingState));
+		}
+		else
+			commandBuffer->CopyBufferToBuffer(stagingBuffer, buffer, 0, offset, length);
+
 		commandBuffer->AddQueueSyncMask(syncMask);
 
 		// We don't actually flush the transfer buffer here since it's an expensive operation, but it's instead
@@ -516,8 +543,21 @@ namespace b3d::render
 				// Make any writes visible before mapping
 				if(supportsGPUWrites)
 				{
-					// Issue a barrier so the device makes the written memory available for read (read-after-write hazard)
-					commandBuffer->IssueBarriers({{ GpuBufferBarrier(buffer, GpuResourceUseFlag::Host, GpuAccessFlag::Read)}});
+					// Command buffers with explicit barriers make the writes visible to the host from the buffer's resting state. The buffer
+					// needs no barrier back to rest, because the host reads it after the command buffer completes, and any later GPU access is
+					// submitted after that.
+					if(commandBuffer->UsesExplicitBarriers())
+					{
+						const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*buffer, commandBuffer->GetQueueType());
+						const GpuAccessState hostRead(GpuStageFlag::Host, GpuAccessFlag::Read);
+
+						commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, restingState, hostRead));
+					}
+					else
+					{
+						// Issue a barrier so the device makes the written memory available for read (read-after-write hazard)
+						commandBuffer->IssueBarriers({{ GpuBufferBarrier(buffer, GpuResourceUseFlag::Host, GpuAccessFlag::Read)}});
+					}
 				}
 
 				// Submit the command buffer and wait until it finishes
@@ -545,7 +585,7 @@ namespace b3d::render
 		TShared<GpuCommandBuffer> commandBuffer = gpuContext.GetTransferCommandBuffer();
 
 		// Queue copy command
-		commandBuffer->CopyBufferToBuffer(buffer, stagingBuffer, offset, 0, length);
+		GpuBackendUtility::CopyToStagingBuffer(*commandBuffer, buffer, offset, length, stagingBuffer);
 
 		// Submit the command buffer and wait until it finishes
 		commandBuffer->AddQueueSyncMask(syncMask);
@@ -559,6 +599,37 @@ namespace b3d::render
 		stagingBuffer->Destroy();
 	}
 
+	namespace
+	{
+		/**
+		 * Completes @p operation with the first @p length bytes of @p stagingBuffer once @p commandBuffer completes, or with null if the
+		 * command buffer is destroyed without being submitted.
+		 */
+		void CompleteReadOnCompletion(GpuCommandBuffer& commandBuffer, const TShared<GpuBuffer>& stagingBuffer, u32 length, TAsyncOp<TShared<MemoryDataStream>> operation)
+		{
+			auto fnOnCommandBufferCompleted = [stagingBuffer, length, operation]() mutable
+			{
+				GpuBufferMappedScope mapping = stagingBuffer->Map(GpuMapOption::Read);
+				const TShared<MemoryDataStream> dataStream = B3DMakeShared<MemoryDataStream>(stagingBuffer->GetTotalSize());
+				memcpy(dataStream->Data(), mapping.GetMappedMemory(), length);
+
+				operation.CompleteOperation(dataStream);
+			};
+
+			auto fnOnCommandBufferDestroyed = [operation](bool isSubmitted) mutable
+			{
+				// In this case the completion callback will trigger.
+				if(isSubmitted)
+					return;
+
+				operation.CompleteOperation(nullptr);
+			};
+
+			commandBuffer.OnDidComplete.Connect(fnOnCommandBufferCompleted);
+			commandBuffer.OnDestroyed.Connect(fnOnCommandBufferDestroyed);
+		}
+	} // namespace
+
 	TAsyncOp<TShared<MemoryDataStream>> GpuBufferUtility::ReadAsync(GpuWorkContext& gpuContext, const TShared<GpuBuffer>& buffer, u32 offset, u32 length, GpuCommandBuffer& commandBuffer)
 	{
 		if(buffer == nullptr)
@@ -566,29 +637,33 @@ namespace b3d::render
 
 		// TODO - Staging buffer might not be necessary if he texture is directly mappable
 		TShared<GpuBuffer> stagingBuffer = CreateStaging(gpuContext, buffer, true);
-		commandBuffer.CopyBufferToBuffer(buffer, stagingBuffer, offset, 0, length);
+		GpuBackendUtility::CopyToStagingBuffer(commandBuffer, buffer, offset, length, stagingBuffer);
 
 		TAsyncOp<TShared<MemoryDataStream>> op;
-		auto fnOnCommandBufferCompleted = [stagingBuffer, length, op]() mutable
+		CompleteReadOnCompletion(commandBuffer, stagingBuffer, length, op);
+
+		return op;
+	}
+
+	TAsyncOp<TShared<MemoryDataStream>> GpuBufferUtility::ReadAsync(FrameGraph& graph, const TShared<GpuBuffer>& buffer, u32 offset, u32 length)
+	{
+		if(buffer == nullptr)
+			return {};
+
+		const TShared<GpuBuffer> stagingBuffer = CreateStaging(graph.GetWorkContext(), buffer, true);
+		graph.ImportBuffer(stagingBuffer);
+
+		FrameGraphCopyPass pass;
+		pass.AddSource(buffer);
+		pass.AddDestination(stagingBuffer);
+
+		TAsyncOp<TShared<MemoryDataStream>> op;
+		graph.AddCopyPass("Readback", std::move(pass), [buffer, offset, length, stagingBuffer, op](FrameGraphPassContext& passContext)
 		{
-			GpuBufferMappedScope mapping = stagingBuffer->Map(GpuMapOption::Read);
-			const TShared<MemoryDataStream> dataStream = B3DMakeShared<MemoryDataStream>(stagingBuffer->GetTotalSize());
-			memcpy(dataStream->Data(), mapping.GetMappedMemory(), length);
-
-			op.CompleteOperation(dataStream);
-		};
-
-		auto fnOnCommandBufferDestroyed = [op](bool isSubmitted) mutable
-		{
-			// In this case the completion callback will trigger.
-			if(isSubmitted)
-				return;
-
-			op.CompleteOperation(nullptr);
-		};
-
-		commandBuffer.OnDidComplete.Connect(fnOnCommandBufferCompleted);
-		commandBuffer.OnDestroyed.Connect(fnOnCommandBufferDestroyed);
+			GpuCommandBuffer& commandBuffer = passContext.GetCommandBuffer();
+			commandBuffer.CopyBufferToBuffer(buffer, stagingBuffer, offset, 0, length);
+			CompleteReadOnCompletion(commandBuffer, stagingBuffer, length, op);
+		});
 
 		return op;
 	}

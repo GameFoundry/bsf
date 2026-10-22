@@ -10,6 +10,7 @@
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DGpuPushConstants.h"
 #include "Math/B3DArea2.h"
+#include "GpuBackend/B3DRenderTarget.h"
 
 namespace b3d
 {
@@ -44,7 +45,10 @@ namespace b3d
 		{
 			using Base = GpuCommandBufferPool;
 		public:
-			/** Creates a command-buffer pool backed by one D3D12 command allocator. */
+			/**
+			 * Creates a command-buffer pool. A pool that uses pool reset backs all its command buffers with one D3D12 command allocator,
+			 * otherwise each command buffer has an allocator of its own.
+			 */
 			D3D12GpuCommandBufferPool(D3D12GpuDevice& device, const GpuCommandBufferPoolCreateInformation& createInformation);
 			~D3D12GpuCommandBufferPool() override;
 
@@ -60,7 +64,7 @@ namespace b3d
 
 			/** @} */
 
-			/** Returns the D3D12 command allocator. */
+			/** Returns the D3D12 command allocator shared by the command buffers. Null if the pool does not use pool reset. */
 			ID3D12CommandAllocator* GetD3D12CommandAllocator() const { return mCommandAllocator.Get(); }
 
 		private:
@@ -108,6 +112,7 @@ namespace b3d
 			void CopyBufferToBuffer(const TShared<GpuBuffer>& source, const TShared<GpuBuffer>& destination, u32 sourceOffset, u32 destinationOffset, u32 length) override;
 			void CopyBufferToTexture(const TShared<GpuBuffer>& source, const TShared<Texture>& destination, u32 bufferOffset, u32 mipLevel, u32 arrayLayer) override;
 			void CopyTextureToBuffer(const TShared<Texture>& source, const TShared<GpuBuffer>& destination, u32 mipLevel, u32 arrayLayer, u32 bufferOffset) override;
+			void CopyWindowToBuffer(const TShared<RenderWindow>& source, const TShared<GpuBuffer>& destination) override;
 			bool CopyTexture(const TShared<Texture>& source, const TShared<Texture>& destination, const TextureCopyInformation& copyInformation) override;
 			bool BlitTexture(const TShared<Texture>& source, const TShared<Texture>& destination, const TextureBlitInformation& blitInformation) override;
 			void WriteTimestamp(GpuQueryId query, const TShared<GpuQueryPool>& queryPool) override;
@@ -207,12 +212,10 @@ namespace b3d
 			friend class D3D12GpuCommandBufferPool;
 			friend class D3D12GpuQueue;
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 			bool RecordExplicitBarriers(const GpuExplicitBarriers& barriers, GpuBarrierPhase phase, GpuSplitBarrier* split) override;
-#endif
 
 			/** Creates a command buffer wrapping @p commandList. */
-			D3D12GpuCommandBuffer(D3D12GpuDevice& device, D3D12GpuCommandBufferPool& pool, u32 id, ID3D12GraphicsCommandList7* commandList, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation);
+			D3D12GpuCommandBuffer(D3D12GpuDevice& device, D3D12GpuCommandBufferPool& pool, u32 id, ID3D12GraphicsCommandList7* commandList, ID3D12CommandAllocator* commandAllocator, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation);
 
 			/** Returns the pool the command buffer was allocated from. */
 			D3D12GpuCommandBufferPool& GetPool() const { return mPool; }
@@ -253,8 +256,8 @@ namespace b3d
 			 */
 			D3D12Framebuffer* AcquireWindowFramebuffer(RenderWindow& renderWindow);
 
-			/** Clears the specified area of the currently bound render target. */
-			void ClearViewportArea(const Area2I& area, RenderSurfaceMask mask);
+			/** Clears the masked surfaces of the currently bound render target within @p area, to @p clearValues. */
+			void ClearViewportArea(const Area2I& area, RenderSurfaceMask mask, const RenderTargetClearValues& clearValues);
 
 			/** Remembers a query pool written to during the current recording so its results are resolved on End(). */
 			void TrackQueryPool(const TShared<GpuQueryPool>& queryPool);
@@ -270,6 +273,7 @@ namespace b3d
 
 			u32 mId;
 			ComPtr<ID3D12GraphicsCommandList7> mCommandList;
+			ComPtr<ID3D12CommandAllocator> mCommandAllocator; /**< Allocator of this command buffer only. Null if the pool shares one. */
 			D3D12GpuCommandBufferPool& mPool;
 			ComPtr<ID3D12Fence> mFence;
 			u64 mFenceValue = 0;

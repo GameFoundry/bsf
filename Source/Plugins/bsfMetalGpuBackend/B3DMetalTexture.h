@@ -89,12 +89,11 @@ namespace b3d
 		class MetalTexture : public Texture
 		{
 		public:
-			MetalTexture(MetalGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation);
+			MetalTexture(MetalGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags);
 			~MetalTexture();
 
 			void SetName(const StringView& name) override;
 			GpuDevice& GetDevice() const override { return mGpuDevice; }
-			PixelFormat GetSupportedFormat() const override { return mInternalFormat; }
 			GpuQueueMask GetUseMask(u32 mipLevel, u32 arrayLayer, GpuAccessFlags accessFlags = GpuAccessFlag::Read | GpuAccessFlag::Write) const override;
 			u32 GetBoundCount(u32 subresourceIdx = 0) const override;
 			u32 GetUseCount(u32 subresourceIdx = 0) const override;
@@ -134,7 +133,6 @@ namespace b3d
 
 			MetalGpuDevice& mGpuDevice;
 			MetalImage* mImage = nullptr;
-			PixelFormat mInternalFormat = PF_UNKNOWN;
 		};
 
 		/** @} */

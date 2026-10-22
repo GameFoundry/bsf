@@ -7,7 +7,6 @@
 #include "Renderer/B3DRenderSettings.h"
 #include "Math/B3DBounds.h"
 #include "Math/B3DConvexVolume.h"
-#include "Shading/B3DLightGrid.h"
 #include "Shading/B3DShadowRendering.h"
 #include "RenderState/B3DRenderableRenderState.h"
 #include "B3DRenderCompositor.h"
@@ -74,8 +73,19 @@ namespace b3d
 			SkyboxMaterial() = default;
 			void Initialize() override;
 
-			/** Binds the material for rendering and sets up any parameters. */
-			void Bind(GpuCommandBuffer& commandBuffer, const GpuBufferSuballocation& perCamera, const TShared<Texture>& texture, const Color& solidColor);
+			/**
+			 * Creates the parameter set of @p pass and assigns the sky to it.
+			 *
+			 * @param	pass		Pass that draws the sky.
+			 * @param	perCamera	Uniform buffer of the view that draws the sky.
+			 * @param	texture		Sky texture. Ignored by the solid color variation.
+			 * @param	solidColor	Color of the sky in the solid color variation.
+			 * @return				Parameter set to pass to Execute().
+			 */
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const GpuBufferSuballocation& perCamera, const TShared<Texture>& texture, const Color& solidColor);
+
+			/** Binds the material and @p set, a set from Prepare(), and draws the sky. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
 			/**
 			 * Returns the material variation matching the provided parameters.
@@ -87,6 +97,7 @@ namespace b3d
 
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
+			GpuParameterUniformBuffer mPerCameraParameter;
 			GpuParameterSampledTexture mSkyTextureParameter;
 		};
 
@@ -393,8 +404,12 @@ namespace b3d
 			 * Inserts all draw commands for all visible objects into render queues. Assumes visibility has been calculated beforehand
 			 * by calling DetermineVisible(). After the call render elements can be retrieved from the queues using
 			 * GetOpaqueQueue or GetTransparentQueue() calls.
+			 *
+			 * @param	scene						Scene the view renders.
+			 * @param	hasCpuParticleData			False if the frame has no CPU particle simulation data (scene captures), in which
+			 *										case CPU simulated particle systems are not queued, as they have nothing to draw.
 			 */
-			void QueueDrawCommands(const RenderBeastScene& scene);
+			void QueueDrawCommands(const RenderBeastScene& scene, bool hasCpuParticleData);
 
 			/** Returns the visibility mask calculated with the last call to determineVisible(). */
 			const VisibilityInfo& GetVisibilityMasks() const { return mVisibility; }
@@ -413,15 +428,6 @@ namespace b3d
 
 			/** Returns a buffer that stores per-view parameters. */
 			const GpuBufferSuballocation& GetPerViewBuffer() const { return mPerCameraBuffer; }
-
-			/**
-			 * Returns information about visible lights, in the form of a light grid, used for forward rendering. Only valid
-			 * after a call to updateLightGrid().
-			 */
-			const LightGrid& GetLightGrid() const { return mLightGrid; }
-
-			/** Updates the light grid used for forward rendering. */
-			void UpdateLightGrid(GpuCommandBuffer& commandBuffer, const VisibleLightData& visibleLightData, const VisibleReflectionProbeData& visibleReflProbeData);
 
 			/**
 			 * Returns a value that can be used for transforming x, y coordinates from NDC into UV coordinates that can be used
@@ -477,29 +483,19 @@ namespace b3d
 			void NotifyNeedsRedraw();
 
 			/**
-			 * Notifies the view that the render target the compositor is rendering to has changed. Note that this does not
-			 * mean the final render target, rather the current intermediate target as set by the renderer during the
-			 * rendering of a single frame. This should be set to null if the renderer is not currently rendering the
-			 * view.
+			 * Notifies the view that a new average luminance is being calculated into @p texture, a resource of @p graph. Adds a pass that
+			 * reads it back after the passes that write it, and the view picks up the value once the graph's GPU work completes.
 			 */
-			void NotifyCompositorTargetChanged(const TShared<RenderTarget>& target) const { mCurrentRenderTarget = target; }
-
-			/**
-			 * Returns the render target that is currently being rendered to by the render compositor.
-			 */
-			TShared<RenderTarget> GetCompositorRenderTarget() const { return mCurrentRenderTarget; }
-
-			/**
-			 * Notifies the view that a new average luminance is being calculated on the provided command buffer. The results
-			 * will be read from the provided texture when the command buffer finishes executing.
-			 */
-			void NotifyLuminanceUpdated(u64 frameIdx, TShared<GpuCommandBuffer> cb, TShared<PooledRenderTexture> texture) const;
+			void NotifyLuminanceUpdated(u64 frameIdx, FrameGraph& graph, const TShared<Texture>& texture) const;
 
 			/** Queues a capture to be resolved the next time the view is rendered. */
 			void RequestCapture(TAsyncOp<TShared<PixelData>> asyncOp);
 
-			/** Resolves pending captures after rendering completes. */
-			void ResolveCaptures(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& target) const;
+			/**
+			 * Resolves pending captures of @p target, which must be imported into @p graph, after the graph's passes that render it.
+			 * Captures of a window are handed to the window, which reads it when it is presented.
+			 */
+			void ResolveCaptures(FrameGraph& graph, const TShared<RenderTarget>& target) const;
 
 			/**
 			 * Extracts the necessary values from the projection matrix that allow you to transform device Z value (range [0, 1]
@@ -530,18 +526,15 @@ namespace b3d
 		private:
 			struct LuminanceUpdate
 			{
-				LuminanceUpdate(u64 frameIdx, TAsyncOp<TShared<PixelData>> readbackAsyncOp, TShared<PooledRenderTexture> outputTexture)
-					: FrameIdx(frameIdx), OutputTexture(std::move(outputTexture)), ReadbackAsyncOp(std::move(readbackAsyncOp))
+				LuminanceUpdate(u64 frameIdx, TAsyncOp<TShared<PixelData>> readbackAsyncOp)
+					: FrameIdx(frameIdx), ReadbackAsyncOp(std::move(readbackAsyncOp))
 				{}
 
 				u64 FrameIdx;
-				TShared<GpuCommandBuffer> CommandBuffer;
-				TShared<PooledRenderTexture> OutputTexture;
 				TAsyncOp<TShared<PixelData>> ReadbackAsyncOp;
 			};
 
 			RendererViewProperties mProperties;
-			mutable TShared<RenderTarget> mCurrentRenderTarget;
 			Camera* mCamera;
 
 			TShared<RenderQueue> mDeferredOpaqueQueue;
@@ -556,7 +549,6 @@ namespace b3d
 			GpuBufferPool mPerCameraBufferPool;
 			GpuBufferSuballocation mPerCameraBuffer;
 			VisibilityInfo mVisibility;
-			LightGrid mLightGrid;
 			u32 mViewIndex;
 
 			// Temporal anti-aliasing
@@ -630,9 +622,9 @@ namespace b3d
 			/**
 			 * Updates visibility information for the provided scene objects, from the perspective of all views in this group,
 			 * and updates the render queues of each individual view. Use getVisibilityInfo() to retrieve the calculated
-			 * visibility information.
+			 * visibility information. @p frameInfo is the frame the views render.
 			 */
-			void DetermineVisibility(GpuCommandBuffer& commandBuffer, const RenderBeastScene& scene);
+			void DetermineVisibility(const RenderBeastScene& scene, const FrameInfo& frameInfo);
 
 		private:
 			Vector<RendererView*> mViews;

@@ -103,6 +103,9 @@ void D3D12GpuParameters::Initialize()
 
 			DescriptorBinding& binding = bindings[uniformInformation->Slot];
 			binding.Descriptors.resize(uniformInformation->ArraySize);
+			binding.Type = type;
+			binding.FirstDataIndex = uniformInformation->SequentialResourceIndex;
+			binding.IsReadWrite = type == GpuParameterType::StorageBuffer && GpuObjectParameterTypeInformation::IsReadWriteBuffer(uniformInformation->ObjectType);
 
 			// Fallback descriptor for elements the caller leaves unbound, matching the binding's declared type (see the field's documentation)
 			D3D12DescriptorManager& descriptorManager = mDevice.GetDescriptorManager();
@@ -140,15 +143,9 @@ bool D3D12GpuParameters::SetUniformBuffer(u32 slot, const TShared<GpuBuffer>& un
 	if (mRootConstantBuffers.find(slot) != mRootConstantBuffers.end())
 		return true;
 
-	if (uniformBuffer == nullptr)
-	{
-		// A cleared handle makes the GPU-visible copy substitute a null CBV (see UpdateGPUDescriptors)
-		SetDescriptor(slot, arrayIndex, D3D12_CPU_DESCRIPTOR_HANDLE{ 0 });
-		return true;
-	}
+	if (DescriptorBinding* binding = FindDescriptorBinding(slot))
+		StoreDescriptor(*binding, arrayIndex, ResolveCBV(static_cast<const D3D12GpuBuffer*>(uniformBuffer.get()), offset));
 
-	auto* d3d12Buffer = static_cast<D3D12GpuBuffer*>(uniformBuffer.get());
-	SetDescriptor(slot, arrayIndex, d3d12Buffer->GetCBVHandle(offset));
 	return true;
 }
 
@@ -157,15 +154,9 @@ bool D3D12GpuParameters::SetSampledTexture(u32 slot, const TShared<Texture>& tex
 	if (!GpuParameterSet::SetSampledTexture(slot, texture, surface, arrayIndex))
 		return false;
 
-	if (texture == nullptr)
-	{
-		// A cleared handle makes the GPU-visible copy substitute a null SRV (see UpdateGPUDescriptors)
-		SetDescriptor(slot, arrayIndex, D3D12_CPU_DESCRIPTOR_HANDLE{ 0 });
-		return true;
-	}
+	if (DescriptorBinding* binding = FindDescriptorBinding(slot))
+		StoreDescriptor(*binding, arrayIndex, ResolveSRV(static_cast<D3D12Texture*>(texture.get()), surface));
 
-	auto* d3d12Texture = static_cast<D3D12Texture*>(texture.get());
-	SetDescriptor(slot, arrayIndex, d3d12Texture->GetSRVHandle(surface));
 	return true;
 }
 
@@ -174,15 +165,9 @@ bool D3D12GpuParameters::SetStorageTexture(u32 slot, const TShared<Texture>& tex
 	if (!GpuParameterSet::SetStorageTexture(slot, texture, surface, arrayIndex))
 		return false;
 
-	if (texture == nullptr)
-	{
-		// A cleared handle makes the GPU-visible copy substitute a null UAV (see UpdateGPUDescriptors)
-		SetDescriptor(slot, arrayIndex, D3D12_CPU_DESCRIPTOR_HANDLE{ 0 });
-		return true;
-	}
+	if (DescriptorBinding* binding = FindDescriptorBinding(slot))
+		StoreDescriptor(*binding, arrayIndex, ResolveUAV(static_cast<D3D12Texture*>(texture.get()), surface));
 
-	auto* d3d12Texture = static_cast<D3D12Texture*>(texture.get());
-	SetDescriptor(slot, arrayIndex, d3d12Texture->GetUAVHandle(surface));
 	return true;
 }
 
@@ -191,30 +176,10 @@ bool D3D12GpuParameters::SetStorageBuffer(u32 slot, const TShared<GpuBuffer>& bu
 	if (!GpuParameterSet::SetStorageBuffer(slot, buffer, arrayIndex, view))
 		return false;
 
-	if (buffer == nullptr)
-	{
-		// A cleared handle makes the GPU-visible copy substitute a null SRV/UAV (see UpdateGPUDescriptors)
-		SetDescriptor(slot, arrayIndex, D3D12_CPU_DESCRIPTOR_HANDLE{ 0 });
-		return true;
-	}
-
 	// TODO(d3d12-port): view.Offset/Range are not applied (no engine callers currently pass them for storage buffers).
-	const UniformInformation* uniformInformation = GetLayout()->TryGetUniformInformation(slot);
-	const bool isReadWrite = uniformInformation != nullptr && GpuObjectParameterTypeInformation::IsReadWriteBuffer(uniformInformation->ObjectType);
+	if (DescriptorBinding* binding = FindDescriptorBinding(slot))
+		StoreDescriptor(*binding, arrayIndex, ResolveStorageBuffer(static_cast<const D3D12GpuBuffer*>(buffer.get()), view.Format, binding->IsReadWrite, slot));
 
-	auto* d3d12Buffer = static_cast<D3D12GpuBuffer*>(buffer.get());
-
-	D3D12_CPU_DESCRIPTOR_HANDLE handle = isReadWrite ? d3d12Buffer->GetUAVHandle(view.Format) : d3d12Buffer->GetSRVHandle(view.Format);
-	if (handle.ptr == 0)
-	{
-		B3D_LOG(Warning, LogRenderBackend, "D3D12: Storage buffer bound to set {0} slot {1} has no {2} view; binding its {3} view instead.", GetSet(), slot, isReadWrite ? "UAV" : "SRV", isReadWrite ? "SRV" : "UAV");
-		handle = isReadWrite ? d3d12Buffer->GetSRVHandle(view.Format) : d3d12Buffer->GetUAVHandle(view.Format);
-
-		if (handle.ptr == 0)
-			B3D_LOG(Error, LogRenderBackend, "D3D12: Storage buffer '{0}' (type {1}) bound to set {2} slot {3} has no shader views at all; the slot is left unbound and reads will return zero.", buffer->GetName(), (u32)buffer->GetInformation().Type, GetSet(), slot);
-	}
-
-	SetDescriptor(slot, arrayIndex, handle);
 	return true;
 }
 
@@ -349,6 +314,130 @@ bool D3D12GpuParameters::SetBindingDescriptor(UnorderedMap<u32, DescriptorBindin
 	return true;
 }
 
+D3D12GpuParameters::DescriptorBinding* D3D12GpuParameters::FindDescriptorBinding(u32 slot)
+{
+	const auto bindingIterator = mDescriptorBindings.find(slot);
+	return bindingIterator != mDescriptorBindings.end() ? &bindingIterator->second : nullptr;
+}
+
+void D3D12GpuParameters::StoreDescriptor(DescriptorBinding& binding, u32 arrayIndex, const ResolvedDescriptor& descriptor)
+{
+	if(arrayIndex >= binding.Descriptors.size())
+		return;
+
+	// A cleared handle makes the GPU-visible copy substitute a null descriptor (see UpdateGPUDescriptors). Resources without a
+	// native resource resolve to one, until RefreshDescriptors() resolves them again once they have one.
+	BoundDescriptor& boundDescriptor = binding.Descriptors[arrayIndex];
+	boundDescriptor.CPUHandle = descriptor.Handle;
+	boundDescriptor.ResourceGeneration = descriptor.ResourceGeneration;
+	mResourceTable.IsDirty = true;
+}
+
+D3D12GpuParameters::ResolvedDescriptor D3D12GpuParameters::ResolveCBV(const D3D12GpuBuffer* buffer, u32 offset)
+{
+	if(buffer == nullptr)
+		return ResolvedDescriptor();
+
+	return ResolvedDescriptor{ buffer->GetCBVHandle(offset), buffer->GetResourceGeneration() };
+}
+
+D3D12GpuParameters::ResolvedDescriptor D3D12GpuParameters::ResolveSRV(D3D12Texture* texture, const TextureSurface& surface)
+{
+	if(texture == nullptr)
+		return ResolvedDescriptor();
+
+	return ResolvedDescriptor{ texture->GetSRVHandle(surface), texture->GetResourceGeneration() };
+}
+
+D3D12GpuParameters::ResolvedDescriptor D3D12GpuParameters::ResolveUAV(D3D12Texture* texture, const TextureSurface& surface)
+{
+	if(texture == nullptr)
+		return ResolvedDescriptor();
+
+	return ResolvedDescriptor{ texture->GetUAVHandle(surface), texture->GetResourceGeneration() };
+}
+
+D3D12GpuParameters::ResolvedDescriptor D3D12GpuParameters::ResolveStorageBuffer(const D3D12GpuBuffer* buffer, GpuBufferFormat format, bool isReadWrite, u32 slot) const
+{
+	if(buffer == nullptr)
+		return ResolvedDescriptor();
+
+	ResolvedDescriptor output;
+	output.ResourceGeneration = buffer->GetResourceGeneration();
+	if(buffer->GetD3D12Buffer() == nullptr)
+		return output;
+
+	output.Handle = isReadWrite ? buffer->GetUAVHandle(format) : buffer->GetSRVHandle(format);
+	if (output.Handle.ptr == 0)
+	{
+		B3D_LOG(Warning, LogRenderBackend, "D3D12: Storage buffer bound to set {0} slot {1} has no {2} view; binding its {3} view instead.", GetSet(), slot, isReadWrite ? "UAV" : "SRV", isReadWrite ? "SRV" : "UAV");
+		output.Handle = isReadWrite ? buffer->GetSRVHandle(format) : buffer->GetUAVHandle(format);
+
+		if (output.Handle.ptr == 0)
+			B3D_LOG(Error, LogRenderBackend, "D3D12: Storage buffer '{0}' (type {1}) bound to set {2} slot {3} has no shader views at all; the slot is left unbound and reads will return zero.", buffer->GetName(), (u32)buffer->GetInformation().Type, GetSet(), slot);
+	}
+
+	return output;
+}
+
+void D3D12GpuParameters::RefreshDescriptors()
+{
+	for(auto& entry : mDescriptorBindings)
+	{
+		DescriptorBinding& binding = entry.second;
+		if(binding.FirstDataIndex == ~0u)
+			continue;
+
+		// Bindings without a resource stay at generation zero, which no resource has once it created its native resource
+		for(u32 arrayIndex = 0; arrayIndex < (u32)binding.Descriptors.size(); arrayIndex++)
+		{
+			const u32 dataIndex = binding.FirstDataIndex + arrayIndex;
+			const u32 resolvedGeneration = binding.Descriptors[arrayIndex].ResourceGeneration;
+			switch(binding.Type)
+			{
+			case GpuParameterType::UniformBuffer:
+			{
+				const auto& data = mUniformBufferData[dataIndex];
+				const auto* buffer = static_cast<const D3D12GpuBuffer*>(data.Buffer.get());
+				if(buffer != nullptr && buffer->GetResourceGeneration() != resolvedGeneration)
+					StoreDescriptor(binding, arrayIndex, ResolveCBV(buffer, data.Offset));
+
+				break;
+			}
+			case GpuParameterType::SampledTexture:
+			{
+				const auto& data = mSampledTextureData[dataIndex];
+				auto* texture = static_cast<D3D12Texture*>(data.Texture.get());
+				if(texture != nullptr && texture->GetResourceGeneration() != resolvedGeneration)
+					StoreDescriptor(binding, arrayIndex, ResolveSRV(texture, data.Surface));
+
+				break;
+			}
+			case GpuParameterType::StorageTexture:
+			{
+				const auto& data = mStorageTextureData[dataIndex];
+				auto* texture = static_cast<D3D12Texture*>(data.Texture.get());
+				if(texture != nullptr && texture->GetResourceGeneration() != resolvedGeneration)
+					StoreDescriptor(binding, arrayIndex, ResolveUAV(texture, data.Surface));
+
+				break;
+			}
+			case GpuParameterType::StorageBuffer:
+			{
+				const auto& data = mStorageBufferData[dataIndex];
+				const auto* buffer = static_cast<const D3D12GpuBuffer*>(data.Buffer.get());
+				if(buffer != nullptr && buffer->GetResourceGeneration() != resolvedGeneration)
+					StoreDescriptor(binding, arrayIndex, ResolveStorageBuffer(buffer, data.View.Format, binding.IsReadWrite, entry.first));
+
+				break;
+			}
+			default:
+				break;
+			}
+		}
+	}
+}
+
 void D3D12GpuParameters::UpdateGPUDescriptors(D3D12GpuDevice& device, const D3D12DescriptorSetLayout& descriptorSetLayout)
 {
 	// Dirty tables are updated in place only after all command buffers referencing their current range have completed.
@@ -447,6 +536,7 @@ void D3D12GpuParameters::UpdateGPUDescriptors(D3D12GpuDevice& device, const D3D1
 void D3D12GpuParameters::BindDescriptors(D3D12GpuDevice& device, D3D12ResourceTracker& resourceTracker, ID3D12GraphicsCommandList* commandList, bool isGraphics,
 	const D3D12DescriptorSetLayout& descriptorSetLayout, const UnorderedMap<u32, u32>* dynamicOffsets)
 {
+	RefreshDescriptors();
 	UpdateGPUDescriptors(device, descriptorSetLayout);
 
 	for(const D3D12RootConstantBufferLayout& rootBufferLayout : descriptorSetLayout.RootConstantBuffers)

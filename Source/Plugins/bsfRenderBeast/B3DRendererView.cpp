@@ -14,7 +14,11 @@
 #include "Animation/B3DAnimationScene.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DRenderTarget.h"
+#include "GpuBackend/B3DRenderWindow.h"
+#include "GpuBackend/B3DRenderTexture.h"
 #include "Image/B3DTexture.h"
+#include "Mesh/B3DMesh.h"
+#include "FrameGraph/B3DFrameGraph.h"
 
 namespace b3d {
 namespace render {
@@ -28,19 +32,32 @@ void SkyboxMaterial::Initialize()
 		mGpuParameterSet->GetSampledTextureParameter("gSkyTex", mSkyTextureParameter);
 
 	mGpuParameterSet->TryGetUniformBufferParameter("Params", mUniformBufferParameter);
+	mGpuParameterSet->GetUniformBufferParameter("PerCamera", mPerCameraParameter);
 }
 
-void SkyboxMaterial::Bind(GpuCommandBuffer& commandBuffer, const GpuBufferSuballocation& perCamera, const TShared<Texture>& texture, const Color& solidColor)
+TShared<GpuParameterSet> SkyboxMaterial::Prepare(FrameGraphPass& pass, const GpuBufferSuballocation& perCamera, const TShared<Texture>& texture, const Color& solidColor)
 {
-	mGpuParameterSet->SetUniformBuffer("PerCamera", perCamera);
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+	mPerCameraParameter.Set(set, perCamera);
 
 	GpuBufferMappedScope uniforms = gSkyboxUniformDefinition.AllocateTransient().Map();
 	gSkyboxUniformDefinition.gClearColor.Set(uniforms, solidColor);
 
-	mUniformBufferParameter.Set(uniforms);
-	mSkyTextureParameter.Set(texture);
+	mUniformBufferParameter.Set(set, uniforms);
+	mSkyTextureParameter.Set(set, texture);
 
-	RendererMaterial::Bind(commandBuffer);
+	return set;
+}
+
+void SkyboxMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
+{
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
+	B3D_PROFILE_RENDERER_MATERIAL
+
+	Bind(commandBuffer, set);
+
+	const TShared<Mesh> mesh = GetRendererUtility().GetSkyBoxMesh();
+	GetRendererUtility().Draw(commandBuffer, mesh, mesh->GetProperties().SubMeshes[0]);
 }
 
 SkyboxMaterial* SkyboxMaterial::GetVariation(bool color)
@@ -123,7 +140,7 @@ void RendererView::SetRenderSettings(const TShared<RenderSettings>& settings)
 	primaryNodes.Add(RCNodeSSR::GetNodeId());
 	primaryNodes.Add(RCNodeDeferredIndirectSpecularLighting::GetNodeId());
 	primaryNodes.Add(RCNodeSkybox::GetNodeId());
-	primaryNodes.Add(RCNodeParticleSimulate::GetNodeId());	
+	primaryNodes.Add(RCNodeParticleSimulate::GetNodeId());
 	primaryNodes.Add(RCNodeClusteredForward::GetNodeId());
 
 	// Screen space
@@ -385,16 +402,10 @@ float RendererView::GetCurrentExposure() const
 	return Math::RaiseToPower(2.0f, mRenderSettings->ExposureScale);
 }
 
-void RendererView::NotifyLuminanceUpdated(u64 frameIdx, TShared<GpuCommandBuffer> cb, TShared<PooledRenderTexture> texture) const
+void RendererView::NotifyLuminanceUpdated(u64 frameIdx, FrameGraph& graph, const TShared<Texture>& texture) const
 {
-	if(cb == nullptr)
-	{
-		B3D_LOG(Error, LogRenderer, "Cannot queue luminance update. (Null command buffer provided.)");
-		return;
-	}
-
-	TAsyncOp<TShared<PixelData>> readbackAsyncOp = TextureUtility::ReadAsync(GetRenderer()->GetGpuContext(), texture->Texture, *cb);
-	mLuminanceUpdates.emplace_back(frameIdx, std::move(readbackAsyncOp), std::move(texture));
+	TAsyncOp<TShared<PixelData>> readbackAsyncOp = TextureUtility::ReadAsync(graph, texture);
+	mLuminanceUpdates.emplace_back(frameIdx, std::move(readbackAsyncOp));
 }
 
 void RendererView::DetermineVisible(const TChunkedArray<RenderableRenderState*>& renderables, const TChunkedArray<CullInfo>& cullInfos, Vector<bool>* visibility)
@@ -584,7 +595,7 @@ void RendererView::CalculateVisibility(const Vector<AABox>& bounds, Vector<bool>
 	}
 }
 
-void RendererView::QueueDrawCommands(const RenderBeastScene& scene)
+void RendererView::QueueDrawCommands(const RenderBeastScene& scene, bool hasCpuParticleData)
 {
 	B3D_ENSURE(mDeferredOpaqueQueue->GetSortedEntries().empty());
 	B3D_ENSURE(mForwardOpaqueQueue->GetSortedEntries().empty());
@@ -631,7 +642,11 @@ void RendererView::QueueDrawCommands(const RenderBeastScene& scene)
 		if(!mVisibility.ParticleSystems[i])
 			continue;
 
-		const ParticlesDrawCommand& drawCommand = scene.GetParticleRenderState(i).DrawCommand;
+		const ParticleRenderState& renderState = scene.GetParticleRenderState(i);
+		if(!hasCpuParticleData && renderState.GpuParticleSystem == nullptr)
+			continue;
+
+		const ParticlesDrawCommand& drawCommand = renderState.DrawCommand;
 		if(!drawCommand.IsValid())
 			continue;
 
@@ -908,11 +923,6 @@ Vector4 RendererView::GetNdcToUv() const
 	return ndcToUV;
 }
 
-void RendererView::UpdateLightGrid(GpuCommandBuffer& commandBuffer, const VisibleLightData& visibleLightData, const VisibleReflectionProbeData& visibleReflProbeData)
-{
-	mLightGrid.UpdateGrid(commandBuffer, *this, visibleLightData, visibleReflProbeData, !mRenderSettings->EnableLighting);
-}
-
 RendererViewGroup::RendererViewGroup(RendererView** views, u32 numViews, bool mainPass, u32 shadowMapSize)
 	: mIsMainPass(mainPass), mShadowRenderer(shadowMapSize)
 {
@@ -930,7 +940,7 @@ void RendererViewGroup::SetViews(RendererView** views, u32 numViews)
 	}
 }
 
-void RendererViewGroup::DetermineVisibility(GpuCommandBuffer& commandBuffer, const RenderBeastScene& scene)
+void RendererViewGroup::DetermineVisibility(const RenderBeastScene& scene, const FrameInfo& frameInfo)
 {
 	const auto viewCount = (u32)mViews.size();
 
@@ -969,7 +979,7 @@ void RendererViewGroup::DetermineVisibility(GpuCommandBuffer& commandBuffer, con
 	for(u32 i = 0; i < viewCount; i++)
 	{
 		if(mViews[i]->ShouldDraw3D())
-			mViews[i]->QueueDrawCommands(scene);
+			mViews[i]->QueueDrawCommands(scene, frameInfo.PerSceneFrameData.Particles != nullptr);
 	}
 
 	// Calculate light visibility for all views
@@ -1015,18 +1025,6 @@ void RendererViewGroup::DetermineVisibility(GpuCommandBuffer& commandBuffer, con
 	// then updated when each view group is rendered. It might be better to keep one buffer reserved per-view.
 	mVisibleLightData.Update(scene, *this);
 	mVisibleReflProbeData.Update(scene, *this);
-
-	const bool supportsClusteredForward = GetRenderBeast()->GetFeatureSet() == RenderBeastFeatureSet::Desktop;
-	if(supportsClusteredForward)
-	{
-		for(u32 i = 0; i < viewCount; i++)
-		{
-			if(!mViews[i]->ShouldDraw3D())
-				continue;
-
-			mViews[i]->UpdateLightGrid(commandBuffer, mVisibleLightData, mVisibleReflProbeData);
-		}
-	}
 }
 
 void RendererView::RequestCapture(TAsyncOp<TShared<PixelData>> asyncOp)
@@ -1034,7 +1032,7 @@ void RendererView::RequestCapture(TAsyncOp<TShared<PixelData>> asyncOp)
 	mRequestedCaptures.push_back(std::move(asyncOp));
 }
 
-void RendererView::ResolveCaptures(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& target) const
+void RendererView::ResolveCaptures(FrameGraph& graph, const TShared<RenderTarget>& target) const
 {
 	if(mRequestedCaptures.empty())
 		return;
@@ -1051,14 +1049,26 @@ void RendererView::ResolveCaptures(GpuCommandBuffer& commandBuffer, const TShare
 	Vector<TAsyncOp<TShared<PixelData>>> captureOps = std::move(mRequestedCaptures);
 	mRequestedCaptures.clear();
 
-	TAsyncOp<TShared<PixelData>> readOp = target->ReadAsync(GetRenderer()->GetGpuContext(), commandBuffer);
-
-	auto fnOnReadOpCompleted = [captureOps = std::move(captureOps), readOp]() mutable
+	// Windows can only be read when they are presented, so the capture includes everything rendered to the window that frame
+	if(target->GetProperties().IsWindow)
 	{
-		for(auto& entry : captureOps)
-			entry.CompleteOperation(readOp.GetReturnValue());
-	};
+		RenderWindow& window = static_cast<RenderWindow&>(*target);
+		for(TAsyncOp<TShared<PixelData>>& captureOp : captureOps)
+			window.RequestCapture(std::move(captureOp));
+	}
+	else
+	{
+		// Render textures are read through their first color surface
+		const TShared<Texture>& colorTexture = static_cast<RenderTexture&>(*target).GetColorSurfaceInformation(0).Texture;
+		TAsyncOp<TShared<PixelData>> readOp = TextureUtility::ReadAsync(graph, colorTexture);
 
-	readOp.DoWhenComplete(std::move(fnOnReadOpCompleted));
+		auto fnOnReadOpCompleted = [captureOps = std::move(captureOps), readOp]() mutable
+		{
+			for(auto& entry : captureOps)
+				entry.CompleteOperation(readOp.GetReturnValue());
+		};
+
+		readOp.DoWhenComplete(std::move(fnOnReadOpCompleted));
+	}
 }
 }} // namespace b3d::render

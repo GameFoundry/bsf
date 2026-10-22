@@ -6,7 +6,6 @@
 #include "Renderer/B3DRendererMaterial.h"
 #include "Renderer/B3DGpuUniformBuffer.h"
 #include "Renderer/B3DRenderSettings.h"
-#include "Renderer/B3DGpuResourcePool.h"
 #include "RenderState/B3DLightRenderState.h"
 
 namespace b3d
@@ -45,11 +44,14 @@ namespace b3d
 			DownsampleMaterial() = default;
 			void Initialize() override;
 
-			/** Renders the post-process effect with the provided parameters. */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& input, const TShared<RenderTarget>& output);
+			/** Creates the parameter set of @p pass, which downsamples @p input. Returns the set to pass to Execute(). */
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& input);
 
-			/** Returns the texture descriptor that can be used for initializing the output render target. */
-			static PooledRenderTextureCreateInformation GetOutputDesc(const TShared<Texture>& target);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad that samples @p input. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const TShared<Texture>& input) const;
+
+			/** Returns the information of the output texture, when downsampling @p target. */
+			static TextureCreateInformation GetOutputCreateInformation(const TShared<Texture>& target);
 
 			/** Returns the downsample material variation matching the provided parameters. */
 			static DownsampleMaterial* GetVariation(u32 quality, bool msaa);
@@ -57,6 +59,7 @@ namespace b3d
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
 			GpuParameterSampledTexture mInputTextureParameter;
+			bool mMsaa = false;
 		};
 
 		B3D_UNIFORM_BUFFER_BEGIN(EyeAdaptHistogramUniformDefinition)
@@ -76,11 +79,22 @@ namespace b3d
 			EyeAdaptHistogramMaterial() = default;
 			void Initialize() override;
 
-			/** Executes the post-process effect with the provided parameters. */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& input, const TShared<Texture>& output, const AutoExposureSettings& settings);
+			/**
+			 * Creates the parameter set of @p pass, which builds the luminance histograms of @p input into @p output.
+			 *
+			 * @param	pass		Pass that dispatches the material.
+			 * @param	input		Scene color to build the histograms of.
+			 * @param	output		Texture to write the histograms to, created from GetOutputCreateInformation().
+			 * @param	settings	Auto exposure settings of the view.
+			 * @return				Parameter set to pass to Execute().
+			 */
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& input, const TShared<Texture>& output, const AutoExposureSettings& settings);
 
-			/** Returns the texture descriptor that can be used for initializing the output render target. */
-			static PooledRenderTextureCreateInformation GetOutputDesc(const TShared<Texture>& target);
+			/** Binds the material and @p set, a set from Prepare(), and dispatches the thread groups that cover @p input. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const TShared<Texture>& input) const;
+
+			/** Returns the information of the output texture, for the histograms of @p target. */
+			static TextureCreateInformation GetOutputCreateInformation(const TShared<Texture>& target);
 
 			/** Calculates the number of thread groups that need to execute to cover the provided texture. */
 			static Vector2I GetThreadGroupCount(const TShared<Texture>& target);
@@ -120,14 +134,22 @@ namespace b3d
 			EyeAdaptHistogramReduceMaterial() = default;
 			void Initialize() override;
 
-			/** Prepares GPU parameters for rendering. Must be called before Execute(). */
-			void Prepare(const TShared<Texture>& sceneColor, const TShared<Texture>& histogram, const TShared<Texture>& prevFrame);
+			/**
+			 * Creates the parameter set of @p pass, which reduces the histograms of @p sceneColor into one.
+			 *
+			 * @param	pass		Pass that draws the material.
+			 * @param	sceneColor	Scene color the histograms were built from.
+			 * @param	histogram	Histograms written by EyeAdaptHistogramMaterial.
+			 * @param	prevFrame	Eye adaptation output of the previous frame, or null if there is none.
+			 * @return				Parameter set to pass to Execute().
+			 */
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& sceneColor, const TShared<Texture>& histogram, const TShared<Texture>& prevFrame);
 
-			/** Executes the post-process effect with the provided parameters. */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
-			/** Returns the texture descriptor that can be used for initializing the output render target. */
-			static PooledRenderTextureCreateInformation GetOutputDesc();
+			/** Returns the information of the output texture. */
+			static TextureCreateInformation GetOutputCreateInformation();
 
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
@@ -150,14 +172,23 @@ namespace b3d
 			EyeAdaptationMaterial() = default;
 			void Initialize() override;
 
-			/** Prepares GPU parameters before rendering. */
-			void Prepare(const TShared<Texture>& reducedHistogram, float frameDelta, const AutoExposureSettings& settings, float exposureScale);
+			/**
+			 * Creates the parameter set of @p pass, which computes the eye adaptation value from @p reducedHistogram.
+			 *
+			 * @param	pass				Pass that draws the material.
+			 * @param	reducedHistogram	Histogram written by EyeAdaptHistogramReduceMaterial.
+			 * @param	frameDelta			Time since the previous frame, in seconds.
+			 * @param	settings			Auto exposure settings of the view.
+			 * @param	exposureScale		Exposure scale of the view, as a power of two.
+			 * @return						Parameter set to pass to Execute().
+			 */
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& reducedHistogram, float frameDelta, const AutoExposureSettings& settings, float exposureScale);
 
-			/** Executes the post-process effect with the provided parameters. */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
-			/** Returns the texture descriptor that can be used for initializing the output render target. */
-			static PooledRenderTextureCreateInformation GetOutputDesc();
+			/** Returns the information of the output texture. */
+			static TextureCreateInformation GetOutputCreateInformation();
 
 			/**
 			 * Populates the provided uniform buffer memory with eye adaptation parameters. The uniform buffer is expected to be
@@ -168,69 +199,6 @@ namespace b3d
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
 			GpuParameterSampledTexture mReducedHistogramTex;
-		};
-
-		/**
-		 * Shader that computes luminance of all the pixels in the provided texture, and stores them in log2 format, scaled
-		 * to [0, 1] range (according to eye adapatation parameters) and stores those values in the alpha channel of the
-		 * output texture. Color channel is just a copy of the input texture. Resulting texture is intended to be provided
-		 * to the downsampling shader in order to calculate the average luminance, used for non-histogram eye adaptation
-		 * calculation (when compute shader is not available).
-		 */
-		class EyeAdaptationBasicSetupMaterial : public RendererMaterial<EyeAdaptationBasicSetupMaterial>
-		{
-			RMAT_DEF("PPEyeAdaptationBasicSetup.bsl");
-
-		public:
-			EyeAdaptationBasicSetupMaterial() = default;
-			void Initialize() override;
-
-			/** Prepares GPU parameters before rendering. */
-			void Prepare(const TShared<Texture>& input, float frameDelta, const AutoExposureSettings& settings, float exposureScale);
-
-			/** Executes the post-process effect with the provided parameters. */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output);
-
-			/** Returns the texture descriptor that can be used for initializing the output render target. */
-			static PooledRenderTextureCreateInformation GetOutputDesc(const TShared<Texture>& input);
-
-		private:
-			GpuParameterUniformBuffer mUniformBufferParameter;
-			GpuParameterSampledTexture mInputTextureParameter;
-		};
-
-		B3D_UNIFORM_BUFFER_BEGIN(EyeAdaptationBasicUniformDefinition)
-			B3D_UNIFORM_BUFFER_MEMBER(Vector2I, gInputTexSize)
-		B3D_UNIFORM_BUFFER_END
-
-		extern EyeAdaptationBasicUniformDefinition gEyeAdaptationBasicUniformDefinition;
-
-		/**
-		 * Shader that computes eye adapatation value from a texture that has luminance encoded in its alpha channel (as done
-		 * by EyeAdaptationBasicSetupMat). The result is a 1x1 texture containing the eye adaptation value.
-		 */
-		class EyeAdaptationBasicMaterial : public RendererMaterial<EyeAdaptationBasicMaterial>
-		{
-			RMAT_DEF("PPEyeAdaptationBasic.bsl");
-
-		public:
-			EyeAdaptationBasicMaterial() = default;
-			void Initialize() override;
-
-			/** Prepares GPU parameters before rendering. */
-			void Prepare(const TShared<Texture>& curFrame, const TShared<Texture>& prevFrame, float frameDelta, const AutoExposureSettings& settings, float exposureScale);
-
-			/** Executes the post-process effect with the provided parameters. */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output);
-
-			/** Returns the texture descriptor that can be used for initializing the output render target. */
-			static PooledRenderTextureCreateInformation GetOutputDesc();
-
-		private:
-			GpuParameterUniformBuffer mEyeAdaptationUniformBufferParameter;
-			GpuParameterUniformBuffer mUniformBufferParameter;
-			GpuParameterSampledTexture mCurrentFrameTextureParameter;
-			GpuParameterSampledTexture mPreviousFrameTextureParameter;
 		};
 
 		B3D_UNIFORM_BUFFER_BEGIN(CreateTonemapLUTUniformDefinition)
@@ -252,38 +220,6 @@ namespace b3d
 
 		extern WhiteBalanceUniformDefinition gWhiteBalanceUniformDefinition;
 
-		/** Shader that creates a 2D lookup texture that is used to apply tonemapping, color grading, white balancing and gamma correction. Uses a vertex/fragment pipeline. */
-		class CreateTonemap2DLUTMaterial : public RendererMaterial<CreateTonemap2DLUTMaterial>
-		{
-			RMAT_DEF_CUSTOMIZED("PPCreateTonemap2DLUT.bsl")
-
-		public:
-			CreateTonemap2DLUTMaterial() = default;
-			void Initialize() override;
-
-			/** Prepares GPU parameters for rendering. Must be called before Execute(). */
-			void Prepare(const RenderSettings& settings);
-
-			/** Executes the post-process effect with the provided parameters, generating an unwrapped 2D LUT using the vertex & fragment shader pipeline. */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTexture>& output);
-
-			/** Returns the texture descriptor that can be used for initializing the output render target. */
-			PooledRenderTextureCreateInformation GetOutputDesc() const;
-
-			/** Populates uniform buffer memory of CreateTonemapLUTUniformDefinition type using the provided settings. */
-			static void PopulateTonemappingUniformBuffer(const RenderSettings& settings, const GpuBufferMappedScope& uniforms);
-
-			/** Populates uniform buffer memory of WhiteBalanceUniformDefinition type using the provided settings. */
-			static void PopulateWhiteBalanceUniformBuffer(const RenderSettings& settings, const GpuBufferMappedScope& uniforms);
-
-			/** Size of a single dimension in the color lookup table. */
-			static const u32 kLutSize = 32;
-
-		private:
-			GpuParameterUniformBuffer mUniformBufferParameter;
-			GpuParameterUniformBuffer mWhiteBalanceUniformBufferParameter;
-		};
-
 		/** Shader that creates a 3D lookup texture that is used to apply tonemapping, color grading, white balancing and gamma correction. Uses a compute pipeline. */
 		class CreateTonemap3DLUTMaterial : public RendererMaterial<CreateTonemap3DLUTMaterial>
 		{
@@ -293,11 +229,26 @@ namespace b3d
 			CreateTonemap3DLUTMaterial() = default;
 			void Initialize() override;
 
-			/** Executes the post-process effect with the provided parameters, generating a 3D LUT using a compute shader. */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& output, const RenderSettings& settings);
+			/** Creates the parameter set of @p pass, which writes the 3D LUT for @p settings into @p output. Returns the set to pass to Execute(). */
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& output, const RenderSettings& settings);
 
-			/** Returns the texture descriptor that can be used for initializing the output render target. */
-			PooledRenderTextureCreateInformation GetOutputDesc() const;
+			/** Binds the material and @p set, a set from Prepare(), and dispatches the thread groups that cover the LUT. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
+
+			/**
+			 * Returns the information of the 3D texture that Prepare() writes the LUT to. Unlike the outputs of the other materials, the
+			 * LUT persists across frames.
+			 */
+			static TextureCreateInformation GetOutputCreateInformation();
+
+			/** Populates uniform buffer memory of CreateTonemapLUTUniformDefinition type using the provided settings. */
+			static void PopulateTonemappingUniformBuffer(const RenderSettings& settings, const GpuBufferMappedScope& uniforms);
+
+			/** Populates uniform buffer memory of WhiteBalanceUniformDefinition type using the provided settings. */
+			static void PopulateWhiteBalanceUniformBuffer(const RenderSettings& settings, const GpuBufferMappedScope& uniforms);
+
+			/** Size of a single dimension in the color lookup table. */
+			static const u32 kLutSize = 32;
 
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
@@ -321,12 +272,11 @@ namespace b3d
 			RMAT_DEF_CUSTOMIZED("PPTonemapping.bsl");
 
 			/** Helper method used for initializing variations of this material. */
-			template <bool volumeLUT, bool gammaOnly, bool autoExposure, bool MSAA>
+			template <bool gammaOnly, bool autoExposure, bool MSAA>
 			static const ShaderVariationParameters& GetVariation()
 			{
 				static ShaderVariationParameters variation = ShaderVariationParameters(
 					{
-						ShaderVariationParameter("VOLUME_LUT", volumeLUT),
 						ShaderVariationParameter("GAMMA_ONLY", gammaOnly),
 						ShaderVariationParameter("AUTO_EXPOSURE", autoExposure),
 						ShaderVariationParameter("MSAA", MSAA),
@@ -340,27 +290,24 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering. Must be called before Execute().
+			 * Creates the parameter set of @p pass, which tonemaps @p sceneColor.
 			 *
+			 * @param	pass			Pass that draws the material.
 			 * @param	sceneColor		Input HDR scene color texture.
 			 * @param	eyeAdaptation	Eye adaptation texture containing exposure value.
 			 * @param	bloom			Optional bloom texture.
 			 * @param	colorLUT		Color lookup table texture.
 			 * @param	settings		Render settings for the current view.
+			 * @return					Parameter set to pass to Execute().
 			 */
-			void Prepare(const TShared<Texture>& sceneColor, const TShared<Texture>& eyeAdaptation, const TShared<Texture>& bloom, const TShared<Texture>& colorLUT, const RenderSettings& settings);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& sceneColor, const TShared<Texture>& eyeAdaptation, const TShared<Texture>& bloom,
+				const TShared<Texture>& colorLUT, const RenderSettings& settings);
 
-			/**
-			 * Executes the post-process effect with the provided parameters and writes the results to the currently bound
-			 * render target.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	output			Render target to write the results to.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
 			/** Returns the material variation matching the provided parameters. */
-			static TonemappingMaterial* GetVariation(bool volumeLUT, bool gammaOnly, bool autoExposure, bool MSAA);
+			static TonemappingMaterial* GetVariation(bool gammaOnly, bool autoExposure, bool MSAA);
 
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
@@ -397,24 +344,20 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering. Must be called before Execute().
+			 * Creates the parameter set of @p pass, which clips @p input.
 			 *
+			 * @param	pass			Pass that draws the material.
 			 * @param	input			Texture to process.
 			 * @param	threshold		Threshold below which values will be ignored for purposes of bloom.
 			 * @param	eyeAdaptation	Texture containing eye adaptation exposure value. Only needed if using the
 			 *								AUTO_EXPOSURE variation of this material.
 			 * @param	settings		Render settings for the current view.
+			 * @return					Parameter set to pass to Execute().
 			 */
-			void Prepare(const TShared<Texture>& input, float threshold, const TShared<Texture>& eyeAdaptation, const RenderSettings& settings);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& input, float threshold, const TShared<Texture>& eyeAdaptation, const RenderSettings& settings);
 
-			/**
-			 * Executes the post-process effect with the provided parameters and writes the results to the currently bound
-			 * render target.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	output			Render target to write the results to.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
 			/**
 			 * Returns the material variation matching the provided parameters.
@@ -465,21 +408,17 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering. Must be called before Execute().
+			 * Creates the parameter set of @p pass, which generates the lens flare features of @p input.
 			 *
+			 * @param	pass			Pass that draws the material.
 			 * @param	input			Texture to process.
 			 * @param	settings		Settings used for customizing the effect.
+			 * @return					Parameter set to pass to Execute().
 			 */
-			void Prepare(const TShared<Texture>& input, const ScreenSpaceLensFlareSettings& settings);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& input, const ScreenSpaceLensFlareSettings& settings);
 
-			/**
-			 * Executes the post-process effect with the provided parameters and writes the results to the provided
-			 * render target.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	output			Render target to write the results to.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
 			/**
 			 * Returns the material variation matching the provided parameters.
@@ -528,21 +467,17 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering. Must be called before Execute().
+			 * Creates the parameter set of @p pass, which applies chromatic aberration to @p input.
 			 *
+			 * @param	pass			Pass that draws the material.
 			 * @param	input			Texture to process.
 			 * @param	settings		Settings used for customizing the effect.
+			 * @return					Parameter set to pass to Execute().
 			 */
-			void Prepare(const TShared<Texture>& input, const ChromaticAberrationSettings& settings);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& input, const ChromaticAberrationSettings& settings);
 
-			/**
-			 * Executes the post-process effect with the provided parameters and writes the results to the provided
-			 * render target.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	output			Render target to write the results to.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
 			/**
 			 * Returns the material variation matching the provided parameters.
@@ -574,22 +509,18 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering. Must be called before Execute().
+			 * Creates the parameter set of @p pass, which applies film grain to @p input.
 			 *
+			 * @param	pass			Pass that draws the material.
 			 * @param	input			Texture to process.
 			 * @param	time			Time of the current frame, in seconds.
 			 * @param	settings		Settings used for customizing the effect.
+			 * @return					Parameter set to pass to Execute().
 			 */
-			void Prepare(const TShared<Texture>& input, float time, const FilmGrainSettings& settings);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& input, float time, const FilmGrainSettings& settings);
 
-			/**
-			 * Executes the post-process effect with the provided parameters and writes the results to the provided
-			 * render target.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	output			Render target to write the results to.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
@@ -635,8 +566,9 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering. Must be called before Execute().
+			 * Creates the parameter set of @p pass, which blurs @p source in one direction.
 			 *
+			 * @param	pass			Pass that draws the material.
 			 * @param	direction		Direction in which to perform the separable blur.
 			 * @param	source			Input texture to blur.
 			 * @param	filterSize		Size of the blurring filter, in percent of the source texture. In range [0, 1].
@@ -644,32 +576,13 @@ namespace b3d
 			 * @param	additive		Optional texture whose values to add to the destination texture (won't be included
 			 *							in filtering). Only used if using the variation of this shader that supports additive
 			 *							input.
+			 * @return					Parameter set to pass to Execute().
 			 */
-			void PrepareDirection(Direction direction, const TShared<Texture>& source, float filterSize, const Color& tint = Color::kWhite, const TShared<Texture>& additive = nullptr);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, Direction direction, const TShared<Texture>& source, float filterSize, const Color& tint = Color::kWhite,
+				const TShared<Texture>& additive = nullptr);
 
-			/**
-			 * Executes the post-process effect with the provided parameters and writes the results to the provided
-			 * render target.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	output			Render target to write the results to.
-			 */
-			void ExecutePass(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output);
-
-			/**
-			 * Renders the post-process effect with the provided parameters. This is a convenience method that performs
-			 * both horizontal and vertical blur passes.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	source			Input texture to blur.
-			 * @param	filterSize		Size of the blurring filter, in percent of the source texture. In range [0, 1].
-			 * @param	destination		Output texture to which to write the blurred image to.
-			 * @param	tint			Optional tint to apply all filtered pixels.
-			 * @param	additive		Optional texture whose values to add to the destination texture (won't be included
-			 *							in filtering). Only used if using the variation of this shader that supports additive
-			 *							input.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& source, float filterSize, const TShared<RenderTexture>& destination, const Color& tint = Color::kWhite, const TShared<Texture>& additive = nullptr);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
 			/**
 			 * Populates the provided uniform buffer with parameters required for a shader including gaussian blur.
@@ -702,6 +615,20 @@ namespace b3d
 			GpuParameterSampledTexture mAdditiveTextureParameter;
 			bool mIsAdditive = false;
 		};
+
+		/**
+		 * Adds the two passes of a separable Gaussian blur to @p graph: a horizontal pass from @p source into a transient of the size of
+		 * @p destination, and a vertical pass from the transient into @p destination.
+		 *
+		 * @param	graph			Graph to add the passes to.
+		 * @param	source			Input texture to blur.
+		 * @param	filterSize		Size of the blurring filter, in percent of the source texture. In range [0, 1].
+		 * @param	destination		Texture to write the blurred image to. Must not be @p source.
+		 * @param	tint			Tint to apply to all filtered pixels.
+		 * @param	additive		Optional texture whose values to add to @p destination, without filtering them.
+		 */
+		void AddGaussianBlurPasses(FrameGraph& graph, const TShared<Texture>& source, float filterSize, const TShared<Texture>& destination, const Color& tint = Color::kWhite,
+			const TShared<Texture>& additive = nullptr);
 
 		B3D_UNIFORM_BUFFER_BEGIN(GaussianDOFUniformDefinition)
 			B3D_UNIFORM_BUFFER_MEMBER(float, gNearBlurPlane)
@@ -739,34 +666,22 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering. Must be called before Execute().
+			 * Creates the parameter set of @p pass, which masks the pixels of @p color into its color attachments.
 			 *
+			 * @param	pass			Pass that draws the material.
 			 * @param	color			Input color texture to process.
 			 * @param	depth			Input depth buffer texture that will be used for determining pixel depth.
 			 * @param	view			View through which the depth of field effect is viewed.
 			 * @param	settings		Settings used to control depth of field rendering.
+			 * @return					Parameter set to pass to Execute().
 			 */
-			void Prepare(const TShared<Texture>& color, const TShared<Texture>& depth, const RendererView& view, const DepthOfFieldSettings& settings);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& color, const TShared<Texture>& depth, const RendererView& view, const DepthOfFieldSettings& settings);
 
-			/**
-			 * Renders the post-process effect with the provided parameters.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	color			Input color texture to process.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& color);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
-			/**
-			 * Returns the texture generated after the shader was executed. Only valid to call this in-between calls to
-			 * execute() & release(), with @p idx value 0 or 1.
-			 */
-			TShared<PooledRenderTexture> GetOutput(u32 idx);
-
-			/**
-			 * Releases the interally allocated output render textures. Must be called after each call to execute(), when the
-			 * caller is done using the textures.
-			 */
-			void Release();
+			/** Returns the information of each output texture, when processing @p color. */
+			static TextureCreateInformation GetOutputCreateInformation(const TShared<Texture>& color);
 
 			/**
 			 * Returns the material variation matching the provided parameters.
@@ -779,11 +694,11 @@ namespace b3d
 
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
+			GpuParameterUniformBuffer mPerCameraParameter;
 			GpuParameterSampledTexture mColorTextureParameter;
 			GpuParameterSampledTexture mDepthTextureParameter;
-
-			TShared<PooledRenderTexture> mOutput0;
-			TShared<PooledRenderTexture> mOutput1;
+			GpuParameterSampler mColorSamplerParameter;
+			TShared<SamplerState> mPointSamplerState;
 		};
 
 		/**
@@ -812,8 +727,9 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering. Must be called before Execute().
+			 * Creates the parameter set of @p pass, which combines the near, focused and far planes.
 			 *
+			 * @param	pass			Pass that draws the material.
 			 * @param	focused			Input texture containing focused (default) scene color.
 			 * @param	near			Input texture containing filtered (blurred) values for the unfocused foreground area.
 			 *							Can be null if no near plane needs to be blended.
@@ -822,16 +738,13 @@ namespace b3d
 			 * @param	depth			Input depth buffer texture that will be used for determining pixel depth.
 			 * @param	view			View through which the depth of field effect is viewed.
 			 * @param	settings		Settings used to control depth of field rendering.
+			 * @return					Parameter set to pass to Execute().
 			 */
-			void Prepare(const TShared<Texture>& focused, const TShared<Texture>& near, const TShared<Texture>& far, const TShared<Texture>& depth, const RendererView& view, const DepthOfFieldSettings& settings);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& focused, const TShared<Texture>& near, const TShared<Texture>& far, const TShared<Texture>& depth,
+				const RendererView& view, const DepthOfFieldSettings& settings);
 
-			/**
-			 * Renders the post-process effect with the provided parameters.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	output			Texture to output the results to.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
 			/**
 			 * Returns the material variation matching the provided parameters.
@@ -845,6 +758,7 @@ namespace b3d
 
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
+			GpuParameterUniformBuffer mPerCameraParameter;
 			GpuParameterSampledTexture mFocusedTextureParameter;
 			GpuParameterSampledTexture mNearTextureParameter;
 			GpuParameterSampledTexture mFarTextureParameter;
@@ -894,25 +808,22 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering.
+			 * Creates the parameter set of @p pass, which downsamples @p input.
 			 *
+			 * @param	pass			Pass that draws the material.
 			 * @param	input			Input texture to downsample.
 			 * @param	depth			Input depth buffer texture that will be used for determining pixel depth.
 			 * @param	view			View through which the depth of field effect is viewed.
 			 * @param	settings		Settings used to control depth of field rendering.
+			 * @return					Parameter set to pass to Execute().
 			 */
-			void Prepare(const TShared<Texture>& input, const TShared<Texture>& depth, const RendererView& view, const DepthOfFieldSettings& settings);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& input, const TShared<Texture>& depth, const RendererView& view, const DepthOfFieldSettings& settings);
 
-			/**
-			 * Renders the post-process effect with the provided parameters.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	output			Texture to output the results to.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad that samples @p input. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const TShared<Texture>& input) const;
 
-			/** Returns the texture descriptor that can be used for initializing the output render target. */
-			static PooledRenderTextureCreateInformation GetOutputDesc(const TShared<Texture>& target);
+			/** Returns the information of the output texture, when downsampling @p target. */
+			static TextureCreateInformation GetOutputCreateInformation(const TShared<Texture>& target);
 
 			/** Returns the material variation matching the provided parameters. */
 			static BokehDOFPrepareMaterial* GetVariation(bool msaa);
@@ -920,8 +831,10 @@ namespace b3d
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
 			GpuParameterUniformBuffer mCommonUniformBufferParameter;
+			GpuParameterUniformBuffer mPerCameraParameter;
 			GpuParameterSampledTexture mInputTextureParameter;
 			GpuParameterSampledTexture mDepthTextureParameter;
+			bool mMsaa = false;
 		};
 
 		B3D_UNIFORM_BUFFER_BEGIN(BokehDOFUniformDefinition)
@@ -963,26 +876,22 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering.
+			 * Creates the parameter set of @p pass, which renders the Bokeh sprites of @p input.
 			 *
+			 * @param	pass			Pass that draws the material.
 			 * @param	input			Input texture as generated by BokehDOFPrepare material.
 			 * @param	view			View through which the depth of field effect is viewed.
 			 * @param	settings		Settings used to control depth of field rendering.
 			 * @param	output			Texture to output the results to (needed for size calculations).
+			 * @return					Parameter set to pass to Execute().
 			 */
-			void Prepare(const TShared<Texture>& input, const RendererView& view, const DepthOfFieldSettings& settings, const TShared<RenderTarget>& output);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& input, const RendererView& view, const DepthOfFieldSettings& settings, const TShared<Texture>& output);
 
-			/**
-			 * Renders the post-process effect with the provided parameters.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	input			Input texture as generated by BokehDOFPrepare material.
-			 * @param	output			Texture to output the results to.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& input, const TShared<RenderTarget>& output);
+			/** Binds the material and @p set, a set from Prepare(), and draws a sprite for every pixel of @p input. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const TShared<Texture>& input) const;
 
-			/** Returns the texture descriptor that can be used for initializing the output render target. */
-			static PooledRenderTextureCreateInformation GetOutputDesc(const TShared<Texture>& target);
+			/** Returns the information of the output texture, for the sprites of @p target. */
+			static TextureCreateInformation GetOutputCreateInformation(const TShared<Texture>& target);
 
 			/** Populates the common depth of field uniform buffer memory with values from the provided settings object. */
 			static void PopulateDofCommonParams(const GpuBufferMappedScope& uniforms, const DepthOfFieldSettings& settings, const RendererView& view);
@@ -993,6 +902,7 @@ namespace b3d
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
 			GpuParameterUniformBuffer mCommonUniformBufferParameter;
+			GpuParameterUniformBuffer mPerCameraParameter;
 			GpuParameterSampledTexture mInputTextureVSParameter;
 			GpuParameterSampledTexture mInputTextureFSParameter;
 			GpuParameterSampledTexture mBokehTextureParameter;
@@ -1030,24 +940,22 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering.
+			 * Creates the parameter set of @p pass, which combines the unfocused layers with @p focused.
 			 *
+			 * @param	pass			Pass that draws the material.
 			 * @param	unfocused		Unfocused and half-resolution texture as generated by the BokehDOF material, containing
 			 *							the near and far unfocused layers.
 			 * @param	focused			Focused full resolution scene color.
 			 * @param	depth			Input depth buffer texture that will be used for determining pixel depth.
 			 * @param	view			View through which the depth of field effect is viewed.
 			 * @param	settings		Settings used to control depth of field rendering.
+			 * @return					Parameter set to pass to Execute().
 			 */
-			void Prepare(const TShared<Texture>& unfocused, const TShared<Texture>& focused, const TShared<Texture>& depth, const RendererView& view, const DepthOfFieldSettings& settings);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& unfocused, const TShared<Texture>& focused, const TShared<Texture>& depth, const RendererView& view,
+				const DepthOfFieldSettings& settings);
 
-			/**
-			 * Renders the post-process effect with the provided parameters.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	output			Texture to output the results to.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
 			/** Returns the material variation matching the provided parameters. */
 			static BokehDOFCombineMaterial* GetVariation(MSAAMode msaaMode);
@@ -1055,6 +963,7 @@ namespace b3d
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
 			GpuParameterUniformBuffer mCommonUniformBufferParameter;
+			GpuParameterUniformBuffer mPerCameraParameter;
 			GpuParameterSampledTexture mUnfocusedTextureParameter;
 			GpuParameterSampledTexture mFocusedTextureParameter;
 			GpuParameterSampledTexture mDepthTextureParameter;
@@ -1099,65 +1008,36 @@ namespace b3d
 			GpuParameterSampledTexture mDepthTexture;
 		};
 
-		B3D_UNIFORM_BUFFER_BEGIN(BuildHiZUniformDefinition)
-			B3D_UNIFORM_BUFFER_MEMBER(Vector2, gHalfPixelOffset)
-			B3D_UNIFORM_BUFFER_MEMBER(int, gMipLevel)
-		B3D_UNIFORM_BUFFER_END
-
-		extern BuildHiZUniformDefinition gBuildHiZUniformDefinition;
-
 		/** Shader that calculates a single level of the hierarchical Z mipmap chain. */
 		class BuildHiZMaterial : public RendererMaterial<BuildHiZMaterial>
 		{
 			RMAT_DEF("PPBuildHiZ.bsl");
-
-			/** Helper method used for initializing variations of this material. */
-			template <bool noTextureViews>
-			static const ShaderVariationParameters& GetVariation()
-			{
-				static ShaderVariationParameters variation = ShaderVariationParameters(
-					{
-						ShaderVariationParameter("NO_TEXTURE_VIEWS", noTextureViews),
-					});
-
-				return variation;
-			}
 
 		public:
 			BuildHiZMaterial() = default;
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering. Must be called before Execute().
+			 * Creates the parameter set of @p pass, which reads mip level @p sourceMip of @p source. Returns the set to pass to Execute().
 			 *
+			 * @param	pass			Pass that renders the mip level.
 			 * @param	source			Input depth texture to use as the source.
-			 * @param	srcMip			Mip level to read from the @p source texture.
+			 * @param	sourceMip		Mip level to read from the @p source texture.
 			 */
-			void Prepare(const TShared<Texture>& source, u32 srcMip);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& source, u32 sourceMip);
 
 			/**
-			 * Renders the post-process effect with the provided parameters.
+			 * Binds the material and @p set, a set from Prepare(), and draws a screen quad into the current viewport.
 			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	output			Output target to which to write to results.
-			 * @param	srcRect			Rectangle in normalized coordinates, describing from which portion of the source
-			 *							texture to read the input.
-			 * @param	dstRect			Destination rectangle to limit the writes to.
+			 * @param	context			Context of the pass the set was prepared for.
+			 * @param	set				Parameter set from Prepare().
+			 * @param	sourceArea		Rectangle in normalized coordinates, describing from which portion of the source texture to
+			 *							read the input.
 			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTexture>& output, const Area2& srcRect, const Area2& dstRect);
-
-			/**
-			 * Returns the material variation matching the provided parameters.
-			 *
-			 * @param	noTextureViews		Specify as true if the current render backend doesn't support texture views, in
-			 *								which case the implementation falls back on using a simpler version of the shader.
-			 */
-			static BuildHiZMaterial* GetVariation(bool noTextureViews);
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const Area2& sourceArea) const;
 
 		private:
 			GpuParameterSampledTexture mInputTexture;
-			GpuParameterUniformBuffer mUniformBufferParameter;
-			bool mNoTextureViews = false;
 		};
 
 		B3D_UNIFORM_BUFFER_BEGIN(FXAAUniformDefinition)
@@ -1175,21 +1055,11 @@ namespace b3d
 			FXAAMaterial() = default;
 			void Initialize() override;
 
-			/**
-			 * Prepares GPU parameters for rendering. Must be called before Execute().
-			 *
-			 * @param	source			Input texture to apply FXAA to.
-			 */
-			void Prepare(const TShared<Texture>& source);
+			/** Creates the parameter set of @p pass, which applies FXAA to @p source. Returns the set to pass to Execute(). */
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& source);
 
-			/**
-			 * Executes the post-process effect with the provided parameters and writes the results to the provided
-			 * render target.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	output			Output target to which to write the antialiased image to.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
@@ -1252,23 +1122,19 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Updates GPU parameters. Must be called any time input parameters change.
+			 * Creates the parameter set of @p pass. Returns the set to pass to Execute().
 			 *
+			 * @param	pass			Pass that renders into @p destination.
 			 * @param	view			Information about the view we're rendering from.
 			 * @param	textures		Set of textures to be used as input. Which textures are used depends on the
 			 *							template parameters of this class.
 			 * @param	destination		Output texture to which to write the ambient occlusion data to.
 			 * @param	settings		Settings used to control the ambient occlusion effect.
 			 */
-			void Prepare(const RendererView& view, const SSAOTextureInputs& textures, const TShared<RenderTexture>& destination, const AmbientOcclusionSettings& settings);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const RendererView& view, const SSAOTextureInputs& textures, const TShared<Texture>& destination, const AmbientOcclusionSettings& settings);
 
-			/**
-			 * Renders the effect with the provided parameters, using the specified render target.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	destination		Output texture to which to write the ambient occlusion data to.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTexture>& destination);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
 			/**
 			 * Returns the material variation matching the provided parameters.
@@ -1284,11 +1150,16 @@ namespace b3d
 
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
+			GpuParameterUniformBuffer mPerCameraParameter;
 			GpuParameterSampledTexture mDepthTexture;
 			GpuParameterSampledTexture mNormalsTexture;
 			GpuParameterSampledTexture mDownsampledAOTexture;
 			GpuParameterSampledTexture mSetupAOTexture;
 			GpuParameterSampledTexture mRandomTexture;
+			TInlineArray<GpuParameterSampler, 4> mInputSamplerParameters;
+			GpuParameterSampler mRandomSamplerParameter;
+			TShared<SamplerState> mInputSamplerState;
+			TShared<SamplerState> mRandomSamplerState;
 		};
 
 		B3D_UNIFORM_BUFFER_BEGIN(SSAODownsampleUniformDefinition)
@@ -1311,28 +1182,27 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering. Must be called before Execute().
+			 * Creates the parameter set of @p pass. Returns the set to pass to Execute().
 			 *
+			 * @param	pass			Pass that renders into @p destination.
 			 * @param	view			Information about the view we're rendering from.
 			 * @param	sceneDepth		Input texture containing scene depth.
 			 * @param	sceneNormals	Input texture containing scene world space normals.
 			 * @param	destination		Output texture to which to write the downsampled data to.
 			 * @param	depthRange		Valid depth range (in view space) within which nearby samples will be averaged.
 			 */
-			void Prepare(const RendererView& view, const TShared<Texture>& sceneDepth, const TShared<Texture>& sceneNormals, const TShared<RenderTexture>& destination, float depthRange);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const RendererView& view, const TShared<Texture>& sceneDepth, const TShared<Texture>& sceneNormals, const TShared<Texture>& destination, float depthRange);
 
-			/**
-			 * Renders the post-process effect with the provided parameters.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	destination		Output texture to which to write the downsampled data to.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTexture>& destination);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
+			GpuParameterUniformBuffer mPerCameraParameter;
 			GpuParameterSampledTexture mDepthTexture;
 			GpuParameterSampledTexture mNormalsTexture;
+			TInlineArray<GpuParameterSampler, 2> mInputSamplerParameters;
+			TShared<SamplerState> mInputSamplerState;
 		};
 
 		B3D_UNIFORM_BUFFER_BEGIN(SSAOBlurUniformDefinition)
@@ -1365,30 +1235,29 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering.
+			 * Creates the parameter set of @p pass. Returns the set to pass to Execute().
 			 *
+			 * @param	pass			Pass that renders the blurred output.
 			 * @param	view			Information about the view we're rendering from.
 			 * @param	ao				Input texture containing ambient occlusion data to be blurred.
 			 * @param	sceneDepth		Input texture containing scene depth.
 			 * @param	depthRange		Valid depth range (in view space) within which nearby samples will be averaged.
 			 */
-			void Prepare(const RendererView& view, const TShared<Texture>& ao, const TShared<Texture>& sceneDepth, float depthRange);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const RendererView& view, const TShared<Texture>& ao, const TShared<Texture>& sceneDepth, float depthRange);
 
-			/**
-			 * Renders the post-process effect with the provided parameters.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	destination		Output texture to which to write the blurred data to.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTexture>& destination);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
 			/** Returns the material variation matching the provided parameters. */
 			static SSAOBlurMaterial* GetVariation(bool horizontal);
 
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
+			GpuParameterUniformBuffer mPerCameraParameter;
 			GpuParameterSampledTexture mAOTexture;
 			GpuParameterSampledTexture mDepthTexture;
+			TInlineArray<GpuParameterSampler, 2> mInputSamplerParameters;
+			TShared<SamplerState> mInputSamplerState;
 		};
 
 		B3D_UNIFORM_BUFFER_BEGIN(SSRStencilUniformDefinition)
@@ -1418,21 +1287,23 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering.
+			 * Creates the parameter set of @p pass. Returns the set to pass to Execute().
 			 *
+			 * @param	pass			Pass that marks the stencil.
 			 * @param	view			Information about the view we're rendering from.
 			 * @param	gbuffer			GBuffer textures.
 			 * @param	settings		Parameters used for controlling the SSR effect.
 			 */
-			void Prepare(const RendererView& view, GBufferTextures gbuffer, const ScreenSpaceReflectionsSettings& settings);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const RendererView& view, const GBufferTextures& gbuffer, const ScreenSpaceReflectionsSettings& settings);
 
 			/**
-			 * Renders the effect with the provided parameters, using the currently bound render target.
+			 * Binds the material and @p set, a set from Prepare(), and draws a screen quad.
 			 *
-			 * @param	commandBuffer	Command buffer to execute on.
+			 * @param	context			Context of the pass the set was prepared for.
+			 * @param	set				Parameter set from Prepare().
 			 * @param	view			Information about the view we're rendering from.
 			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const RendererView& view);
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const RendererView& view) const;
 
 			/**
 			 * Returns the material variation matching the provided parameters.
@@ -1446,6 +1317,7 @@ namespace b3d
 
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
+			GpuParameterUniformBuffer mPerCameraParameter;
 			GBufferParameterBinding mGBufferParams;
 		};
 
@@ -1483,24 +1355,25 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering.
+			 * Creates the parameter set of @p pass. Returns the set to pass to Execute().
 			 *
+			 * @param	pass			Pass that traces the rays.
 			 * @param	view			Information about the view we're rendering from.
 			 * @param	gbuffer			GBuffer textures.
 			 * @param	sceneColor		Scene color texture.
 			 * @param	hiZ				Hierarchical Z buffer.
 			 * @param	settings		Parameters used for controling the SSR effect.
 			 */
-			void Prepare(const RendererView& view, GBufferTextures gbuffer, const TShared<Texture>& sceneColor, const TShared<Texture>& hiZ, const ScreenSpaceReflectionsSettings& settings);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const RendererView& view, const GBufferTextures& gbuffer, const TShared<Texture>& sceneColor, const TShared<Texture>& hiZ, const ScreenSpaceReflectionsSettings& settings);
 
 			/**
-			 * Renders the effect with the provided parameters.
+			 * Binds the material and @p set, a set from Prepare(), and draws a screen quad.
 			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	destination		Render target to which to write the results to.
+			 * @param	context			Context of the pass the set was prepared for.
+			 * @param	set				Parameter set from Prepare().
 			 * @param	view			Information about the view we're rendering from.
 			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& destination, const RendererView& view);
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const RendererView& view) const;
 
 			/**
 			 * Calculates a scale & bias that is used for transforming roughness into a fade out value. Anything that is below
@@ -1522,9 +1395,12 @@ namespace b3d
 
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
+			GpuParameterUniformBuffer mPerCameraParameter;
 			GBufferParameterBinding mGBufferParams;
 			GpuParameterSampledTexture mSceneColorTextureParameter;
 			GpuParameterSampledTexture mHiZTextureParameter;
+			GpuParameterSampler mHiZSamplerParameter;
+			TShared<SamplerState> mHiZSamplerState;
 		};
 
 		B3D_UNIFORM_BUFFER_BEGIN(TemporalResolveUniformDefinition)
@@ -1577,26 +1453,27 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Prepares GPU parameters for rendering.
+			 * Creates the parameter set of @p pass. Returns the set to pass to Execute().
 			 *
+			 * @param	pass			Pass that writes the filtered frame.
 			 * @param	view			Information about the view we're rendering from.
-			 * @param	prevFrame		Frame data calculated previous frame.
-			 * @param	curFrame		Frame data calculated this frame.
-			 * @param	velocity		Optional texture containing per-pixel velocity;
+			 * @param	previousFrame	Frame data calculated previous frame.
+			 * @param	currentFrame	Frame data calculated this frame.
+			 * @param	velocity		Optional texture containing per-pixel velocity.
 			 * @param	sceneDepth		Buffer containing scene depth.
 			 * @param	jitter			Sub-pixel jitter applied to the projection matrix.
 			 * @param	exposure		Exposure to use when transforming from HDR to LDR image.
 			 */
-			void Prepare(const RendererView& view, const TShared<Texture>& prevFrame, const TShared<Texture>& curFrame, const TShared<Texture>& velocity, const TShared<Texture>& sceneDepth, const Vector2& jitter, float exposure);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const RendererView& view, const TShared<Texture>& previousFrame, const TShared<Texture>& currentFrame, const TShared<Texture>& velocity, const TShared<Texture>& sceneDepth, const Vector2& jitter, float exposure);
 
 			/**
-			 * Renders the effect with the provided parameters.
+			 * Binds the material and @p set, a set from Prepare(), and draws a screen quad.
 			 *
-			 * @param	commandBuffer	Command buffer to execute on.
+			 * @param	context			Context of the pass the set was prepared for.
+			 * @param	set				Parameter set from Prepare().
 			 * @param	view			Information about the view we're rendering from.
-			 * @param	destination		Render target to which to write the results to.
 			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const RendererView& view, const TShared<RenderTarget>& destination);
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const RendererView& view) const;
 
 			/**
 			 * Returns the material variation matching the provided parameters.
@@ -1612,11 +1489,17 @@ namespace b3d
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
 			GpuParameterUniformBuffer mTemporalUniformBufferParameter;
+			GpuParameterUniformBuffer mPerCameraParameter;
 
 			GpuParameterSampledTexture mSceneColorTextureParameter;
 			GpuParameterSampledTexture mPreviousColorTextureParameter;
 			GpuParameterSampledTexture mSceneDepthTextureParameter;
 			GpuParameterSampledTexture mVelocityTextureParameter;
+
+			TInlineArray<GpuParameterSampler, 2> mPointSamplerParameters;
+			TInlineArray<GpuParameterSampler, 2> mLinearSamplerParameters;
+			TShared<SamplerState> mPointSamplerState;
+			TShared<SamplerState> mLinearSamplerState;
 
 			bool mHasVelocityTexture = false;
 		};
@@ -1641,26 +1524,26 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Updates GPU parameters. Must be called any time input parameters change.
+			 * Creates the material's parameter set for @p pass, and fills it.
 			 *
+			 * @param	pass			Raster pass the material draws in, whose color attachment receives the encoded depth in
+			 *							its alpha channel.
+			 * @param	view			View whose depth is encoded.
 			 * @param	depth			Resolved (non-MSAA) depth texture to encode.
 			 * @param	near			Near range (in view space) to start encoding the depth. Any depth lower than this will
 			 *							be encoded to 1.
 			 * @param	far				Far range (in view space) to end encoding the depth. Any depth higher than this will
 			 *							be encoded to 0.
+			 * @return					Parameter set to pass to Execute().
 			 */
-			void Prepare(const TShared<Texture>& depth, float near, float far);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const RendererView& view, const TShared<Texture>& depth, float near, float far);
 
-			/**
-			 * Renders the post-process effect with the provided parameters.
-			 *
-			 * @param	commandBuffer	Command buffer to execute on.
-			 * @param	output			Output texture to write the results in. Results will be written in the alpha channel.
-			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output);
+			/** Binds the material and @p set, a set from Prepare(), and draws a full screen quad. */
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const;
 
 		private:
 			GpuParameterUniformBuffer mUniformBufferParameter;
+			GpuParameterUniformBuffer mPerCameraParameter;
 			GpuParameterSampledTexture mInputTextureParameter;
 		};
 
@@ -1687,32 +1570,34 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Updates GPU parameters. Must be called any time input parameters change.
+			 * Creates the parameter set of @p pass. Returns the set to pass to Execute().
 			 *
+			 * @param	pass			Pass that writes the coverage texture.
 			 * @param	view			Information about the view we're rendering from.
 			 * @param	gbuffer			GBuffer textures.
 			 */
-			void Prepare(const RendererView& view, GBufferTextures gbuffer);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const RendererView& view, const GBufferTextures& gbuffer);
 
 			/**
-			 * Renders the effect with the provided parameters, using the currently bound render target.
+			 * Binds the material and @p set, a set from Prepare(), and draws a screen quad.
 			 *
-			 * @param	commandBuffer	Command buffer to execute on.
+			 * @param	context			Context of the pass the set was prepared for.
+			 * @param	set				Parameter set from Prepare().
 			 * @param	view			Information about the view we're rendering from.
 			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const RendererView& view);
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const RendererView& view) const;
 
 			/** Returns the material variation matching the provided parameters. */
 			static MSAACoverageMaterial* GetVariation(u32 msaaCount);
 
 		private:
 			GBufferParameterBinding mGBufferParams;
+			GpuParameterUniformBuffer mPerCameraParameter;
 		};
 
 		/**
 		 * Converts the coverage texture output by MSAACoverageMaterial and writes its information in the highest bit of the
-		 * currently bound stencil buffer. This allows coverage information to be used by normal (non-compute) rendering
-		 * shaders.
+		 * stencil buffer of the pass. This allows coverage information to be used by normal (non-compute) rendering shaders.
 		 */
 		class MSAACoverageStencilMaterial : public RendererMaterial<MSAACoverageStencilMaterial>
 		{
@@ -1723,19 +1608,21 @@ namespace b3d
 			void Initialize() override;
 
 			/**
-			 * Updates GPU parameters. Must be called any time input parameters change.
+			 * Creates the parameter set of @p pass. Returns the set to pass to Execute().
 			 *
+			 * @param	pass			Pass that marks the stencil.
 			 * @param	coverage		Coverage texture as output by MSAACoverageMaterial.
 			 */
-			void Prepare(const TShared<Texture>& coverage);
+			TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& coverage);
 
 			/**
-			 * Renders the effect with the provided parameters, using the currently bound render target.
+			 * Binds the material and @p set, a set from Prepare(), and draws a screen quad.
 			 *
-			 * @param	commandBuffer	Command buffer to execute on.
+			 * @param	context			Context of the pass the set was prepared for.
+			 * @param	set				Parameter set from Prepare().
 			 * @param	view			Information about the view we're rendering from.
 			 */
-			void Execute(GpuCommandBuffer& commandBuffer, const RendererView& view);
+			void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const RendererView& view) const;
 
 		private:
 			GpuParameterSampledTexture mCoverageTextureParameter;

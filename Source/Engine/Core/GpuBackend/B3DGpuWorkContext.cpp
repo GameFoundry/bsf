@@ -6,6 +6,7 @@
 #include "B3DGpuCommandBufferPoolRing.h"
 #include "B3DGpuParameterSetPool.h"
 #include "B3DGpuTransientResourceAllocator.h"
+#include "B3DGpuDeviceCapabilities.h"
 #include "GpuBackend/Allocators/B3DGpuResource.h"
 
 using namespace b3d;
@@ -160,6 +161,9 @@ const TShared<render::GpuCommandBuffer>& GpuWorkContext::GetTransferCommandBuffe
 		poolCreateInformation.Type = kTransferQueueType;
 		poolCreateInformation.UsePoolReset = true;
 
+		// In explicit mode the upload utilities bracket their writes with explicit barriers
+		poolCreateInformation.ExplicitBarriers = gGpuExplicitBarriers && mDevice.GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
+
 		mTransferPoolRing = B3DMakeUnique<render::GpuCommandBufferPoolRing>(mDevice, poolCreateInformation);
 	}
 
@@ -269,6 +273,10 @@ void GpuWorkContext::AdvanceFrame()
 		entry.second->FreeAll();
 		entry.second->ReclaimUnused(false);
 	}
+
+	// A context that stops recording frame graphs would otherwise keep its transient resources, and the heaps under them
+	if (mTransientResourceAllocator != nullptr)
+		mTransientResourceAllocator->EvictIdleResources();
 }
 
 void GpuWorkContext::WaitAndReclaim()

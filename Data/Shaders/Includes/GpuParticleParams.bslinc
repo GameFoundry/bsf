@@ -1,0 +1,15 @@
+mixin GpuParticleParams
+{
+	code
+	{
+		[internal]
+		[dynamicOffset]
+		cbuffer GpuParticleParams : register(c1, space1)
+		{
+			float2 gColorCurveOffset;
+			float2 gColorCurveScale;
+			float2 gSizeScaleFrameIdxCurveOffset;
+			float2 gSizeScaleFrameIdxCurveScale;
+		};
+	};
+};

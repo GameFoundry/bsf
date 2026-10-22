@@ -189,9 +189,7 @@ VulkanGpuCommandBuffer::VulkanGpuCommandBuffer(VulkanGpuDevice& device, VulkanGp
 	const VkResult result = vkCreateFence(GetVulkanGpuDevice().GetLogical(), &fenceCI, gVulkanAllocator, &mFence);
 	B3D_ASSERT(result == VK_SUCCESS);
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	mResourceTracker.SetHazardTracking(!UsesExplicitBarriers());
-#endif
 
 	SetName(createInformation.Name);
 }
@@ -295,7 +293,6 @@ void VulkanGpuCommandBuffer::BeginRenderPass(const RenderPassCreateInformation& 
 		return;
 
 	mRenderTarget = renderTarget;
-	mRenderTargetModified = false;
 
 	// Warn if invalid load mask
 	if(loadMask.IsSet(RT_DEPTH) && !loadMask.IsSet(RT_STENCIL))
@@ -320,7 +317,6 @@ void VulkanGpuCommandBuffer::BeginRenderPass(const RenderPassCreateInformation& 
 	mResourceTracker.TrackResourceUsage(mFramebuffer, GpuAccessFlag::Write);
 
 	VulkanRenderPass* renderPass = mFramebuffer->GetRenderPass();
-	const u32 colorAttachmentCount = renderPass->GetColorAttachmentCount();
 	const GpuRenderPassAttachmentUsageArray renderPassAttachmentUsages = mFramebuffer->BuildRenderPassAttachmentUsages(readOnlyMask, loadMask, VulkanFramebuffer::GetLayoutPolicy());
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
@@ -369,70 +365,9 @@ void VulkanGpuCommandBuffer::BeginRenderPass(const RenderPassCreateInformation& 
 	const Area2I renderArea = GetRenderPassArea();
 
 	const RenderSurfaceMask readMask = mRenderTargetReadOnlyMask;
-	const RenderSurfaceMask originalClearMask = createInformation.ClearMask;
-	Array<VkClearValue, B3D_MAXIMUM_RENDER_TARGET_COUNT + 1> clearValues = BuildClearValues(originalClearMask);
-
-	RenderSurfaceMask clearMask = createInformation.ClearMask;
-
-#if B3D_DEBUG
-	const VkClearColorValue kDebugClearColor = { { 1.0f, 0.0f, 1.0f, 1.0f } }; // Bright pink
-
-	for(u32 sequentialColorAttachmentIndex = 0; sequentialColorAttachmentIndex < colorAttachmentCount; sequentialColorAttachmentIndex++)
-	{
-		const GpuFramebufferAttachment& colorAttachment = mFramebuffer->GetColorAttachments()[sequentialColorAttachmentIndex];
-		const RenderSurfaceMaskBits colorAttachmentBit = colorAttachment.Surface;
-		if(loadMask.IsSet(colorAttachmentBit))
-			continue;
-
-		if(readMask.IsSet(colorAttachmentBit))
-		{
-			B3D_LOG(Error, LogRenderBackend, "Color attachment at index {0} cannot be read only if we're not loading it.", colorAttachment.GetIndex());
-			continue;
-		}
-
-		// In debug mode clear not loaded values to the clear color
-		if(!originalClearMask.IsSet(colorAttachmentBit))
-		{
-			clearMask |= colorAttachmentBit;
-			clearValues[sequentialColorAttachmentIndex].color = kDebugClearColor;
-		}
-	}
-
-	if(renderPass->HasDepthAttachment())
-	{
-		if(!loadMask.IsSet(RT_DEPTH))
-		{
-			if(readMask.IsSet(RT_DEPTH))
-			{
-				B3D_LOG(Error, LogRenderBackend, "Depth attachment cannot be read only if we're not loading it.");
-			}
-			else
-			{
-				if(!originalClearMask.IsSet(RT_DEPTH))
-				{
-					clearMask |= RT_DEPTH;
-					clearValues[colorAttachmentCount].depthStencil.depth = 0.0f;
-				}
-			}
-		}
-
-		if(!loadMask.IsSet(RT_STENCIL))
-		{
-			if(readMask.IsSet(RT_STENCIL))
-			{
-				B3D_LOG(Error, LogRenderBackend, "Stencil attachment cannot be read only if we're not loading it.");
-			}
-			else
-			{
-				if(!originalClearMask.IsSet(RT_STENCIL))
-				{
-					clearMask |= RT_STENCIL;
-					clearValues[colorAttachmentCount].depthStencil.stencil = 0;
-				}
-			}
-		}
-	}
-#endif
+	RenderTargetClearValues targetClearValues;
+	const RenderSurfaceMask clearMask = GpuBackendUtility::GetRenderPassClears(createInformation, targetClearValues);
+	Array<VkClearValue, B3D_MAXIMUM_RENDER_TARGET_COUNT + 1> clearValues = BuildClearValues(clearMask, targetClearValues);
 
 	VkRenderPassBeginInfo renderPassBeginInfo;
 	renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -559,7 +494,6 @@ void VulkanGpuCommandBuffer::SetDynamicBufferOffset(u32 set, u32 bufferIndex, u3
 	if(!mBoundParamsDirty && set < mDynamicOffsetsPerSet.size() && bufferIndex < mDynamicOffsetsPerSet[set].size())
 	{
 		mDynamicOffsetsPerSet[set][bufferIndex] = offset;
-		RebuildFlatDynamicOffsets();
 #if B3D_BUILD_TYPE_DEVELOPMENT
 		mBoundGpuParameterSets[set]->TrackDynamicUniformBufferOffsets(mResourceTracker, mDynamicOffsetsPerSet[set]);
 #endif
@@ -801,12 +735,7 @@ void VulkanGpuCommandBuffer::Draw(u32 vertexOffset, u32 vertexCount, u32 instanc
 
 	if(mDescriptorSetsBindState.IsSet(DescriptorSetBindFlag::Graphics))
 	{
-		if(mBoundDescriptorSetCount > 0)
-		{
-			VkPipelineLayout pipelineLayout = mGraphicsPipeline->GetPipelineLayoutHandle();
-
-			vkCmdBindDescriptorSets(mCommandBufferHandle, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, mBoundDescriptorSetCount, mDescriptorSetsTemp, (u32)mFlatDynamicOffsets.size(), mFlatDynamicOffsets.data());
-		}
+		BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, mGraphicsPipeline->GetPipelineLayoutHandle());
 
 		mDescriptorSetsBindState.Unset(DescriptorSetBindFlag::Graphics);
 	}
@@ -822,7 +751,6 @@ void VulkanGpuCommandBuffer::Draw(u32 vertexOffset, u32 vertexCount, u32 instanc
 #endif
 
 	vkCmdDraw(mCommandBufferHandle, vertexCount, instanceCount, vertexOffset, firstInstance);
-	NotifyRenderTargetModified();
 
 	B3D_INCREMENT_RENDER_STATISTIC(NumDrawCalls);
 	B3D_ADD_RENDER_STATISTIC(NumVertices, vertexCount);
@@ -865,12 +793,7 @@ void VulkanGpuCommandBuffer::DrawIndexed(u32 startIndex, u32 indexCount, u32 ver
 
 	if(mDescriptorSetsBindState.IsSet(DescriptorSetBindFlag::Graphics))
 	{
-		if(mBoundDescriptorSetCount > 0)
-		{
-			VkPipelineLayout pipelineLayout = mGraphicsPipeline->GetPipelineLayoutHandle();
-
-			vkCmdBindDescriptorSets(mCommandBufferHandle, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, mBoundDescriptorSetCount, mDescriptorSetsTemp, (u32)mFlatDynamicOffsets.size(), mFlatDynamicOffsets.data());
-		}
+		BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, mGraphicsPipeline->GetPipelineLayoutHandle());
 
 		mDescriptorSetsBindState.Unset(DescriptorSetBindFlag::Graphics);
 	}
@@ -886,7 +809,6 @@ void VulkanGpuCommandBuffer::DrawIndexed(u32 startIndex, u32 indexCount, u32 ver
 #endif
 
 	vkCmdDrawIndexed(mCommandBufferHandle, indexCount, instanceCount, startIndex, vertexOffset, firstInstance);
-	NotifyRenderTargetModified();
 
 	B3D_INCREMENT_RENDER_STATISTIC(NumDrawCalls);
 	B3D_ADD_RENDER_STATISTIC(NumVertices, vertexCount);
@@ -931,11 +853,7 @@ void VulkanGpuCommandBuffer::DispatchCompute(u32 groupCountX, u32 groupCountY, u
 
 	if(mDescriptorSetsBindState.IsSet(DescriptorSetBindFlag::Compute))
 	{
-		if(mBoundDescriptorSetCount > 0)
-		{
-			VkPipelineLayout pipelineLayout = mComputePipeline->GetPipelineLayoutHandle();
-			vkCmdBindDescriptorSets(mCommandBufferHandle, VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, mBoundDescriptorSetCount, mDescriptorSetsTemp, (u32)mFlatDynamicOffsets.size(), mFlatDynamicOffsets.data());
-		}
+		BindDescriptorSets(VK_PIPELINE_BIND_POINT_COMPUTE, mComputePipeline->GetPipelineLayoutHandle());
 
 		mDescriptorSetsBindState.Unset(DescriptorSetBindFlag::Compute);
 	}
@@ -1041,6 +959,33 @@ void VulkanGpuCommandBuffer::CopyTextureToBuffer(const TShared<Texture>& source,
 		transferLayout = GpuImageLayout::TransferSource;
 
 	CopyImageToBuffer(sourceImage, destinationBuffer, extent, range, transferLayout, pitch.RowPitch, pitch.SliceHeight);
+}
+
+void VulkanGpuCommandBuffer::CopyWindowToBuffer(const TShared<RenderWindow>& source, const TShared<GpuBuffer>& destination)
+{
+	GpuCommandBuffer::CopyWindowToBuffer(source, destination);
+	EnsureValidThread();
+
+	if(source == nullptr || destination == nullptr)
+		return;
+
+	auto* const surface = static_cast<IVulkanRenderWindowSurface*>(source->GetRenderWindowSurface().get());
+	if(surface == nullptr)
+		return;
+
+	const TOptional<RenderWindowImageLayout> layout = surface->GetImageLayout();
+	VulkanImage* const sourceImage = surface->GetCurrentColorImage();
+	VulkanBuffer* const destinationBuffer = static_cast<VulkanGpuBuffer*>(destination.get())->GetVulkanResource();
+	if(!layout || sourceImage == nullptr || destinationBuffer == nullptr)
+		return;
+
+	VkExtent3D extent;
+	extent.width = layout->Width;
+	extent.height = layout->Height;
+	extent.depth = 1;
+
+	const GpuTextureSubresourceRange range(0, 1, 0, 1, GpuTextureAspectFlag::Color);
+	CopyImageToBuffer(sourceImage, destinationBuffer, extent, range, GpuImageLayout::TransferSource, layout->Pitch.RowPitch, layout->Pitch.SliceHeight);
 }
 
 bool VulkanGpuCommandBuffer::CopyTexture(const TShared<Texture>& source, const TShared<Texture>& destination, const TextureCopyInformation& copyInformation)
@@ -1306,7 +1251,6 @@ void VulkanGpuCommandBuffer::EndRenderPass()
 
 	mState = GpuCommandBufferState::Recording;
 	mRenderTarget = nullptr;
-	mRenderTargetModified = false;
 	mRenderTargetReadOnlyMask = RT_NONE;
 	mFramebuffer = nullptr;
 
@@ -1508,9 +1452,7 @@ VulkanGpuCommandBufferSubmitInformation VulkanGpuCommandBuffer::PrepareForSubmit
 	mResourceTracker.ResolveSubmissionTransitions(destinationQueueId, device.GetSubmitThread().GetFrameIndex(), transitionVisitor);
 	transitionVisitor.Finalize();
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	PublishExplicitImageLayouts(destinationQueueId);
-#endif
 
 	// Wait on present (i.e. until the back buffer becomes available) for any surfaces
 	for(IVulkanRenderWindowSurface* surface : mAcquiredSurfaces)
@@ -1599,9 +1541,7 @@ void VulkanGpuCommandBuffer::ClearRecordingState()
 	mGraphicsPushConstantsRequireBind = false;
 	mComputePushConstantsRequireBind = false;
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	ClearExplicitBarrierState(wasSubmitted);
-#endif
 
 	OnDidComplete.Clear();
 	OnDestroyed.Clear();
@@ -1624,14 +1564,12 @@ void VulkanGpuCommandBuffer::NotifyParentPoolReset()
 	mState = GpuCommandBufferState::Ready;
 }
 
-Array<VkClearValue, B3D_MAXIMUM_RENDER_TARGET_COUNT + 1> VulkanGpuCommandBuffer::BuildClearValues(RenderSurfaceMask clearMask)
+Array<VkClearValue, B3D_MAXIMUM_RENDER_TARGET_COUNT + 1> VulkanGpuCommandBuffer::BuildClearValues(RenderSurfaceMask clearMask, const RenderTargetClearValues& targetClearValues)
 {
 	Array<VkClearValue, B3D_MAXIMUM_RENDER_TARGET_COUNT + 1> clearValues{};
 
-	if(clearMask == RT_NONE || mFramebuffer == nullptr || mRenderTarget == nullptr)
+	if(clearMask == RT_NONE || mFramebuffer == nullptr)
 		return clearValues;
-
-	const RenderTargetClearValues& targetClearValues = mRenderTarget->GetClearValues();
 
 	// Determine which attachments require clearing, and their clear values
 	const VulkanRenderPass* renderPass = mFramebuffer->GetRenderPass();
@@ -1668,7 +1606,10 @@ Array<VkClearValue, B3D_MAXIMUM_RENDER_TARGET_COUNT + 1> VulkanGpuCommandBuffer:
 
 void VulkanGpuCommandBuffer::ClearAttachments(const Area2I& area, RenderSurfaceMask clearMask)
 {
-	ClearAttachments(area, clearMask, BuildClearValues(clearMask));
+	if(mRenderTarget == nullptr)
+		return;
+
+	ClearAttachments(area, clearMask, BuildClearValues(clearMask, mRenderTarget->GetClearValues()));
 }
 
 void VulkanGpuCommandBuffer::ClearAttachments(const Area2I& area, RenderSurfaceMask clearMask, const Array<VkClearValue, B3D_MAXIMUM_RENDER_TARGET_COUNT + 1>& clearValues)
@@ -1678,7 +1619,7 @@ void VulkanGpuCommandBuffer::ClearAttachments(const Area2I& area, RenderSurfaceM
 
 	VulkanRenderPass* renderPass = mFramebuffer->GetRenderPass();
 
-	Array<VkClearAttachment, B3D_MAXIMUM_RENDER_TARGET_COUNT + 1> attachments;
+	Array<VkClearAttachment, B3D_MAXIMUM_RENDER_TARGET_COUNT + 1> attachments{};
 	u32 baseLayerIndex = 0;
 	u32 sequentialClearedAttachmentIndex = 0; // Only counts attachments that we need to clear
 
@@ -1766,7 +1707,6 @@ void VulkanGpuCommandBuffer::ClearAttachments(const Area2I& area, RenderSurfaceM
 	clearRect.rect.extent.height = area.Height;
 
 	vkCmdClearAttachments(mCommandBufferHandle, attachmentsToClearCount, attachments.data(), 1, &clearRect);
-	NotifyRenderTargetModified();
 }
 
 bool VulkanGpuCommandBuffer::IsReadyForRender()
@@ -1900,7 +1840,7 @@ bool VulkanGpuCommandBuffer::BindGpuParameters(const TShared<GpuPipelineParamete
 		mDrawAccessValidator.ClearBindings();
 #endif
 
-	mBoundDescriptorSetCount = 0;
+	mBoundDescriptorSetMask = 0;
 
 	const u32 setCount = pipelineParameterLayout->GetSetCount();
 
@@ -1915,8 +1855,10 @@ bool VulkanGpuCommandBuffer::BindGpuParameters(const TShared<GpuPipelineParamete
 	{
 		mDynamicOffsetsPerSet[set].clear();
 
+		// A set the pipeline declares no resources in is not bound, even if one remains bound from an earlier draw
 		const TShared<VulkanGpuParameterSet>& boundGpuParameterSet = mBoundGpuParameterSets[set];
-		if(boundGpuParameterSet != nullptr)
+		const TShared<GpuPipelineParameterSetLayout>& pipelineSetLayout = pipelineParameterLayout->GetSet(set);
+		if(boundGpuParameterSet != nullptr && pipelineSetLayout != nullptr && pipelineSetLayout->GetResourceCount() > 0)
 		{
 #if B3D_BUILD_TYPE_DEVELOPMENT
 			if(IsInRenderPass())
@@ -1962,11 +1904,10 @@ bool VulkanGpuCommandBuffer::BindGpuParameters(const TShared<GpuPipelineParamete
 #endif
 
 			mDynamicOffsetsPerSet[set] = setDynamicOffsets;
-			mBoundDescriptorSetCount++;
+			mBoundDescriptorSetMask |= 1ull << set;
 		}
 	}
 
-	RebuildFlatDynamicOffsets();
 	mBoundParamsDirty = false;
 	return true;
 }
@@ -2005,17 +1946,28 @@ void VulkanGpuCommandBuffer::BindPushConstants(bool isGraphics)
 		mComputePushConstantsRequireBind = false;
 }
 
-void VulkanGpuCommandBuffer::RebuildFlatDynamicOffsets()
+void VulkanGpuCommandBuffer::BindDescriptorSets(VkPipelineBindPoint bindPoint, VkPipelineLayout pipelineLayout)
 {
-	mFlatDynamicOffsets.clear();
-
-	for(u32 set = 0; set < mBoundDescriptorSetCount; set++)
+	u32 set = 0;
+	while(set < kMaximumBoundDescriptorSets)
 	{
-		if(set >= (u32)mDynamicOffsetsPerSet.size())
-			continue;
+		if((mBoundDescriptorSetMask & (1ull << set)) == 0)
+			set++;
+		else
+		{
+			const u32 firstSet = set;
 
-		for(u32 offset : mDynamicOffsetsPerSet[set])
-			mFlatDynamicOffsets.Add(offset);
+			TInlineArray<u32, 16> dynamicOffsets;
+			while(set < kMaximumBoundDescriptorSets && (mBoundDescriptorSetMask & (1ull << set)) != 0)
+			{
+				for(u32 offset : mDynamicOffsetsPerSet[set])
+					dynamicOffsets.Add(offset);
+
+				set++;
+			}
+
+			vkCmdBindDescriptorSets(mCommandBufferHandle, bindPoint, pipelineLayout, firstSet, set - firstSet, &mDescriptorSetsTemp[firstSet], (u32)dynamicOffsets.size(), dynamicOffsets.data());
+		}
 	}
 }
 
@@ -2295,7 +2247,6 @@ VulkanFramebuffer* VulkanGpuCommandBuffer::AcquireWindowFramebuffer(RenderWindow
 	return framebuffer;
 }
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 VulkanSplitBarrier::VulkanSplitBarrier(VulkanGpuDevice& device, TOptional<GpuQueueType> releaseQueue, TOptional<GpuQueueType> acquireQueue)
 	: GpuSplitBarrier(releaseQueue, acquireQueue), mDevice(device.GetLogical())
 {
@@ -2370,6 +2321,10 @@ bool VulkanGpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& b
 
 	const auto fnAddImageBarrier = [&](VulkanImage& image, const GpuTextureSubresourceRange& range, const GpuExplicitBarrier& barrier, bool usesGeneralLayout)
 	{
+		// The alias acquire that supersedes the image flushes its writes through a global memory barrier, which covers images in any layout
+		if(barrier.Flags.IsSet(GpuBarrierFlag::AliasRelease))
+			return;
+
 		const bool isAliasAcquire = barrier.Flags.IsSet(GpuBarrierFlag::AliasAcquire);
 		if(isAliasAcquire && !B3D_ENSURE_LOG(barrier.Source.Layout == GpuImageLayout::Undefined && image.IsFullRange(range), "An alias acquire of an image must start from GpuImageLayout::Undefined and cover the whole image."))
 			return;
@@ -2492,16 +2447,6 @@ bool VulkanGpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& b
 		batch.Execute(mCommandBufferHandle);
 
 	return true;
-}
-#endif
-
-void VulkanGpuCommandBuffer::NotifyRenderTargetModified()
-{
-	if(mRenderTarget == nullptr || mRenderTargetModified)
-		return;
-
-	mRenderTarget->TickUpdateCount();
-	mRenderTargetModified = true;
 }
 
 Area2I VulkanGpuCommandBuffer::GetViewportArea() const

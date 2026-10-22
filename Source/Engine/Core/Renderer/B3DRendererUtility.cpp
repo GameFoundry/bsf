@@ -11,11 +11,14 @@
 #include "Material/B3DMaterialParameterAdapter.h"
 #include "Material/B3DPass.h"
 #include "GpuBackend/B3DGpuParameterSet.h"
+#include "GpuBackend/B3DGpuPipelineParameterLayout.h"
+#include "GpuBackend/B3DGpuPipelineState.h"
 #include "Utility/B3DShapeMeshes3D.h"
 #include "Material/B3DShader.h"
 #include "Renderer/B3DIBLUtility.h"
 #include "Math/B3DAABox.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
+#include "FrameGraph/B3DFrameGraph.h"
 #include "GpuBackend/B3DGpuDeviceCapabilities.h"
 #include "Components/B3DLight.h"
 
@@ -288,61 +291,6 @@ void RendererUtility::DrawMorph(GpuCommandBuffer& commandBuffer, const TShared<M
 	mesh->NotifyUsedOnGPU();
 }
 
-void RendererUtility::Blit(GpuCommandBuffer& commandBuffer, const BlitInformation& blitInformation)
-{
-	if(!B3D_ENSURE(blitInformation.InputTexture != nullptr))
-		return;
-
-	if(!B3D_ENSURE(blitInformation.OutputRenderTarget != nullptr))
-		return;
-
-	// Convert input area to float coordinates
-	auto& textureProperties = blitInformation.InputTexture->GetProperties();
-	const Area2I& area = blitInformation.InputArea;
-
-	Area2 inputAreaFloat((float)area.X, (float)area.Y, (float)area.Width, (float)area.Height);
-	if(area.Width == 0 || area.Height == 0)
-	{
-		inputAreaFloat.X = 0.0f;
-		inputAreaFloat.Y = 0.0f;
-		inputAreaFloat.Width = (float)textureProperties.Width;
-		inputAreaFloat.Height = (float)textureProperties.Height;
-	}
-
-	bool output32Bit = false;
-	if(!blitInformation.IsDepth && !blitInformation.OutputRenderTarget->GetProperties().IsWindow)
-	{
-		const RenderSurfaceInformation& colorSurface = static_cast<RenderTexture&>(*blitInformation.OutputRenderTarget).GetColorSurfaceInformation(0);
-		if(colorSurface.Texture != nullptr)
-			output32Bit = PixelUtility::GetElementType(colorSurface.Texture->GetProperties().Format) == PCT_FLOAT32;
-	}
-
-	// Get appropriate material variation
-	BlitMat* const blitMaterial = BlitMat::GetVariation(textureProperties.SampleCount, !blitInformation.IsDepth, blitInformation.UseFiltering, blitInformation.UseBlend, blitInformation.PremultipliedAlpha, blitInformation.WriteAlpha, blitInformation.SrgbEncode, output32Bit);
-
-	// Get GPU parameters and configure source texture
-	const TShared<GpuParameterSet> gpuParameters = blitMaterial->Prepare(blitInformation.InputTexture);
-
-	// Begin render pass
-	RenderPassCreateInformation renderPassInfo(blitInformation.OutputRenderTarget, gpuParameters, blitInformation.ReadOnlyMask, blitInformation.LoadMask);
-	commandBuffer.BeginRenderPass(renderPassInfo);
-
-	if(blitInformation.OutputArea.has_value())
-		commandBuffer.SetViewport(blitInformation.OutputArea.value());
-
-	if(blitInformation.ClearMask != RT_NONE)
-	{
-		if(blitInformation.OutputArea.has_value())
-			commandBuffer.ClearViewport(blitInformation.ClearMask);
-		else
-			commandBuffer.ClearRenderTarget(blitInformation.ClearMask);
-	}
-
-	blitMaterial->Execute(commandBuffer, gpuParameters, inputAreaFloat, blitInformation.FlipUV);
-
-	commandBuffer.EndRenderPass();
-}
-
 void RendererUtility::DrawScreenQuad(GpuCommandBuffer& commandBuffer, const Area2& uv, const Vector2I& textureSize, u32 numInstances, bool flipUV)
 {
 	// Note: Consider drawing the quad using a single large triangle for possibly better performance
@@ -421,22 +369,31 @@ RendererUtility& GetRendererUtility()
 void BlitMat::Initialize()
 {
 	mIsFiltered = mVariationParameters.GetI32("MODE") == 1;
+	mGpuParameterSet->GetSampledTextureParameter("gSource", mSourceParameter);
 }
 
 TShared<GpuParameterSet> BlitMat::Prepare(const TShared<Texture>& source)
 {
 	TShared<GpuParameterSet> gpuParameters = CreateGpuParameterSet();
-	gpuParameters->SetSampledTexture("gSource", source);
+	mSourceParameter.Set(gpuParameters, source);
 
 	return gpuParameters;
 }
 
-void BlitMat::Execute(GpuCommandBuffer& commandBuffer, const TShared<GpuParameterSet>& gpuParameters, const Area2& area, bool flipUV)
+TShared<GpuParameterSet> BlitMat::Prepare(FrameGraphPass& pass, const TShared<Texture>& source)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+	mSourceParameter.Set(set, source);
+
+	return set;
+}
+
+void BlitMat::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const Area2& area, bool flipUV) const
+{
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	Bind(commandBuffer, false);
-	commandBuffer.SetGpuParameterSet(gpuParameters);
+	Bind(commandBuffer, set);
 
 	if(!mIsFiltered)
 		GetRendererUtility().DrawScreenQuad(commandBuffer, area, Vector2I(1, 1), 1, flipUV);
@@ -515,27 +472,36 @@ void ClearMaterial::Initialize()
 	mGpuParameterSet->GetUniformBufferParameter("Params", mUniformBufferParameter);
 }
 
-void ClearMaterial::Prepare(u32 value)
+TShared<GpuParameterSet> ClearMaterial::Prepare(FrameGraphPass& pass, u32 value)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	GpuBufferMappedScope uniforms = gClearUniformDefinition.AllocateTransient().Map();
 	gClearUniformDefinition.gIntegerClearValue.Set(uniforms, Vector4UI(value, value, value, value));
 
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
+
+	return set;
 }
 
-void ClearMaterial::Prepare(const Color& color)
+TShared<GpuParameterSet> ClearMaterial::Prepare(FrameGraphPass& pass, const Color& color)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	GpuBufferMappedScope uniforms = gClearUniformDefinition.AllocateTransient().Map();
 	gClearUniformDefinition.gColorClearValue.Set(uniforms, color);
 
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
+
+	return set;
 }
 
-void ClearMaterial::Execute(GpuCommandBuffer& commandBuffer)
+void ClearMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
 }
 
@@ -555,23 +521,26 @@ void CompositeMaterial::Initialize()
 	mGpuParameterSet->GetSampledTextureParameter("gSource", mSourceTextureParameter);
 }
 
-void CompositeMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& source, const TShared<RenderTarget>& target, const Color& tint)
+TShared<GpuParameterSet> CompositeMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& source, const Color& tint)
 {
-	B3D_PROFILE_RENDERER_MATERIAL
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
 
 	GpuBufferMappedScope uniforms = gCompositeUniformDefinition.AllocateTransient().Map();
 	gCompositeUniformDefinition.gTint.Set(uniforms, tint);
 
-	mUniformBufferParameter.Set(uniforms);
-	mSourceTextureParameter.Set(source);
+	mUniformBufferParameter.Set(set, uniforms);
+	mSourceTextureParameter.Set(set, source);
 
-	// Render
-	commandBuffer.BeginRenderPass(RenderPassCreateInformation(target, mGpuParameterSet));
+	return set;
+}
 
-	Bind(commandBuffer);
+void CompositeMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
+{
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
+	B3D_PROFILE_RENDERER_MATERIAL
+
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
 BicubicUpsampleUniformDefinition gBicubicUpsampleUniformDefinition;
@@ -582,9 +551,9 @@ void BicubicUpsampleMaterial::Initialize()
 	mGpuParameterSet->GetSampledTextureParameter("gSource", mSourceTextureParameter);
 }
 
-void BicubicUpsampleMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& source, const TShared<RenderTarget>& target, const Color& tint)
+TShared<GpuParameterSet> BicubicUpsampleMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& source, const Color& tint)
 {
-	B3D_PROFILE_RENDERER_MATERIAL
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
 
 	const TextureProperties& sourceProps = source->GetProperties();
 
@@ -598,16 +567,19 @@ void BicubicUpsampleMaterial::Execute(GpuCommandBuffer& commandBuffer, const TSh
 	gBicubicUpsampleUniformDefinition.gInvPixel.Set(uniforms, invPixelSize);
 	gBicubicUpsampleUniformDefinition.gInvTwoPixels.Set(uniforms, invTwoPixelSize);
 
-	mUniformBufferParameter.Set(uniforms);
-	mSourceTextureParameter.Set(source);
+	mUniformBufferParameter.Set(set, uniforms);
+	mSourceTextureParameter.Set(set, source);
 
-	// Render
-	commandBuffer.BeginRenderPass(RenderPassCreateInformation(target, mGpuParameterSet));
+	return set;
+}
 
-	Bind(commandBuffer);
+void BicubicUpsampleMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
+{
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
+	B3D_PROFILE_RENDERER_MATERIAL
+
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
 BicubicUpsampleMaterial* BicubicUpsampleMaterial::GetVariation(bool hermite)
@@ -617,5 +589,74 @@ BicubicUpsampleMaterial* BicubicUpsampleMaterial::GetVariation(bool hermite)
 
 	return Get(GetVariation<false>());
 }
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+bool RendererUtility::ValidateRendererSetLayout(const Material& material, u32 variationIndex, u32 setIndex, const GpuPipelineParameterSetLayout& expected) const
+{
+	const u32 passCount = material.GetPassCount(variationIndex);
+	for(u32 passIndex = 0; passIndex < passCount; passIndex++)
+	{
+		const TShared<Pass> pass = material.GetPass(passIndex, variationIndex);
+		if(pass == nullptr || pass->GetGraphicsPipelineState() == nullptr)
+			continue;
+
+		const TShared<GpuPipelineParameterLayout>& pipelineLayout = pass->GetGraphicsPipelineState()->GetParameterLayout();
+		TShared<GpuPipelineParameterSetLayout> declared;
+		if(setIndex < pipelineLayout->GetSetCount())
+			declared = pipelineLayout->GetSet(setIndex);
+
+		auto fnReportError = [&](const String& resourceName, const char* problem)
+		{
+			B3D_LOG(Error, LogRenderer, "Shader '{0}', variation {1}, pass {2}: renderer input '{3}' in set {4} {5}.",
+				material.GetShader()->GetShaderName(), variationIndex, passIndex, resourceName, setIndex, problem);
+		};
+
+		for(u32 typeIndex = 0; typeIndex < (u32)GpuParameterType::Count; typeIndex++)
+		{
+			const GpuParameterType type = (GpuParameterType)typeIndex;
+			for(u32 bindingIndex = 0; bindingIndex < expected.GetBindingCount(type); bindingIndex++)
+			{
+				const UniformInformation* expectedInformation = expected.TryGetUniformInformation(type, bindingIndex);
+				if(expectedInformation == nullptr)
+					continue;
+
+				const UniformInformation* declaredInformation = declared != nullptr ? declared->TryGetUniformInformation(expectedInformation->Name) : nullptr;
+				if(declaredInformation == nullptr)
+				{
+					fnReportError(expectedInformation->Name, "is not declared");
+					return false;
+				}
+
+				const bool matches = declaredInformation->Type == expectedInformation->Type &&
+					declaredInformation->Slot == expectedInformation->Slot &&
+					declaredInformation->ArraySize == expectedInformation->ArraySize &&
+					(type == GpuParameterType::UniformBuffer || declaredInformation->ObjectType == expectedInformation->ObjectType) &&
+					(declaredInformation->DynamicOffsetIndex != ~0u) == (expectedInformation->DynamicOffsetIndex != ~0u);
+
+				if(!matches)
+				{
+					fnReportError(expectedInformation->Name, "differs from the renderer's layout");
+					return false;
+				}
+			}
+
+			if(declared != nullptr)
+			{
+				for(u32 bindingIndex = 0; bindingIndex < declared->GetBindingCount(type); bindingIndex++)
+				{
+					const UniformInformation* declaredInformation = declared->TryGetUniformInformation(type, bindingIndex);
+					if(declaredInformation != nullptr && !expected.HasUniform(declaredInformation->Name))
+					{
+						fnReportError(declaredInformation->Name, "is not in the renderer's layout");
+						return false;
+					}
+				}
+			}
+		}
+	}
+
+	return true;
+}
+#endif
 
 }}

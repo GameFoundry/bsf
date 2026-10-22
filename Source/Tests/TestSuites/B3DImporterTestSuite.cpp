@@ -70,6 +70,7 @@ namespace
 	//   --test.ldrImage=<path>   LDR source for TestGpuCompress_Psnr (any importer-loadable image; dims floored to /4).
 	//   --test.bc6hImage=<path>  HDR source for TestGpuCompress_BC6H_Psnr (imported as RGBA32F).
 	//   --test.perfImage=<path>  LDR source for TestGpuCompress_Perf (also gates whether that test runs at all).
+	//   --test.perfFormats=<list> Comma-separated formats TestGpuCompress_Perf measures (e.g. BC7,BC1); all if not set.
 	Path GetImagePathParameter(const String& name)
 	{
 		const String value = CommandLine::GetParameterValue(name);
@@ -1796,9 +1797,13 @@ void ImporterTestSuite::TestGpuCompress_Perf()
 	};
 
 	const u32 kIterationCount = 3;
+	const Vector<String> selectedFormats = StringUtility::Split(CommandLine::GetParameterValue("test.perfFormats"), ",");
 
 	for(const Case& testCase : cases)
 	{
+		if(!selectedFormats.empty() && std::find(selectedFormats.begin(), selectedFormats.end(), testCase.Name) == selectedFormats.end())
+			continue;
+
 		TShared<PixelData> compressed = PixelData::Create(width, height, 1, testCase.Format);
 		CompressionOptions compressionOptions;
 		compressionOptions.Format = testCase.Format;

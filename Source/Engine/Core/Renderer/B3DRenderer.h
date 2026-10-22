@@ -11,6 +11,7 @@
 #include "GpuBackend/B3DGpuCommandBufferPoolRing.h"
 #include "GpuBackend/B3DGpuCompletionTracker.h"
 #include "GpuBackend/B3DGpuParameterSetPool.h"
+#include "FrameGraph/B3DFrameGraph.h"
 
 namespace b3d
 {
@@ -42,7 +43,7 @@ namespace b3d
 		class RendererTask;
 		class LightProbeVolume;
 		class Decal;
-		class RenderWindow;
+		class FrameGraph;
 
 		/** @addtogroup Renderer-Internal
 		 *  @{
@@ -88,16 +89,46 @@ namespace b3d
 		};
 
 		/**
-		 * Contains information about the current state of a particular renderer view. This will be updated
-		 * during rendering of a single frame.
+		 * Describes the view a renderer extension renders for, at the extension's RenderLocation. Extensions add their passes to the graph
+		 * of the view, and render into the attachments of the location with SetAttachments().
 		 */
-		struct RendererViewContext
+		struct B3D_EXPORT RendererViewContext
 		{
-			/** Current target the view is rendering to. */
-			TShared<RenderTarget> CurrentTarget;
+			RendererViewContext(FrameGraph& graph)
+				: Graph(graph)
+			{}
 
-			/** Command buffer that's currently being recorded. */
-			TShared<GpuCommandBuffer> CommandBuffer;
+			/**
+			 * Attaches the attachments of the location to @p pass, loading their contents: Target if set, otherwise ColorAttachments and
+			 * DepthStencilAttachment.
+			 */
+			void SetAttachments(FrameGraphRasterPass& pass) const;
+
+			/**
+			 * Graph of the view. Extensions add their passes to it. The graph executes once every view of the render target has added its
+			 * passes, so state the passes need must be captured when they are added.
+			 */
+			FrameGraph& Graph;
+
+			/**
+			 * Color attachments of the location, in order. Scene color at RenderLocation::PostLightPass. Scene color and the G-buffer at
+			 * RenderLocation::PreBasePass and RenderLocation::PostBasePass. Empty at RenderLocation::Prepare and RenderLocation::Overlay.
+			 */
+			TInlineArray<TShared<Texture>, 8> ColorAttachments;
+
+			/** Depth-stencil attachment of the location, scene depth. Null at RenderLocation::Prepare and RenderLocation::Overlay. */
+			TShared<Texture> DepthStencilAttachment;
+
+			/** How passes at the location may access DepthStencilAttachment. */
+			FrameGraphDepthStencilMode DepthStencilMode = FrameGraphDepthStencilMode::Write;
+
+			/** Render target of the view at RenderLocation::Overlay, imported into Graph. Null at the other locations. */
+			TShared<RenderTarget> Target;
+
+			/**
+			 * Normalized area of the attachments the view covers. The graph sets no viewport, so every pass sets one before it draws.
+			 */
+			Area2 Viewport = Area2(0.0f, 0.0f, 1.0f, 1.0f);
 		};
 
 		/** Settings that control renderer scene capture. */
@@ -230,14 +261,15 @@ namespace b3d
 			 * Captures the scene at the specified location into a cubemap.
 			 *
 			 * @param	scene			Scene to capture.
-			 * @param	commandBuffer	Command buffer on which to encode the capture.
+			 * @param	graph			Graph to add the capture's passes to. The cubemap holds the capture once the graph executes,
+			 *							and later passes of the graph may read it.
 			 * @param	cubemap			Cubemap to store the results in.
 			 * @param	position		Position to capture the scene at.
 			 * @param	settings		Settings that allow you to customize the capture.
 			 *
 			 * @note	Render thread.
 			 */
-			virtual void CaptureSceneCubeMap(RendererScene& scene, GpuCommandBuffer& commandBuffer, const TShared<Texture>& cubemap, const Vector3& position, const CaptureSettings& settings) = 0;
+			virtual void CaptureSceneCubeMap(RendererScene& scene, FrameGraph& graph, const TShared<Texture>& cubemap, const Vector3& position, const CaptureSettings& settings) = 0;
 
 			virtual TShared<RendererScene> CreateScene() = 0;
 
@@ -271,16 +303,6 @@ namespace b3d
 			 * @note	Render thread.
 			 */
 			virtual void RequestViewCapture(Camera* camera, TAsyncOp<TShared<PixelData>> asyncOp) { asyncOp.CompleteOperation(nullptr); }
-
-			/**
-			 * Requests capture of the final image rendered to the specified window before it is presented.
-			 *
-			 * @param	window		Window whose next rendered image should be captured.
-			 * @param	asyncOp		Operation to complete when capture finishes.
-			 *
-			 * @note	Render thread.
-			 */
-			void RequestScreenCapture(const TShared<RenderWindow>& window, TAsyncOp<TShared<PixelData>> asyncOp);
 
 			/**
 			 * Registers an extension object that will be called every frame, for each scene and view. Allows external code to perform
@@ -341,7 +363,8 @@ namespace b3d
 			virtual void DestroyOnRenderThread();
 
 			/**
-			 * Executes all renderer tasks queued for this frame.
+			 * Executes all renderer tasks queued for this frame. The tasks of each round add their work to one frame graph, which is
+			 * compiled and executed at the end of the round.
 			 *
 			 * @param[in]	forceAll	If true, multi-frame tasks will be forced to execute fully within this call.
 			 * @param[in]	upToFrame	Only tasks that were queued before or during the frame with the provided index will
@@ -349,10 +372,10 @@ namespace b3d
 			 *
 			 * @note	Render thread.
 			 */
-			void ProcessTasks(bool forceAll, u64 upToFrame = std::numeric_limits<u64>::max());
+			virtual void ProcessTasks(bool forceAll, u64 upToFrame = std::numeric_limits<u64>::max());
 
 			/**
-			 * Executes the provided renderer task.
+			 * Executes the provided renderer task. Each round of the task adds its work to a frame graph of its own.
 			 *
 			 * @param[in]	task		Task to execute.
 			 * @param[in]	forceAll	If true, multi-frame tasks will be forced to execute fully within this call.
@@ -360,31 +383,6 @@ namespace b3d
 			 * @note	Render thread.
 			 */
 			void ProcessTask(RendererTask& task, bool forceAll);
-
-			/**
-			 * Returns whether the specified window has a pending screen capture.
-			 *
-			 * @note	Render thread.
-			 */
-			bool IsScreenCaptureRequested(const TShared<RenderWindow>& window) const;
-
-			/**
-			 * Records a window readback into @p commandBuffer and forwards its result to the capture
-			 * operations pending on @p window, removing them from the pending list. Returns false if no
-			 * capture was pending or the window does not support readback.
-			 *
-			 * @note	Render thread.
-			 */
-			bool ResolveScreenCaptures(GpuCommandBuffer& commandBuffer, const TShared<RenderWindow>& window);
-
-			/**
-			 * Resolves pending screen captures for windows the frame's rendering did not cover (e.g. windows
-			 * rendered outside of the renderer), submitting a readback command buffer per window. Call once
-			 * per frame after regular rendering, before EndFrame().
-			 *
-			 * @note	Render thread.
-			 */
-			void ResolveOutstandingScreenCaptures();
 
 			TShared<GpuDevice> mDevice;
 
@@ -412,22 +410,6 @@ namespace b3d
 			Vector<TShared<RendererTask>> mRunningTasks; // Render thread
 			Vector<TShared<RendererTask>> mRemainingTasks; // Render thread
 			Mutex mTaskMutex;
-
-		private:
-			/** Capture operations waiting for the next image rendered to a window. */
-			struct ScreenCaptureRequest
-			{
-				ScreenCaptureRequest(const TShared<RenderWindow>& window, TAsyncOp<TShared<PixelData>> asyncOp)
-					: Window(window)
-				{
-					Operations.Add(std::move(asyncOp));
-				}
-
-				TShared<RenderWindow> Window;
-				TInlineArray<TAsyncOp<TShared<PixelData>>, 1> Operations;
-			};
-
-			TInlineArray<ScreenCaptureRequest, 1> mScreenCaptureRequests; // Render thread
 		};
 
 		/**	Provides easy access to Renderer. */
@@ -445,19 +427,21 @@ namespace b3d
 			{};
 
 		public:
-			RendererTask(const PrivatelyConstruct& dummy, String name, std::function<bool(GpuCommandBufferPool&)> taskWorker);
+			RendererTask(const PrivatelyConstruct& dummy, String name, std::function<bool(FrameGraph&)> taskWorker);
 
 			/**
 			 * Creates a new task. Task should be provided to Renderer in order for it to start.
 			 *
 			 * @param[in]	name		Name you can use to more easily identify the task.
-			 * @param[in]	taskWorker	Worker method that does all of the work in the task. Tasks can run over the course of
-			 *							multiple frames, in which case this method should return false (if there's more
-			 *							work to be done), or true (if the task has completed).
+			 * @param[in]	taskWorker	Worker method that does all of the work in the task, by adding passes to the frame graph it
+			 *							is given. The renderer compiles and executes the graph, together with the work of the
+			 *							other tasks that run in the same frame. Tasks can run over the course of multiple
+			 *							frames, in which case this method should return false (if there's more work to be
+			 *							done), or true (if the task has completed).
 			 */
-			static TShared<RendererTask> Create(String name, std::function<bool(GpuCommandBufferPool&)> taskWorker);
+			static TShared<RendererTask> Create(String name, std::function<bool(FrameGraph&)> taskWorker);
 
-			/** Returns true if the task has completed. */
+			/** Returns true if the task has completed, and the graph holding its work has executed. */
 			bool IsComplete() const;
 
 			/**	Returns true if the task has been canceled. */
@@ -480,7 +464,7 @@ namespace b3d
 			friend class Renderer;
 
 			String mName;
-			std::function<bool(GpuCommandBufferPool&)> mTaskWorker;
+			std::function<bool(FrameGraph&)> mTaskWorker;
 			std::atomic<u32> mState{ 0 }; /**< 0 - Inactive, 1 - In progress, 2 - Completed, 3 - Canceled */
 		};
 

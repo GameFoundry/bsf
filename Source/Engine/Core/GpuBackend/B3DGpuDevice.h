@@ -14,9 +14,7 @@
 #include "B3DGpuSubmitThread.h"
 #include "B3DGpuWorkContext.h"
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 #include "B3DGpuSplitBarrier.h"
-#endif
 
 namespace b3d::render
 {
@@ -91,13 +89,16 @@ namespace b3d
 		void DoForEachQueue(const std::function<void(GpuQueue&)>&& callback) const;
 
 		/**
-		 * Presents the back-buffer image from the provided window onto the window, using the appropriate queue that supports present operations.
+		 * Presents the back-buffer image from the provided window onto the window, on the first graphics queue. See
+		 * GpuQueue::PresentRenderWindow().
 		 *
 		 * @param	renderWindow		Window whose back-buffer to present.
 		 * @param	syncMask			Optional synchronization mask that determines if the present operation
 		 *								depends on command buffers submitted on other queues.
+		 *
+		 * @note	Render thread only.
 		 */
-		virtual void PresentRenderWindow(const TShared<render::RenderWindow>& renderWindow, GpuQueueMask syncMask = GpuQueueMask::kAll) = 0;
+		void PresentRenderWindow(const TShared<render::RenderWindow>& renderWindow, GpuQueueMask syncMask = GpuQueueMask::kAll);
 
 		/** Blocks the calling thread until all operations on the device finish. */
 		virtual void WaitUntilIdle() = 0;
@@ -111,6 +112,12 @@ namespace b3d
 			B3D_ASSERT(mSubmitThread != nullptr);
 			return *mSubmitThread;
 		}
+
+		/**
+		 * Returns true if the submit thread is running. It doesn't run during device startup and shutdown, or on backends
+		 * that don't construct one.
+		 */
+		bool HasSubmitThread() const { return mSubmitThread != nullptr; }
 
 		/** Notifies the device the rendering for the current frame will start. See EndFrame(). Render thread only. */
 		virtual void BeginFrame() = 0;
@@ -214,7 +221,7 @@ namespace b3d
 		virtual TShared<SamplerState> CreateSamplerState(const SamplerStateCreateInformation& createInformation, GpuObjectCreateFlags flags = GpuObjectCreateFlag::None) = 0;
 
 		/**
-		 * Creates a new query pool.
+		 * Creates a new query pool. Returns null if the device does not support queries of the requested type.
 		 *
 		 * @param	createInformation		Object describing the query pool to create.
 		 */
@@ -272,12 +279,15 @@ namespace b3d
 		virtual TShared<GpuPipelineParameterSetLayout> CreateGpuPipelineParameterSetLayout(const GpuProgramParameterDescription& parameterDescription, const TShared<GpuResourceTableLayout>& resourceTableLayout = nullptr, u32 tableIndex = ~0u) = 0;
 
 		/**
-		 * Maps a uniform-buffer shader register index to the parameter slot value this backend uses in parameter
-		 * descriptions and set layouts. Engine-authored parameter descriptions must assign slots through this mapping
-		 * to remain slot-compatible with shader-reflected layouts, which may encode more than the register index into
-		 * the slot value (e.g. the register class).
+		 * Maps a shader register to the parameter slot value this backend uses in parameter descriptions and set
+		 * layouts. Engine-authored parameter descriptions must assign slots through this mapping to remain
+		 * slot-compatible with shader-reflected layouts, which may encode more than the register index into the slot
+		 * value (e.g. the register class).
+		 *
+		 * Backends that don't encode the class use the register index as the slot, so register indices within one set
+		 * must be unique across all register classes.
 		 */
-		virtual u32 GetUniformBufferParameterSlot(u32 registerIndex) const { return registerIndex; }
+		virtual u32 GetParameterSlot(ShaderRegisterClass registerClass, u32 registerIndex) const { return registerIndex; }
 
 		/**
 		 * Creates a parameter set pool for allocating GPU parameter sets.
@@ -290,7 +300,6 @@ namespace b3d
 		/** Creates a timeline fence that can be signaled when command buffer execution finishes. */
 		virtual TShared<GpuTimelineFence> CreateTimelineFence() = 0;
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 		/**
 		 * Creates an object that connects the release of a split barrier with its acquire. See
 		 * render::GpuCommandBuffer::ReleaseBarriers(). Thread safe.
@@ -300,7 +309,6 @@ namespace b3d
 		 *							empty, the halves are recorded for one queue of any type, which is the common case.
 		 */
 		virtual TShared<render::GpuSplitBarrier> CreateSplitBarrier(TOptional<GpuQueueType> releaseQueue = {}, TOptional<GpuQueueType> acquireQueue = {});
-#endif
 
 		/**
 		 * Backend factory for a context-owned scratch (linear/bump) allocator. Manufactures an

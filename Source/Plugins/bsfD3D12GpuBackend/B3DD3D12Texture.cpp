@@ -49,8 +49,8 @@ namespace b3d
 			return D3D12BarrierUtility::TranslateTextureLayout(layout, queueType, options);
 		}
 
-		D3D12Texture::D3D12Texture(const TextureCreateInformation& createInformation, GpuDevice& device, const GpuAllocation& allocation)
-			: Texture(createInformation, allocation), mGpuDevice(device)
+		D3D12Texture::D3D12Texture(const TextureCreateInformation& createInformation, GpuDevice& device, const GpuAllocation& allocation, GpuObjectCreateFlags flags)
+			: Texture(createInformation, allocation, flags), mGpuDevice(device)
 		{
 		}
 
@@ -149,6 +149,8 @@ namespace b3d
 
 		void D3D12Texture::CreateTexture()
 		{
+			mResourceGeneration++;
+
 			D3D12GpuDevice& device = static_cast<D3D12GpuDevice&>(mGpuDevice);
 
 			const TextureProperties& properties = GetProperties();
@@ -182,9 +184,25 @@ namespace b3d
 				optimizedClearValue = &clearValue;
 			}
 
+			const bool allowConcurrentQueueReads = properties.Usage.IsSet(TextureUsageFlag::AllowConcurrentQueueReads) || GpuBackendUtility::IsSampleableOnly(properties.Usage);
+
+			D3D12TextureLayout initialLayout = D3D12TextureLayout::Undefined();
+			// A texture that starts at rest is created in its resting layout, so it needs no transition. Textures that are not shared between
+			// queues rest on the graphics queue. Placed render and depth-stencil targets must have their compression metadata initialized
+			// first, which a transition from the undefined layout does, so the submit thread brings those to rest instead.
+			const bool startsAtRest = StartsAtRest();
+			const bool isTarget = properties.Usage.IsSetAny(TextureUsageFlag::RenderTarget | TextureUsageFlag::DepthStencil);
+			if(startsAtRest && !isTarget)
+			{
+				D3D12TextureLayoutOptions layoutOptions;
+				layoutOptions.AllowConcurrentQueueReads = allowConcurrentQueueReads;
+
+				initialLayout = D3D12BarrierUtility::TranslateTextureLayout(GpuImageLayout::ShaderReadOnly, GQT_GRAPHICS, layoutOptions);
+			}
+
 			ComPtr<ID3D12Resource> resource;
 			GpuAllocation allocation;
-			HRESULT hr = device.CreateResource(resourceDesc, mRequestedAllocation, D3D12_BARRIER_LAYOUT_UNDEFINED, optimizedClearValue, resource, allocation);
+			HRESULT hr = device.CreateResource(resourceDesc, mRequestedAllocation, initialLayout.GetLayout(GpuTextureAspectFlag::Color), optimizedClearValue, resource, allocation);
 
 			if (FAILED(hr))
 			{
@@ -211,15 +229,18 @@ namespace b3d
 			imageCreateInformation.Resource = std::move(resource);
 			imageCreateInformation.Allocation = allocation;
 			imageCreateInformation.ViewFormat = mViewFormat;
-			imageCreateInformation.InitialLayout = D3D12TextureLayout::Undefined();
+			imageCreateInformation.InitialLayout = initialLayout;
 			imageCreateInformation.FaceCount = faceCount;
 			imageCreateInformation.MipLevelCount = properties.MipMapCount + 1;
 			imageCreateInformation.Aspect = aspect;
-			imageCreateInformation.AllowConcurrentQueueReads = properties.Usage.IsSet(TextureUsageFlag::AllowConcurrentQueueReads) || GpuBackendUtility::IsSampleableOnly(properties.Usage);
+			imageCreateInformation.AllowConcurrentQueueReads = allowConcurrentQueueReads;
 			imageCreateInformation.CanRest = GpuBackendUtility::IsSampleableOnly(properties.Usage);
 			imageCreateInformation.Name = properties.Name;
 
 			mImage = device.GetResourceManager().Create<D3D12Image>(imageCreateInformation);
+
+			if(startsAtRest && isTarget)
+				mImage->RequestRestingTransition(GpuImageLayout::ShaderReadOnly);
 			if(UsesDefaultSRV())
 				mDefaultSRV = CreateView(TextureSurface::kComplete, ViewType::SRV);
 

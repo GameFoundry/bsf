@@ -207,9 +207,10 @@ namespace b3d
 
 		/**
 		 * Advances to the next frame at the frame boundary: recycles the transfer pool ring (clearing the
-		 * active transfer command buffer) and reclaims scratch memory the GPU has finished with - retiring
+		 * active transfer command buffer), reclaims scratch memory the GPU has finished with - retiring
 		 * each scratch allocator's open page and draining everything whose completion marker has signaled
-		 * (non-blocking; drains only what is already complete). Call once per frame after the prior frame's
+		 * (non-blocking; drains only what is already complete) - and releases the transient resources that
+		 * went unused for gGpuTransientIdleFrames frames. Call once per frame after the prior frame's
 		 * work is known safe to reuse, and before the frame index advances so retired pages are stamped with
 		 * the correct frame.
 		 */

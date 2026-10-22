@@ -9,6 +9,8 @@
 
 namespace b3d
 {
+	struct RenderTargetClearValues;
+
 	/** @addtogroup GpuBackend
 	 *  @{
 	 */
@@ -117,6 +119,68 @@ namespace b3d
 
 		/** Converts a GpuImageLayout enum value to a readable string representing the layout name. */
 		static const char* GetImageLayoutName(render::GpuImageLayout layout);
+
+		/**
+		 * Records a copy of a subresource of @p texture into @p stagingBuffer, which the host can read once @p commandBuffer completes. On a
+		 * command buffer with explicit barriers the subresource and @p stagingBuffer leave their resting states for the copy and return to
+		 * them.
+		 */
+		static void CopyToStagingBuffer(render::GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& texture, u32 mipLevel, u32 arrayLayer, const TShared<render::GpuBuffer>& stagingBuffer);
+
+		/**
+		 * Records a copy of @p length bytes of @p buffer, starting at @p offset, to the start of @p stagingBuffer, which the host can read
+		 * once @p commandBuffer completes. On a command buffer with explicit barriers @p buffer and @p stagingBuffer leave their resting
+		 * states for the copy and return to them.
+		 */
+		static void CopyToStagingBuffer(render::GpuCommandBuffer& commandBuffer, const TShared<render::GpuBuffer>& buffer, u32 offset, u32 length, const TShared<render::GpuBuffer>& stagingBuffer);
+
+		/**
+		 * Records a copy of the back-buffer image a window's surface holds into @p stagingBuffer (see GpuCommandBuffer::CopyWindowToBuffer()),
+		 * which the host can read once @p commandBuffer completes. On a command buffer with explicit barriers the image and @p stagingBuffer
+		 * leave their resting states for the copy and return to them.
+		 */
+		static void CopyToStagingBuffer(render::GpuCommandBuffer& commandBuffer, const TShared<render::RenderWindow>& window, const TShared<render::GpuBuffer>& stagingBuffer);
+
+		/**
+		 * Returns the resting state of a buffer on queues of @p queueType. With explicit barriers, a resource outside of the work that
+		 * declares its state is at rest: it may be read in the resting state without a barrier, and whoever writes it brings it back to
+		 * rest. Buffers rest readable as vertex, index and indirect arguments, and from every shader stage. Readback buffers
+		 * (GpuBufferType::StagingRead) rest readable by the host, so a barrier that returns one to rest makes the GPU's writes visible
+		 * to the host. Upload buffers (GpuBufferType::StagingWrite) rest readable by copies, the only GPU work that reads them.
+		 */
+		static render::GpuAccessState GetRestingState(const render::GpuBuffer& buffer, GpuQueueType queueType);
+
+		/**
+		 * Returns the resting state of a texture on queues of @p queueType: sampled from every shader stage in
+		 * GpuImageLayout::ShaderReadOnly. Textures that can be render targets, depth-stencil targets or storage textures, which may have
+		 * compression metadata, rest with GpuCompressionHint::Compressed: compressed in an encoding sampling can read, without fast-clear
+		 * markers. Other textures have no compression metadata, and rest with GpuCompressionHint::Unknown. See
+		 * GetRestingState(const render::GpuBuffer&, GpuQueueType).
+		 */
+		static render::GpuAccessState GetRestingState(const render::Texture& texture, GpuQueueType queueType);
+
+		/**
+		 * Returns the resting state of the single-bit @p surface of @p target, on queues of @p queueType. A render texture surface rests
+		 * like its texture. A window surface can only be accessed as an attachment: its color surface rests as returned by
+		 * GetWindowColorRestingState(), and its depth and stencil surfaces in GpuImageLayout::DepthStencilAttachment.
+		 */
+		static render::GpuAccessState GetRestingState(const render::RenderTarget& target, RenderSurfaceMaskBits surface, GpuQueueType queueType);
+
+		/**
+		 * Returns the resting state of the color surface of a window on queues of @p queueType: read and written by color attachments, in
+		 * GpuImageLayout::ColorAttachment. Presentation takes the surface out of rest into GpuImageLayout::Present, and the next
+		 * submission that uses it brings it back (see IGpuImageResource::RequestRestingTransition()).
+		 */
+		static render::GpuAccessState GetWindowColorRestingState(GpuQueueType queueType);
+
+		/**
+		 * Returns the surfaces that a render pass clears when it begins, and writes the values to clear them to into @p clearValues. These
+		 * are the surfaces in RenderPassCreateInformation::ClearMask, with the clear values of the render target. If
+		 * gGpuPoisonUnloadedAttachments is enabled, development builds also clear every surface the render pass neither loads nor clears:
+		 * color to magenta, depth and stencil to 0. Backends load depth and stencil together, so neither is cleared if the pass loads either.
+		 * Read-only surfaces are never cleared, and must be loaded.
+		 */
+		static RenderSurfaceMask GetRenderPassClears(const render::RenderPassCreateInformation& createInformation, RenderTargetClearValues& clearValues);
 	};
 
 	/** @} */

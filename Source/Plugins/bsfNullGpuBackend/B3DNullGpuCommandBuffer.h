@@ -51,6 +51,9 @@ namespace b3d
 			void End() override;
 			void IssueBarriers(const GpuBarriers& barriers) override {}
 
+			/** Writes a black image, the contents of every null window. */
+			void CopyWindowToBuffer(const TShared<RenderWindow>& source, const TShared<GpuBuffer>& destination) override;
+
 			/** Returns an unique identifier of this command buffer. */
 			u32 GetId() const { return mId; }
 
@@ -58,10 +61,8 @@ namespace b3d
 			friend class NullGpuCommandBufferPool;
 			friend class NullGpuQueue;
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 			/** Accepts every barrier, since nothing executes. */
 			bool RecordExplicitBarriers(const GpuExplicitBarriers& barriers, GpuBarrierPhase phase, GpuSplitBarrier* split) override { return true; }
-#endif
 
 			/** Sets the command buffer state. Only accessible by friends (pool and queue). */
 			void SetState(GpuCommandBufferState state) { mState = state; }

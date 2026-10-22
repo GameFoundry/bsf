@@ -49,7 +49,6 @@ namespace b3d
 
 			u32 GetQueueCount(GpuQueueType type) const override { return (u32)mQueueInfos[(u32)type].Queues.size(); }
 			TShared<GpuQueue> GetQueue(GpuQueueType type, u32 index) const override;
-			void PresentRenderWindow(const TShared<RenderWindow>& renderWindow, GpuQueueMask syncMask = GpuQueueMask::kAll) override;
 			void WaitUntilIdle() override;
 			void BeginFrame() override;
 
@@ -66,7 +65,7 @@ namespace b3d
 			TShared<GpuComputePipelineState> CreateGpuComputePipelineState(const GpuComputePipelineStateCreateInformation& createInformation, GpuObjectCreateFlags flags = GpuObjectCreateFlag::None) override;
 			TShared<GpuPipelineParameterLayout> CreateGpuPipelineParameterLayout(const GpuPipelineParameterLayoutCreateInformation& createInformation) override;
 			TShared<GpuPipelineParameterSetLayout> CreateGpuPipelineParameterSetLayout(const GpuProgramParameterDescription& parameterDescription, const TShared<GpuResourceTableLayout>& resourceTableLayout, u32 tableIndex) override;
-			u32 GetUniformBufferParameterSlot(u32 registerIndex) const override;
+			u32 GetParameterSlot(ShaderRegisterClass registerClass, u32 registerIndex) const override;
 			TUnique<GpuParameterSetPool> CreateParameterSetPool(const GpuParameterSetPoolCreateInformation& createInformation) override;
 			TShared<GpuTimelineFence> CreateTimelineFence() override;
 
@@ -91,8 +90,6 @@ namespace b3d
 			/** Returns a manager that owns the lifetime of manager-allocated D3D12 GPU resources. */
 			D3D12ResourceManager& GetResourceManager() const { return *mResourceManager; }
 
-			/** Returns true if the submit thread is currently running. */
-			bool HasSubmitThread() const { return mSubmitThread != nullptr; }
 
 			/**
 			 * Returns true if placed buffers use tight alignment. Buffers are then placed resources of their own in persistent

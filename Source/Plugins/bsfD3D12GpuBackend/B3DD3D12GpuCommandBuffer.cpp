@@ -66,10 +66,13 @@ namespace
 
 D3D12GpuCommandBufferPool::D3D12GpuCommandBufferPool(D3D12GpuDevice& device, const GpuCommandBufferPoolCreateInformation& createInformation) : GpuCommandBufferPool(device, createInformation)
 {
-	const D3D12_COMMAND_LIST_TYPE commandListType = GetCommandListType(createInformation.Type);
+	if(createInformation.UsePoolReset)
+	{
+		const D3D12_COMMAND_LIST_TYPE commandListType = GetCommandListType(createInformation.Type);
 
-	HRESULT hr = device.GetD3D12Device()->CreateCommandAllocator(commandListType, IID_PPV_ARGS(&mCommandAllocator));
-	B3D_ASSERT(SUCCEEDED(hr) && "Failed to create command allocator");
+		HRESULT hr = device.GetD3D12Device()->CreateCommandAllocator(commandListType, IID_PPV_ARGS(&mCommandAllocator));
+		B3D_ASSERT(SUCCEEDED(hr) && "Failed to create command allocator");
+	}
 }
 
 D3D12GpuCommandBufferPool::~D3D12GpuCommandBufferPool()
@@ -133,9 +136,19 @@ TShared<GpuCommandBuffer> D3D12GpuCommandBufferPool::Create(const GpuCommandBuff
 
 	const D3D12_COMMAND_LIST_TYPE commandListType = GetCommandListType(mInformation.Type);
 
+	// A command allocator only gives its memory back when it is reset, which requires the GPU to be done with every command list
+	// recorded with it. Without pool reset command buffers complete one by one, so each gets an allocator of its own.
+	ComPtr<ID3D12CommandAllocator> commandAllocator;
+	if(!GetUsePoolReset())
+	{
+		HRESULT hr = d3d12Device.GetD3D12Device()->CreateCommandAllocator(commandListType, IID_PPV_ARGS(&commandAllocator));
+		if(!B3D_ENSURE_LOG(SUCCEEDED(hr), "D3D12: Failed to create a command allocator (hr={0}).", (u32)hr))
+			return nullptr;
+	}
+
 	// Node mask 0 (single GPU), no initial pipeline state
 	ComPtr<ID3D12GraphicsCommandList> baseCommandList;
-	HRESULT hr = d3d12Device.GetD3D12Device()->CreateCommandList(0, commandListType, mCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&baseCommandList));
+	HRESULT hr = d3d12Device.GetD3D12Device()->CreateCommandList(0, commandListType, commandAllocator != nullptr ? commandAllocator.Get() : mCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&baseCommandList));
 	if(!B3D_ENSURE_LOG(SUCCEEDED(hr), "D3D12: Failed to create a command list (hr={0}).", (u32)hr))
 		return nullptr;
 
@@ -150,7 +163,7 @@ TShared<GpuCommandBuffer> D3D12GpuCommandBufferPool::Create(const GpuCommandBuff
 		return nullptr;
 
 	TShared<D3D12GpuCommandBuffer> commandBuffer = B3DMakeSharedFromExisting(new (B3DAllocate<D3D12GpuCommandBuffer>())
-		D3D12GpuCommandBuffer(d3d12Device, *this, mNextCommandBufferId++, commandList.Get(), mInformation.Thread, mInformation.Type, createInformation),
+		D3D12GpuCommandBuffer(d3d12Device, *this, mNextCommandBufferId++, commandList.Get(), commandAllocator.Get(), mInformation.Thread, mInformation.Type, createInformation),
 		[](D3D12GpuCommandBuffer* commandBuffer)
 		{
 			B3DDelete(commandBuffer);
@@ -181,11 +194,14 @@ void D3D12GpuCommandBufferPool::Reset()
 			commandBufferPair.second->Reset();
 	}
 
-	HRESULT hr = mCommandAllocator->Reset();
-	B3D_ASSERT(SUCCEEDED(hr) && "Failed to reset command allocator");
+	if(mCommandAllocator != nullptr)
+	{
+		HRESULT hr = mCommandAllocator->Reset();
+		B3D_ASSERT(SUCCEEDED(hr) && "Failed to reset command allocator");
+	}
 }
 
-D3D12GpuCommandBuffer::D3D12GpuCommandBuffer(D3D12GpuDevice& device, D3D12GpuCommandBufferPool& pool, u32 id, ID3D12GraphicsCommandList7* commandList, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation) : GpuCommandBuffer(device, ownerThread, queueType, pool.UsesExplicitBarriers(), createInformation), mId(id), mCommandList(commandList), mPool(pool), mBarrierHelper(&mResourceTracker, queueType), mGraphicsPipelineRequiresBind(true), mGraphicsRootSignatureRequiresBind(true), mComputePipelineRequiresBind(true), mPrimitiveTopologyRequiresBind(true), mViewportRequiresBind(true), mStencilReferenceValueRequiresBind(true), mScissorRequiresBind(true), mGraphicsParametersRequireBind(false), mComputeParametersRequireBind(false), mGraphicsPushConstantsRequireBind(false), mComputePushConstantsRequireBind(false), mVertexInputsDirty(false)
+D3D12GpuCommandBuffer::D3D12GpuCommandBuffer(D3D12GpuDevice& device, D3D12GpuCommandBufferPool& pool, u32 id, ID3D12GraphicsCommandList7* commandList, ID3D12CommandAllocator* commandAllocator, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation) : GpuCommandBuffer(device, ownerThread, queueType, pool.UsesExplicitBarriers(), createInformation), mId(id), mCommandList(commandList), mCommandAllocator(commandAllocator), mPool(pool), mBarrierHelper(&mResourceTracker, queueType), mGraphicsPipelineRequiresBind(true), mGraphicsRootSignatureRequiresBind(true), mComputePipelineRequiresBind(true), mPrimitiveTopologyRequiresBind(true), mViewportRequiresBind(true), mStencilReferenceValueRequiresBind(true), mScissorRequiresBind(true), mGraphicsParametersRequireBind(false), mComputeParametersRequireBind(false), mGraphicsPushConstantsRequireBind(false), mComputePushConstantsRequireBind(false), mVertexInputsDirty(false)
 {
 	HRESULT hr = GetD3D12GpuDevice().GetD3D12Device()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
 	B3D_ASSERT(SUCCEEDED(hr) && "Failed to create fence");
@@ -193,9 +209,7 @@ D3D12GpuCommandBuffer::D3D12GpuCommandBuffer(D3D12GpuDevice& device, D3D12GpuCom
 	// Incremented by the queue just before each submit's fence signal, so it always identifies the latest submission
 	mFenceValue = 0;
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	mResourceTracker.SetHazardTracking(!UsesExplicitBarriers());
-#endif
 
 	SetName(createInformation.Name);
 }
@@ -223,6 +237,7 @@ D3D12GpuCommandBuffer::~D3D12GpuCommandBuffer()
 	}
 
 	mCommandList.Reset();
+	mCommandAllocator.Reset();
 	mFence.Reset();
 }
 
@@ -231,7 +246,17 @@ void D3D12GpuCommandBuffer::Begin()
 	EnsureValidThread();
 	B3D_ASSERT(mState == GpuCommandBufferState::Ready);
 
-	HRESULT hr = mCommandList->Reset(mPool.GetD3D12CommandAllocator(), nullptr);
+	// A ready command buffer is not executing, so the GPU is done with the commands recorded with its own allocator
+	ID3D12CommandAllocator* commandAllocator = mPool.GetD3D12CommandAllocator();
+	if(mCommandAllocator != nullptr)
+	{
+		HRESULT allocatorResult = mCommandAllocator->Reset();
+		B3D_ASSERT(SUCCEEDED(allocatorResult) && "Failed to reset command allocator");
+
+		commandAllocator = mCommandAllocator.Get();
+	}
+
+	HRESULT hr = mCommandList->Reset(commandAllocator, nullptr);
 	B3D_ASSERT(SUCCEEDED(hr) && "Failed to reset command list");
 
 	if (GetQueueType() != GQT_TRANSFER)
@@ -653,8 +678,10 @@ void D3D12GpuCommandBuffer::BeginRenderPass(const RenderPassCreateInformation& c
 	}
 
 	// Apply clear operations requested for the render pass start
-	if (createInformation.ClearMask != RT_NONE)
-		ClearViewportArea(GetRenderPassArea(), createInformation.ClearMask);
+	RenderTargetClearValues clearValues;
+	const RenderSurfaceMask clearMask = GpuBackendUtility::GetRenderPassClears(createInformation, clearValues);
+	if (clearMask != RT_NONE)
+		ClearViewportArea(GetRenderPassArea(), clearMask, clearValues);
 }
 
 void D3D12GpuCommandBuffer::SetViewport(const Area2& area)
@@ -677,22 +704,22 @@ void D3D12GpuCommandBuffer::ClearRenderTarget(RenderSurfaceMask mask)
 {
 	EnsureValidThread();
 
-	ClearViewportArea(GetRenderPassArea(), mask);
+	if (mRenderTarget)
+		ClearViewportArea(GetRenderPassArea(), mask, mRenderTarget->GetClearValues());
 }
 
 void D3D12GpuCommandBuffer::ClearViewport(RenderSurfaceMask mask)
 {
 	EnsureValidThread();
 
-	ClearViewportArea(GetViewportArea(), mask);
+	if (mRenderTarget)
+		ClearViewportArea(GetViewportArea(), mask, mRenderTarget->GetClearValues());
 }
 
-void D3D12GpuCommandBuffer::ClearViewportArea(const Area2I& area, RenderSurfaceMask mask)
+void D3D12GpuCommandBuffer::ClearViewportArea(const Area2I& area, RenderSurfaceMask mask, const RenderTargetClearValues& clearValues)
 {
-	if (!mFramebuffer || !mRenderTarget)
+	if (!mFramebuffer)
 		return;
-
-	const RenderTargetClearValues& clearValues = mRenderTarget->GetClearValues();
 
 	D3D12_RECT rect;
 	rect.left = area.X;
@@ -910,6 +937,9 @@ void D3D12GpuCommandBuffer::EndRenderPass()
 	if (mState != GpuCommandBufferState::RecordingRenderPass)
 		return;
 
+	// Ends the tracked attachment usage in the attachment layouts, before the transitions below move them on
+	mResourceTracker.EndRenderPass();
+
 	if (mFramebuffer != nullptr)
 	{
 		// Swap-chain back buffers must be in PRESENT (COMMON) state by the time the queue presents; there is no
@@ -925,8 +955,6 @@ void D3D12GpuCommandBuffer::EndRenderPass()
 
 		mBarrierHelper.Execute(*this);
 	}
-
-	mResourceTracker.EndRenderPass();
 
 	mState = GpuCommandBufferState::Recording;
 }
@@ -1401,9 +1429,7 @@ D3D12GpuCommandBufferSubmitInformation D3D12GpuCommandBuffer::PrepareForSubmitOn
 	mResourceTracker.ResolveSubmissionTransitions(destinationQueueId, device.GetSubmitThread().GetFrameIndex(), visitor);
 	visitor.Finalize();
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	PublishExplicitImageLayouts(destinationQueueId);
-#endif
 
 	submitInformation.PrimaryCommandBuffer = std::static_pointer_cast<D3D12GpuCommandBuffer>(GetShared());
 	return submitInformation;
@@ -1460,9 +1486,7 @@ void D3D12GpuCommandBuffer::Reset()
 	mResourceTracker.Clear();
 	mQueueSyncMask = GpuQueueMask();
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	ClearExplicitBarrierState(wasSubmitted);
-#endif
 
 	OnDidComplete.Clear();
 	OnDestroyed.Clear();
@@ -1892,6 +1916,28 @@ void D3D12GpuCommandBuffer::CopyTextureToBuffer(const TShared<Texture>& source, 
 	CopyTextureToBuffer(textureResource, d3d12Destination->GetD3D12Resource(), footprint, subresourceIndex);
 }
 
+void D3D12GpuCommandBuffer::CopyWindowToBuffer(const TShared<RenderWindow>& source, const TShared<GpuBuffer>& destination)
+{
+	GpuCommandBuffer::CopyWindowToBuffer(source, destination);
+	EnsureValidThread();
+
+	if (source == nullptr || destination == nullptr)
+		return;
+
+	auto* const surface = static_cast<ID3D12RenderWindowSurface*>(source->GetRenderWindowSurface().get());
+	if (surface == nullptr)
+		return;
+
+	const TOptional<RenderWindowImageLayout> layout = surface->GetImageLayout();
+	D3D12Image* const sourceImage = surface->GetCurrentColorImage();
+	D3D12Buffer* const destinationBuffer = static_cast<D3D12GpuBuffer*>(destination.get())->GetD3D12Buffer();
+	if (!layout || sourceImage == nullptr || destinationBuffer == nullptr)
+		return;
+
+	const u32 rowPitchBytes = layout->Pitch.RowPitch * PixelUtility::GetBlockSize(layout->Format);
+	CopyImageToBuffer(sourceImage, destinationBuffer, layout->Width, layout->Height, rowPitchBytes);
+}
+
 void D3D12GpuCommandBuffer::CopyImageToBuffer(D3D12Image* source, D3D12Buffer* destination, u32 width, u32 height, u32 rowPitchBytes)
 {
 	EnsureValidThread();
@@ -1952,7 +1998,6 @@ D3D12Framebuffer* D3D12GpuCommandBuffer::AcquireWindowFramebuffer(RenderWindow& 
 	return surface->GetActiveFramebuffer();
 }
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 bool D3D12GpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& barriers, GpuBarrierPhase phase, GpuSplitBarrier* split)
 {
 	// What the barriers of each case record:
@@ -2055,8 +2100,9 @@ bool D3D12GpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& ba
 		bufferBarriers.Add(nativeBarrier);
 	};
 
-	// Texture barriers
+	// Texture barriers. Alias releases go to their own list, recorded before the activations of the textures that take over their memory.
 	TInlineArray<D3D12_TEXTURE_BARRIER, 8> textureBarriers;
+	TInlineArray<D3D12_TEXTURE_BARRIER, 8> aliasReleaseBarriers;
 	const auto fnAddImageBarrier = [&](D3D12Image& image, const GpuTextureSubresourceRange& range, const GpuExplicitBarrier& barrier)
 	{
 		const bool isAliasAcquire = barrier.Flags.IsSet(GpuBarrierFlag::AliasAcquire);
@@ -2142,7 +2188,10 @@ bool D3D12GpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& ba
 			else if(barrierCase == BarrierCase::SplitAcquire)
 				nativeBarrier.SyncBefore = D3D12_BARRIER_SYNC_SPLIT;
 
-			textureBarriers.Add(nativeBarrier);
+			if(barrier.Flags.IsSet(GpuBarrierFlag::AliasRelease))
+				aliasReleaseBarriers.Add(nativeBarrier);
+			else
+				textureBarriers.Add(nativeBarrier);
 		}
 	};
 
@@ -2191,9 +2240,13 @@ bool D3D12GpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& ba
 		fnAddImageBarrier(static_cast<D3D12Image&>(*attachment->Image), range, barrier);
 	}
 
-	// Recording. Global barriers go first, in their own Barrier() call: a discard and an access of overlapping memory in one call break the
-	// enhanced-barrier rules. A buffer barrier without work on either side orders nothing.
+	// Recording. Alias releases and global barriers go first, each in their own Barrier() call: a discard and an access of overlapping memory
+	// in one call break the enhanced-barrier rules. A buffer barrier without work on either side orders nothing.
 	D3D12BarrierBatch batch;
+	for(const D3D12_TEXTURE_BARRIER& textureBarrier : aliasReleaseBarriers)
+		batch.AddTextureBarrier(textureBarrier);
+
+	batch.EndGroup();
 	if(aliasScope.SourceStages != GpuStageFlag::None)
 		batch.AddGlobalBarrier(D3D12BarrierUtility::GetAliasGlobalBarrier(aliasScope));
 
@@ -2209,4 +2262,3 @@ bool D3D12GpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& ba
 	batch.Record(*mCommandList.Get());
 	return true;
 }
-#endif

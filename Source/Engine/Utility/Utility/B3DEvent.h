@@ -30,6 +30,19 @@ namespace b3d
 	 *  @{
 	 */
 
+	/** Connection list of an event control block that an event connection is linked into. */
+	enum class EventConnectionList : u8
+	{
+		/** Not linked into any list. Either a deactivated connection still referenced by handles, or a freed one. */
+		None,
+
+		/** The list of connections the event calls when triggered. */
+		Active,
+
+		/** Connections formed while the event was triggering. They join the active list once the trigger ends. */
+		Pending
+	};
+
 	/** Data common to all event connections. */
 	struct EventConnection
 	{
@@ -48,11 +61,18 @@ namespace b3d
 
 		EventConnection* Previous = nullptr;
 		EventConnection* Next = nullptr;
+		EventConnectionList List = EventConnectionList::None;
 		bool IsActive = true;
 		u32 ActiveHandleCount = 0;
 	};
 
-	/** Internal data for an Event, storing all connections. Templated on ThreadSafetyPolicy to conditionally include a mutex. */
+	/**
+	 * Internal data for an Event, storing all connections. Templated on ThreadSafetyPolicy to conditionally include a mutex.
+	 *
+	 * While the event is triggering the active list is never modified, so the trigger can walk it while callbacks connect
+	 * and disconnect. Connections formed meanwhile go to the pending list and connections released meanwhile only get
+	 * deactivated. Both are applied once the outermost trigger ends.
+	 */
 	template<ThreadSafetyPolicy Policy = ThreadSafe>
 	struct TEventControlBlock
 	{
@@ -63,47 +83,24 @@ namespace b3d
 
 		~TEventControlBlock()
 		{
-			EventConnection* connection = ActiveConnections;
-			while(connection != nullptr)
-			{
-				EventConnection* next = connection->Next;
-				B3DFree(connection);
-
-				connection = next;
-			}
-
-			connection = FreeConnections;
-			while(connection != nullptr)
-			{
-				EventConnection* next = connection->Next;
-				B3DFree(connection);
-
-				connection = next;
-			}
-
-			connection = NewConnections;
-			while(connection != nullptr)
-			{
-				EventConnection* next = connection->Next;
-				B3DFree(connection);
-
-				connection = next;
-			}
+			FreeConnectionMemory(ActiveConnections);
+			FreeConnectionMemory(PendingConnections);
+			FreeConnectionMemory(FreeConnections);
 		}
 
-		/** Appends a new connection to the active connection array. */
+		/** Links a new connection into the active list, or into the pending list if the event is currently triggering. */
 		void Connect(EventConnection* connection)
 		{
-			connection->Previous = LastConnection;
-
-			if(LastConnection != nullptr)
-				LastConnection->Next = connection;
-
-			LastConnection = connection;
-
-			// First connection
-			if(ActiveConnections == nullptr)
-				ActiveConnections = connection;
+			if(TriggerDepth > 0)
+			{
+				LinkLast(PendingConnections, LastPendingConnection, connection);
+				connection->List = EventConnectionList::Pending;
+			}
+			else
+			{
+				LinkLast(ActiveConnections, LastConnection, connection);
+				connection->List = EventConnectionList::Active;
+			}
 		}
 
 		/**
@@ -115,11 +112,10 @@ namespace b3d
 		{
 			LockType lock(Mutex);
 
-			connection->Deactivate();
+			DeactivateConnection(connection);
 			connection->ActiveHandleCount--;
 
-			if(connection->ActiveHandleCount == 0)
-				FreeConnection(connection);
+			ReleaseConnection(connection);
 		}
 
 		/** Disconnects all connections in the event. */
@@ -127,20 +123,27 @@ namespace b3d
 		{
 			LockType lock(Mutex);
 
-			EventConnection* connection = ActiveConnections;
-			while(connection != nullptr)
+			for(EventConnection* list : { ActiveConnections, PendingConnections })
 			{
-				EventConnection* next = connection->Next;
-				connection->Deactivate();
+				EventConnection* connection = list;
+				while(connection != nullptr)
+				{
+					EventConnection* next = connection->Next;
 
-				if(connection->ActiveHandleCount == 0)
-					FreeConnection(connection);
+					DeactivateConnection(connection);
+					ReleaseConnection(connection);
 
-				connection = next;
+					connection = next;
+				}
 			}
+		}
 
-			ActiveConnections = nullptr;
-			LastConnection = nullptr;
+		/** Registers a new event handle that references the connection. */
+		void AddHandle(EventConnection* connection)
+		{
+			LockType lock(Mutex);
+
+			connection->ActiveHandleCount++;
 		}
 
 		/**
@@ -153,43 +156,152 @@ namespace b3d
 
 			connection->ActiveHandleCount--;
 
-			if(connection->ActiveHandleCount == 0 && !connection->IsActive)
-				FreeConnection(connection);
+			if(!connection->IsActive)
+				ReleaseConnection(connection);
 		}
 
-		/** Releases connection data and makes it available for re-use when next connection is formed. */
-		void FreeConnection(EventConnection* connection)
+		/** Applies the list changes deferred while the event was triggering. Called once the outermost trigger ends. */
+		void EndTrigger()
+		{
+			if(HasDeferredReleases)
+			{
+				HasDeferredReleases = false;
+
+				EventConnection* connection = ActiveConnections;
+				while(connection != nullptr)
+				{
+					EventConnection* next = connection->Next;
+
+					if(!connection->IsActive)
+					{
+						connection->Deactivate();
+						ReleaseConnection(connection);
+					}
+
+					connection = next;
+				}
+			}
+
+			if(PendingConnections != nullptr)
+			{
+				for(EventConnection* connection = PendingConnections; connection != nullptr; connection = connection->Next)
+					connection->List = EventConnectionList::Active;
+
+				PendingConnections->Previous = LastConnection;
+				if(LastConnection != nullptr)
+					LastConnection->Next = PendingConnections;
+				else
+					ActiveConnections = PendingConnections;
+
+				LastConnection = LastPendingConnection;
+				PendingConnections = nullptr;
+				LastPendingConnection = nullptr;
+			}
+		}
+
+		/**
+		 * Stops the connection's callback from being called. While the event is triggering, connections in the active list
+		 * keep their callback (it might be the one currently executing) until the trigger ends.
+		 */
+		void DeactivateConnection(EventConnection* connection)
+		{
+			if(TriggerDepth > 0 && connection->List == EventConnectionList::Active)
+			{
+				connection->IsActive = false;
+				HasDeferredReleases = true;
+			}
+			else
+				connection->Deactivate();
+		}
+
+		/**
+		 * Unlinks an inactive connection from its list, and frees it if no handles reference it anymore. While the event is
+		 * triggering, connections in the active list are left linked until the trigger ends.
+		 */
+		void ReleaseConnection(EventConnection* connection)
+		{
+			if(TriggerDepth > 0 && connection->List == EventConnectionList::Active)
+				return;
+
+			switch(connection->List)
+			{
+			case EventConnectionList::Active:
+				Unlink(ActiveConnections, LastConnection, connection);
+				break;
+			case EventConnectionList::Pending:
+				Unlink(PendingConnections, LastPendingConnection, connection);
+				break;
+			case EventConnectionList::None:
+				break;
+			}
+
+			connection->List = EventConnectionList::None;
+
+			if(connection->ActiveHandleCount > 0)
+				return;
+
+			// Freed connections are kept in a singly linked list for re-use by later connections
+			connection->Next = FreeConnections;
+			FreeConnections = connection;
+			connection->~EventConnection();
+		}
+
+		/** Appends the connection to the end of the list with the provided first and last entries. */
+		static void LinkLast(EventConnection*& first, EventConnection*& last, EventConnection* connection)
+		{
+			connection->Previous = last;
+			connection->Next = nullptr;
+
+			if(last != nullptr)
+				last->Next = connection;
+			else
+				first = connection;
+
+			last = connection;
+		}
+
+		/** Removes the connection from the list with the provided first and last entries. */
+		static void Unlink(EventConnection*& first, EventConnection*& last, EventConnection* connection)
 		{
 			if(connection->Previous != nullptr)
 				connection->Previous->Next = connection->Next;
 			else
-				ActiveConnections = connection->Next;
+				first = connection->Next;
 
 			if(connection->Next != nullptr)
 				connection->Next->Previous = connection->Previous;
 			else
-				LastConnection = connection->Previous;
+				last = connection->Previous;
 
 			connection->Previous = nullptr;
 			connection->Next = nullptr;
+		}
 
-			if(FreeConnections != nullptr)
+		/** Releases the memory of every connection in the list starting with the provided connection. */
+		static void FreeConnectionMemory(EventConnection* connection)
+		{
+			while(connection != nullptr)
 			{
-				connection->Next = FreeConnections;
-				FreeConnections->Previous = connection;
-			}
+				EventConnection* next = connection->Next;
+				B3DFree(connection);
 
-			FreeConnections = connection;
-			FreeConnections->~EventConnection();
+				connection = next;
+			}
 		}
 
 		EventConnection* ActiveConnections = nullptr;
 		EventConnection* LastConnection = nullptr;
+		EventConnection* PendingConnections = nullptr;
+		EventConnection* LastPendingConnection = nullptr;
 		EventConnection* FreeConnections = nullptr;
-		EventConnection* NewConnections = nullptr;
 
 		MutexType Mutex;
-		bool IsCurrentlyTriggering = false;
+
+		/** Number of triggers currently executing. Above one when a callback triggers the same event again. */
+		u32 TriggerDepth = 0;
+
+		/** True if connections in the active list were deactivated while triggering, and must be released once it ends. */
+		bool HasDeferredReleases = false;
 	};
 
 	/** @} */
@@ -211,6 +323,17 @@ namespace b3d
 		{
 			connection->ActiveHandleCount++;
 		}
+
+		THEvent(const THEvent& other)
+			: mConnection(other.mConnection), mEventControlBlock(other.mEventControlBlock)
+		{
+			if(mConnection != nullptr)
+				mEventControlBlock->AddHandle(mConnection);
+		}
+
+		THEvent(THEvent&& other) noexcept
+			: mConnection(std::exchange(other.mConnection, nullptr)), mEventControlBlock(std::move(other.mEventControlBlock))
+		{ }
 
 		~THEvent()
 		{
@@ -252,11 +375,21 @@ namespace b3d
 
 		THEvent& operator=(const THEvent& rhs)
 		{
-			mConnection = rhs.mConnection;
-			mEventControlBlock = rhs.mEventControlBlock;
+			// Copy first, so self-assignment never releases the last handle of the connection
+			THEvent copy(rhs);
+			return *this = std::move(copy);
+		}
 
-			if(mConnection != nullptr)
-				mConnection->ActiveHandleCount++;
+		THEvent& operator=(THEvent&& rhs) noexcept
+		{
+			if(this != &rhs)
+			{
+				if(mConnection != nullptr)
+					mEventControlBlock->FreeHandle(mConnection);
+
+				mConnection = std::exchange(rhs.mConnection, nullptr);
+				mEventControlBlock = std::move(rhs.mEventControlBlock);
+			}
 
 			return *this;
 		}
@@ -335,31 +468,13 @@ namespace b3d
 				mControlBlock->FreeConnections = connection->Next;
 
 				new(connection) TEventConnection();
-				if(connection->Next != nullptr)
-					connection->Next->Previous = nullptr;
-
-				connection->IsActive = true;
 			}
 
 			if(connection == nullptr)
 				connection = B3DNew<TEventConnection>();
 
-			// If currently iterating over the connection list, delay modifying it until done
-			if(mControlBlock->IsCurrentlyTriggering)
-			{
-				connection->Previous = mControlBlock->NewConnections;
-
-				if(mControlBlock->NewConnections != nullptr)
-					mControlBlock->NewConnections->Next = connection;
-
-				mControlBlock->NewConnections = connection;
-			}
-			else
-			{
-				mControlBlock->Connect(connection);
-			}
-
-			connection->Callback = callback;
+			mControlBlock->Connect(connection);
+			connection->Callback = std::move(callback);
 
 			return THEvent<Policy>(mControlBlock, connection);
 		}
@@ -371,7 +486,7 @@ namespace b3d
 			{
 				// Fast path: skip when no connections exist or control block was never allocated.
 				// Only safe for ThreadUnsafe events — for ThreadSafe events another thread could Connect() between this check and the lock acquisition.
-				if(!mControlBlock || (mControlBlock->ActiveConnections == nullptr && mControlBlock->NewConnections == nullptr))
+				if(!mControlBlock || mControlBlock->ActiveConnections == nullptr)
 					return;
 			}
 
@@ -379,42 +494,24 @@ namespace b3d
 			TShared2<TEventControlBlock<Policy>, Policy> hoistedControlBlock = mControlBlock;
 
 			LockType lock(hoistedControlBlock->Mutex);
-			hoistedControlBlock->IsCurrentlyTriggering = true;
+			hoistedControlBlock->TriggerDepth++;
 
+			// The active list isn't modified until the trigger ends, so the next connection stays valid whatever the
+			// callback connects or disconnects
 			TEventConnection* connection = static_cast<TEventConnection*>(hoistedControlBlock->ActiveConnections);
 			while(connection != nullptr)
 			{
-				// Save next here in case the callback itself disconnects this connection
 				TEventConnection* next = static_cast<TEventConnection*>(connection->Next);
 
-				if(connection->Callback != nullptr)
+				if(connection->IsActive)
 					connection->Callback(std::forward<ArgumentType>(arguments)...);
 
 				connection = next;
 			}
 
-			hoistedControlBlock->IsCurrentlyTriggering = false;
-
-			// If any new connections were added during the above calls, add them to the connection list
-			if(hoistedControlBlock->NewConnections != nullptr)
-			{
-				EventConnection* lastNewConnection = hoistedControlBlock->NewConnections;
-				while(lastNewConnection != nullptr)
-					lastNewConnection = lastNewConnection->Next;
-
-				EventConnection* currentConnection = lastNewConnection;
-				while(currentConnection != nullptr)
-				{
-					EventConnection* prevConnection = currentConnection->Previous;
-					currentConnection->Next = nullptr;
-					currentConnection->Previous = nullptr;
-
-					mControlBlock->Connect(currentConnection);
-					currentConnection = prevConnection;
-				}
-
-				hoistedControlBlock->NewConnections = nullptr;
-			}
+			hoistedControlBlock->TriggerDepth--;
+			if(hoistedControlBlock->TriggerDepth == 0)
+				hoistedControlBlock->EndTrigger();
 		}
 
 		/** Clear all callbacks from the event. */
@@ -436,7 +533,7 @@ namespace b3d
 
 			LockType lock(mControlBlock->Mutex);
 
-			return mControlBlock->ActiveConnections == nullptr;
+			return mControlBlock->ActiveConnections == nullptr && mControlBlock->PendingConnections == nullptr;
 		}
 
 	private:

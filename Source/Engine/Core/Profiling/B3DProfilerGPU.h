@@ -65,7 +65,6 @@ namespace b3d
 
 			render::GpuQueryId TimestampBeginQueryId;
 			render::GpuQueryId TimestampEndQueryId;
-			TShared<render::GpuQueryPool> TimestampQueryPool;
 
 			TArray<Sample*> Children;
 		};
@@ -182,6 +181,9 @@ namespace b3d
 		/** Notifies the system that the query pool is no longer used and can be re-used. */
 		void ReleaseQueryPool(const TShared<render::GpuQueryPool>& queryPool);
 
+		/** Makes the discarded profilers whose queries the GPU finished writing available for reuse. */
+		void RecycleDiscardedProfilers();
+
 	private:
 		static constexpr u32 kMaxQueuedEntries = 3;
 
@@ -200,6 +202,9 @@ namespace b3d
 		UnorderedMap<ProfilerString, UnresolvedCommandBufferProfilerData> mUnresolvedProfilerData;
 		UnorderedMap<ProfilerString, ResolvedCommandBufferProfilerData> mResolvedProfilerData;
 
+		/** Profilers whose results were superseded before they resolved. Their query pools are reused once the GPU finished writing them. */
+		TArray<TShared<GpuCommandBufferProfiler>> mDiscardedProfilers;
+
 		mutable TArray<TShared<GpuCommandBufferProfiler>> mFreeCommandBufferProfilers;
 		mutable TArray<TShared<render::GpuQueryPool>> mFreeTimestampQueryPools;
 		mutable Mutex mMutex;
@@ -209,13 +214,13 @@ namespace b3d
 	B3D_EXPORT GpuProfiler& GetGpuProfiler();
 
 	/**
-	 * Helper class that performs GPU profiling in the current block. Profiling sample is started when the class is
-	 * constructed and ended upon destruction.
+	 * Measures a GPU profiler sample on a command buffer from its construction to its destruction, if the command buffer is being
+	 * profiled (see GpuCommandBuffer::BeginProfiling()).
 	 */
-	struct ProfileGPUBlock
+	struct GpuProfilingScope
 	{
 #if B3D_PROFILING_ENABLED
-		ProfileGPUBlock(render::GpuCommandBuffer& commandBuffer, ProfilerString name)
+		GpuProfilingScope(render::GpuCommandBuffer& commandBuffer, ProfilerString name)
 			: mCommandBuffer(commandBuffer)
 		{
 			const TShared<GpuCommandBufferProfiler>& commandBufferProfiler = commandBuffer.GetProfiler();
@@ -224,12 +229,12 @@ namespace b3d
 				commandBufferProfiler->BeginSample(commandBuffer, name);
 		}
 #else
-		ProfileGPUBlock(render::GpuCommandBuffer& commandBuffer, ProfilerString name)
+		GpuProfilingScope(render::GpuCommandBuffer& commandBuffer, ProfilerString name)
 		{}
 #endif
 
 #if B3D_PROFILING_ENABLED
-		~ProfileGPUBlock()
+		~GpuProfilingScope()
 		{
 			const TShared<GpuCommandBufferProfiler>& commandBufferProfiler = mCommandBuffer.GetProfiler();
 

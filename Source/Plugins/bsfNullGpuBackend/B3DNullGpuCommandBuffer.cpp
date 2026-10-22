@@ -3,6 +3,7 @@
 #include "B3DNullGpuCommandBuffer.h"
 #include "B3DNullGpuDevice.h"
 #include "B3DNullGpuCommandBufferPool.h"
+#include "GpuBackend/B3DGpuBuffer.h"
 
 namespace b3d
 {
@@ -17,6 +18,17 @@ namespace b3d
 		{
 			// Transition from Ready to Done (null backend executes instantly)
 			mState = GpuCommandBufferState::Done;
+		}
+
+		void NullGpuCommandBuffer::CopyWindowToBuffer(const TShared<RenderWindow>& source, const TShared<GpuBuffer>& destination)
+		{
+			GpuCommandBuffer::CopyWindowToBuffer(source, destination);
+
+			if(destination == nullptr)
+				return;
+
+			GpuBufferMappedScope mapping = destination->Map(GpuMapOption::Write);
+			memset(mapping.GetMappedMemory(), 0, destination->GetTotalSize());
 		}
 	} // namespace render
 } // namespace b3d

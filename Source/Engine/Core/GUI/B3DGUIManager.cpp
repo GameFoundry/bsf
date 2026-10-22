@@ -32,6 +32,7 @@
 #include "GUI/B3DGUITooltipManager.h"
 #include "Renderer/B3DRendererUtility.h"
 #include "Image/B3DTexture.h"
+#include "Image/B3DPixelUtility.h"
 #include "GpuBackend/B3DRenderTexture.h"
 #include "GpuBackend/B3DSamplerState.h"
 #include "Resources/B3DBuiltinResources.h"
@@ -1657,6 +1658,11 @@ void GUIRenderer::Render(const Camera& camera, const RendererViewContext& viewCo
 {
 	// TODO - Sprite animation might be broken. I need to continually mark the animated region as dirty.
 
+	// GUI renders at RenderLocation::Overlay, into the render target of the view
+	const TShared<RenderTarget>& renderTarget = viewContext.Target;
+	if(!B3D_ENSURE(renderTarget != nullptr))
+		return;
+
 	FrameAllocatorScope frameScope;
 	const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 	const GpuBackendConventions& gpuBackendConventions = gpuDevice->GetCapabilities().Conventions;
@@ -1666,34 +1672,27 @@ void GUIRenderer::Render(const Camera& camera, const RendererViewContext& viewCo
 
 	const bool viewflipYFlip = gpuBackendConventions.NdcYAxis == GpuBackendConventions::Axis::Down;
 
-	GpuCommandBuffer& commandBuffer = *viewContext.CommandBuffer;
-	commandBuffer.BeginLabel("GUIRenderer::Render");
-
-	// Re-create cached render texture if needed
-	const TShared<RenderTarget> renderTarget = viewContext.CurrentTarget;
+	// Re-create cached texture if needed
 	const u32 renderTargetWidth = renderTarget->GetProperties().Width;
 	const u32 renderTargetHeight = renderTarget->GetProperties().Height;
 
-	const bool rebuildCachedRenderTexture = cameraRenderData.CachedRenderTexture == nullptr ||
-		cameraRenderData.CachedRenderTexture->GetProperties().Width != renderTargetWidth ||
-		cameraRenderData.CachedRenderTexture->GetProperties().Height != renderTargetHeight;
+	const bool rebuildCachedTexture = cameraRenderData.CachedTexture == nullptr ||
+		cameraRenderData.CachedTexture->GetProperties().Width != renderTargetWidth ||
+		cameraRenderData.CachedTexture->GetProperties().Height != renderTargetHeight;
 
-	if(rebuildCachedRenderTexture)
+	if(rebuildCachedTexture)
 	{
-		TextureCreateInformation cachedColorTextureCreateInformation;
-		cachedColorTextureCreateInformation.Width = renderTargetWidth;
-		cachedColorTextureCreateInformation.Height = renderTargetHeight;
-		cachedColorTextureCreateInformation.Format = PF_RGBA8;
-		cachedColorTextureCreateInformation.Usage = TextureUsageFlag::RenderTarget;
-		cachedColorTextureCreateInformation.UseHardwareSRGB = gGuiUseLinearColorSpace;
+		TextureCreateInformation cachedTextureCreateInformation;
+		cachedTextureCreateInformation.Width = renderTargetWidth;
+		cachedTextureCreateInformation.Height = renderTargetHeight;
+		cachedTextureCreateInformation.Format = PF_RGBA8;
+		cachedTextureCreateInformation.Usage = TextureUsageFlag::RenderTarget;
+		cachedTextureCreateInformation.UseHardwareSRGB = gGuiUseLinearColorSpace;
 
-		const TShared<Texture> cachedColorTexture = gpuDevice->CreateTexture(cachedColorTextureCreateInformation);
-
-		RenderTextureCreateInformation cachedRenderTextureCreateInformation;
-		cachedRenderTextureCreateInformation.ColorSurfaces[0].Texture = cachedColorTexture;
-
-		cameraRenderData.CachedRenderTexture = RenderTexture::Create(cachedRenderTextureCreateInformation);
+		cameraRenderData.CachedTexture = gpuDevice->CreateTexture(cachedTextureCreateInformation);
 	}
+
+	const TShared<Texture> cachedTexture = cameraRenderData.CachedTexture;
 
 	for(auto& widget : widgetRenderData)
 	{
@@ -1731,20 +1730,31 @@ void GUIRenderer::Render(const Camera& camera, const RendererViewContext& viewCo
 		return clipRegionBuffer;
 	};
 
-	// Structure to hold prepared rendering information
-	struct PreparedMeshData
+	/** A draw of the pass that renders into the cached texture. */
+	struct GUIDraw
 	{
-		const GUIMeshRenderData* RenderData = nullptr;
-		FrameVector<Area2I> OverlappingRegions;
+		SpriteMaterial* Material = nullptr;
 		TShared<render::GpuParameterSet> GpuParameters;
+		TShared<render::Mesh> Mesh;
+		SubMesh SubMesh;
 		TShared<GpuBuffer> ClipRegionBuffer;
 		u32 ClipRegionCount = 0;
+		TShared<SpriteMaterialExtraInfo> AdditionalData;
 	};
 
-	// Accumulate all GPU parameters before starting render pass
-	RenderPassCreateInformation mainRenderPassCreateInformation(cameraRenderData.CachedRenderTexture, RT_NONE, RT_ALL);
+	/** Regions of the cached texture to clear, and the draws that render into them afterwards. */
+	struct GUIDrawGroup
+	{
+		Vector<Area2> ClearAreas;
+		Vector<GUIDraw> Draws;
+	};
 
-	auto fnPrepareRegions = [this, &fnCreateClipRegionBuffer, &widgetRenderData, renderTargetWidth, renderTargetHeight, viewflipYFlip, &mainRenderPassCreateInformation](const Vector<Area2I>& regions, bool useDebugMaterial, FrameVector<PreparedMeshData>& outPreparedMeshData)
+	// The pass's lambda runs when the graph executes, after this method returns, so it holds its own copies of everything it draws
+	FrameGraphRasterPass guiPass;
+	guiPass.SetColorAttachment(0, cachedTexture, rebuildCachedTexture ? FrameGraphAttachmentLoad::Clear : FrameGraphAttachmentLoad::Load);
+
+	FrameVector<GpuParameterSet*> addedParameterSets;
+	auto fnPrepareRegions = [this, &fnCreateClipRegionBuffer, &widgetRenderData, renderTargetWidth, renderTargetHeight, viewflipYFlip, &guiPass, &addedParameterSets](const Vector<Area2I>& regions, bool useDebugMaterial, GUIDrawGroup& outDrawGroup)
 	{
 		const Area2I clipRectangle(0, 0, renderTargetWidth, renderTargetHeight);
 
@@ -1840,89 +1850,71 @@ void GUIRenderer::Render(const Camera& camera, const RendererViewContext& viewCo
 				else
 					material->Prepare(materialParameterAdapter, meshRenderData->Mesh, Texture::kPink, mSamplerState, uniformBuffer, clipRegionBuffer);
 
-				PreparedMeshData preparedData;
-				preparedData.RenderData = meshRenderData;
-				preparedData.OverlappingRegions = meshToDraw.OverlappingRegions;
-				preparedData.GpuParameters = materialParameterAdapter->GetGpuParameterSet();
-				preparedData.ClipRegionBuffer = clipRegionBuffer;
-				preparedData.ClipRegionCount = (u32)meshToDraw.OverlappingRegions.size();
+				GUIDraw draw;
+				draw.Material = material;
+				draw.GpuParameters = materialParameterAdapter->GetGpuParameterSet();
+				draw.Mesh = meshRenderData->Mesh;
+				draw.SubMesh = meshRenderData->SubMesh;
+				draw.ClipRegionBuffer = clipRegionBuffer;
+				draw.ClipRegionCount = (u32)meshToDraw.OverlappingRegions.size();
+				draw.AdditionalData = meshRenderData->MaterialInformation.AdditionalData;
 
-				mainRenderPassCreateInformation.Parameters.Add(preparedData.GpuParameters);
-				outPreparedMeshData.push_back(std::move(preparedData));
+				if(std::find(addedParameterSets.begin(), addedParameterSets.end(), draw.GpuParameters.get()) == addedParameterSets.end())
+				{
+					guiPass.AddParameterSet(draw.GpuParameters);
+					addedParameterSets.push_back(draw.GpuParameters.get());
+				}
+
+				outDrawGroup.Draws.push_back(std::move(draw));
 			}
 		}
 	};
 
-	// Determine which regions to prepare
-	FrameVector<PreparedMeshData> debugDrawPreparedMeshes;
-	FrameVector<PreparedMeshData> preparedMeshes;
-
-	if(!rebuildCachedRenderTexture && !kRedrawAllRegions)
+	// Clears the regions of a draw group, unless the whole texture is cleared when the pass begins
+	auto fnAddClearAreas = [renderTargetWidth, renderTargetHeight, rebuildCachedTexture](const Vector<Area2I>& regions, GUIDrawGroup& outDrawGroup)
 	{
-		fnPrepareRegions(cameraRenderData.LastFrameDirtyDebugDrawRegions, false, debugDrawPreparedMeshes);
-		fnPrepareRegions(cameraRenderData.DirtyRegions, true, preparedMeshes);
-	}
-	else
-	{
-		fnPrepareRegions({ Area2I(0, 0, renderTargetWidth, renderTargetHeight) }, true, preparedMeshes);
-	}
+		if(rebuildCachedTexture)
+			return;
 
-	if(rebuildCachedRenderTexture)
-	{
-		mainRenderPassCreateInformation.ClearMask = RT_COLOR_ALL;
-	}
-
-	// Begin render pass with all accumulated GPU parameters
-	commandBuffer.BeginRenderPass(mainRenderPassCreateInformation);
-
-	// Now execute the actual rendering using the prepared data
-	auto fnDrawPreparedMeshes = [&commandBuffer, renderTargetWidth, renderTargetHeight, rebuildCachedRenderTexture](const FrameVector<PreparedMeshData>& preparedMeshes, const Vector<Area2I>& regions)
-	{
 		const Area2I clipRectangle(0, 0, renderTargetWidth, renderTargetHeight);
-
-		// Clear all regions
 		for(Area2I region : regions)
 		{
 			region.Clip(clipRectangle);
 
-			const Area2 normalizedRegionArea =
+			outDrawGroup.ClearAreas.push_back(
 				Area2(
 					region.X / (float)renderTargetWidth,
 					region.Y / (float)renderTargetHeight,
 					region.Width / (float)renderTargetWidth,
-					region.Height / (float)renderTargetHeight);
-
-			// TODO - This could probably be more efficient by clearing N regions in a single draw call
-			commandBuffer.SetViewport(normalizedRegionArea);
-
-			if(!rebuildCachedRenderTexture)
-				commandBuffer.ClearViewport(RT_COLOR_ALL);
-		}
-
-		commandBuffer.SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
-
-		for(const PreparedMeshData& preparedData : preparedMeshes)
-		{
-			const GUIMeshRenderData* const meshRenderData = preparedData.RenderData;
-			SpriteMaterial* const material = meshRenderData->Material;
-
-			// Note: Sprite material is being re-bound for each draw. We should ensure the material is bound only when it actually changes.
-			// Note: Ideally all these buffers are using dynamic buffer offsets, and textures are atlased so we can avoid rebinding parameters each time
-			material->Render(commandBuffer, preparedData.GpuParameters, meshRenderData->Mesh, meshRenderData->SubMesh, preparedData.ClipRegionBuffer, preparedData.ClipRegionCount, meshRenderData->MaterialInformation.AdditionalData);
+					region.Height / (float)renderTargetHeight));
 		}
 	};
 
-	if(!rebuildCachedRenderTexture && !kRedrawAllRegions)
+	// Determine which regions to redraw
+	Vector<GUIDrawGroup> drawGroups;
+	if(!rebuildCachedTexture && !kRedrawAllRegions)
 	{
 		if(!cameraRenderData.LastFrameDirtyDebugDrawRegions.empty())
-			fnDrawPreparedMeshes(debugDrawPreparedMeshes, cameraRenderData.LastFrameDirtyDebugDrawRegions);
+		{
+			GUIDrawGroup& debugDrawGroup = drawGroups.emplace_back();
+			fnPrepareRegions(cameraRenderData.LastFrameDirtyDebugDrawRegions, false, debugDrawGroup);
+			fnAddClearAreas(cameraRenderData.LastFrameDirtyDebugDrawRegions, debugDrawGroup);
+		}
 
 		if(!cameraRenderData.DirtyRegions.empty())
-			fnDrawPreparedMeshes(preparedMeshes, cameraRenderData.DirtyRegions);
+		{
+			GUIDrawGroup& drawGroup = drawGroups.emplace_back();
+			fnPrepareRegions(cameraRenderData.DirtyRegions, true, drawGroup);
+			fnAddClearAreas(cameraRenderData.DirtyRegions, drawGroup);
+		}
 	}
 	else
 	{
-		fnDrawPreparedMeshes(preparedMeshes, { Area2I(0, 0, renderTargetWidth, renderTargetHeight) });
+		const Vector<Area2I> wholeTarget = { Area2I(0, 0, renderTargetWidth, renderTargetHeight) };
+
+		GUIDrawGroup& drawGroup = drawGroups.emplace_back();
+		fnPrepareRegions(wholeTarget, true, drawGroup);
+		fnAddClearAreas(wholeTarget, drawGroup);
 	}
 
 	cameraRenderData.LastFrameDirtyDebugDrawRegions.clear();
@@ -1931,22 +1923,54 @@ void GUIRenderer::Render(const Camera& camera, const RendererViewContext& viewCo
 
 	cameraRenderData.DirtyRegions.clear();
 
-	// Blit cached texture into main output
-	// Note: This could be optimized by blitting only the modified regions
-	commandBuffer.EndRenderPass();
+	// Render the dirty regions into the cached texture
+	viewContext.Graph.ImportTexture(cachedTexture);
+	viewContext.Graph.AddRasterPass("GUI", std::move(guiPass), [drawGroups = std::move(drawGroups)](FrameGraphPassContext& context)
+	{
+		GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 
-	BlitInformation blitInformation = BlitInformation::Blend(cameraRenderData.CachedRenderTexture->GetColorSurfaceInformation(0).Texture, renderTarget, Area2I::kEmpty, RT_NONE, RT_ALL);
-	blitInformation.OutputArea = Area2(0.0f, 0.0f, 1.0f, 1.0f);
-	blitInformation.PremultipliedAlpha = true; // Sprite blend states accumulate premultiplied color in the cached texture
-	blitInformation.WriteAlpha = true;
-	blitInformation.SrgbEncode = gGuiUseLinearColorSpace;
+		for(const GUIDrawGroup& drawGroup : drawGroups)
+		{
+			// TODO - This could probably be more efficient by clearing N regions in a single draw call
+			for(const Area2& clearArea : drawGroup.ClearAreas)
+			{
+				commandBuffer.SetViewport(clearArea);
+				commandBuffer.ClearViewport(RT_COLOR_ALL);
+			}
 
-	GetRendererUtility().Blit(commandBuffer, blitInformation);
+			commandBuffer.SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
 
-	commandBuffer.EndLabel();
+			// Note: Sprite material is being re-bound for each draw. We should ensure the material is bound only when it actually changes.
+			// Note: Ideally all these buffers are using dynamic buffer offsets, and textures are atlased so we can avoid rebinding parameters each time
+			for(const GUIDraw& draw : drawGroup.Draws)
+				draw.Material->Render(commandBuffer, draw.GpuParameters, draw.Mesh, draw.SubMesh, draw.ClipRegionBuffer, draw.ClipRegionCount, draw.AdditionalData);
+		}
+	});
 
-	// Restore original viewport
-	commandBuffer.SetViewport(camera.GetViewport()->GetArea());
+	// Blend the cached texture over the render target
+	// Note: This could be optimized by blending only the modified regions
+	bool output32Bit = false;
+	if(!renderTarget->GetProperties().IsWindow)
+	{
+		const RenderSurfaceInformation& colorSurface = static_cast<RenderTexture&>(*renderTarget).GetColorSurfaceInformation(0);
+		if(colorSurface.Texture != nullptr)
+			output32Bit = PixelUtility::GetElementType(colorSurface.Texture->GetProperties().Format) == PCT_FLOAT32;
+	}
+
+	// Sprite blend states accumulate premultiplied color in the cached texture
+	BlitMat* const blitMaterial = BlitMat::GetVariation(1, true, false, true, true, true, gGuiUseLinearColorSpace, output32Bit);
+
+	FrameGraphRasterPass compositePass;
+	viewContext.SetAttachments(compositePass);
+
+	const TShared<GpuParameterSet> blitSet = blitMaterial->Prepare(compositePass, cachedTexture);
+	const Area2 inputArea(0.0f, 0.0f, (float)renderTargetWidth, (float)renderTargetHeight);
+
+	viewContext.Graph.AddRasterPass("GUIComposite", std::move(compositePass), [blitMaterial, blitSet, inputArea](FrameGraphPassContext& context)
+	{
+		context.GetCommandBuffer().SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
+		blitMaterial->Execute(context, blitSet, inputArea, false);
+	});
 }
 
 void GUIRenderer::Update(float time)

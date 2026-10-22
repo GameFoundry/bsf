@@ -2,8 +2,8 @@
 // 11-bit base plus three signed deltas at 4/4/5 bits (B gets the wider delta). Sibling of modes 3/4 with the wide delta
 // channel rotated to blue; wins on smooth two-subset HDR blocks whose blue channel needs the extra delta range.
 //
-// Endpoint fit + indices + partition search come from the shared two-region encoder; only the scattered bit layout is
-// mode-specific. The 11th base bit of each channel is interleaved into the delta region.
+// TextureCompressBC6HTwoRegionFinalize fits the endpoints, chooses the partition and packs the indices; only the
+// scattered endpoint bit layout is mode-specific. The 11th base bit of each channel is interleaved into the delta region.
 #include "$ENGINE$\TextureCompression\TextureCompressBC6Common.bslinc"
 
 mixin TextureCompressBC6Mode5
@@ -12,13 +12,8 @@ mixin TextureCompressBC6Mode5
 
 	code
 	{
-		uint4 CompressBC6Mode5(int3 h[16], uint partId, out float outErr)
+		uint4 PackBC6Mode5Endpoints(int3 c[4], uint part)
 		{
-			uint part;
-			int3 c[4];
-			uint idx[16];
-			EncodeBC6TwoRegion(h, 11, int3(4, 4, 5), true, partId, part, c, idx, outErr);
-
 			uint rw = (uint)c[0].x, gw = (uint)c[0].y, bw = (uint)c[0].z;
 			uint rx = (uint)c[1].x, gx = (uint)c[1].y, bx = (uint)c[1].z;
 			uint ry = (uint)c[2].x, gy = (uint)c[2].y, by = (uint)c[2].z;
@@ -47,7 +42,6 @@ mixin TextureCompressBC6Mode5
 			SetBits(block, 75, bz >> 4, 1);       // bz[4]
 			SetBits(block, 76, bz >> 3, 1);       // bz[3]
 			SetBits(block, 77, part, 5);          // partition (shape index)
-			PackBC6IndicesTwoRegion(block, idx, kBC6Anchor2[part]);
 			return block;
 		}
 	};

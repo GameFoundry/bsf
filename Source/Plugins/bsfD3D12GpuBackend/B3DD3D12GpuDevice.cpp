@@ -86,17 +86,25 @@ D3D12GpuDevice::D3D12GpuDevice(IDXGIAdapter4* adapter) : mAdapter(adapter)
 	if(FAILED(hr))
 		B3D_LOG(Fatal, LogRenderBackend, "ID3D12Device10 is unavailable on the selected D3D12 device (hr={0}).", (u32)hr);
 
-#if B3D_GPU_EXPLICIT_BARRIERS && B3D_BUILD_TYPE_DEVELOPMENT
+#if B3D_BUILD_TYPE_DEVELOPMENT
 	// Split barriers whose halves are in different ExecuteCommandLists() calls only transition layouts, and the debug layer warns about
 	// them. Explicit barriers order such halves with queue fences instead, so the warning is expected.
 	// TODO - Replace split barriers with SignalBarrier()/WaitBarrier() fence barriers once they are out of preview (they also split global barriers)
 	ComPtr<ID3D12InfoQueue> infoQueue;
 	if(SUCCEEDED(mDevice.As(&infoQueue)))
 	{
-		D3D12_MESSAGE_ID deniedMessages[] = { D3D12_MESSAGE_ID_DEGENERATE_SPLIT_BARRIER };
+		D3D12_MESSAGE_ID deniedMessages[3] = { D3D12_MESSAGE_ID_DEGENERATE_SPLIT_BARRIER };
+		UINT deniedMessageCount = 1;
+
+		// Poisoned surfaces are cleared to values other than the ones they were created with, which the debug layer reports as slow
+		if(gGpuPoisonUnloadedAttachments)
+		{
+			deniedMessages[deniedMessageCount++] = D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE;
+			deniedMessages[deniedMessageCount++] = D3D12_MESSAGE_ID_CLEARDEPTHSTENCILVIEW_MISMATCHINGCLEARVALUE;
+		}
 
 		D3D12_INFO_QUEUE_FILTER filter = {};
-		filter.DenyList.NumIDs = (UINT)std::size(deniedMessages);
+		filter.DenyList.NumIDs = deniedMessageCount;
 		filter.DenyList.pIDList = deniedMessages;
 		infoQueue->AddStorageFilterEntries(&filter);
 	}
@@ -240,7 +248,7 @@ TShared<GpuCommandBufferPool> D3D12GpuDevice::CreateGpuCommandBufferPool(const r
 
 TShared<render::Texture> D3D12GpuDevice::CreateTextureInternal(const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags)
 {
-	D3D12Texture* rawTexture = new (B3DAllocate<D3D12Texture>()) D3D12Texture(createInformation, *this, allocation);
+	D3D12Texture* rawTexture = new (B3DAllocate<D3D12Texture>()) D3D12Texture(createInformation, *this, allocation, flags);
 
 	TShared<Texture> output = flags.IsSet(GpuObjectCreateFlag::RenderThreadDestroy) ? B3DMakeSharedFromExisting(rawTexture) : MakeSharedStandalone<D3D12Texture>(rawTexture);
 
@@ -448,11 +456,29 @@ TShared<GpuPipelineParameterSetLayout> D3D12GpuDevice::CreateGpuPipelineParamete
 	return B3DMakeShared<D3D12GpuPipelineParameterSetLayout>(parameterDescription);
 }
 
-u32 D3D12GpuDevice::GetUniformBufferParameterSlot(u32 registerIndex) const
+u32 D3D12GpuDevice::GetParameterSlot(ShaderRegisterClass registerClass, u32 registerIndex) const
 {
 	// Slots encode the HLSL register class alongside the register index (see MapRegisterToSlot()); engine-authored
 	// parameter descriptions must use the same encoding to remain slot-compatible with shader-reflected layouts.
-	return MapRegisterToSlot(registerIndex, HLSLRegisterClass::ConstantBuffer);
+	HLSLRegisterClass hlslRegisterClass;
+	switch(registerClass)
+	{
+	default:
+	case ShaderRegisterClass::ConstantBuffer:
+		hlslRegisterClass = HLSLRegisterClass::ConstantBuffer;
+		break;
+	case ShaderRegisterClass::ShaderResource:
+		hlslRegisterClass = HLSLRegisterClass::ShaderResource;
+		break;
+	case ShaderRegisterClass::UnorderedAccess:
+		hlslRegisterClass = HLSLRegisterClass::UnorderedAccess;
+		break;
+	case ShaderRegisterClass::Sampler:
+		hlslRegisterClass = HLSLRegisterClass::Sampler;
+		break;
+	}
+
+	return MapRegisterToSlot(registerIndex, hlslRegisterClass);
 }
 
 TUnique<GpuParameterSetPool> D3D12GpuDevice::CreateParameterSetPool(const GpuParameterSetPoolCreateInformation& createInformation)
@@ -804,15 +830,6 @@ void D3D12GpuDevice::LogDebugLayerMessages()
 #endif
 }
 
-void D3D12GpuDevice::PresentRenderWindow(const TShared<render::RenderWindow>& renderWindow, GpuQueueMask syncMask)
-{
-	TShared<GpuQueue> queue = GetQueue(GQT_GRAPHICS, 0);
-	if (!B3D_ENSURE(queue))
-		return;
-
-	queue->PresentRenderWindow(renderWindow, syncMask);
-}
-
 void D3D12GpuDevice::ConvertProjectionMatrix(const Matrix4& input, Matrix4& outMatrix)
 {
 	outMatrix = input;
@@ -918,9 +935,8 @@ void D3D12GpuDevice::InitializeCapabilities()
 	mCapabilities.SetCapability(RSC_BYTECODE_CACHING);
 	mCapabilities.SetCapability(RSC_TEXTURE_VIEWS);
 	mCapabilities.SetCapability(RSC_RENDER_TARGET_LAYERS);
-#if B3D_GPU_EXPLICIT_BARRIERS
 	mCapabilities.SetCapability(RSC_EXPLICIT_BARRIERS);
-#endif
+	mCapabilities.SetCapability(RSC_TIMER_QUERIES);
 	if(options.WaveOps)
 		mCapabilities.SetCapability(RSC_WAVE_OPERATIONS);
 

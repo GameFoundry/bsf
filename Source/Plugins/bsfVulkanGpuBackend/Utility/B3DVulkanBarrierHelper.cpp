@@ -200,20 +200,22 @@ void VulkanBarrierBatch::Execute(VkCommandBuffer commandBuffer) const
 	vkCmdPipelineBarrier(commandBuffer, sourceStages, destinationStages, 0, mHasMemoryBarrier ? 1u : 0u, mHasMemoryBarrier ? &mMemoryBarrier : nullptr, (u32)mOwnershipBufferBarriers.size(), mOwnershipBufferBarriers.data(), (u32)mImageBarriers.size(), mImageBarriers.data());
 }
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 template<class TRecord>
 void VulkanBarrierBatch::RecordDependencyInformation(TRecord fnRecord) const
 {
 	// Like Execute(), every barrier uses the stages of the whole batch. The stage and access bits of synchronization 1 have the same
 	// values in synchronization2.
-	const VkPipelineStageFlags2 sourceStages = mCombinedSourceStages;
+	// Events reject the host stage in the source. Host accesses before the submission need no ordering: the submission makes host writes
+	// visible, and the host reads a resource before the submission that next writes it, such as a readback buffer at rest.
+	constexpr VkAccessFlags2 kHostAccess = VK_ACCESS_2_HOST_READ_BIT | VK_ACCESS_2_HOST_WRITE_BIT;
+	const VkPipelineStageFlags2 sourceStages = mCombinedSourceStages & ~(VkPipelineStageFlags2)VK_PIPELINE_STAGE_2_HOST_BIT;
 	const VkPipelineStageFlags2 destinationStages = mCombinedDestinationStages;
 
 	// An execution barrier is a memory barrier without accesses
 	VkMemoryBarrier2 memoryBarrier{};
 	memoryBarrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER_2;
 	memoryBarrier.srcStageMask = sourceStages;
-	memoryBarrier.srcAccessMask = mMemoryBarrier.srcAccessMask;
+	memoryBarrier.srcAccessMask = mMemoryBarrier.srcAccessMask & ~kHostAccess;
 	memoryBarrier.dstStageMask = destinationStages;
 	memoryBarrier.dstAccessMask = mMemoryBarrier.dstAccessMask;
 
@@ -223,7 +225,7 @@ void VulkanBarrierBatch::RecordDependencyInformation(TRecord fnRecord) const
 		VkBufferMemoryBarrier2 output{};
 		output.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2;
 		output.srcStageMask = sourceStages;
-		output.srcAccessMask = barrier.srcAccessMask;
+		output.srcAccessMask = barrier.srcAccessMask & ~kHostAccess;
 		output.dstStageMask = destinationStages;
 		output.dstAccessMask = barrier.dstAccessMask;
 		output.srcQueueFamilyIndex = barrier.srcQueueFamilyIndex;
@@ -241,7 +243,7 @@ void VulkanBarrierBatch::RecordDependencyInformation(TRecord fnRecord) const
 		VkImageMemoryBarrier2 output{};
 		output.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2;
 		output.srcStageMask = sourceStages;
-		output.srcAccessMask = barrier.srcAccessMask;
+		output.srcAccessMask = barrier.srcAccessMask & ~kHostAccess;
 		output.dstStageMask = destinationStages;
 		output.dstAccessMask = barrier.dstAccessMask;
 		output.oldLayout = barrier.oldLayout;
@@ -283,7 +285,6 @@ void VulkanBarrierBatch::WaitEvent(VkCommandBuffer commandBuffer, VkEvent event)
 		vkCmdWaitEvents2(commandBuffer, 1, &event, &dependencyInformation);
 	});
 }
-#endif
 
 void VulkanBarrierBatch::Clear()
 {

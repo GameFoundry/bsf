@@ -224,9 +224,7 @@ namespace b3d
 			mCapabilities.SetCapability(RSC_TEXTURE_VIEWS);
 			mCapabilities.SetCapability(RSC_RENDER_TARGET_LAYERS);
 			mCapabilities.SetCapability(RSC_MULTI_THREADED_CB);
-#if B3D_GPU_EXPLICIT_BARRIERS
 			mCapabilities.SetCapability(RSC_EXPLICIT_BARRIERS);
-#endif
 
 			// Metal 4 writes timestamps at any point of a command buffer, inside or outside of encoders
 			mTimestampFrequency = [mMetalDevice queryTimestampFrequency];
@@ -321,7 +319,7 @@ namespace b3d
 
 		TShared<Texture> MetalGpuDevice::CreateTextureInternal(const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags)
 		{
-			MetalTexture* rawTexture = new(B3DAllocate<MetalTexture>()) MetalTexture(*this, createInformation, allocation);
+			MetalTexture* rawTexture = new(B3DAllocate<MetalTexture>()) MetalTexture(*this, createInformation, allocation, flags);
 
 			TShared<MetalTexture> texture = flags.IsSet(GpuObjectCreateFlag::RenderThreadDestroy)
 				? B3DMakeSharedFromExisting(rawTexture)
@@ -367,6 +365,10 @@ namespace b3d
 
 		TShared<GpuQueryPool> MetalGpuDevice::CreateQueryPool(const GpuQueryPoolCreateInformation& createInformation)
 		{
+			// Without timer queries the device cannot write timestamps at arbitrary points of a command buffer
+			if (createInformation.Type == GpuQueryType::Timestamp && !mCapabilities.HasCapability(RSC_TIMER_QUERIES))
+				return nullptr;
+
 			return B3DMakeShared<MetalGpuQueryPool>(*this, createInformation);
 		}
 
@@ -475,18 +477,6 @@ namespace b3d
 				return 0.0f;
 
 			return (float)((double)timestamp * 1000.0 / (double)mTimestampFrequency);
-		}
-
-		void MetalGpuDevice::PresentRenderWindow(const TShared<RenderWindow>& renderWindow, GpuQueueMask syncMask)
-		{
-			if (!renderWindow)
-				return;
-
-			TShared<GpuQueue> queue = GetQueue(GQT_GRAPHICS, 0);
-			if (!queue)
-				return;
-
-			queue->PresentRenderWindow(renderWindow, syncMask);
 		}
 
 		void MetalGpuDevice::WaitUntilIdle()

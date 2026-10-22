@@ -286,10 +286,8 @@ VulkanGpuDevice::VulkanGpuDevice(VkPhysicalDevice device)
 	GET_DEVICE_PROC_ADDR(mLogicalDevice, GetDeviceBufferMemoryRequirements)
 	GET_DEVICE_PROC_ADDR(mLogicalDevice, GetDeviceImageMemoryRequirements)
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 	GET_DEVICE_PROC_ADDR(mLogicalDevice, CmdSetEvent2)
 	GET_DEVICE_PROC_ADDR(mLogicalDevice, CmdWaitEvents2)
-#endif
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
 	if(supportsPipelineExecutableProperties)
@@ -415,7 +413,7 @@ TShared<GpuCommandBufferPool> VulkanGpuDevice::CreateGpuCommandBufferPool(const 
 
 TShared<render::Texture> VulkanGpuDevice::CreateTextureInternal(const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags)
 {
-	VulkanTexture* rawTexture = new(B3DAllocate<VulkanTexture>()) VulkanTexture(*this, createInformation, allocation);
+	VulkanTexture* rawTexture = new(B3DAllocate<VulkanTexture>()) VulkanTexture(*this, createInformation, allocation, flags);
 
 	TShared<Texture> output = flags.IsSet(GpuObjectCreateFlag::RenderThreadDestroy)
 		? B3DMakeSharedFromExisting(rawTexture)
@@ -515,12 +513,10 @@ TShared<GpuTimelineFence> VulkanGpuDevice::CreateTimelineFence()
 	return B3DMakeShared<VulkanGpuTimelineFence>(*this);
 }
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 TShared<GpuSplitBarrier> VulkanGpuDevice::CreateSplitBarrier(TOptional<GpuQueueType> releaseQueue, TOptional<GpuQueueType> acquireQueue)
 {
 	return B3DMakeShared<VulkanSplitBarrier>(*this, releaseQueue, acquireQueue);
 }
-#endif
 
 void VulkanGpuDevice::WaitUntilIdle()
 {
@@ -580,6 +576,9 @@ void VulkanGpuDevice::RunDefragPass(GpuWorkContext& gpuContext)
 	if (transferCb == nullptr)
 		return;
 
+	// Relocation copies rely on the automatic tracker for the barriers around them, and for the new resources' transitions to rest
+	B3D_ASSERT(!transferCb->UsesExplicitBarriers() && "Defragmentation is not supported with explicit barriers.");
+
 	typename TGpuTlsfAllocator<VulkanHeapBackend>::DefragmentationInfo info;
 	info.MaxBytesPerCall = mDefragBudgetBytes;
 	info.MaxAllocationsPerCall = mDefragBudgetAllocations;
@@ -590,15 +589,6 @@ void VulkanGpuDevice::RunDefragPass(GpuWorkContext& gpuContext)
 		if (allocator != nullptr)
 			allocator->Defrag(*transferCb, info);
 	}
-}
-
-void VulkanGpuDevice::PresentRenderWindow(const TShared<render::RenderWindow>& renderWindow, GpuQueueMask syncMask)
-{
-	TShared<GpuQueue> queue = GetQueue(GQT_GRAPHICS, 0);
-	if (!B3D_ENSURE(queue))
-		return;
-
-	queue->PresentRenderWindow(renderWindow, syncMask);
 }
 
 void VulkanGpuDevice::ConvertProjectionMatrix(const Matrix4& input, Matrix4& output)
@@ -1149,9 +1139,10 @@ void VulkanGpuDevice::InitializeCapabilities()
 	mCapabilities.SetCapability(RSC_TEXTURE_VIEWS);
 	mCapabilities.SetCapability(RSC_RENDER_TARGET_LAYERS);
 	mCapabilities.SetCapability(RSC_MULTI_THREADED_CB);
-#if B3D_GPU_EXPLICIT_BARRIERS
 	mCapabilities.SetCapability(RSC_EXPLICIT_BARRIERS);
-#endif
+
+	if(deviceLimits.timestampComputeAndGraphics && deviceLimits.timestampPeriod > 0.0f)
+		mCapabilities.SetCapability(RSC_TIMER_QUERIES);
 
 	mCapabilities.Conventions.NdcYAxis = GpuBackendConventions::Axis::Down;
 	mCapabilities.Conventions.MatrixOrder = GpuBackendConventions::MatrixOrder::ColumnMajor;

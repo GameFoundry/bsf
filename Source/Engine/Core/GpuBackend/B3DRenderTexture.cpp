@@ -1,6 +1,7 @@
 //************************************* B3D Framework - Copyright 2026 Marko Pintera *************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "GpuBackend/B3DRenderTexture.h"
+#include "FrameGraph/B3DFrameGraph.h"
 #include "Image/B3DTexture.h"
 #include "Managers/B3DTextureManager.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
@@ -204,6 +205,20 @@ RenderTexture::RenderTexture(const RenderTextureCreateInformation& createInforma
 void RenderTexture::Initialize()
 {
 	RenderTarget::Initialize();
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+	// A frame graph places its resources late and may move them, so only the graph builds render textures from them
+	const auto fnValidateSurface = [](const RenderSurfaceInformation& surface)
+	{
+		B3D_ENSURE_LOG(surface.Texture == nullptr || surface.Texture->GetFrameGraphResourceIndex() == ~0u || FrameGraph::IsCreatingRenderTexture(),
+			"Render texture created from '{0}', a resource of a frame graph. Declare it as an attachment of a raster pass instead.", surface.Texture->GetName());
+	};
+
+	for(const RenderSurfaceInformation& surface : mInformation.ColorSurfaces)
+		fnValidateSurface(surface);
+
+	fnValidateSurface(mInformation.DepthStencilSurface);
+#endif
 
 	for(u32 i = 0; i < B3D_MAXIMUM_RENDER_TARGET_COUNT; i++)
 	{

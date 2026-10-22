@@ -15,39 +15,31 @@ namespace b3d
 	 *  @{
 	 */
 
-	/** A set of available locations at which the renderer can call RendererExtension's render() method. */
+	/**
+	 * Locations in the passes of a view at which the renderer calls RendererExtension::Render(). The passes an extension adds follow the
+	 * renderer's passes of the location. render::RendererViewContext holds the attachments of the location.
+	 */
 	enum class RenderLocation
 	{
-		/**
-		 * Rendering happens before any scene objects are rendered and before the render target for scene objects is
-		 * bound (e.g. GBuffer).
-		 */
+		/** Before the view renders any scene objects. The location has no attachments. */
 		Prepare,
 
-		/**
-		 * Rendering happens before any scene objects are rendered. The renderer guarantees the render targets used for
-		 * rendering scene objects will be bound (e.g. GBuffer).
-		 */
+		/** After the G-buffer is cleared, before the view renders scene objects into it. The attachments are the G-buffer and scene depth. */
 		PreBasePass,
 
 		/**
-		 * Rendering happens after all scene objects are rendered. The renderer guarantees the render targets used for
-		 * rendering scene objects will be bound (e.g. GBuffer).
+		 * After the view renders scene objects into the G-buffer, before lighting. The attachments are the G-buffer and scene depth, whose
+		 * depth is read-only.
 		 */
 		PostBasePass,
 
 		/**
-		 * Rendering happens after all scene objects have been rendered and their final information has been written to
-		 * the final scene color buffer, without any post-processing. The renderer guarantees the final scene color render
-		 * target will be bound.
+		 * After the view renders every scene object and lights it, before post-processing. The attachments are scene color and scene
+		 * depth.
 		 */
 		PostLightPass,
 
-		/**
-		 * Rendering happens after all scene objects have been rendered and their final information has been written to
-		 * the final scene color buffer, with post-processing. The renderer guarantees the final scene color render target
-		 * will be bound.
-		 */
+		/** After post-processing, once the view's final image is in the view's render target, which is the attachment. */
 		Overlay,
 
 		Count // Keep at end
@@ -119,12 +111,11 @@ namespace b3d
 		virtual RendererExtensionRequest Check(const render::Camera& camera) = 0;
 
 		/**
-		 * Called at the point at which rendering should be performed for the provided camera. Relevant render targets
-		 * are guaranteed to be already bound to the render API, depending on the RenderLocation. Note that actual structure
-		 * of the render targets depends on the active renderer.
+		 * Called while the renderer adds the passes of the view of @p camera to its frame graph, at the extension's RenderLocation. The
+		 * extension adds its passes to the graph of @p viewContext. The passes record their commands later, when the graph executes.
 		 *
-		 * @param[in]	camera			Camera through which the renderer is currently rendering.
-		 * @param[in]	viewContext		Additional information about the currently rendered view.
+		 * @param	camera			Camera through which the renderer is currently rendering.
+		 * @param	viewContext		Graph and attachments of the view at the extension's location.
 		 */
 		virtual void Render(const render::Camera& camera, const render::RendererViewContext& viewContext) = 0;
 
@@ -133,7 +124,7 @@ namespace b3d
 		 * Higher number means the extension will execute before extensions with lower numbers. Priorities only matter for
 		 * extensions that share the same RenderLocation.
 		 */
-		u32 GetPriority() const { return mPriority; }
+		i32 GetPriority() const { return mPriority; }
 
 		/**
 		 * Returns a location that determines at which point in rendering should the system call the render() method. See
@@ -148,7 +139,7 @@ namespace b3d
 		};
 
 	protected:
-		RendererExtension(RenderLocation location, u32 priority)
+		RendererExtension(RenderLocation location, i32 priority)
 			: mLocation(location), mPriority(priority)
 		{}
 
@@ -162,7 +153,7 @@ namespace b3d
 		static void QueueDeleteOnRenderThread(RendererExtension* extension);
 
 		RenderLocation mLocation;
-		u32 mPriority;
+		i32 mPriority;
 		WeakSPtr<render::RendererScene> mAssociatedScene;
 	};
 

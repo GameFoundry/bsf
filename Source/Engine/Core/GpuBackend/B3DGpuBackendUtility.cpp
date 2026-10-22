@@ -1,6 +1,11 @@
 //************************************* B3D Framework - Copyright 2026 Marko Pintera *************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "GpuBackend/B3DGpuBackendUtility.h"
+#include "GpuBackend/B3DRenderTexture.h"
+#include "GpuBackend/B3DRenderWindow.h"
+#include "GpuBackend/B3DGpuCommandBuffer.h"
+#include "GpuBackend/B3DGpuBuffer.h"
+#include "Image/B3DTexture.h"
 
 #include "Utility/B3DBitwise.h"
 #include "Math/B3DMath.h"
@@ -379,4 +384,181 @@ const char* GpuBackendUtility::GetImageLayoutName(GpuImageLayout layout)
 	case GpuImageLayout::Present: return "Present";
 	default: return "Unknown";
 	}
+}
+
+void GpuBackendUtility::CopyToStagingBuffer(GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& texture, u32 mipLevel, u32 arrayLayer, const TShared<render::GpuBuffer>& stagingBuffer)
+{
+	if(commandBuffer.UsesExplicitBarriers())
+	{
+		const GpuAccessState restingState = GetRestingState(*texture, commandBuffer.GetQueueType());
+		const GpuAccessState transferRead(GpuStageFlag::Transfer, GpuAccessFlag::Read, GpuImageLayout::TransferSource);
+		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
+		const GpuAccessState stagingRestingState = GetRestingState(*stagingBuffer, commandBuffer.GetQueueType());
+		const GpuTextureSubresourceRange range(mipLevel, 1, arrayLayer, 1, GetFormatAspects(texture->GetProperties().Format));
+
+		commandBuffer.IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, restingState, transferRead, range));
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, stagingRestingState, transferWrite));
+		commandBuffer.CopyTextureToBuffer(texture, stagingBuffer, mipLevel, arrayLayer, 0);
+		commandBuffer.IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, transferRead, restingState, range));
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, transferWrite, stagingRestingState));
+	}
+	else
+		commandBuffer.CopyTextureToBuffer(texture, stagingBuffer, mipLevel, arrayLayer, 0);
+}
+
+void GpuBackendUtility::CopyToStagingBuffer(GpuCommandBuffer& commandBuffer, const TShared<render::GpuBuffer>& buffer, u32 offset, u32 length, const TShared<render::GpuBuffer>& stagingBuffer)
+{
+	if(commandBuffer.UsesExplicitBarriers())
+	{
+		const GpuAccessState restingState = GetRestingState(*buffer, commandBuffer.GetQueueType());
+		const GpuAccessState transferRead(GpuStageFlag::Transfer, GpuAccessFlag::Read);
+		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
+		const GpuAccessState stagingRestingState = GetRestingState(*stagingBuffer, commandBuffer.GetQueueType());
+
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, restingState, transferRead));
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, stagingRestingState, transferWrite));
+		commandBuffer.CopyBufferToBuffer(buffer, stagingBuffer, offset, 0, length);
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, transferRead, restingState));
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, transferWrite, stagingRestingState));
+	}
+	else
+		commandBuffer.CopyBufferToBuffer(buffer, stagingBuffer, offset, 0, length);
+}
+
+void GpuBackendUtility::CopyToStagingBuffer(GpuCommandBuffer& commandBuffer, const TShared<render::RenderWindow>& window, const TShared<render::GpuBuffer>& stagingBuffer)
+{
+	if(commandBuffer.UsesExplicitBarriers())
+	{
+		const TShared<render::RenderTarget> target = window;
+		const GpuAccessState restingState = GetRestingState(*window, RT_COLOR0, commandBuffer.GetQueueType());
+		const GpuAccessState transferRead(GpuStageFlag::Transfer, GpuAccessFlag::Read, GpuImageLayout::TransferSource);
+		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
+		const GpuAccessState stagingRestingState = GetRestingState(*stagingBuffer, commandBuffer.GetQueueType());
+
+		commandBuffer.IssueExplicitBarriers(GpuExplicitRenderTargetBarrier(target, RT_COLOR0, restingState, transferRead));
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, stagingRestingState, transferWrite));
+		commandBuffer.CopyWindowToBuffer(window, stagingBuffer);
+		commandBuffer.IssueExplicitBarriers(GpuExplicitRenderTargetBarrier(target, RT_COLOR0, transferRead, restingState));
+		commandBuffer.IssueExplicitBarriers(GpuExplicitBufferBarrier(stagingBuffer, transferWrite, stagingRestingState));
+	}
+	else
+		commandBuffer.CopyWindowToBuffer(window, stagingBuffer);
+}
+
+GpuAccessState GpuBackendUtility::GetRestingState(const render::GpuBuffer& buffer, GpuQueueType queueType)
+{
+	// Only the host reads readback buffers, so the barrier that returns one to rest makes the GPU's writes visible to the host
+	if(buffer.GetInformation().Type == GpuBufferType::StagingRead)
+		return GpuAccessState(GetQueueStageFlags(queueType) & GpuStageFlag::Host, GpuAccessFlag::Read);
+
+	// Only copies read upload buffers, and the host writes them before the submission that reads them
+	if(buffer.GetInformation().Type == GpuBufferType::StagingWrite)
+		return GpuAccessState(GetQueueStageFlags(queueType) & GpuStageFlag::Transfer, GpuAccessFlag::Read);
+
+	const GpuStageFlags stages = GpuStageFlag::DrawIndirect | GpuStageFlag::VertexInputAttributes | GpuStageFlag::VertexInputIndices | GpuStageFlag::AllShader;
+	return GpuAccessState(stages & GetQueueStageFlags(queueType), GpuAccessFlag::Read);
+}
+
+GpuAccessState GpuBackendUtility::GetRestingState(const render::Texture& texture, GpuQueueType queueType)
+{
+	const GpuStageFlags stages = GpuStageFlag::VertexShaderNonUniform | GpuStageFlag::FragmentShaderNonUniform | GpuStageFlag::ComputeShaderNonUniform;
+
+	// Only render targets, depth-stencil targets and storage textures can have compression metadata. Whoever leaves their write state
+	// resolves fast clears on the way back to rest, so sampling reads the contents directly.
+	const TextureUsageFlags metadataUsage = TextureUsageFlag::RenderTarget | TextureUsageFlag::DepthStencil | TextureUsageFlag::AllowUnorderedAccessOnTheGPU;
+	const GpuCompressionHint compression = texture.GetProperties().Usage.IsSetAny(metadataUsage) ? GpuCompressionHint::Compressed : GpuCompressionHint::Unknown;
+
+	return GpuAccessState(stages & GetQueueStageFlags(queueType), GpuAccessFlag::Read, GpuImageLayout::ShaderReadOnly, compression);
+}
+
+GpuAccessState GpuBackendUtility::GetRestingState(const render::RenderTarget& target, RenderSurfaceMaskBits surface, GpuQueueType queueType)
+{
+	const bool isColor = ((u32)surface & (u32)RT_COLOR_ALL) != 0;
+	if(!target.GetProperties().IsWindow)
+	{
+		const render::RenderTexture& renderTexture = static_cast<const render::RenderTexture&>(target);
+		const render::RenderSurfaceInformation& surfaceInformation = isColor ? renderTexture.GetColorSurfaceInformation(Bitwise::LeastSignificantBit((u32)surface)) : renderTexture.GetDepthStencilSurfaceInformation();
+		if(surfaceInformation.Texture != nullptr)
+			return GetRestingState(*surfaceInformation.Texture, queueType);
+
+		return GpuAccessState();
+	}
+
+	if(isColor)
+		return GetWindowColorRestingState(queueType);
+
+	const GpuStageFlags depthStencilStages = GpuStageFlag::EarlyFragmentTests | GpuStageFlag::LateFragmentTests;
+	return GpuAccessState(depthStencilStages & GetQueueStageFlags(queueType), GpuAccessFlag::Read | GpuAccessFlag::Write, GpuImageLayout::DepthStencilAttachment);
+}
+
+GpuAccessState GpuBackendUtility::GetWindowColorRestingState(GpuQueueType queueType)
+{
+	return GpuAccessState(GpuStageFlags(GpuStageFlag::ColorAttachment) & GetQueueStageFlags(queueType), GpuAccessFlag::Read | GpuAccessFlag::Write, GpuImageLayout::ColorAttachment);
+}
+
+RenderSurfaceMask GpuBackendUtility::GetRenderPassClears(const RenderPassCreateInformation& createInformation, RenderTargetClearValues& clearValues)
+{
+	clearValues = createInformation.Target != nullptr ? createInformation.Target->GetClearValues() : RenderTargetClearValues();
+	RenderSurfaceMask clearMask = createInformation.ClearMask;
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+	if(!gGpuPoisonUnloadedAttachments)
+		return clearMask;
+
+	const TShared<render::RenderTarget>& target = createInformation.Target;
+	if(target == nullptr)
+		return clearMask;
+
+	// Surfaces the render target has
+	RenderSurfaceMask targetSurfaceMask = RT_NONE;
+	if(target->GetProperties().IsWindow)
+	{
+		targetSurfaceMask = RT_COLOR0;
+		if(static_cast<const render::RenderWindow&>(*target).HasDepthBuffer())
+			targetSurfaceMask |= RT_DEPTH_STENCIL;
+	}
+	else
+	{
+		const auto& renderTexture = static_cast<const render::RenderTexture&>(*target);
+		for(u32 colorIndex = 0; colorIndex < B3D_MAXIMUM_RENDER_TARGET_COUNT; colorIndex++)
+		{
+			if(renderTexture.GetColorSurfaceInformation(colorIndex).Texture != nullptr)
+				targetSurfaceMask |= (RenderSurfaceMaskBits)(RT_COLOR0 << colorIndex);
+		}
+
+		if(renderTexture.GetDepthStencilSurfaceInformation().Texture != nullptr)
+			targetSurfaceMask |= RT_DEPTH_STENCIL;
+	}
+
+	const RenderSurfaceMask loadMask = createInformation.LoadMask;
+	RenderSurfaceMask poisonMask = targetSurfaceMask & ~loadMask & ~clearMask;
+
+	// Backends load depth and stencil together
+	if(loadMask.IsSetAny(RT_DEPTH_STENCIL))
+		poisonMask &= ~RenderSurfaceMask(RT_DEPTH_STENCIL);
+
+	// A read-only surface keeps its contents, so the pass must load it
+	const RenderSurfaceMask unloadedReadOnlyMask = poisonMask & createInformation.ReadOnlyMask;
+	if(unloadedReadOnlyMask != RT_NONE)
+	{
+		B3D_LOG(Error, LogRenderBackend, "Render pass surfaces {0} are read-only but not loaded. Read-only surfaces must be loaded.", (u32)unloadedReadOnlyMask);
+		poisonMask &= ~unloadedReadOnlyMask;
+	}
+
+	for(u32 colorIndex = 0; colorIndex < B3D_MAXIMUM_RENDER_TARGET_COUNT; colorIndex++)
+	{
+		if(poisonMask.IsSet((RenderSurfaceMaskBits)(RT_COLOR0 << colorIndex)))
+			clearValues.Colors[colorIndex] = Color(1.0f, 0.0f, 1.0f, 1.0f);
+	}
+
+	if(poisonMask.IsSet(RT_DEPTH))
+		clearValues.Depth = 0.0f;
+
+	if(poisonMask.IsSet(RT_STENCIL))
+		clearValues.Stencil = 0;
+
+	clearMask |= poisonMask;
+#endif
+
+	return clearMask;
 }

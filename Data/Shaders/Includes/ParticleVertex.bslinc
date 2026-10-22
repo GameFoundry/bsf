@@ -1,10 +1,16 @@
+// Shaders built on this include are surface shaders
+#define IS_SURFACE_SHADER 1
+
 #include "$ENGINE$\PerCameraData.bslinc"
+#include "$ENGINE$\PerFrameData.bslinc"
 #include "$ENGINE$\PerObjectData.bslinc"
+#include "$ENGINE$\GpuParticleParams.bslinc"
 // Note: I should include VertexCommon.bslinc here, instead of redefining vertex input code below
 
 mixin ParticleVertex
 {
 	mixin PerCameraData;
+	mixin PerFrameData;
 	mixin PerObjectData;
 
 	variations
@@ -14,6 +20,10 @@ mixin ParticleVertex
 		GPU = { false, true };
 		IS_3D = { false, true };
 	};
+
+	#if GPU
+		mixin GpuParticleParams;
+	#endif
 
 	code
 	{
@@ -77,29 +87,16 @@ mixin ParticleVertex
 		};
 		
 		#if GPU
-		[internal]
-		Texture2D gPositionTimeTex; // position in .xyz, time (in [0, 1] range) in .w
-		
-		[internal]
-		Texture2D gSizeRotationTex; // size in .xy, rotation in .z
-		
-		[internal]
-		Texture2D gCurvesTex;
-		
-		[internal]
+		B3D_RENDERER_PASS_INPUT(Texture2D gPositionTimeTex, t22); // position in .xyz, time (in [0, 1] range) in .w
+		B3D_RENDERER_PASS_INPUT(Texture2D gSizeRotationTex, t23); // size in .xy, rotation in .z
+		B3D_RENDERER_PASS_INPUT(Texture2D gCurvesTex, t24);
+
 		[alias(gCurvesTex)]
-		SamplerState gCurvesSampler;
-		
-		[internal]
-		[dynamicOffset]
-		cbuffer GpuParticleParams : register(c1, space1)
-		{
-			float2 gColorCurveOffset;
-			float2 gColorCurveScale;
-			float2 gSizeScaleFrameIdxCurveOffset;
-			float2 gSizeScaleFrameIdxCurveScale;
-		};
-		
+		B3D_RENDERER_PASS_INPUT(SamplerState gCurvesSampler, s25);
+
+		// Indices of the particles of distance sorted systems, at gBufferOffset
+		B3D_RENDERER_PASS_INPUT(Buffer<uint2> gSortedIndices, t26);
+
 		ParticleInput getParticleInput(uint2 index)
 		{
 			uint3 pixelPos;
@@ -215,8 +212,13 @@ mixin ParticleVertex
 		}
 		#endif
 		
+		#if GPU
 		[internal]
 		Buffer<uint2> gIndices;
+		#else
+		// Indices of the particles to draw, as texel coordinates, the system's at gBufferOffset
+		B3D_RENDERER_PASS_INPUT(Buffer<uint2> gParticleIndices, t27);
+		#endif
 
 		[internal]
 		cbuffer ParticleParams
@@ -228,6 +230,7 @@ mixin ParticleVertex
 			uint gTexSize;
 			float3 gAxisRight;
 			uint gBufferOffset;
+			uint gUseSortedIndices;
 		}
 		
 		#ifdef LIGHTING_DATA
@@ -262,7 +265,17 @@ mixin ParticleVertex
 
 		VStoFS vsmain(VertexInput input)
 		{
-			ParticleInput pi = getParticleInput(gIndices[gBufferOffset + input.instanceId]);
+			#if GPU
+			uint2 particleIndex;
+			if(gUseSortedIndices != 0)
+				particleIndex = gSortedIndices[gBufferOffset + input.instanceId];
+			else
+				particleIndex = gIndices[input.instanceId];
+
+			ParticleInput pi = getParticleInput(particleIndex);
+			#else
+			ParticleInput pi = getParticleInput(gParticleIndices[gBufferOffset + input.instanceId]);
+			#endif
 			
 			VStoFS output;
 			output.color = pi.color;

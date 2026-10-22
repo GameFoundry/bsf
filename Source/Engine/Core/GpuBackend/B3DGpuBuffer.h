@@ -537,6 +537,8 @@ namespace b3d
 
 namespace b3d::render
 {
+	class FrameGraph;
+
 	using GpuBufferSuballocation = TGpuBufferSuballocation<true>;
 	using GpuBufferMappedScope = TGpuBufferMappedScope<true>;
 
@@ -685,6 +687,52 @@ namespace b3d::render
 		 */
 		bool HasFixedLocation() const { return !mRequestedAllocation.IsPending(); }
 
+		/**
+		 * @name Internal
+		 * @{
+		 */
+
+		/**
+		 * Moves the buffer to @p allocation. An initialized buffer recreates its native resource there and loses its contents, and
+		 * views of the old native resource are no longer valid. The old native resource is released once the GPU finishes using it.
+		 * An uninitialized buffer is created there once initialized.
+		 *
+		 * @param	allocation	Memory to create the native resource at. Rules match GpuDevice::CreateGpuBuffer(const GpuBufferCreateInformation&,
+		 *						const GpuAllocation&, GpuObjectCreateFlags), except that the memory requirements are not checked.
+		 * @param	flags		GpuObjectCreateFlag::Aliased if the memory is shared with other resources over time. Other flags are ignored.
+		 */
+		void SetAllocation(const GpuAllocation& allocation, GpuObjectCreateFlags flags);
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+		/**
+		 * Marks the buffer as unplaced: a transient resource allocator returned it without memory for its next use. Accessing a marked buffer
+		 * on the GPU is invalid. Development builds only.
+		 */
+		void SetUnplaced(bool unplaced) { mIsUnplaced.store(unplaced, std::memory_order_relaxed); }
+
+		/** Returns true if the buffer is marked with SetUnplaced(). Development builds only. */
+		bool IsUnplaced() const { return mIsUnplaced.load(std::memory_order_relaxed); }
+#endif
+
+		/**
+		 * Registers the buffer as resource @p resourceIndex of a frame graph, or unregisters it if @p resourceIndex is ~0u. The buffer is
+		 * a resource of at most one frame graph. See FrameGraph.
+		 */
+		void SetFrameGraphResourceIndex(u32 resourceIndex) { mFrameGraphResourceIndex = resourceIndex; }
+
+		/** Returns the index of the buffer among the resources of its frame graph, or ~0u if it is a resource of none. */
+		u32 GetFrameGraphResourceIndex() const { return mFrameGraphResourceIndex; }
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+		/** Sets the id of the frame graph the buffer is a resource of, or zero if none, so graphs detect resources of other graphs. */
+		void SetFrameGraphId(u32 graphId) { mFrameGraphId = graphId; }
+
+		/** Returns the id set by SetFrameGraphId(). */
+		u32 GetFrameGraphId() const { return mFrameGraphId; }
+#endif
+
+		/** @} */
+
 #if B3D_BUILD_TYPE_DEVELOPMENT
 		/** Checks if any suballocation overlapping the given byte range is bound. */
 		virtual bool IsRangeBound(u32 offset, u32 size) const = 0;
@@ -728,6 +776,13 @@ namespace b3d::render
 		 * by the proxy itself.
 		 */
 		GpuAllocation mRequestedAllocation;
+
+		u32 mFrameGraphResourceIndex = ~0u; /**< See SetFrameGraphResourceIndex(). */
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+		u32 mFrameGraphId = 0; /**< See SetFrameGraphId(). */
+		std::atomic<bool> mIsUnplaced = false;
+#endif
 	};
 
 	/** Flags used to control the GPU buffer writes. */
@@ -828,6 +883,19 @@ namespace b3d::render
 		 * @return					Operation that will be signaled when the data is ready to be read.
 		 */
 		static TAsyncOp<TShared<MemoryDataStream>> ReadAsync(GpuWorkContext& gpuContext, const TShared<GpuBuffer>& buffer, u32 offset, u32 length, GpuCommandBuffer& commandBuffer);
+
+		/**
+		 * Performs a non-blocking read operation inside @p graph. The GPU will execute the read when the command buffer reaches 
+		 * the execution point and the asynchronous operation will be signaled with the return value.
+		 *
+		 * @param	graph			Graph to add the copy pass to. Its work context backs the internal staging buffer.
+		 * @param	buffer			Buffer to read from. Must be a resource of @p graph.
+		 * @param	offset			Offset in bytes from which to read the data.
+		 * @param	length			Length of the area you want to read, in bytes.
+		 * @return					Operation that will be signaled when the command buffer of the copy pass completes. Signaled with
+		 *							null if the command buffer is destroyed without being submitted.
+		 */
+		static TAsyncOp<TShared<MemoryDataStream>> ReadAsync(FrameGraph& graph, const TShared<GpuBuffer>& buffer, u32 offset, u32 length);
 	};
 
 } // namespace b3d::render

@@ -24,12 +24,18 @@ namespace b3d
 	struct GpuTransientLastUse
 	{
 		GpuTransientLastUse() = default;
-		GpuTransientLastUse(u32 submission, const render::GpuAccessScope& access)
-			: Submission(submission), Access(access)
+		GpuTransientLastUse(u32 submission, const render::GpuAccessScope& access, u32 pass = 0)
+			: Submission(submission), Pass(pass), Access(access)
 		{ }
 
 		/** Index of the last submission that used the resource on its queue, in the timeline of the scope that releases the resource. */
 		u32 Submission = 0;
+
+		/**
+		 * Index of the last pass that used the resource on its queue, within Submission, or of any other unit of work the caller records in
+		 * order. Must not decrease with later work on the queue. Reported back as GpuTransientTexture::LatestPredecessorPassIndex, and otherwise unused.
+		 */
+		u32 Pass = 0;
 
 		/** Stages of the last write on the queue, and of every read on the queue since that write, over all subresources. */
 		render::GpuAccessScope Access;
@@ -50,9 +56,10 @@ namespace b3d
 	 * Returns the earlier accesses that the first use of the new resource must still be ordered after, as a GpuAliasAcquire.
 	 *
 	 * Each scope describes its GPU work with a GpuSubmissionTimeline, and memory released in the scope is tagged with the
-	 * submissions that last used it on each queue. Every heap starts free in every scope, and tags never outlive their scope:
-	 * the system that schedules scopes guarantees that no two scopes execute on the GPU at the same time, and that the work of
-	 * a scope is ordered after the work of every earlier scope.
+	 * submissions that last used it on each queue. Every heap starts free in every scope, and tags never outlive their scope.
+	 * Memory no earlier resource of the scope used may hold resources of earlier scopes, of this allocator or of others, whose
+	 * work may still run on the GPU: placements on it set GpuAliasAcquire::HasUnknownSourceAccess, and the first use of the new
+	 * resource must then be ordered after all earlier work on its queue.
 	 *
 	 * The allocator places memory only and creates no resources. Allocations are non-owning.
 	 *
@@ -80,25 +87,29 @@ namespace b3d
 		 * Places @p size bytes of memory with @p alignment in @p pool, for a resource whose first use is in submission
 		 * @p firstSubmission of the scope's timeline. Must be called within a scope.
 		 *
-		 * @param	pool				Pool to place the memory in.
-		 * @param	size				Size of the memory, in bytes.
-		 * @param	alignment			Required alignment of the memory's offset. Must be a power of two.
-		 * @param	firstSubmission		Index of the submission in the scope's timeline that uses the resource first.
-		 * @param	outAllocation		Non-owning allocation referencing the memory. Identifies the memory to Release() and
-		 *								TryAllocateAt().
-		 * @param	outAcquire			Accesses on the queue of @p firstSubmission that the first use of the resource must be
-		 *								ordered after. In development builds also lists the earlier resources on the memory,
-		 *								valid until the next call to TryAllocate() or TryAllocateAt().
-		 * @return						False if a heap that fits the memory could not be created.
+		 * @param	pool							Pool to place the memory in.
+		 * @param	size							Size of the memory, in bytes.
+		 * @param	alignment						Required alignment of the memory's offset. Must be a power of two.
+		 * @param	firstSubmission					Index of the submission in the scope's timeline that uses the resource first.
+		 * @param	outAllocation					Non-owning allocation referencing the memory. Identifies the memory to Release() and
+		 *											TryAllocateAt().
+		 * @param	outAcquire						Accesses on the queue of @p firstSubmission that the first use of the resource must be
+		 *											ordered after. Also lists the earlier resources on the memory,
+		 *											valid until the next call to TryAllocate() or TryAllocateAt().
+		 * @param	outLatestPredecessorPassIndex	If not null, receives the latest pass among the last accesses of the earlier
+		 *											resources on the memory (the Source of @p outAcquire), as their
+		 *											GpuTransientLastUse::Pass reported when they were released. Empty if that Source has
+		 *											no accesses.
+		 * @return									False if a heap that fits the memory could not be created.
 		 */
-		bool TryAllocate(IGpuTransientHeapPool& pool, u64 size, u64 alignment, u32 firstSubmission, GpuAllocation& outAllocation, render::GpuAliasAcquire& outAcquire);
+		bool TryAllocate(IGpuTransientHeapPool& pool, u64 size, u64 alignment, u32 firstSubmission, GpuAllocation& outAllocation, render::GpuAliasAcquire& outAcquire, TOptional<u32>* outLatestPredecessorPassIndex = nullptr);
 
 		/**
 		 * Places memory at exactly the location of @p location, an allocation that TryAllocate() or TryAllocateAt() returned in
 		 * this or an earlier scope, and whose heap is still referenced. Fails if that memory is not free in the scope, or if
 		 * the first use is not ordered after its earlier uses. Parameters otherwise match TryAllocate().
 		 */
-		bool TryAllocateAt(IGpuTransientHeapPool& pool, const GpuAllocation& location, u32 firstSubmission, GpuAllocation& outAllocation, render::GpuAliasAcquire& outAcquire);
+		bool TryAllocateAt(IGpuTransientHeapPool& pool, const GpuAllocation& location, u32 firstSubmission, GpuAllocation& outAllocation, render::GpuAliasAcquire& outAcquire, TOptional<u32>* outLatestPredecessorPassIndex = nullptr);
 
 		/**
 		 * Releases the memory of @p allocation, so later allocations of the scope may reuse it once they are ordered after
@@ -108,7 +119,7 @@ namespace b3d
 		 * @param	lastUses	Last accesses of the resource placed on the memory, at most one per queue, in the scope's timeline.
 		 *						Empty if the resource was never accessed, in which case the memory keeps the accesses of the
 		 *						resources released on it before.
-		 * @param	owner		Resource placed on the memory. Reported to later allocations of the memory in development builds.
+		 * @param	owner		Resource placed on the memory. Reported to later allocations of the memory.
 		 */
 		void Release(const GpuAllocation& allocation, TArrayView<const GpuTransientLastUse> lastUses, IGpuResource* owner);
 
@@ -122,12 +133,13 @@ namespace b3d
 		/** Last use of released memory on one queue. */
 		struct TagUse
 		{
-			TagUse(GpuQueueId queue, u32 lastSubmission, const render::GpuAccessScope& access)
-				: Queue(queue), LastSubmission(lastSubmission), Access(access)
+			TagUse(GpuQueueId queue, u32 lastSubmission, u32 lastPass, const render::GpuAccessScope& access)
+				: Queue(queue), LastSubmission(lastSubmission), LastPass(lastPass), Access(access)
 			{ }
 
 			GpuQueueId Queue;
 			u32 LastSubmission; /**< Index of the submission in the scope's timeline. */
+			u32 LastPass; /**< See GpuTransientLastUse::Pass. */
 			render::GpuAccessScope Access;
 		};
 
@@ -137,9 +149,7 @@ namespace b3d
 			u32 FirstUse = 0; /**< Index of the tag's first use in mTagUses. */
 			u32 UseCount = 0; /**< At most one use per queue. */
 
-#if B3D_BUILD_TYPE_DEVELOPMENT
 			IGpuResource* Owner = nullptr; /**< Resource released on the memory. */
-#endif
 		};
 
 		/** Range of heap memory, tagged with its last uses. */
@@ -194,10 +204,10 @@ namespace b3d
 
 		/**
 		 * Allocates @p size bytes at @p offset of the heap at @p heapIndex, over its free segments @p firstSegmentIndex to
-		 * @p lastSegmentIndex. Returns the allocation and the acquire of its first use in @p firstSubmission.
+		 * @p lastSegmentIndex. Returns the allocation and the acquire of its first use in @p firstSubmission, along with the latest pass
+		 * among the acquire's accesses if @p outLatestPredecessorPassIndex is not null.
 		 */
-		void Place(u32 heapIndex, u32 firstSegmentIndex, u32 lastSegmentIndex, u64 offset, u64 size, u32 firstSubmission, GpuAllocation& outAllocation,
-			render::GpuAliasAcquire& outAcquire);
+		void Place(u32 heapIndex, u32 firstSegmentIndex, u32 lastSegmentIndex, u64 offset, u64 size, u32 firstSubmission, GpuAllocation& outAllocation, render::GpuAliasAcquire& outAcquire, TOptional<u32>* outLatestPredecessorPassIndex);
 
 		/** Returns the live allocation that @p allocation refers to. */
 		Allocation& GetAllocation(const GpuAllocation& allocation);
@@ -225,9 +235,7 @@ namespace b3d
 		u64 mPeakUsedBytes = 0;
 		u64 mRequestedBytes = 0;
 
-#if B3D_BUILD_TYPE_DEVELOPMENT
 		TInlineArray<IGpuResource*, 4> mPredecessors; /**< Earlier resources on the memory of the last allocation. */
-#endif
 	};
 
 	/** @} */

@@ -85,6 +85,10 @@ namespace b3d
 		GpuBufferFormat Format = BF_UNKNOWN; /**< Format to interpret the buffer contents as. If not specified, default buffer format will be used. Only relevant for simple storage buffers. */
 	};
 
+	// TODO - Refactor all parameter handle types so they only write a set the caller passes in, and never store one. The handle would keep
+	// only its binding (and the layout, to validate the set against). Today every handle stores its parent set, and only the resource
+	// handles accept an external one.
+
 	/**
 	 * A handle that allows you to set a GpuProgram parameter. Internally keeps a reference to the GPU parameter buffer and
 	 * the necessary offsets. You should specialize this type for specific parameter types.
@@ -189,6 +193,9 @@ namespace b3d
 		/** @copydoc TGpuDataParam::Set */
 		void Set(const TextureType& texture, const TextureSurface& surface = TextureSurface::kComplete, u32 arrayIndex = 0) const;
 
+		/* Sets the parameter in @p set. @p set must have the same layout, such as another set created for the same material and set index. */
+		void Set(const GpuParamsType& set, const TextureType& texture, const TextureSurface& surface = TextureSurface::kComplete, u32 arrayIndex = 0) const;
+
 		/** @copydoc TGpuDataParam::Get */
 		TextureType Get(u32 arrayIndex = 0) const;
 
@@ -221,6 +228,9 @@ namespace b3d
 		/** @copydoc TGpuDataParam::Set */
 		void Set(const TextureType& texture, const TextureSurface& surface = TextureSurface(), u32 arrayIndex = 0) const;
 
+		/** Sets the parameter in @p set instead. @p set must have the same layout, such as another set created for the same material and set index. */
+		void Set(const GpuParamsType& set, const TextureType& texture, const TextureSurface& surface = TextureSurface(), u32 arrayIndex = 0) const;
+
 		/** @copydoc TGpuDataParam::Get */
 		TextureType Get(u32 arrayIndex = 0) const;
 
@@ -252,6 +262,9 @@ namespace b3d
 
 		/** @copydoc TGpuDataParam::Set */
 		void Set(const BufferType& buffer, u32 arrayIndex = 0, GpuBufferViewInformation view = GpuBufferViewInformation()) const;
+
+		/** Sets the parameter in @p set. @p set must have the same layout, such as another set created for the same material and set index. */
+		void Set(const GpuParamsType& set, const BufferType& buffer, u32 arrayIndex = 0, GpuBufferViewInformation view = GpuBufferViewInformation()) const;
 
 		/** @copydoc TGpuDataParam::Get */
 		BufferType Get(u32 arrayIndex = 0) const;
@@ -289,6 +302,13 @@ namespace b3d
 		template<bool Condition = IsRenderProxy, std::enable_if_t<Condition, i32> = 0>
 		void Set(const render::GpuBufferSuballocation& bufferSuballocation) const;
 
+		/** Sets the parameter in @p set. @p set must have the same layout, such as another set created for the same material and set index. */
+		void Set(const GpuParamsType& set, const BufferType& buffer) const;
+
+		/** Sets the parameter in @p set instead. @p set must have the same layout, such as another set created for the same material and set index. */
+		template<bool Condition = IsRenderProxy, std::enable_if_t<Condition, i32> = 0>
+		void Set(const GpuParamsType& set, const render::GpuBufferSuballocation& bufferSuballocation) const;
+
 		/** @copydoc TGpuDataParam::Get */
 		BufferType Get() const;
 
@@ -319,6 +339,9 @@ namespace b3d
 
 		/** @copydoc TGpuDataParam::Set */
 		void Set(const TShared<SamplerState>& samplerState, u32 arrayIndex = 0) const;
+
+		/** Sets the parameter in @p set. @p set must have the same layout, such as another set created for the same material and set index. */
+		void Set(const GpuParamsType& set, const TShared<SamplerState>& samplerState, u32 arrayIndex = 0) const;
 
 		/** @copydoc TGpuDataParam::Get */
 		TShared<SamplerState> Get(u32 arrayIndex = 0) const;

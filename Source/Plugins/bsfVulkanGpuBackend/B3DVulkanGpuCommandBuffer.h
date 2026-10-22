@@ -133,7 +133,6 @@ namespace b3d
 			TInlineArray<SourceQueueTransitionInformation, 4> mSourceQueueTransitions;
 		};
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 		/**
 		 * Vulkan split barrier. Halves on one queue are connected by an event. The release sets it with the whole dependency, so the layout
 		 * transitions start in the release, and the acquire waits for it. Halves on different queues are ordered by the queue wait of the
@@ -154,7 +153,6 @@ namespace b3d
 			VkDevice mDevice;
 			VkEvent mEvent = VK_NULL_HANDLE;
 		};
-#endif
 
 		/** CommandBuffer implementation for Vulkan. */
 		class VulkanGpuCommandBuffer final : public GpuCommandBuffer
@@ -187,6 +185,7 @@ namespace b3d
 			void CopyBufferToBuffer(const TShared<GpuBuffer>& source, const TShared<GpuBuffer>& destination, u32 sourceOffset, u32 destinationOffset, u32 length) override;
 			void CopyBufferToTexture(const TShared<GpuBuffer>& source, const TShared<Texture>& destination, u32 bufferOffset, u32 mipLevel, u32 arrayLayer) override;
 			void CopyTextureToBuffer(const TShared<Texture>& source, const TShared<GpuBuffer>& destination, u32 mipLevel, u32 arrayLayer, u32 bufferOffset) override;
+			void CopyWindowToBuffer(const TShared<RenderWindow>& source, const TShared<GpuBuffer>& destination) override;
 			bool CopyTexture(const TShared<Texture>& source, const TShared<Texture>& destination, const TextureCopyInformation& copyInformation) override;
 			bool BlitTexture(const TShared<Texture>& source, const TShared<Texture>& destination, const TextureBlitInformation& blitInformation) override;
 			void WriteTimestamp(GpuQueryId query, const TShared<GpuQueryPool>& queryPool) override;
@@ -383,9 +382,7 @@ namespace b3d
 			friend class VulkanTexture;
 			friend class VulkanBarrierHelper;
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 			bool RecordExplicitBarriers(const GpuExplicitBarriers& barriers, GpuBarrierPhase phase, GpuSplitBarrier* split) override;
-#endif
 
 			/** Contains information about a single Vulkan resource bound/used on this command buffer. */
 			struct ResourceUseHandle
@@ -460,10 +457,10 @@ namespace b3d
 			void BindPushConstants(bool isGraphics);
 
 			/**
-			 * Creates an array of clear values for the currently bound render target, using the fixed clear values its
-			 * surfaces were created with. To be used for the explicit clear command, or render pass begin.
+			 * Creates an array of clear values for the attachments of the currently bound framebuffer, from @p targetClearValues. To be
+			 * used for the explicit clear command, or render pass begin.
 			 */
-			Array<VkClearValue, B3D_MAXIMUM_RENDER_TARGET_COUNT + 1> BuildClearValues(RenderSurfaceMask clearMask);
+			Array<VkClearValue, B3D_MAXIMUM_RENDER_TARGET_COUNT + 1> BuildClearValues(RenderSurfaceMask clearMask, const RenderTargetClearValues& targetClearValues);
 
 			/**
 			 * Executes a clear command in the command buffer, clearing every masked surface to the value it was created with.
@@ -488,14 +485,14 @@ namespace b3d
 			/** Returns the current area of the render pass in pixels. This depends on the currently bound framebuffer. */
 			Area2I GetRenderPassArea() const;
 
-			/** Notifies the active render target that a rendering command was queued that will potentially change its contents. */
-			void NotifyRenderTargetModified();
-
 			/** Returns the owner GPU device, cast as a VulkanGpuDevice. */
 			VulkanGpuDevice& GetVulkanGpuDevice() const { return static_cast<VulkanGpuDevice&>(mGpuDevice); }
 
-			/** Rebuilds the flat dynamic offset array from per-set arrays. */
-			void RebuildFlatDynamicOffsets();
+			/**
+			 * Binds the descriptor sets prepared by BindGpuParameters() to @p bindPoint, in runs of consecutive set indices,
+			 * since one bind call covers a contiguous range of sets.
+			 */
+			void BindDescriptorSets(VkPipelineBindPoint bindPoint, VkPipelineLayout pipelineLayout);
 
 			/**
 			 * Acquires the active swap chain image of @p renderWindow and registers its surface with the command buffer. Returns the
@@ -527,7 +524,7 @@ namespace b3d
 			u32 mStencilRef = 0;
 			DrawOperationType mDrawOp = DOT_TRIANGLE_LIST;
 			u32 mRequiredVertexBufferBindingCount = 0;
-			u32 mBoundDescriptorSetCount = 0;
+			u64 mBoundDescriptorSetMask = 0; /**< Bit per set index prepared by BindGpuParameters() for binding. */
 			GpuPushConstantPayload mPushConstants;
 			bool mGfxPipelineRequiresBind : 1;
 			bool mCmpPipelineRequiresBind : 1;
@@ -549,11 +546,9 @@ namespace b3d
 			Vector<IVulkanRenderWindowSurface*> mAcquiredSurfaces;
 			TInlineArray<TInlineArray<u32, 4>, 4> mDynamicOffsetsPerSet;
 			TInlineArray<UnorderedMap<u32, u32>, 4> mDynamicOffsetsOverridesPerSet;
-			TInlineArray<u32, 16> mFlatDynamicOffsets;
 			UnorderedMap<GpuParameterSet*, CachedGpuParameterData> mRenderPassGpuParameterSetCache;
 
 			TShared<RenderTarget> mRenderTarget;
-			bool mRenderTargetModified = false;
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
 			Vector<QueryInformation> mOpenQueries; // Only used for validation

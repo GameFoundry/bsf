@@ -175,8 +175,8 @@ namespace b3d
 			return view;
 		}
 
-		MetalTexture::MetalTexture(MetalGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation)
-			: Texture(createInformation, allocation), mGpuDevice(gpuDevice)
+		MetalTexture::MetalTexture(MetalGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags)
+			: Texture(createInformation, allocation, flags), mGpuDevice(gpuDevice)
 		{ }
 
 		MetalTexture::~MetalTexture()
@@ -363,8 +363,6 @@ namespace b3d
 				B3D_LOG(Error, LogRenderBackend, "Failed to create MTLTexture (format {0}, {1}x{2}).", (u32)mProperties.Format, mProperties.Width, mProperties.Height);
 				return nullptr;
 			}
-
-			mInternalFormat = mProperties.Format;
 
 			const u32 mipCount = mProperties.MipMapCount + 1;
 

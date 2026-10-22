@@ -20,86 +20,49 @@
 namespace b3d {
 namespace render {
 
-template <bool LOCK_Y, bool GPU, bool IS_3D, ParticleForwardLightingType FWD>
+template <bool LOCK_Y, bool GPU, bool IS_3D>
 const ShaderVariationParameters& GetParticleShaderVariationInternal(ParticleOrientation orient)
 {
 	switch(orient)
 	{
 	default:
 	case ParticleOrientation::ViewPlane:
-		return GetParticleShaderVariation<ParticleOrientation::ViewPlane, LOCK_Y, GPU, IS_3D, FWD>();
+		return GetParticleShaderVariation<ParticleOrientation::ViewPlane, LOCK_Y, GPU, IS_3D>();
 	case ParticleOrientation::ViewPosition:
-		return GetParticleShaderVariation<ParticleOrientation::ViewPosition, LOCK_Y, GPU, IS_3D, FWD>();
+		return GetParticleShaderVariation<ParticleOrientation::ViewPosition, LOCK_Y, GPU, IS_3D>();
 	case ParticleOrientation::Plane:
-		return GetParticleShaderVariation<ParticleOrientation::Plane, LOCK_Y, GPU, IS_3D, FWD>();
+		return GetParticleShaderVariation<ParticleOrientation::Plane, LOCK_Y, GPU, IS_3D>();
 	}
 }
 
-template <bool GPU, bool IS_3D, ParticleForwardLightingType FWD>
+template <bool GPU, bool IS_3D>
 const ShaderVariationParameters& GetParticleShaderVariationInternal(ParticleOrientation orient, bool lockY)
 {
 	if(lockY)
-		return GetParticleShaderVariationInternal<true, GPU, IS_3D, FWD>(orient);
+		return GetParticleShaderVariationInternal<true, GPU, IS_3D>(orient);
 
-	return GetParticleShaderVariationInternal<false, GPU, IS_3D, FWD>(orient);
+	return GetParticleShaderVariationInternal<false, GPU, IS_3D>(orient);
 }
 
-template <bool IS_3D, ParticleForwardLightingType FWD>
+template <bool IS_3D>
 const ShaderVariationParameters& GetParticleShaderVariationInternal(ParticleOrientation orient, bool lockY, bool gpu)
 {
 	if(gpu)
-		return GetParticleShaderVariationInternal<true, IS_3D, FWD>(orient, lockY);
+		return GetParticleShaderVariationInternal<true, IS_3D>(orient, lockY);
 
-	return GetParticleShaderVariationInternal<false, IS_3D, FWD>(orient, lockY);
+	return GetParticleShaderVariationInternal<false, IS_3D>(orient, lockY);
 }
 
-template <ParticleForwardLightingType FWD>
-const ShaderVariationParameters& GetParticleShaderVariationInternal(ParticleOrientation orient, bool lockY, bool gpu, bool is3D)
+const ShaderVariationParameters& GetParticleShaderVariationParameters(ParticleOrientation orient, bool lockY, bool gpu, bool is3D)
 {
 	if(is3D)
-		return GetParticleShaderVariationInternal<true, FWD>(orient, lockY, gpu);
+		return GetParticleShaderVariationInternal<true>(orient, lockY, gpu);
 
-	return GetParticleShaderVariationInternal<false, FWD>(orient, lockY, gpu);
-}
-
-const ShaderVariationParameters& GetParticleShaderVariationParameters(ParticleOrientation orient, bool lockY, bool gpu, bool is3D, ParticleForwardLightingType forwardLighting)
-{
-	switch(forwardLighting)
-	{
-	default:
-	case ParticleForwardLightingType::None:
-		return GetParticleShaderVariationInternal<ParticleForwardLightingType::None>(orient, lockY, gpu, is3D);
-	case ParticleForwardLightingType::Clustered:
-		return GetParticleShaderVariationInternal<ParticleForwardLightingType::Clustered>(orient, lockY, gpu, is3D);
-	case ParticleForwardLightingType::Standard:
-		return GetParticleShaderVariationInternal<ParticleForwardLightingType::Standard>(orient, lockY, gpu, is3D);
-	}
+	return GetParticleShaderVariationInternal<false>(orient, lockY, gpu);
 }
 
 ParticlesUniformDefinition gParticlesUniformDefinition;
 GpuParticlesUniformDefinition gGpuParticlesUniformDefinition;
-
-void WriteIndices(const TShared<GpuBuffer>& buffer, const Vector<u32>& input, u32 texSize)
-{
-	const auto numParticles = (u32)input.size();
-	if(numParticles == 0)
-		return;
-
-	auto* const indices = (u32*)B3DStackAllocate(buffer->GetTotalSize());
-
-	u32 idx = 0;
-	for(auto& entry : input)
-	{
-		const u32 x = entry % texSize;
-		const u32 y = entry / texSize;
-
-		indices[idx++] = (x & 0xFFFF) | (y << 16);
-	}
-
-	GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
-	GpuBufferUtility::Write(gpuContext, buffer, 0, buffer->GetTotalSize(), indices, GpuBufferWriteFlag::Discard);
-	B3DStackFree(indices);
-}
 
 void ParticlesDrawCommand::Draw(GpuCommandBuffer& commandBuffer) const
 {
@@ -108,7 +71,7 @@ void ParticlesDrawCommand::Draw(GpuCommandBuffer& commandBuffer) const
 		if(IsGpuSimulated)
 		{
 			const u32 gpuParticlesDynamicOffsetIndex = GetRenderBeast()->GetGpuParticlesParameterSetInfo().GpuParticlesDynamicOffsetIndex;
-			commandBuffer.SetDynamicBufferOffset(GpuPipelineSet::kPerObject, gpuParticlesDynamicOffsetIndex, GpuParticlesParamBufferOffset);
+			commandBuffer.SetDynamicBufferOffset(GpuPipelineSet::kPerObjectSetIndex, gpuParticlesDynamicOffsetIndex, GpuParticlesParamBufferOffset);
 		}
 
 		if(Is3D)
@@ -118,7 +81,7 @@ void ParticlesDrawCommand::Draw(GpuCommandBuffer& commandBuffer) const
 	}
 }
 
-void ParticleRenderState::BindCpuSimulatedInputs(const ParticleSystemProxy& proxy, const ParticleRenderData* renderData, const RendererView& view) const
+void ParticleRenderState::BindCpuSimulatedInputs(const ParticleSystemProxy& proxy, const ParticleRenderData* renderData) const
 {
 	ParticleTexturePool& particlesTexPool = ParticleRenderer::Instance().GetTexturePool();
 
@@ -136,7 +99,6 @@ void ParticleRenderState::BindCpuSimulatedInputs(const ParticleSystemProxy& prox
 			DrawCommand.ParamsCpuBillboard.ColorTexture.Set(textures->Color);
 			DrawCommand.ParamsCpuBillboard.SizeAndFrameIdxTexture.Set(textures->SizeAndFrameIdx);
 
-			DrawCommand.IndicesBuffer.Set(textures->Indices);
 			texSize = textures->PositionAndRotation->GetProperties().Width;
 		}
 		break;
@@ -150,7 +112,6 @@ void ParticleRenderState::BindCpuSimulatedInputs(const ParticleSystemProxy& prox
 			DrawCommand.ParamsCpuMesh.RotationTexture.Set(textures->Rotation);
 			DrawCommand.ParamsCpuMesh.SizeTexture.Set(textures->Size);
 
-			DrawCommand.IndicesBuffer.Set(textures->Indices);
 			texSize = textures->Position->GetProperties().Width;
 		}
 		break;
@@ -158,39 +119,23 @@ void ParticleRenderState::BindCpuSimulatedInputs(const ParticleSystemProxy& prox
 
 	DrawCommand.NumParticles = renderData->NumParticles;
 
-	PopulateAndBindParticlesUniformBuffer(proxy, texSize, 0);
-	DrawCommand.PerCameraUniformBufferParameter.Set(view.GetPerViewBuffer());
+	PopulateAndBindParticlesUniformBuffer(proxy, texSize, (i32)ParticleIndicesOffset, false);
 }
 
-void ParticleRenderState::BindGpuSimulatedInputs(const ParticleSystemProxy& proxy, const GpuParticleResources& gpuSimResources, const RendererView& view) const
+void ParticleRenderState::BindGpuSimulatedInputs(const ParticleSystemProxy& proxy) const
 {
-	const GpuParticleStateTextures& gpuSimStateTextures = gpuSimResources.GetCurrentState();
-	const GpuParticleStaticTextures& gpuSimStaticTextures = gpuSimResources.GetStaticTextures();
-	const GpuParticleCurves& gpuCurves = gpuSimResources.GetCurveTexture();
-	const TShared<GpuBuffer>& sortedIndices = gpuSimResources.GetSortedIndices();
+	DrawCommand.NumParticles = GpuParticleSystem->GetParticleCount();
 
-	DrawCommand.ParamsGpu.PositionTimeTexture.Set(gpuSimStateTextures.PositionAndTimeTex);
-	DrawCommand.ParamsGpu.SizeRotationTexture.Set(gpuSimStaticTextures.SizeAndRotationTex);
-	DrawCommand.ParamsGpu.CurvesTexture.Set(gpuCurves.GetTexture());
-	DrawCommand.NumParticles = GpuParticleSystem->GetTileCount() * GpuParticleConstants::kParticlesPerTile;
+	// Distance sorted systems read their indices from the sorted index buffer of the renderer inputs instead
+	DrawCommand.IndicesBuffer.Set(GpuParticleSystem->GetParticleIndices());
 
-	i32 bufferOffset;
-	if(GpuParticleSystem->HasSortInfo())
-	{
-		DrawCommand.IndicesBuffer.Set(sortedIndices);
-		bufferOffset = GpuParticleSystem->GetSortOffset();
-	}
-	else
-	{
-		DrawCommand.IndicesBuffer.Set(GpuParticleSystem->GetParticleIndices());
-		bufferOffset = 0;
-	}
+	const bool sorted = GpuParticleSystem->HasSortInfo();
+	const i32 bufferOffset = sorted ? (i32)GpuParticleSystem->GetSortOffset() : 0;
 
-	PopulateAndBindParticlesUniformBuffer(proxy, GpuParticleConstants::kTexSize, bufferOffset);
-	DrawCommand.PerCameraUniformBufferParameter.Set(view.GetPerViewBuffer());
+	PopulateAndBindParticlesUniformBuffer(proxy, GpuParticleConstants::kTexSize, bufferOffset, sorted);
 }
 
-void ParticleRenderState::PopulateAndBindParticlesUniformBuffer(const ParticleSystemProxy& proxy, i32 texSize, i32 bufferOffset) const
+void ParticleRenderState::PopulateAndBindParticlesUniformBuffer(const ParticleSystemProxy& proxy, i32 texSize, i32 bufferOffset, bool useSortedIndices) const
 {
 	GpuBufferMappedScope uniforms = gParticlesUniformDefinition.AllocateTransient().Map();
 
@@ -234,6 +179,7 @@ void ParticleRenderState::PopulateAndBindParticlesUniformBuffer(const ParticleSy
 
 	gParticlesUniformDefinition.gTexSize.Set(uniforms, texSize);
 	gParticlesUniformDefinition.gBufferOffset.Set(uniforms, bufferOffset);
+	gParticlesUniformDefinition.gUseSortedIndices.Set(uniforms, useSortedIndices ? 1 : 0);
 
 	DrawCommand.ParticlesUniformBufferParameter.Set(uniforms);
 }
@@ -279,7 +225,6 @@ const ParticleBillboardTextures* ParticleTexturePool::Alloc(const ParticleBillbo
 	TextureUtility::Write(gpuContext, output->Color, simulationData.Color, 0, 0, TextureWriteFlag::Discard);
 	TextureUtility::Write(gpuContext, output->SizeAndFrameIdx, simulationData.SizeAndFrameIdx, 0, 0, TextureWriteFlag::Discard);
 
-	WriteIndices(output->Indices, simulationData.Indices, size);
 	return output;
 }
 
@@ -310,7 +255,6 @@ const ParticleMeshTextures* ParticleTexturePool::Alloc(const ParticleMeshRenderD
 	TextureUtility::Write(gpuContext, output->Size, simulationData.Size, 0, 0, TextureWriteFlag::Discard);
 	TextureUtility::Write(gpuContext, output->Rotation, simulationData.Rotation, 0, 0, TextureWriteFlag::Discard);
 
-	WriteIndices(output->Indices, simulationData.Indices, size);
 	return output;
 }
 
@@ -346,13 +290,6 @@ ParticleBillboardTextures* ParticleTexturePool::CreateNewBillboardTextures(u32 s
 	textureCreateInformation.Name = "Particle Billboard Size & Frame Index";
 	output->SizeAndFrameIdx = gpuDevice->CreateTexture(textureCreateInformation);
 
-	GpuBufferCreateInformation bufferCreateInformation;
-	bufferCreateInformation.Type = GpuBufferType::SimpleStorage;
-	bufferCreateInformation.SimpleStorage.Count = size * size;
-	bufferCreateInformation.SimpleStorage.Format = BF_16X2U;
-
-	output->Indices = gpuDevice->CreateGpuBuffer(bufferCreateInformation);
-
 	mBillboardBufferList[size].Buffers.push_back(output);
 	return output;
 }
@@ -383,13 +320,6 @@ ParticleMeshTextures* ParticleTexturePool::CreateNewMeshTextures(u32 size)
 	texDesc.Format = PF_RGBA16F;
 	texDesc.Name = "Particle Mesh Rotation";
 	output->Rotation = gpuDevice->CreateTexture(texDesc);
-
-	GpuBufferCreateInformation bufferCreateInformation;
-	bufferCreateInformation.Type = GpuBufferType::SimpleStorage;
-	bufferCreateInformation.SimpleStorage.Count = size * size;
-	bufferCreateInformation.SimpleStorage.Format = BF_16X2U;
-
-	output->Indices = gpuDevice->CreateGpuBuffer(bufferCreateInformation);
 
 	mMeshBufferList[size].Buffers.push_back(output);
 	return output;
@@ -471,7 +401,7 @@ void ParticleRenderer::DrawBillboards(GpuCommandBuffer& commandBuffer, u32 count
 	commandBuffer.Draw(0, 4, count);
 }
 
-void ParticleRenderer::SortByDistance(const Vector3& refPoint, const PixelData& positions, u32 numParticles, u32 stride, Vector<u32>& indices)
+void ParticleRenderer::SortByDistance(const Vector3& refPoint, const PixelData& positions, u32 numParticles, u32 stride, u32* indices)
 {
 	struct ParticleSortData
 	{

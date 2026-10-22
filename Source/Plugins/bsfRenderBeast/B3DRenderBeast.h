@@ -8,6 +8,7 @@
 #include "B3DRendererView.h"
 #include "B3DRenderBeastScene.h"
 #include "Utility/B3DUniformBufferPools.h"
+#include "RenderState/B3DSurfaceShaderParameterSets.h"
 
 namespace b3d
 {
@@ -15,7 +16,6 @@ namespace b3d
 
 	namespace render
 	{
-		class LightGrid;
 		struct LoadedRendererTextures;
 
 		/** @addtogroup RenderBeast
@@ -79,9 +79,6 @@ namespace b3d
 			void SetOptions(const TShared<RendererOptions>& options) override;
 			TShared<RendererOptions> GetOptions() const override;
 
-			/** Returns the feature set the renderer is operating on. Render thread only. */
-			RenderBeastFeatureSet GetFeatureSet() const { return mFeatureSet; }
-
 			/** Returns the per-object parameter set info for normal renderables. */
 			const RenderableParameterSetInfo& GetRenderableParameterSetInfo() const { return mRenderableParameterSetInfo; }
 
@@ -91,12 +88,15 @@ namespace b3d
 			/** Returns the per-object parameter set info for GPU-simulated particles. */
 			const GpuParticlesParameterSetInfo& GetGpuParticlesParameterSetInfo() const { return mGpuParticlesParameterSetInfo; }
 
+			/** Returns the per-pass parameter set info for surface shaders. */
+			const SurfaceShaderParameterSetInfo& GetSurfaceShaderParameterSetInfo() const { return mSurfaceShaderParameterSetInfo; }
+
 			/** Returns the type configurations for the renderable uniform buffer manager. */
 			const TInlineArray<UniformBufferPools::PoolConfiguration, 4>& GetPerObjectUniformTypeConfigurations() const { return mTypeConfigurations; }
 
 			void Activate() override;
 			void Destroy() override;
-			void CaptureSceneCubeMap(RendererScene& scene, GpuCommandBuffer& commandBuffer, const TShared<Texture>& cubemap, const Vector3& position, const CaptureSettings& settings) override;
+			void CaptureSceneCubeMap(RendererScene& scene, FrameGraph& graph, const TShared<Texture>& cubemap, const Vector3& position, const CaptureSettings& settings) override;
 			void RequestGPUCommandCapture() override { mIsGPUCommandCaptureRequested = true; }
 			void RequestViewCapture(Camera* camera, TAsyncOp<TShared<PixelData>> asyncOp) override;
 			TShared<GpuDevice> GetGpuDevice() const { return mDevice; }
@@ -132,9 +132,9 @@ namespace b3d
 			bool RenderScene(RenderBeastScene& scene, const FrameInfo& frameInfo);
 
 			/**
-			 * Renders all views in the provided view group. Returns true if anything has been draw to any of the views.
+			 * Renders all views in the provided view group, with a frame graph of the group that executes before this returns. Returns
+			 * true if anything has been draw to any of the views.
 			 *
-			 * @param	commandBuffer			Command buffer into which to record the render commands.
 			 * @param	scene					Owner scene of the view being drawn.
 			 * @param	viewGroup				Group of views to render. Usually there's one view per group, but e.g. when rendering cubemaps it can be 6.
 			 * @param	frameInfo				Information about the current frame.
@@ -142,12 +142,29 @@ namespace b3d
 			 *
 			 * @note	Render thread only.
 			 */
-			bool RenderViews(GpuCommandBuffer& commandBuffer, RenderBeastScene& scene, RendererViewGroup& viewGroup, const FrameInfo& frameInfo, bool forceRendering);
+			bool RenderViews(RenderBeastScene& scene, RendererViewGroup& viewGroup, const FrameInfo& frameInfo, bool forceRendering);
 
 			/**
-			 * Renders all objects visible by the provided view.
+			 * Adds the passes that render all views in the provided view group to @p graph. Returns true if anything has been drawn to
+			 * any of the views.
 			 *
-			 * @param	commandBuffer			Command buffer into which to record the render commands.
+			 * @param	graph					Frame graph to add the passes to.
+			 * @param	scene					Owner scene of the view being drawn.
+			 * @param	viewGroup				Group of views to render. Its visibility must have been determined.
+			 * @param	frameInfo				Information about the current frame. Must stay valid until @p graph executes.
+			 * @param	forceRendering			Forces the overlay to render even if the views and extensions don't request a render.
+			 * @param	drawnViews				Receives the views whose frames began. Their frames must end after @p graph executes,
+			 *									because the passes read their render queues.
+			 *
+			 * @note	Render thread only.
+			 */
+			bool BuildViewGroup(FrameGraph& graph, RenderBeastScene& scene, RendererViewGroup& viewGroup, const FrameInfo& frameInfo, bool forceRendering, TInlineArray<RendererView*, 6>& drawnViews);
+
+			/**
+			 * Adds the passes that render all objects visible by the provided view to @p graph. Begins the frame of @p view, which must
+			 * end after @p graph executes, because the passes read the view's render queues.
+			 *
+			 * @param	graph					Frame graph of the view group.
 			 * @param	scene					Owner scene of the view being drawn.
 			 * @param	viewGroup				Group of views that the view belong to. Usually there's one view per group, but e.g. when rendering cubemaps it can be 6.
 			 * @param	view					View being drawn.
@@ -155,12 +172,13 @@ namespace b3d
 			 *
 			 * @note	Render thread only.
 			 */
-			void RenderView(GpuCommandBuffer& commandBuffer, RenderBeastScene& scene, const RendererViewGroup& viewGroup, RendererView& view, const FrameInfo& frameInfo);
+			void RenderView(FrameGraph& graph, RenderBeastScene& scene, RendererViewGroup& viewGroup, RendererView& view, const FrameInfo& frameInfo);
 
 			/**
-			 * Renders all overlay callbacks of the provided view. Returns true if anything has been rendered in any of the views.
+			 * Adds the passes that render all overlay callbacks of the provided view to @p graph. Begins the frame of @p view, which
+			 * must end after @p graph executes. Returns true if anything has been rendered in any of the views.
 			 *
-			 * @param	commandBuffer			Command buffer into which to record the render commands.
+			 * @param	graph					Frame graph of the view group.
 			 * @param	scene					Owner scene of the view being drawn.
 			 * @param	view					View being drawn.
 			 * @param	frameInfo				Information about the current frame.
@@ -168,13 +186,16 @@ namespace b3d
 			 *
 			 * @note	Render thread only.
 			 */
-			bool RenderOverlay(GpuCommandBuffer& commandBuffer, RenderBeastScene& scene, RendererView& view, const FrameInfo& frameInfo, bool forceRendering);
+			bool RenderOverlay(FrameGraph& graph, RenderBeastScene& scene, RendererView& view, const FrameInfo& frameInfo, bool forceRendering);
 
 			/**	Creates data used by the renderer on the render thread, when the renderer is activated. */
 			void ActivateOnRenderThread(const LoadedRendererTextures& rendererTextures);
 
 			/**	Destroys data used by the renderer on the render thread. */
 			void DestroyOnRenderThread() override;
+
+			/** Records the queued uniform buffer updates of every scene, then executes renderer tasks as Renderer::ProcessTasks(). */
+			void ProcessTasks(bool forceAll, u64 upToFrame = std::numeric_limits<u64>::max()) override;
 
 			/** Called right after a renderer scene has been created. */
 			void NotifySceneCreated(const TShared<RenderBeastScene>& scene);
@@ -183,14 +204,17 @@ namespace b3d
 			void NotifySceneDestroyed(const RenderBeastScene* scene);
 
 			// Render thread only fields
-			RenderBeastFeatureSet mFeatureSet = RenderBeastFeatureSet::Desktop;
 			bool mIsGPUCommandCaptureRequested = false;
+
+			// Windows drawn this frame, presented once after every scene drew to them
+			Vector<TShared<RenderWindow>> mWindowsToPresent;
 
 			// Per-object parameter set layouts and dynamic offset indices
 			RenderableParameterSetInfo mRenderableParameterSetInfo;
 			DecalParameterSetInfo mDecalParameterSetInfo;
 			GpuParticlesParameterSetInfo mGpuParticlesParameterSetInfo;
 			TInlineArray<UniformBufferPools::PoolConfiguration, 4> mTypeConfigurations;
+			SurfaceShaderParameterSetInfo mSurfaceShaderParameterSetInfo;
 
 			// Scene data
 			Vector<RenderBeastScene*> mScenes;
@@ -203,9 +227,6 @@ namespace b3d
 			// Main thread only fields
 			TShared<RenderBeastOptions> mOptions;
 			bool mOptionsDirty = true;
-
-			// Transient
-			Vector<RendererExtension*> mOverlayExtensions;
 		};
 
 		/**	Provides easy access to the RenderBeast renderer. */

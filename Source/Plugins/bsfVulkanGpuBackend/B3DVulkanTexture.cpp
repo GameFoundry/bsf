@@ -395,9 +395,11 @@ void VulkanImage::Invalidate(VkDeviceSize offset, VkDeviceSize size)
 	device.InvalidateMemory(mAllocation, offset, size);
 }
 
-VulkanTexture::VulkanTexture(VulkanGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation)
-	: Texture(createInformation, allocation), mGpuDevice(gpuDevice), mDirectlyMappable(false), mSupportsGPUWrites(false), mUsesGeneralLayout(false)
+VulkanTexture::VulkanTexture(VulkanGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags)
+	: Texture(createInformation, allocation, flags), mGpuDevice(gpuDevice), mDirectlyMappable(false), mSupportsGPUWrites(false), mUsesGeneralLayout(false)
 {
+	// The supported format is valid before the image exists, such as while the transient resource allocator has not placed the texture
+	mInternalFormat = GetInternalFormat(gpuDevice, mProperties);
 }
 
 VulkanTexture::~VulkanTexture()
@@ -406,6 +408,22 @@ VulkanTexture::~VulkanTexture()
 		mImage->Destroy();
 
 	B3D_INCREMENT_RENDER_STATISTIC_CATEGORY(ResDestroyed, RenderStatObject_Texture);
+}
+
+bool VulkanTexture::UsesLinearTiling(const TextureProperties& properties)
+{
+	// Dynamic textures use linear tiling, so they can be mapped and modified directly. Only 2D textures with one sample, one mip level and
+	// one face qualify, and only for shader reads, not render targets or storage textures. (Optionally check
+	// vkGetPhysicalDeviceFormatProperties & vkGetPhysicalDeviceImageFormatProperties for additional supported configs, but right now there
+	// doesn't seem to be any additional support)
+	const TextureUsageFlags gpuWriteUsage = TextureUsageFlag::RenderTarget | TextureUsageFlag::DepthStencil | TextureUsageFlag::AllowUnorderedAccessOnTheGPU;
+	return properties.Usage.IsSet(TextureUsageFlag::StoreOnCPUWithGPUAccess) && !properties.Usage.IsSetAny(gpuWriteUsage) && properties.Type == TEX_TYPE_2D &&
+		properties.SampleCount <= 1 && properties.MipMapCount == 0 && properties.GetFaceCount() == 1;
+}
+
+PixelFormat VulkanTexture::GetInternalFormat(const VulkanGpuDevice& device, const TextureProperties& properties)
+{
+	return VulkanUtility::GetClosestSupportedPixelFormat(device, properties.Format, properties.Type, properties.Usage, !UsesLinearTiling(properties), properties.UseHardwareSRGB);
 }
 
 void VulkanTexture::BuildDescription(const VulkanGpuDevice& device, const TextureProperties& properties, VulkanTextureDescription& outDescription)
@@ -465,22 +483,11 @@ void VulkanTexture::BuildDescription(const VulkanGpuDevice& device, const Textur
 
 	VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL;
 	VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
-	if(usage.IsSet(TextureUsageFlag::StoreOnCPUWithGPUAccess)) // Attempt to use linear tiling for dynamic textures, so we can directly map and modify them
+	if(UsesLinearTiling(properties))
 	{
-		// Only support 2D textures, with one sample and one mip level, only used for shader reads
-		// (Optionally check vkGetPhysicalDeviceFormatProperties & vkGetPhysicalDeviceImageFormatProperties for
-		// additional supported configs, but right now there doesn't seem to be any additional support)
-		if(texType == TEX_TYPE_2D && properties.SampleCount <= 1 && properties.MipMapCount == 0 &&
-		   properties.GetFaceCount() == 1 && (createInfo.usage & VK_IMAGE_USAGE_SAMPLED_BIT) != 0)
-		{
-			// Also, only support normal textures, not render targets or storage textures
-			if(!outDescription.SupportsGPUWrites)
-			{
-				outDescription.DirectlyMappable = true;
-				tiling = VK_IMAGE_TILING_LINEAR;
-				layout = VK_IMAGE_LAYOUT_PREINITIALIZED;
-			}
-		}
+		outDescription.DirectlyMappable = true;
+		tiling = VK_IMAGE_TILING_LINEAR;
+		layout = VK_IMAGE_LAYOUT_PREINITIALIZED;
 	}
 
 	if(usage.IsSet(TextureUsageFlag::MutableFormat))
@@ -510,9 +517,7 @@ void VulkanTexture::BuildDescription(const VulkanGpuDevice& device, const Textur
 	createInfo.queueFamilyIndexCount = usesConcurrentSharing ? (u32)queueFamilies.Size() : 0;
 	createInfo.pQueueFamilyIndices = usesConcurrentSharing ? queueFamilies.data() : nullptr;
 
-	bool optimalTiling = tiling == VK_IMAGE_TILING_OPTIMAL;
-
-	outDescription.InternalFormat = VulkanUtility::GetClosestSupportedPixelFormat(device, properties.Format, properties.Type, properties.Usage, optimalTiling, properties.UseHardwareSRGB);
+	outDescription.InternalFormat = GetInternalFormat(device, properties);
 	createInfo.format = VulkanUtility::GetPixelFormat(outDescription.InternalFormat, properties.UseHardwareSRGB);
 
 	// Linearly-tiled images are CPU-accessible by spec and route through host-visible memory; optimally-tiled
@@ -609,6 +614,9 @@ VulkanImage* VulkanTexture::CreateImage()
 	VulkanImage* const vulkanImage = mGpuDevice.CreateImage(imageInfo, mRequestedAllocation, mKind, proxyParent);
 	if (vulkanImage != nullptr)
 		vulkanImage->SetName(mName);
+
+	if (vulkanImage != nullptr && StartsAtRest())
+		vulkanImage->RequestRestingTransition(mUsesGeneralLayout ? GpuImageLayout::General : GpuImageLayout::ShaderReadOnly);
 
 	return vulkanImage;
 }

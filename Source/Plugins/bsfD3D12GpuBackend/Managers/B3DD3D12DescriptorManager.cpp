@@ -141,7 +141,8 @@ void D3D12DescriptorManager::CreateHeaps()
 	fnCreateHeap(mHeaps[(u32)D3D12DescriptorHeapType::CBV_SRV_UAV], D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 256 * 1024, true, "Failed to create CBV/SRV/UAV descriptor heap");
 	fnCreateHeap(mHeaps[(u32)D3D12DescriptorHeapType::Sampler], D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 2048, true, "Failed to create Sampler descriptor heap");
 	fnCreateHeap(mHeaps[(u32)D3D12DescriptorHeapType::RTV], D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 1024, false, "Failed to create RTV descriptor heap");
-	fnCreateHeap(mHeaps[(u32)D3D12DescriptorHeapType::DSV], D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 256, false, "Failed to create DSV descriptor heap");
+	// A depth-stencil framebuffer takes four views (one per read-only combination), so this fits as many framebuffers as the RTV heap
+	fnCreateHeap(mHeaps[(u32)D3D12DescriptorHeapType::DSV], D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 4096, false, "Failed to create DSV descriptor heap");
 
 	// Shader-visible heaps cannot be descriptor-copy sources, so resource views live in separate staging heaps.
 	fnCreateHeap(mStagingHeaps[(u32)D3D12DescriptorHeapType::CBV_SRV_UAV], D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 32 * 1024, false, "Failed to create CBV/SRV/UAV staging descriptor heap");

@@ -20,9 +20,6 @@ TDerived& TGpuResourceTracker<TDerived, TBarrierHelper>::GetDerived()
 template<class TDerived, class TBarrierHelper>
 void TGpuResourceTracker<TDerived, TBarrierHelper>::ResolveSubmissionTransitions(GpuQueueId destinationQueueId, u32 frameIndex, GpuSubmissionTransitionVisitor& visitor)
 {
-	if(!mTracksHazards)
-		return;
-
 	// Tracks resting reads in the submission state if the resource is at rest, so they need no transition. Returns false if the reads need a GpuSubmissionTransition::Build().
 	auto fnTryTrackRestingRead = [destinationQueueId, frameIndex](GpuResourceSubmissionState& state, GpuStageFlags readStages)
 	{
@@ -81,6 +78,40 @@ void TGpuResourceTracker<TDerived, TBarrierHelper>::ResolveSubmissionTransitions
 
 		stateResource.SubmissionState = std::move(transition.PostTransitionSubmissionState);
 	};
+
+	// If an image is not at rest, transition it to rest before first use on the command buffer
+	for(const auto& entry : mImages)
+	{
+		IGpuImageResource* const image = entry.first;
+		const GpuImageLayout restingLayout = image->ConsumeRestingTransition();
+		if(restingLayout == GpuImageLayout::Undefined || mTracksHazards)
+			continue;
+
+		// The command buffer does not track its accesses, so the transition makes the image available to every stage of the queue. 
+		// TODO - Make the image available only to the first access of the command buffer, rather than to every stage of the queue. This
+		// needs the command buffer to track the initial state of every resource that is not at rest yet.
+		GpuResourceHazardState commandBufferAccesses;
+		commandBufferAccesses.RecordAccess(GpuStageFlags(GpuStageFlag::All) & GpuBackendUtility::GetQueueStageFlags(destinationQueueId.GetType()), GpuAccessFlag::Read | GpuAccessFlag::Write);
+
+		for(GpuTextureAspectFlag aspect : kGpuTextureAspects)
+		{
+			if(!image->GetRange().AspectMask.IsSet(aspect))
+				continue;
+
+			GpuTextureSubresourceRange range = image->GetRange();
+			range.AspectMask = aspect;
+
+			GpuImageSubresource& stateResource = image->GetSubmissionStateResource(0, 0, aspect);
+			fnVisitImageTransition(*image, range, stateResource, restingLayout, restingLayout, GpuBarrierFlags(), GpuQueueMask::kNone, commandBufferAccesses,
+				TDerived::kLayoutTransitionsAreWrites);
+
+			if(!image->HasUniformSubmissionState())
+				image->SetNativeState(range, stateResource.NativeState);
+		}
+	}
+
+	if(!mTracksHazards)
+		return;
 
 	// Selects the hazards of a tracked image partition for one submitted range, and visits the range's submission transition
 	auto fnResolveTrackedImageTransition = [this, &fnVisitImageTransition](IGpuImageResource* image, const GpuImageSubresourceTrackingState& trackingState, const GpuTextureSubresourceRange& range,
@@ -261,10 +292,6 @@ void TGpuResourceTracker<TDerived, TBarrierHelper>::ResolveSubmissionTransitions
 template<class TDerived, class TBarrierHelper>
 GpuBufferTrackingState& TGpuResourceTracker<TDerived, TBarrierHelper>::GetOrCreateBufferTrackingState(IGpuBufferResource* buffer)
 {
-#if B3D_BUILD_TYPE_DEVELOPMENT
-	B3D_ENSURE_LOG(!buffer->IsSupersededByAlias(), "A GPU buffer is used after another resource took over its memory with an alias acquire.");
-#endif
-
 	auto insertResult = mBuffers.insert(std::make_pair(buffer, GpuBufferTrackingState()));
 	if(insertResult.second) // New element
 	{
@@ -324,16 +351,6 @@ void TGpuResourceTracker<TDerived, TBarrierHelper>::TrackBufferBarrier(IGpuBuffe
 	{
 		if(!B3D_ENSURE_LOG(FindBufferTrackingState(buffer) == nullptr, "An alias acquire must precede every other use of the GPU buffer on the command buffer."))
 			return;
-
-#if B3D_BUILD_TYPE_DEVELOPMENT
-		buffer->NotifyAliasAcquired();
-		for(IGpuResource* predecessor : aliasAcquire->Predecessors)
-		{
-			// Barriers of one batch are not ordered against each other, so a barrier of an earlier resource could overlap the acquire's barrier
-			B3D_ENSURE_LOG(!barrierHelper.HasQueuedBarrier(predecessor), "A barrier of an earlier resource on the memory is issued together with the alias acquire that supersedes it.");
-			predecessor->SetSupersededByAlias(true);
-		}
-#endif
 
 		GpuBufferTrackingState& bufferTrackingState = GetOrCreateBufferTrackingState(buffer);
 		bufferTrackingState.SubmissionBarrierFlags = GpuBarrierFlag::AliasAcquire;
@@ -939,16 +956,6 @@ void TGpuResourceTracker<TDerived, TBarrierHelper>::TrackImageBarrier(IGpuImageR
 		if(!B3D_ENSURE_LOG(destinationLayout != GpuImageLayout::Undefined, "An alias acquire of a GPU image must provide a destination layout."))
 			return;
 
-#if B3D_BUILD_TYPE_DEVELOPMENT
-		image->NotifyAliasAcquired();
-		for(IGpuResource* predecessor : aliasAcquire->Predecessors)
-		{
-			// Barriers of one batch are not ordered against each other, so a barrier of an earlier resource could overlap the acquire's discard
-			B3D_ENSURE_LOG(!barrierHelper.HasQueuedBarrier(predecessor), "A barrier of an earlier resource on the memory is issued together with the alias acquire that supersedes it.");
-			predecessor->SetSupersededByAlias(true);
-		}
-#endif
-
 		struct AcquireCallbackParameters
 		{
 			TGpuResourceTracker* Tracker;
@@ -1183,10 +1190,6 @@ void TGpuResourceTracker<TDerived, TBarrierHelper>::TrackSwapChainUsage(IGpuSwap
 template<class TDerived, class TBarrierHelper>
 GpuImageTrackingState& TGpuResourceTracker<TDerived, TBarrierHelper>::GetOrCreateImageTrackingState(IGpuImageResource* image)
 {
-#if B3D_BUILD_TYPE_DEVELOPMENT
-	B3D_ENSURE_LOG(!image->IsSupersededByAlias(), "A GPU image is used after another resource took over its memory with an alias acquire.");
-#endif
-
 	const u32 nextImageTrackingIndex = (u32)mImageTrackingState.size();
 
 	auto insertResult = mImages.insert(std::make_pair(image, nextImageTrackingIndex));

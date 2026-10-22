@@ -77,12 +77,10 @@ void GpuDevice::DestroyTransientHeapPools()
 	mTransientHeapPools.Clear();
 }
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 TShared<render::GpuSplitBarrier> GpuDevice::CreateSplitBarrier(TOptional<GpuQueueType> releaseQueue, TOptional<GpuQueueType> acquireQueue)
 {
 	return B3DMakeShared<render::GpuSplitBarrier>(releaseQueue, acquireQueue);
 }
-#endif
 
 namespace
 {
@@ -165,6 +163,15 @@ void GpuDevice::DoForEachQueue(const std::function<void(GpuQueue&)>&& callback) 
 			callback(*queue);
 		}
 	}
+}
+
+void GpuDevice::PresentRenderWindow(const TShared<render::RenderWindow>& renderWindow, GpuQueueMask syncMask)
+{
+	const TShared<GpuQueue> queue = GetQueue(GQT_GRAPHICS, 0);
+	if(!B3D_ENSURE(queue != nullptr))
+		return;
+
+	queue->PresentRenderWindow(renderWindow, syncMask);
 }
 
 TShared<SamplerState> GpuDevice::FindOrCreateSamplerState(const SamplerStateCreateInformation& createInformation)

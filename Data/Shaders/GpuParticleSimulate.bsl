@@ -1,6 +1,7 @@
 #include "$ENGINE$/GpuParticleTileVertex.bslinc"
 #include "$ENGINE$/PerCameraData.bslinc"
 #include "$ENGINE$/PerObjectData.bslinc"
+#include "$ENGINE$/GpuParticleParams.bslinc"
 
 shader GpuParticleSimulate
 {
@@ -14,6 +15,7 @@ shader GpuParticleSimulate
 	#if DEPTH_COLLISIONS
 		mixin PerCameraData;
 		mixin PerObjectData;
+		mixin GpuParticleParams;
 	#endif
 	
 	output
@@ -103,9 +105,6 @@ shader GpuParticleSimulate
 			float gRestitution;
 			float gDampening;
 			float gCollisionRadiusScale;
-			
-			float2 gSizeScaleCurveOffset;
-			float2 gSizeScaleCurveScale;
 		};
 		
 		void integrateWithDepthCollisions(
@@ -224,7 +223,7 @@ shader GpuParticleSimulate
 #if DEPTH_COLLISIONS
 				float2 size = gSizeRotationTex.Sample(gSizeRotationSampler, input.uv0).xy;
 			
-				float2 sizeScaleCurveUV = gSizeScaleCurveOffset + time * gSizeScaleCurveScale;
+				float2 sizeScaleCurveUV = gSizeScaleFrameIdxCurveOffset + time * gSizeScaleFrameIdxCurveScale;
 				float2 sizeScale = gCurvesTex.Sample(gCurvesSampler, sizeScaleCurveUV, 0).xy;
 			
 				// TODO - Apply world transform scale

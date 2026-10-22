@@ -69,18 +69,11 @@ namespace b3d
 		public string MultisampleHint;
 		/// <summary>Should the written color pixels be gamma corrected before write.</summary>
 		public bool Gamma;
-		/// <summary>
-		/// Color the window&apos;s back buffer is cleared to. Fixed on creation - clear commands provide no value of their own.
-		/// </summary>
+		/// <summary>Color the window&apos;s back buffer is cleared to, when a clear operation is issued.</summary>
 		public Color ClearColor;
-		/// <summary>
-		/// Value the window&apos;s depth buffer is cleared to. Fixed on creation - clear commands provide no value of their own.
-		/// </summary>
+		/// <summary>Value the window&apos;s depth buffer is cleared to, when a clear operation is issued.</summary>
 		public float ClearDepth;
-		/// <summary>
-		/// Value the window&apos;s stencil buffer is cleared to. Fixed on creation - clear commands provide no value of their 
-		/// own.
-		/// </summary>
+		/// <summary>Value the window&apos;s stencil buffer is cleared to, when a clear operation is issued.</summary>
 		public byte ClearStencil;
 		/// <summary>Window origin on X axis in pixels. -1 == screen center. Relative to monitor provided in videoMode.</summary>
 		public int Left;

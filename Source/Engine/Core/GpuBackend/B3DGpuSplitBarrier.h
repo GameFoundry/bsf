@@ -5,8 +5,6 @@
 #include "B3DPrerequisites.h"
 #include "B3DGpuQueue.h"
 
-#if B3D_GPU_EXPLICIT_BARRIERS
-
 namespace b3d::render
 {
 	class GpuCommandBuffer;
@@ -95,5 +93,3 @@ namespace b3d::render
 
 	/** @} */
 } // namespace b3d::render
-
-#endif

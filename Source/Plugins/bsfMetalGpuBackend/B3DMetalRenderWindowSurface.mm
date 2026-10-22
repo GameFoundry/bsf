@@ -347,6 +347,12 @@ namespace b3d::render
 		mGpuDevice.GetSubmitThread().QueuePresent(queue, *mSwapChain, syncMask);
 	}
 
+	bool MetalRenderWindowSurface::HasAcquiredImage() const
+	{
+		u32 imageIndex;
+		return mValid && mSwapChain != nullptr && mSwapChain->TryGetFirstAcquiredImageIndex(imageIndex);
+	}
+
 	void MetalRenderWindowSurface::RebuildSwapChain(u32 width, u32 height, bool vsync, u32 vsyncInterval)
 	{
 		// May be invoked from the main thread during AppKit live-resize or from the render thread via the command

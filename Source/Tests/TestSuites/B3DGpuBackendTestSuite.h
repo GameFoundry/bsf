@@ -93,13 +93,18 @@ namespace b3d
 		 */
 		void TestTransientResourceExecution();
 
+		/**
+		 * Verifies textures returned before their memory is known: placement at the cached memory or at other memory, held textures that
+		 * are neither returned again nor evicted, Return(), Detach() and the unplaced mark.
+		 */
+		void TestTransientResourcePlacement();
+
 		/** Verifies framebuffer attachment normalization and render-pass usage construction. */
 		void TestFramebufferAttachmentUsage();
 
 		/** Verifies render-pass attachment and shader usage is combined through core subresource partitions. */
 		void TestRenderPassResourceTracking();
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 		/** Verifies a tracker without hazard tracking keeps resources alive without resolving hazards, barriers or submission transitions. */
 		void TestTrackingWithoutHazards();
 
@@ -127,6 +132,13 @@ namespace b3d
 		 */
 		void TestBarrierAcrossPasses();
 
+		/**
+		 * Places transient resources over each other's memory and hands the memory between them with explicit alias acquires, issued as full
+		 * and as split barriers. Then binds resources before they are placed, recreates them at other memory and writes them with a dispatch.
+		 * Verifies the contents each resource reads back. Runs only on devices that support explicit barriers.
+		 */
+		void TestTransientExplicitAliasing();
+
 #if B3D_BUILD_TYPE_DEVELOPMENT
 		/**
 		 * Verifies the errors for explicit barriers and command buffer methods that do not match the state earlier explicit barriers
@@ -134,7 +146,14 @@ namespace b3d
 		 * implementation. Runs only on devices that support explicit barriers.
 		 */
 		void TestExplicitBarrierValidation();
-#endif
+
+		/**
+		 * Verifies the errors of a validator shared by two command buffers: resources used outside of their lifetime on the memory, alias
+		 * acquires that do not cover their source or share a call with a barrier of a resource they supersede, states carried over to
+		 * the next command buffer, accesses outside of the resting state and dispatches that access what an earlier dispatch wrote
+		 * without a barrier. Runs only on devices that support explicit barriers.
+		 */
+		void TestExplicitBarrierResourceValidation();
 #endif
 
 		/** Verifies push-constant metadata merging and carrier separation across program stages. */

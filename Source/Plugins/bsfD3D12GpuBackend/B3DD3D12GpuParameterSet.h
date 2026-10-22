@@ -71,6 +71,9 @@ namespace b3d
 			struct BoundDescriptor
 			{
 				D3D12_CPU_DESCRIPTOR_HANDLE CPUHandle = { 0 }; /**< CPU descriptor copied into the GPU-visible table. */
+
+				/** Resource generation (see D3D12Texture::GetResourceGeneration()) CPUHandle was resolved at. Only used for textures and buffers. */
+				u32 ResourceGeneration = 0;
 			};
 
 			/** CPU descriptors belonging to one shader binding. */
@@ -79,6 +82,10 @@ namespace b3d
 				DescriptorBinding() = default;
 
 				Vector<BoundDescriptor> Descriptors; /**< CPU descriptors, one per array element of this binding. */
+
+				GpuParameterType Type = GpuParameterType::Count; /**< Type of the binding. */
+				u32 FirstDataIndex = ~0u; /**< Index of the first array element in the base class's resource data (sequential resource index). */
+				bool IsReadWrite = false; /**< True for storage buffers bound for writing. */
 
 				/**
 				 * Descriptor copied into GPU-visible slots whose binding is unset: a type-compatible null descriptor, or
@@ -111,15 +118,42 @@ namespace b3d
 				u32 DynamicOffsetIndex = ~0u; /**< Dynamic-offset index in this parameter set's own layout. */
 			};
 
+			/** CPU descriptor of a texture or buffer, and the resource generation it was resolved at. */
+			struct ResolvedDescriptor
+			{
+				D3D12_CPU_DESCRIPTOR_HANDLE Handle = { 0 }; /**< Null if there is no resource, or the resource has no native resource. */
+				u32 ResourceGeneration = 0;
+			};
+
 			/** Stores a CPU descriptor at the given (slot, arrayIndex) in @p bindings. */
 			static bool SetBindingDescriptor(UnorderedMap<u32, DescriptorBinding>& bindings, u32 slot, u32 arrayIndex, D3D12_CPU_DESCRIPTOR_HANDLE handle);
 
-			/** Stores a CPU descriptor at the given (slot, arrayIndex) in the resource bindings and flags the packed table dirty. */
-			void SetDescriptor(u32 slot, u32 arrayIndex, D3D12_CPU_DESCRIPTOR_HANDLE handle)
-			{
-				if(SetBindingDescriptor(mDescriptorBindings, slot, arrayIndex, handle))
-					mResourceTable.IsDirty = true;
-			}
+			/** Returns the resource binding at @p slot, or null if the set has none, such as for a uniform buffer bound as a root CBV. */
+			DescriptorBinding* FindDescriptorBinding(u32 slot);
+
+			/** Stores @p descriptor at @p arrayIndex of @p binding, and flags the packed table dirty. Ignores out of range array indices. */
+			void StoreDescriptor(DescriptorBinding& binding, u32 arrayIndex, const ResolvedDescriptor& descriptor);
+
+			/** Resolves the constant buffer view of @p buffer at @p offset bytes. @p buffer may be null. */
+			static ResolvedDescriptor ResolveCBV(const D3D12GpuBuffer* buffer, u32 offset);
+
+			/** Resolves the shader resource view of @p surface of @p texture. @p texture may be null. */
+			static ResolvedDescriptor ResolveSRV(D3D12Texture* texture, const TextureSurface& surface);
+
+			/** Resolves the unordered access view of @p surface of @p texture. @p texture may be null. */
+			static ResolvedDescriptor ResolveUAV(D3D12Texture* texture, const TextureSurface& surface);
+
+			/**
+			 * Resolves the view of a storage buffer bound at @p slot: its unordered access view if @p isReadWrite, and its shader resource view
+			 * otherwise, viewing the elements as @p format. Falls back to the other view if the buffer lacks the requested one. @p buffer may be null.
+			 */
+			ResolvedDescriptor ResolveStorageBuffer(const D3D12GpuBuffer* buffer, GpuBufferFormat format, bool isReadWrite, u32 slot) const;
+
+			/**
+			 * Resolves again the descriptors of textures and buffers that recreated their native resource since they were resolved,
+			 * which released the views the descriptors were copied from.
+			 */
+			void RefreshDescriptors();
 
 			/** Stores a CPU descriptor at the given (slot, arrayIndex) in the sampler bindings and flags the packed table dirty. */
 			void SetSamplerDescriptor(u32 slot, u32 arrayIndex, D3D12_CPU_DESCRIPTOR_HANDLE handle)

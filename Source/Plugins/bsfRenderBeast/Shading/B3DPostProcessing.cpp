@@ -8,14 +8,27 @@
 #include "Material/B3DMaterialParameterAdapter.h"
 #include "Image/B3DPixelUtility.h"
 #include "Utility/B3DBitwise.h"
-#include "Renderer/B3DGpuResourcePool.h"
 #include "B3DRendererView.h"
 #include "B3DRenderBeast.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "Utility/B3DRendererTextures.h"
 #include "GpuBackend/B3DVertexDescription.h"
+#include "FrameGraph/B3DFrameGraph.h"
+#include "Image/B3DTexture.h"
 
 namespace b3d { namespace render {
+
+/** Adds the handle of sampler @p name of @p params to @p outHandles, if @p params has it. */
+template<u32 Count>
+void AddSamplerHandle(const TShared<GpuParameterSet>& params, const char* name, TInlineArray<GpuParameterSampler, Count>& outHandles)
+{
+	if(!params->HasSamplerState(name))
+		return;
+
+	GpuParameterSampler handle;
+	params->GetSamplerStateParameter(name, handle);
+	outHandles.Add(handle);
+}
 
 void SetSamplerState(const TShared<GpuParameterSet>& params, const String& name, const String& secondaryName, const TShared<SamplerState>& samplerState, bool optional = false)
 {
@@ -37,60 +50,68 @@ DownsampleUniformDefinition gDownsampleUniformDefinition;
 
 void DownsampleMaterial::Initialize()
 {
+	mMsaa = mVariationParameters.GetI32("MSAA") > 0;
+
 	mGpuParameterSet->TryGetUniformBufferParameter("Input", mUniformBufferParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gInputTex", mInputTextureParameter);
 }
 
-void DownsampleMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& input, const TShared<RenderTarget>& output)
+TShared<GpuParameterSet> DownsampleMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& input)
 {
-	B3D_PROFILE_RENDERER_MATERIAL
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
 
 	// Populate parameter buffer
 	GpuBufferMappedScope uniforms = gDownsampleUniformDefinition.AllocateTransient().Map();
 	const TextureProperties& rtProps = input->GetProperties();
 
-	bool MSAA = mVariationParameters.GetI32("MSAA") > 0;
-	if(MSAA)
+	if(mMsaa)
 	{
-		gDownsampleUniformDefinition.gOffsets.Set(uniforms, Vector2(-1.0f, -1.0f));
-		gDownsampleUniformDefinition.gOffsets.Set(uniforms, Vector2(1.0f, -1.0f));
-		gDownsampleUniformDefinition.gOffsets.Set(uniforms, Vector2(-1.0f, 1.0f));
-		gDownsampleUniformDefinition.gOffsets.Set(uniforms, Vector2(1.0f, 1.0f));
+		gDownsampleUniformDefinition.gOffsets.Set(uniforms, Vector2(-1.0f, -1.0f), 0);
+		gDownsampleUniformDefinition.gOffsets.Set(uniforms, Vector2(1.0f, -1.0f), 1);
+		gDownsampleUniformDefinition.gOffsets.Set(uniforms, Vector2(-1.0f, 1.0f), 2);
+		gDownsampleUniformDefinition.gOffsets.Set(uniforms, Vector2(1.0f, 1.0f), 3);
 	}
 	else
 	{
 		Vector2 invTextureSize(1.0f / rtProps.Width, 1.0f / rtProps.Height);
 
-		gDownsampleUniformDefinition.gOffsets.Set(uniforms, invTextureSize * Vector2(-1.0f, -1.0f));
-		gDownsampleUniformDefinition.gOffsets.Set(uniforms, invTextureSize * Vector2(1.0f, -1.0f));
-		gDownsampleUniformDefinition.gOffsets.Set(uniforms, invTextureSize * Vector2(-1.0f, 1.0f));
-		gDownsampleUniformDefinition.gOffsets.Set(uniforms, invTextureSize * Vector2(1.0f, 1.0f));
+		gDownsampleUniformDefinition.gOffsets.Set(uniforms, invTextureSize * Vector2(-1.0f, -1.0f), 0);
+		gDownsampleUniformDefinition.gOffsets.Set(uniforms, invTextureSize * Vector2(1.0f, -1.0f), 1);
+		gDownsampleUniformDefinition.gOffsets.Set(uniforms, invTextureSize * Vector2(-1.0f, 1.0f), 2);
+		gDownsampleUniformDefinition.gOffsets.Set(uniforms, invTextureSize * Vector2(1.0f, 1.0f), 3);
 	}
 
 	// Set parameters
-	mUniformBufferParameter.Set(uniforms);
-	mInputTextureParameter.Set(input);
+	mUniformBufferParameter.Set(set, uniforms);
+	mInputTextureParameter.Set(set, input);
 
-	commandBuffer.BeginRenderPass(RenderPassCreateInformation(output, mGpuParameterSet, RT_DEPTH_STENCIL));
-
-	Bind(commandBuffer);
-
-	if(MSAA)
-		GetRendererUtility().DrawScreenQuad(commandBuffer, Area2(0.0f, 0.0f, (float)rtProps.Width, (float)rtProps.Height));
-	else
-		GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
+	return set;
 }
 
-PooledRenderTextureCreateInformation DownsampleMaterial::GetOutputDesc(const TShared<Texture>& target)
+void DownsampleMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const TShared<Texture>& input) const
+{
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
+	B3D_PROFILE_RENDERER_MATERIAL
+
+	Bind(commandBuffer, set);
+
+	if(mMsaa)
+	{
+		const TextureProperties& rtProps = input->GetProperties();
+		GetRendererUtility().DrawScreenQuad(commandBuffer, Area2(0.0f, 0.0f, (float)rtProps.Width, (float)rtProps.Height));
+	}
+	else
+		GetRendererUtility().DrawScreenQuad(commandBuffer);
+}
+
+TextureCreateInformation DownsampleMaterial::GetOutputCreateInformation(const TShared<Texture>& target)
 {
 	const TextureProperties& rtProps = target->GetProperties();
 
 	u32 width = std::max(1, Math::CeilToInt(rtProps.Width * 0.5f));
 	u32 height = std::max(1, Math::CeilToInt(rtProps.Height * 0.5f));
 
-	return PooledRenderTextureCreateInformation::Create2D(rtProps.Format, width, height, TextureUsageFlag::RenderTarget);
+	return TextureCreateInformation::Create2D(rtProps.Format, width, height, TextureUsageFlag::RenderTarget);
 }
 
 DownsampleMaterial* DownsampleMaterial::GetVariation(u32 quality, bool msaa)
@@ -128,9 +149,9 @@ void EyeAdaptHistogramMaterial::InitDefinesInternal(ShaderDefines& defines)
 	defines.Set("LOOP_COUNT_Y", kLoopCountY);
 }
 
-void EyeAdaptHistogramMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& input, const TShared<Texture>& output, const AutoExposureSettings& settings)
+TShared<GpuParameterSet> EyeAdaptHistogramMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& input, const TShared<Texture>& output, const AutoExposureSettings& settings)
 {
-	B3D_PROFILE_RENDERER_MATERIAL
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
 
 	// Populate parameter buffer
 	GpuBufferMappedScope uniforms = gEyeAdaptHistogramUniformDefinition.AllocateTransient().Map();
@@ -145,23 +166,30 @@ void EyeAdaptHistogramMaterial::Execute(GpuCommandBuffer& commandBuffer, const T
 	gEyeAdaptHistogramUniformDefinition.gThreadGroupCount.Set(uniforms, threadGroupCount);
 
 	// Set parameters
-	mUniformBufferParameter.Set(uniforms);
-	mSceneColorParameter.Set(input);
+	mUniformBufferParameter.Set(set, uniforms);
+	mSceneColorParameter.Set(set, input);
+	mOutputTextureParameter.Set(set, output);
 
-	// Dispatch
-	mOutputTextureParameter.Set(output);
+	return set;
+}
 
-	Bind(commandBuffer);
+void EyeAdaptHistogramMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const TShared<Texture>& input) const
+{
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
+	B3D_PROFILE_RENDERER_MATERIAL
 
+	const Vector2I threadGroupCount = GetThreadGroupCount(input);
+
+	Bind(commandBuffer, set);
 	commandBuffer.DispatchCompute(threadGroupCount.X, threadGroupCount.Y);
 }
 
-PooledRenderTextureCreateInformation EyeAdaptHistogramMaterial::GetOutputDesc(const TShared<Texture>& target)
+TextureCreateInformation EyeAdaptHistogramMaterial::GetOutputCreateInformation(const TShared<Texture>& target)
 {
 	Vector2I threadGroupCount = GetThreadGroupCount(target);
 	u32 numHistograms = threadGroupCount.X * threadGroupCount.Y;
 
-	return PooledRenderTextureCreateInformation::Create2D(PF_RGBA16F, kHistogramNumTexels, numHistograms, TextureUsageFlag::AllowUnorderedAccessOnTheGPU);
+	return TextureCreateInformation::Create2D(PF_RGBA16F, kHistogramNumTexels, numHistograms, TextureUsageFlag::AllowUnorderedAccessOnTheGPU);
 }
 
 Vector2I EyeAdaptHistogramMaterial::GetThreadGroupCount(const TShared<Texture>& target)
@@ -196,11 +224,13 @@ void EyeAdaptHistogramReduceMaterial::Initialize()
 	mGpuParameterSet->GetSampledTextureParameter("gEyeAdaptationTex", mEyeAdaptationTextureParameter);
 }
 
-void EyeAdaptHistogramReduceMaterial::Prepare(const TShared<Texture>& sceneColor, const TShared<Texture>& histogram, const TShared<Texture>& prevFrame)
+TShared<GpuParameterSet> EyeAdaptHistogramReduceMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& sceneColor, const TShared<Texture>& histogram, const TShared<Texture>& prevFrame)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	GpuBufferMappedScope uniforms = gEyeAdaptHistogramReduceUniformDefinition.AllocateTransient().Map();
 
-	mHistogramTextureParameter.Set(histogram);
+	mHistogramTextureParameter.Set(set, histogram);
 
 	TShared<Texture> eyeAdaptationTex;
 	if(prevFrame == nullptr) // Could be that this is the first run
@@ -208,34 +238,32 @@ void EyeAdaptHistogramReduceMaterial::Prepare(const TShared<Texture>& sceneColor
 	else
 		eyeAdaptationTex = prevFrame;
 
-	mEyeAdaptationTextureParameter.Set(eyeAdaptationTex);
+	mEyeAdaptationTextureParameter.Set(set, eyeAdaptationTex);
 
 	Vector2I threadGroupCount = EyeAdaptHistogramMaterial::GetThreadGroupCount(sceneColor);
 	u32 numHistograms = threadGroupCount.X * threadGroupCount.Y;
 
 	gEyeAdaptHistogramReduceUniformDefinition.gThreadGroupCount.Set(uniforms, numHistograms);
 
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
+
+	return set;
 }
 
-void EyeAdaptHistogramReduceMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output)
+void EyeAdaptHistogramReduceMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(output, mGpuParameterSet, RT_DEPTH_STENCIL);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 
 	Area2 drawUV(0.0f, 0.0f, (float)EyeAdaptHistogramMaterial::kHistogramNumTexels, 2.0f);
 	GetRendererUtility().DrawScreenQuad(commandBuffer, drawUV);
-
-	commandBuffer.EndRenderPass();
 }
 
-PooledRenderTextureCreateInformation EyeAdaptHistogramReduceMaterial::GetOutputDesc()
+TextureCreateInformation EyeAdaptHistogramReduceMaterial::GetOutputCreateInformation()
 {
-	return PooledRenderTextureCreateInformation::Create2D(PF_RGBA16F, EyeAdaptHistogramMaterial::kHistogramNumTexels, 2, TextureUsageFlag::RenderTarget);
+	return TextureCreateInformation::Create2D(PF_RGBA16F, EyeAdaptHistogramMaterial::kHistogramNumTexels, 2, TextureUsageFlag::RenderTarget);
 }
 
 EyeAdaptationUniformDefinition gEyeAdaptationUniformDefinition;
@@ -252,32 +280,32 @@ void EyeAdaptationMaterial::InitDefinesInternal(ShaderDefines& defines)
 	defines.Set("THREADGROUP_SIZE_Y", EyeAdaptHistogramMaterial::kThreadGroupSizeY);
 }
 
-void EyeAdaptationMaterial::Prepare(const TShared<Texture>& reducedHistogram, float frameDelta, const AutoExposureSettings& settings, float exposureScale)
+TShared<GpuParameterSet> EyeAdaptationMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& reducedHistogram, float frameDelta, const AutoExposureSettings& settings, float exposureScale)
 {
-	mReducedHistogramTex.Set(reducedHistogram);
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
+	mReducedHistogramTex.Set(set, reducedHistogram);
 
 	GpuBufferMappedScope uniforms = gEyeAdaptationUniformDefinition.AllocateTransient().Map();
 	PopulateUniformBuffer(uniforms, frameDelta, settings, exposureScale);
 
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
+
+	return set;
 }
 
-void EyeAdaptationMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output)
+void EyeAdaptationMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(output, mGpuParameterSet, RT_DEPTH_STENCIL);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
-PooledRenderTextureCreateInformation EyeAdaptationMaterial::GetOutputDesc()
+TextureCreateInformation EyeAdaptationMaterial::GetOutputCreateInformation()
 {
-	return PooledRenderTextureCreateInformation::Create2D(PF_R32F, 1, 1, TextureUsageFlag::RenderTarget);
+	return TextureCreateInformation::Create2D(PF_R32F, 1, 1, TextureUsageFlag::RenderTarget);
 }
 
 void EyeAdaptationMaterial::PopulateUniformBuffer(const GpuBufferMappedScope& uniforms, float frameDelta, const AutoExposureSettings& settings, float exposureScale)
@@ -310,140 +338,10 @@ void EyeAdaptationMaterial::PopulateUniformBuffer(const GpuBufferMappedScope& un
 	gEyeAdaptationUniformDefinition.gEyeAdaptationParams.Set(uniforms, eyeAdaptationParams[2], 2);
 }
 
-void EyeAdaptationBasicSetupMaterial::Initialize()
-{
-	mGpuParameterSet->GetUniformBufferParameter("EyeAdaptationParams", mUniformBufferParameter);
-	mGpuParameterSet->GetSampledTextureParameter("gInputTex", mInputTextureParameter);
-
-	SamplerStateCreateInformation samplerStateCreateInformation;
-	samplerStateCreateInformation.MinFilter = FO_POINT;
-	samplerStateCreateInformation.MagFilter = FO_POINT;
-	samplerStateCreateInformation.MipFilter = FO_POINT;
-
-	TShared<SamplerState> samplerState = mGpuDevice->FindOrCreateSamplerState(samplerStateCreateInformation);
-	SetSamplerState(mGpuParameterSet, "gInputSamp", "gInputTex", samplerState);
-}
-
-void EyeAdaptationBasicSetupMaterial::Prepare(const TShared<Texture>& input, float frameDelta, const AutoExposureSettings& settings, float exposureScale)
-{
-	mInputTextureParameter.Set(input);
-
-	GpuBufferMappedScope uniforms = gEyeAdaptationUniformDefinition.AllocateTransient().Map();
-	EyeAdaptationMaterial::PopulateUniformBuffer(uniforms, frameDelta, settings, exposureScale);
-
-	mUniformBufferParameter.Set(uniforms);
-}
-
-void EyeAdaptationBasicSetupMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output)
-{
-	B3D_PROFILE_RENDERER_MATERIAL
-
-	RenderPassCreateInformation info(output, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
-	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
-}
-
-PooledRenderTextureCreateInformation EyeAdaptationBasicSetupMaterial::GetOutputDesc(const TShared<Texture>& input)
-{
-	auto& props = input->GetProperties();
-	return PooledRenderTextureCreateInformation::Create2D(PF_RGBA16F, props.Width, props.Height, TextureUsageFlag::RenderTarget);
-}
-
-EyeAdaptationBasicUniformDefinition gEyeAdaptationBasicUniformDefinition;
-
-void EyeAdaptationBasicMaterial::Initialize()
-{
-	mGpuParameterSet->GetUniformBufferParameter("Input", mUniformBufferParameter);
-	mGpuParameterSet->GetUniformBufferParameter("EyeAdaptationParams", mEyeAdaptationUniformBufferParameter);
-	mGpuParameterSet->GetSampledTextureParameter("gCurFrameTex", mCurrentFrameTextureParameter);
-	mGpuParameterSet->GetSampledTextureParameter("gPrevFrameTex", mPreviousFrameTextureParameter);
-}
-
-void EyeAdaptationBasicMaterial::Prepare(const TShared<Texture>& curFrame, const TShared<Texture>& prevFrame, float frameDelta, const AutoExposureSettings& settings, float exposureScale)
-{
-	GpuBufferMappedScope eyeAdaptationUniforms = gEyeAdaptationUniformDefinition.AllocateTransient().Map();
-	GpuBufferMappedScope eyeAdaptationBasicUniforms = gEyeAdaptationBasicUniformDefinition.AllocateTransient().Map();
-
-	EyeAdaptationMaterial::PopulateUniformBuffer(eyeAdaptationUniforms, frameDelta, settings, exposureScale);
-
-	auto& texProps = curFrame->GetProperties();
-	Vector2I texSize = { (i32)texProps.Width, (i32)texProps.Height };
-
-	gEyeAdaptationBasicUniformDefinition.gInputTexSize.Set(eyeAdaptationBasicUniforms, texSize);
-
-	mEyeAdaptationUniformBufferParameter.Set(eyeAdaptationUniforms);
-	mUniformBufferParameter.Set(eyeAdaptationBasicUniforms);
-	mCurrentFrameTextureParameter.Set(curFrame);
-
-	if(prevFrame == nullptr) // Could be that this is the first run
-		mPreviousFrameTextureParameter.Set(Texture::kWhite);
-	else
-		mPreviousFrameTextureParameter.Set(prevFrame);
-}
-
-void EyeAdaptationBasicMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output)
-{
-	B3D_PROFILE_RENDERER_MATERIAL
-
-	RenderPassCreateInformation info(output, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
-	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
-}
-
-PooledRenderTextureCreateInformation EyeAdaptationBasicMaterial::GetOutputDesc()
-{
-	return PooledRenderTextureCreateInformation::Create2D(PF_R32F, 1, 1, TextureUsageFlag::RenderTarget);
-}
-
 CreateTonemapLUTUniformDefinition gCreateTonemapLUTUniformDefinition;
 WhiteBalanceUniformDefinition gWhiteBalanceUniformDefinition;
 
-void CreateTonemap2DLUTMaterial::Initialize()
-{
-	mGpuParameterSet->GetUniformBufferParameter("Input", mUniformBufferParameter);
-	mGpuParameterSet->GetUniformBufferParameter("WhiteBalanceInput", mWhiteBalanceUniformBufferParameter);
-}
-
-void CreateTonemap2DLUTMaterial::InitDefinesInternal(ShaderDefines& defines)
-{
-	defines.Set("LUT_SIZE", kLutSize);
-}
-
-void CreateTonemap2DLUTMaterial::Prepare(const RenderSettings& settings)
-{
-	GpuBufferMappedScope lutUniforms = gCreateTonemapLUTUniformDefinition.AllocateTransient().Map();
-	GpuBufferMappedScope whiteBalanceUniforms = gWhiteBalanceUniformDefinition.AllocateTransient().Map();
-
-	PopulateTonemappingUniformBuffer(settings, lutUniforms);
-	PopulateWhiteBalanceUniformBuffer(settings, whiteBalanceUniforms);
-
-	mUniformBufferParameter.Set(lutUniforms);
-	mWhiteBalanceUniformBufferParameter.Set(whiteBalanceUniforms);
-}
-
-void CreateTonemap2DLUTMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTexture>& output)
-{
-	B3D_PROFILE_RENDERER_MATERIAL
-
-	// Render
-	RenderPassCreateInformation info(output, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
-	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
-}
-
-void CreateTonemap2DLUTMaterial::PopulateTonemappingUniformBuffer(const RenderSettings& settings, const GpuBufferMappedScope& uniforms)
+void CreateTonemap3DLUTMaterial::PopulateTonemappingUniformBuffer(const RenderSettings& settings, const GpuBufferMappedScope& uniforms)
 {
 	// Set parameters
 	gCreateTonemapLUTUniformDefinition.gGammaAdjustment.Set(uniforms, 2.2f / settings.Gamma);
@@ -473,15 +371,10 @@ void CreateTonemap2DLUTMaterial::PopulateTonemappingUniformBuffer(const RenderSe
 	gCreateTonemapLUTUniformDefinition.gOffset.Set(uniforms, settings.ColorGrading.Offset);
 }
 
-void CreateTonemap2DLUTMaterial::PopulateWhiteBalanceUniformBuffer(const RenderSettings& settings, const GpuBufferMappedScope& uniforms)
+void CreateTonemap3DLUTMaterial::PopulateWhiteBalanceUniformBuffer(const RenderSettings& settings, const GpuBufferMappedScope& uniforms)
 {
 	gWhiteBalanceUniformDefinition.gWhiteTemp.Set(uniforms, settings.WhiteBalance.Temperature);
 	gWhiteBalanceUniformDefinition.gWhiteOffset.Set(uniforms, settings.WhiteBalance.Tint);
-}
-
-PooledRenderTextureCreateInformation CreateTonemap2DLUTMaterial::GetOutputDesc() const
-{
-	return PooledRenderTextureCreateInformation::Create2D(PF_RGBA8, kLutSize * kLutSize, kLutSize, TextureUsageFlag::RenderTarget);
 }
 
 void CreateTonemap3DLUTMaterial::Initialize()
@@ -493,32 +386,47 @@ void CreateTonemap3DLUTMaterial::Initialize()
 
 void CreateTonemap3DLUTMaterial::InitDefinesInternal(ShaderDefines& defines)
 {
-	defines.Set("LUT_SIZE", CreateTonemap2DLUTMaterial::kLutSize);
+	defines.Set("LUT_SIZE", kLutSize);
 }
 
-void CreateTonemap3DLUTMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& output, const RenderSettings& settings)
+TShared<GpuParameterSet> CreateTonemap3DLUTMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& output, const RenderSettings& settings)
 {
-	B3D_PROFILE_RENDERER_MATERIAL
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
 
 	GpuBufferMappedScope lutUniforms = gCreateTonemapLUTUniformDefinition.AllocateTransient().Map();
 	GpuBufferMappedScope whiteBalanceUniforms = gWhiteBalanceUniformDefinition.AllocateTransient().Map();
 
-	CreateTonemap2DLUTMaterial::PopulateTonemappingUniformBuffer(settings, lutUniforms);
-	CreateTonemap2DLUTMaterial::PopulateWhiteBalanceUniformBuffer(settings, whiteBalanceUniforms);
+	PopulateTonemappingUniformBuffer(settings, lutUniforms);
+	PopulateWhiteBalanceUniformBuffer(settings, whiteBalanceUniforms);
 
-	mUniformBufferParameter.Set(lutUniforms);
-	mWhiteBalanceUniformBufferParameter.Set(whiteBalanceUniforms);
+	mUniformBufferParameter.Set(set, lutUniforms);
+	mWhiteBalanceUniformBufferParameter.Set(set, whiteBalanceUniforms);
+	mOutputTextureParameter.Set(set, output);
 
-	// Dispatch
-	mOutputTextureParameter.Set(output);
-
-	Bind(commandBuffer);
-	commandBuffer.DispatchCompute(CreateTonemap2DLUTMaterial::kLutSize / 8, CreateTonemap2DLUTMaterial::kLutSize / 8, CreateTonemap2DLUTMaterial::kLutSize);
+	return set;
 }
 
-PooledRenderTextureCreateInformation CreateTonemap3DLUTMaterial::GetOutputDesc() const
+void CreateTonemap3DLUTMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
-	return PooledRenderTextureCreateInformation::Create3D(PF_RGBA8, CreateTonemap2DLUTMaterial::kLutSize, CreateTonemap2DLUTMaterial::kLutSize, CreateTonemap2DLUTMaterial::kLutSize, TextureUsageFlag::AllowUnorderedAccessOnTheGPU);
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
+	B3D_PROFILE_RENDERER_MATERIAL
+
+	Bind(commandBuffer, set);
+	commandBuffer.DispatchCompute(kLutSize / 8, kLutSize / 8, kLutSize);
+}
+
+TextureCreateInformation CreateTonemap3DLUTMaterial::GetOutputCreateInformation()
+{
+	TextureCreateInformation information;
+	information.Type = TEX_TYPE_3D;
+	information.Format = PF_RGBA8;
+	information.Width = kLutSize;
+	information.Height = kLutSize;
+	information.Depth = kLutSize;
+	information.Usage = TextureUsageFlag::AllowUnorderedAccessOnTheGPU;
+	information.SampleCount = 1;
+
+	return information;
 }
 
 TonemappingUniformDefinition gTonemappingUniformDefinition;
@@ -536,11 +444,14 @@ void TonemappingMaterial::Initialize()
 
 void TonemappingMaterial::InitDefinesInternal(ShaderDefines& defines)
 {
-	defines.Set("LUT_SIZE", CreateTonemap2DLUTMaterial::kLutSize);
+	defines.Set("LUT_SIZE", CreateTonemap3DLUTMaterial::kLutSize);
 }
 
-void TonemappingMaterial::Prepare(const TShared<Texture>& sceneColor, const TShared<Texture>& eyeAdaptation, const TShared<Texture>& bloom, const TShared<Texture>& colorLUT, const RenderSettings& settings)
+TShared<GpuParameterSet> TonemappingMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& sceneColor, const TShared<Texture>& eyeAdaptation, const TShared<Texture>& bloom,
+	const TShared<Texture>& colorLUT, const RenderSettings& settings)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	const TextureProperties& texProps = sceneColor->GetProperties();
 
 	GpuBufferMappedScope uniforms = gTonemappingUniformDefinition.AllocateTransient().Map();
@@ -551,101 +462,59 @@ void TonemappingMaterial::Prepare(const TShared<Texture>& sceneColor, const TSha
 	gTonemappingUniformDefinition.gBloomTint.Set(uniforms, settings.Bloom.Tint);
 	gTonemappingUniformDefinition.gNumSamples.Set(uniforms, texProps.SampleCount);
 
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
 
-	mInputTextureParameter.Set(sceneColor);
-	mColorLUTParameter.Set(colorLUT);
-	mEyeAdaptationTextureParameter.Set(eyeAdaptation);
-	mBloomTextureParameter.Set(bloom != nullptr ? bloom : Texture::kBlack);
+	mInputTextureParameter.Set(set, sceneColor);
+	mColorLUTParameter.Set(set, colorLUT);
+	mEyeAdaptationTextureParameter.Set(set, eyeAdaptation);
+	mBloomTextureParameter.Set(set, bloom != nullptr ? bloom : Texture::kBlack);
+
+	return set;
 }
 
-void TonemappingMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output)
+void TonemappingMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(output, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
-TonemappingMaterial* TonemappingMaterial::GetVariation(bool volumeLUT, bool gammaOnly, bool autoExposure, bool MSAA)
+TonemappingMaterial* TonemappingMaterial::GetVariation(bool gammaOnly, bool autoExposure, bool MSAA)
 {
-	if(volumeLUT)
+	if(gammaOnly)
 	{
-		if(gammaOnly)
+		if(autoExposure)
 		{
-			if(autoExposure)
-			{
-				if(MSAA)
-					return Get(GetVariation<true, true, true, true>());
-				else
-					return Get(GetVariation<true, true, true, false>());
-			}
+			if(MSAA)
+				return Get(GetVariation<true, true, true>());
 			else
-			{
-				if(MSAA)
-					return Get(GetVariation<true, true, false, true>());
-				else
-					return Get(GetVariation<true, true, false, false>());
-			}
+				return Get(GetVariation<true, true, false>());
 		}
 		else
 		{
-			if(autoExposure)
-			{
-				if(MSAA)
-					return Get(GetVariation<true, false, true, true>());
-				else
-					return Get(GetVariation<true, false, true, false>());
-			}
+			if(MSAA)
+				return Get(GetVariation<true, false, true>());
 			else
-			{
-				if(MSAA)
-					return Get(GetVariation<true, false, false, true>());
-				else
-					return Get(GetVariation<true, false, false, false>());
-			}
+				return Get(GetVariation<true, false, false>());
 		}
 	}
 	else
 	{
-		if(gammaOnly)
+		if(autoExposure)
 		{
-			if(autoExposure)
-			{
-				if(MSAA)
-					return Get(GetVariation<false, true, true, true>());
-				else
-					return Get(GetVariation<false, true, true, false>());
-			}
+			if(MSAA)
+				return Get(GetVariation<false, true, true>());
 			else
-			{
-				if(MSAA)
-					return Get(GetVariation<false, true, false, true>());
-				else
-					return Get(GetVariation<false, true, false, false>());
-			}
+				return Get(GetVariation<false, true, false>());
 		}
 		else
 		{
-			if(autoExposure)
-			{
-				if(MSAA)
-					return Get(GetVariation<false, false, true, true>());
-				else
-					return Get(GetVariation<false, false, true, false>());
-			}
+			if(MSAA)
+				return Get(GetVariation<false, false, true>());
 			else
-			{
-				if(MSAA)
-					return Get(GetVariation<false, false, false, true>());
-				else
-					return Get(GetVariation<false, false, false, false>());
-			}
+				return Get(GetVariation<false, false, false>());
 		}
 	}
 }
@@ -659,29 +528,29 @@ void BloomClipMaterial::Initialize()
 	mGpuParameterSet->GetSampledTextureParameter("gInputTex", mInputTextureParameter);
 }
 
-void BloomClipMaterial::Prepare(const TShared<Texture>& input, float threshold, const TShared<Texture>& eyeAdaptation, const RenderSettings& settings)
+TShared<GpuParameterSet> BloomClipMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& input, float threshold, const TShared<Texture>& eyeAdaptation, const RenderSettings& settings)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	GpuBufferMappedScope uniforms = gBloomClipUniformDefinition.AllocateTransient().Map();
 
 	gBloomClipUniformDefinition.gThreshold.Set(uniforms, threshold);
 	gBloomClipUniformDefinition.gManualExposureScale.Set(uniforms, Math::RaiseToPower(2.0f, settings.ExposureScale));
 
-	mUniformBufferParameter.Set(uniforms);
-	mInputTextureParameter.Set(input);
-	mEyeAdaptationTextureParameter.Set(eyeAdaptation);
+	mUniformBufferParameter.Set(set, uniforms);
+	mInputTextureParameter.Set(set, input);
+	mEyeAdaptationTextureParameter.Set(set, eyeAdaptation);
+
+	return set;
 }
 
-void BloomClipMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output)
+void BloomClipMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(output, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
 BloomClipMaterial* BloomClipMaterial::GetVariation(bool autoExposure)
@@ -701,8 +570,10 @@ void ScreenSpaceLensFlareMaterial::Initialize()
 	mGpuParameterSet->GetSampledTextureParameter("gGradientTex", mGradientTextureParameter);
 }
 
-void ScreenSpaceLensFlareMaterial::Prepare(const TShared<Texture>& input, const ScreenSpaceLensFlareSettings& settings)
+TShared<GpuParameterSet> ScreenSpaceLensFlareMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& input, const ScreenSpaceLensFlareSettings& settings)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	GpuBufferMappedScope uniforms = gScreenSpaceLensFlareUniformDefinition.AllocateTransient().Map();
 
 	gScreenSpaceLensFlareUniformDefinition.gThreshold.Set(uniforms, settings.Threshold);
@@ -714,24 +585,21 @@ void ScreenSpaceLensFlareMaterial::Prepare(const TShared<Texture>& input, const 
 	gScreenSpaceLensFlareUniformDefinition.gHaloAspectRatio.Set(uniforms, settings.HaloAspectRatio);
 	gScreenSpaceLensFlareUniformDefinition.gChromaticAberration.Set(uniforms, settings.ChromaticAberrationOffset);
 
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
 
-	mInputTextureParameter.Set(input);
-	mGradientTextureParameter.Set(RendererTextures::lensFlareGradient);
+	mInputTextureParameter.Set(set, input);
+	mGradientTextureParameter.Set(set, RendererTextures::lensFlareGradient);
+
+	return set;
 }
 
-void ScreenSpaceLensFlareMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output)
+void ScreenSpaceLensFlareMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	// Render
-	RenderPassCreateInformation info(output, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
 ScreenSpaceLensFlareMaterial* ScreenSpaceLensFlareMaterial::GetVariation(bool halo, bool haloAspect, bool chromaticAberration)
@@ -773,8 +641,10 @@ void ChromaticAberrationMaterial::Initialize()
 	mGpuParameterSet->GetSampledTextureParameter("gFringeTex", mFringeTextureParameter);
 }
 
-void ChromaticAberrationMaterial::Prepare(const TShared<Texture>& input, const ChromaticAberrationSettings& settings)
+TShared<GpuParameterSet> ChromaticAberrationMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& input, const ChromaticAberrationSettings& settings)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	const TextureProperties& texProps = input->GetProperties();
 
 	GpuBufferMappedScope uniforms = gChromaticAberrationUniformDefinition.AllocateTransient().Map();
@@ -782,7 +652,7 @@ void ChromaticAberrationMaterial::Prepare(const TShared<Texture>& input, const C
 	gChromaticAberrationUniformDefinition.gInputSize.Set(uniforms, Vector2((float)texProps.Width, (float)texProps.Height));
 	gChromaticAberrationUniformDefinition.gShiftAmount.Set(uniforms, settings.ShiftAmount);
 
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
 
 	TShared<Texture> fringeTex;
 	if(settings.FringeTexture)
@@ -790,22 +660,19 @@ void ChromaticAberrationMaterial::Prepare(const TShared<Texture>& input, const C
 	else
 		fringeTex = RendererTextures::chromaticAberrationFringe;
 
-	mInputTextureParameter.Set(input);
-	mFringeTextureParameter.Set(fringeTex);
+	mInputTextureParameter.Set(set, input);
+	mFringeTextureParameter.Set(set, fringeTex);
+
+	return set;
 }
 
-void ChromaticAberrationMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output)
+void ChromaticAberrationMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	// Render
-	RenderPassCreateInformation info(output, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
 ChromaticAberrationMaterial* ChromaticAberrationMaterial::GetVariation(ChromaticAberrationType type)
@@ -829,30 +696,29 @@ void FilmGrainMaterial::Initialize()
 	mGpuParameterSet->GetSampledTextureParameter("gInputTex", mInputTextureParameter);
 }
 
-void FilmGrainMaterial::Prepare(const TShared<Texture>& input, float time, const FilmGrainSettings& settings)
+TShared<GpuParameterSet> FilmGrainMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& input, float time, const FilmGrainSettings& settings)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	GpuBufferMappedScope uniforms = gFilmGrainUniformDefinition.AllocateTransient().Map();
 
 	gFilmGrainUniformDefinition.gIntensity.Set(uniforms, settings.Intensity);
 	gFilmGrainUniformDefinition.gTime.Set(uniforms, settings.Speed * time);
 
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
 
-	mInputTextureParameter.Set(input);
+	mInputTextureParameter.Set(set, input);
+
+	return set;
 }
 
-void FilmGrainMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output)
+void FilmGrainMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	// Render
-	RenderPassCreateInformation info(output, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
 GaussianBlurUniformDefinition gGaussianBlurUniformDefinition;
@@ -873,53 +739,35 @@ void GaussianBlurMaterial::InitDefinesInternal(ShaderDefines& defines)
 	defines.Set("MAX_NUM_SAMPLES", kMaxBlurSamples);
 }
 
-void GaussianBlurMaterial::PrepareDirection(Direction direction, const TShared<Texture>& source, float filterSize, const Color& tint, const TShared<Texture>& additive)
+TShared<GpuParameterSet> GaussianBlurMaterial::Prepare(FrameGraphPass& pass, Direction direction, const TShared<Texture>& source, float filterSize, const Color& tint,
+	const TShared<Texture>& additive)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	GpuBufferMappedScope uniforms = gGaussianBlurUniformDefinition.AllocateTransient().Map();
 	PopulateUniformBuffer(uniforms, direction, source, filterSize, tint);
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
 
-	mInputTextureParameter.Set(source);
+	mInputTextureParameter.Set(set, source);
 
 	if(mIsAdditive)
 	{
 		if(additive)
-			mAdditiveTextureParameter.Set(additive);
+			mAdditiveTextureParameter.Set(set, additive);
 		else
-			mAdditiveTextureParameter.Set(Texture::kBlack);
+			mAdditiveTextureParameter.Set(set, Texture::kBlack);
 	}
+
+	return set;
 }
 
-void GaussianBlurMaterial::ExecutePass(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output)
+void GaussianBlurMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(output, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
-}
-
-void GaussianBlurMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& source, float filterSize, const TShared<RenderTexture>& destination, const Color& tint, const TShared<Texture>& additive)
-{
-	B3D_PROFILE_RENDERER_MATERIAL
-
-	const TextureProperties& srcProps = source->GetProperties();
-	const RenderTargetProperties& dstProps = destination->GetProperties();
-
-	PooledRenderTextureCreateInformation tempTextureDesc = PooledRenderTextureCreateInformation::Create2D(srcProps.Format, dstProps.Width, dstProps.Height, TextureUsageFlag::RenderTarget);
-	TShared<PooledRenderTexture> tempTexture = GetGpuResourcePool().Get(tempTextureDesc);
-
-	// Horizontal pass
-	PrepareDirection(DirHorizontal, source, filterSize, Color::kWhite);
-	ExecutePass(commandBuffer, tempTexture->RenderTexture);
-
-	// Vertical pass
-	PrepareDirection(DirVertical, tempTexture->Texture, filterSize, tint, additive);
-	ExecutePass(commandBuffer, destination);
 }
 
 u32 GaussianBlurMaterial::CalcStdDistribution(float filterRadius, std::array<float, kMaxBlurSamples>& weights, std::array<float, kMaxBlurSamples>& offsets)
@@ -1062,13 +910,52 @@ GaussianBlurMaterial* GaussianBlurMaterial::GetVariation(bool additive)
 	return Get(GetVariation<false>());
 }
 
+void AddGaussianBlurPasses(FrameGraph& graph, const TShared<Texture>& source, float filterSize, const TShared<Texture>& destination, const Color& tint, const TShared<Texture>& additive)
+{
+	const TextureProperties& srcProps = source->GetProperties();
+	const TextureProperties& dstProps = destination->GetProperties();
+
+	const TShared<Texture> horizontalOutput = graph.CreateTexture("GaussianBlurHorizontal", TextureCreateInformation::Create2D(srcProps.Format, dstProps.Width, dstProps.Height, TextureUsageFlag::RenderTarget));
+
+	GaussianBlurMaterial* const horizontalMaterial = GaussianBlurMaterial::GetVariation(false);
+
+	FrameGraphRasterPass horizontalPass;
+	horizontalPass.SetColorAttachment(0, horizontalOutput, FrameGraphAttachmentLoad::DontCare);
+
+	const TShared<GpuParameterSet> horizontalSet = horizontalMaterial->Prepare(horizontalPass, GaussianBlurMaterial::DirHorizontal, source, filterSize);
+	graph.AddRasterPass("GaussianBlurH", std::move(horizontalPass), [horizontalMaterial, horizontalSet](FrameGraphPassContext& context)
+	{
+		context.GetCommandBuffer().SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
+		horizontalMaterial->Execute(context, horizontalSet);
+	});
+
+	// Adding nothing gives the same result as the variation without the additive input
+	GaussianBlurMaterial* const verticalMaterial = GaussianBlurMaterial::GetVariation(additive != nullptr);
+
+	FrameGraphRasterPass verticalPass;
+	verticalPass.SetColorAttachment(0, destination, FrameGraphAttachmentLoad::DontCare);
+
+	const TShared<GpuParameterSet> verticalSet = verticalMaterial->Prepare(verticalPass, GaussianBlurMaterial::DirVertical, horizontalOutput, filterSize, tint, additive);
+	graph.AddRasterPass("GaussianBlurV", std::move(verticalPass), [verticalMaterial, verticalSet](FrameGraphPassContext& context)
+	{
+		context.GetCommandBuffer().SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
+		verticalMaterial->Execute(context, verticalSet);
+	});
+}
+
 GaussianDOFUniformDefinition gGaussianDOFUniformDefinition;
 
 void GaussianDOFSeparateMaterial::Initialize()
 {
 	mGpuParameterSet->GetUniformBufferParameter("Input", mUniformBufferParameter);
+	mGpuParameterSet->GetUniformBufferParameter("PerCamera", mPerCameraParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gColorTex", mColorTextureParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gDepthTex", mDepthTextureParameter);
+
+	if(mGpuParameterSet->HasSamplerState("gColorSamp"))
+		mGpuParameterSet->GetSamplerStateParameter("gColorSamp", mColorSamplerParameter);
+	else
+		mGpuParameterSet->GetSamplerStateParameter("gColorTex", mColorSamplerParameter);
 
 	SamplerStateCreateInformation samplerStateCreateInformation;
 	samplerStateCreateInformation.MinFilter = FO_POINT;
@@ -1078,12 +965,13 @@ void GaussianDOFSeparateMaterial::Initialize()
 	samplerStateCreateInformation.AddressMode.V = TAM_CLAMP;
 	samplerStateCreateInformation.AddressMode.W = TAM_CLAMP;
 
-	TShared<SamplerState> samplerState = mGpuDevice->FindOrCreateSamplerState(samplerStateCreateInformation);
-	SetSamplerState(mGpuParameterSet, "gColorSamp", "gColorTex", samplerState);
+	mPointSamplerState = mGpuDevice->FindOrCreateSamplerState(samplerStateCreateInformation);
 }
 
-void GaussianDOFSeparateMaterial::Prepare(const TShared<Texture>& color, const TShared<Texture>& depth, const RendererView& view, const DepthOfFieldSettings& settings)
+TShared<GpuParameterSet> GaussianDOFSeparateMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& color, const TShared<Texture>& depth, const RendererView& view, const DepthOfFieldSettings& settings)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	const TextureProperties& srcProps = color->GetProperties();
 	Vector2 invTexSize(1.0f / srcProps.Width, 1.0f / srcProps.Height);
 
@@ -1095,67 +983,33 @@ void GaussianDOFSeparateMaterial::Prepare(const TShared<Texture>& color, const T
 	gGaussianDOFUniformDefinition.gInvNearBlurRange.Set(uniforms, 1.0f / settings.NearTransitionRange);
 	gGaussianDOFUniformDefinition.gInvFarBlurRange.Set(uniforms, 1.0f / settings.FarTransitionRange);
 
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
 
-	mColorTextureParameter.Set(color);
-	mDepthTextureParameter.Set(depth);
+	mColorTextureParameter.Set(set, color);
+	mDepthTextureParameter.Set(set, depth);
+	mColorSamplerParameter.Set(set, mPointSamplerState);
+	mPerCameraParameter.Set(set, view.GetPerViewBuffer());
 
-	const GpuBufferSuballocation& perView = view.GetPerViewBuffer();
-	mGpuParameterSet->SetUniformBuffer("PerCamera", perView);
+	return set;
 }
 
-void GaussianDOFSeparateMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& color)
+void GaussianDOFSeparateMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
+	Bind(commandBuffer, set);
+	GetRendererUtility().DrawScreenQuad(commandBuffer);
+}
+
+TextureCreateInformation GaussianDOFSeparateMaterial::GetOutputCreateInformation(const TShared<Texture>& color)
+{
 	const TextureProperties& srcProps = color->GetProperties();
 
 	u32 outputWidth = std::max(1U, srcProps.Width / 2);
 	u32 outputHeight = std::max(1U, srcProps.Height / 2);
 
-	PooledRenderTextureCreateInformation outputTexDesc = PooledRenderTextureCreateInformation::Create2D(srcProps.Format, outputWidth, outputHeight, TextureUsageFlag::RenderTarget);
-	mOutput0 = GetGpuResourcePool().Get(outputTexDesc);
-
-	bool near = mVariationParameters.GetBool("NEAR");
-	bool far = mVariationParameters.GetBool("FAR");
-
-	TShared<RenderTexture> rt;
-	if(near && far)
-	{
-		mOutput1 = GetGpuResourcePool().Get(outputTexDesc);
-
-		RenderTextureCreateInformation rtDesc;
-		rtDesc.ColorSurfaces[0].Texture = mOutput0->Texture;
-		rtDesc.ColorSurfaces[1].Texture = mOutput1->Texture;
-
-		rt = RenderTexture::Create(rtDesc);
-	}
-	else
-		rt = mOutput0->RenderTexture;
-
-	RenderPassCreateInformation info(rt, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
-	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
-}
-
-TShared<PooledRenderTexture> GaussianDOFSeparateMaterial::GetOutput(u32 idx)
-{
-	if(idx == 0)
-		return mOutput0;
-	else if(idx == 1)
-		return mOutput1;
-
-	return nullptr;
-}
-
-void GaussianDOFSeparateMaterial::Release()
-{
-	mOutput0 = nullptr;
-	mOutput1 = nullptr;
+	return TextureCreateInformation::Create2D(srcProps.Format, outputWidth, outputHeight, TextureUsageFlag::RenderTarget);
 }
 
 GaussianDOFSeparateMaterial* GaussianDOFSeparateMaterial::GetVariation(bool near, bool far)
@@ -1174,6 +1028,7 @@ GaussianDOFSeparateMaterial* GaussianDOFSeparateMaterial::GetVariation(bool near
 void GaussianDOFCombineMaterial::Initialize()
 {
 	mGpuParameterSet->GetUniformBufferParameter("Input", mUniformBufferParameter);
+	mGpuParameterSet->GetUniformBufferParameter("PerCamera", mPerCameraParameter);
 
 	mGpuParameterSet->GetSampledTextureParameter("gFocusedTex", mFocusedTextureParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gDepthTex", mDepthTextureParameter);
@@ -1185,8 +1040,11 @@ void GaussianDOFCombineMaterial::Initialize()
 		mGpuParameterSet->GetSampledTextureParameter("gFarTex", mFarTextureParameter);
 }
 
-void GaussianDOFCombineMaterial::Prepare(const TShared<Texture>& focused, const TShared<Texture>& near, const TShared<Texture>& far, const TShared<Texture>& depth, const RendererView& view, const DepthOfFieldSettings& settings)
+TShared<GpuParameterSet> GaussianDOFCombineMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& focused, const TShared<Texture>& near, const TShared<Texture>& far,
+	const TShared<Texture>& depth, const RendererView& view, const DepthOfFieldSettings& settings)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	const TextureProperties& srcProps = focused->GetProperties();
 	Vector2 invTexSize(1.0f / srcProps.Width, 1.0f / srcProps.Height);
 
@@ -1198,28 +1056,24 @@ void GaussianDOFCombineMaterial::Prepare(const TShared<Texture>& focused, const 
 	gGaussianDOFUniformDefinition.gInvNearBlurRange.Set(uniforms, 1.0f / settings.NearTransitionRange);
 	gGaussianDOFUniformDefinition.gInvFarBlurRange.Set(uniforms, 1.0f / settings.FarTransitionRange);
 
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
 
-	mFocusedTextureParameter.Set(focused);
-	mNearTextureParameter.Set(near);
-	mFarTextureParameter.Set(far);
-	mDepthTextureParameter.Set(depth);
+	mFocusedTextureParameter.Set(set, focused);
+	mNearTextureParameter.Set(set, near);
+	mFarTextureParameter.Set(set, far);
+	mDepthTextureParameter.Set(set, depth);
+	mPerCameraParameter.Set(set, view.GetPerViewBuffer());
 
-	const GpuBufferSuballocation& perView = view.GetPerViewBuffer();
-	mGpuParameterSet->SetUniformBuffer("PerCamera", perView);
+	return set;
 }
 
-void GaussianDOFCombineMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output)
+void GaussianDOFCombineMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(output, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
 GaussianDOFCombineMaterial* GaussianDOFCombineMaterial::GetVariation(bool near, bool far)
@@ -1240,14 +1094,19 @@ BokehDOFPrepareUniformDefinition gBokehDOFPrepareUniformDefinition;
 
 void BokehDOFPrepareMaterial::Initialize()
 {
+	mMsaa = mVariationParameters.GetI32("MSAA_COUNT") > 1;
+
 	mGpuParameterSet->GetUniformBufferParameter("Params", mUniformBufferParameter);
 	mGpuParameterSet->GetUniformBufferParameter("DepthOfFieldParams", mCommonUniformBufferParameter);
+	mGpuParameterSet->GetUniformBufferParameter("PerCamera", mPerCameraParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gInputTex", mInputTextureParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gDepthBufferTex", mDepthTextureParameter);
 }
 
-void BokehDOFPrepareMaterial::Prepare(const TShared<Texture>& input, const TShared<Texture>& depth, const RendererView& view, const DepthOfFieldSettings& settings)
+TShared<GpuParameterSet> BokehDOFPrepareMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& input, const TShared<Texture>& depth, const RendererView& view, const DepthOfFieldSettings& settings)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	const TextureProperties& srcProps = input->GetProperties();
 
 	GpuBufferMappedScope prepareUniforms = gBokehDOFPrepareUniformDefinition.AllocateTransient().Map();
@@ -1258,44 +1117,39 @@ void BokehDOFPrepareMaterial::Prepare(const TShared<Texture>& input, const TShar
 
 	BokehDOFMaterial::PopulateDofCommonParams(commonUniforms, settings, view);
 
-	mUniformBufferParameter.Set(prepareUniforms);
-	mCommonUniformBufferParameter.Set(commonUniforms);
-	mInputTextureParameter.Set(input);
-	mDepthTextureParameter.Set(depth);
+	mUniformBufferParameter.Set(set, prepareUniforms);
+	mCommonUniformBufferParameter.Set(set, commonUniforms);
+	mInputTextureParameter.Set(set, input);
+	mDepthTextureParameter.Set(set, depth);
+	mPerCameraParameter.Set(set, view.GetPerViewBuffer());
 
-	const GpuBufferSuballocation& perView = view.GetPerViewBuffer();
-	mGpuParameterSet->SetUniformBuffer("PerCamera", perView);
+	return set;
 }
 
-void BokehDOFPrepareMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output)
+void BokehDOFPrepareMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const TShared<Texture>& input) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(output, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
+	Bind(commandBuffer, set);
 
-	Bind(commandBuffer);
-
-	bool MSAA = mVariationParameters.GetI32("MSAA_COUNT") > 1;
-	if(MSAA)
+	if(mMsaa)
 	{
-		const TextureProperties& srcProps = mInputTextureParameter.Get()->GetProperties();
+		const TextureProperties& srcProps = input->GetProperties();
 		GetRendererUtility().DrawScreenQuad(commandBuffer, Area2(0.0f, 0.0f, (float)srcProps.Width, (float)srcProps.Height));
 	}
 	else
 		GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
-PooledRenderTextureCreateInformation BokehDOFPrepareMaterial::GetOutputDesc(const TShared<Texture>& target)
+TextureCreateInformation BokehDOFPrepareMaterial::GetOutputCreateInformation(const TShared<Texture>& target)
 {
 	const TextureProperties& rtProps = target->GetProperties();
 
 	u32 width = std::max(1U, Math::DivideAndRoundUp(rtProps.Width, 2U));
 	u32 height = std::max(1U, Math::DivideAndRoundUp(rtProps.Height, 2U));
 
-	return PooledRenderTextureCreateInformation::Create2D(PF_RGBA16F, width, height, TextureUsageFlag::RenderTarget);
+	return TextureCreateInformation::Create2D(PF_RGBA16F, width, height, TextureUsageFlag::RenderTarget);
 }
 
 BokehDOFPrepareMaterial* BokehDOFPrepareMaterial::GetVariation(bool msaa)
@@ -1315,6 +1169,7 @@ void BokehDOFMaterial::Initialize()
 {
 	mGpuParameterSet->GetUniformBufferParameter("Params", mUniformBufferParameter);
 	mGpuParameterSet->GetUniformBufferParameter("DepthOfFieldParams", mCommonUniformBufferParameter);
+	mGpuParameterSet->GetUniformBufferParameter("PerCamera", mPerCameraParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gInputTex", mInputTextureVSParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gInputTex", mInputTextureFSParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gBokehTex", mBokehTextureParameter);
@@ -1390,10 +1245,12 @@ void BokehDOFMaterial::InitDefinesInternal(ShaderDefines& defines)
 	defines.Set("QUADS_PER_TILE", kQuadsPerTile);
 }
 
-void BokehDOFMaterial::Prepare(const TShared<Texture>& input, const RendererView& view, const DepthOfFieldSettings& settings, const TShared<RenderTarget>& output)
+TShared<GpuParameterSet> BokehDOFMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& input, const RendererView& view, const DepthOfFieldSettings& settings, const TShared<Texture>& output)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	const TextureProperties& srcProps = input->GetProperties();
-	const RenderTargetProperties& dstProps = output->GetProperties();
+	const TextureProperties& dstProps = output->GetProperties();
 
 	GpuBufferMappedScope bokehUniforms = gBokehDOFUniformDefinition.AllocateTransient().Map();
 	GpuBufferMappedScope depthOfFieldCommonUniforms = gDepthOfFieldCommonUniformDefinition.AllocateTransient().Map();
@@ -1418,23 +1275,24 @@ void BokehDOFMaterial::Prepare(const TShared<Texture>& input, const RendererView
 
 	PopulateDofCommonParams(depthOfFieldCommonUniforms, settings, view);
 
-	mUniformBufferParameter.Set(bokehUniforms);
-	mCommonUniformBufferParameter.Set(depthOfFieldCommonUniforms);
-	mInputTextureVSParameter.Set(input);
-	mInputTextureFSParameter.Set(input);
+	mUniformBufferParameter.Set(set, bokehUniforms);
+	mCommonUniformBufferParameter.Set(set, depthOfFieldCommonUniforms);
+	mInputTextureVSParameter.Set(set, input);
+	mInputTextureFSParameter.Set(set, input);
 
 	TShared<Texture> bokehTexture = settings.BokehShape;
 	if(bokehTexture == nullptr)
 		bokehTexture = RendererTextures::bokehFlare;
 
-	mBokehTextureParameter.Set(bokehTexture);
+	mBokehTextureParameter.Set(set, bokehTexture);
+	mPerCameraParameter.Set(set, view.GetPerViewBuffer());
 
-	const GpuBufferSuballocation& perView = view.GetPerViewBuffer();
-	mGpuParameterSet->SetUniformBuffer("PerCamera", perView);
+	return set;
 }
 
-void BokehDOFMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<Texture>& input, const TShared<RenderTarget>& output)
+void BokehDOFMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const TShared<Texture>& input) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
 	const TextureProperties& srcProps = input->GetProperties();
@@ -1443,10 +1301,6 @@ void BokehDOFMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<Te
 	// TODO - Allow tile count to halve (i.e. half sampling rate)
 	const Vector2I tileCount = imageSize / 1;
 
-	RenderPassCreateInformation info(output, mGpuParameterSet, RT_DEPTH_STENCIL, RT_DEPTH_STENCIL);
-	info.ClearMask = RT_COLOR_ALL;
-
-	commandBuffer.BeginRenderPass(info);
 	commandBuffer.SetVertexDescription(mTileVertexDescription);
 
 	TShared<GpuBuffer> buffers[] = { mTileVertexBuffer };
@@ -1454,21 +1308,19 @@ void BokehDOFMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<Te
 	commandBuffer.SetIndexBuffer(mTileIndexBuffer);
 	commandBuffer.SetDrawOperation(DOT_TRIANGLE_LIST);
 
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	const u32 numInstances = Math::DivideAndRoundUp((u32)(tileCount.X * tileCount.Y), kQuadsPerTile);
 	commandBuffer.DrawIndexed(0, kQuadsPerTile * 6, 0, kQuadsPerTile * 4, numInstances);
-
-	commandBuffer.EndRenderPass();
 }
 
-PooledRenderTextureCreateInformation BokehDOFMaterial::GetOutputDesc(const TShared<Texture>& target)
+TextureCreateInformation BokehDOFMaterial::GetOutputCreateInformation(const TShared<Texture>& target)
 {
 	const TextureProperties& rtProps = target->GetProperties();
 
 	u32 width = rtProps.Width;
 	u32 height = rtProps.Height * 2 + kNearFarPadding;
 
-	return PooledRenderTextureCreateInformation::Create2D(PF_RGBA16F, width, height, TextureUsageFlag::RenderTarget);
+	return TextureCreateInformation::Create2D(PF_RGBA16F, width, height, TextureUsageFlag::RenderTarget);
 }
 
 void BokehDOFMaterial::PopulateDofCommonParams(const GpuBufferMappedScope& uniforms, const DepthOfFieldSettings& settings, const RendererView& view)
@@ -1511,13 +1363,17 @@ void BokehDOFCombineMaterial::Initialize()
 {
 	mGpuParameterSet->GetUniformBufferParameter("Params", mUniformBufferParameter);
 	mGpuParameterSet->GetUniformBufferParameter("DepthOfFieldParams", mCommonUniformBufferParameter);
+	mGpuParameterSet->GetUniformBufferParameter("PerCamera", mPerCameraParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gUnfocusedTex", mUnfocusedTextureParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gFocusedTex", mFocusedTextureParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gDepthBufferTex", mDepthTextureParameter);
 }
 
-void BokehDOFCombineMaterial::Prepare(const TShared<Texture>& unfocused, const TShared<Texture>& focused, const TShared<Texture>& depth, const RendererView& view, const DepthOfFieldSettings& settings)
+TShared<GpuParameterSet> BokehDOFCombineMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& unfocused, const TShared<Texture>& focused, const TShared<Texture>& depth,
+	const RendererView& view, const DepthOfFieldSettings& settings)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	const TextureProperties& focusedProps = focused->GetProperties();
 	const TextureProperties& unfocusedProps = unfocused->GetProperties();
 	u32 halfHeight = std::max(1U, Math::DivideAndRoundUp(focusedProps.Height, 2U));
@@ -1535,27 +1391,23 @@ void BokehDOFCombineMaterial::Prepare(const TShared<Texture>& unfocused, const T
 
 	BokehDOFMaterial::PopulateDofCommonParams(depthOfFieldCommonUniforms, settings, view);
 
-	mUniformBufferParameter.Set(bokehCombineUniforms);
-	mCommonUniformBufferParameter.Set(depthOfFieldCommonUniforms);
-	mUnfocusedTextureParameter.Set(unfocused);
-	mFocusedTextureParameter.Set(focused);
-	mDepthTextureParameter.Set(depth);
+	mUniformBufferParameter.Set(set, bokehCombineUniforms);
+	mCommonUniformBufferParameter.Set(set, depthOfFieldCommonUniforms);
+	mUnfocusedTextureParameter.Set(set, unfocused);
+	mFocusedTextureParameter.Set(set, focused);
+	mDepthTextureParameter.Set(set, depth);
+	mPerCameraParameter.Set(set, view.GetPerViewBuffer());
 
-	const GpuBufferSuballocation& perView = view.GetPerViewBuffer();
-	mGpuParameterSet->SetUniformBuffer("PerCamera", perView);
+	return set;
 }
 
-void BokehDOFCombineMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output)
+void BokehDOFCombineMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(output, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
 BokehDOFCombineMaterial* BokehDOFCombineMaterial::GetVariation(MSAAMode msaaMode)
@@ -1631,74 +1483,26 @@ void MotionBlurMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<
 	commandBuffer.EndRenderPass();
 }
 
-BuildHiZUniformDefinition gBuildHiZUniformDefinition;
-
 void BuildHiZMaterial::Initialize()
 {
-	mNoTextureViews = mVariationParameters.GetBool("NO_TEXTURE_VIEWS");
-
 	mGpuParameterSet->GetSampledTextureParameter("gDepthTex", mInputTexture);
-
-	// If no texture view support, we must manually pick a valid mip level in the shader
-	if(mNoTextureViews)
-	{
-		mGpuParameterSet->GetUniformBufferParameter("Input", mUniformBufferParameter);
-
-		SamplerStateInformation inputSampDesc;
-		inputSampDesc.MinFilter = FO_POINT;
-		inputSampDesc.MagFilter = FO_POINT;
-		inputSampDesc.MipFilter = FO_POINT;
-
-		TShared<SamplerState> inputSampState = mGpuDevice->FindOrCreateSamplerState(inputSampDesc);
-		SetSamplerState(mGpuParameterSet, "gDepthSamp", "gDepthTex", inputSampState);
-	}
 }
 
-void BuildHiZMaterial::Prepare(const TShared<Texture>& source, u32 srcMip)
+TShared<GpuParameterSet> BuildHiZMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& source, u32 sourceMip)
 {
-	// If no texture view support, we must manually pick a valid mip level in the shader
-	if(mNoTextureViews)
-	{
-		mInputTexture.Set(source);
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+	mInputTexture.Set(set, source, TextureSurface(sourceMip));
 
-		auto& props = source->GetProperties();
-		float pixelWidth = (float)props.Width;
-		float pixelHeight = (float)props.Height;
-
-		Vector2 halfPixelOffset(0.5f / pixelWidth, 0.5f / pixelHeight);
-
-		GpuBufferMappedScope uniforms = gBuildHiZUniformDefinition.AllocateTransient().Map();
-		gBuildHiZUniformDefinition.gHalfPixelOffset.Set(uniforms, halfPixelOffset);
-		gBuildHiZUniformDefinition.gMipLevel.Set(uniforms, srcMip);
-
-		mUniformBufferParameter.Set(uniforms);
-	}
-	else
-		mInputTexture.Set(source, TextureSurface(srcMip));
+	return set;
 }
 
-void BuildHiZMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTexture>& output, const Area2& srcRect, const Area2& dstRect)
+void BuildHiZMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const Area2& sourceArea) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(output, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	commandBuffer.SetViewport(dstRect);
-
-	Bind(commandBuffer);
-	GetRendererUtility().DrawScreenQuad(commandBuffer, srcRect);
-
-	commandBuffer.SetViewport(Area2(0, 0, 1, 1));
-	commandBuffer.EndRenderPass();
-}
-
-BuildHiZMaterial* BuildHiZMaterial::GetVariation(bool noTextureViews)
-{
-	if(noTextureViews)
-		return Get(GetVariation<true>());
-
-	return Get(GetVariation<false>());
+	Bind(commandBuffer, set);
+	GetRendererUtility().DrawScreenQuad(commandBuffer, sourceArea);
 }
 
 FXAAUniformDefinition gFXAAUniformDefinition;
@@ -1709,8 +1513,10 @@ void FXAAMaterial::Initialize()
 	mGpuParameterSet->GetSampledTextureParameter("gInputTex", mInputTexture);
 }
 
-void FXAAMaterial::Prepare(const TShared<Texture>& source)
+TShared<GpuParameterSet> FXAAMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& source)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	const TextureProperties& srcProps = source->GetProperties();
 
 	Vector2 invTexSize(1.0f / srcProps.Width, 1.0f / srcProps.Height);
@@ -1718,21 +1524,19 @@ void FXAAMaterial::Prepare(const TShared<Texture>& source)
 	GpuBufferMappedScope uniforms = gFXAAUniformDefinition.AllocateTransient().Map();
 	gFXAAUniformDefinition.gInvTexSize.Set(uniforms, invTexSize);
 
-	mUniformBufferParameter.Set(uniforms);
-	mInputTexture.Set(source);
+	mUniformBufferParameter.Set(set, uniforms);
+	mInputTexture.Set(set, source);
+
+	return set;
 }
 
-void FXAAMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output)
+void FXAAMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(output, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
 SSAOUniformDefinition gSSAOUniformDefinition;
@@ -1757,6 +1561,7 @@ void SSAOMaterial::Initialize()
 		mGpuParameterSet->GetSampledTextureParameter("gDownsampledAO", mDownsampledAOTexture);
 
 	mGpuParameterSet->GetSampledTextureParameter("gRandomTex", mRandomTexture);
+	mGpuParameterSet->TryGetUniformBufferParameter("PerCamera", mPerCameraParameter);
 
 	SamplerStateInformation inputSampDesc;
 	inputSampDesc.MinFilter = FO_POINT;
@@ -1766,22 +1571,22 @@ void SSAOMaterial::Initialize()
 	inputSampDesc.AddressMode.V = TAM_CLAMP;
 	inputSampDesc.AddressMode.W = TAM_CLAMP;
 
-	TShared<SamplerState> inputSampState = mGpuDevice->FindOrCreateSamplerState(inputSampDesc);
+	mInputSamplerState = mGpuDevice->FindOrCreateSamplerState(inputSampDesc);
 	if(mGpuParameterSet->HasSamplerState("gInputSamp"))
-		mGpuParameterSet->SetSamplerState("gInputSamp", inputSampState);
+		AddSamplerHandle(mGpuParameterSet, "gInputSamp", mInputSamplerParameters);
 	else
 	{
 		if(isFinal)
 		{
-			mGpuParameterSet->SetSamplerState("gDepthTex", inputSampState);
-			mGpuParameterSet->SetSamplerState("gNormalsTex", inputSampState);
+			AddSamplerHandle(mGpuParameterSet, "gDepthTex", mInputSamplerParameters);
+			AddSamplerHandle(mGpuParameterSet, "gNormalsTex", mInputSamplerParameters);
 		}
 
 		if(!isFinal || mixWithUpsampled)
-			mGpuParameterSet->SetSamplerState("gSetupAO", inputSampState);
+			AddSamplerHandle(mGpuParameterSet, "gSetupAO", mInputSamplerParameters);
 
 		if(mixWithUpsampled)
-			mGpuParameterSet->SetSamplerState("gDownsampledAO", inputSampState);
+			AddSamplerHandle(mGpuParameterSet, "gDownsampledAO", mInputSamplerParameters);
 	}
 
 	SamplerStateInformation randomSampDesc;
@@ -1792,18 +1597,23 @@ void SSAOMaterial::Initialize()
 	randomSampDesc.AddressMode.V = TAM_WRAP;
 	randomSampDesc.AddressMode.W = TAM_WRAP;
 
-	TShared<SamplerState> randomSampState = mGpuDevice->FindOrCreateSamplerState(randomSampDesc);
-	SetSamplerState(mGpuParameterSet, "gRandomSamp", "gRandomTex", randomSampState);
+	mRandomSamplerState = mGpuDevice->FindOrCreateSamplerState(randomSampDesc);
+	if(mGpuParameterSet->HasSamplerState("gRandomSamp"))
+		mGpuParameterSet->GetSamplerStateParameter("gRandomSamp", mRandomSamplerParameter);
+	else if(mGpuParameterSet->HasSamplerState("gRandomTex"))
+		mGpuParameterSet->GetSamplerStateParameter("gRandomTex", mRandomSamplerParameter);
 }
 
-void SSAOMaterial::Prepare(const RendererView& view, const SSAOTextureInputs& textures, const TShared<RenderTexture>& destination, const AmbientOcclusionSettings& settings)
+TShared<GpuParameterSet> SSAOMaterial::Prepare(FrameGraphPass& pass, const RendererView& view, const SSAOTextureInputs& textures, const TShared<Texture>& destination, const AmbientOcclusionSettings& settings)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	// Scale that can be used to adjust how quickly does AO radius increase with downsampled AO. This yields a very
 	// small AO radius at highest level, and very large radius at lowest level
 	static const float kDownsampleScale = 4.0f;
 
 	const RendererViewProperties& viewProps = view.GetProperties();
-	const RenderTargetProperties& rtProps = destination->GetProperties();
+	const TextureProperties& rtProps = destination->GetProperties();
 
 	Vector2 tanHalfFOV;
 	tanHalfFOV.X = 1.0f / viewProps.ProjTransform[0][0];
@@ -1866,37 +1676,38 @@ void SSAOMaterial::Prepare(const RendererView& view, const SSAOTextureInputs& te
 	Vector2 randomTileScale((float)scaleWidth, (float)scaleHeight);
 	gSSAOUniformDefinition.gRandomTileScale.Set(uniforms, randomTileScale);
 
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
 
-	mSetupAOTexture.Set(textures.AoSetup);
+	mSetupAOTexture.Set(set, textures.AoSetup);
 
 	bool finalPass = mVariationParameters.GetBool("FINAL_AO");
 	if(finalPass)
 	{
-		mDepthTexture.Set(textures.SceneDepth);
-		mNormalsTexture.Set(textures.SceneNormals);
+		mDepthTexture.Set(set, textures.SceneDepth);
+		mNormalsTexture.Set(set, textures.SceneNormals);
 	}
 
 	if(upsample)
-		mDownsampledAOTexture.Set(textures.AoDownsampled);
+		mDownsampledAOTexture.Set(set, textures.AoDownsampled);
 
-	mRandomTexture.Set(textures.RandomRotations);
+	mRandomTexture.Set(set, textures.RandomRotations);
 
-	const GpuBufferSuballocation& perView = view.GetPerViewBuffer();
-	mGpuParameterSet->SetUniformBuffer("PerCamera", perView);
+	for(const GpuParameterSampler& samplerParameter : mInputSamplerParameters)
+		samplerParameter.Set(set, mInputSamplerState);
+
+	mRandomSamplerParameter.Set(set, mRandomSamplerState);
+	mPerCameraParameter.Set(set, view.GetPerViewBuffer());
+
+	return set;
 }
 
-void SSAOMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTexture>& destination)
+void SSAOMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(destination, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
 SSAOMaterial* SSAOMaterial::GetVariation(bool upsample, bool finalPass, int quality)
@@ -1937,6 +1748,7 @@ void SSAODownsampleMaterial::Initialize()
 	mGpuParameterSet->GetUniformBufferParameter("Input", mUniformBufferParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gDepthTex", mDepthTexture);
 	mGpuParameterSet->GetSampledTextureParameter("gNormalsTex", mNormalsTexture);
+	mGpuParameterSet->TryGetUniformBufferParameter("PerCamera", mPerCameraParameter);
 
 	SamplerStateInformation inputSampDesc;
 	inputSampDesc.MinFilter = FO_LINEAR;
@@ -1946,21 +1758,23 @@ void SSAODownsampleMaterial::Initialize()
 	inputSampDesc.AddressMode.V = TAM_CLAMP;
 	inputSampDesc.AddressMode.W = TAM_CLAMP;
 
-	TShared<SamplerState> inputSampState = mGpuDevice->FindOrCreateSamplerState(inputSampDesc);
+	mInputSamplerState = mGpuDevice->FindOrCreateSamplerState(inputSampDesc);
 
 	if(mGpuParameterSet->HasSamplerState("gInputSamp"))
-		mGpuParameterSet->SetSamplerState("gInputSamp", inputSampState);
+		AddSamplerHandle(mGpuParameterSet, "gInputSamp", mInputSamplerParameters);
 	else
 	{
-		mGpuParameterSet->SetSamplerState("gDepthTex", inputSampState);
-		mGpuParameterSet->SetSamplerState("gNormalsTex", inputSampState);
+		AddSamplerHandle(mGpuParameterSet, "gDepthTex", mInputSamplerParameters);
+		AddSamplerHandle(mGpuParameterSet, "gNormalsTex", mInputSamplerParameters);
 	}
 }
 
-void SSAODownsampleMaterial::Prepare(const RendererView& view, const TShared<Texture>& depth, const TShared<Texture>& normals, const TShared<RenderTexture>& destination, float depthRange)
+TShared<GpuParameterSet> SSAODownsampleMaterial::Prepare(FrameGraphPass& pass, const RendererView& view, const TShared<Texture>& depth, const TShared<Texture>& normals, const TShared<Texture>& destination, float depthRange)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	const RendererViewProperties& viewProps = view.GetProperties();
-	const RenderTargetProperties& rtProps = destination->GetProperties();
+	const TextureProperties& rtProps = destination->GetProperties();
 
 	Vector2 pixelSize;
 	pixelSize.X = 1.0f / rtProps.Width;
@@ -1972,25 +1786,25 @@ void SSAODownsampleMaterial::Prepare(const RendererView& view, const TShared<Tex
 	gSSAODownsampleUniformDefinition.gPixelSize.Set(uniforms, pixelSize);
 	gSSAODownsampleUniformDefinition.gInvDepthThreshold.Set(uniforms, (1.0f / depthRange) / scale);
 
-	mUniformBufferParameter.Set(uniforms);
-	mDepthTexture.Set(depth);
-	mNormalsTexture.Set(normals);
+	mUniformBufferParameter.Set(set, uniforms);
+	mDepthTexture.Set(set, depth);
+	mNormalsTexture.Set(set, normals);
 
-	const GpuBufferSuballocation& perView = view.GetPerViewBuffer();
-	mGpuParameterSet->SetUniformBuffer("PerCamera", perView);
+	for(const GpuParameterSampler& samplerParameter : mInputSamplerParameters)
+		samplerParameter.Set(set, mInputSamplerState);
+
+	mPerCameraParameter.Set(set, view.GetPerViewBuffer());
+
+	return set;
 }
 
-void SSAODownsampleMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTexture>& destination)
+void SSAODownsampleMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(destination, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
 SSAOBlurUniformDefinition gSSAOBlurUniformDefinition;
@@ -2000,6 +1814,7 @@ void SSAOBlurMaterial::Initialize()
 	mGpuParameterSet->GetUniformBufferParameter("Input", mUniformBufferParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gInputTex", mAOTexture);
 	mGpuParameterSet->GetSampledTextureParameter("gDepthTex", mDepthTexture);
+	mGpuParameterSet->TryGetUniformBufferParameter("PerCamera", mPerCameraParameter);
 
 	SamplerStateInformation inputSampDesc;
 	inputSampDesc.MinFilter = FO_POINT;
@@ -2009,18 +1824,20 @@ void SSAOBlurMaterial::Initialize()
 	inputSampDesc.AddressMode.V = TAM_CLAMP;
 	inputSampDesc.AddressMode.W = TAM_CLAMP;
 
-	TShared<SamplerState> inputSampState = mGpuDevice->FindOrCreateSamplerState(inputSampDesc);
+	mInputSamplerState = mGpuDevice->FindOrCreateSamplerState(inputSampDesc);
 	if(mGpuParameterSet->HasSamplerState("gInputSamp"))
-		mGpuParameterSet->SetSamplerState("gInputSamp", inputSampState);
+		AddSamplerHandle(mGpuParameterSet, "gInputSamp", mInputSamplerParameters);
 	else
 	{
-		mGpuParameterSet->SetSamplerState("gInputTex", inputSampState);
-		mGpuParameterSet->SetSamplerState("gDepthTex", inputSampState);
+		AddSamplerHandle(mGpuParameterSet, "gInputTex", mInputSamplerParameters);
+		AddSamplerHandle(mGpuParameterSet, "gDepthTex", mInputSamplerParameters);
 	}
 }
 
-void SSAOBlurMaterial::Prepare(const RendererView& view, const TShared<Texture>& ao, const TShared<Texture>& sceneDepth, float depthRange)
+TShared<GpuParameterSet> SSAOBlurMaterial::Prepare(FrameGraphPass& pass, const RendererView& view, const TShared<Texture>& ao, const TShared<Texture>& sceneDepth, float depthRange)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	const RendererViewProperties& viewProps = view.GetProperties();
 	const TextureProperties& texProps = ao->GetProperties();
 
@@ -2041,25 +1858,25 @@ void SSAOBlurMaterial::Prepare(const RendererView& view, const TShared<Texture>&
 	gSSAOBlurUniformDefinition.gPixelOffset.Set(uniforms, pixelOffset);
 	gSSAOBlurUniformDefinition.gInvDepthThreshold.Set(uniforms, (1.0f / depthRange) / scale);
 
-	mUniformBufferParameter.Set(uniforms);
-	mAOTexture.Set(ao);
-	mDepthTexture.Set(sceneDepth);
+	mUniformBufferParameter.Set(set, uniforms);
+	mAOTexture.Set(set, ao);
+	mDepthTexture.Set(set, sceneDepth);
 
-	const GpuBufferSuballocation& perView = view.GetPerViewBuffer();
-	mGpuParameterSet->SetUniformBuffer("PerCamera", perView);
+	for(const GpuParameterSampler& samplerParameter : mInputSamplerParameters)
+		samplerParameter.Set(set, mInputSamplerState);
+
+	mPerCameraParameter.Set(set, view.GetPerViewBuffer());
+
+	return set;
 }
 
-void SSAOBlurMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTexture>& destination)
+void SSAOBlurMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(destination, mGpuParameterSet);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
 SSAOBlurMaterial* SSAOBlurMaterial::GetVariation(bool horizontal)
@@ -2076,27 +1893,32 @@ void SSRStencilMaterial::Initialize()
 {
 	mGBufferParams.Initialize(*mGpuDevice, GPT_FRAGMENT_PROGRAM, mGpuParameterSet);
 	mGpuParameterSet->GetUniformBufferParameter("Input", mUniformBufferParameter);
+	mGpuParameterSet->TryGetUniformBufferParameter("PerCamera", mPerCameraParameter);
 }
 
-void SSRStencilMaterial::Prepare(const RendererView& view, GBufferTextures gbuffer, const ScreenSpaceReflectionsSettings& settings)
+TShared<GpuParameterSet> SSRStencilMaterial::Prepare(FrameGraphPass& pass, const RendererView& view, const GBufferTextures& gbuffer, const ScreenSpaceReflectionsSettings& settings)
 {
-	mGBufferParams.Bind(gbuffer);
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
+	mGBufferParams.Bind(set, gbuffer);
 
 	Vector2 roughnessScaleBias = SSRTraceMaterial::CalcRoughnessFadeScaleBias(settings.MaxRoughness);
 
 	GpuBufferMappedScope uniforms = gSSRStencilUniformDefinition.AllocateTransient().Map();
 	gSSRStencilUniformDefinition.gRoughnessScaleBias.Set(uniforms, roughnessScaleBias);
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
 
-	const GpuBufferSuballocation& perView = view.GetPerViewBuffer();
-	mGpuParameterSet->TrySetUniformBuffer("PerCamera", perView);
+	mPerCameraParameter.Set(set, view.GetPerViewBuffer());
+
+	return set;
 }
 
-void SSRStencilMaterial::Execute(GpuCommandBuffer& commandBuffer, const RendererView& view)
+void SSRStencilMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const RendererView& view) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 
 	const RendererViewProperties& viewProps = view.GetProperties();
 	Area2I viewRect = viewProps.Target.ViewRect;
@@ -2129,6 +1951,7 @@ void SSRTraceMaterial::Initialize()
 	mGpuParameterSet->TryGetUniformBufferParameter("Input", mUniformBufferParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gSceneColor", mSceneColorTextureParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gHiZ", mHiZTextureParameter);
+	mGpuParameterSet->TryGetUniformBufferParameter("PerCamera", mPerCameraParameter);
 
 	SamplerStateInformation desc;
 	desc.MinFilter = FO_POINT;
@@ -2138,21 +1961,24 @@ void SSRTraceMaterial::Initialize()
 	desc.AddressMode.V = TAM_CLAMP;
 	desc.AddressMode.W = TAM_CLAMP;
 
-	TShared<SamplerState> hiZSamplerState = mGpuDevice->FindOrCreateSamplerState(desc);
+	mHiZSamplerState = mGpuDevice->FindOrCreateSamplerState(desc);
 	if(mGpuParameterSet->HasSamplerState("gHiZSamp"))
-		mGpuParameterSet->SetSamplerState("gHiZSamp", hiZSamplerState);
+		mGpuParameterSet->GetSamplerStateParameter("gHiZSamp", mHiZSamplerParameter);
 	else if(mGpuParameterSet->HasSamplerState("gHiZ"))
-		mGpuParameterSet->SetSamplerState("gHiZ", hiZSamplerState);
+		mGpuParameterSet->GetSamplerStateParameter("gHiZ", mHiZSamplerParameter);
 }
 
-void SSRTraceMaterial::Prepare(const RendererView& view, GBufferTextures gbuffer, const TShared<Texture>& sceneColor, const TShared<Texture>& hiZ, const ScreenSpaceReflectionsSettings& settings)
+TShared<GpuParameterSet> SSRTraceMaterial::Prepare(FrameGraphPass& pass, const RendererView& view, const GBufferTextures& gbuffer, const TShared<Texture>& sceneColor, const TShared<Texture>& hiZ, const ScreenSpaceReflectionsSettings& settings)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	const RendererViewProperties& viewProps = view.GetProperties();
 	const TextureProperties& hiZProps = hiZ->GetProperties();
 
-	mGBufferParams.Bind(gbuffer);
-	mSceneColorTextureParameter.Set(sceneColor);
-	mHiZTextureParameter.Set(hiZ);
+	mGBufferParams.Bind(set, gbuffer);
+	mSceneColorTextureParameter.Set(set, sceneColor);
+	mHiZTextureParameter.Set(set, hiZ);
+	mHiZSamplerParameter.Set(set, mHiZSamplerState);
 
 	Area2I viewRect = viewProps.Target.ViewRect;
 
@@ -2196,22 +2022,18 @@ void SSRTraceMaterial::Prepare(const RendererView& view, GBufferTextures gbuffer
 	gSSRTraceUniformDefinition.gRoughnessScaleBias.Set(uniforms, roughnessScaleBias);
 	gSSRTraceUniformDefinition.gTemporalJitter.Set(uniforms, temporalJitter);
 
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
+	mPerCameraParameter.Set(set, view.GetPerViewBuffer());
 
-	const GpuBufferSuballocation& perView = view.GetPerViewBuffer();
-	mGpuParameterSet->SetUniformBuffer("PerCamera", perView);
+	return set;
 }
 
-void SSRTraceMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& destination, const RendererView& view)
+void SSRTraceMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const RendererView& view) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(destination, mGpuParameterSet, RT_DEPTH_STENCIL, RT_DEPTH_STENCIL);
-	info.ClearMask = RT_COLOR_ALL;
-
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 
 	const RendererViewProperties& viewProps = view.GetProperties();
 	if(viewProps.Target.NumSamples > 1)
@@ -2221,8 +2043,6 @@ void SSRTraceMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<Re
 	}
 	else
 		GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
 Vector2 SSRTraceMaterial::CalcRoughnessFadeScaleBias(float maxRoughness)
@@ -2281,6 +2101,8 @@ void TemporalFilteringMaterial::Initialize()
 	if(mHasVelocityTexture)
 		mGpuParameterSet->GetSampledTextureParameter("gVelocity", mVelocityTextureParameter);
 
+	mGpuParameterSet->TryGetUniformBufferParameter("PerCamera", mPerCameraParameter);
+
 	SamplerStateInformation pointSampDesc;
 	pointSampDesc.MinFilter = FO_POINT;
 	pointSampDesc.MagFilter = FO_POINT;
@@ -2289,33 +2111,36 @@ void TemporalFilteringMaterial::Initialize()
 	pointSampDesc.AddressMode.V = TAM_CLAMP;
 	pointSampDesc.AddressMode.W = TAM_CLAMP;
 
-	TShared<SamplerState> pointSampState = mGpuDevice->FindOrCreateSamplerState(pointSampDesc);
+	mPointSamplerState = mGpuDevice->FindOrCreateSamplerState(pointSampDesc);
 
+	// The compiler strips samplers a variation does not use (the MSAA depth read uses Load)
 	if(mGpuParameterSet->HasSamplerState("gPointSampler"))
-		mGpuParameterSet->SetSamplerState("gPointSampler", pointSampState);
+		AddSamplerHandle(mGpuParameterSet, "gPointSampler", mPointSamplerParameters);
 	else
-		mGpuParameterSet->SetSamplerState("gSceneDepth", pointSampState);
+		AddSamplerHandle(mGpuParameterSet, "gSceneDepth", mPointSamplerParameters);
 
 	SamplerStateInformation linearSampDesc;
-	linearSampDesc.MinFilter = FO_POINT;
-	linearSampDesc.MagFilter = FO_POINT;
-	linearSampDesc.MipFilter = FO_POINT;
+	linearSampDesc.MinFilter = FO_LINEAR;
+	linearSampDesc.MagFilter = FO_LINEAR;
+	linearSampDesc.MipFilter = FO_LINEAR;
 	linearSampDesc.AddressMode.U = TAM_CLAMP;
 	linearSampDesc.AddressMode.V = TAM_CLAMP;
 	linearSampDesc.AddressMode.W = TAM_CLAMP;
 
-	TShared<SamplerState> linearSampState = mGpuDevice->FindOrCreateSamplerState(linearSampDesc);
+	mLinearSamplerState = mGpuDevice->FindOrCreateSamplerState(linearSampDesc);
 	if(mGpuParameterSet->HasSamplerState("gLinearSampler"))
-		mGpuParameterSet->SetSamplerState("gLinearSampler", linearSampState);
+		AddSamplerHandle(mGpuParameterSet, "gLinearSampler", mLinearSamplerParameters);
 	else
 	{
-		mGpuParameterSet->SetSamplerState("gSceneColor", linearSampState);
-		mGpuParameterSet->SetSamplerState("gPrevColor", linearSampState);
+		AddSamplerHandle(mGpuParameterSet, "gSceneColor", mLinearSamplerParameters);
+		AddSamplerHandle(mGpuParameterSet, "gPrevColor", mLinearSamplerParameters);
 	}
 }
 
-void TemporalFilteringMaterial::Prepare(const RendererView& view, const TShared<Texture>& prevFrame, const TShared<Texture>& curFrame, const TShared<Texture>& velocity, const TShared<Texture>& sceneDepth, const Vector2& jitter, float exposure)
+TShared<GpuParameterSet> TemporalFilteringMaterial::Prepare(FrameGraphPass& pass, const RendererView& view, const TShared<Texture>& previousFrame, const TShared<Texture>& currentFrame, const TShared<Texture>& velocity, const TShared<Texture>& sceneDepth, const Vector2& jitter, float exposure)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	GpuBufferMappedScope filteringUniforms = gTemporalFilteringUniformDefinition.AllocateTransient().Map();
 	GpuBufferMappedScope resolveUniforms = gTemporalResolveUniformDefinition.AllocateTransient().Map();
 
@@ -2323,14 +2148,20 @@ void TemporalFilteringMaterial::Prepare(const RendererView& view, const TShared<
 	if(!velocityTex)
 		velocityTex = Texture::kBlack;
 
-	mPreviousColorTextureParameter.Set(prevFrame);
-	mSceneColorTextureParameter.Set(curFrame);
-	mSceneDepthTextureParameter.Set(sceneDepth);
+	mPreviousColorTextureParameter.Set(set, previousFrame);
+	mSceneColorTextureParameter.Set(set, currentFrame);
+	mSceneDepthTextureParameter.Set(set, sceneDepth);
 
 	if(mHasVelocityTexture)
-		mVelocityTextureParameter.Set(velocityTex);
+		mVelocityTextureParameter.Set(set, velocityTex);
 
-	auto& colorProps = curFrame->GetProperties(); // Assuming prev and current frame are the same size
+	for(const GpuParameterSampler& samplerParameter : mPointSamplerParameters)
+		samplerParameter.Set(set, mPointSamplerState);
+
+	for(const GpuParameterSampler& samplerParameter : mLinearSamplerParameters)
+		samplerParameter.Set(set, mLinearSamplerState);
+
+	auto& colorProps = currentFrame->GetProperties(); // Assuming prev and current frame are the same size
 	auto& depthProps = sceneDepth->GetProperties();
 
 	Vector4 colorPixelSize(1.0f / colorProps.Width, 1.0f / colorProps.Height, (float)colorProps.Width, (float)colorProps.Height);
@@ -2432,23 +2263,19 @@ void TemporalFilteringMaterial::Prepare(const RendererView& view, const TShared<
 		gTemporalResolveUniformDefinition.gSampleWeightsLowpass.Set(resolveUniforms, sampleWeightsLowPass[i] / totalWeightsLowPass, i);
 	}
 
-	mUniformBufferParameter.Set(filteringUniforms);
-	mTemporalUniformBufferParameter.Set(resolveUniforms);
+	mUniformBufferParameter.Set(set, filteringUniforms);
+	mTemporalUniformBufferParameter.Set(set, resolveUniforms);
+	mPerCameraParameter.Set(set, view.GetPerViewBuffer());
 
-	const GpuBufferSuballocation& perView = view.GetPerViewBuffer();
-	mGpuParameterSet->SetUniformBuffer("PerCamera", perView);
+	return set;
 }
 
-void TemporalFilteringMaterial::Execute(GpuCommandBuffer& commandBuffer, const RendererView& view, const TShared<RenderTarget>& destination)
+void TemporalFilteringMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const RendererView& view) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(destination, mGpuParameterSet);
-	info.ClearMask = RT_COLOR_ALL;
-
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 
 	const RendererViewProperties& viewProps = view.GetProperties();
 	Area2I viewRect = viewProps.Target.ViewRect;
@@ -2457,8 +2284,6 @@ void TemporalFilteringMaterial::Execute(GpuCommandBuffer& commandBuffer, const R
 		GetRendererUtility().DrawScreenQuad(commandBuffer, Area2(0.0f, 0.0f, (float)viewRect.Width, (float)viewRect.Height));
 	else
 		GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
 TemporalFilteringMaterial* TemporalFilteringMaterial::GetVariation(TemporalFilteringType type, bool velocity, bool msaa)
@@ -2500,6 +2325,7 @@ EncodeDepthUniformDefinition gEncodeDepthUniformDefinition;
 void EncodeDepthMaterial::Initialize()
 {
 	mGpuParameterSet->GetUniformBufferParameter("Params", mUniformBufferParameter);
+	mGpuParameterSet->GetUniformBufferParameter("PerCamera", mPerCameraParameter);
 	mGpuParameterSet->GetSampledTextureParameter("gInputTex", mInputTextureParameter);
 
 	SamplerStateInformation sampDesc;
@@ -2514,49 +2340,54 @@ void EncodeDepthMaterial::Initialize()
 	SetSamplerState(mGpuParameterSet, "gInputSamp", "gInputTex", samplerState);
 }
 
-void EncodeDepthMaterial::Prepare(const TShared<Texture>& depth, float near, float far)
+TShared<GpuParameterSet> EncodeDepthMaterial::Prepare(FrameGraphPass& pass, const RendererView& view, const TShared<Texture>& depth, float near, float far)
 {
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+
 	GpuBufferMappedScope uniforms = gEncodeDepthUniformDefinition.AllocateTransient().Map();
 	gEncodeDepthUniformDefinition.gNear.Set(uniforms, near);
 	gEncodeDepthUniformDefinition.gFar.Set(uniforms, far);
 
-	mInputTextureParameter.Set(depth);
-	mUniformBufferParameter.Set(uniforms);
+	mUniformBufferParameter.Set(set, uniforms);
+	mPerCameraParameter.Set(set, view.GetPerViewBuffer());
+	mInputTextureParameter.Set(set, depth);
+
+	return set;
 }
 
-void EncodeDepthMaterial::Execute(GpuCommandBuffer& commandBuffer, const TShared<RenderTarget>& output)
+void EncodeDepthMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
-	RenderPassCreateInformation info(output, mGpuParameterSet, RT_NONE, RT_COLOR0);
-	commandBuffer.BeginRenderPass(info);
-
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer);
-
-	commandBuffer.EndRenderPass();
 }
 
 void MSAACoverageMaterial::Initialize()
 {
 	mGBufferParams.Initialize(*mGpuDevice, GPT_FRAGMENT_PROGRAM, mGpuParameterSet);
+	mGpuParameterSet->TryGetUniformBufferParameter("PerCamera", mPerCameraParameter);
 }
 
-void MSAACoverageMaterial::Prepare(const RendererView& view, GBufferTextures gbuffer)
+TShared<GpuParameterSet> MSAACoverageMaterial::Prepare(FrameGraphPass& pass, const RendererView& view, const GBufferTextures& gbuffer)
 {
-	mGBufferParams.Bind(gbuffer);
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
 
-	const GpuBufferSuballocation& perView = view.GetPerViewBuffer();
-	mGpuParameterSet->SetUniformBuffer("PerCamera", perView);
+	mGBufferParams.Bind(set, gbuffer);
+	mPerCameraParameter.Set(set, view.GetPerViewBuffer());
+
+	return set;
 }
 
-void MSAACoverageMaterial::Execute(GpuCommandBuffer& commandBuffer, const RendererView& view)
+void MSAACoverageMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const RendererView& view) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
 	const Area2I& viewRect = view.GetProperties().Target.ViewRect;
 
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer, Area2(0, 0, (float)viewRect.Width, (float)viewRect.Height));
 }
 
@@ -2579,18 +2410,22 @@ void MSAACoverageStencilMaterial::Initialize()
 	mGpuParameterSet->GetSampledTextureParameter("gMSAACoverage", mCoverageTextureParameter);
 }
 
-void MSAACoverageStencilMaterial::Prepare(const TShared<Texture>& coverage)
+TShared<GpuParameterSet> MSAACoverageStencilMaterial::Prepare(FrameGraphPass& pass, const TShared<Texture>& coverage)
 {
-	mCoverageTextureParameter.Set(coverage);
+	const TShared<GpuParameterSet> set = CreateGpuParameterSet(pass);
+	mCoverageTextureParameter.Set(set, coverage);
+
+	return set;
 }
 
-void MSAACoverageStencilMaterial::Execute(GpuCommandBuffer& commandBuffer, const RendererView& view)
+void MSAACoverageStencilMaterial::Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const RendererView& view) const
 {
+	GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
 	B3D_PROFILE_RENDERER_MATERIAL
 
 	const Area2I& viewRect = view.GetProperties().Target.ViewRect;
 
-	Bind(commandBuffer);
+	Bind(commandBuffer, set);
 	GetRendererUtility().DrawScreenQuad(commandBuffer, Area2(0, 0, (float)viewRect.Width, (float)viewRect.Height));
 }
 }}

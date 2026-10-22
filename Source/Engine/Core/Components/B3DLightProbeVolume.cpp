@@ -9,6 +9,7 @@
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DGpuDevice.h"
 #include "Renderer/B3DIBLUtility.h"
+#include "FrameGraph/B3DFrameGraph.h"
 #include "Renderer/B3DRenderer.h"
 #include "Renderer/B3DRendererScene.h"
 #include "Scene/B3DSceneInstance.h"
@@ -242,20 +243,9 @@ void LightProbeVolume::RunRenderProbeTask()
 	};
 
 	TShared<render::LightProbeVolume> renderProxy = B3DGetRenderProxy(this);
-	auto fnRenderProbes = [renderProxy](render::GpuCommandBufferPool& commandBufferPool)
+	auto fnRenderProbes = [renderProxy](render::FrameGraph& graph)
 	{
-		TShared<render::GpuCommandBuffer> commandBuffer = commandBufferPool.FindOrCreate(render::GpuCommandBufferCreateInformation::Create("LightProbeRendering"));
-		TShared<GpuCommandBufferProfiler> commandBufferProfiler = GetGpuProfiler().CreateCommandBufferProfiler(*commandBuffer);
-
-		commandBufferProfiler->BeginSample(*commandBuffer, "LightProbeRendering");
-		const bool isDone = renderProxy->RenderProbes(*commandBuffer, 3);
-		commandBufferProfiler->EndSample(*commandBuffer);
-
-		GetGpuProfiler().ResolveProfileWhenReady("LightProbeRendering", commandBufferProfiler);
-		GpuWorkContext& gpuContext = render::GetRenderer()->GetGpuContext();
-		gpuContext.SubmitCommandBuffer(commandBuffer);
-
-		return isDone;
+		return renderProxy->RenderProbes(graph, 3);
 	};
 
 	mRendererTask = render::RendererTask::Create("RenderLightProbes", fnRenderProbes);
@@ -435,7 +425,7 @@ void LightProbeVolume::Initialize()
 	RenderProxy::Initialize();
 }
 
-bool LightProbeVolume::RenderProbes(GpuCommandBuffer& commandBuffer, u32 maxProbeCount)
+bool LightProbeVolume::RenderProbes(FrameGraph& graph, u32 maxProbeCount)
 {
 	// Probe map only contains active probes
 	u32 usedProbeCount = (u32)mProbeMap.size();
@@ -446,7 +436,19 @@ bool LightProbeVolume::RenderProbes(GpuCommandBuffer& commandBuffer, u32 maxProb
 		ResizeCoefficientTexture(std::max(32U, usedProbeCount * 2));
 
 		if (oldTexture)
-			commandBuffer.CopyTexture(oldTexture, mCoefficients);
+		{
+			graph.ImportTexture(oldTexture);
+			graph.ImportTexture(mCoefficients);
+
+			FrameGraphCopyPass copyPass;
+			copyPass.AddSource(oldTexture);
+			copyPass.AddDestination(mCoefficients);
+
+			graph.AddCopyPass("LightProbeCoefficientsResize", std::move(copyPass), [oldTexture, newTexture = mCoefficients](FrameGraphPassContext& context)
+			{
+				context.GetCommandBuffer().CopyTexture(oldTexture, newTexture);
+			});
+		}
 	}
 
 	const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
@@ -475,8 +477,8 @@ bool LightProbeVolume::RenderProbes(GpuCommandBuffer& commandBuffer, u32 maxProb
 			const Quaternion& rotation = mTransform.GetRotation();
 			Vector3 transformedPos = rotation.Rotate(localPos) + position;
 
-			GetRenderer()->CaptureSceneCubeMap(*rendererScene, commandBuffer, cubemap, transformedPos, CaptureSettings());
-			GetIBLUtility().FilterCubemapForIrradiance(commandBuffer, cubemap, mCoefficients, probeInfo.BufferIdx);
+			GetRenderer()->CaptureSceneCubeMap(*rendererScene, graph, cubemap, transformedPos, CaptureSettings());
+			GetIBLUtility().FilterCubemapForIrradiance(graph, cubemap, mCoefficients, probeInfo.BufferIdx);
 
 			probeInfo.Flags = LightProbeFlags::Clean;
 			probeUpdateCount++;

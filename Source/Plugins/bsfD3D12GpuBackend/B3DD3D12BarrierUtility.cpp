@@ -124,9 +124,9 @@ D3D12_BARRIER_SYNC D3D12BarrierUtility::GetStageSync(GpuStageFlags stages)
 		sync |= D3D12_BARRIER_SYNC_COPY;
 	if(stages.IsSet(GpuStageFlag::Resolve))
 		sync |= D3D12_BARRIER_SYNC_RESOLVE;
-	if(stages.IsSet(GpuStageFlag::Host))
-		sync |= D3D12_BARRIER_SYNC_ALL;
 
+	// The host stage maps to no work. Fences order the CPU against the GPU, and a command list's writes are visible to the CPU once
+	// its fence completes.
 	return sync;
 }
 
@@ -177,26 +177,22 @@ D3D12_GLOBAL_BARRIER D3D12BarrierUtility::GetGlobalBufferBarrier(D3D12_RESOURCE_
 
 D3D12_GLOBAL_BARRIER D3D12BarrierUtility::GetAliasGlobalBarrier(const GpuBarrierScope& scope)
 {
-	// Accesses any resource type can perform at @p stages
-	auto fnGetAccess = [](GpuStageFlags stages, GpuAccessFlags access)
+	// Render target, depth-stencil and resolve accesses are tied to texture layouts, which global barriers do not express
+	const GpuStageFlags textureOnlyStages = GpuStageFlag::ColorAttachment | GpuStageFlag::EarlyFragmentTests | GpuStageFlag::LateFragmentTests | GpuStageFlag::Resolve;
+
+	// Accesses performed at @p stages that a global barrier can name
+	auto fnGetAccess = [&textureOnlyStages](GpuStageFlags stages, GpuAccessFlags access)
 	{
+		stages &= ~textureOnlyStages;
+
 		D3D12_BARRIER_ACCESS nativeAccess = D3D12_BARRIER_ACCESS_COMMON;
 		if(access.IsSet(GpuAccessFlag::Write))
 		{
 			if(stages.IsSetAny(GpuStageFlag::VertexShaderNonUniform | GpuStageFlag::FragmentShaderNonUniform | GpuStageFlag::ComputeShaderNonUniform))
 				nativeAccess |= D3D12_BARRIER_ACCESS_UNORDERED_ACCESS;
 
-			if(stages.IsSet(GpuStageFlag::ColorAttachment))
-				nativeAccess |= D3D12_BARRIER_ACCESS_RENDER_TARGET;
-
-			if(stages.IsSetAny(GpuStageFlag::EarlyFragmentTests | GpuStageFlag::LateFragmentTests))
-				nativeAccess |= D3D12_BARRIER_ACCESS_DEPTH_STENCIL_WRITE;
-
 			if(stages.IsSet(GpuStageFlag::Transfer))
 				nativeAccess |= D3D12_BARRIER_ACCESS_COPY_DEST;
-
-			if(stages.IsSet(GpuStageFlag::Resolve))
-				nativeAccess |= D3D12_BARRIER_ACCESS_RESOLVE_DEST;
 		}
 
 		if(access.IsSet(GpuAccessFlag::Read))
@@ -216,31 +212,33 @@ D3D12_GLOBAL_BARRIER D3D12BarrierUtility::GetAliasGlobalBarrier(const GpuBarrier
 			if(stages.IsSetAny(GpuStageFlag::VertexShaderNonUniform | GpuStageFlag::FragmentShaderNonUniform | GpuStageFlag::ComputeShaderNonUniform))
 				nativeAccess |= D3D12_BARRIER_ACCESS_SHADER_RESOURCE;
 
-			if(stages.IsSet(GpuStageFlag::ColorAttachment))
-				nativeAccess |= D3D12_BARRIER_ACCESS_RENDER_TARGET;
-
-			// Depth writes already include depth reads
-			if(stages.IsSetAny(GpuStageFlag::EarlyFragmentTests | GpuStageFlag::LateFragmentTests) && (nativeAccess & D3D12_BARRIER_ACCESS_DEPTH_STENCIL_WRITE) == 0)
-				nativeAccess |= D3D12_BARRIER_ACCESS_DEPTH_STENCIL_READ;
-
 			if(stages.IsSet(GpuStageFlag::Transfer))
 				nativeAccess |= D3D12_BARRIER_ACCESS_COPY_SOURCE;
-
-			if(stages.IsSet(GpuStageFlag::Resolve))
-				nativeAccess |= D3D12_BARRIER_ACCESS_RESOLVE_SOURCE;
 		}
 
 		return nativeAccess != D3D12_BARRIER_ACCESS_COMMON ? nativeAccess : D3D12_BARRIER_ACCESS_NO_ACCESS;
 	};
 
-	// Source reads only need their execution to complete, which the sync scope covers
+	// Source writes need a flush, and only common access flushes the writes of texture-only accesses. Source reads only need their execution
+	// to complete, but without writes they are still named: no access before the barrier tells the driver that nothing accessed the memory
+	// before it, so it may skip the wait.
 	D3D12BarrierScope beforeScope;
-	beforeScope.Access = fnGetAccess(scope.SourceStages, scope.SourceAccess & GpuAccessFlag::Write);
 	beforeScope.Sync = GetStageSync(scope.SourceStages);
+	beforeScope.Access = fnGetAccess(scope.SourceStages, scope.SourceAccess & GpuAccessFlag::Write);
+	if(beforeScope.Access == D3D12_BARRIER_ACCESS_NO_ACCESS)
+		beforeScope.Access = fnGetAccess(scope.SourceStages, scope.SourceAccess);
 
+	const bool hasTextureOnlyWrites = scope.SourceAccess.IsSet(GpuAccessFlag::Write) && scope.SourceStages.IsSetAny(textureOnlyStages);
+	if(hasTextureOnlyWrites || (beforeScope.Access == D3D12_BARRIER_ACCESS_NO_ACCESS && beforeScope.Sync != D3D12_BARRIER_SYNC_NONE))
+		beforeScope.Access = D3D12_BARRIER_ACCESS_COMMON;
+
+	// No access after the barrier tells the driver that nothing accesses the memory after it, so it may skip the wait. The accesses of the
+	// acquiring textures come from their own barriers. D3D12 requires common access after a global barrier with common access before.
 	D3D12BarrierScope afterScope;
-	afterScope.Access = fnGetAccess(scope.DestinationStages, scope.DestinationAccess);
 	afterScope.Sync = GetStageSync(scope.DestinationStages);
+	afterScope.Access = fnGetAccess(scope.DestinationStages, scope.DestinationAccess);
+	if(beforeScope.Access == D3D12_BARRIER_ACCESS_COMMON || (afterScope.Access == D3D12_BARRIER_ACCESS_NO_ACCESS && afterScope.Sync != D3D12_BARRIER_SYNC_NONE))
+		afterScope.Access = D3D12_BARRIER_ACCESS_COMMON;
 
 	D3D12_GLOBAL_BARRIER barrier{};
 	barrier.SyncBefore = GetChainedSyncBefore(beforeScope, GpuStageFlag::None);
@@ -325,6 +323,14 @@ D3D12_TEXTURE_BARRIER D3D12BarrierUtility::GetTextureBarrier(ID3D12Resource* res
 	barrier.Subresources.NumArraySlices = range.ArrayLayerCount;
 	barrier.Subresources.FirstPlane = range.AspectMask.IsSet(GpuTextureAspectFlag::Stencil) ? 1 : 0;
 	barrier.Subresources.NumPlanes = 1;
+
+	// D3D12 rejects a barrier from or into a layout with no access, such as the present layout, unless the sync on that side is none.
+	// Work on that side is then ordered by ExecuteCommandLists() boundaries instead.
+	B3D_ASSERT((barrier.AccessBefore != D3D12_BARRIER_ACCESS_NO_ACCESS || barrier.LayoutBefore == D3D12_BARRIER_LAYOUT_UNDEFINED || barrier.SyncBefore == D3D12_BARRIER_SYNC_NONE ||
+		barrier.SyncBefore == D3D12_BARRIER_SYNC_SPLIT) && "A barrier from a layout with no access must not synchronize with earlier work.");
+	B3D_ASSERT((barrier.AccessAfter != D3D12_BARRIER_ACCESS_NO_ACCESS || barrier.LayoutAfter == D3D12_BARRIER_LAYOUT_UNDEFINED || barrier.SyncAfter == D3D12_BARRIER_SYNC_NONE ||
+		barrier.SyncAfter == D3D12_BARRIER_SYNC_SPLIT) && "A barrier into a layout with no access must not synchronize with later work.");
+
 	B3D_ASSERT((flags & D3D12_TEXTURE_BARRIER_FLAG_DISCARD) == 0 || barrier.LayoutBefore == D3D12_BARRIER_LAYOUT_UNDEFINED);
 	barrier.Flags = flags;
 
@@ -355,7 +361,7 @@ D3D12_BARRIER_ACCESS D3D12BarrierUtility::GetBufferAccess(GpuStageFlags stages, 
 	if(stages.IsSetAny(GpuStageFlag::VertexShaderNonUniform | GpuStageFlag::FragmentShaderNonUniform | GpuStageFlag::ComputeShaderNonUniform))
 		nativeAccess |= writes ? D3D12_BARRIER_ACCESS_UNORDERED_ACCESS : D3D12_BARRIER_ACCESS_SHADER_RESOURCE;
 
-	if(stages.IsSetAny(GpuStageFlag::Transfer | GpuStageFlag::Host))
+	if(stages.IsSet(GpuStageFlag::Transfer))
 	{
 		if(reads)
 			nativeAccess |= D3D12_BARRIER_ACCESS_COPY_SOURCE;
@@ -368,7 +374,8 @@ D3D12_BARRIER_ACCESS D3D12BarrierUtility::GetBufferAccess(GpuStageFlags stages, 
 	if((resourceFlags & D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS) == 0)
 		nativeAccess = (D3D12_BARRIER_ACCESS)(nativeAccess & ~D3D12_BARRIER_ACCESS_UNORDERED_ACCESS);
 
-	return nativeAccess;
+	// Host accesses map to no GPU access, and a scope without synchronization must name no access
+	return nativeAccess != D3D12_BARRIER_ACCESS_COMMON ? nativeAccess : D3D12_BARRIER_ACCESS_NO_ACCESS;
 }
 
 D3D12_BARRIER_ACCESS D3D12BarrierUtility::GetTextureAccess(GpuStageFlags stages, GpuAccessFlags access, GpuImageLayout layout, GpuTextureAspectFlags aspects)

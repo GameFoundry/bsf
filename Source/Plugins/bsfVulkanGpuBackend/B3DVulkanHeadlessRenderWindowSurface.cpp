@@ -7,6 +7,7 @@
 #include "B3DVulkanTexture.h"
 #include "B3DVulkanRenderPass.h"
 #include "B3DVulkanUtility.h"
+#include "GpuBackend/B3DGpuCommandBuffer.h"
 
 using namespace b3d;
 using namespace b3d::render;
@@ -48,6 +49,9 @@ void VulkanHeadlessRenderWindowSurface::CreateSwapChainImages()
 	vkImageCreateInfo.pQueueFamilyIndices = nullptr;
 	vkImageCreateInfo.queueFamilyIndexCount = 0;
 
+	// With explicit barriers, window surfaces start at rest like textures (see GpuBackendUtility::GetRestingState())
+	const bool startsAtRest = gGpuExplicitBarriers && presentDevice->GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
+
 	// Create color images for each buffer
 	for(u32 imageIndex = 0; imageIndex < kImageCount; imageIndex++)
 	{
@@ -64,7 +68,12 @@ void VulkanHeadlessRenderWindowSurface::CreateSwapChainImages()
 		// Purposefully not setting parent so these images don't participate in defragmentation
 		mColorImages[imageIndex] = presentDevice->CreateImage(imageCreateInformation, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 0, GpuResourceKind::NonLinear);
 		if(mColorImages[imageIndex] != nullptr)
+		{
 			mColorImages[imageIndex]->SetName("HeadlessSwapChainColor" + ToString(imageIndex));
+
+			if(startsAtRest)
+				mColorImages[imageIndex]->RequestRestingTransition(GpuImageLayout::ColorAttachment);
+		}
 	}
 
 	// Create depth image if requested
@@ -83,7 +92,12 @@ void VulkanHeadlessRenderWindowSurface::CreateSwapChainImages()
 		// Purposefully not setting parent so these images don't participate in defragmentation
 		mDepthImage = presentDevice->CreateImage(imageCreateInformation, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 0, GpuResourceKind::NonLinear);
 		if(mDepthImage != nullptr)
+		{
 			mDepthImage->SetName("HeadlessSwapChainDepth");
+
+			if(startsAtRest)
+				mDepthImage->RequestRestingTransition(GpuImageLayout::DepthStencilAttachment);
+		}
 	}
 
 	// Create render pass
@@ -159,6 +173,7 @@ void VulkanHeadlessRenderWindowSurface::RebuildSwapChain(u32 width, u32 height, 
 	mHeight = height;
 	mVSync = vsync;
 	mCurrentImageIndex = 0;
+	mHasAcquiredImage = false;
 
 	DestroySwapChainImages();
 	CreateSwapChainImages();
@@ -180,18 +195,16 @@ void VulkanHeadlessRenderWindowSurface::Destroy()
 
 void VulkanHeadlessRenderWindowSurface::SwapBuffers(GpuQueue& queue, GpuQueueMask syncMask)
 {
-	// We don't modify mCurrentImageIndex there in order to match the non-headless surface behaviour, which changes the active image index during the first subsequent GetActiveFramebuffer call.
-	// This is important for scene captures that run /after/ the end of the frame (i.e. after SwapBuffers has been called). This way they will perform capture on the last image we rendered to, rather than a new empty one.
-	mIsSwapQueued = true;
+	// Like a swap chain, only an image that was acquired for rendering is presented
+	if(!mHasAcquiredImage)
+		return;
+
+	mCurrentImageIndex = (mCurrentImageIndex + 1) % kImageCount;
+	mHasAcquiredImage = false;
 }
 
 VulkanFramebuffer* VulkanHeadlessRenderWindowSurface::GetActiveFramebuffer(bool acquireIfUnavailable)
 {
-	if(mIsSwapQueued)
-	{
-		mCurrentImageIndex = (mCurrentImageIndex + 1) % kImageCount;
-		mIsSwapQueued = false;
-	}
-
+	mHasAcquiredImage = true;
 	return mFramebuffers[mCurrentImageIndex];
 }

@@ -68,9 +68,10 @@ GpuSubmitThread::~GpuSubmitThread()
 	auto fnDestroy = [this]()
 	{
 		for (auto& pool : mCommandBufferPools)
-		{
 			pool = nullptr;
-		}
+
+		for (Deque<FenceSignal>& fenceSignals : mFenceSignals)
+			fenceSignals.clear();
 	};
 
 	RunSubmitThreadCommand(mCommandQueue, std::move(fnDestroy), "Cleanup submit thread");
@@ -85,6 +86,13 @@ void GpuSubmitThread::QueueSubmit(const TShared<GpuCommandBuffer>& commandBuffer
 	{
 		syncMask |= commandBuffer->GetQueueSyncMask();
 		mBackend.ExecuteSubmit(queue, commandBuffer, syncMask, signalFences);
+
+		if (signalFences.Empty())
+			return;
+
+		const u64 queueFenceValue = mBackend.GetLastSubmittedFenceValue(queue);
+		for (const GpuTimelineFenceAndValue& signalFence : signalFences)
+			mFenceSignals[queue.GetId().Id].push_back(FenceSignal{ signalFence.Fence, signalFence.Value, queueFenceValue });
 	};
 
 	commandBuffer->NotifyWillQueueForSubmit(queue.GetId(), syncMask | commandBuffer->GetQueueSyncMask());
@@ -175,6 +183,7 @@ void GpuSubmitThread::QueueEndFrameAndWaitForPreviousFrame()
 		{
 			const u64 lastFenceValue = previousMarker.LastFenceValues[queue.GetId().Id];
 			mBackend.RefreshCompletionState(queue, true, lastFenceValue);
+			RemoveFenceSignals(queue, lastFenceValue);
 		});
 
 		// TODO: This could be signalled earlier. In case the frame's work finishes earlier the submit thread could set the signal
@@ -200,6 +209,7 @@ void GpuSubmitThread::WaitUntilIdle(bool performCleanupForShutdown)
 		mGpuDevice.DoForEachQueue([this](GpuQueue& queue)
 		{
 			mBackend.RefreshCompletionState(queue, true);
+			RemoveFenceSignals(queue, ~0ull);
 		});
 
 		if (performCleanupForShutdown)
@@ -222,9 +232,47 @@ void GpuSubmitThread::WaitUntilIdle(GpuQueue& queue)
 		gRenderEnableSubmitThread ? RunBlockingCallAsYieldable(fnWait) : fnWait();
 
 		mBackend.RefreshCompletionState(queue, true);
+		RemoveFenceSignals(queue, ~0ull);
 	};
 
 	RunSubmitThreadCommand(mCommandQueue, std::move(fnCommand), "Queue wait idle", true);
+}
+
+void GpuSubmitThread::WaitUntilFence(GpuQueue& queue, const TShared<GpuTimelineFence>& fence, u64 value)
+{
+	auto fnCommand = [this, &queue, fence, value]()
+	{
+		auto fnWait = [&fence, value] { fence->Wait(value); };
+		gRenderEnableSubmitThread ? RunBlockingCallAsYieldable(fnWait) : fnWait();
+
+		// Commands execute in order, so the submission that signals the value has been recorded by now, unless it was
+		// already known to be complete and removed. Backends may signal the fence before the queue's own fence that
+		// completion is tracked with, so the submission can still be finishing, and is waited for explicitly.
+		const Deque<FenceSignal>& fenceSignals = mFenceSignals[queue.GetId().Id];
+		const auto iterFenceSignal = std::find_if(fenceSignals.begin(), fenceSignals.end(), [&fence, value](const FenceSignal& fenceSignal)
+		{
+			return fenceSignal.Fence == fence && fenceSignal.Value >= value;
+		});
+
+		if (iterFenceSignal == fenceSignals.end())
+		{
+			mBackend.RefreshCompletionState(queue, false);
+			return;
+		}
+
+		const u64 queueFenceValue = iterFenceSignal->QueueFenceValue;
+		mBackend.RefreshCompletionState(queue, true, queueFenceValue);
+		RemoveFenceSignals(queue, queueFenceValue);
+	};
+
+	RunSubmitThreadCommand(mCommandQueue, std::move(fnCommand), "Wait for fence", true);
+}
+
+void GpuSubmitThread::RemoveFenceSignals(const GpuQueue& queue, u64 lastFenceValue)
+{
+	Deque<FenceSignal>& fenceSignals = mFenceSignals[queue.GetId().Id];
+	while (!fenceSignals.empty() && fenceSignals.front().QueueFenceValue <= lastFenceValue)
+		fenceSignals.pop_front();
 }
 
 u32 GpuSubmitThread::GetThreadId() const

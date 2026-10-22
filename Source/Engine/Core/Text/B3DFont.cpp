@@ -10,7 +10,7 @@
 #include "GpuBackend/B3DGpuDevice.h"
 #include "Renderer/B3DRenderer.h"
 #include "Renderer/B3DRendererManager.h"
-#include "GpuBackend/B3DGpuCommandBuffer.h"
+#include "FrameGraph/B3DFrameGraph.h"
 
 #define USE_FREETYPE2_STATIC
 #include <ft2build.h>
@@ -841,57 +841,55 @@ RTTIType* FontMetaData::GetRtti() const
 	return FontMetaData::GetRttiStatic();
 }
 
-void FontAtlasRenderer::OnStartUp()
-{
-	TShared<GpuDevice> gpuDevice = GetApplication().GetPrimaryGpuDevice();
-	if (!gpuDevice)
-		return;
-
-	auto fnCreateCommandBufferPool = [this, gpuDevice]()
-	{
-		render::GpuCommandBufferPoolCreateInformation poolCreateInformation;
-		poolCreateInformation.Thread = B3D_CURRENT_THREAD_ID;
-		poolCreateInformation.Type = GQT_GRAPHICS;
-
-		mCommandBufferPool = gpuDevice->CreateGpuCommandBufferPool(poolCreateInformation);
-	};
-
-	GetRenderThread().PostCommand(fnCreateCommandBufferPool, "FontAtlasRenderer::CreateCommandBufferPool");
-}
-
-void FontAtlasRenderer::OnShutDown()
-{
-	auto fnDestroyCommandBufferPool = [this]()
-	{
-		mCommandBufferPool = nullptr;
-	};
-
-	GetRenderThread().PostCommand(fnDestroyCommandBufferPool, "FontAtlasRenderer::DestroyCommandBufferPool", true);
-}
-
 void FontAtlasRenderer::BlitGlyphs(Vector<GlyphBitmap> glyphBitmaps)
 {
-	auto fnBlitToAtlas = [this, glyphBitmaps = std::move(glyphBitmaps)]() {
-
-		if (!B3D_ENSURE(mCommandBufferPool))
+	auto fnBlitToAtlas = [glyphBitmaps = std::move(glyphBitmaps)]()
+	{
+		if(glyphBitmaps.empty())
 			return;
 
-		const TShared<render::GpuCommandBuffer> commandBuffer = mCommandBufferPool->FindOrCreate(render::GpuCommandBufferCreateInformation::Create("BlitGlyphBitmaps"));
+		GpuWorkContext& gpuContext = render::GetRenderer()->GetGpuContext();
+		render::FrameGraph graph(gpuContext, "FontAtlas");
+
+		render::FrameGraphCopyPass copyPass;
+		Vector<render::Texture*> declaredTextures;
+		auto fnDeclare = [&graph, &copyPass, &declaredTextures](const TShared<render::Texture>& texture, bool isDestination)
+		{
+			if(std::find(declaredTextures.begin(), declaredTextures.end(), texture.get()) != declaredTextures.end())
+				return;
+
+			graph.ImportTexture(texture);
+			if(isDestination)
+				copyPass.AddDestination(texture);
+			else
+				copyPass.AddSource(texture);
+
+			declaredTextures.push_back(texture.get());
+		};
 
 		for(const auto& entry : glyphBitmaps)
 		{
-			TextureBlitInformation blitInformation;
-			blitInformation.DestinationVolume.Left = entry.PositionInAtlas.X;
-			blitInformation.DestinationVolume.Top = entry.PositionInAtlas.Y;
-			blitInformation.DestinationVolume.Right = entry.PositionInAtlas.X + (i32)entry.Size.Width;
-			blitInformation.DestinationVolume.Bottom = entry.PositionInAtlas.Y + (i32)entry.Size.Height;
-			blitInformation.DestinationVolume.Back = 1;
-
-			commandBuffer->BlitTexture(entry.GlyphTexture, entry.AtlasTexture, blitInformation);
+			fnDeclare(entry.GlyphTexture, false);
+			fnDeclare(entry.AtlasTexture, true);
 		}
 
-		GpuWorkContext& gpuContext = render::GetRenderer()->GetGpuContext();
-		gpuContext.SubmitCommandBuffer(commandBuffer);
+		graph.AddCopyPass("BlitGlyphs", std::move(copyPass), [glyphBitmaps](render::FrameGraphPassContext& context)
+		{
+			for(const auto& entry : glyphBitmaps)
+			{
+				TextureBlitInformation blitInformation;
+				blitInformation.DestinationVolume.Left = entry.PositionInAtlas.X;
+				blitInformation.DestinationVolume.Top = entry.PositionInAtlas.Y;
+				blitInformation.DestinationVolume.Right = entry.PositionInAtlas.X + (i32)entry.Size.Width;
+				blitInformation.DestinationVolume.Bottom = entry.PositionInAtlas.Y + (i32)entry.Size.Height;
+				blitInformation.DestinationVolume.Back = 1;
+
+				context.GetCommandBuffer().BlitTexture(entry.GlyphTexture, entry.AtlasTexture, blitInformation);
+			}
+		});
+
+		graph.Compile();
+		graph.Execute();
 	};
 
 	GetRenderThread().PostCommand(fnBlitToAtlas, "FontAtlasRenderer::BlitGlyphs");

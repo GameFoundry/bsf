@@ -321,27 +321,6 @@ namespace b3d
 		/** Returns queues on which the resource currently has in-flight accesses matching @p useFlags. */
 		GpuQueueMask GetUseInfo(GpuAccessFlags useFlags) const;
 
-#if B3D_BUILD_TYPE_DEVELOPMENT
-		/**
-		 * Marks whether a resource sharing memory with this one has started a new lifetime on it (see GpuBarrier::AliasAcquire).
-		 * Accessing a superseded resource is invalid until it is acquired again. Development builds only.
-		 */
-		void SetSupersededByAlias(bool superseded) { mIsSupersededByAlias.store(superseded, std::memory_order_relaxed); }
-
-		/** Returns true if a resource sharing memory with this one has started a new lifetime on it since this resource was last acquired. */
-		bool IsSupersededByAlias() const { return mIsSupersededByAlias.load(std::memory_order_relaxed); }
-
-		/** Notifies the resource that it started a new lifetime on its memory with an alias acquire. Development builds only. */
-		void NotifyAliasAcquired()
-		{
-			mIsSupersededByAlias.store(false, std::memory_order_relaxed);
-			mAliasAcquireCount.fetch_add(1, std::memory_order_relaxed);
-		}
-
-		/** Returns the number of alias acquires of the resource. Development builds only. */
-		u32 GetAliasAcquireCount() const { return mAliasAcquireCount.load(std::memory_order_relaxed); }
-#endif
-
 		/**
 		 * Queues the resource for destruction. If the resource is currently bound to a command buffer, the actual free
 		 * is deferred until the bound count drops to zero; otherwise the manager frees it immediately. Only valid for
@@ -441,11 +420,6 @@ namespace b3d
 		void DestroyImmediately();
 
 		bool mDestroyRequested = false;
-
-#if B3D_BUILD_TYPE_DEVELOPMENT
-		std::atomic<bool> mIsSupersededByAlias = false;
-		std::atomic<u32> mAliasAcquireCount = 0;
-#endif
 	};
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
@@ -619,6 +593,18 @@ namespace b3d
 		 */
 		bool CanRest() const { return mCanRest; }
 
+		/**
+		 * Makes the next submission that uses the image bring every subresource of it from its native layout to @p layout, the backend's
+		 * resting layout of the image. Thread safe on submit thread, or during initial creation of the resource.
+		 */
+		void RequestRestingTransition(render::GpuImageLayout layout) { mRestingTransitionLayout = layout; }
+
+		/**
+		 * Returns the layout requested by RequestRestingTransition() and forgets it, or GpuImageLayout::Undefined if there is none. Called
+		 * by the next submission that uses the image. Submit thread only.
+		 */
+		render::GpuImageLayout ConsumeRestingTransition();
+
 	protected:
 		/** Constructs an unmanaged image resource (no owner). Reserved for test mocks, see IGpuResource(). */
 		IGpuImageResource(u32 faceCount, u32 mipLevelCount, GpuTextureAspectFlags aspectMask);
@@ -637,6 +623,7 @@ namespace b3d
 		GpuTextureSubresourceRange mFullRange;
 
 		bool mCanRest = false;
+		render::GpuImageLayout mRestingTransitionLayout{}; /**< See RequestRestingTransition(). GpuImageLayout::Undefined if none is requested. */
 
 	private:
 		/** Creates the subresources and selects the initial submission state mode. */

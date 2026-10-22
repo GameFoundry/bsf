@@ -258,9 +258,7 @@ namespace b3d
 		MetalGpuCommandBuffer::MetalGpuCommandBuffer(MetalGpuDevice& device, MetalGpuCommandBufferPool& pool, u32 id, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation)
 			: GpuCommandBuffer(device, ownerThread, queueType, pool.UsesExplicitBarriers(), createInformation), mGpuDevice(device), mPool(pool), mId(id), mBarrierHelper(&mResourceTracker)
 		{
-#if B3D_GPU_EXPLICIT_BARRIERS
 			mResourceTracker.SetHazardTracking(!UsesExplicitBarriers());
-#endif
 
 			// The id parameter hides the Objective-C id type
 			const auto metalDevice = device.GetMetalDevice();
@@ -1000,18 +998,27 @@ namespace b3d
 				mDrawAccessValidator.ClearBindings();
 #endif
 
+			const GpuPipelineParameterLayout* const pipelineLayout = compute
+				? (mBoundComputePipeline != nullptr ? mBoundComputePipeline->GetParameterLayout().get() : nullptr)
+				: (mBoundGraphicsPipeline != nullptr ? mBoundGraphicsPipeline->GetParameterLayout().get() : nullptr);
+
 			for(u32 setIndex = 0; setIndex < (u32)mBoundParameterSets.Size(); setIndex++)
 			{
 				const TShared<GpuParameterSet>& parameters = mBoundParameterSets[setIndex];
 				if(parameters == nullptr)
 					continue;
 
+				// A set the pipeline declares no resources in is not accessed, even if one remains bound from an earlier draw
+				const GpuPipelineParameterSetLayout* const setLayout = pipelineLayout != nullptr && setIndex < pipelineLayout->GetSetCount() ? pipelineLayout->GetSet(setIndex).get() : nullptr;
+				if(pipelineLayout != nullptr && (setLayout == nullptr || setLayout->GetResourceCount() == 0))
+					continue;
+
 				if(!static_cast<MetalGpuParameters&>(*parameters).TrackResources(mResourceTracker, mBarrierHelper, mDynamicOffsetOverridesPerSet[setIndex], compute))
 					return false;
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
-				if(!compute && mBoundGraphicsPipeline != nullptr && parameters->GetSet() < mBoundGraphicsPipeline->GetParameterLayout()->GetSetCount())
-					mDrawAccessValidator.AddParameterSet(*parameters, *mBoundGraphicsPipeline->GetParameterLayout()->GetSet(parameters->GetSet()));
+				if(!compute && setLayout != nullptr)
+					mDrawAccessValidator.AddParameterSet(*parameters, *setLayout);
 #endif
 			}
 
@@ -1261,7 +1268,8 @@ namespace b3d
 			mRenderPassPipelineKey.SampleCount = (u16)std::max(1u, targetProperties.MultisampleCount);
 			mRenderPassClearValues = target->GetClearValues();
 
-			const RenderSurfaceMask clearMask = createInformation.ClearMask;
+			RenderTargetClearValues renderPassStartClearValues;
+			const RenderSurfaceMask clearMask = GpuBackendUtility::GetRenderPassClears(createInformation, renderPassStartClearValues);
 			const RenderSurfaceMask loadMask = createInformation.LoadMask;
 			const RenderSurfaceMask readOnlyMask = createInformation.ReadOnlyMask;
 			GpuRenderPassAttachmentUsageArray renderPassAttachmentUsages;
@@ -1325,7 +1333,7 @@ namespace b3d
 				renderPassAttachmentUsages = framebuffer->BuildRenderPassAttachmentUsages(readOnlyMask, loadMask, MetalFramebuffer::GetLayoutPolicy());
 			}
 
-			ConfigureAttachmentActions(descriptor, loadMask, clearMask, mRenderPassClearValues);
+			ConfigureAttachmentActions(descriptor, loadMask, clearMask, renderPassStartClearValues);
 			PackAttachmentFormats(descriptor, mRenderPassPipelineKey);
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
@@ -1809,6 +1817,49 @@ namespace b3d
 				options:transferInformation.Options];
 
 			mEncoderHasWork = true;
+		}
+
+		void MetalGpuCommandBuffer::CopyWindowToBuffer(const TShared<RenderWindow>& source, const TShared<GpuBuffer>& destination)
+		{
+			GpuCommandBuffer::CopyWindowToBuffer(source, destination);
+			EnsureValidThread();
+			if (!source || !destination)
+				return;
+
+			auto* const surface = static_cast<IMetalRenderWindowSurface*>(source->GetRenderWindowSurface().get());
+			if (surface == nullptr)
+				return;
+
+			const TOptional<RenderWindowImageLayout> layout = surface->GetImageLayout();
+			id<MTLTexture> sourceTexture = surface->GetCurrentColorTexture();
+			auto metalDestination = std::static_pointer_cast<MetalGpuBuffer>(destination);
+			id<MTLBuffer> destinationBuffer = metalDestination->GetMetalBuffer();
+			if (!layout || sourceTexture == nil || destinationBuffer == nil)
+				return;
+
+			EnsureEncoderKind(EncoderKind::Blit);
+
+			MetalBuffer* destinationResource = metalDestination->GetMetalResource();
+			if (destinationResource != nullptr)
+				mResourceTracker.TrackBufferAccess(destinationResource, GpuStageFlag::Transfer, GpuAccessFlag::Write, mBarrierHelper, 0);
+
+			if (!ExecutePendingBarriers())
+				return;
+
+			id<MTLBlitCommandEncoder> blit = GetOrOpenBlitEncoder();
+			if (blit == nil)
+				return;
+
+			const u32 rowPitchBytes = layout->Pitch.RowPitch * PixelUtility::GetBlockSize(layout->Format);
+			[blit copyFromTexture:sourceTexture
+				sourceSlice:0
+				sourceLevel:0
+				sourceOrigin:MTLOriginMake(0, 0, 0)
+				sourceSize:MTLSizeMake(layout->Width, layout->Height, 1)
+				toBuffer:destinationBuffer
+				destinationOffset:0
+				destinationBytesPerRow:rowPitchBytes
+				destinationBytesPerImage:(NSUInteger)rowPitchBytes * layout->Pitch.SliceHeight];
 		}
 
 		bool MetalGpuCommandBuffer::CopyTexture(const TShared<Texture>& source, const TShared<Texture>& destination, const TextureCopyInformation& copyInformation)
@@ -2314,7 +2365,6 @@ namespace b3d
 			ExecutePendingBarriers();
 		}
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 		bool MetalGpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& barriers, GpuBarrierPhase phase, GpuSplitBarrier* split)
 		{
 			// What the barriers of each case record:
@@ -2388,6 +2438,10 @@ namespace b3d
 
 			for (const GpuExplicitTextureBarrier& barrier : barriers.TextureBarriers)
 			{
+				// Metal has no layouts, and the alias acquire that supersedes the texture orders the work of the memory
+				if (barrier.Flags.IsSet(GpuBarrierFlag::AliasRelease))
+					continue;
+
 				auto* const texture = static_cast<MetalTexture*>(barrier.Object.get());
 				MetalImage* const image = texture != nullptr ? texture->GetMetalResource() : nullptr;
 				if (image == nullptr)
@@ -2440,7 +2494,6 @@ namespace b3d
 			EmitBarrier(stageBarrier);
 			return true;
 		}
-#endif
 
 		void MetalGpuCommandBuffer::ExecuteSubmitOnSubmitThread(MetalGpuQueue& submitQueue, GpuQueueMask syncMask, TArrayView<const GpuTimelineFenceAndValue> signalFences)
 		{
@@ -2483,9 +2536,7 @@ namespace b3d
 			MetalSubmissionTransitionVisitor transitionVisitor;
 			mResourceTracker.ResolveSubmissionTransitions(mSubmittedQueueId, submitThread.GetFrameIndex(), transitionVisitor);
 			syncMask |= transitionVisitor.GetRequiredWaitMask();
-#if B3D_GPU_EXPLICIT_BARRIERS
 			PublishExplicitImageLayouts(mSubmittedQueueId);
-#endif
 
 			mResourceTracker.NotifyUsed(mSubmittedQueueId);
 			mResourcesSubmitted = true;
@@ -2631,9 +2682,7 @@ namespace b3d
 			else
 				mResourceTracker.NotifyUnbound();
 
-#if B3D_GPU_EXPLICIT_BARRIERS
 			ClearExplicitBarrierState(mResourcesSubmitted);
-#endif
 
 			mResourceTracker.Clear();
 			mResourcesSubmitted = false;

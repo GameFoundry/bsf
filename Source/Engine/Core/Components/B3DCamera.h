@@ -533,7 +533,8 @@ namespace b3d
 		bool IsMain() const { return mMain; }
 
 		/**
-		 * Requests an asynchronous capture of the next rendered frame from this camera.
+		 * Requests an asynchronous capture of the next rendered frame from this camera. When the camera renders to a window, the
+		 * capture holds the image presented to the window, including other cameras drawn to it that frame.
 		 *
 		 * @return	Async operation with captured pixel data, or nullptr if camera is inactive.
 		 */

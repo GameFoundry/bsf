@@ -25,6 +25,7 @@ namespace b3d::render
 		void RebuildSwapChain(u32 width, u32 height, bool vsync, u32 vsyncInterval) override;
 		void MarkSwapChainAsInvalid() override;
 		void SwapBuffers(GpuQueue& queue, GpuQueueMask syncMask) override;
+		bool HasAcquiredImage() const override;
 		void Destroy() override;
 
 		// IVulkanRenderWindowSurface
@@ -33,7 +34,10 @@ namespace b3d::render
 		bool IsSwapChainValid() const override;
 		VulkanSwapChain* GetSwapChain() const override { return mSwapChain; }
 		VulkanImage* GetCurrentColorImage() const override;
+		u32 GetWidth() const override;
+		u32 GetHeight() const override;
 		PixelFormat GetColorPixelFormat() const override;
+		bool SupportsReadback() const override;
 
 	private:
 		TShared<VulkanSurface> mSurface;

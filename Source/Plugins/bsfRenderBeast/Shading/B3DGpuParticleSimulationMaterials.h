@@ -30,8 +30,11 @@ namespace b3d { namespace render
 	public:
 		GpuParticleClearMaterial() = default;
 
-		/** Populates GPU parameters for rendering using this material. */
-		static void PopulateParameters(const TShared<GpuParameterSet>& gpuParameters, const TShared<GpuBuffer>& vertexInputBuffer, const TShared<GpuBuffer>& tileUVs);
+		/**
+		 * Creates the parameter set of @p pass and assigns @p vertexInputBuffer, the uniform buffer of the vertex shader, and @p tileUVs,
+		 * the UVs of the tiles to clear, to it.
+		 */
+		TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<GpuBuffer>& vertexInputBuffer, const TShared<GpuBuffer>& tileUVs);
 	};
 
 	/** Material used for adding new particles into the particle state textures. */
@@ -42,8 +45,8 @@ namespace b3d { namespace render
 	public:
 		GpuParticleInjectMaterial() = default;
 
-		/** Populates GPU parameters for rendering using this material. */
-		static void PopulateParameters(const TShared<GpuParameterSet>& gpuParameters, const TShared<GpuBuffer>& vertexInputBuffer);
+		/** Creates the parameter set of @p pass and assigns @p vertexInputBuffer, the uniform buffer of the vertex shader, to it. */
+		TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<GpuBuffer>& vertexInputBuffer);
 	};
 
 	/** Material used for adding new curves into the curve texture. */
@@ -54,8 +57,8 @@ namespace b3d { namespace render
 	public:
 		GpuParticleCurveInjectMaterial() = default;
 
-		/** Populates GPU parameters for rendering using this material. */
-		void Prepare(const TShared<GpuBuffer>& vertexInputBuffer);
+		/** Creates the parameter set of @p pass and assigns @p vertexInputBuffer, the uniform buffer of the vertex shader, to it. */
+		TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<GpuBuffer>& vertexInputBuffer);
 	};
 
 	B3D_UNIFORM_BUFFER_BEGIN(VectorFieldUniformDefinition)
@@ -74,8 +77,6 @@ namespace b3d { namespace render
 		B3D_UNIFORM_BUFFER_MEMBER(float, gRestitution)
 		B3D_UNIFORM_BUFFER_MEMBER(float, gDampening)
 		B3D_UNIFORM_BUFFER_MEMBER(float, gCollisionRadiusScale)
-		B3D_UNIFORM_BUFFER_MEMBER(Vector2, gSizeScaleCurveOffset)
-		B3D_UNIFORM_BUFFER_MEMBER(Vector2, gSizeScaleCurveScale)
 	B3D_UNIFORM_BUFFER_END
 
 	inline GpuParticleDepthCollisionUniformDefinition gGpuParticleDepthCollisionUniformDefinition;
@@ -121,13 +122,12 @@ namespace b3d { namespace render
 		 * @param	depth						Depth texture for collision detection
 		 * @param	normals						Normals texture for collision detection
 		 * @param	tileUVs						Sets the UV offsets of individual tiles for a particular particle system that's being rendered.
-		 * @param	perObjectParams				General purpose particle system parameters.
 		 * @param	vectorFieldTexture			3D texture representing the vector field, or null if none.
 		 * @param	supportsDepthCollisions		True if this material variation supports depth collisions
 		 */
 		static void PopulateParameters(const TShared<GpuParameterSet>& gpuParameters, GpuParticleResources& resources, const TShared<GpuBuffer>& particleVertexInputBuffer,
 			const GpuBufferSuballocation& viewParams, const TShared<Texture>& depth, const TShared<Texture>& normals, const TShared<GpuBuffer>& tileUVs,
-			const GpuBufferSuballocation& perObjectParams, const TShared<Texture>& vectorFieldTexture, bool supportsDepthCollisions);
+			const TShared<Texture>& vectorFieldTexture, bool supportsDepthCollisions);
 
 		/** Returns the material variation matching the provided parameters. */
 		static GpuParticleSimulateMaterial* GetVariation(bool depthCollisions, bool localSpace);
@@ -194,14 +194,12 @@ namespace b3d { namespace render
 		GpuParticleSortPrepareMaterial() = default;
 		void Initialize() override;
 
-		/** Binds the material to the pipeline along with the global input texture containing particle positions and times. */
-		void Bind(GpuCommandBuffer& commandBuffer, const TShared<Texture>& positionAndTime);
-
 		/**
-		 * Executes the material, generating sort data for a particular particle system and injecting it into the specified
-		 * location in the key and index buffers.
+		 * Creates the parameter set of @p pass and assigns the inputs and outputs that generate the sort data of a particular particle
+		 * system to it, injecting it into the specified location in the key and index buffers.
 		 *
-		 * @param	commandBuffer		Command buffer to execute on.
+		 * @param	pass				Pass that dispatches the material.
+		 * @param	positionAndTime		Texture containing the particle positions and times.
 		 * @param	system				System whose particles to insert into the sort key/index buffers.
 		 * @param	systemIdx			Sequential index of the system to insert into the sort buffers.
 		 * @param	localViewOrigin		View origin in the simulation space of the particle system.
@@ -211,9 +209,13 @@ namespace b3d { namespace render
 		 * @param	outIndices			Pre-allocated buffer that will receive the indices to be sorted. The buffer must
 		 *								be GPU writable and use a 2x 16-bit integer format. Must have the same capacity
 		 *								as @p outKeys.
-		 * @return						Number of particle that were written to the buffers.
+		 * @return						Parameter set to pass to Execute().
 		 */
-		u32 Execute(GpuCommandBuffer& commandBuffer, const GpuParticleSystem& system, u32 systemIdx, const Vector3& localViewOrigin, u32 offset, const TShared<GpuBuffer>& outKeys, const TShared<GpuBuffer>& outIndices);
+		TShared<GpuParameterSet> Prepare(FrameGraphPass& pass, const TShared<Texture>& positionAndTime, const GpuParticleSystem& system, u32 systemIdx,
+			const Vector3& localViewOrigin, u32 offset, const TShared<GpuBuffer>& outKeys, const TShared<GpuBuffer>& outIndices);
+
+		/** Binds the material and @p set, a set from Prepare() for @p system, and dispatches over the particles of @p system. */
+		void Execute(FrameGraphPassContext& context, const TShared<GpuParameterSet>& set, const GpuParticleSystem& system) const;
 
 	private:
 		GpuParameterUniformBuffer mInputUniformBufferParameter;

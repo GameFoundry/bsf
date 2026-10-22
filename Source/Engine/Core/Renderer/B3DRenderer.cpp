@@ -16,13 +16,27 @@
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DGpuDevice.h"
 #include "GpuBackend/B3DGpuWorkContext.h"
-#include "GpuBackend/B3DRenderWindow.h"
 #include "Scene/B3DSceneManager.h"
 
 using namespace b3d;
 
 namespace b3d { namespace render
 {
+void RendererViewContext::SetAttachments(FrameGraphRasterPass& pass) const
+{
+	if(Target != nullptr)
+	{
+		pass.SetRenderTarget(Target, FrameGraphAttachmentLoad::Load);
+		return;
+	}
+
+	for(u32 colorIndex = 0; colorIndex < ColorAttachments.Size(); colorIndex++)
+		pass.SetColorAttachment(colorIndex, ColorAttachments[colorIndex], FrameGraphAttachmentLoad::Load);
+
+	if(DepthStencilAttachment != nullptr)
+		pass.SetDepthStencilAttachment(DepthStencilAttachment, DepthStencilMode, FrameGraphAttachmentLoad::Load);
+}
+
 void Renderer::Initialize(const TShared<GpuDevice>& gpuDevice)
 {
 	mDevice = gpuDevice;
@@ -67,85 +81,6 @@ void Renderer::EndFrame()
 	mFrameCompletionTracker.AdvanceFrame();
 }
 
-void Renderer::RequestScreenCapture(const TShared<RenderWindow>& window, TAsyncOp<TShared<PixelData>> asyncOp)
-{
-	if(window == nullptr)
-	{
-		asyncOp.CompleteOperation(nullptr);
-		return;
-	}
-
-	for(ScreenCaptureRequest& request : mScreenCaptureRequests)
-	{
-		if(request.Window != window)
-			continue;
-
-		request.Operations.Add(std::move(asyncOp));
-		return;
-	}
-
-	mScreenCaptureRequests.EmplaceBack(window, std::move(asyncOp));
-}
-
-bool Renderer::IsScreenCaptureRequested(const TShared<RenderWindow>& window) const
-{
-	if(window == nullptr)
-		return false;
-
-	for(const ScreenCaptureRequest& request : mScreenCaptureRequests)
-	{
-		if(request.Window == window)
-			return true;
-	}
-
-	return false;
-}
-
-bool Renderer::ResolveScreenCaptures(GpuCommandBuffer& commandBuffer, const TShared<RenderWindow>& window)
-{
-	for(u32 requestIndex = 0; requestIndex < mScreenCaptureRequests.Size(); ++requestIndex)
-	{
-		ScreenCaptureRequest& request = mScreenCaptureRequests[requestIndex];
-		if(request.Window != window)
-			continue;
-
-		TInlineArray<TAsyncOp<TShared<PixelData>>, 1> captureOps = std::move(request.Operations);
-		mScreenCaptureRequests.Erase(mScreenCaptureRequests.Begin() + requestIndex);
-
-		TAsyncOp<TShared<PixelData>> readOp = window->ReadAsync(GetGpuContext(), commandBuffer);
-		if(readOp == nullptr)
-		{
-			for(TAsyncOp<TShared<PixelData>>& captureOp : captureOps)
-				captureOp.CompleteOperation(nullptr);
-
-			return false;
-		}
-
-		auto fnOnReadOpCompleted = [captureOps = std::move(captureOps), readOp]() mutable
-		{
-			for(TAsyncOp<TShared<PixelData>>& captureOp : captureOps)
-				captureOp.CompleteOperation(readOp.GetReturnValue());
-		};
-
-		readOp.DoWhenComplete(std::move(fnOnReadOpCompleted));
-		return true;
-	}
-
-	return false;
-}
-
-void Renderer::ResolveOutstandingScreenCaptures()
-{
-	while(!mScreenCaptureRequests.Empty())
-	{
-		const TShared<RenderWindow> window = mScreenCaptureRequests.Front().Window;
-		TShared<GpuCommandBuffer> commandBuffer = mCommandBufferPoolRing->GetCurrentPool().FindOrCreate(GpuCommandBufferCreateInformation::Create("Screen capture"));
-
-		if(ResolveScreenCaptures(*commandBuffer, window))
-			GetGpuContext().SubmitCommandBuffer(commandBuffer);
-	}
-}
-
 void Renderer::InitializeOnRenderThread()
 {
 	// Borrows the renderer's frame completion tracker; all thread-affine state (transfer pools, scratch
@@ -165,15 +100,6 @@ void Renderer::ActivateOnRenderThread()
 
 void Renderer::DestroyOnRenderThread()
 {
-	// Cancel capture requests before the renderer's GPU state is torn down
-	for(ScreenCaptureRequest& request : mScreenCaptureRequests)
-	{
-		for(TAsyncOp<TShared<PixelData>>& operation : request.Operations)
-			operation.CompleteOperation(nullptr);
-	}
-
-	mScreenCaptureRequests.Clear();
-
 	GpuUniformBufferManager::ShutDown();
 	GpuProfiler::Instance().Clear();
 
@@ -247,33 +173,49 @@ void Renderer::ProcessTasks(bool forceAll, u64 upToFrame)
 		}
 	}
 
-	do
+	while(!mRunningTasks.empty())
 	{
+		// Covers the graph's execution, because pass functions may read data the tasks allocated from the frame allocator
+		FrameAllocatorScope frameScope;
+
+		// The tasks of the round add their work to one graph
+		FrameGraph graph(*mGpuContext, "RendererTasks");
+
+		bool anyTaskRan = false;
+		FrameVector<TShared<RendererTask>> completedTasks;
 		for(auto& entry : mRunningTasks)
 		{
 			if(entry->IsCanceled() || entry->IsComplete())
 				continue;
 
 			entry->mState.store(1);
+			anyTaskRan = true;
 
-			const bool complete = [this, &entry]()
-			{
-				return entry->mTaskWorker(mCommandBufferPoolRing->GetCurrentPool());
-			}();
-
-			if(!complete)
-				mRemainingTasks.push_back(entry);
+			if(entry->mTaskWorker(graph))
+				completedTasks.push_back(entry);
 			else
-			{
-				entry->mState.store(2);
-				entry->mTaskWorker = nullptr;
-			}
+				mRemainingTasks.push_back(entry);
+		}
+
+		if(anyTaskRan)
+		{
+			graph.Compile();
+			graph.Execute();
+		}
+
+		// Once the graph holding their work has executed
+		for(auto& entry : completedTasks)
+		{
+			entry->mState.store(2);
+			entry->mTaskWorker = nullptr;
 		}
 
 		mRunningTasks.clear();
 		std::swap(mRemainingTasks, mRunningTasks);
+
+		if(!forceAll)
+			break;
 	}
-	while(forceAll && !mRunningTasks.empty());
 }
 
 void Renderer::ProcessTask(RendererTask& task, bool forceAll)
@@ -301,7 +243,12 @@ void Renderer::ProcessTask(RendererTask& task, bool forceAll)
 
 		GetProfilerCPU().BeginThread("RenderTask");
 		{
-			complete = task.mTaskWorker(mCommandBufferPoolRing->GetCurrentPool());
+			FrameAllocatorScope frameScope;
+			FrameGraph graph(*mGpuContext, "RendererTasks");
+			complete = task.mTaskWorker(graph);
+
+			graph.Compile();
+			graph.Execute();
 		}
 		GetProfilerCPU().EndThread();
 
@@ -321,11 +268,11 @@ TShared<Renderer> GetRenderer()
 	return std::static_pointer_cast<Renderer>(RendererManager::Instance().GetActive());
 }
 
-RendererTask::RendererTask(const PrivatelyConstruct& dummy, String name, std::function<bool(GpuCommandBufferPool&)> taskWorker)
+RendererTask::RendererTask(const PrivatelyConstruct& dummy, String name, std::function<bool(FrameGraph&)> taskWorker)
 	: mName(std::move(name)), mTaskWorker(std::move(taskWorker))
 {}
 
-TShared<RendererTask> RendererTask::Create(String name, std::function<bool(GpuCommandBufferPool&)> taskWorker)
+TShared<RendererTask> RendererTask::Create(String name, std::function<bool(FrameGraph&)> taskWorker)
 {
 	return B3DMakeShared<RendererTask>(PrivatelyConstruct(), std::move(name), std::move(taskWorker));
 }

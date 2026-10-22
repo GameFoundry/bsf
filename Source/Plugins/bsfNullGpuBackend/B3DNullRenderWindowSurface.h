@@ -19,9 +19,10 @@ namespace b3d::render
 		~NullRenderWindowSurface();
 
 		void SwapBuffers(GpuQueue& queue, GpuQueueMask syncMask) override {}
+		bool HasAcquiredImage() const override { return true; }
 		void RebuildSwapChain(u32 width, u32 height, bool vsync, u32 vsyncInterval) override;
 		void MarkSwapChainAsInvalid() override;
-		TAsyncOp<TShared<PixelData>> ReadAsync(GpuCommandBuffer& commandBuffer) override;
+		TOptional<RenderWindowImageLayout> GetImageLayout() const override;
 		void Destroy() override;
 
 	private:

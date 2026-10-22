@@ -119,3 +119,18 @@ gpuContext.SubmitCommandBuffer(commandBuffer);
 GpuDevice& gpuDevice = commandBuffer->GetGpuDevice();
 gpuDevice.PresentRenderWindow(window);
 ~~~~~~~~~~~~~
+
+# Capturing window contents
+A window's back buffer can only be read while it is being presented. Call @b3d::render::RenderWindow::RequestCapture to capture the next image presented to the window. The capture is read when the window is presented, after everything rendered to it that frame, and the provided async operation completes with the image once the GPU finishes the copy. A request stays pending until the window is presented with a rendered image. Call @b3d::render::RenderWindow::CancelCaptures to complete pending requests with a null image. Both methods must be called on the render thread.
+
+~~~~~~~~~~~~~{.cpp}
+TAsyncOp<TShared<PixelData>> captureOp;
+window->RequestCapture(captureOp);
+
+// ... render to the window and present it ...
+
+// Once the GPU has finished the copy
+TShared<PixelData> image = captureOp.GetReturnValue();
+~~~~~~~~~~~~~
+
+On Vulkan and Metal, reading a window that is not headless requires a development build, because only development builds create swap chain images that can be copied from.

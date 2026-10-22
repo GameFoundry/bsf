@@ -48,7 +48,11 @@ namespace b3d
 
 			/**
 			 * Builds a native global barrier for an alias acquire. Its source scope belongs to earlier resources on the memory, whose type and layout
-			 * are unknown, so accesses are derived from the stages alone. Only source writes need a flush.
+			 * are unknown, so accesses are derived from the stages alone. Accesses only textures perform (render target, depth-stencil and resolve)
+			 * are tied to a layout, which a global barrier cannot name, so they are covered by common access. The acquiring textures gain their
+			 * accesses through their own barriers.
+			 *
+			 * @param	scope	Last accesses of the earlier resources, and first accesses of the acquiring resources.
 			 */
 			static D3D12_GLOBAL_BARRIER GetAliasGlobalBarrier(const GpuBarrierScope& scope);
 

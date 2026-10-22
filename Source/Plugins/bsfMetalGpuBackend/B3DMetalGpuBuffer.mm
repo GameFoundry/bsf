@@ -51,6 +51,7 @@ namespace b3d
 		void MetalGpuBuffer::Initialize()
 		{
 			RecreateInternalBuffer();
+			GpuBuffer::Initialize();
 		}
 
 		MetalBuffer* MetalGpuBuffer::CreateBuffer()

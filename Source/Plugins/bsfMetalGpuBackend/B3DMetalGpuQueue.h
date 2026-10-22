@@ -111,7 +111,6 @@ namespace b3d
 
 			void SubmitCommandBuffer(const GpuSubmissionInformation& information) override;
 			void WaitUntilIdle() override;
-			void PresentRenderWindow(const TShared<RenderWindow>& renderWindow, GpuQueueMask syncMask = GpuQueueMask::kAll) override;
 
 		private:
 			/** Submission on this queue that has not been retired yet. */

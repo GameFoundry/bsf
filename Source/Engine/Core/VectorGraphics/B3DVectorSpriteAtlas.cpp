@@ -11,6 +11,7 @@
 #include "Renderer/B3DRenderer.h"
 #include "Renderer/B3DRendererManager.h"
 #include "Renderer/B3DRendererUtility.h"
+#include "FrameGraph/B3DFrameGraph.h"
 #include "Utility/B3DTime.h"
 
 using namespace b3d;
@@ -221,24 +222,21 @@ void GUIVectorSpriteAtlas::RenderDirtySprites(u32 bufferIndex)
 		return;
 
 	GpuWorkContext& gpuContext = render::GetRenderer()->GetGpuContext();
-	const TShared<GpuDevice> gpuDevice = GetApplication().GetPrimaryGpuDevice();
+	render::FrameGraph graph(gpuContext, "GUIVectorSpriteAtlas");
 
-	// Create a command buffer
-	render::GpuCommandBufferPool& commandBufferPool = RendererManager::Instance().GetActive()->GetCurrentCommandBufferPool();
-	TShared<render::GpuCommandBuffer> commandBuffer = commandBufferPool.FindOrCreate(render::GpuCommandBufferCreateInformation::Create("GUIVectorSpriteAtlas"));
-
-	FrameAllocatorScope frameScope;
-	FrameUnorderedMap<render::Texture*, TShared<render::RenderTexture>> atlasRenderTextures;
+	// The same variation RendererUtility::Blit() picks for a color copy into an 8-bit texture
+	render::BlitMat* const blitMaterial = render::BlitMat::GetVariation(1, true, false);
 
 	for(const auto& entry : dirtySprites)
 	{
+		// Rasterize the path into a texture of its own, with a stencil buffer
 		TextureCreateInformation colorTextureCreateInformation;
 		colorTextureCreateInformation.Width = entry.Size.Width;
 		colorTextureCreateInformation.Height = entry.Size.Height;
 		colorTextureCreateInformation.Format = PF_RGBA8;
 		colorTextureCreateInformation.Usage = TextureUsageFlag::RenderTarget;
 
-		const TShared<render::Texture> colorTexture = gpuDevice->CreateTexture(colorTextureCreateInformation);
+		const TShared<render::Texture> colorTexture = graph.CreateTexture("VectorSprite", colorTextureCreateInformation);
 
 		TextureCreateInformation stencilTextureCreateInformation;
 		stencilTextureCreateInformation.Width = entry.Size.Width;
@@ -246,49 +244,40 @@ void GUIVectorSpriteAtlas::RenderDirtySprites(u32 bufferIndex)
 		stencilTextureCreateInformation.Format = PF_D32_S8X24;
 		stencilTextureCreateInformation.Usage = TextureUsageFlag::DepthStencil;
 
-		const TShared<render::Texture> stencilTexture = gpuDevice->CreateTexture(stencilTextureCreateInformation);
+		const TShared<render::Texture> stencilTexture = graph.CreateTexture("VectorSpriteStencil", stencilTextureCreateInformation);
 
-		render::RenderTextureCreateInformation renderTextureCreateInformation;
-		renderTextureCreateInformation.ColorSurfaces[0].Texture = colorTexture;
-		renderTextureCreateInformation.DepthStencilSurface.Texture = stencilTexture;
+		render::FrameGraphRasterPass spritePass;
+		spritePass.SetColorAttachment(0, colorTexture, render::FrameGraphAttachmentLoad::Clear);
+		spritePass.SetDepthStencilAttachment(stencilTexture, render::FrameGraphDepthStencilMode::Write, render::FrameGraphAttachmentLoad::Clear);
+		spritePass.AddParameterSet(entry.Renderable->Prepare());
 
-		TShared<render::RenderTexture> renderTarget = render::RenderTexture::Create(renderTextureCreateInformation);
-
-		// Prepare GPU parameters just before render pass
-		TShared<render::GpuParameterSet> gpuParameters = entry.Renderable->Prepare();
-
-		// Begin render pass WITH GPU parameters
-		render::RenderPassCreateInformation renderPassCreateInformation(renderTarget, gpuParameters, RT_NONE, RT_NONE);
-		renderPassCreateInformation.ClearMask = RT_ALL;
-
-		commandBuffer->BeginRenderPass(renderPassCreateInformation);
-		commandBuffer->SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
-
-		entry.Renderable->Render(*commandBuffer);
-
-		TShared<render::RenderTexture> atlasRenderTexture;
-		if(auto found = atlasRenderTextures.find(entry.Texture.get()); found != atlasRenderTextures.end())
+		graph.AddRasterPass("VectorSprite", std::move(spritePass), [renderable = entry.Renderable](render::FrameGraphPassContext& context)
 		{
-			atlasRenderTexture = found->second;
-		}
-		else
+			render::GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
+			commandBuffer.SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
+
+			renderable->Render(commandBuffer);
+		});
+
+		// Copy the sprite into its region of the atlas
+		graph.ImportTexture(entry.Texture);
+
+		render::FrameGraphRasterPass blitPass;
+		blitPass.SetColorAttachment(0, entry.Texture, render::FrameGraphAttachmentLoad::Load);
+
+		const TShared<render::GpuParameterSet> blitSet = blitMaterial->Prepare(blitPass, colorTexture);
+		const Area2 inputArea(0.0f, 0.0f, (float)entry.Size.Width, (float)entry.Size.Height);
+
+		graph.AddRasterPass("VectorSpriteToAtlas", std::move(blitPass), [blitMaterial, blitSet, inputArea, outputArea = entry.UVRegion](render::FrameGraphPassContext& context)
 		{
-			render::RenderTextureCreateInformation atlasTextureCreateInformation;
-			atlasTextureCreateInformation.ColorSurfaces[0].Texture = entry.Texture;
-
-			atlasRenderTexture = render::RenderTexture::Create(atlasTextureCreateInformation);
-			atlasRenderTextures[entry.Texture.get()] = atlasRenderTexture;
-		}
-
-		commandBuffer->EndRenderPass();
-
-		render::BlitInformation blitInformation = render::BlitInformation::BlitColor(colorTexture, atlasRenderTexture, Area2I::kEmpty, RT_NONE, RT_COLOR0);
-		blitInformation.OutputArea = entry.UVRegion;
-
-		render::GetRendererUtility().Blit(*commandBuffer, blitInformation);
+			context.GetCommandBuffer().SetViewport(outputArea);
+			blitMaterial->Execute(context, blitSet, inputArea, false);
+		});
 	}
 
-	gpuContext.SubmitCommandBuffer(commandBuffer);
+	graph.Compile();
+	graph.Execute();
+
 	dirtySprites.clear();
 }
 

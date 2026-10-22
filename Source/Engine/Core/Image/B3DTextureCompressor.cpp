@@ -1,23 +1,24 @@
 //************************************* B3D Framework - Copyright 2026 Marko Pintera *************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "Image/B3DTextureCompressor.h"
+#include "Image/B3DTextureCompressorStages.h"
 
 #include "Image/B3DPixelUtility.h"
 #include "Image/B3DPixelData.h"
 #include "Image/B3DTexture.h"
 #include "Renderer/B3DRenderer.h"
-#include "Renderer/B3DRendererMaterial.h"
 #include "Renderer/B3DGpuUniformBuffer.h"
 #include "GpuBackend/B3DGpuDevice.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DGpuBuffer.h"
-#include "GpuBackend/B3DGpuParameterSet.h"
-#include "GpuBackend/B3DGpuPipelineState.h"
+#include "GpuBackend/B3DGpuQueries.h"
+#include "FrameGraph/B3DFrameGraph.h"
 #include "CoreObject/B3DRenderThread.h"
 #include "Threading/B3DAsyncOp.h"
-#include "FileSystem/B3DDataStream.h"
+#include "Utility/B3DConfigVariable.h"
 #include "B3DApplication.h"
 
+#include <cmath>
 #include <cstring>
 #include <cfloat>
 
@@ -27,13 +28,13 @@ namespace b3d::render
 {
 	namespace
 	{
-		/** Per-dispatch constants for the block-compression kernel (maps to the BSL `cbuffer Parameters`). */
+		/** Per-dispatch constants of every texture compression stage (maps to the BSL `cbuffer Parameters`). */
 		B3D_UNIFORM_BUFFER_BEGIN(TextureCompressParameterDefinition)
 			B3D_UNIFORM_BUFFER_MEMBER(Vector2I, gTextureSize)  // Texture size in pixels
 			B3D_UNIFORM_BUFFER_MEMBER(Vector2I, gBlockCount)   // Number of 4x4 blocks along each axis (whole texture)
-			B3D_UNIFORM_BUFFER_MEMBER(Vector2I, gBlockOffset)  // Block-grid offset of the dispatched band (X is always 0)
-			B3D_UNIFORM_BUFFER_MEMBER(Vector2I, gScratchBlockCount) // Number of blocks in this scratch-buffer tile
-			B3D_UNIFORM_BUFFER_MEMBER(i32, gBC7PartitionOffset) // First partition evaluated by the current BC7 search batch
+			B3D_UNIFORM_BUFFER_MEMBER(Vector2I, gBlockOffset)  // Block-grid offset of the dispatched chunk
+			B3D_UNIFORM_BUFFER_MEMBER(Vector2I, gScratchBlockCount) // Number of blocks in the dispatched chunk
+			B3D_UNIFORM_BUFFER_MEMBER(Vector4I, gStageParameters) // TextureCompressStageRequirements::StageParameters of the dispatched stage
 		B3D_UNIFORM_BUFFER_END
 
 		TextureCompressParameterDefinition gTextureCompressParameters;
@@ -44,534 +45,37 @@ namespace b3d
 {
 	namespace
 	{
-		/**
-		 * Maps a block-compressed pixel format to the TextureCompress.bsl FORMAT variation index, the output texture format
-		 * (one packed block per texel: RG32U for 64-bit blocks, RGBA32U for 128-bit), whether the source must be fed as HDR
-		 * floating-point (BC6H) rather than normalized RGBA8, and a per-format band-height multiplier.
-		 *
-		 * @p tileSizeMultiplier scales the caller's maxTileSize band budget by how much GPU work this format does per block,
-		 * so each band's dispatch stays well under the OS GPU watchdog (TDR) regardless of format.
-		 */
-		bool GetFormatInfo(PixelFormat format, i32& outVariation, PixelFormat& outPixelFormat, bool& outIsHDR, float& outTileSizeMultiplier)
-		{
-			outIsHDR = false;
-			switch(format)
-			{
-			case PF_BC1:
-			case PF_BC1a:
-				outVariation = 0;
-				outPixelFormat = PF_RG32U; // 64-bit block
-				outTileSizeMultiplier = 1.0f;
-				return true;
-			case PF_BC3:
-				outVariation = 1;
-				outPixelFormat = PF_RGBA32U; // 128-bit block
-				outTileSizeMultiplier = 1.0f;
-				return true;
-			case PF_BC4:
-				outVariation = 2;
-				outPixelFormat = PF_RG32U; // 64-bit block
-				outTileSizeMultiplier = 4.0f; // Trivial min/max encode, allow larger tiles
-				return true;
-			case PF_BC5:
-				outVariation = 3;
-				outPixelFormat = PF_RGBA32U; // 128-bit block
-				outTileSizeMultiplier = 4.0f; // Trivial min/max encode, allow larger tiles
-				return true;
-			case PF_BC6H:
-				outVariation = 4; // base of the BC6H mode range (variations 4..17, encoder modes 1..14)
-				outPixelFormat = PF_RGBA32U; // 128-bit block
-				outIsHDR = true; // HDR source: fed as RGBA32F, not normalized RGBA8
-				outTileSizeMultiplier = 0.25f; // Multiple modes per tile, expensive, use smaller tile
-				return true;
-			case PF_BC7:
-				outVariation = 18; // Selects the dedicated BC7 search/finalize pass sequence.
-				outPixelFormat = PF_RGBA32U; // 128-bit block
-				outTileSizeMultiplier = 0.25f; // Multiple modes per tile, expensive, use smaller tile
-				return true;
-			default:
-				return false;
-			}
-		}
+#if B3D_BUILD_TYPE_DEVELOPMENT
+		TConfigVariable gGpuLogTextureCompressionTimings("gpu.LogTextureCompressionTimings",
+			"Log the GPU time of every GPU texture compression stage, summed over the texture. Development builds only.",
+			false);
+#endif
 
-		enum class TextureCompressPassType
-		{
-			Standard,
-			BC7PartitionSearch,
-			BC7Finalize,
-			BC7StandaloneFinalize
-		};
+		/** GPU time a single chunk submission is sized to take. Keeps every submission far below the OS GPU watchdog limit. */
+		constexpr float kChunkTimeBudgetMilliseconds = 50.0f;
 
-		struct TextureCompressPass
-		{
-			TextureCompressPassType Type;
-			i32 Variation;
-			i32 PartitionOffset;
-		};
+		/** Number of blocks in the first chunks, compressed before any GPU time has been measured. */
+		constexpr u32 kInitialChunkBlockCount = 64;
 
-		constexpr u32 kBC7CandidateRecordsPerBlock = 1;
+		/** Number of blocks in every chunk when the GPU time of chunks cannot be measured. */
+		constexpr u32 kUnmeasuredChunkBlockCount = 64 * 64;
 
-		template <int BC7_MODE>
-		const ShaderVariationParameters& GetBC7VariationParameters()
-		{
-			static ShaderVariationParameters variation = ShaderVariationParameters({ ShaderVariationParameter("BC7_MODE", BC7_MODE) });
+		/** Maximum factor by which a chunk may be larger than the last chunk whose GPU time was measured. */
+		constexpr float kMaximumChunkGrowth = 4.0f;
 
-			return variation;
-		}
+		/** Number of chunk submissions in flight at once. Each has its own set of scratch resources. */
+		constexpr u32 kChunksInFlight = 2;
 
-		/** RendererMaterial wrapper around the block-compression compute shader. */
-		class TextureCompressMaterial : public render::RendererMaterial<TextureCompressMaterial>
-		{
-			RMAT_DEF("TextureCompress.bsl")
-
-		public:
-			TextureCompressMaterial() = default;
-
-			void Initialize() override
-			{
-				mGpuParameterSet->TryGetUniformBufferParameter("Parameters", mParametersBuffer);
-			}
-
-			/**
-			 * Records the dispatch that compresses @p input into @p output. Must run on the render thread. @p bestErr is the
-			 * per-block running-best-error buffer shared by the BC6H per-mode dispatches; pass null for single-dispatch
-			 * formats.
-			 */
-			void Execute(render::GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& input, const TShared<render::Texture>& output, const render::GpuBufferMappedScope& parameters, const TShared<render::Texture>& bestError, const Vector2I& blockCount, i32 variation)
-			{
-				mGpuParameterSet->SetSampledTexture("gInput", input);
-				mGpuParameterSet->SetStorageTexture("gOutput", output, TextureSurface::kComplete);
-				mParametersBuffer.Set(parameters);
-
-				if(bestError != nullptr && mGpuParameterSet->HasStorageTexture("gBestErr"))
-					mGpuParameterSet->SetStorageTexture("gBestErr", bestError, TextureSurface::kComplete);
-
-				Bind(commandBuffer);
-
-				// BC6H two-region modes (variations 4..13) dispatch one thread-group per 4x4 block, with 32 threads (one per
-				// partition) cooperating via groupshared (kernel uses [numthreads(32, 1, 1)]). Every other variation runs one
-				// thread per block ([numthreads(8, 8, 1)], 8x8 groups).
-				if(variation >= 4 && variation <= 13)
-					commandBuffer.DispatchCompute((u32)blockCount.X, (u32)blockCount.Y);
-				else
-					commandBuffer.DispatchCompute((u32)Math::DivideAndRoundUp(blockCount.X, 8), (u32)Math::DivideAndRoundUp(blockCount.Y, 8));
-			}
-
-			template <int FORMAT>
-			static const ShaderVariationParameters& GetVariationParams()
-			{
-				static ShaderVariationParameters variation = ShaderVariationParameters({ ShaderVariationParameter("FORMAT", FORMAT) });
-
-				return variation;
-			}
-
-			/** Returns the material for a single FORMAT variation value (0..17; see TextureCompress.bsl FORMAT note). */
-			static TextureCompressMaterial* GetVariation(i32 variation)
-			{
-				switch(variation)
-				{
-				case 0: return Get(GetVariationParams<0>());
-				case 1: return Get(GetVariationParams<1>());
-				case 2: return Get(GetVariationParams<2>());
-				case 3: return Get(GetVariationParams<3>());
-				case 4: return Get(GetVariationParams<4>());
-				case 5: return Get(GetVariationParams<5>());
-				case 6: return Get(GetVariationParams<6>());
-				case 7: return Get(GetVariationParams<7>());
-				case 8: return Get(GetVariationParams<8>());
-				case 9: return Get(GetVariationParams<9>());
-				case 10: return Get(GetVariationParams<10>());
-				case 11: return Get(GetVariationParams<11>());
-				case 12: return Get(GetVariationParams<12>());
-				case 13: return Get(GetVariationParams<13>());
-				case 14: return Get(GetVariationParams<14>());
-				case 15: return Get(GetVariationParams<15>());
-				case 16: return Get(GetVariationParams<16>());
-				case 17: return Get(GetVariationParams<17>());
-				default:
-					B3D_ASSERT(false);
-					return Get(GetVariationParams<0>());
-				}
-			}
-
-		private:
-			render::GpuParameterUniformBuffer mParametersBuffer;
-		};
-
-		/** Selects and persists the lowest-error candidate for one partitioned BC7 mode. */
-		class TextureCompressBC7PartitionSearchMaterial : public render::RendererMaterial<TextureCompressBC7PartitionSearchMaterial>
-		{
-			RMAT_DEF("TextureCompressBC7PartitionSearch.bsl")
-
-		public:
-			TextureCompressBC7PartitionSearchMaterial() = default;
-
-			void Initialize() override
-			{
-				mGpuParameterSet->TryGetUniformBufferParameter("Parameters", mParametersBuffer);
-			}
-
-			void Execute(render::GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& input, const TShared<render::GpuBuffer>& candidateBuffer, const render::GpuBufferMappedScope& parameters, const Vector2I& blockCount)
-			{
-				mGpuParameterSet->SetSampledTexture("gInput", input);
-				mGpuParameterSet->SetStorageBuffer("gBC7Candidate", candidateBuffer);
-				mParametersBuffer.Set(parameters);
-
-				Bind(commandBuffer);
-				commandBuffer.DispatchCompute((u32)blockCount.X, (u32)blockCount.Y);
-			}
-
-			static TextureCompressBC7PartitionSearchMaterial* GetVariation(i32 variation)
-			{
-				switch(variation)
-				{
-				case 0: return Get(GetBC7VariationParameters<0>());
-				case 1: return Get(GetBC7VariationParameters<1>());
-				case 2: return Get(GetBC7VariationParameters<2>());
-				case 3: return Get(GetBC7VariationParameters<3>());
-				case 7: return Get(GetBC7VariationParameters<7>());
-				default:
-					B3D_ASSERT(false);
-					return Get(GetBC7VariationParameters<0>());
-				}
-			}
-
-		private:
-			render::GpuParameterUniformBuffer mParametersBuffer;
-		};
-
-		/** Finalizes one BC7 mode and updates the per-block running best. */
-		class TextureCompressBC7Mode0FinalizeMaterial : public render::RendererMaterial<TextureCompressBC7Mode0FinalizeMaterial>
-		{
-			RMAT_DEF("TextureCompressBC7Mode0Finalize.bsl")
-
-		public:
-			TextureCompressBC7Mode0FinalizeMaterial() = default;
-
-			void Initialize() override
-			{
-				mGpuParameterSet->TryGetUniformBufferParameter("Parameters", mParametersBuffer);
-			}
-
-			void Execute(render::GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& input,
-				const TShared<render::Texture>& output,
-				const TShared<render::Texture>& bestError, const TShared<render::GpuBuffer>& candidateBuffer,
-				const render::GpuBufferMappedScope& parameters, const Vector2I& blockCount)
-			{
-				mGpuParameterSet->SetSampledTexture("gInput", input);
-				mGpuParameterSet->SetStorageTexture("gOutput", output, TextureSurface::kComplete);
-				mGpuParameterSet->SetStorageTexture("gBestErr", bestError, TextureSurface::kComplete);
-				mParametersBuffer.Set(parameters);
-
-				if(candidateBuffer != nullptr && mGpuParameterSet->HasStorageBuffer("gBC7Candidate"))
-					mGpuParameterSet->SetStorageBuffer("gBC7Candidate", candidateBuffer);
-
-				Bind(commandBuffer);
-				commandBuffer.DispatchCompute((u32)Math::DivideAndRoundUp(blockCount.X, 8),
-					(u32)Math::DivideAndRoundUp(blockCount.Y, 8));
-			}
-
-		private:
-			render::GpuParameterUniformBuffer mParametersBuffer;
-		};
-
-		class TextureCompressBC7Mode1FinalizeMaterial : public render::RendererMaterial<TextureCompressBC7Mode1FinalizeMaterial>
-		{
-			RMAT_DEF("TextureCompressBC7Mode1Finalize.bsl")
-
-		public:
-			TextureCompressBC7Mode1FinalizeMaterial() = default;
-
-			void Initialize() override
-			{
-				mGpuParameterSet->TryGetUniformBufferParameter("Parameters", mParametersBuffer);
-			}
-
-			void Execute(render::GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& input,
-				const TShared<render::Texture>& output, const TShared<render::Texture>& bestError,
-				const TShared<render::GpuBuffer>& candidateBuffer, const render::GpuBufferMappedScope& parameters,
-				const Vector2I& blockCount)
-			{
-				mGpuParameterSet->SetSampledTexture("gInput", input);
-				mGpuParameterSet->SetStorageTexture("gOutput", output, TextureSurface::kComplete);
-				mGpuParameterSet->SetStorageTexture("gBestErr", bestError, TextureSurface::kComplete);
-				mGpuParameterSet->SetStorageBuffer("gBC7Candidate", candidateBuffer);
-				mParametersBuffer.Set(parameters);
-
-				Bind(commandBuffer);
-				commandBuffer.DispatchCompute((u32)Math::DivideAndRoundUp(blockCount.X, 8),
-					(u32)Math::DivideAndRoundUp(blockCount.Y, 8));
-			}
-
-		private:
-			render::GpuParameterUniformBuffer mParametersBuffer;
-		};
-
-		class TextureCompressBC7Mode2FinalizeMaterial : public render::RendererMaterial<TextureCompressBC7Mode2FinalizeMaterial>
-		{
-			RMAT_DEF("TextureCompressBC7Mode2Finalize.bsl")
-
-		public:
-			TextureCompressBC7Mode2FinalizeMaterial() = default;
-
-			void Initialize() override
-			{
-				mGpuParameterSet->TryGetUniformBufferParameter("Parameters", mParametersBuffer);
-			}
-
-			void Execute(render::GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& input,
-				const TShared<render::Texture>& output, const TShared<render::Texture>& bestError,
-				const TShared<render::GpuBuffer>& candidateBuffer, const render::GpuBufferMappedScope& parameters,
-				const Vector2I& blockCount)
-			{
-				mGpuParameterSet->SetSampledTexture("gInput", input);
-				mGpuParameterSet->SetStorageTexture("gOutput", output, TextureSurface::kComplete);
-				mGpuParameterSet->SetStorageTexture("gBestErr", bestError, TextureSurface::kComplete);
-				mGpuParameterSet->SetStorageBuffer("gBC7Candidate", candidateBuffer);
-				mParametersBuffer.Set(parameters);
-
-				Bind(commandBuffer);
-				commandBuffer.DispatchCompute((u32)Math::DivideAndRoundUp(blockCount.X, 8),
-					(u32)Math::DivideAndRoundUp(blockCount.Y, 8));
-			}
-
-		private:
-			render::GpuParameterUniformBuffer mParametersBuffer;
-		};
-
-		class TextureCompressBC7Mode7FinalizeMaterial : public render::RendererMaterial<TextureCompressBC7Mode7FinalizeMaterial>
-		{
-			RMAT_DEF("TextureCompressBC7Mode7Finalize.bsl")
-
-		public:
-			TextureCompressBC7Mode7FinalizeMaterial() = default;
-
-			void Initialize() override
-			{
-				mGpuParameterSet->TryGetUniformBufferParameter("Parameters", mParametersBuffer);
-			}
-
-			void Execute(render::GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& input,
-				const TShared<render::Texture>& output, const TShared<render::Texture>& bestError,
-				const TShared<render::GpuBuffer>& candidateBuffer, const render::GpuBufferMappedScope& parameters,
-				const Vector2I& blockCount)
-			{
-				mGpuParameterSet->SetSampledTexture("gInput", input);
-				mGpuParameterSet->SetStorageTexture("gOutput", output, TextureSurface::kComplete);
-				mGpuParameterSet->SetStorageTexture("gBestErr", bestError, TextureSurface::kComplete);
-				mGpuParameterSet->SetStorageBuffer("gBC7Candidate", candidateBuffer);
-				mParametersBuffer.Set(parameters);
-
-				Bind(commandBuffer);
-				commandBuffer.DispatchCompute((u32)Math::DivideAndRoundUp(blockCount.X, 8),
-					(u32)Math::DivideAndRoundUp(blockCount.Y, 8));
-			}
-
-		private:
-			render::GpuParameterUniformBuffer mParametersBuffer;
-		};
-
-		class TextureCompressBC7Mode4FinalizeMaterial : public render::RendererMaterial<TextureCompressBC7Mode4FinalizeMaterial>
-		{
-			RMAT_DEF("TextureCompressBC7Mode4Finalize.bsl")
-
-		public:
-			TextureCompressBC7Mode4FinalizeMaterial() = default;
-
-			void Initialize() override
-			{
-				mGpuParameterSet->TryGetUniformBufferParameter("Parameters", mParametersBuffer);
-			}
-
-			void Execute(render::GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& input,
-				const TShared<render::Texture>& output, const TShared<render::Texture>& bestError,
-				const render::GpuBufferMappedScope& parameters, const Vector2I& blockCount)
-			{
-				mGpuParameterSet->SetSampledTexture("gInput", input);
-				mGpuParameterSet->SetStorageTexture("gOutput", output, TextureSurface::kComplete);
-				mGpuParameterSet->SetStorageTexture("gBestErr", bestError, TextureSurface::kComplete);
-				mParametersBuffer.Set(parameters);
-
-				Bind(commandBuffer);
-				commandBuffer.DispatchCompute((u32)blockCount.X, (u32)blockCount.Y);
-			}
-
-		private:
-			render::GpuParameterUniformBuffer mParametersBuffer;
-		};
-
-		class TextureCompressBC7Mode5FinalizeMaterial : public render::RendererMaterial<TextureCompressBC7Mode5FinalizeMaterial>
-		{
-			RMAT_DEF("TextureCompressBC7Mode5Finalize.bsl")
-
-		public:
-			TextureCompressBC7Mode5FinalizeMaterial() = default;
-
-			void Initialize() override
-			{
-				mGpuParameterSet->TryGetUniformBufferParameter("Parameters", mParametersBuffer);
-			}
-
-			void Execute(render::GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& input,
-				const TShared<render::Texture>& output, const TShared<render::Texture>& bestError,
-				const render::GpuBufferMappedScope& parameters, const Vector2I& blockCount)
-			{
-				mGpuParameterSet->SetSampledTexture("gInput", input);
-				mGpuParameterSet->SetStorageTexture("gOutput", output, TextureSurface::kComplete);
-				mGpuParameterSet->SetStorageTexture("gBestErr", bestError, TextureSurface::kComplete);
-				mParametersBuffer.Set(parameters);
-
-				Bind(commandBuffer);
-				commandBuffer.DispatchCompute((u32)blockCount.X, (u32)blockCount.Y);
-			}
-
-		private:
-			render::GpuParameterUniformBuffer mParametersBuffer;
-		};
-
-		class TextureCompressBC7Mode6FinalizeMaterial : public render::RendererMaterial<TextureCompressBC7Mode6FinalizeMaterial>
-		{
-			RMAT_DEF("TextureCompressBC7Mode6Finalize.bsl")
-
-		public:
-			TextureCompressBC7Mode6FinalizeMaterial() = default;
-
-			void Initialize() override
-			{
-				mGpuParameterSet->TryGetUniformBufferParameter("Parameters", mParametersBuffer);
-			}
-
-			void Execute(render::GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& input,
-				const TShared<render::Texture>& output, const TShared<render::Texture>& bestError,
-				const render::GpuBufferMappedScope& parameters, const Vector2I& blockCount)
-			{
-				mGpuParameterSet->SetSampledTexture("gInput", input);
-				mGpuParameterSet->SetStorageTexture("gOutput", output, TextureSurface::kComplete);
-				mGpuParameterSet->SetStorageTexture("gBestErr", bestError, TextureSurface::kComplete);
-				mParametersBuffer.Set(parameters);
-
-				Bind(commandBuffer);
-				commandBuffer.DispatchCompute((u32)Math::DivideAndRoundUp(blockCount.X, 8),
-					(u32)Math::DivideAndRoundUp(blockCount.Y, 8));
-			}
-
-		private:
-			render::GpuParameterUniformBuffer mParametersBuffer;
-		};
-
-		/** Finalizes mode 3 in its own kernel so its encoder is not combined with the other BC7 modes. */
-		class TextureCompressBC7Mode3FinalizeMaterial : public render::RendererMaterial<TextureCompressBC7Mode3FinalizeMaterial>
-		{
-			RMAT_DEF("TextureCompressBC7Mode3Finalize.bsl")
-
-		public:
-			TextureCompressBC7Mode3FinalizeMaterial() = default;
-
-			void Initialize() override
-			{
-				mGpuParameterSet->TryGetUniformBufferParameter("Parameters", mParametersBuffer);
-			}
-
-			void Execute(render::GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& input,
-				const TShared<render::Texture>& output, const TShared<render::Texture>& bestError,
-				const TShared<render::GpuBuffer>& candidateBuffer, const render::GpuBufferMappedScope& parameters,
-				const Vector2I& blockCount)
-			{
-				mGpuParameterSet->SetSampledTexture("gInput", input);
-				mGpuParameterSet->SetStorageTexture("gOutput", output, TextureSurface::kComplete);
-				mGpuParameterSet->SetStorageTexture("gBestErr", bestError, TextureSurface::kComplete);
-				mGpuParameterSet->SetStorageBuffer("gBC7Candidate", candidateBuffer);
-				mParametersBuffer.Set(parameters);
-
-				Bind(commandBuffer);
-				commandBuffer.DispatchCompute((u32)Math::DivideAndRoundUp(blockCount.X, 8),
-					(u32)Math::DivideAndRoundUp(blockCount.Y, 8));
-			}
-
-		private:
-			render::GpuParameterUniformBuffer mParametersBuffer;
-		};
-
-		void GetTextureCompressPasses(i32 baseVariation, TInlineArray<TextureCompressPass, 32>& outPasses)
-		{
-			outPasses.Clear();
-			if(baseVariation == 4)
-			{
-				for(i32 variation = 4; variation <= 17; ++variation)
-					outPasses.Add({ TextureCompressPassType::Standard, variation, 0 });
-			}
-			else if(baseVariation == 18)
-			{
-				for(i32 mode = 0; mode <= 3; ++mode)
-				{
-					const i32 partitionCount = mode == 0 ? 16 : 64;
-					for(i32 partitionOffset = 0; partitionOffset < partitionCount; partitionOffset += 16)
-						outPasses.Add({ TextureCompressPassType::BC7PartitionSearch, mode, partitionOffset });
-
-					outPasses.Add({ TextureCompressPassType::BC7Finalize, mode, 0 });
-				}
-
-				for(i32 mode = 4; mode <= 6; ++mode)
-					outPasses.Add({ TextureCompressPassType::BC7StandaloneFinalize, mode, 0 });
-
-				for(i32 partitionOffset = 0; partitionOffset < 64; partitionOffset += 16)
-					outPasses.Add({ TextureCompressPassType::BC7PartitionSearch, 7, partitionOffset });
-
-				outPasses.Add({ TextureCompressPassType::BC7Finalize, 7, 0 });
-			}
-			else
-				outPasses.Add({ TextureCompressPassType::Standard, baseVariation, 0 });
-		}
-
-		bool IsTextureCompressPassAvailable(const TextureCompressPass& pass)
-		{
-			switch(pass.Type)
-			{
-			case TextureCompressPassType::Standard:
-			{
-				TextureCompressMaterial* const material = TextureCompressMaterial::GetVariation(pass.Variation);
-				return material != nullptr && material->GetComputePipeline() != nullptr;
-			}
-			case TextureCompressPassType::BC7PartitionSearch:
-			{
-				TextureCompressBC7PartitionSearchMaterial* const material =
-					TextureCompressBC7PartitionSearchMaterial::GetVariation(pass.Variation);
-				return material != nullptr && material->GetComputePipeline() != nullptr;
-			}
-			case TextureCompressPassType::BC7Finalize:
-			{
-				switch(pass.Variation)
-				{
-				case 0: return TextureCompressBC7Mode0FinalizeMaterial::Get()->GetComputePipeline() != nullptr;
-				case 1: return TextureCompressBC7Mode1FinalizeMaterial::Get()->GetComputePipeline() != nullptr;
-				case 2: return TextureCompressBC7Mode2FinalizeMaterial::Get()->GetComputePipeline() != nullptr;
-				case 3: return TextureCompressBC7Mode3FinalizeMaterial::Get()->GetComputePipeline() != nullptr;
-				case 7: return TextureCompressBC7Mode7FinalizeMaterial::Get()->GetComputePipeline() != nullptr;
-				default: return false;
-				}
-			}
-			case TextureCompressPassType::BC7StandaloneFinalize:
-			{
-				switch(pass.Variation)
-				{
-				case 4: return TextureCompressBC7Mode4FinalizeMaterial::Get()->GetComputePipeline() != nullptr;
-				case 5: return TextureCompressBC7Mode5FinalizeMaterial::Get()->GetComputePipeline() != nullptr;
-				case 6: return TextureCompressBC7Mode6FinalizeMaterial::Get()->GetComputePipeline() != nullptr;
-				default: return false;
-				}
-			}
-			default:
-				return false;
-			}
-		}
+		/** Maximum number of distinct stage parameters among the stages of a compression, each with its own uniform buffer. */
+		constexpr u32 kMaximumParameterVariants = 8;
 
 		/**
-		 * Records the GPU compression on the render thread and sets up an asynchronous read-back. Must be called on the
-		 * render thread: it creates the shared GPU resources, dispatches the compute kernel(s) tile by tile, then queues a
-		 * non-blocking read-back of the packed blocks into @p destination. Completes @p op with @p destination once the GPU
-		 * finishes and the blocks have been copied back, or with null on failure.
+		 * Runs the GPU compression. Must be called on the render thread: it creates the shared GPU resources, dispatches the
+		 * stages chunk by chunk, one frame graph per chunk, then reads the packed blocks back into @p destination. Completes
+		 * @p op with @p destination once the GPU finishes and the blocks have been copied back, or with null on failure.
+		 * Returns once the read-back completes.
 		 */
-		void CompressOnRenderThread(const TInlineArray<TextureCompressPass, 32>& passes, const TShared<PixelData>& source, PixelFormat inputTexFormat, PixelFormat outputTexFormat, const TShared<PixelData>& destination, u32 maxTileSize, TAsyncOp<TShared<PixelData>> op)
+		void CompressOnRenderThread(const render::TextureCompressStageList& stages, const TShared<PixelData>& source, PixelFormat inputTexFormat, PixelFormat outputTexFormat, const TShared<PixelData>& destination, u32 maxChunkSize, TAsyncOp<TShared<PixelData>> op)
 		{
 			AssertIfNotRenderThread();
 
@@ -584,10 +88,10 @@ namespace b3d
 
 			GpuWorkContext& gpuContext = render::GetRenderer()->GetGpuContext();
 
-			// Compile/fetch every shader variation before allocating or submitting any GPU work.
-			for(const TextureCompressPass& pass : passes)
+			// Compile/fetch every shader variation before allocating or submitting any GPU work
+			for(const TShared<render::TextureCompressStage>& stage : stages)
 			{
-				if(!IsTextureCompressPassAvailable(pass))
+				if(!stage->Prepare())
 				{
 					op.CompleteOperation(nullptr);
 					return;
@@ -605,12 +109,9 @@ namespace b3d
 				return;
 			}
 
-			// Command buffer pool for the whole operation (uploads, tile dispatches, read-back).
-			const TShared<render::GpuCommandBufferPool> pool = gpuDevice->CreateGpuCommandBufferPool(render::GpuCommandBufferPoolCreateInformation::CreateForThisThread());
-
 			// Upload the whole source once into one sampled input texture, read as float4 in the shader. LDR formats use a
 			// normalized RGBA8 texture; BC6H uses a full-float RGBA32F texture so HDR values survive. A 2D texture (rather
-			// than a flat buffer) lets the texture cache exploit the spatial locality of each 4x4 block's 16 texels. 
+			// than a flat buffer) lets the texture cache exploit the spatial locality of each 4x4 block's 16 texels.
 			TextureCreateInformation inputTextureCreateInformation;
 			inputTextureCreateInformation.Type = TEX_TYPE_2D;
 			inputTextureCreateInformation.Format = inputTexFormat;
@@ -641,32 +142,49 @@ namespace b3d
 				return;
 			}
 
-			// Tile extent (a square, in blocks). maxTileSize is in pixels and has already been scaled by the per-format
-			// multiplier (see GetFormatInfo / Compress), so a maxTileSize of 1024 means the texture is processed in
-			// 1024x1024-pixel tiles (256x256 blocks). Aligned up to a multiple of 8 so non-cooperative tiles (8x8 thread groups)
-			// fall on group boundaries and adjacent tiles never share a thread group.
-			const u32 budgetBlocks = (maxTileSize < 4u) ? 1u : (maxTileSize / 4u);
-			const u32 tileBlocks = Math::DivideAndRoundUp(Math::Max(1u, budgetBlocks), 8u) * 8u;
-			const u32 tileCountX = Math::DivideAndRoundUp(blockCountX, tileBlocks);
-			const u32 tileCountY = Math::DivideAndRoundUp(blockCountY, tileBlocks);
+			const Vector2I fullBlockCount((i32)blockCountX, (i32)blockCountY);
+			const Vector2I fullTextureSize((i32)width, (i32)height);
 
-			const bool multiMode = passes.Size() > 1;
-			bool usesBC7CandidateScratch = false;
-			for(const TextureCompressPass& pass : passes)
-				usesBC7CandidateScratch |= pass.Type == TextureCompressPassType::BC7PartitionSearch;
+			// The texture is compressed in chunks: rectangles of blocks whose stages are all recorded into a single submission.
+			// Some GPUs can only preempt compute work between submissions, so a submission that runs too long trips the OS GPU
+			// watchdog (TDR). Each chunk is therefore sized from the measured GPU time of earlier chunks, to take about
+			// kChunkTimeBudgetMilliseconds. Chunks are at most maxChunkSize pixels wide and tall, and start on 8-block
+			// boundaries, so the 8x8-block thread groups of different chunks never overlap.
+			const u32 maximumChunkBlockCount = Math::Max(8u, (maxChunkSize / 4u) / 8u * 8u);
+			const u32 scratchBlockCountX = Math::Min(maximumChunkBlockCount, blockCountX);
+			const u32 scratchBlockCountY = Math::Min(maximumChunkBlockCount, blockCountY);
 
-			const u32 scratchTextureWidth = Math::Min(tileBlocks, blockCountX);
-			const u32 scratchTextureHeight = Math::Min(tileBlocks, blockCountY);
+			// Union of the resources the stages use
+			render::TextureCompressStageRequirements combinedRequirements;
+			TInlineArray<Vector4I, kMaximumParameterVariants> stageParameters;
+			for(const TShared<render::TextureCompressStage>& stage : stages)
+			{
+				const render::TextureCompressStageRequirements& requirements = stage->GetRequirements();
+				for(u32 bufferIndex = 0; bufferIndex < (u32)render::TextureCompressScratchBuffer::Count; ++bufferIndex)
+					combinedRequirements.ScratchElementsPerBlock[bufferIndex] = Math::Max(combinedRequirements.ScratchElementsPerBlock[bufferIndex], requirements.ScratchElementsPerBlock[bufferIndex]);
 
+				for(u32 tableIndex = 0; tableIndex < (u32)render::TextureCompressTable::Count; ++tableIndex)
+					combinedRequirements.UsesTable[tableIndex] |= requirements.UsesTable[tableIndex];
+
+				combinedRequirements.UsesBestError |= requirements.UsesBestError;
+
+				if(std::find(stageParameters.begin(), stageParameters.end(), requirements.StageParameters) == stageParameters.end())
+				{
+					B3D_ASSERT(stageParameters.Size() < kMaximumParameterVariants);
+					stageParameters.Add(requirements.StageParameters);
+				}
+			}
+
+			// Running-best error of every block, for formats that try multiple encodings per block
 			TShared<render::Texture> bestErrorTexture;
 			TShared<PixelData> bestErrorTextureInitialData;
-			if(multiMode)
+			if(combinedRequirements.UsesBestError)
 			{
 				TextureCreateInformation bestErrorTextureCreateInformation;
 				bestErrorTextureCreateInformation.Type = TEX_TYPE_2D;
 				bestErrorTextureCreateInformation.Format = PF_R32F;
-				bestErrorTextureCreateInformation.Width = scratchTextureWidth;
-				bestErrorTextureCreateInformation.Height = scratchTextureHeight;
+				bestErrorTextureCreateInformation.Width = blockCountX;
+				bestErrorTextureCreateInformation.Height = blockCountY;
 				bestErrorTextureCreateInformation.Usage = TextureUsageFlag::StoreOnGPU | TextureUsageFlag::AllowUnorderedAccessOnTheGPU;
 
 				bestErrorTexture = gpuDevice->CreateTexture(bestErrorTextureCreateInformation);
@@ -676,53 +194,192 @@ namespace b3d
 					return;
 				}
 
-				// +inf seed (one tile's worth). Fill row by row so any staging row-pitch padding is respected. FLT_MAX is set
-				// explicitly (not via Clear/SetColors, which may clamp) so the first mode of every tile always wins.
-				bestErrorTextureInitialData = PixelData::Create(scratchTextureWidth, scratchTextureHeight, 1, PF_R32F);
-				for(u32 y = 0; y < scratchTextureHeight; ++y)
+				// +inf seed. Fill row by row so any staging row-pitch padding is respected. FLT_MAX is set explicitly (not via
+				// Clear/SetColors, which may clamp) so the first encoding of every block always wins.
+				bestErrorTextureInitialData = PixelData::Create(blockCountX, blockCountY, 1, PF_R32F);
+				for(u32 y = 0; y < blockCountY; ++y)
 				{
 					float* const row = (float*)(bestErrorTextureInitialData->GetData() + (u64)y * bestErrorTextureInitialData->GetRowPitch());
-					for(u32 x = 0; x < scratchTextureWidth; ++x)
+					for(u32 x = 0; x < blockCountX; ++x)
 						row[x] = FLT_MAX;
 				}
 			}
 
-			TShared<render::GpuBuffer> bc7CandidateBuffer;
-			if(usesBC7CandidateScratch)
+			TShared<render::GpuBuffer> tables[(u32)render::TextureCompressTable::Count];
+			for(u32 tableIndex = 0; tableIndex < (u32)render::TextureCompressTable::Count; ++tableIndex)
 			{
-				const u32 candidateRecordCount = scratchTextureWidth * scratchTextureHeight * kBC7CandidateRecordsPerBlock;
-				const GpuBufferCreateInformation candidateBufferCreateInformation = GpuBufferCreateInformation::CreateSimpleStorage(
-					BF_32X4U, candidateRecordCount, GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU);
-				bc7CandidateBuffer = gpuDevice->CreateGpuBuffer(candidateBufferCreateInformation);
-				if(bc7CandidateBuffer == nullptr)
+				if(!combinedRequirements.UsesTable[tableIndex])
+					continue;
+
+				const TArrayView<const u32> tableData = render::GetTextureCompressTableData((render::TextureCompressTable)tableIndex);
+				tables[tableIndex] = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), (u32)tableData.Size()));
+				if(tables[tableIndex] == nullptr)
 				{
 					op.CompleteOperation(nullptr);
 					return;
 				}
 			}
 
-			const Vector2I fullBlockCount((i32)blockCountX, (i32)blockCountY);
-			const Vector2I fullTextureSize((i32)width, (i32)height);
+			// Upload the data shared by all chunks. Without a command buffer the uploads go on the transfer command buffer, which
+			// is submitted before the first chunk's graph, and leave the resources at rest.
+			render::TextureUtility::Write(gpuContext, inputTexture, *source);
 
-			// Compress tile by tile, and mode by mode (for multi-mode encoders such as BC6H and BC7). After each tile/mode
-			// we submit the command buffer and drain the GPU via WaitUntilIdle. This stops the OS watchdog (TDR) from triggering
-			// on weaker GPUs due to excessively long tasks.
-			bool inputUploaded = false;
-			for(u32 tileY = 0; tileY < tileCountY; ++tileY)
+			if(bestErrorTexture != nullptr)
+				render::TextureUtility::Write(gpuContext, bestErrorTexture, *bestErrorTextureInitialData);
+
+			for(u32 tableIndex = 0; tableIndex < (u32)render::TextureCompressTable::Count; ++tableIndex)
 			{
-				const u32 tileStartBlockRow = tileY * tileBlocks;
-				const u32 tileBlockRows = Math::Min(tileBlocks, blockCountY - tileStartBlockRow);
+				if(tables[tableIndex] == nullptr)
+					continue;
 
-				for(u32 tileX = 0; tileX < tileCountX; ++tileX)
+				const TArrayView<const u32> tableData = render::GetTextureCompressTableData((render::TextureCompressTable)tableIndex);
+				render::GpuBufferUtility::Write(gpuContext, tables[tableIndex], 0, (u32)(tableData.Size() * sizeof(u32)), tableData.Data());
+			}
+
+			// Resources of one chunk submission in flight. A chunk reuses them only after the previous chunk using them completes.
+			struct ChunkSlot
+			{
+				ChunkSlot() = default;
+
+				TShared<render::GpuBuffer> ScratchBuffers[(u32)render::TextureCompressScratchBuffer::Count];
+				TShared<render::GpuQueryPool> TimestampQueryPool;
+				TInlineArray<render::GpuQueryId, 33> TimestampQueryIds; // Written before the first stage and after every stage
+				u64 FenceValue = 0; // Signalled by the chunk's submission; 0 once the chunk is retired
+				u32 BlockCount = 0;
+			};
+
+			ChunkSlot chunkSlots[kChunksInFlight];
+			bool canMeasureChunks = true;
+			for(ChunkSlot& chunkSlot : chunkSlots)
+			{
+				for(u32 bufferIndex = 0; bufferIndex < (u32)render::TextureCompressScratchBuffer::Count; ++bufferIndex)
 				{
-					const u32 tileStartBlockColumn = tileX * tileBlocks;
-					const u32 tileBlockColumnCount = Math::Min(tileBlocks, blockCountX - tileStartBlockColumn);
-					const Vector2I tileDispatch((i32)tileBlockColumnCount, (i32)tileBlockRows);
-					const Vector2I tileOffset((i32)tileStartBlockColumn, (i32)tileStartBlockRow);
+					const u32 elementsPerBlock = combinedRequirements.ScratchElementsPerBlock[bufferIndex];
+					if(elementsPerBlock == 0)
+						continue;
 
-					for(u32 passIndex = 0; passIndex < passes.Size(); ++passIndex)
+					chunkSlot.ScratchBuffers[bufferIndex] = render::CreateTextureCompressScratchBuffer(*gpuDevice, scratchBlockCountX * scratchBlockCountY * elementsPerBlock);
+					if(chunkSlot.ScratchBuffers[bufferIndex] == nullptr)
 					{
-						const TextureCompressPass& pass = passes[passIndex];
+						op.CompleteOperation(nullptr);
+						return;
+					}
+				}
+
+				render::GpuQueryPoolCreateInformation timestampQueryPoolCreateInformation;
+				timestampQueryPoolCreateInformation.Type = render::GpuQueryType::Timestamp;
+				timestampQueryPoolCreateInformation.PoolSize = (u32)stages.Size() + 1;
+
+				chunkSlot.TimestampQueryPool = gpuDevice->CreateQueryPool(timestampQueryPoolCreateInformation);
+				canMeasureChunks &= chunkSlot.TimestampQueryPool != nullptr;
+			}
+
+			// Every graph signals the next value of the fence, so waiting for a chunk doesn't wait for the ones after it. Graphs
+			// submit on the first graphics queue.
+			const TShared<GpuQueue> queue = gpuDevice->GetQueue(GQT_GRAPHICS, 0);
+			const TShared<GpuTimelineFence> fence = gpuDevice->CreateTimelineFence();
+			u64 lastFenceValue = 0;
+			float chunkBlockBudget = (float)(canMeasureChunks ? kInitialChunkBlockCount : kUnmeasuredChunkBlockCount);
+
+			double stageMilliseconds[32];
+			for(double& milliseconds : stageMilliseconds)
+				milliseconds = 0.0;
+
+			// Waits for the chunk last submitted from the slot to complete, and sizes the following chunks from its GPU time
+			auto fnRetireChunkSlot = [&gpuDevice, &queue, &fence, &chunkBlockBudget, &stageMilliseconds, canMeasureChunks](ChunkSlot& chunkSlot)
+			{
+				if(chunkSlot.FenceValue == 0)
+					return;
+
+				queue->WaitUntilFence(fence, chunkSlot.FenceValue);
+				chunkSlot.FenceValue = 0;
+
+				const u32 timestampCount = (u32)chunkSlot.TimestampQueryIds.Size();
+				if(!canMeasureChunks || timestampCount < 2 || !chunkSlot.TimestampQueryPool->TryResolve(false))
+					return;
+
+				for(const render::GpuQueryId& queryId : chunkSlot.TimestampQueryIds)
+				{
+					if(!queryId.IsValid())
+						return;
+				}
+
+				for(u32 stageIndex = 0; stageIndex + 1 < timestampCount; ++stageIndex)
+				{
+					const u64 stageBegin = chunkSlot.TimestampQueryPool->GetQueryResult(chunkSlot.TimestampQueryIds[stageIndex]);
+					const u64 stageEnd = chunkSlot.TimestampQueryPool->GetQueryResult(chunkSlot.TimestampQueryIds[stageIndex + 1]);
+					if(stageEnd > stageBegin)
+						stageMilliseconds[stageIndex] += gpuDevice->ConvertTimestampToMilliseconds(stageEnd - stageBegin);
+				}
+
+				const u64 chunkBegin = chunkSlot.TimestampQueryPool->GetQueryResult(chunkSlot.TimestampQueryIds[0]);
+				const u64 chunkEnd = chunkSlot.TimestampQueryPool->GetQueryResult(chunkSlot.TimestampQueryIds[timestampCount - 1]);
+				if(chunkEnd <= chunkBegin)
+					return;
+
+				// Grow gradually, as small chunks underestimate the cost of large ones whose work no longer fits the GPU at once
+				const float chunkMilliseconds = Math::Max(gpuDevice->ConvertTimestampToMilliseconds(chunkEnd - chunkBegin), 1e-3f);
+				const float chunkBlockCount = (float)chunkSlot.BlockCount;
+				chunkBlockBudget = Math::Clamp(chunkBlockCount / chunkMilliseconds * kChunkTimeBudgetMilliseconds, (float)kInitialChunkBlockCount, Math::Max(chunkBlockCount * kMaximumChunkGrowth, (float)kInitialChunkBlockCount));
+			};
+
+			render::TextureCompressBindings bindings;
+			bindings.Input = inputTexture;
+			bindings.Output = outputTexture;
+			bindings.BestError = bestErrorTexture;
+			for(u32 tableIndex = 0; tableIndex < (u32)render::TextureCompressTable::Count; ++tableIndex)
+				bindings.Tables[tableIndex] = tables[tableIndex];
+
+			// Imports the resources every chunk's graph reads or writes. They are at rest between graphs.
+			auto fnImportSharedResources = [&inputTexture, &outputTexture, &bestErrorTexture, &tables](render::FrameGraph& graph)
+			{
+				graph.ImportTexture(inputTexture);
+				graph.ImportTexture(outputTexture);
+
+				if(bestErrorTexture != nullptr)
+					graph.ImportTexture(bestErrorTexture);
+
+				for(const TShared<render::GpuBuffer>& table : tables)
+				{
+					if(table != nullptr)
+						graph.ImportBuffer(table);
+				}
+			};
+
+			// Chunks are laid out in strips of block rows, with every strip and chunk sized to the current block budget
+			u32 chunkIndex = 0;
+			u32 stripStartRow = 0;
+			while(stripStartRow < blockCountY)
+			{
+				const u32 stripRowBudget = (u32)std::sqrt(chunkBlockBudget) / 8u * 8u;
+				const u32 stripRowCount = Math::Min(Math::Clamp(stripRowBudget, 8u, maximumChunkBlockCount), blockCountY - stripStartRow);
+
+				u32 chunkStartColumn = 0;
+				while(chunkStartColumn < blockCountX)
+				{
+					ChunkSlot& chunkSlot = chunkSlots[chunkIndex % kChunksInFlight];
+					fnRetireChunkSlot(chunkSlot);
+
+					const u32 chunkColumnBudget = (u32)(chunkBlockBudget / (float)stripRowCount) / 8u * 8u;
+					const u32 chunkColumnCount = Math::Min(Math::Clamp(chunkColumnBudget, 8u, maximumChunkBlockCount), blockCountX - chunkStartColumn);
+					const Vector2I chunkBlockCount((i32)chunkColumnCount, (i32)stripRowCount);
+					const Vector2I chunkBlockOffset((i32)chunkStartColumn, (i32)stripStartRow);
+
+					render::FrameGraph graph(gpuContext, "TextureCompress");
+					fnImportSharedResources(graph);
+
+					for(const TShared<render::GpuBuffer>& scratchBuffer : chunkSlot.ScratchBuffers)
+					{
+						if(scratchBuffer != nullptr)
+							graph.ImportBuffer(scratchBuffer);
+					}
+
+					chunkSlot.TimestampQueryIds.Clear();
+
+					// Stages only differ in their stage parameters, so stages with the same ones share a uniform buffer
+					render::GpuBufferMappedScope chunkParameters[kMaximumParameterVariants];
+					for(u32 variantIndex = 0; variantIndex < stageParameters.Size(); ++variantIndex)
+					{
 						const TShared<render::GpuBuffer> parameterBuffer = render::gTextureCompressParameters.CreateScratchBuffer(gpuContext);
 						if(parameterBuffer == nullptr)
 						{
@@ -730,139 +387,125 @@ namespace b3d
 							return;
 						}
 
-						render::GpuBufferMappedScope parameters = parameterBuffer->Map(GpuMapOption::Write);
+						render::GpuBufferMappedScope& parameters = chunkParameters[variantIndex];
+						parameters = parameterBuffer->Map(GpuMapOption::Write);
 						render::gTextureCompressParameters.gTextureSize.Set(parameters, fullTextureSize);
 						render::gTextureCompressParameters.gBlockCount.Set(parameters, fullBlockCount);
-						render::gTextureCompressParameters.gBlockOffset.Set(parameters, tileOffset);
-						render::gTextureCompressParameters.gScratchBlockCount.Set(parameters, tileDispatch);
-						render::gTextureCompressParameters.gBC7PartitionOffset.Set(parameters, pass.PartitionOffset);
+						render::gTextureCompressParameters.gBlockOffset.Set(parameters, chunkBlockOffset);
+						render::gTextureCompressParameters.gScratchBlockCount.Set(parameters, chunkBlockCount);
+						render::gTextureCompressParameters.gStageParameters.Set(parameters, stageParameters[variantIndex]);
 						parameters.Unmap();
-
-						render::GpuCommandBufferCreateInformation commandBufferInfo;
-						commandBufferInfo.Name = pass.Type == TextureCompressPassType::BC7PartitionSearch ? "TextureCompressBC7PartitionSearch" : "TextureCompress";
-
-						const TShared<render::GpuCommandBuffer> commandBuffer = pool->Create(commandBufferInfo);
-
-						// Upload the source onto the very first command buffer (the dispatch barriers make it visible to the
-						// first sample); the input texture then persists, sampled by every later tile.
-						if(!inputUploaded)
-						{
-							render::TextureUtility::Write(gpuContext, inputTexture, *source, 0, 0, render::TextureWriteFlag::Normal, commandBuffer);
-							inputUploaded = true;
-						}
-
-						// Re-seed the per-tile running-best to +inf before this tile's first mode. The previous tile's writes are
-						// already drained by the inter-tile WaitUntilIdle, so reusing the scratch is safe; the dispatch barriers
-						// order this copy before the first mode reads it.
-						if(multiMode && passIndex == 0)
-							render::TextureUtility::Write(gpuContext, bestErrorTexture, *bestErrorTextureInitialData, 0, 0, render::TextureWriteFlag::Normal, commandBuffer);
-
-						switch(pass.Type)
-						{
-						case TextureCompressPassType::Standard:
-							TextureCompressMaterial::GetVariation(pass.Variation)->Execute(*commandBuffer, inputTexture, outputTexture, parameters, bestErrorTexture, tileDispatch, pass.Variation);
-							break;
-						case TextureCompressPassType::BC7PartitionSearch:
-							TextureCompressBC7PartitionSearchMaterial::GetVariation(pass.Variation)->Execute(
-								*commandBuffer, inputTexture, bc7CandidateBuffer, parameters, tileDispatch);
-							break;
-						case TextureCompressPassType::BC7Finalize:
-							switch(pass.Variation)
-							{
-							case 0:
-								TextureCompressBC7Mode0FinalizeMaterial::Get()->Execute(*commandBuffer, inputTexture, outputTexture,
-									bestErrorTexture, bc7CandidateBuffer, parameters, tileDispatch);
-								break;
-							case 1:
-								TextureCompressBC7Mode1FinalizeMaterial::Get()->Execute(*commandBuffer, inputTexture,
-									outputTexture, bestErrorTexture, bc7CandidateBuffer, parameters, tileDispatch);
-								break;
-							case 2:
-								TextureCompressBC7Mode2FinalizeMaterial::Get()->Execute(*commandBuffer, inputTexture,
-									outputTexture, bestErrorTexture, bc7CandidateBuffer, parameters, tileDispatch);
-								break;
-							case 3:
-								TextureCompressBC7Mode3FinalizeMaterial::Get()->Execute(*commandBuffer, inputTexture,
-									outputTexture, bestErrorTexture, bc7CandidateBuffer, parameters, tileDispatch);
-								break;
-							case 7:
-								TextureCompressBC7Mode7FinalizeMaterial::Get()->Execute(*commandBuffer, inputTexture,
-									outputTexture, bestErrorTexture, bc7CandidateBuffer, parameters, tileDispatch);
-								break;
-							}
-							break;
-						case TextureCompressPassType::BC7StandaloneFinalize:
-							switch(pass.Variation)
-							{
-							case 4:
-								TextureCompressBC7Mode4FinalizeMaterial::Get()->Execute(*commandBuffer, inputTexture,
-									outputTexture, bestErrorTexture, parameters, tileDispatch);
-								break;
-							case 5:
-								TextureCompressBC7Mode5FinalizeMaterial::Get()->Execute(*commandBuffer, inputTexture,
-									outputTexture, bestErrorTexture, parameters, tileDispatch);
-								break;
-							case 6:
-								TextureCompressBC7Mode6FinalizeMaterial::Get()->Execute(*commandBuffer, inputTexture,
-									outputTexture, bestErrorTexture, parameters, tileDispatch);
-								break;
-							}
-							break;
-						}
-
-						gpuContext.SubmitCommandBuffer(commandBuffer);
-
-						// Drain the GPU before the next mode/tile so it cannot run dispatches back-to-back and trip the watchdog.
-						gpuDevice->WaitUntilIdle();
 					}
+
+					bindings.ChunkBlockCount = chunkBlockCount;
+					for(u32 bufferIndex = 0; bufferIndex < (u32)render::TextureCompressScratchBuffer::Count; ++bufferIndex)
+						bindings.ScratchBuffers[bufferIndex] = chunkSlot.ScratchBuffers[bufferIndex];
+
+					// One pass per stage. The first resets the chunk's timestamp queries and writes the one before the first stage, and
+					// every pass writes the one after its stage.
+					for(u32 stageIndex = 0; stageIndex < stages.Size(); ++stageIndex)
+					{
+						const TShared<render::TextureCompressStage>& stage = stages[stageIndex];
+						const u32 variantIndex = (u32)(std::find(stageParameters.begin(), stageParameters.end(), stage->GetRequirements().StageParameters) - stageParameters.begin());
+						bindings.Parameters = &chunkParameters[variantIndex];
+
+						render::FrameGraphComputePass pass;
+						const TShared<render::GpuParameterSet> set = stage->PrepareDispatch(pass, bindings);
+
+						graph.AddComputePass(stage->GetName(), std::move(pass), [&chunkSlot, stage, set, chunkBlockCount, canMeasureChunks, stageIndex](render::FrameGraphPassContext& context)
+						{
+							render::GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
+							if(canMeasureChunks && stageIndex == 0)
+							{
+								commandBuffer.ResetQueries(chunkSlot.TimestampQueryPool);
+								chunkSlot.TimestampQueryIds.Add(chunkSlot.TimestampQueryPool->AllocateQuery());
+								commandBuffer.WriteTimestamp(chunkSlot.TimestampQueryIds.Back(), chunkSlot.TimestampQueryPool);
+							}
+
+							stage->Dispatch(context, set, chunkBlockCount);
+
+							if(canMeasureChunks)
+							{
+								chunkSlot.TimestampQueryIds.Add(chunkSlot.TimestampQueryPool->AllocateQuery());
+								commandBuffer.WriteTimestamp(chunkSlot.TimestampQueryIds.Back(), chunkSlot.TimestampQueryPool);
+							}
+						});
+					}
+
+					chunkSlot.FenceValue = ++lastFenceValue;
+					graph.AddSignalFence(fence, chunkSlot.FenceValue);
+					graph.Compile();
+					graph.Execute();
+					chunkSlot.BlockCount = chunkColumnCount * stripRowCount;
+
+					chunkStartColumn += chunkColumnCount;
+					++chunkIndex;
 				}
+
+				stripStartRow += stripRowCount;
 			}
 
-			// Final command buffer: a single non-blocking read-back of the whole output texture
-			render::GpuCommandBufferCreateInformation readbackInfo;
-			readbackInfo.Name = "TextureCompressReadback";
+#if B3D_BUILD_TYPE_DEVELOPMENT
+			if(gGpuLogTextureCompressionTimings.Get())
+			{
+				for(u32 slotOffset = 0; slotOffset < kChunksInFlight; ++slotOffset)
+					fnRetireChunkSlot(chunkSlots[(chunkIndex + slotOffset) % kChunksInFlight]);
 
-			const TShared<render::GpuCommandBuffer> readbackCommandBuffer = pool->Create(readbackInfo);
-
-			const u32 readSize = destination->GetConsecutiveSize();
-			TAsyncOp<TShared<PixelData>> readOp = render::TextureUtility::ReadAsync(gpuContext, outputTexture, *readbackCommandBuffer);
-
-			// Copy the packed blocks into the destination surface and complete the op once the GPU finishes. 
-			readbackCommandBuffer->OnDidComplete.Connect(
-				[op, readOp, outputTexture, inputTexture, bestErrorTexture, bc7CandidateBuffer, destination, readSize]() mutable
+				double totalMilliseconds = 0.0;
+				for(u32 stageIndex = 0; stageIndex < stages.Size(); ++stageIndex)
 				{
-					const TShared<PixelData> data = readOp.GetReturnValue();
-					if(data == nullptr)
-					{
-						op.CompleteOperation(nullptr);
-						return;
-					}
+					B3D_LOG(Info, LogTexture, "[TextureCompress] stage {0} {1}: {2} ms", stageIndex, stages[stageIndex]->GetName(), stageMilliseconds[stageIndex]);
+					totalMilliseconds += stageMilliseconds[stageIndex];
+				}
 
-					const u32 rows = data->GetHeight();
-					const u32 destinationRowByteCount = (rows != 0) ? (readSize / rows) : readSize; // tightly-packed block row
-					const u32 sourceRowPitch = data->GetRowPitch();
-					const u8* const sourceData = (const u8*)data->GetData();
+				B3D_LOG(Info, LogTexture, "[TextureCompress] {0}x{1}: {2} stages, {3} chunks, {4} ms GPU time", width, height, stages.Size(), chunkIndex, totalMilliseconds);
+			}
+#endif
 
-					u8* const destinationData = destination->GetData();
-					for(u32 y = 0; y < rows; ++y)
-						memcpy(destinationData + (u64)y * destinationRowByteCount, sourceData + (u64)y * sourceRowPitch, destinationRowByteCount);
+			// A last graph reads the whole output texture back
+			render::FrameGraph readbackGraph(gpuContext, "TextureCompressReadback");
+			readbackGraph.ImportTexture(outputTexture);
 
-					op.CompleteOperation(destination);
-				});
+			TAsyncOp<TShared<PixelData>> readOp = render::TextureUtility::ReadAsync(readbackGraph, outputTexture);
 
-			gpuContext.SubmitCommandBuffer(readbackCommandBuffer);
+			const u64 readbackFenceValue = ++lastFenceValue;
+			readbackGraph.AddSignalFence(fence, readbackFenceValue);
+			readbackGraph.Compile();
+			readbackGraph.Execute();
+
+			// Completion of the read-back is otherwise only processed at the end of a frame. This only waits for this
+			// compression's own submissions, and completes the read.
+			queue->WaitUntilFence(fence, readbackFenceValue);
+
+			const TShared<PixelData> data = readOp.HasCompleted() ? readOp.GetReturnValue() : nullptr;
+			if(data == nullptr)
+			{
+				op.CompleteOperation(nullptr);
+				return;
+			}
+
+			// Copy the packed blocks into the destination surface
+			const u32 readSize = destination->GetConsecutiveSize();
+			const u32 rows = data->GetHeight();
+			const u32 destinationRowByteCount = (rows != 0) ? (readSize / rows) : readSize; // tightly-packed block row
+			const u32 sourceRowPitch = data->GetRowPitch();
+			const u8* const sourceData = (const u8*)data->GetData();
+
+			u8* const destinationData = destination->GetData();
+			for(u32 y = 0; y < rows; ++y)
+				memcpy(destinationData + (u64)y * destinationRowByteCount, sourceData + (u64)y * sourceRowPitch, destinationRowByteCount);
+
+			op.CompleteOperation(destination);
 		}
 
 	} // anonymous namespace
 
 	bool GpuTextureCompressor::IsFormatSupported(PixelFormat format)
 	{
-		i32 variation;
-		PixelFormat outputTexFormat;
-		bool isHdr;
-		float tileSizeMultiplier;
+		PixelFormat blockTextureFormat;
+		bool isHDR;
 
-		return GetFormatInfo(format, variation, outputTexFormat, isHdr, tileSizeMultiplier);
+		return render::GetTextureCompressFormatInformation(format, blockTextureFormat, isHDR);
 	}
 
 	TAsyncOp<TShared<PixelData>> GpuTextureCompressor::Compress(const TShared<PixelData>& source, const TShared<PixelData>& destination, const CompressionOptions& options)
@@ -878,36 +521,26 @@ namespace b3d
 		if(source == nullptr || destination == nullptr)
 			return fnFailed();
 
-		i32 variation;
-		PixelFormat outputTexFormat;
-		bool isHdr;
-		float tileSizeMultiplier;
-
-		if(!GetFormatInfo(options.Format, variation, outputTexFormat, isHdr, tileSizeMultiplier))
+		PixelFormat blockTextureFormat;
+		bool isHDR;
+		if(!render::GetTextureCompressFormatInformation(options.Format, blockTextureFormat, isHDR))
 			return fnFailed();
 
 		if(GetApplication().GetPrimaryGpuDevice() == nullptr)
 			return fnFailed();
 
-		// Scale the caller's tile budget by how heavy this format's per-block GPU work is, so each tile stays under the OS
-		// GPU watchdog regardless of format (BC1/3 allow larger tiles, BC6H/BC7 force smaller ones; see GetFormatInfo()).
-		const u32 effectiveTileSize = Math::Max(4u, (u32)((float)options.MaxTileSize * tileSizeMultiplier));
-
 		// Convert the source to a surface the compute shader can sample: RGBA8 for LDR formats, RGBA32F for HDR (BC6H).
-		const PixelFormat interimFormat = isHdr ? PF_RGBA32F : PF_RGBA8;
+		const PixelFormat interimFormat = isHDR ? PF_RGBA32F : PF_RGBA8;
 		const TShared<PixelData> convertedSource = PixelData::Create(source->GetWidth(), source->GetHeight(), 1, interimFormat);
 		PixelUtility::BulkPixelConversion(*source, *convertedSource);
 
-		// BC6H expands to one standard pass per mode. Partitioned BC7 modes alternate a cooperative candidate search with a
-		// small packing pass; modes 4/5/6 only need the finalize pass.
-		TInlineArray<TextureCompressPass, 32> passes;
-		GetTextureCompressPasses(variation, passes);
+		const render::TextureCompressStageList stages = render::GetTextureCompressStages(options.Format, options.Quality);
 
 		// Run inline if we are already on the render thread, otherwise marshal it across.
 		TAsyncOp<TShared<PixelData>> op;
-		auto fnGpuWork = [passes, convertedSource, interimFormat, outputTexFormat, destination, effectiveTileSize, op]() mutable
+		auto fnGpuWork = [stages, convertedSource, interimFormat, blockTextureFormat, destination, maxChunkSize = options.MaxChunkSize, op]() mutable
 		{
-			CompressOnRenderThread(passes, convertedSource, interimFormat, outputTexFormat, destination, effectiveTileSize, op);
+			CompressOnRenderThread(stages, convertedSource, interimFormat, blockTextureFormat, destination, maxChunkSize, op);
 		};
 
 		if(B3D_CURRENT_THREAD_ID == GetRenderThread().GetThreadId())

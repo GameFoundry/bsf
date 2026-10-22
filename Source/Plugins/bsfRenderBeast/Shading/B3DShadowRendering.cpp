@@ -17,6 +17,7 @@
 #include "GpuBackend/B3DRenderTexture.h"
 #include "GpuBackend/B3DGpuProgramParameterDescription.h"
 #include "GpuBackend/B3DGpuDevice.h"
+#include "FrameGraph/B3DFrameGraph.h"
 #include "Math/B3DMath.h"
 
 namespace b3d
@@ -25,13 +26,6 @@ namespace b3d
 	{
 
 		ShadowUniformDefinition gShadowUniformDefinition;
-
-		void ShadowDepthNormalMaterial::Bind(GpuCommandBuffer& commandBuffer, const TShared<GpuParameterSet>& gpuParameters)
-		{
-			commandBuffer.SetGpuGraphicsPipelineState(mGraphicsPipeline);
-			commandBuffer.SetStencilReferenceValue(mStencilReferenceValue);
-			commandBuffer.SetGpuParameterSet(gpuParameters);
-		}
 
 		void ShadowDepthNormalMaterial::PopulateParameters(const TShared<GpuParameterSet>& gpuParameters, const GpuBufferSuballocation& shadowUniforms)
 		{
@@ -56,13 +50,6 @@ namespace b3d
 			}
 		}
 
-		void ShadowDepthNormalNoPSMaterial::Bind(GpuCommandBuffer& commandBuffer, const TShared<GpuParameterSet>& gpuParameters)
-		{
-			commandBuffer.SetGpuGraphicsPipelineState(mGraphicsPipeline);
-			commandBuffer.SetStencilReferenceValue(mStencilReferenceValue);
-			commandBuffer.SetGpuParameterSet(gpuParameters);
-		}
-
 		void ShadowDepthNormalNoPSMaterial::PopulateParameters(const TShared<GpuParameterSet>& gpuParameters, const GpuBufferSuballocation& shadowUniforms)
 		{
 			gpuParameters->SetUniformBuffer("ShadowParams", shadowUniforms);
@@ -84,13 +71,6 @@ namespace b3d
 
 				return Get(GetVariation<false, false>());
 			}
-		}
-
-		void ShadowDepthDirectionalMaterial::Bind(GpuCommandBuffer& commandBuffer, const TShared<GpuParameterSet>& gpuParameters)
-		{
-			commandBuffer.SetGpuGraphicsPipelineState(mGraphicsPipeline);
-			commandBuffer.SetStencilReferenceValue(mStencilReferenceValue);
-			commandBuffer.SetGpuParameterSet(gpuParameters);
 		}
 
 		void ShadowDepthDirectionalMaterial::PopulateParameters(const TShared<GpuParameterSet>& gpuParameters, const GpuBufferSuballocation& shadowUniforms)
@@ -118,13 +98,6 @@ namespace b3d
 
 		ShadowCubeMatricesUniformDefinition gShadowCubeMatricesUniformDefinition;
 		ShadowCubeMasksUniformDefinition gShadowCubeMasksUniformDefinition;
-
-		void ShadowDepthCubeMaterial::Bind(GpuCommandBuffer& commandBuffer, const TShared<GpuParameterSet>& gpuParameters)
-		{
-			commandBuffer.SetGpuGraphicsPipelineState(mGraphicsPipeline);
-			commandBuffer.SetStencilReferenceValue(mStencilReferenceValue);
-			commandBuffer.SetGpuParameterSet(gpuParameters);
-		}
 
 		void ShadowDepthCubeMaterial::PopulateParameters(const TShared<GpuParameterSet>& gpuParameters, const GpuBufferSuballocation& shadowUniforms, const GpuBufferSuballocation& shadowCubeMatrices, const GpuBufferSuballocation& shadowCubeMasks)
 		{
@@ -154,11 +127,6 @@ namespace b3d
 		ShadowProjectUniformDefinition gShadowProjectUniformDefinition;
 		ShadowProjectVertUniformDefinition gShadowProjectVertUniformDefinition;
 
-		void ShadowProjectStencilMaterial::Bind(GpuCommandBuffer& commandBuffer)
-		{
-			RendererMaterial::Bind(commandBuffer, false);
-		}
-
 		ShadowProjectStencilMaterial* ShadowProjectStencilMaterial::GetVariation(bool directional, bool useZFailStencil)
 		{
 			if(directional)
@@ -170,11 +138,6 @@ namespace b3d
 				else
 					return Get(GetVariation<false, false>());
 			}
-		}
-
-		void ShadowProjectMaterial::Bind(GpuCommandBuffer& commandBuffer)
-		{
-			RendererMaterial::Bind(commandBuffer, false);
 		}
 
 		TShared<SamplerState> ShadowProjectMaterial::GetShadowSampler(GpuDevice& gpuDevice)
@@ -218,11 +181,6 @@ namespace b3d
 		}
 
 		ShadowProjectOmniUniformDefinition gShadowProjectOmniUniformDefinition;
-
-		void ShadowProjectOmniMaterial::Bind(GpuCommandBuffer& commandBuffer)
-		{
-			RendererMaterial::Bind(commandBuffer, false);
-		}
 
 		TShared<SamplerState> ShadowProjectOmniMaterial::GetShadowSampler(GpuDevice& gpuDevice)
 		{
@@ -357,11 +315,39 @@ namespace b3d
 			NormArea.Height = Area.Height / (float)atlasSize;
 		}
 
-		ShadowMapAtlas::ShadowMapAtlas(u32 size)
+		namespace
+		{
+			/** Creates a shadow map depth texture with faces @p size pixels wide and high. */
+			TShared<Texture> CreateShadowMapTexture(GpuDevice& device, const String& name, TextureType type, u32 size, u32 arraySliceCount = 1)
+			{
+				TextureCreateInformation textureCreateInformation;
+				textureCreateInformation.Name = name;
+				textureCreateInformation.Type = type;
+				textureCreateInformation.Format = kShadowMapFormat;
+				textureCreateInformation.Width = size;
+				textureCreateInformation.Height = size;
+				textureCreateInformation.ArraySliceCount = arraySliceCount;
+				textureCreateInformation.Usage = TextureUsageFlag::DepthStencil;
+
+				return device.CreateTexture(textureCreateInformation);
+			}
+
+			/** Creates a render target covering every face of the shadow map @p texture. */
+			TShared<RenderTexture> CreateShadowMapTarget(const TShared<Texture>& texture)
+			{
+				RenderTextureCreateInformation renderTextureCreateInformation;
+				renderTextureCreateInformation.DepthStencilSurface.Texture = texture;
+				renderTextureCreateInformation.DepthStencilSurface.FaceCount = texture->GetProperties().GetFaceCount();
+
+				return RenderTexture::Create(renderTextureCreateInformation);
+			}
+		} // namespace
+
+		ShadowMapAtlas::ShadowMapAtlas(GpuDevice& device, u32 size)
 			: mLayout(0, 0, size, size, true), mLastUsedCounter(0)
 		{
-			mAtlas = GpuResourcePool::Instance().Get(
-				PooledRenderTextureCreateInformation::Create2D(kShadowMapFormat, size, size, TextureUsageFlag::DepthStencil));
+			mTexture = CreateShadowMapTexture(device, "ShadowMapAtlas", TEX_TYPE_2D, size);
+			mTarget = CreateShadowMapTarget(mTexture);
 		}
 
 		bool ShadowMapAtlas::AddMap(u32 size, Area2I& area, u32 border)
@@ -393,12 +379,12 @@ namespace b3d
 
 		TShared<Texture> ShadowMapAtlas::GetTexture() const
 		{
-			return mAtlas->Texture;
+			return mTexture;
 		}
 
 		TShared<RenderTexture> ShadowMapAtlas::GetTarget() const
 		{
-			return mAtlas->RenderTexture;
+			return mTarget;
 		}
 
 		ShadowMapBase::ShadowMapBase(u32 size)
@@ -407,28 +393,28 @@ namespace b3d
 
 		TShared<Texture> ShadowMapBase::GetTexture() const
 		{
-			return mShadowMap->Texture;
+			return mTexture;
 		}
 
-		ShadowCubemap::ShadowCubemap(u32 size)
+		ShadowCubemap::ShadowCubemap(GpuDevice& device, u32 size)
 			: ShadowMapBase(size)
 		{
-			mShadowMap = GpuResourcePool::Instance().Get(
-				PooledRenderTextureCreateInformation::CreateCube(kShadowMapFormat, size, size, TextureUsageFlag::DepthStencil));
+			mTexture = CreateShadowMapTexture(device, "ShadowCubemap", TEX_TYPE_CUBE_MAP, size);
+			mTarget = CreateShadowMapTarget(mTexture);
 		}
 
 		TShared<RenderTexture> ShadowCubemap::GetTarget() const
 		{
-			return mShadowMap->RenderTexture;
+			return mTarget;
 		}
 
-		ShadowCascadedMap::ShadowCascadedMap(u32 size, u32 numCascades)
+		ShadowCascadedMap::ShadowCascadedMap(GpuDevice& device, u32 size, u32 numCascades)
 			: ShadowMapBase(size), mNumCascades(numCascades), mTargets(numCascades), mShadowInfos(numCascades)
 		{
-			mShadowMap = GpuResourcePool::Instance().Get(PooledRenderTextureCreateInformation::Create2D(kShadowMapFormat, size, size, TextureUsageFlag::DepthStencil, 0, false, numCascades));
+			mTexture = CreateShadowMapTexture(device, "ShadowCascadedMap", TEX_TYPE_2D, size, numCascades);
 
 			RenderTextureCreateInformation rtDesc;
-			rtDesc.DepthStencilSurface.Texture = mShadowMap->Texture;
+			rtDesc.DepthStencilSurface.Texture = mTexture;
 			rtDesc.DepthStencilSurface.FaceCount = 1;
 
 			for(u32 i = 0; i < mNumCascades; ++i)
@@ -445,8 +431,8 @@ namespace b3d
 
 		/**
 		 * Provides a common way for all types of shadow depth rendering to render the relevant objects into the depth map.
-		 * Iterates over all relevant objects in the scene, binds the relevant materials and renders the objects into the depth
-		 * map.
+		 * Iterates over all relevant objects in the scene, and adds a pass that binds the relevant materials and renders the
+		 * objects into the depth map.
 		 */
 		class ShadowRenderQueue
 		{
@@ -466,109 +452,129 @@ namespace b3d
 					RenderableRenderState* Renderable;
 				};
 
-				TShared<GpuParameterSet> GpuParameterSet;
+				const RendererMaterialBase* Material = nullptr;
+				TShared<render::GpuParameterSet> PerObjectParameterSet;
+				TShared<render::GpuParameterSet> GpuParameterSet;
 
 				bool IsDrawCommand : 1;
 			};
 
+			/** Adds a pass to @p graph that renders the renderables that intersect the volume of @p options into @p renderTarget, which it imports. */
 			template <class Options>
-			static void Execute(GpuCommandBuffer& commandBuffer, RenderBeastScene& scene, const FrameInfo& frameInfo, const TShared<RenderTarget>& renderTarget, const Options& opt)
+			static void AddPass(FrameGraph& graph, const StringView& name, RenderBeastScene& scene, const FrameInfo& frameInfo, const TShared<RenderTarget>& renderTarget, const Options& options)
+			{
+				graph.ImportRenderTarget(renderTarget);
+
+				FrameGraphRasterPass pass;
+				pass.SetRenderTarget(renderTarget, Options::kLoad);
+				AddPass(graph, name, scene, frameInfo, std::move(pass), options);
+			}
+
+			/**
+			 * Adds a pass to @p graph that renders the renderables that intersect the volume of @p options into the attachments of @p pass,
+			 * which the caller sets.
+			 */
+			template <class Options>
+			static void AddPass(FrameGraph& graph, const StringView& name, RenderBeastScene& scene, const FrameInfo& frameInfo, FrameGraphRasterPass&& pass, const Options& options)
 			{
 				static_assert((u32)RenderableAnimType::Count == 4, "RenderableAnimType is expected to have four sequential entries.");
 
 				RenderableObjectStorage& renderableStorage = scene.GetRenderableStorage();
 
-				B3DMarkAllocatorFrame();
+				Vector<Command> commandsPerAnimationType[4];
+
+				static const ShaderVariationParameters* kVariationLookup[4];
+				kVariationLookup[0] = &GetVertexInputVariation<false, false, false>(false);
+				kVariationLookup[1] = &GetVertexInputVariation<true, false, false>(false);
+				kVariationLookup[2] = &GetVertexInputVariation<false, true, false>(false);
+				kVariationLookup[3] = &GetVertexInputVariation<true, true, false>(false);
+
+				TInlineArray<TShared<GpuParameterSet>, 4> perObjectParameterSets;
+
+				// Make a list of relevant renderables and prepare them for rendering
+				for(u32 renderableIndex = 0; renderableIndex < renderableStorage.GetRenderableCount(); renderableIndex++)
 				{
-					FrameVector<Command> commands[4];
+					const Sphere& bounds = renderableStorage.GetRenderableCullInfo(renderableIndex).Bounds.GetSphere();
+					if(!options.Intersects(bounds))
+						continue;
 
-					static const ShaderVariationParameters* kVariationLookup[4];
-					kVariationLookup[0] = &GetVertexInputVariation<false, false, false>(false);
-					kVariationLookup[1] = &GetVertexInputVariation<true, false, false>(false);
-					kVariationLookup[2] = &GetVertexInputVariation<false, true, false>(false);
-					kVariationLookup[3] = &GetVertexInputVariation<true, true, false>(false);
+					renderableStorage.PrepareVisibleRenderable(renderableIndex, frameInfo);
 
-					RenderPassCreateInformation passCreateInformation(renderTarget);
-					TInlineArray<TShared<GpuParameterSet>, 4> perObjectParameterSets;
+					RenderableRenderState* renderable = renderableStorage.GetRenderable(renderableIndex);
 
-					// Make a list of relevant renderables and prepare them for rendering
-					for(u32 renderableIndex = 0; renderableIndex < renderableStorage.GetRenderableCount(); renderableIndex++)
+					// Register per-object shadow parameter set if not already registered
+					const TShared<GpuParameterSet>& perObjectParameterSet = options.GetShadowParameterSet(renderable);
+					auto found = std::find(perObjectParameterSets.begin(), perObjectParameterSets.end(), perObjectParameterSet);
+					if(found == perObjectParameterSets.end())
 					{
-						const Sphere& bounds = renderableStorage.GetRenderableCullInfo(renderableIndex).Bounds.GetSphere();
-						if(!opt.Intersects(bounds))
-							continue;
-
-						renderableStorage.PrepareVisibleRenderable(renderableIndex, frameInfo);
-
-						RenderableRenderState* renderable = renderableStorage.GetRenderable(renderableIndex);
-
-						// Register per-object shadow parameter set if not already registered
-						const TShared<GpuParameterSet>& perObjectParameterSet = opt.GetShadowParameterSet(renderable);
-						auto found = std::find(perObjectParameterSets.begin(), perObjectParameterSets.end(), perObjectParameterSet);
-						if(found == perObjectParameterSets.end())
-						{
-							passCreateInformation.Parameters.Add(perObjectParameterSet);
-							perObjectParameterSets.Add(perObjectParameterSet);
-						}
-
-						Command renderableCommand;
-						renderableCommand.IsDrawCommand = false;
-						renderableCommand.Renderable = renderable;
-
-						bool renderableBound[4];
-						B3DZeroOut(renderableBound);
-
-						for(auto& drawCommand : renderable->DrawCommands)
-						{
-							const u32 animationTypeIndex = (u32)drawCommand.AnimType;
-
-							if(!renderableBound[animationTypeIndex])
-							{
-								opt.Prepare(renderableCommand, bounds, *kVariationLookup[animationTypeIndex]);
-								passCreateInformation.Parameters.Add(renderableCommand.GpuParameterSet);
-
-								commands[animationTypeIndex].push_back(renderableCommand);
-								renderableBound[animationTypeIndex] = true;
-							}
-
-							commands[animationTypeIndex].push_back(Command(&drawCommand));
-						}
+						pass.AddRenderPassParameterSet(perObjectParameterSet);
+						perObjectParameterSets.Add(perObjectParameterSet);
 					}
 
-					commandBuffer.BeginRenderPass(passCreateInformation);
-					opt.PrepareRenderTarget(commandBuffer);
+					Command renderableCommand;
+					renderableCommand.IsDrawCommand = false;
+					renderableCommand.Renderable = renderable;
+					renderableCommand.PerObjectParameterSet = perObjectParameterSet; // TODO - Should sort objects by set if possible, to avoid switching sets
+
+					bool renderableBound[4];
+					B3DZeroOut(renderableBound);
+
+					for(auto& drawCommand : renderable->DrawCommands)
+					{
+						const u32 animationTypeIndex = (u32)drawCommand.AnimType;
+
+						if(!renderableBound[animationTypeIndex])
+						{
+							options.Prepare(renderableCommand, bounds, *kVariationLookup[animationTypeIndex]);
+							pass.AddRenderPassParameterSet(renderableCommand.GpuParameterSet);
+
+							commandsPerAnimationType[animationTypeIndex].push_back(renderableCommand);
+							renderableBound[animationTypeIndex] = true;
+						}
+
+						commandsPerAnimationType[animationTypeIndex].push_back(Command(&drawCommand));
+					}
+				}
+
+				// Renderables draw grouped by animation type
+				Vector<Command> commands;
+				for(const Vector<Command>& animationTypeCommands : commandsPerAnimationType)
+					commands.insert(commands.end(), animationTypeCommands.begin(), animationTypeCommands.end());
+
+				const Area2 viewportArea = options.GetViewportArea();
+				graph.AddRasterPass(name, std::move(pass), [commands = std::move(commands), viewportArea](FrameGraphPassContext& context)
+				{
+					GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
+					commandBuffer.SetViewport(viewportArea);
+
+					// A pass that keeps the earlier contents of the shadow map clears only the area it renders into
+					if(Options::kLoad == FrameGraphAttachmentLoad::Load)
+						commandBuffer.ClearViewport(RT_DEPTH);
 
 					const u32 perObjectDynamicOffsetIndex = GetRenderBeast()->GetRenderableParameterSetInfo().PerObjectDynamicOffsetIndex;
 
-					for(u32 i = 0; i < (u32)RenderableAnimType::Count; i++)
+					for(const Command& command : commands)
 					{
-						for(auto& command : commands[i])
+						if(command.IsDrawCommand)
 						{
-							if(command.IsDrawCommand)
-							{
-								const RenderableDrawCommand& drawCommand = *command.DrawCommand;
+							const RenderableDrawCommand& drawCommand = *command.DrawCommand;
 
-								if(drawCommand.MorphVertexDefinition == nullptr)
-									GetRendererUtility().Draw(commandBuffer, drawCommand.Mesh, drawCommand.SubMesh);
-								else
-									GetRendererUtility().DrawMorph(commandBuffer, drawCommand.Mesh, drawCommand.SubMesh, drawCommand.MorphShapeBuffer, drawCommand.MorphVertexDefinition);
-							}
+							if(drawCommand.MorphVertexDefinition == nullptr)
+								GetRendererUtility().Draw(commandBuffer, drawCommand.Mesh, drawCommand.SubMesh);
 							else
-							{
-								opt.Bind(commandBuffer, command);
+								GetRendererUtility().DrawMorph(commandBuffer, drawCommand.Mesh, drawCommand.SubMesh, drawCommand.MorphShapeBuffer, drawCommand.MorphVertexDefinition);
+						}
+						else
+						{
+							command.Material->Bind(commandBuffer, command.GpuParameterSet);
 
-								// Bind per-object shadow parameter set and dynamic offset
-								const GpuBufferSuballocation& perObjectSuballocation = command.Renderable->PerObjectSuballocation;
-								TShared<GpuParameterSet> shadowParameterSet = opt.GetShadowParameterSet(command.Renderable); // TODO - Should sort objects by set if possible, to avoid switching sets
-								commandBuffer.SetGpuParameterSet(shadowParameterSet);
-								commandBuffer.SetDynamicBufferOffset(GpuPipelineSet::kPerObject, perObjectDynamicOffsetIndex, perObjectSuballocation.GetSuballocationOffset());
-							}
+							// Bind per-object shadow parameter set and dynamic offset
+							const GpuBufferSuballocation& perObjectSuballocation = command.Renderable->PerObjectSuballocation;
+							commandBuffer.SetGpuParameterSet(command.PerObjectParameterSet);
+							commandBuffer.SetDynamicBufferOffset(GpuPipelineSet::kPerObjectSetIndex, perObjectDynamicOffsetIndex, perObjectSuballocation.GetSuballocationOffset());
 						}
 					}
-
-					commandBuffer.EndRenderPass();
-				}
-				B3DClearAllocatorFrame();
+				});
 			}
 		};
 
@@ -584,9 +590,12 @@ namespace b3d
 				: ShadowRenderer(shadowRendering), Frustums(frustums), BoundingVolume(boundingVolume), ShadowUniformBuffer(shadowParamsBuffer), ShadowCubeMatricesBuffer(shadowCubeMatricesBuffer)
 			{}
 
-			void PrepareRenderTarget(GpuCommandBuffer& commandBuffer) const
+			/** What the pass does with the earlier contents of the shadow map. */
+			static constexpr FrameGraphAttachmentLoad kLoad = FrameGraphAttachmentLoad::Clear;
+
+			Area2 GetViewportArea() const
 			{
-				commandBuffer.ClearRenderTarget(RT_DEPTH);
+				return Area2(0.0f, 0.0f, 1.0f, 1.0f);
 			}
 
 			bool Intersects(const Sphere& bounds) const
@@ -596,20 +605,16 @@ namespace b3d
 
 			void Prepare(ShadowRenderQueue::Command& command, const Sphere& bounds, const ShaderVariationParameters& variation) const
 			{
-				Material = ShadowDepthCubeMaterial::Get(variation);
+				const ShadowDepthCubeMaterial* material = ShadowDepthCubeMaterial::Get(variation);
 
-				command.GpuParameterSet = Material->CreateGpuParameterSet();
+				command.Material = material;
+				command.GpuParameterSet = material->CreateGpuParameterSet();
 				GpuBufferMappedScope shadowCubeMatricesUniforms = gShadowCubeMasksUniformDefinition.AllocateTransient().Map();
 
 				for(u32 j = 0; j < 6; j++)
 					gShadowCubeMasksUniformDefinition.gFaceMasks.Set(shadowCubeMatricesUniforms, (Frustums[j].Intersects(bounds) ? 1 : 0), j);
 
 				ShadowDepthCubeMaterial::PopulateParameters(command.GpuParameterSet, ShadowUniformBuffer, ShadowCubeMatricesBuffer, shadowCubeMatricesUniforms);
-			}
-
-			void Bind(GpuCommandBuffer& commandBuffer, ShadowRenderQueue::Command& command) const
-			{
-				Material->Bind(commandBuffer, command.GpuParameterSet);
 			}
 
 			TShared<GpuParameterSet> GetShadowParameterSet(RenderableRenderState* renderable) const
@@ -623,8 +628,6 @@ namespace b3d
 			const ConvexVolume& BoundingVolume;
 			const GpuBufferSuballocation& ShadowUniformBuffer;
 			const GpuBufferSuballocation& ShadowCubeMatricesBuffer;
-
-			mutable ShadowDepthCubeMaterial* Material = nullptr;
 		};
 
 		/** Specialization used for ShadowRenderQueue when rendering cube (omnidirectional) shadow maps (one face at a time). */
@@ -637,9 +640,12 @@ namespace b3d
 				: ShadowRenderer(shadowRendering), BoundingVolume(boundingVolume), ShadowUniformBuffer(shadowUniformBuffer)
 			{}
 
-			void PrepareRenderTarget(GpuCommandBuffer& commandBuffer) const
+			/** What the pass does with the earlier contents of the shadow map. */
+			static constexpr FrameGraphAttachmentLoad kLoad = FrameGraphAttachmentLoad::Clear;
+
+			Area2 GetViewportArea() const
 			{
-				commandBuffer.ClearRenderTarget(RT_DEPTH);
+				return Area2(0.0f, 0.0f, 1.0f, 1.0f);
 			}
 
 			bool Intersects(const Sphere& bounds) const
@@ -649,15 +655,11 @@ namespace b3d
 
 			void Prepare(ShadowRenderQueue::Command& command, const Sphere& bounds, const ShaderVariationParameters& variation) const
 			{
-				Material = ShadowDepthNormalNoPSMaterial::Get(variation);
+				const ShadowDepthNormalNoPSMaterial* material = ShadowDepthNormalNoPSMaterial::Get(variation);
 
-				command.GpuParameterSet = Material->CreateGpuParameterSet();
+				command.Material = material;
+				command.GpuParameterSet = material->CreateGpuParameterSet();
 				ShadowDepthNormalNoPSMaterial::PopulateParameters(command.GpuParameterSet, ShadowUniformBuffer);
-			}
-
-			void Bind(GpuCommandBuffer& commandBuffer, ShadowRenderQueue::Command& command) const
-			{
-				Material->Bind(commandBuffer, command.GpuParameterSet);
 			}
 
 			TShared<GpuParameterSet> GetShadowParameterSet(RenderableRenderState* renderable) const
@@ -668,8 +670,6 @@ namespace b3d
 			ShadowRendering& ShadowRenderer;
 			const ConvexVolume& BoundingVolume;
 			const GpuBufferSuballocation& ShadowUniformBuffer;
-
-			mutable ShadowDepthNormalNoPSMaterial* Material = nullptr;
 		};
 
 		/** Specialization used for ShadowRenderQueue when rendering spot light shadow maps. */
@@ -683,10 +683,12 @@ namespace b3d
 				: ShadowRenderer(shadowRendering), ViewportArea(viewportArea), BoundingVolume(boundingVolume), ShadowUniformBuffer(shadowUniformBuffer)
 			{}
 
-			void PrepareRenderTarget(GpuCommandBuffer& commandBuffer) const
+			/** What the pass does with the earlier contents of the shadow map: it keeps the atlas regions of other spot lights. */
+			static constexpr FrameGraphAttachmentLoad kLoad = FrameGraphAttachmentLoad::Load;
+
+			Area2 GetViewportArea() const
 			{
-				commandBuffer.SetViewport(ViewportArea);
-				commandBuffer.ClearViewport(RT_DEPTH);
+				return ViewportArea;
 			}
 
 			bool Intersects(const Sphere& bounds) const
@@ -696,15 +698,11 @@ namespace b3d
 
 			void Prepare(ShadowRenderQueue::Command& command, const Sphere& bounds, const ShaderVariationParameters& variation) const
 			{
-				Material = ShadowDepthNormalMaterial::Get(variation);
+				const ShadowDepthNormalMaterial* material = ShadowDepthNormalMaterial::Get(variation);
 
-				command.GpuParameterSet = Material->CreateGpuParameterSet();
+				command.Material = material;
+				command.GpuParameterSet = material->CreateGpuParameterSet();
 				ShadowDepthNormalMaterial::PopulateParameters(command.GpuParameterSet, ShadowUniformBuffer);
-			}
-
-			void Bind(GpuCommandBuffer& commandBuffer, ShadowRenderQueue::Command& command) const
-			{
-				Material->Bind(commandBuffer, command.GpuParameterSet);
 			}
 
 			TShared<GpuParameterSet> GetShadowParameterSet(RenderableRenderState* renderable) const
@@ -713,11 +711,9 @@ namespace b3d
 			}
 
 			ShadowRendering& ShadowRenderer;
-			const Area2& ViewportArea;
+			Area2 ViewportArea;
 			const ConvexVolume& BoundingVolume;
 			const GpuBufferSuballocation& ShadowUniformBuffer;
-
-			mutable ShadowDepthNormalMaterial* Material = nullptr;
 		};
 
 		/** Specialization used for ShadowRenderQueue when rendering directional light shadow maps. */
@@ -730,9 +726,12 @@ namespace b3d
 				: ShadowRenderer(shadowRendering), BoundingVolume(boundingVolume), ShadowUniformBuffer(shadowUniformBuffer)
 			{}
 
-			void PrepareRenderTarget(GpuCommandBuffer& commandBuffer) const
+			/** What the pass does with the earlier contents of the shadow map. */
+			static constexpr FrameGraphAttachmentLoad kLoad = FrameGraphAttachmentLoad::Clear;
+
+			Area2 GetViewportArea() const
 			{
-				commandBuffer.ClearRenderTarget(RT_DEPTH);
+				return Area2(0.0f, 0.0f, 1.0f, 1.0f);
 			}
 
 			bool Intersects(const Sphere& bounds) const
@@ -742,27 +741,21 @@ namespace b3d
 
 			void Prepare(ShadowRenderQueue::Command& command, const Sphere& bounds, const ShaderVariationParameters& variation) const
 			{
-				Material = ShadowDepthDirectionalMaterial::Get(variation);
+				const ShadowDepthDirectionalMaterial* material = ShadowDepthDirectionalMaterial::Get(variation);
 
-				command.GpuParameterSet = Material->CreateGpuParameterSet();
+				command.Material = material;
+				command.GpuParameterSet = material->CreateGpuParameterSet();
 				ShadowDepthDirectionalMaterial::PopulateParameters(command.GpuParameterSet, ShadowUniformBuffer);
-			}
-
-			void Bind(GpuCommandBuffer& commandBuffer, ShadowRenderQueue::Command& command) const
-			{
-				Material->Bind(commandBuffer, command.GpuParameterSet);
 			}
 
 			TShared<GpuParameterSet> GetShadowParameterSet(RenderableRenderState* renderable) const
 			{
-				return renderable->PerObjectParameterSet;
+				return ShadowRenderer.GetOrCreateDirectionalShadowParameterSet(renderable->PerObjectSuballocation.GetBuffer());
 			}
 
 			ShadowRendering& ShadowRenderer;
 			const ConvexVolume& BoundingVolume;
 			const GpuBufferSuballocation& ShadowUniformBuffer;
-
-			mutable ShadowDepthDirectionalMaterial* Material = nullptr;
 		};
 
 		const u32 ShadowRendering::kMaxAtlasSize = 4096;
@@ -832,20 +825,26 @@ namespace b3d
 				GpuBufferUtility::Write(gpuContext, mFrustumIB, 0, sizeof(AABox::kCubeIndices), AABox::kCubeIndices);
 			}
 
-			// Create shadow per-object layout with vertex+geometry stage (for point light cubemap shadows)
+			// Create the shadow per-object layouts
 			{
-				GpuUniformBufferInformation perObjectInfo;
-				perObjectInfo.Name = "PerObject";
-				perObjectInfo.Set = GpuPipelineSet::kPerObject;
-				perObjectInfo.Slot = gpuDevice->GetUniformBufferParameterSlot(0);
-				perObjectInfo.Size = Math::CeilToMultiple(gPerObjectUniformDefinition.GetSize() / 4u, 4u);
-				perObjectInfo.Stages = GpuProgramStageBit::Vertex | GpuProgramStageBit::Geometry;
-				perObjectInfo.IsShareable = true;
-				perObjectInfo.UsesDynamicOffset = true;
+				const auto fnCreatePerObjectLayout = [&gpuDevice](GpuProgramStageBits stages)
+				{
+					GpuUniformBufferInformation perObjectInfo;
+					perObjectInfo.Name = "PerObject";
+					perObjectInfo.Set = GpuPipelineSet::kPerObjectSetIndex;
+					perObjectInfo.Slot = gpuDevice->GetParameterSlot(ShaderRegisterClass::ConstantBuffer, 0);
+					perObjectInfo.Size = Math::CeilToMultiple(gPerObjectUniformDefinition.GetSize() / 4u, 4u);
+					perObjectInfo.Stages = stages;
+					perObjectInfo.IsShareable = true;
+					perObjectInfo.UsesDynamicOffset = true;
 
-				GpuProgramParameterDescription description;
-				description.UniformBuffers["PerObject"] = perObjectInfo;
-				mCubemapShadowPerObjectLayout = gpuDevice->CreateGpuPipelineParameterSetLayout(description);
+					GpuProgramParameterDescription description;
+					description.UniformBuffers["PerObject"] = perObjectInfo;
+					return gpuDevice->CreateGpuPipelineParameterSetLayout(description);
+				};
+
+				mCubemapShadowPerObjectParameterSets.Layout = fnCreatePerObjectLayout(GpuProgramStageBit::Vertex | GpuProgramStageBit::Geometry);
+				mDirectionalShadowPerObjectParameterSets.Layout = fnCreatePerObjectLayout(GpuProgramStageBit::Vertex);
 			}
 		}
 
@@ -863,25 +862,31 @@ namespace b3d
 
 		TShared<GpuParameterSet> ShadowRendering::GetOrCreateCubemapShadowParameterSet(const TShared<GpuBuffer>& perObjectBuffer)
 		{
+			return GetOrCreateShadowPerObjectParameterSet(mCubemapShadowPerObjectParameterSets, perObjectBuffer);
+		}
+
+		TShared<GpuParameterSet> ShadowRendering::GetOrCreateDirectionalShadowParameterSet(const TShared<GpuBuffer>& perObjectBuffer)
+		{
+			return GetOrCreateShadowPerObjectParameterSet(mDirectionalShadowPerObjectParameterSets, perObjectBuffer);
+		}
+
+		TShared<GpuParameterSet> ShadowRendering::GetOrCreateShadowPerObjectParameterSet(ShadowPerObjectParameterSets& sets, const TShared<GpuBuffer>& perObjectBuffer)
+		{
 			GpuBuffer* key = perObjectBuffer.get();
 
-			auto iter = mCubemapShadowParameterSets.find(key);
-			if(iter != mCubemapShadowParameterSets.end())
-				return iter->second.ParameterSet;
+			auto iter = sets.ParameterSets.find(key);
+			if(iter != sets.ParameterSets.end())
+				return iter->second;
 
 			GpuParameterSetPool& pool = GetRenderer()->GetGpuContext().GetParameterSetPool();
-			TShared<GpuParameterSet> parameterSet = pool.Create(mCubemapShadowPerObjectLayout, GpuPipelineSet::kPerObject);
+			TShared<GpuParameterSet> parameterSet = pool.Create(sets.Layout, GpuPipelineSet::kPerObjectSetIndex);
 			parameterSet->SetUniformBuffer("PerObject", perObjectBuffer, 0);
 
-			CubemapShadowParameterSetEntry entry;
-			entry.ParameterSet = parameterSet;
-			entry.RefCount = 1;
-
-			mCubemapShadowParameterSets[key] = entry;
+			sets.ParameterSets[key] = parameterSet;
 			return parameterSet;
 		}
 
-		void ShadowRendering::RenderShadowMaps(GpuCommandBuffer& commandBuffer, RenderBeastScene& scene, const RendererViewGroup& viewGroup, const FrameInfo& frameInfo)
+		void ShadowRendering::RenderShadowMaps(FrameGraph& graph, RenderBeastScene& scene, const RendererViewGroup& viewGroup, const FrameInfo& frameInfo)
 		{
 			// Note: Currently all shadows are dynamic and are rebuilt every frame. I should later added support for static
 			// shadow maps which can be used for immovable lights. Such a light can then maintain a set of shadow maps,
@@ -900,7 +905,8 @@ namespace b3d
 
 			// Clear all transient data from last frame
 			mShadowInfos.clear();
-			mCubemapShadowParameterSets.clear();
+			mCubemapShadowPerObjectParameterSets.ParameterSets.clear();
+			mDirectionalShadowPerObjectParameterSets.ParameterSets.clear();
 
 			mSpotLightShadows.resize(spotLights.size());
 			mRadialLightShadows.resize(radialLights.size());
@@ -1021,19 +1027,19 @@ namespace b3d
 				mDirectionalLightShadows[lightIndex].ViewShadows.Resize(numViews);
 
 				for(u32 j = 0; j < numViews; ++j)
-					RenderCascadedShadowMaps(commandBuffer, *viewGroup.GetView(j), lightIndex, scene, frameInfo);
+					RenderCascadedShadowMaps(graph, *viewGroup.GetView(j), lightIndex, scene, frameInfo);
 			}
 
 			for(auto& entry : mSpotLightShadowOptions)
 			{
 				u32 lightIdx = entry.LightIdx;
-				RenderSpotShadowMap(commandBuffer, spotLights[lightIdx], entry, scene, frameInfo);
+				RenderSpotShadowMap(graph, spotLights[lightIdx], entry, scene, frameInfo);
 			}
 
 			for(auto& entry : mRadialLightShadowOptions)
 			{
 				u32 lightIdx = entry.LightIdx;
-				RenderRadialShadowMap(commandBuffer, radialLights[lightIdx], entry, scene, frameInfo);
+				RenderRadialShadowMap(graph, radialLights[lightIdx], entry, scene, frameInfo);
 			}
 		}
 
@@ -1116,7 +1122,7 @@ namespace b3d
 			return shadowMapTfrm * mixedToShadow;
 		}
 
-		ShadowRendering::ProjectedShadowRenderingBatchInformation ShadowRendering::PrepareParametersForRenderShadowProjection(GpuDevice& gpuDevice, const RendererView& view, PackedRendererId lightId, const RenderBeastScene& scene, GBufferTextures gbuffer) const
+		ShadowRendering::ProjectedShadowRenderingBatchInformation ShadowRendering::PrepareParametersForRenderShadowProjection(FrameGraphPass& pass, GpuDevice& gpuDevice, const RendererView& view, PackedRendererId lightId, const RenderBeastScene& scene, GBufferTextures gbuffer) const
 		{
 			const u32 shadowQuality = view.GetRenderSettings().ShadowSettings.ShadowFilteringQuality;
 
@@ -1190,7 +1196,7 @@ namespace b3d
 
 					ShadowProjectOmniMaterial* const shadowProjectOmniMaterial = ShadowProjectOmniMaterial::GetVariation(effectiveShadowQuality, viewerInsideVolume, viewProperties.Target.NumSamples > 1);
 
-					const TShared<GpuParameterSet>& gpuParameters = shadowProjectOmniMaterial->CreateGpuParameterSet();
+					const TShared<GpuParameterSet> gpuParameters = shadowProjectOmniMaterial->CreateGpuParameterSet(pass);
 
 					ProjectedShadowRenderingInformation shadowRenderingInfo;
 					shadowRenderingInfo.ShadowInfo = &shadowInfo;
@@ -1326,7 +1332,7 @@ namespace b3d
 						ShadowProjectStencilMaterial* const stencilMaterial = ShadowProjectStencilMaterial::GetVariation(false, viewerInsideFrustum);
 
 						// Bind GPU parameters for stencil material
-						TShared<GpuParameterSet> stencilGpuParameters = stencilMaterial->CreateGpuParameterSet();
+						TShared<GpuParameterSet> stencilGpuParameters = stencilMaterial->CreateGpuParameterSet(pass);
 						ShadowProjectionParameterBinding::BindStencilProjectionParameters(stencilGpuParameters, perViewBuffer, shadowProjectVertBuffer);
 
 						shadowRenderingInfo.StencilGpuParameters = stencilGpuParameters;
@@ -1340,7 +1346,7 @@ namespace b3d
 						ShadowProjectStencilMaterial* const stencilMaterial = ShadowProjectStencilMaterial::GetVariation(true, true);
 
 						// Bind GPU parameters for stencil material
-						TShared<GpuParameterSet> stencilGpuParameters = stencilMaterial->CreateGpuParameterSet();
+						TShared<GpuParameterSet> stencilGpuParameters = stencilMaterial->CreateGpuParameterSet(pass);
 						ShadowProjectionParameterBinding::BindStencilProjectionParameters(stencilGpuParameters, perViewBuffer, shadowProjectVertBuffer);
 
 						shadowRenderingInfo.StencilGpuParameters = stencilGpuParameters;
@@ -1357,7 +1363,7 @@ namespace b3d
 					ShadowProjectMaterial* const primaryMaterial = ShadowProjectMaterial::GetVariation(effectiveShadowQuality, isCSM, viewProperties.Target.NumSamples > 1);
 
 					// Bind GPU parameters explicitly
-					TShared<GpuParameterSet> gpuParameters = primaryMaterial->CreateGpuParameterSet();
+					TShared<GpuParameterSet> gpuParameters = primaryMaterial->CreateGpuParameterSet(pass);
 					ShadowProjectionParameterBinding::BindProjectionParameters(gpuParameters, gpuDevice, shadowMap, shadowParamBuffer, perViewBuffer, shadowProjectVertBuffer, gbuffer);
 
 					shadowRenderingInfo.PrimaryGpuParameters = gpuParameters;
@@ -1373,14 +1379,14 @@ namespace b3d
 			return batchRenderingInfo;
 		}
 
-		void ShadowRendering::RenderShadowProjectionBatch(GpuCommandBuffer& commandBuffer, const RendererView& view, PackedRendererId lightId, const RenderBeastScene& scene, const ProjectedShadowRenderingBatchInformation& batch) const
+		void ShadowRendering::RenderShadowProjectionBatch(FrameGraphPassContext& context, const RendererView& view, PackedRendererId lightId, const RenderBeastScene& scene, const ProjectedShadowRenderingBatchInformation& batch) const
 		{
+			GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
+
 			const LightProxy& light = scene.GetLightProxy(lightId);
 			const auto& viewProperties = view.GetProperties();
 
 			// TODO - Calculate and set a scissor rectangle for the light
-
-			ProfileGPUBlock sampleBlock(commandBuffer, "Render shadow occlusion");
 
 			if(light.GetType() == LightType::Radial)
 			{
@@ -1389,10 +1395,7 @@ namespace b3d
 					const ProjectedShadowRenderingInformation& shadowRenderingInformation = batch.Shadows[visibleShadowIndex];
 
 					ShadowProjectOmniMaterial* const shadowProjectOmniMaterial = ShadowProjectOmniMaterial::GetVariation(shadowRenderingInformation.ShadowQuality, shadowRenderingInformation.IsViewerInsideLightVolume, batch.MSAA);
-					shadowProjectOmniMaterial->Bind(commandBuffer);
-
-					// Bind parameters to pipeline
-					commandBuffer.SetGpuParameterSet(shadowRenderingInformation.PrimaryGpuParameters);
+					shadowProjectOmniMaterial->Bind(commandBuffer, shadowRenderingInformation.PrimaryGpuParameters);
 
 					// Calculate sub-allocation offsets
 					const u32 shadowSuballocationOffset = visibleShadowIndex * batch.UniformBufferSuballocationSize;
@@ -1422,10 +1425,7 @@ namespace b3d
 						frustumVertices = GetFrustum(shadowInfo.ShadowVpTransform.Inverse(), shadowFrustum);
 
 						ShadowProjectStencilMaterial* stencilMat = ShadowProjectStencilMaterial::GetVariation(false, shadowRenderingInformation.IsViewerInsideLightVolume);
-						stencilMat->Bind(commandBuffer);
-
-						// Bind parameters to pipeline
-						commandBuffer.SetGpuParameterSet(shadowRenderingInformation.StencilGpuParameters);
+						stencilMat->Bind(commandBuffer, shadowRenderingInformation.StencilGpuParameters);
 
 						const u32 vertSuballocationOffset = visibleShadowIndex * batch.VertexUniformBufferSuballocationSize;
 						const u32 setIndex = shadowRenderingInformation.StencilGpuParameters->GetSet();
@@ -1441,22 +1441,15 @@ namespace b3d
 						Vector3 near = viewProperties.ProjTransform.Multiply(Vector3(0, 0, -shadowInfo.DepthNear));
 						Vector3 far = viewProperties.ProjTransform.Multiply(Vector3(0, 0, -shadowInfo.DepthFar));
 
+						// The directional variation draws its planes without a transform, so it has no vertex parameters
 						ShadowProjectStencilMaterial* stencilMaterial = ShadowProjectStencilMaterial::GetVariation(true, true);
-						stencilMaterial->Bind(commandBuffer);
-
-						commandBuffer.SetGpuParameterSet(shadowRenderingInformation.StencilGpuParameters);
-
-						const u32 vertSuballocationOffset = visibleShadowIndex * batch.VertexUniformBufferSuballocationSize;
-						const u32 setIndex = shadowRenderingInformation.StencilGpuParameters->GetSet();
-						commandBuffer.SetDynamicBufferOffset(setIndex, shadowRenderingInformation.StencilVertexUniformBufferDynamicIndex, vertSuballocationOffset);
+						stencilMaterial->Bind(commandBuffer, shadowRenderingInformation.StencilGpuParameters);
 
 						DrawNearFarPlanes(commandBuffer, near.Z, far.Z, shadowInfo.CascadeIdx != 0);
 					}
 
 					ShadowProjectMaterial* mat = ShadowProjectMaterial::GetVariation(shadowRenderingInformation.ShadowQuality, isCSM, batch.MSAA);
-					mat->Bind(commandBuffer);
-
-					commandBuffer.SetGpuParameterSet(shadowRenderingInformation.PrimaryGpuParameters);
+					mat->Bind(commandBuffer, shadowRenderingInformation.PrimaryGpuParameters);
 
 					// Calculate sub-allocation offsets
 					const u32 shadowSuballocationOffset = visibleShadowIndex * batch.UniformBufferSuballocationSize;
@@ -1464,17 +1457,20 @@ namespace b3d
 					const u32 setIndex = shadowRenderingInformation.PrimaryGpuParameters->GetSet();
 
 					commandBuffer.SetDynamicBufferOffset(setIndex, shadowRenderingInformation.PrimaryUniformBufferDynamicIndex, shadowSuballocationOffset);
-					commandBuffer.SetDynamicBufferOffset(setIndex, shadowRenderingInformation.PrimaryVertexUniformBufferDynamicIndex, vertSuballocationOffset);
 
+					// The cascaded variation draws a screen quad without a transform, so it has no vertex parameters
 					if(!isCSM)
+					{
+						commandBuffer.SetDynamicBufferOffset(setIndex, shadowRenderingInformation.PrimaryVertexUniformBufferDynamicIndex, vertSuballocationOffset);
 						DrawFrustum(commandBuffer, frustumVertices);
+					}
 					else
 						GetRendererUtility().DrawScreenQuad(commandBuffer);
 				}
 			}
 		}
 
-		void ShadowRendering::RenderCascadedShadowMaps(GpuCommandBuffer& commandBuffer, const RendererView& view, u32 lightIdx, RenderBeastScene& scene, const FrameInfo& frameInfo)
+		void ShadowRendering::RenderCascadedShadowMaps(FrameGraph& graph, const RendererView& view, u32 lightIdx, RenderBeastScene& scene, const FrameInfo& frameInfo)
 		{
 			u32 viewIdx = view.GetViewIndex();
 			LocalLightShadows& lightShadows = mDirectionalLightShadows[lightIdx].ViewShadows[viewIdx];
@@ -1525,7 +1521,7 @@ namespace b3d
 			if(shadowInfo.TextureIdx == (u32)-1)
 			{
 				shadowInfo.TextureIdx = (u32)mCascadedShadowMaps.size();
-				mCascadedShadowMaps.push_back(ShadowCascadedMap(mapSize, numCascades));
+				mCascadedShadowMaps.push_back(ShadowCascadedMap(graph.GetWorkContext().GetDevice(), mapSize, numCascades));
 
 				ShadowCascadedMap& shadowMap = mCascadedShadowMaps.back();
 				shadowMap.MarkAsUsed();
@@ -1535,8 +1531,6 @@ namespace b3d
 
 			Quaternion lightRotation(kIdentityTag);
 			lightRotation.LookRotation(lightDir, Vector3::kUnitY);
-
-			ProfileGPUBlock profileSample(commandBuffer, "Project directional light shadow");
 
 			for(u32 i = 0; i < numCascades; ++i)
 			{
@@ -1569,7 +1563,7 @@ namespace b3d
 
 				Matrix4 proj = Matrix4::ProjectionOrthographic(-orthoSize, orthoSize, orthoSize, -orthoSize, 0.0f, shadowInfo.DepthRange);
 
-				GpuDevice& gpuDevice = commandBuffer.GetGpuDevice();
+				GpuDevice& gpuDevice = graph.GetWorkContext().GetDevice();
 				gpuDevice.ConvertProjectionMatrix(proj, proj);
 
 				shadowInfo.CascadeIdx = i;
@@ -1602,7 +1596,7 @@ namespace b3d
 					cascadeCullVolume,
 					shadowUniforms);
 
-				ShadowRenderQueue::Execute(commandBuffer, scene, frameInfo, shadowMap.GetTarget(i), dirOptions);
+				ShadowRenderQueue::AddPass(graph, "DirectionalShadowMap", scene, frameInfo, shadowMap.GetTarget(i), dirOptions);
 
 				shadowMap.SetShadowInfo(i, shadowInfo);
 			}
@@ -1611,7 +1605,7 @@ namespace b3d
 			lightShadows.ShadowCount = 1;
 		}
 
-		void ShadowRendering::RenderSpotShadowMap(GpuCommandBuffer& commandBuffer, PackedRendererId lightId, const ShadowMapOptions& options, RenderBeastScene& scene, const FrameInfo& frameInfo)
+		void ShadowRendering::RenderSpotShadowMap(FrameGraph& graph, PackedRendererId lightId, const ShadowMapOptions& options, RenderBeastScene& scene, const FrameInfo& frameInfo)
 		{
 			const LightProxy& light = scene.GetLightStorage().GetLightProxy(lightId);
 
@@ -1639,7 +1633,7 @@ namespace b3d
 			if(!foundSpace)
 			{
 				mapInfo.TextureIdx = (u32)mAtlasShadowMaps.size();
-				mAtlasShadowMaps.push_back(ShadowMapAtlas(kMaxAtlasSize));
+				mAtlasShadowMaps.push_back(ShadowMapAtlas(graph.GetWorkContext().GetDevice(), kMaxAtlasSize));
 
 				ShadowMapAtlas& atlas = mAtlasShadowMaps.back();
 				atlas.AddMap(options.MapSize, mapInfo.Area, kShadowMapBorder);
@@ -1647,8 +1641,6 @@ namespace b3d
 
 			mapInfo.UpdateNormArea(kMaxAtlasSize);
 			ShadowMapAtlas& atlas = mAtlasShadowMaps[mapInfo.TextureIdx];
-
-			ProfileGPUBlock profileSample(commandBuffer, "Project spot light shadows");
 
 			mapInfo.DepthNear = 0.05f;
 			mapInfo.DepthFar = light.GetAttenuationRadius();
@@ -1665,7 +1657,7 @@ namespace b3d
 
 			ConvexVolume localFrustum = ConvexVolume(proj);
 
-			GpuDevice& gpuDevice = commandBuffer.GetGpuDevice();
+			GpuDevice& gpuDevice = graph.GetWorkContext().GetDevice();
 			gpuDevice.ConvertProjectionMatrix(proj, proj);
 
 			mapInfo.ShadowVpTransform = proj * view;
@@ -1695,10 +1687,7 @@ namespace b3d
 				worldFrustum,
 				shadowUniforms);
 
-			ShadowRenderQueue::Execute(commandBuffer, scene, frameInfo, atlas.GetTarget(), spotOptions);
-
-			// Restore viewport
-			commandBuffer.SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
+			ShadowRenderQueue::AddPass(graph, "SpotShadowMap", scene, frameInfo, atlas.GetTarget(), spotOptions);
 
 			LocalLightShadows& lightShadows = mSpotLightShadows[options.LightIdx];
 
@@ -1706,7 +1695,7 @@ namespace b3d
 			lightShadows.ShadowCount++;
 		}
 
-		void ShadowRendering::RenderRadialShadowMap(GpuCommandBuffer& commandBuffer, PackedRendererId lightId, const ShadowMapOptions& options, RenderBeastScene& scene, const FrameInfo& frameInfo)
+		void ShadowRendering::RenderRadialShadowMap(FrameGraph& graph, PackedRendererId lightId, const ShadowMapOptions& options, RenderBeastScene& scene, const FrameInfo& frameInfo)
 		{
 			const LightProxy& light = scene.GetLightStorage().GetLightProxy(lightId);
 
@@ -1736,7 +1725,7 @@ namespace b3d
 			if(shadowInfo.TextureIdx == (u32)-1)
 			{
 				shadowInfo.TextureIdx = (u32)mShadowCubemaps.size();
-				mShadowCubemaps.push_back(ShadowCubemap(options.MapSize));
+				mShadowCubemaps.push_back(ShadowCubemap(graph.GetWorkContext().GetDevice(), options.MapSize));
 
 				ShadowCubemap& cubemap = mShadowCubemaps.back();
 				cubemap.MarkAsUsed();
@@ -1756,11 +1745,9 @@ namespace b3d
 			Matrix4 proj = Matrix4::ProjectionPerspective(Degree(90.0f), 1.0f, 0.05f, light.GetAttenuationRadius(), true);
 			ConvexVolume localFrustum(proj);
 
-			ProfileGPUBlock profileSample(commandBuffer, "Project radial light shadows");
+			GpuDevice& gpuDevice = graph.GetWorkContext().GetDevice();
+			const GpuDeviceCapabilities& caps = gpuDevice.GetCapabilities();
 
-			const GpuDeviceCapabilities& caps = commandBuffer.GetGpuDevice().GetCapabilities();
-
-			GpuDevice& gpuDevice = commandBuffer.GetGpuDevice();
 			gpuDevice.ConvertProjectionMatrix(proj, proj);
 
 			// Render cubemaps upside down if necessary
@@ -1865,20 +1852,19 @@ namespace b3d
 					GpuBufferMappedScope faceUniforms = gShadowUniformDefinition.AllocateTransient().Map();
 					fnPopulateShadowUniforms(faceUniforms, shadowViewProj);
 
-					RenderTextureCreateInformation rtDesc;
-					rtDesc.DepthStencilSurface.Texture = cubemap.GetTexture();
-					rtDesc.DepthStencilSurface.Face = i;
-					rtDesc.DepthStencilSurface.FaceCount = 1;
+					// Render all renderables into the face of the shadow map. The graph builds the render texture of the face.
+					const TShared<Texture>& cubemapTexture = cubemap.GetTexture();
+					graph.ImportTexture(cubemapTexture);
 
-					TShared<RenderTarget> faceRt = RenderTexture::Create(rtDesc);
+					FrameGraphRasterPass pass;
+					pass.SetDepthStencilAttachment(cubemapTexture, FrameGraphDepthStencilMode::Write, ShadowRenderQueueCubeSingleOptions::kLoad, 0, i, 1);
 
-					// Render all renderables into the shadow map
 					ShadowRenderQueueCubeSingleOptions cubeOptions(
 						*this,
 						frustum,
 						faceUniforms);
 
-					ShadowRenderQueue::Execute(commandBuffer, scene, frameInfo, faceRt, cubeOptions);
+					ShadowRenderQueue::AddPass(graph, "RadialShadowMap", scene, frameInfo, std::move(pass), cubeOptions);
 				}
 			}
 
@@ -1893,7 +1879,7 @@ namespace b3d
 					shadowUniforms,
 					shadowCubeMatricesBuffer);
 
-				ShadowRenderQueue::Execute(commandBuffer, scene, frameInfo, cubemap.GetTarget(), cubeOptions);
+				ShadowRenderQueue::AddPass(graph, "RadialShadowMap", scene, frameInfo, cubemap.GetTarget(), cubeOptions);
 			}
 
 			LocalLightShadows& lightShadows = mRadialLightShadows[options.LightIdx];

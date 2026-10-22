@@ -10,6 +10,13 @@ namespace b3d
 	TConfigVariable<i32> gGpuPreferredDeviceIndex("gpu.PreferredDeviceIndex",
 		"Specifies the index of the GPU to use. If < 0 is provided, best GPU is selected automatically.", -1,
 		ConfigVariableFlag::ReadOnly);
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+	TConfigVariable<bool> gGpuDumpPipelineTimings("gpu.DumpPipelineTimings",
+		"Log the driver pipeline-compile time (ms) at compute pipeline creation. Clear the driver shader caches first for "
+		"cold (true compile) numbers; a warm cache returns in <1 ms.",
+		false, ConfigVariableFlag::ReadOnly);
+#endif
 } // namespace b3d
 
 using namespace b3d;

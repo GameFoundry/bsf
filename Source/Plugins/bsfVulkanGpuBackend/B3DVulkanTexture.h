@@ -243,11 +243,20 @@ namespace b3d
 			/** Builds the native image description of a texture with properties @p properties, on device @p device. */
 			static void BuildDescription(const VulkanGpuDevice& device, const TextureProperties& properties, VulkanTextureDescription& outDescription);
 
+			/**
+			 * Returns the format of the native image of a texture with properties @p properties, on device @p device. Differs from the
+			 * requested format when the device does not support it.
+			 */
+			static PixelFormat GetInternalFormat(const VulkanGpuDevice& device, const TextureProperties& properties);
+
 		protected:
 			friend class VulkanGpuDevice;
 			friend class VulkanImage;
 
-			VulkanTexture(VulkanGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation);
+			/** Returns true if a texture with properties @p properties gets a linearly tiled image, which the CPU maps directly. */
+			static bool UsesLinearTiling(const TextureProperties& properties);
+
+			VulkanTexture(VulkanGpuDevice& gpuDevice, const TextureCreateInformation& createInformation, const GpuAllocation& allocation, GpuObjectCreateFlags flags);
 
 			void Initialize() override;
 

@@ -77,7 +77,7 @@ namespace b3d
 			 * Creates a texture owned by @p device, whose native resource is placed at @p allocation. See
 			 * GpuDevice::CreateTexture(). Call Initialize() before use.
 			 */
-			D3D12Texture(const TextureCreateInformation& createInformation, GpuDevice& device, const GpuAllocation& allocation);
+			D3D12Texture(const TextureCreateInformation& createInformation, GpuDevice& device, const GpuAllocation& allocation, GpuObjectCreateFlags flags);
 			~D3D12Texture() override;
 
 			void Initialize() override;
@@ -99,6 +99,12 @@ namespace b3d
 			DXGI_FORMAT GetViewFormat() const { return mViewFormat; }
 
 			GpuDevice& GetDevice() const override { return mGpuDevice; }
+
+			/**
+			 * Returns a number that changes whenever the native resource is created or recreated. Recreation releases the views of the
+			 * previous native resource, so view handles obtained before the number changed are no longer valid.
+			 */
+			u32 GetResourceGeneration() const { return mResourceGeneration; }
 
 			/**
 			 * Byte pitch between rows that staging buffers use for copies to or from the given subresource. Padded to
@@ -171,6 +177,7 @@ namespace b3d
 			D3D12_CPU_DESCRIPTOR_HANDLE mDefaultSRV{};
 			TInlineArray<ViewEntry, 1> mViews;
 			Mutex mViewMutex;
+			u32 mResourceGeneration = 0;
 		};
 
 		/** @} */

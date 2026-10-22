@@ -23,7 +23,6 @@
 #include "Components/B3DCamera.h"
 #include "Renderer/B3DRendererUtility.h"
 #include "Utility/B3DRendererTextures.h"
-#include "Renderer/B3DGpuResourcePool.h"
 #include "Renderer/B3DRendererManager.h"
 #include "Shading/B3DShadowRendering.h"
 #include "Shading/B3DStandardDeferred.h"
@@ -40,6 +39,7 @@
 #include "RenderState/B3DDecalRenderState.h"
 #include "RenderState/B3DParticleRenderState.h"
 #include "GpuBackend/B3DGpuProgramParameterDescription.h"
+#include "FrameGraph/B3DFrameGraph.h"
 #include "Math/B3DMath.h"
 
 namespace b3d {
@@ -83,7 +83,7 @@ void RenderBeast::ActivateOnRenderThread(const LoadedRendererTextures& rendererT
 		!caps.HasCapability(RSC_LOAD_STORE) ||
 		!caps.HasCapability(RSC_TEXTURE_VIEWS))
 	{
-		mFeatureSet = RenderBeastFeatureSet::DesktopMacOS;
+		B3D_LOG(Fatal, LogRenderer, "RenderBeast requires a device with compute programs, load-store textures and texture views.");
 	}
 
 	// Create per-object parameter set layouts
@@ -91,8 +91,8 @@ void RenderBeast::ActivateOnRenderThread(const LoadedRendererTextures& rendererT
 		// PerObject uniform buffer info (shared by both layouts)
 		GpuUniformBufferInformation perObjectInfo;
 		perObjectInfo.Name = "PerObject";
-		perObjectInfo.Set = GpuPipelineSet::kPerObject;
-		perObjectInfo.Slot = mDevice->GetUniformBufferParameterSlot(0);
+		perObjectInfo.Set = GpuPipelineSet::kPerObjectSetIndex;
+		perObjectInfo.Slot = mDevice->GetParameterSlot(ShaderRegisterClass::ConstantBuffer, 0);
 		perObjectInfo.Size = Math::CeilToMultiple(gPerObjectUniformDefinition.GetSize() / 4u, 4u);
 		perObjectInfo.Stages = GpuProgramStageBit::Vertex | GpuProgramStageBit::Fragment;
 		perObjectInfo.IsShareable = true;
@@ -116,8 +116,8 @@ void RenderBeast::ActivateOnRenderThread(const LoadedRendererTextures& rendererT
 
 			GpuUniformBufferInformation decalInfo;
 			decalInfo.Name = "DecalParams";
-			decalInfo.Set = GpuPipelineSet::kPerObject;
-			decalInfo.Slot = mDevice->GetUniformBufferParameterSlot(1);
+			decalInfo.Set = GpuPipelineSet::kPerObjectSetIndex;
+			decalInfo.Slot = mDevice->GetParameterSlot(ShaderRegisterClass::ConstantBuffer, 1);
 			decalInfo.Size = Math::CeilToMultiple(gDecalUniformDefinition.GetSize() / 4u, 4u);
 			decalInfo.Stages = GpuProgramStageBit::Vertex | GpuProgramStageBit::Fragment;
 			decalInfo.IsShareable = true;
@@ -142,8 +142,8 @@ void RenderBeast::ActivateOnRenderThread(const LoadedRendererTextures& rendererT
 
 			GpuUniformBufferInformation gpuParticlesInfo;
 			gpuParticlesInfo.Name = "GpuParticleParams";
-			gpuParticlesInfo.Set = GpuPipelineSet::kPerObject;
-			gpuParticlesInfo.Slot = mDevice->GetUniformBufferParameterSlot(1);
+			gpuParticlesInfo.Set = GpuPipelineSet::kPerObjectSetIndex;
+			gpuParticlesInfo.Slot = mDevice->GetParameterSlot(ShaderRegisterClass::ConstantBuffer, 1);
 			gpuParticlesInfo.Size = Math::CeilToMultiple(gGpuParticlesUniformDefinition.GetSize() / 4u, 4u);
 			gpuParticlesInfo.Stages = GpuProgramStageBit::Vertex | GpuProgramStageBit::Fragment;
 			gpuParticlesInfo.IsShareable = true;
@@ -161,6 +161,8 @@ void RenderBeast::ActivateOnRenderThread(const LoadedRendererTextures& rendererT
 				mGpuParticlesParameterSetInfo.GpuParticlesDynamicOffsetIndex = mGpuParticlesParameterSetInfo.Layout->GetDynamicOffsetIndex(gpuParticlesSlot);
 		}
 	}
+
+	mSurfaceShaderParameterSetInfo.Initialize(*mDevice);
 
 	// Build type configurations for UniformBufferPools
 	{
@@ -201,7 +203,6 @@ void RenderBeast::ActivateOnRenderThread(const LoadedRendererTextures& rendererT
 
 	RendererUtility::StartUp();
 	GpuSort::StartUp();
-	GpuResourcePool::StartUp();
 	IBLUtility::StartUp<RenderBeastIBLUtility>();
 	RendererTextures::StartUp(rendererTextures);
 
@@ -266,7 +267,6 @@ void RenderBeast::DestroyOnRenderThread()
 
 	RendererTextures::ShutDown();
 	IBLUtility::ShutDown();
-	GpuResourcePool::ShutDown();
 	GpuSort::ShutDown();
 	RendererUtility::ShutDown();
 
@@ -340,6 +340,15 @@ void RenderBeast::RenderAll(PerFrameData perFrameData)
 	GetRenderThread().PostCommand([this, timings, perFrameData]() { RenderAllOnRenderThread(timings, perFrameData); }, "RenderBeast::RenderAll");
 }
 
+void RenderBeast::ProcessTasks(bool forceAll, u64 upToFrame)
+{
+	// Tasks may draw objects whose uniform buffers were updated during sync
+	for(RenderBeastScene* scene : mScenes)
+		scene->GetUniformBufferPools().Flush();
+
+	Renderer::ProcessTasks(forceAll, upToFrame);
+}
+
 void RenderBeast::RenderAllOnRenderThread(FrameTimings timings, PerFrameData perFrameData)
 {
 	ASSERT_IF_NOT_RENDER_THREAD
@@ -369,13 +378,12 @@ void RenderBeast::RenderAllOnRenderThread(FrameTimings timings, PerFrameData per
 		entry->GetUniformBufferPools().AdvanceFrame();
 	}
 
-	// If some windows were rendered outside of the renderer, still resolve their requested screen captures
-	ResolveOutstandingScreenCaptures();
+	for(const TShared<RenderWindow>& window : mWindowsToPresent)
+		mDevice->PresentRenderWindow(window);
+
+	mWindowsToPresent.clear();
 
 	EndFrame();
-
-	// Tick pool frame
-	GpuResourcePool::Instance().Update();
 
 	GetProfilerCPU().EndSample("Render");
 
@@ -394,11 +402,6 @@ void RenderBeast::RenderAllOnRenderThread(FrameTimings timings, PerFrameData per
 
 bool RenderBeast::RenderScene(RenderBeastScene& scene, const FrameInfo& frameInfo)
 {
-	TShared<GpuCommandBuffer> commandBuffer = mCommandBufferPoolRing->GetCurrentPool().FindOrCreate(GpuCommandBufferCreateInformation::Create("Main"));
-#if B3D_PROFILING_ENABLED
-	commandBuffer->BeginProfiling("RenderScene");
-#endif
-
 	scene.UpdateCombinedRendererExtensionsIfNeeded(mRendererExtensions, mRendererExtensionsDirty);
 
 	// Note: I'm iterating over all sampler states every frame. If this ends up being a performance
@@ -415,25 +418,25 @@ bool RenderBeast::RenderScene(RenderBeastScene& scene, const FrameInfo& frameInf
 
 	scene.ResetRenderableReady();
 
-	GpuWorkContext& gpuContext = GetGpuContext();
 	BeginFrame();
 
 	if (mIsGPUCommandCaptureRequested)
 		GpuBackend::Instance().StartGPUCommandCapture();
-
-	// If any reflection probes were updated or added, we need to copy them over in the global reflection probe array
-	scene.UpdateReflectionProbes(*commandBuffer);
 
 	// Update per-frame data for all renderable objects
 	RenderableObjectStorage& renderableStorage = scene.GetRenderableStorage();
 	for(u32 i = 0; i < renderableStorage.GetRenderableCount(); i++)
 		renderableStorage.PrepareRenderable(i, frameInfo);
 
-	for(u32 i = 0; i < scene.GetParticleSystemCount(); i++)
-		scene.PrepareParticleSystem(i, frameInfo);
+	scene.PrepareParticleSystems(frameInfo);
 
 	for(u32 i = 0; i < scene.GetDecalCount(); i++)
 		scene.PrepareDecal(i, frameInfo);
+
+	// Record the uniform buffer updates of sync and preparation before anything draws
+	scene.GetUniformBufferPools().Flush();
+
+	scene.SortRenderTargets();
 
 	bool anythingDrawnForScene = false;
 	for(auto& rtInfo : scene.GetRenderTargets())
@@ -448,7 +451,7 @@ bool RenderBeast::RenderScene(RenderBeastScene& scene, const FrameInfo& frameInf
 			window = std::static_pointer_cast<RenderWindow>(rtInfo.Target);
 
 		const bool renderTargetNeedsRedraw = window != nullptr && window->IsRedrawRequested();
-		const bool screenCaptureRequested = IsScreenCaptureRequested(window);
+		const bool screenCaptureRequested = window != nullptr && window->IsCaptureRequested();
 		const bool forceRendering = mIsGPUCommandCaptureRequested || renderTargetNeedsRedraw || screenCaptureRequested;
 
 		const u32 cameraCount = (u32)cameras.size();
@@ -464,44 +467,54 @@ bool RenderBeast::RenderScene(RenderBeastScene& scene, const FrameInfo& frameInf
 		}
 
 		mMainViewGroup->SetViews(views.data(), (u32)views.size());
-		PROFILE_CALL(mMainViewGroup->DetermineVisibility(*commandBuffer, scene), "Determine visibility")
+		PROFILE_CALL(mMainViewGroup->DetermineVisibility(scene, frameInfo), "Determine visibility")
+		scene.PrepareVisibleParticleSystems(mMainViewGroup->GetVisibilityInfo(), frameInfo);
 
-		// Render everything
-		const bool anythingDrawnForView = RenderViews(*commandBuffer, scene, *mMainViewGroup, frameInfo, forceRendering);
+		// Render everything. The graph of the group has executed once this returns.
+		const bool anythingDrawnForView = RenderViews(scene, *mMainViewGroup, frameInfo, forceRendering);
 		if(anythingDrawnForView)
 		{
-			if(screenCaptureRequested)
-				ResolveScreenCaptures(*commandBuffer, window);
-
-#if B3D_PROFILING_ENABLED
-			commandBuffer->EndProfiling();
-#endif
-			gpuContext.SubmitCommandBuffer(commandBuffer);
-
-			commandBuffer = mCommandBufferPoolRing->GetCurrentPool().FindOrCreate(GpuCommandBufferCreateInformation::Create("Main"));
-
-#if B3D_PROFILING_ENABLED
-			commandBuffer->BeginProfiling("RenderScene");
-#endif
-
-			if(isWindow)
-				mDevice->PresentRenderWindow(window);
+			// Cameras of other scenes may draw to the window too. Its redraw and capture requests stay pending until it is presented.
+			if(isWindow && std::find(mWindowsToPresent.begin(), mWindowsToPresent.end(), window) == mWindowsToPresent.end())
+				mWindowsToPresent.push_back(window);
 
 			anythingDrawnForScene = true;
 		}
 	}
 
-#if B3D_PROFILING_ENABLED
-	commandBuffer->EndProfiling();
-#endif
-	gpuContext.SubmitCommandBuffer(commandBuffer);
-
 	return anythingDrawnForScene;
 }
 
-bool RenderBeast::RenderViews(GpuCommandBuffer& commandBuffer, RenderBeastScene& scene, RendererViewGroup& viewGroup, const FrameInfo& frameInfo, bool forceRendering)
+bool RenderBeast::RenderViews(RenderBeastScene& scene, RendererViewGroup& viewGroup, const FrameInfo& frameInfo, bool forceRendering)
+{
+	// Covers the graph's execution, because pass functions may read data the nodes allocated from the frame allocator
+	FrameAllocatorScope frameScope;
+
+	// Named for the profiler overlay, which shows the results of this name
+	FrameGraph graph(GetGpuContext(), "RenderScene");
+
+	TInlineArray<RendererView*, 6> drawnViews;
+	const bool anythingDrawn = BuildViewGroup(graph, scene, viewGroup, frameInfo, forceRendering, drawnViews);
+
+	if(!drawnViews.Empty())
+	{
+		graph.Compile();
+		graph.Execute();
+	}
+
+	// After the graph's execution, because the pass functions read the render queues this clears
+	for(RendererView* view : drawnViews)
+		view->EndFrame();
+
+	return anythingDrawn;
+}
+
+bool RenderBeast::BuildViewGroup(FrameGraph& graph, RenderBeastScene& scene, RendererViewGroup& viewGroup, const FrameInfo& frameInfo, bool forceRendering,
+	TInlineArray<RendererView*, 6>& drawnViews)
 {
 	bool needs3DRender = false;
+	bool needsReflectionProbes = false;
+	bool needsLightProbes = false;
 	u32 viewCount = viewGroup.GetViewCount();
 	for(u32 viewIndex = 0; viewIndex < viewCount; viewIndex++)
 	{
@@ -510,17 +523,19 @@ bool RenderBeast::RenderViews(GpuCommandBuffer& commandBuffer, RenderBeastScene&
 		if(view->ShouldDraw3D())
 		{
 			needs3DRender = true;
-			break;
+
+			// Views that capture reflections do not sample the reflection probes
+			if(!view->GetProperties().CapturingReflections)
+				needsReflectionProbes = true;
+
+			if(view->GetRenderSettings().EnableIndirectLighting)
+				needsLightProbes = true;
 		}
 	}
 
 	if(needs3DRender)
 	{
 		const VisibilityInfo& visibility = viewGroup.GetVisibilityInfo();
-
-		// Render shadow maps
-		ShadowRendering& shadowRenderer = viewGroup.GetShadowRenderer();
-		shadowRenderer.RenderShadowMaps(commandBuffer,scene, viewGroup, frameInfo);
 
 		// Update various buffers required by each renderable
 		RenderableObjectStorage& renderableStorage = scene.GetRenderableStorage();
@@ -532,6 +547,18 @@ bool RenderBeast::RenderViews(GpuCommandBuffer& commandBuffer, RenderBeastScene&
 
 			renderableStorage.PrepareVisibleRenderable(i, frameInfo);
 		}
+
+		// If any reflection probes were updated or added, we need to copy them over in the global reflection probe array. Not in
+		// captures: the copy would read the cubemaps of probes that later captures of the same graph render into.
+		if(needsReflectionProbes)
+			scene.UpdateReflectionProbes(graph);
+
+		// Make sure light probe data is up to date
+		if(needsLightProbes)
+			scene.UpdateLightProbes(graph);
+
+		// The views of the group share the shadow maps, which are computed from the views as they were before any of them began its frame
+		viewGroup.GetShadowRenderer().RenderShadowMaps(graph, scene, viewGroup, frameInfo);
 	}
 
 	bool anythingDrawn = false;
@@ -539,59 +566,38 @@ bool RenderBeast::RenderViews(GpuCommandBuffer& commandBuffer, RenderBeastScene&
 	{
 		RendererView* view = viewGroup.GetView(viewIndex);
 
-		const RendererViewTargetInformation& viewTarget = view->GetProperties().Target;
-
 		if(!view->ShouldDraw())
 			continue;
-
-#if B3D_PROFILING_ENABLED
-		const TShared<GpuCommandBufferProfiler>& commandBufferProfiler = commandBuffer.GetProfiler();
-		if(commandBufferProfiler != nullptr)
-		{
-			const String title = StringUtility::Format("View ({0} x {1})", viewTarget.TargetWidth, viewTarget.TargetHeight);
-			commandBufferProfiler->BeginSample(commandBuffer, ProfilerString(title.data(), title.size()));
-		}
-#endif
 
 		const RenderSettings& settings = view->GetRenderSettings();
 		if(settings.OverlayOnly)
 		{
-			if(RenderOverlay(commandBuffer, scene, *view, frameInfo, forceRendering))
+			if(RenderOverlay(graph, scene, *view, frameInfo, forceRendering))
 				anythingDrawn = true;
 		}
 		else
 		{
-			RenderView(commandBuffer, scene, viewGroup, *view, frameInfo);
+			RenderView(graph, scene, viewGroup, *view, frameInfo);
 			anythingDrawn = true;
 		}
 
-#if B3D_PROFILING_ENABLED
-		if(commandBufferProfiler != nullptr)
-			commandBufferProfiler->EndSample(commandBuffer);
-#endif
+		drawnViews.Add(view);
 	}
 
 	return anythingDrawn;
 }
 
-void RenderBeast::RenderView(GpuCommandBuffer& commandBuffer, RenderBeastScene& scene, const RendererViewGroup& viewGroup, RendererView& view, const FrameInfo& frameInfo)
+void RenderBeast::RenderView(FrameGraph& graph, RenderBeastScene& scene, RendererViewGroup& viewGroup, RendererView& view, const FrameInfo& frameInfo)
 {
 	GetProfilerCPU().BeginSample("Render view");
 
 	auto& viewProps = view.GetProperties();
 
-	// Make sure light probe data is up to date
-	if(view.GetRenderSettings().EnableIndirectLighting)
-		scene.UpdateLightProbes(commandBuffer);
-
 	view.BeginFrame(frameInfo);
 
-	RenderCompositorNodeInputs inputs(scene, viewGroup, view, *mRenderThreadOptions, frameInfo, mFeatureSet);
-	inputs.ActiveCommandBuffer = commandBuffer.GetShared();
+	graph.ImportRenderTarget(viewProps.Target.Target);
 
-#if B3D_PROFILING_ENABLED
-	inputs.CommandBufferProfiler = commandBuffer.GetProfiler();
-#endif
+	RenderCompositorNodeInputs inputs(graph, scene, viewGroup, view, *mRenderThreadOptions, frameInfo);
 
 	// Register callbacks
 	if(viewProps.TriggerCallbacks)
@@ -631,12 +637,10 @@ void RenderBeast::RenderView(GpuCommandBuffer& commandBuffer, RenderBeastScene& 
 	const RenderCompositor& compositor = view.GetCompositor();
 	PROFILE_CALL(compositor.Execute(inputs), "Compositor")
 
-	view.EndFrame();
-
 	GetProfilerCPU().EndSample("Render view");
 }
 
-bool RenderBeast::RenderOverlay(GpuCommandBuffer& commandBuffer, RenderBeastScene& scene, RendererView& view, const FrameInfo& frameInfo, bool forceRendering)
+bool RenderBeast::RenderOverlay(FrameGraph& graph, RenderBeastScene& scene, RendererView& view, const FrameInfo& frameInfo, bool forceRendering)
 {
 	GetProfilerCPU().BeginSample("Render overlay");
 
@@ -647,7 +651,7 @@ bool RenderBeast::RenderOverlay(GpuCommandBuffer& commandBuffer, RenderBeastScen
 	TShared<RenderTarget> target = viewProps.Target.Target;
 	TShared<Viewport> viewport = camera->GetViewport();
 
-	commandBuffer.SetViewport(viewport->GetArea());
+	graph.ImportRenderTarget(target);
 
 	ClearFlags clearFlags = viewport->GetClearFlags();
 	RenderSurfaceMask clearMask = RT_NONE;
@@ -657,79 +661,84 @@ bool RenderBeast::RenderOverlay(GpuCommandBuffer& commandBuffer, RenderBeastScen
 	if(clearFlags.IsSet(ClearFlagBits::Stencil))
 		clearMask |= RT_STENCIL;
 
-	ClearMaterial* clearMaterial = nullptr;
-	if(clearFlags.IsSet(ClearFlagBits::Color))
+	const bool clearColor = clearFlags.IsSet(ClearFlagBits::Color);
+	if(clearMask != RT_NONE || clearColor)
 	{
-		clearMaterial = ClearMaterial::GetVariation(true);
-		clearMaterial->Prepare(viewport->GetBackgroundColor());
+		FrameGraphRasterPass clearPass;
+		clearPass.SetRenderTarget(target, FrameGraphAttachmentLoad::Load);
+
+		ClearMaterial* clearMaterial = nullptr;
+		TShared<GpuParameterSet> clearSet;
+		if(clearColor)
+		{
+			clearMaterial = ClearMaterial::GetVariation(true);
+			clearSet = clearMaterial->Prepare(clearPass, viewport->GetBackgroundColor());
+		}
+
+		const Area2 viewArea = viewport->GetArea();
+		graph.AddRasterPass("ClearViewport", std::move(clearPass), [clearMaterial, clearSet, clearMask, viewArea](FrameGraphPassContext& context)
+		{
+			GpuCommandBuffer& commandBuffer = context.GetCommandBuffer();
+			commandBuffer.SetViewport(viewArea);
+
+			if(clearMask != RT_NONE)
+				commandBuffer.ClearViewport(clearMask);
+
+			if(clearMaterial != nullptr)
+				clearMaterial->Execute(context, clearSet);
+		});
 	}
 
-	if(clearMask != RT_NONE || clearMaterial != nullptr)
-	{
-		RenderPassCreateInformation renderPassCreateInformation(target, RT_NONE, RT_COLOR_ALL | RT_DEPTH_STENCIL);
-		if(clearMaterial != nullptr)
-			renderPassCreateInformation.Parameters.Add(clearMaterial->GetGpuParameterSet());
-
-		commandBuffer.BeginRenderPass(renderPassCreateInformation);
-
-		if(clearMask != RT_NONE)
-			commandBuffer.ClearViewport(clearMask);
-
-		if(clearMaterial != nullptr)
-			clearMaterial->Execute(commandBuffer);
-
-		commandBuffer.EndRenderPass();
-	}
-
-	const Set<RendererExtension*, RendererExtension::SortFunction>& rendererExtensions = scene.GetCombinedRendererExtensions();
-
-	// Trigger overlay callbacks
 	bool needsRedraw = view.ShouldRedrawOverlay();
-	if(!rendererExtensions.empty())
+
+	// Trigger overlay callbacks. Extensions that only render into a dirty target render if any other extension or the view redraws.
+	TInlineArray<RendererExtension*, 4> overlayExtensions;
+	for(RendererExtension* extension : scene.GetCombinedRendererExtensions())
 	{
-		view.NotifyCompositorTargetChanged(target);
+		if(extension->GetLocation() != RenderLocation::Overlay)
+			continue;
 
-		mOverlayExtensions.clear();
+		const RendererExtensionRequest request = extension->Check(*camera);
+		if(request == RendererExtensionRequest::DontRender)
+			continue;
 
-		for(auto& entry : rendererExtensions)
-		{
-			if(entry->GetLocation() != RenderLocation::Overlay)
-				continue;
+		if(request == RendererExtensionRequest::ForceRender || forceRendering)
+			needsRedraw = true;
 
-			RendererExtensionRequest request = entry->Check(*camera);
-			if(request == RendererExtensionRequest::DontRender)
-				continue;
-
-			if(request == RendererExtensionRequest::ForceRender || forceRendering)
-				needsRedraw = true;
-
-			mOverlayExtensions.push_back(entry);
-		}
-
-		if(!needsRedraw)
-			mOverlayExtensions.clear();
-
-		for(auto& entry : mOverlayExtensions)
-		{
-			RendererViewContext context;
-			context.CurrentTarget = view.GetCompositorRenderTarget();
-			context.CommandBuffer = commandBuffer.GetShared();
-
-			entry->Render(*camera, context);
-		}
-
-		view.NotifyCompositorTargetChanged(nullptr);
+		overlayExtensions.Add(extension);
 	}
 
-	view.ResolveCaptures(commandBuffer, target);
+	if(needsRedraw)
+	{
+		RendererViewContext context(graph);
+		context.Target = target;
+		context.Viewport = viewport->GetArea();
 
-	view.EndFrame();
+		for(RendererExtension* extension : overlayExtensions)
+			extension->Render(*camera, context);
+	}
+
+	view.ResolveCaptures(graph, target);
 
 	GetProfilerCPU().EndSample("Render overlay");
 	return needsRedraw;
 }
 
-void RenderBeast::CaptureSceneCubeMap(RendererScene& scene, GpuCommandBuffer& commandBuffer, const TShared<Texture>& cubemap, const Vector3& position, const CaptureSettings& settings)
+namespace
+{
+	/** Views of a cube map capture. They live until the graph that renders them has executed, because its passes read them. */
+	struct CubeMapCapture
+	{
+		RendererView Views[6];
+		TUnique<RendererViewGroup> ViewGroup;
+		TInlineArray<RendererView*, 6> DrawnViews;
+
+		// Captures render without the frame's animation and particle data
+		FrameInfo Frame = FrameInfo({ 0.0f, 1.0f / 60.0f, 0 }, false, PerSceneFrameData());
+	};
+}
+
+void RenderBeast::CaptureSceneCubeMap(RendererScene& scene, FrameGraph& graph, const TShared<Texture>& cubemap, const Vector3& position, const CaptureSettings& settings)
 {
 	RenderBeastScene& renderBeastScene = static_cast<RenderBeastScene&>(scene);
 
@@ -738,8 +747,7 @@ void RenderBeast::CaptureSceneCubeMap(RendererScene& scene, GpuCommandBuffer& co
 	Matrix4 projTransform = Matrix4::ProjectionPerspective(Degree(90.0f), 1.0f, 0.05f, 1000.0f);
 	ConvexVolume localFrustum(projTransform);
 
-	GpuDevice& gpuDevice = commandBuffer.GetGpuDevice();
-	gpuDevice.ConvertProjectionMatrix(projTransform, projTransform);
+	mDevice->ConvertProjectionMatrix(projTransform, projTransform);
 
 	RendererViewCreateInformation viewDesc;
 	viewDesc.Target.ClearFlags = FBT_COLOR | FBT_DEPTH;
@@ -781,10 +789,12 @@ void RenderBeast::CaptureSceneCubeMap(RendererScene& scene, GpuCommandBuffer& co
 
 	Matrix4 viewOffsetMat = Matrix4::Translation(-position);
 
+	const TShared<CubeMapCapture> capture = B3DMakeShared<CubeMapCapture>();
+	RendererView* const views = capture->Views;
+
 	// Note: We render upside down, then flip the image vertically, which results in a horizontal flip. The horizontal
 	// flip is required due to the fact how cubemap faces are defined. Another option would be to change the view
 	// orientation matrix, but that also requires a culling mode flip which is inconvenient to do globally.
-	RendererView views[6];
 	for(u32 i = 0; i < 6; i++)
 	{
 		// Calculate view matrix
@@ -855,14 +865,24 @@ void RenderBeast::CaptureSceneCubeMap(RendererScene& scene, GpuCommandBuffer& co
 
 	RendererView* viewPtrs[] = { &views[0], &views[1], &views[2], &views[3], &views[4], &views[5] };
 
-	RendererViewGroup viewGroup(viewPtrs, 6, false, mRenderThreadOptions->ShadowMapSize);
-	viewGroup.DetermineVisibility(commandBuffer, renderBeastScene);
+	capture->ViewGroup = B3DMakeUnique<RendererViewGroup>(viewPtrs, 6, false, mRenderThreadOptions->ShadowMapSize);
+	capture->ViewGroup->DetermineVisibility(renderBeastScene, capture->Frame);
 
-	FrameInfo frameInfo({ 0.0f, 1.0f / 60.0f, 0 }, false, PerSceneFrameData());
-	RenderViews(commandBuffer, renderBeastScene, viewGroup, frameInfo, false);
+	// Tasks run before the scene's frame begins, so the scene's per-frame state is still that of the last frame: a per-frame uniform
+	// buffer allocated for that frame, and ready flags sized for the renderables it had then. The capture sets up both for itself, and
+	// prepares the renderables it sees anew. The scene's frame sets them up again.
+	renderBeastScene.SetParamFrameParams(capture->Frame.Timings.Time);
+	renderBeastScene.ResetRenderableReady();
 
-	// Make sure the render texture is available for reads
-	commandBuffer.EndRenderPass();
+	// The faces' render textures share the cubemap, so later passes of the graph that read the cubemap follow the capture
+	BuildViewGroup(graph, renderBeastScene, *capture->ViewGroup, capture->Frame, false, capture->DrawnViews);
+
+	// The passes read the views' render queues, so the views live, and their frames last, until the graph has executed
+	graph.AddExecuteCallback([capture]()
+	{
+		for(RendererView* view : capture->DrawnViews)
+			view->EndFrame();
+	});
 }
 
 TShared<RendererScene> RenderBeast::CreateScene()

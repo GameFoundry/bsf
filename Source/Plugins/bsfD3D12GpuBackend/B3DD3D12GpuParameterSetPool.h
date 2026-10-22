@@ -28,9 +28,6 @@ namespace b3d::render
 
 	private:
 		D3D12GpuDevice& mDevice;
-
-		/** Number of sets handed out since the pool was last reset, limited by GpuParameterSetPoolCreateInformation::MaxSets. */
-		u32 mAllocatedSetCount = 0;
 	};
 
 	/** @} */

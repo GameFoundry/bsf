@@ -108,6 +108,19 @@ VulkanSwapChain::VulkanSwapChain(VulkanResourceManager* owner, const TShared<Vul
 	else
 		transform = surfaceCaps.currentTransform;
 
+	VkImageUsageFlags imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+	VkBool32 clipped = VK_TRUE;
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+	// Window captures copy the image before it is presented, and must see every pixel even where other windows cover the window
+	if(surfaceCaps.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT)
+		imageUsage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+
+	clipped = VK_FALSE;
+#endif
+
+	mSupportsReadback = (imageUsage & VK_IMAGE_USAGE_TRANSFER_SRC_BIT) != 0;
+
 	VkSwapchainCreateInfoKHR swapChainCI;
 	swapChainCI.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 	swapChainCI.pNext = nullptr;
@@ -117,7 +130,7 @@ VulkanSwapChain::VulkanSwapChain(VulkanResourceManager* owner, const TShared<Vul
 	swapChainCI.imageFormat = colorFormat;
 	swapChainCI.imageColorSpace = colorSpace;
 	swapChainCI.imageExtent = { swapchainExtent.width, swapchainExtent.height };
-	swapChainCI.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+	swapChainCI.imageUsage = imageUsage;
 	swapChainCI.preTransform = (VkSurfaceTransformFlagBitsKHR)transform;
 	swapChainCI.imageArrayLayers = 1;
 	swapChainCI.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -125,7 +138,7 @@ VulkanSwapChain::VulkanSwapChain(VulkanResourceManager* owner, const TShared<Vul
 	swapChainCI.pQueueFamilyIndices = nullptr;
 	swapChainCI.presentMode = presentMode;
 	swapChainCI.oldSwapchain = oldSwapChain ? oldSwapChain->mSwapChain : VK_NULL_HANDLE;
-	swapChainCI.clipped = VK_TRUE;
+	swapChainCI.clipped = clipped;
 	swapChainCI.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 
 	result = vkCreateSwapchainKHR(mDevice, &swapChainCI, gVulkanAllocator, &mSwapChain);
@@ -138,6 +151,9 @@ VulkanSwapChain::VulkanSwapChain(VulkanResourceManager* owner, const TShared<Vul
 	VkImage* images = B3DStackAllocate<VkImage>(imageCount);
 	result = vkGetSwapchainImagesKHR(mDevice, mSwapChain, &imageCount, images);
 	B3D_ASSERT(result == VK_SUCCESS);
+
+	// With explicit barriers, window surfaces start at rest like textures (see GpuBackendUtility::GetRestingState())
+	const bool startsAtRest = gGpuExplicitBarriers && device.GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
 
 	VulkanImageCreateInformation colorImageCreateInformation;
 	colorImageCreateInformation.Format = colorFormat;
@@ -159,6 +175,9 @@ VulkanSwapChain::VulkanSwapChain(VulkanResourceManager* owner, const TShared<Vul
 		if(mSurfaces[imageIndex].Image != nullptr)
 		{
 			mSurfaces[imageIndex].Image->SetName(StringUtility::Format("Color attachment #{0}", imageIndex));
+
+			if(startsAtRest)
+				mSurfaces[imageIndex].Image->RequestRestingTransition(GpuImageLayout::ColorAttachment);
 		}
 	}
 
@@ -210,6 +229,9 @@ VulkanSwapChain::VulkanSwapChain(VulkanResourceManager* owner, const TShared<Vul
 		if(mDepthStencilImage != nullptr)
 		{
 			mDepthStencilImage->SetName("Depth-stencil attachment");
+
+			if(startsAtRest)
+				mDepthStencilImage->RequestRestingTransition(GpuImageLayout::DepthStencilAttachment);
 		}
 	}
 	else
