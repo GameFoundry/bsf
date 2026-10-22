@@ -171,7 +171,7 @@ namespace
 	/** Adds the view's indices of CPU simulated particles, which the CPU particle layouts add to their base layout. */
 	void AddCpuParticleInputs(InputLayoutBuilder& builder)
 	{
-		builder.AddBuffer("gParticleIndices", InputRegister::kParticleIndices, GPOT_BYTE_BUFFER, BF_16X2U);
+		builder.AddBuffer("gParticleIndices", InputRegister::kParticleIndices, GPOT_BYTE_BUFFER, BF_32X2U);
 	}
 
 	/** Creates a table mapping each SurfaceShaderType to its position in @p types, or to -1 for types not in it. */
