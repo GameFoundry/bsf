@@ -83,19 +83,6 @@ namespace b3d
 			void ExecuteSubmitOnSubmitThread(MetalGpuQueue& submitQueue, GpuQueueMask syncMask, TArrayView<const GpuTimelineFenceAndValue> signalFences = {});
 
 			/**
-			 * Closes an open render encoder and returns the compute encoder, opening one if needed. Metal 4 encodes transfers
-			 * on compute encoders. Lets code outside the command buffer (e.g. window surface readback) append transfers in
-			 * order with the recorded commands. Returns nil if recording failed.
-			 */
-			id<MTL4ComputeCommandEncoder> GetOrOpenComputeEncoder();
-
-			/**
-			 * Orders the work recorded after the call against the work recorded or submitted before it. For accesses the
-			 * resource tracker does not see, such as of window back buffers.
-			 */
-			void EncodeBarrier(const GpuBarrierScope& scope);
-
-			/**
 			 * Makes the queue signal @p event with @p value once the GPU finishes executing the command buffer. Metal 4
 			 * command buffers cannot signal events from within. Returns false if recording failed.
 			 */

@@ -2,9 +2,7 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "B3DIMetalRenderWindowSurface.h"
 #include "B3DMetalGpuDevice.h"
-#include "B3DMetalGpuCommandBuffer.h"
 #include "B3DMetalHeapAllocator.h"
-#include "B3DMetalGpuBuffer.h"
 #include "B3DMetalResourceManager.h"
 #include "B3DMetalTexture.h"
 #include "B3DMetalUtility.h"

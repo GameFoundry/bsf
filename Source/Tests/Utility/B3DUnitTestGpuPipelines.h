@@ -19,4 +19,11 @@ namespace b3d
 	 * the host.
 	 */
 	TShared<GpuComputePipelineState> CreateTestSamplePipeline(GpuDevice& device);
+
+	/**
+	 * Creates a compute pipeline whose thread x runs a long serial loop, then writes 0x5A000000 | x into element 2 * x of the storage
+	 * buffer OutputBuffer, and the loop's result into element 2 * x + 1, so the loop cannot be optimized away. Dispatched in groups
+	 * of 64 threads. Returns null on backends that cannot compile shaders on the host.
+	 */
+	TShared<GpuComputePipelineState> CreateTestSlowWritePipeline(GpuDevice& device);
 } // namespace b3d

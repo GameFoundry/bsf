@@ -3764,7 +3764,7 @@ void GpuBackendTestSuite::TestSplitBarrierExecution()
 
 	// Shaders are resources, which are created outside of the render thread
 	const TShared<GpuDevice> device = backend.GetDevice(0);
-	const TShared<GpuComputePipelineState> pipeline = CreateSlowWriteDispatchPipeline(*device);
+	const TShared<GpuComputePipelineState> pipeline = CreateTestSlowWritePipeline(*device);
 	if(pipeline == nullptr)
 		return;
 
@@ -3851,7 +3851,7 @@ void GpuBackendTestSuite::TestBarrierAcrossPasses()
 
 	// Shaders are resources, which are created outside of the render thread
 	const TShared<GpuDevice> device = backend.GetDevice(0);
-	const TShared<GpuComputePipelineState> pipeline = CreateSlowWriteDispatchPipeline(*device);
+	const TShared<GpuComputePipelineState> pipeline = CreateTestSlowWritePipeline(*device);
 	if(pipeline == nullptr)
 		return;
 

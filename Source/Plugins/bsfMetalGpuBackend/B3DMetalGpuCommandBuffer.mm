@@ -382,17 +382,6 @@ namespace b3d
 			return true;
 		}
 
-		id<MTL4ComputeCommandEncoder> MetalGpuCommandBuffer::GetOrOpenComputeEncoder()
-		{
-			EnsureValidThread();
-
-			id<MTL4ComputeCommandEncoder> encoder = OpenComputeEncoder();
-			if (encoder != nil)
-				mEncoderHasWork = true;
-
-			return encoder;
-		}
-
 		void MetalGpuCommandBuffer::EmitBarrier(const MetalStageBarrier& barrier)
 		{
 			if (barrier.IsEmpty())
@@ -429,12 +418,6 @@ namespace b3d
 			const MetalStageBarrier pendingBarrier = mPendingBarrier;
 			mPendingBarrier = MetalStageBarrier();
 			EmitBarrier(pendingBarrier);
-		}
-
-		void MetalGpuCommandBuffer::EncodeBarrier(const GpuBarrierScope& scope)
-		{
-			EnsureValidThread();
-			EmitBarrier(MetalStageBarrier(scope));
 		}
 
 		bool MetalGpuCommandBuffer::RestartRenderPass()
@@ -1837,21 +1820,31 @@ namespace b3d
 			if (!layout || sourceTexture == nil || destinationBuffer == nil)
 				return;
 
-			EnsureEncoderKind(EncoderKind::Blit);
+			id<MTL4ComputeCommandEncoder> encoder = OpenComputeEncoder();
+			if (encoder == nil)
+				return;
+
+			if (MetalImage* colorImage = surface->GetCurrentColorImage())
+				TrackSurfaceImage(*colorImage, GpuAccessFlag::Read);
+			else
+				RetainUntilComplete(sourceTexture);
+
+			UseDrawableResidency(surface->GetCurrentDrawable());
 
 			MetalBuffer* destinationResource = metalDestination->GetMetalResource();
 			if (destinationResource != nullptr)
 				mResourceTracker.TrackBufferAccess(destinationResource, GpuStageFlag::Transfer, GpuAccessFlag::Write, mBarrierHelper, 0);
 
+			// The resource tracker does not see the back buffer, which was last rendered to, possibly by an earlier command buffer.
+			// With explicit barriers, the window's barrier orders it.
+			if (!UsesExplicitBarriers())
+				EmitBarrier(MetalStageBarrier(GpuBarrierScope(GpuStageFlag::ColorAttachment, GpuAccessFlag::Write, GpuStageFlag::Transfer, GpuAccessFlag::Read)));
+
 			if (!ExecutePendingBarriers())
 				return;
 
-			id<MTLBlitCommandEncoder> blit = GetOrOpenBlitEncoder();
-			if (blit == nil)
-				return;
-
 			const u32 rowPitchBytes = layout->Pitch.RowPitch * PixelUtility::GetBlockSize(layout->Format);
-			[blit copyFromTexture:sourceTexture
+			[encoder copyFromTexture:sourceTexture
 				sourceSlice:0
 				sourceLevel:0
 				sourceOrigin:MTLOriginMake(0, 0, 0)
@@ -1860,6 +1853,8 @@ namespace b3d
 				destinationOffset:0
 				destinationBytesPerRow:rowPitchBytes
 				destinationBytesPerImage:(NSUInteger)rowPitchBytes * layout->Pitch.SliceHeight];
+
+			mEncoderHasWork = true;
 		}
 
 		bool MetalGpuCommandBuffer::CopyTexture(const TShared<Texture>& source, const TShared<Texture>& destination, const TextureCopyInformation& copyInformation)

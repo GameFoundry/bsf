@@ -23,14 +23,18 @@ namespace b3d
 			return nullptr;
 #else
 			const String backendName = GpuBackend::Instance().GetBackendName();
-			if(backendName != "bsfD3D12GpuBackend" && backendName != "bsfVulkanGpuBackend")
+			if(backendName != "bsfD3D12GpuBackend" && backendName != "bsfVulkanGpuBackend" && backendName != "bsfMetalGpuBackend")
 				return nullptr;
 
 			const TShared<IShaderCompiler> compiler = ShaderCompilers::Instance().GetCompiler("bsl");
 			if(compiler == nullptr)
 				return nullptr;
 
-			const String language = backendName == "bsfD3D12GpuBackend" ? "hlsl" : "vksl";
+			String language = "vksl";
+			if(backendName == "bsfD3D12GpuBackend")
+				language = "hlsl";
+			else if(backendName == "bsfMetalGpuBackend")
+				language = "msl";
 
 			TShared<Shader> shader;
 			const ShaderCompilerResult result = compiler->Compile(name, source, {}, { language }, true, shader);
@@ -84,5 +88,29 @@ shader ExplicitBarrierSample
 };
 )";
 		return CreateComputePipeline(device, "ExplicitBarrierSample", source);
+	}
+
+	TShared<GpuComputePipelineState> CreateTestSlowWritePipeline(GpuDevice& device)
+	{
+		const String source = R"(
+shader SlowWriteDispatch
+{
+	code
+	{
+		RWStructuredBuffer<uint> OutputBuffer;
+		[numthreads(64, 1, 1)]
+		void csmain(uint3 threadId : SV_DispatchThreadID)
+		{
+			uint state = threadId.x;
+			for(uint iteration = 0; iteration < 16384; iteration++)
+				state = state * 1664525 + 1013904223;
+
+			OutputBuffer[threadId.x * 2] = 0x5A000000 | threadId.x;
+			OutputBuffer[threadId.x * 2 + 1] = state;
+		}
+	};
+};
+)";
+		return CreateComputePipeline(device, "SlowWriteDispatch", source);
 	}
 } // namespace b3d
