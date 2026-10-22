@@ -129,8 +129,8 @@ void GpuCommandBufferProfiler::Reset(render::GpuCommandBuffer& commandBuffer)
 void GpuCommandBufferProfiler::ConvertToResultSample(const Sample& sample, GpuProfilerSample& reportSample)
 {
 	const TShared<GpuDevice>& device = GetApplication().GetPrimaryGpuDevice();
-	const u64 beginTimestamp = sample.TimestampQueryPool->GetQueryResult(sample.TimestampBeginQueryId);
-	const u64 endTimestamp = sample.TimestampQueryPool->GetQueryResult(sample.TimestampEndQueryId);
+	const u64 beginTimestamp = mTimestampQueryPool->GetQueryResult(sample.TimestampBeginQueryId);
+	const u64 endTimestamp = mTimestampQueryPool->GetQueryResult(sample.TimestampEndQueryId);
 
 	reportSample.Name.assign(sample.Name.data(), sample.Name.size());
 	reportSample.TimeMs = endTimestamp >= beginTimestamp
@@ -207,6 +207,11 @@ void GpuProfiler::Clear()
 		entry.second.LastResolved->Clear();
 	mResolvedProfilerData.clear();
 
+	for(auto& profiler : mDiscardedProfilers)
+		profiler->Clear();
+	
+	mDiscardedProfilers.Clear();
+
 	for(auto& profiler : mFreeCommandBufferProfilers)
 		profiler->Clear();
 
@@ -229,12 +234,8 @@ void GpuProfiler::Update()
 			TShared<GpuCommandBufferProfiler>& unresolvedCommandBufferProfiler = unresolvedProfilerData.Queued[index];
 			if(unresolvedCommandBufferProfiler->mTimestampQueryPool == nullptr || previousEntryWasResolved)
 			{
-				auto it = unresolvedProfilerData.Queued.Begin() + index;
-				TShared<GpuCommandBufferProfiler> profiler = *it;
-				unresolvedProfilerData.Queued.Erase(it);
-
-				profiler->Clear();
-				mFreeCommandBufferProfilers.Add(std::move(profiler));
+				mDiscardedProfilers.Add(unresolvedCommandBufferProfiler);
+				unresolvedProfilerData.Queued.Erase(unresolvedProfilerData.Queued.Begin() + index);
 
 				continue;
 			}
@@ -251,11 +252,35 @@ void GpuProfiler::Update()
 			reverseIndex++;
 		}
 	}
+
+	RecycleDiscardedProfilers();
+}
+
+void GpuProfiler::RecycleDiscardedProfilers()
+{
+	// Note: mMutex must be locked here
+	for(u32 index = 0; index < (u32)mDiscardedProfilers.Size();)
+	{
+		const TShared<GpuCommandBufferProfiler>& profiler = mDiscardedProfilers[index];
+		if(profiler->mTimestampQueryPool != nullptr && !profiler->mTimestampQueryPool->TryResolve())
+		{
+			index++;
+			continue;
+		}
+
+		profiler->Clear();
+		mFreeCommandBufferProfilers.Add(profiler);
+		mDiscardedProfilers.Erase(mDiscardedProfilers.Begin() + index);
+	}
 }
 
 TShared<GpuCommandBufferProfiler> GpuProfiler::CreateCommandBufferProfiler(render::GpuCommandBuffer& commandBuffer)
 {
 	Lock lock(mMutex);
+
+	// Profilers can be created without frames passing, such as during start-up, which would otherwise not recycle any
+	if(mFreeCommandBufferProfilers.Empty())
+		RecycleDiscardedProfilers();
 
 	if(!mFreeCommandBufferProfilers.Empty())
 	{
@@ -285,12 +310,8 @@ void GpuProfiler::ResolveProfileWhenReady(const ProfilerString& name, const TSha
 
 	if(profilerData.Queued.Size() == kMaxQueuedEntries)
 	{
-		auto it = profilerData.Queued.Begin();
-		TShared<GpuCommandBufferProfiler> existingProfiler = *it;
+		mDiscardedProfilers.Add(profilerData.Queued[0]);
 		profilerData.Queued.Erase(profilerData.Queued.Begin());
-
-		existingProfiler->Clear();
-		mFreeCommandBufferProfilers.Add(std::move(existingProfiler));
 	}
 
 	profilerData.Queued.Add(profiler);

@@ -65,7 +65,6 @@ namespace b3d
 
 			render::GpuQueryId TimestampBeginQueryId;
 			render::GpuQueryId TimestampEndQueryId;
-			TShared<render::GpuQueryPool> TimestampQueryPool;
 
 			TArray<Sample*> Children;
 		};
@@ -182,6 +181,9 @@ namespace b3d
 		/** Notifies the system that the query pool is no longer used and can be re-used. */
 		void ReleaseQueryPool(const TShared<render::GpuQueryPool>& queryPool);
 
+		/** Makes the discarded profilers whose queries the GPU finished writing available for reuse. */
+		void RecycleDiscardedProfilers();
+
 	private:
 		static constexpr u32 kMaxQueuedEntries = 3;
 
@@ -199,6 +201,9 @@ namespace b3d
 
 		UnorderedMap<ProfilerString, UnresolvedCommandBufferProfilerData> mUnresolvedProfilerData;
 		UnorderedMap<ProfilerString, ResolvedCommandBufferProfilerData> mResolvedProfilerData;
+
+		/** Profilers whose results were superseded before they resolved. Their query pools are reused once the GPU finished writing them. */
+		TArray<TShared<GpuCommandBufferProfiler>> mDiscardedProfilers;
 
 		mutable TArray<TShared<GpuCommandBufferProfiler>> mFreeCommandBufferProfilers;
 		mutable TArray<TShared<render::GpuQueryPool>> mFreeTimestampQueryPools;

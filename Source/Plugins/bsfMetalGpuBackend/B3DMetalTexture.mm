@@ -372,8 +372,6 @@ namespace b3d
 				return nullptr;
 			}
 
-			mInternalFormat = mProperties.Format;
-
 			const u32 mipCount = mProperties.MipMapCount + 1;
 
 			MetalImageCreateInformation imageCreateInformation;

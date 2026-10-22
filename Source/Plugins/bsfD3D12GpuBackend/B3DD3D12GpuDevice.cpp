@@ -936,6 +936,7 @@ void D3D12GpuDevice::InitializeCapabilities()
 	mCapabilities.SetCapability(RSC_TEXTURE_VIEWS);
 	mCapabilities.SetCapability(RSC_RENDER_TARGET_LAYERS);
 	mCapabilities.SetCapability(RSC_EXPLICIT_BARRIERS);
+	mCapabilities.SetCapability(RSC_TIMER_QUERIES);
 	if(options.WaveOps)
 		mCapabilities.SetCapability(RSC_WAVE_OPERATIONS);
 

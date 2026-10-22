@@ -1183,18 +1183,27 @@ namespace b3d
 				mDrawAccessValidator.ClearBindings();
 #endif
 
+			const GpuPipelineParameterLayout* const pipelineLayout = compute
+				? (mBoundComputePipeline != nullptr ? mBoundComputePipeline->GetParameterLayout().get() : nullptr)
+				: (mBoundGraphicsPipeline != nullptr ? mBoundGraphicsPipeline->GetParameterLayout().get() : nullptr);
+
 			for(u32 setIndex = 0; setIndex < (u32)mBoundParameterSets.Size(); setIndex++)
 			{
 				const TShared<GpuParameterSet>& parameters = mBoundParameterSets[setIndex];
 				if(parameters == nullptr)
 					continue;
 
+				// A set the pipeline declares no resources in is not accessed, even if one remains bound from an earlier draw
+				const GpuPipelineParameterSetLayout* const setLayout = pipelineLayout != nullptr && setIndex < pipelineLayout->GetSetCount() ? pipelineLayout->GetSet(setIndex).get() : nullptr;
+				if(pipelineLayout != nullptr && (setLayout == nullptr || setLayout->GetResourceCount() == 0))
+					continue;
+
 				if(!static_cast<MetalGpuParameters&>(*parameters).TrackResources(mResourceTracker, mBarrierHelper, mDynamicOffsetOverridesPerSet[setIndex], compute))
 					return false;
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
-				if(!compute && mBoundGraphicsPipeline != nullptr && parameters->GetSet() < mBoundGraphicsPipeline->GetParameterLayout()->GetSetCount())
-					mDrawAccessValidator.AddParameterSet(*parameters, *mBoundGraphicsPipeline->GetParameterLayout()->GetSet(parameters->GetSet()));
+				if(!compute && setLayout != nullptr)
+					mDrawAccessValidator.AddParameterSet(*parameters, *setLayout);
 #endif
 			}
 
@@ -2968,13 +2977,17 @@ namespace b3d
 
 		void MetalGpuCommandBuffer::NotifyParentPoolReset()
 		{
-			// The native command buffer is single-use and was already released at commit, so this is bookkeeping only.
-			// GpuCommandBufferPool::Reset() may only be called once all its command buffers have finished executing.
-			if (!B3D_ENSURE(mState == GpuCommandBufferState::Done || mState == GpuCommandBufferState::Ready))
+			// GpuCommandBufferPool::Reset() may only be called once all its submitted command buffers have finished executing. The
+			// native command buffer is single-use and released at commit, and one that was never submitted is released uncommitted.
+			if (!B3D_ENSURE(mState != GpuCommandBufferState::Executing))
 				return;
 
-			if (mState == GpuCommandBufferState::Done)
+			if (mState != GpuCommandBufferState::Ready)
+			{
+				CloseAllEncoders();
+				mCommandBuffer = nil;
 				ClearRecordingState();
+			}
 
 			mState = GpuCommandBufferState::Ready;
 		}

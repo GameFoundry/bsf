@@ -26,6 +26,7 @@
 #include "GpuBackend/B3DGpuPushConstants.h"
 #include "GpuBackend/B3DRenderTexture.h"
 #include "GpuBackend/B3DGpuTransientResourceAllocator.h"
+#include "Renderer/B3DRenderer.h"
 #include "Material/B3DShaderCompiler.h"
 #include "Material/B3DShader.h"
 #include "Material/B3DVariation.h"
@@ -4732,6 +4733,12 @@ void GpuBackendTestSuite::TestTransientResourceAllocator()
 			allocator.BeginScope(timeline);
 			allocator.EndScope();
 			B3D_TEST_ASSERT(allocator.GetStatistics().CachedTextures == 0)
+
+			// The renderer's context releases the transient resources of the renderer's start-up frame graphs as its frames advance,
+			// which they do not in this test
+			GpuWorkContext& rendererContext = render::GetRenderer()->GetGpuContext();
+			rendererContext.SubmitTransferCommandBuffers();
+			rendererContext.AdvanceFrame();
 
 			for(u32 frameIndex = 0; frameIndex <= gGpuTransientIdleFrames; frameIndex++)
 				device->EndFrame();

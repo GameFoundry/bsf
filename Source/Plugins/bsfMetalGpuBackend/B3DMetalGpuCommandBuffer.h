@@ -52,8 +52,8 @@ namespace b3d
 			void NotifyWillQueueForSubmit(GpuQueueId queueId, GpuQueueMask syncMask) override;
 
 			/**
-			 * Notifies the command buffer that the pool it was allocated from was reset, returning a finished command
-			 * buffer to the ready state. The pool may only be reset once all of its command buffers have finished executing.
+			 * Notifies the command buffer that the pool it was allocated from was reset, returning the command buffer to the
+			 * ready state. The pool may only be reset once all of its submitted command buffers have finished executing.
 			 */
 			void NotifyParentPoolReset();
 

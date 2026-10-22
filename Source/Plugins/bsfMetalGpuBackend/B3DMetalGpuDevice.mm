@@ -377,6 +377,10 @@ namespace b3d
 
 		TShared<GpuQueryPool> MetalGpuDevice::CreateQueryPool(const GpuQueryPoolCreateInformation& createInformation)
 		{
+			// Without timer queries the device cannot write timestamps at arbitrary points of a command buffer
+			if (createInformation.Type == GpuQueryType::Timestamp && !mCapabilities.HasCapability(RSC_TIMER_QUERIES))
+				return nullptr;
+
 			return B3DMakeShared<MetalGpuQueryPool>(*this, createInformation);
 		}
 
