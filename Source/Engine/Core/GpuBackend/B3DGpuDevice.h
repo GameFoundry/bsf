@@ -113,6 +113,12 @@ namespace b3d
 			return *mSubmitThread;
 		}
 
+		/**
+		 * Returns true if the submit thread is running. It doesn't run during device startup and shutdown, or on backends
+		 * that don't construct one.
+		 */
+		bool HasSubmitThread() const { return mSubmitThread != nullptr; }
+
 		/** Notifies the device the rendering for the current frame will start. See EndFrame(). Render thread only. */
 		virtual void BeginFrame() = 0;
 

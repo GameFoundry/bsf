@@ -4,7 +4,7 @@
 
 #include "B3DScriptEnginePrerequisites.h"
 #include "B3DScriptResourceWrapper.h"
-#include "../../../Engine/Core/Material/B3DShader.h"
+#include "../../../Engine/Core/Material/B3DShaderParameterDescription.h"
 #include "../Extensions/B3DShaderEx.h"
 
 namespace b3d { class Shader; }

@@ -24,6 +24,14 @@ namespace b3d
 	/** Index of the GPU device to use. If negative, the best device is selected automatically. Shared by all backends. */
 	extern B3D_EXPORT TConfigVariable<i32> gGpuPreferredDeviceIndex;
 
+#if B3D_BUILD_TYPE_DEVELOPMENT
+	/**
+	 * When enabled, backends log how long the driver takes to create each compute pipeline. With the driver's shader cache
+	 * cleared this is the driver's shader compile time. Development builds only.
+	 */
+	extern B3D_EXPORT TConfigVariable<bool> gGpuDumpPipelineTimings;
+#endif
+
 	/**
 	 * Identifier for the HLSL source authored by BSL and consumed directly by the DirectX backends. Also the
 	 * common source form that BSL passes are cleaned up into before being cross compiled to the other dialects.

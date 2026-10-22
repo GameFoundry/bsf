@@ -3,8 +3,8 @@
 // endpoint precision of any mode, but with no delta-range coupling between subsets, so it wins on two-subset blocks
 // whose subsets sit far apart in colour space (large inter-subset offset that a signed delta could not reach).
 //
-// Endpoint fit + indices + partition search come from the shared two-region encoder; only the scattered bit layout is
-// mode-specific.
+// TextureCompressBC6HTwoRegionFinalize fits the endpoints, chooses the partition and packs the indices; only the
+// scattered endpoint bit layout is mode-specific.
 #include "$ENGINE$\TextureCompression\TextureCompressBC6Common.bslinc"
 
 mixin TextureCompressBC6Mode10
@@ -13,13 +13,8 @@ mixin TextureCompressBC6Mode10
 
 	code
 	{
-		uint4 CompressBC6Mode10(int3 h[16], uint partId, out float outErr)
+		uint4 PackBC6Mode10Endpoints(int3 c[4], uint part)
 		{
-			uint part;
-			int3 c[4];
-			uint idx[16];
-			EncodeBC6TwoRegion(h, 6, int3(6, 6, 6), false, partId, part, c, idx, outErr);
-
 			uint rw = (uint)c[0].x, gw = (uint)c[0].y, bw = (uint)c[0].z;
 			uint rx = (uint)c[1].x, gx = (uint)c[1].y, bx = (uint)c[1].z;
 			uint ry = (uint)c[2].x, gy = (uint)c[2].y, by = (uint)c[2].z;
@@ -51,7 +46,6 @@ mixin TextureCompressBC6Mode10
 			SetBits(block, 65, ry, 6);            // ry[5:0]
 			SetBits(block, 71, rz, 6);            // rz[5:0]
 			SetBits(block, 77, part, 5);          // partition (shape index)
-			PackBC6IndicesTwoRegion(block, idx, kBC6Anchor2[part]);
 			return block;
 		}
 	};

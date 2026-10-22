@@ -4,7 +4,7 @@
 #include "B3DMonoMethod.h"
 #include "B3DMonoClass.h"
 #include "B3DMonoUtil.h"
-#include "../../../Engine/Core/Material/B3DShader.h"
+#include "../../../Engine/Core/Material/B3DShaderParameterDescription.h"
 #include "B3DScriptShaderVariationParameterValue.generated.h"
 
 namespace b3d

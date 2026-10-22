@@ -101,6 +101,37 @@
 			<doc>Determines the minimum interval allowed between the generated particles. 0 specifies the particles can be generated anywhere on the shape.</doc>
 		</field>
 	</struct>
+	<class native="Viewport" script="Viewport">
+		<doc>Viewport determines to which RenderTarget should rendering be performed. It allows you to render to a sub-region of the target by specifying the area rectangle, and determines which of the target&apos;s surfaces get cleared before rendering to that region.</doc>
+		<ctor>
+			<doc>Creates a new viewport.</doc>
+			<param name="target" type="RenderTarget">
+			</param>
+			<param name="x" type="float">
+			</param>
+			<param name="y" type="float">
+			</param>
+			<param name="width" type="float">
+			</param>
+			<param name="height" type="float">
+			</param>
+		</ctor>
+		<property name="Target" type="RenderTarget" getter="GetTarget" setter="SetTarget" static="false">
+			<doc>Determines the render target the viewport is associated with.</doc>
+		</property>
+		<property name="Area" type="TArea2&lt;float,float&gt;" getter="GetArea" setter="SetArea" static="false">
+			<doc>Determines the area that the viewport covers. Coordinates are in normalized [0, 1] range.</doc>
+		</property>
+		<property name="PixelArea" type="TArea2&lt;int,int&gt;" getter="GetPixelArea" setter="" static="false">
+			<doc>Returns the area of the render target covered by the viewport, in pixels.</doc>
+		</property>
+		<property name="ClearFlags" type="ClearFlags" getter="GetClearFlags" setter="SetClearFlags" static="false">
+			<doc>Determines which portions of the render target should be cleared before rendering to this viewport is performed.</doc>
+		</property>
+		<property name="BackgroundColor" type="Color" getter="GetBackgroundColor" setter="SetBackgroundColor" static="false">
+			<doc>Determines the background color drawn where nothing else covers the view.</doc>
+		</property>
+	</class>
 	<enum native="AreaComponent" script="AreaComponent">
 		<doc>Names of individual components of an area.</doc>
 		<enumentry native="Width" script="Width">
@@ -1064,6 +1095,15 @@ Be aware that this value will be ignored if GUI element is part of a layout sinc
 			<doc>Returns parent GUI base element.</doc>
 		</property>
 	</class>
+	<enum native="FontSlant" script="FontSlant">
+		<doc>Slant of a font face.</doc>
+		<enumentry native="Normal" script="Normal">
+			<doc>Upright face.</doc>
+		</enumentry>
+		<enumentry native="Italic" script="Italic">
+			<doc>Slanted face, whether a true italic or an oblique.</doc>
+		</enumentry>
+	</enum>
 	<class native="TAnimationCurve&lt;float&gt;" script="AnimationCurve">
 		<doc>Animation spline represented by a set of keyframes, each representing an endpoint of a cubic hermite curve. The spline can be evaluated at any time, and uses caching to speed up multiple sequential evaluations.</doc>
 		<ctor>
@@ -2719,6 +2759,9 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 		<enumentry native="Max" script="Max">
 		</enumentry>
 	</enum>
+	<class native="PackageResourceUserMetaData" script="PackageResourceUserMetaData">
+		<doc>Contains user-specified meta-data for a resource stored in a Package.</doc>
+	</class>
 	<enum native="GUIOptionType" script="GUIOptionType">
 		<doc>Type of GUI element options.</doc>
 		<enumentry native="FixedWidth" script="FixedWidth">
@@ -2736,9 +2779,6 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 		<enumentry native="ExpandingHeight" script="ExpandingHeight">
 		</enumentry>
 	</enum>
-	<class native="PackageResourceUserMetaData" script="PackageResourceUserMetaData">
-		<doc>Contains user-specified meta-data for a resource stored in a Package.</doc>
-	</class>
 	<struct native="SkeletonBoneInfoEx" script="BoneInfo">
 		<doc>Contains internal information about a single bone in a Skeleton.</doc>
 		<field name="Name" type="string">
@@ -2772,30 +2812,6 @@ Use {0}, {1}, etc. in the string value for values that might change dynamically.
 			<doc>Animation curve representing the rotation of the root bone.</doc>
 		</property>
 	</class>
-	<enum native="TextureUsageFlag" script="TextureUsageFlag">
-		<doc>Flags that describe how a texture is used.</doc>
-		<enumentry native="MutableFormat" script="MutableFormat">
-			<doc>Allows retrieving views of the texture using a different format than specified on creation.</doc>
-		</enumentry>
-		<enumentry native="DepthStencil" script="DepthStencil">
-			<doc>Texture used as a depth/stencil buffer by the GPU. Must be combined with StoreOnGPU flag.</doc>
-		</enumentry>
-		<enumentry native="StoreOnCPUWithGPUAccess" script="Dynamic">
-			<doc>Places the texture into CPU memory accessible to the GPU. This means the texture is faster to update from the CPU, but it&apos;s slower to access by the GPU. Not allowed for GPU-writeable textures (render target, depth stencil or unordered access).</doc>
-		</enumentry>
-		<enumentry native="Default" script="Default">
-			<doc>Default setting suitable for majority of textures.</doc>
-		</enumentry>
-		<enumentry native="RenderTarget" script="Render">
-			<doc>Texture that can be rendered to by the GPU. Must be combined with StoreOnGPU flag.</doc>
-		</enumentry>
-		<enumentry native="AllowUnorderedAccessOnTheGPU" script="LoadStore">
-			<doc>Ensures that the GPU can perform unordered write operations on the texture. Generally used for textures in compute operations. Must be combined with StoreOnGPU flag.</doc>
-		</enumentry>
-		<enumentry native="CPUCached" script="CPUCached">
-			<doc>All texture data will also be cached in CPU memory for fast read access from the CPU. Only relevant for main thread textures, ignored for render thread textures.</doc>
-		</enumentry>
-	</enum>
 	<enum native="TextureScaleMode" script="TextureScaleMode">
 		<doc>Type of scaling modes for GUI images.</doc>
 		<enumentry native="RepeatToFit" script="RepeatToFit">
@@ -3158,7 +3174,7 @@ Whether or not an audio source is spatial is controlled by the assigned AudioCli
 		</field>
 		<field name="Quality" type="CompressionQuality">
 		</field>
-		<field name="MaxTileSize" type="int">
+		<field name="MaxChunkSize" type="int">
 		</field>
 	</struct>
 	<struct native="TNamedAnimationCurve&lt;float&gt;" script="NamedFloatCurve">
@@ -3683,37 +3699,6 @@ Whether or not an audio source is spatial is controlled by the assigned AudioCli
 		<field name="ToggleGroup" type="GUIToggleGroup">
 		</field>
 	</struct>
-	<class native="Viewport" script="Viewport">
-		<doc>Viewport determines to which RenderTarget should rendering be performed. It allows you to render to a sub-region of the target by specifying the area rectangle, and determines which of the target&apos;s surfaces get cleared before rendering to that region.</doc>
-		<ctor>
-			<doc>Creates a new viewport.</doc>
-			<param name="target" type="RenderTarget">
-			</param>
-			<param name="x" type="float">
-			</param>
-			<param name="y" type="float">
-			</param>
-			<param name="width" type="float">
-			</param>
-			<param name="height" type="float">
-			</param>
-		</ctor>
-		<property name="Target" type="RenderTarget" getter="GetTarget" setter="SetTarget" static="false">
-			<doc>Determines the render target the viewport is associated with.</doc>
-		</property>
-		<property name="Area" type="TArea2&lt;float,float&gt;" getter="GetArea" setter="SetArea" static="false">
-			<doc>Determines the area that the viewport covers. Coordinates are in normalized [0, 1] range.</doc>
-		</property>
-		<property name="PixelArea" type="TArea2&lt;int,int&gt;" getter="GetPixelArea" setter="" static="false">
-			<doc>Returns the area of the render target covered by the viewport, in pixels.</doc>
-		</property>
-		<property name="ClearFlags" type="ClearFlags" getter="GetClearFlags" setter="SetClearFlags" static="false">
-			<doc>Determines which portions of the render target should be cleared before rendering to this viewport is performed.</doc>
-		</property>
-		<property name="BackgroundColor" type="Color" getter="GetBackgroundColor" setter="SetBackgroundColor" static="false">
-			<doc>Determines the background color drawn where nothing else covers the view.</doc>
-		</property>
-	</class>
 	<struct native="PlaneColliderShapeInformation" script="PlaneColliderShapeInformation">
 		<doc>Information describing a plane collider shape that extends infinitely in the X/Z axes.</doc>
 		<ctor>
@@ -3767,6 +3752,33 @@ Whether or not an audio source is spatial is controlled by the assigned AudioCli
 			<doc>Determines was video mode user created or provided by the API/OS. API/OS created video modes can contain additional information that allows the video mode to be used more accurately and you should use them when possible.</doc>
 		</field>
 	</struct>
+	<enum native="TextureUsageFlag" script="TextureUsageFlag">
+		<doc>@{</doc>
+		<enumentry native="MutableFormat" script="MutableFormat">
+			<doc>Allows retrieving views of the texture using a different format than specified on creation.</doc>
+		</enumentry>
+		<enumentry native="DepthStencil" script="DepthStencil">
+			<doc>Texture used as a depth/stencil buffer by the GPU. Must be combined with StoreOnGPU flag.</doc>
+		</enumentry>
+		<enumentry native="StoreOnCPUWithGPUAccess" script="Dynamic">
+			<doc>Places the texture into CPU memory accessible to the GPU. This means the texture is faster to update from the CPU, but it&apos;s slower to access by the GPU. Not allowed for GPU-writeable textures (render target, depth stencil or unordered access).</doc>
+		</enumentry>
+		<enumentry native="Default" script="Default">
+			<doc>Default setting suitable for majority of textures.</doc>
+		</enumentry>
+		<enumentry native="RenderTarget" script="Render">
+			<doc>Texture that can be rendered to by the GPU. Must be combined with StoreOnGPU flag.</doc>
+		</enumentry>
+		<enumentry native="AllowUnorderedAccessOnTheGPU" script="LoadStore">
+			<doc>Ensures that the GPU can perform unordered write operations on the texture. Generally used for textures in compute operations. Must be combined with StoreOnGPU flag.</doc>
+		</enumentry>
+		<enumentry native="CPUCached" script="CPUCached">
+			<doc>All texture data will also be cached in CPU memory for fast read access from the CPU. Only relevant for main thread textures, ignored for render thread textures.</doc>
+		</enumentry>
+		<enumentry native="AllowConcurrentQueueReads" script="ConcurrentQueueReads">
+			<doc>Indicates that the texture may be read by shaders on multiple GPU queues concurrently. Writes and transfer operations remain synchronized normally.</doc>
+		</enumentry>
+	</enum>
 	<struct native="RenderWindowCreateInformation" script="RenderWindowCreateInformation">
 		<doc>Structure that is used for initializing a render window.</doc>
 		<ctor>
@@ -3799,13 +3811,13 @@ Whether or not an audio source is spatial is controlled by the assigned AudioCli
 			<doc>Should the written color pixels be gamma corrected before write.</doc>
 		</field>
 		<field name="ClearColor" type="Color">
-			<doc>Color the window&apos;s back buffer is cleared to. Fixed on creation - clear commands provide no value of their own.</doc>
+			<doc>Color the window&apos;s back buffer is cleared to, when a clear operation is issued.</doc>
 		</field>
 		<field name="ClearDepth" type="float">
-			<doc>Value the window&apos;s depth buffer is cleared to. Fixed on creation - clear commands provide no value of their own.</doc>
+			<doc>Value the window&apos;s depth buffer is cleared to, when a clear operation is issued.</doc>
 		</field>
 		<field name="ClearStencil" type="byte">
-			<doc>Value the window&apos;s stencil buffer is cleared to. Fixed on creation - clear commands provide no value of their own.</doc>
+			<doc>Value the window&apos;s stencil buffer is cleared to, when a clear operation is issued.</doc>
 		</field>
 		<field name="Left" type="int">
 			<doc>Window origin on X axis in pixels. -1 == screen center. Relative to monitor provided in videoMode.</doc>
@@ -4857,7 +4869,7 @@ This object is intended to remain static in the world. You /can/ move it, but it
 	<class native="Camera" script="Camera">
 		<doc>Camera determines how is world geometry projected onto a 2D surface. You may position and orient it in space, set options like aspect ratio and field or view and it outputs view and projection matrices required for rendering.</doc>
 		<method native="RequestCapture" script="RequestCapture" static="false">
-			<doc>Requests an asynchronous capture of the next rendered frame from this camera.</doc>
+			<doc>Requests an asynchronous capture of the next rendered frame from this camera. When the camera renders to a window, the capture holds the image presented to the window, including other cameras drawn to it that frame.</doc>
 			<returns type="AsyncOp&lt;PixelData&gt;">
 				<doc>Async operation with captured pixel data, or nullptr if camera is inactive.</doc>
 			</returns>
@@ -7838,6 +7850,27 @@ Optionally if the parameter is an array you may provide an array index you which
 		<enumentry native="PNTU" script="PNTU">
 		</enumentry>
 	</enum>
+	<enum native="FontWeight" script="FontWeight">
+		<doc>Weight of a font face, on the same 100-900 scale used by the OS/2 table of a font file and by CSS. Values other than the named ones are valid, as some families ship intermediate weights.</doc>
+		<enumentry native="Thin" script="Thin">
+		</enumentry>
+		<enumentry native="ExtraBold" script="ExtraBold">
+		</enumentry>
+		<enumentry native="Normal" script="Normal">
+		</enumentry>
+		<enumentry native="ExtraLight" script="ExtraLight">
+		</enumentry>
+		<enumentry native="Light" script="Light">
+		</enumentry>
+		<enumentry native="Medium" script="Medium">
+		</enumentry>
+		<enumentry native="Bold" script="Bold">
+		</enumentry>
+		<enumentry native="Black" script="Black">
+		</enumentry>
+		<enumentry native="SemiBold" script="SemiBold">
+		</enumentry>
+	</enum>
 	<class native="ResourceMetaData" script="ResourceMetaData">
 		<doc>Class containing meta-information describing a resource.</doc>
 	</class>
@@ -7869,6 +7902,92 @@ Optionally if the parameter is an array you may provide an array index you which
 			<doc>A list of potential values this parameter can take on.</doc>
 		</field>
 	</struct>
+	<class native="MeshImportOptions" script="MeshImportOptions">
+		<doc>Contains import options you may use to control how is a mesh imported from some external format into engine format.</doc>
+		<ctor>
+			<doc>Creates a new import options object that allows you to customize how are meshes imported.</doc>
+		</ctor>
+		<property name="CpuCached" type="bool" getter="GetCpuCached" setter="SetCpuCached" static="false">
+			<doc>Determines whether the texture data is also stored in CPU memory.</doc>
+		</property>
+		<property name="ImportNormals" type="bool" getter="GetImportNormals" setter="SetImportNormals" static="false">
+			<doc>Determines should mesh normals be imported if available.</doc>
+		</property>
+		<property name="ImportTangents" type="bool" getter="GetImportTangents" setter="SetImportTangents" static="false">
+			<doc>Determines should mesh tangents and bitangents be imported if available.</doc>
+		</property>
+		<property name="ImportBlendShapes" type="bool" getter="GetImportBlendShapes" setter="SetImportBlendShapes" static="false">
+			<doc>Determines should mesh blend shapes be imported if available.</doc>
+		</property>
+		<property name="ImportSkin" type="bool" getter="GetImportSkin" setter="SetImportSkin" static="false">
+			<doc>Determines should mesh skin data like bone weights, indices and bind poses be imported if available.</doc>
+		</property>
+		<property name="ImportAnimation" type="bool" getter="GetImportAnimation" setter="SetImportAnimation" static="false">
+			<doc>Determines should animation clips be imported if available.</doc>
+		</property>
+		<property name="ReduceKeyFrames" type="bool" getter="GetReduceKeyFrames" setter="SetReduceKeyFrames" static="false">
+			<doc>Enables or disables keyframe reduction. Keyframe reduction will reduce the number of key-frames in an animation clip by removing identical keyframes, and therefore reducing the size of the clip.</doc>
+		</property>
+		<property name="ImportRootMotion" type="bool" getter="GetImportRootMotion" setter="SetImportRootMotion" static="false">
+			<doc>Enables or disables import of root motion curves. When enabled, any animation curves in imported animations affecting the root bone will be available through a set of separate curves in AnimationClip, and they won&apos;t be evaluated through normal animation process. Instead it is expected that the user evaluates the curves manually and applies them as required.</doc>
+		</property>
+		<property name="ImportScale" type="float" getter="GetImportScale" setter="SetImportScale" static="false">
+			<doc>Uniformly scales the imported mesh by the specified value.</doc>
+		</property>
+		<property name="CollisionMeshType" type="CollisionMeshType" getter="GetCollisionMeshType" setter="SetCollisionMeshType" static="false">
+			<doc>Determines what type (if any) of collision mesh should be imported. If enabled the collision mesh will be available as a sub-resource returned by the importer (along with the normal mesh).</doc>
+		</property>
+		<property name="AnimationSplits" type="AnimationSplitInfo" getter="GetAnimationSplits" setter="SetAnimationSplits" static="false">
+			<doc>Animation split infos that determine how will the source animation clip be split. If no splits are present the data will be imported as one clip, but if splits are present the data will be split according to the split infos. Split infos only affect the primary animation clip, other clips will not be split.</doc>
+		</property>
+		<property name="AnimationEvents" type="ImportedAnimationEvents" getter="GetAnimationEvents" setter="SetAnimationEvents" static="false">
+			<doc>Set of events that will be added to the animation clip, if animation import is enabled.</doc>
+		</property>
+	</class>
+	<enum native="PackageResourceFlag" script="PackageResourceFlag">
+		<doc>Flags that can be set per-resource package meta-data.</doc>
+		<enumentry native="None" script="None">
+		</enumentry>
+		<enumentry native="Folder" script="Folder">
+			<doc>Resource entry represents a folder and has no associated resource data.</doc>
+		</enumentry>
+	</enum>
+	<class native="PackageResourceMetaData" script="PackageResourceMetaData">
+		<doc>Contains meta-data for a resource stored in a Package.</doc>
+		<property name="ResourceName" type="string" getter="GetResourceName" setter="" static="false">
+			<doc>Returns the name of the resource.</doc>
+		</property>
+		<property name="Path" type="string" getter="GetPath" setter="SetPath" static="false">
+			<doc>Path to the resource within the package.</doc>
+		</property>
+		<property name="Id" type="UUID" getter="GetId" setter="SetId" static="false">
+			<doc>Unique ID of the resource.</doc>
+		</property>
+		<property name="TypeId" type="int" getter="GetTypeId" setter="SetTypeId" static="false">
+			<doc>RTTI type ID of the resource contained.</doc>
+		</property>
+		<property name="Dependencies" type="UUID" getter="GetDependencies" setter="SetDependencies" static="false">
+			<doc>IDs of other resource that this resource depends on.</doc>
+		</property>
+		<property name="CompressionType" type="CompressionType" getter="GetCompressionType" setter="SetCompressionType" static="false">
+			<doc>Type of compression used on the serialized resource data.</doc>
+		</property>
+		<property name="Flags" type="PackageResourceFlag" getter="GetFlags" setter="SetFlags" static="false">
+			<doc>Flags to provide additional information about the resource.</doc>
+		</property>
+		<property name="AdditionalMetaData" type="PackageResourceUserMetaData" getter="GetAdditionalMetaData" setter="SetAdditionalMetaData" static="false">
+			<doc>Optional additional meta-data set explicitly by the user. This can be anything, but should be kept small.</doc>
+		</property>
+		<property name="ResourceMetaData" type="ResourceMetaData" getter="GetResourceMetaData" setter="SetResourceMetaData" static="false">
+			<doc>Meta-data that is inherited from the Resource object.</doc>
+		</property>
+		<property name="ResourceType" type="Type" getter="GetResourceType" setter="" static="false">
+			<doc>Returns managed type of the resource described by the meta-data.</doc>
+		</property>
+	</class>
+	<class native="PackageMetaData" script="PackageMetaData">
+		<doc>Contains meta-data for the entirety of a Package (not individual resources).</doc>
+	</class>
 	<enum native="BuiltinTexture" script="BuiltinTexture">
 		<doc>Types of builtin textures that are always available.</doc>
 		<enumentry native="White" script="White">
@@ -8647,6 +8766,103 @@ Optionally if the parameter is an array you may provide an array index you which
 		<field name="Value" type="float">
 		</field>
 	</struct>
+	<enum native="GUIImagePosition" script="GUIImagePosition">
+		<doc>Possible positions used for positioning content image within a GUI element.</doc>
+		<enumentry native="Left" script="Left">
+		</enumentry>
+		<enumentry native="Right" script="Right">
+		</enumentry>
+	</enum>
+	<enum native="GUIElementState" script="GUIElementState">
+		<doc>States a GUI element may be in. Multiple states can be active at the same time (e.g. an element can be hovered and checked), which is why they are combined into GUIElementStates rather than used individually.</doc>
+		<enumentry native="Normal" script="Normal">
+			<doc>No state is active, meaning the element is not being interacted with.</doc>
+		</enumentry>
+		<enumentry native="Disabled" script="Disabled">
+			<doc>Element is disabled and does not react to input.</doc>
+		</enumentry>
+		<enumentry native="Hover" script="Hover">
+			<doc>Pointer is hovering over the element.</doc>
+		</enumentry>
+		<enumentry native="Active" script="Active">
+			<doc>Element is being pressed.</doc>
+		</enumentry>
+		<enumentry native="Focus" script="Focus">
+			<doc>Element has keyboard/gamepad input focus.</doc>
+		</enumentry>
+		<enumentry native="Checked" script="Checked">
+			<doc>Element is toggled on.</doc>
+		</enumentry>
+	</enum>
+	<struct native="GUIScrollAreaContent" script="GUIScrollAreaContent">
+		<doc>Structure describing contents of a GUIScrollArea element.</doc>
+		<ctor>
+			<param name="verticalScrollBarType" type="ScrollBarType">
+			</param>
+			<param name="horizontalScrollBarType" type="ScrollBarType">
+			</param>
+			<param name="layoutType" type="ScrollAreaLayoutType">
+			</param>
+		</ctor>
+		<field name="VerticalScrollBarType" type="ScrollBarType">
+		</field>
+		<field name="HorizontalScrollBarType" type="ScrollBarType">
+		</field>
+		<field name="LayoutType" type="ScrollAreaLayoutType">
+		</field>
+	</struct>
+	<struct native="GUIContent" script="GUIContent">
+		<doc>Holds data used for displaying content in a GUIElement. Content can consist of a string, image, a tooltip or none of those.</doc>
+		<ctor>
+			<doc>Constructs an empty content.</doc>
+		</ctor>
+		<ctor>
+			<doc>Constructs content with just a string.</doc>
+			<param name="text" type="LocString">
+			</param>
+		</ctor>
+		<ctor>
+			<doc>Constructs content with a string and a tooltip.</doc>
+			<param name="text" type="LocString">
+			</param>
+			<param name="tooltip" type="LocString">
+			</param>
+		</ctor>
+		<ctor>
+			<doc>Constructs content with just an image.</doc>
+			<param name="image" type="GUIContentImages">
+			</param>
+		</ctor>
+		<ctor>
+			<doc>Constructs content with an image and a tooltip.</doc>
+			<param name="image" type="GUIContentImages">
+			</param>
+			<param name="tooltip" type="LocString">
+			</param>
+		</ctor>
+		<ctor>
+			<doc>Constructs content with a string and an image.</doc>
+			<param name="text" type="LocString">
+			</param>
+			<param name="image" type="GUIContentImages">
+			</param>
+		</ctor>
+		<ctor>
+			<doc>Constructs content with a string, an image and a tooltip.</doc>
+			<param name="text" type="LocString">
+			</param>
+			<param name="image" type="GUIContentImages">
+			</param>
+			<param name="tooltip" type="LocString">
+			</param>
+		</ctor>
+		<field name="Text" type="LocString">
+		</field>
+		<field name="Images" type="GUIContentImages">
+		</field>
+		<field name="Tooltip" type="LocString">
+		</field>
+	</struct>
 	<struct native="GUIOption" script="GUIOption">
 		<doc>Controls GUI element layout options, possibly by overriding the default options specified in GUI element style. These options control GUI element placement and size in a GUI layout.</doc>
 		<ctor>
@@ -8740,103 +8956,6 @@ Optionally if the parameter is an array you may provide an array index you which
 			</param>
 		</event>
 	</class>
-	<enum native="GUIImagePosition" script="GUIImagePosition">
-		<doc>Possible positions used for positioning content image within a GUI element.</doc>
-		<enumentry native="Left" script="Left">
-		</enumentry>
-		<enumentry native="Right" script="Right">
-		</enumentry>
-	</enum>
-	<enum native="GUIElementState" script="GUIElementState">
-		<doc>States a GUI element may be in. Multiple states can be active at the same time (e.g. an element can be hovered and checked), which is why they are combined into GUIElementStates rather than used individually.</doc>
-		<enumentry native="Normal" script="Normal">
-			<doc>No state is active, meaning the element is not being interacted with.</doc>
-		</enumentry>
-		<enumentry native="Hover" script="Hover">
-			<doc>Pointer is hovering over the element.</doc>
-		</enumentry>
-		<enumentry native="Active" script="Active">
-			<doc>Element is being pressed.</doc>
-		</enumentry>
-		<enumentry native="Focus" script="Focus">
-			<doc>Element has keyboard/gamepad input focus.</doc>
-		</enumentry>
-		<enumentry native="Disabled" script="Disabled">
-			<doc>Element is disabled and does not react to input.</doc>
-		</enumentry>
-		<enumentry native="Checked" script="Checked">
-			<doc>Element is toggled on.</doc>
-		</enumentry>
-	</enum>
-	<struct native="GUIScrollAreaContent" script="GUIScrollAreaContent">
-		<doc>Structure describing contents of a GUIScrollArea element.</doc>
-		<ctor>
-			<param name="verticalScrollBarType" type="ScrollBarType">
-			</param>
-			<param name="horizontalScrollBarType" type="ScrollBarType">
-			</param>
-			<param name="layoutType" type="ScrollAreaLayoutType">
-			</param>
-		</ctor>
-		<field name="VerticalScrollBarType" type="ScrollBarType">
-		</field>
-		<field name="HorizontalScrollBarType" type="ScrollBarType">
-		</field>
-		<field name="LayoutType" type="ScrollAreaLayoutType">
-		</field>
-	</struct>
-	<struct native="GUIContent" script="GUIContent">
-		<doc>Holds data used for displaying content in a GUIElement. Content can consist of a string, image, a tooltip or none of those.</doc>
-		<ctor>
-			<doc>Constructs an empty content.</doc>
-		</ctor>
-		<ctor>
-			<doc>Constructs content with just a string.</doc>
-			<param name="text" type="LocString">
-			</param>
-		</ctor>
-		<ctor>
-			<doc>Constructs content with a string and a tooltip.</doc>
-			<param name="text" type="LocString">
-			</param>
-			<param name="tooltip" type="LocString">
-			</param>
-		</ctor>
-		<ctor>
-			<doc>Constructs content with just an image.</doc>
-			<param name="image" type="GUIContentImages">
-			</param>
-		</ctor>
-		<ctor>
-			<doc>Constructs content with an image and a tooltip.</doc>
-			<param name="image" type="GUIContentImages">
-			</param>
-			<param name="tooltip" type="LocString">
-			</param>
-		</ctor>
-		<ctor>
-			<doc>Constructs content with a string and an image.</doc>
-			<param name="text" type="LocString">
-			</param>
-			<param name="image" type="GUIContentImages">
-			</param>
-		</ctor>
-		<ctor>
-			<doc>Constructs content with a string, an image and a tooltip.</doc>
-			<param name="text" type="LocString">
-			</param>
-			<param name="image" type="GUIContentImages">
-			</param>
-			<param name="tooltip" type="LocString">
-			</param>
-		</ctor>
-		<field name="Text" type="LocString">
-		</field>
-		<field name="Images" type="GUIContentImages">
-		</field>
-		<field name="Tooltip" type="LocString">
-		</field>
-	</struct>
 	<class native="GUIClickable" script="GUIClickable">
 		<doc>Base class for a clickable GUI button element.</doc>
 		<method native="SetContent" script="SetContent" static="false">
@@ -9527,6 +9646,531 @@ If this is disabled, then color grading and white balancing will not be enabled 
 			</param>
 		</ctor>
 	</class>
+	<struct native="FontFaceStyle" script="FontFaceStyle">
+		<doc>Identifies a single face within a font family.</doc>
+		<ctor>
+		</ctor>
+		<ctor>
+			<param name="weight" type="FontWeight">
+			</param>
+			<param name="slant" type="FontSlant">
+			</param>
+		</ctor>
+		<field name="Weight" type="FontWeight">
+		</field>
+		<field name="Slant" type="FontSlant">
+		</field>
+	</struct>
+	<class native="PhysicsScene" script="PhysicsScene">
+		<doc>Physical representation of a scene, allowing creation of new physical objects in the scene and queries against those objects. Objects created in different scenes cannot physically interact with eachother.</doc>
+		<method native="RayCast" script="RayCast" static="false">
+			<doc>Casts a ray into the scene and returns the closest found hit, if any.</doc>
+			<param name="ray" type="Ray">
+				<doc>Ray to cast into the scene.</doc>
+			</param>
+			<param name="hit" type="PhysicsQueryHit">
+				<doc>Information recorded about a hit. Only valid if method returns true.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="bool">
+				<doc>True if something was hit, false otherwise.</doc>
+			</returns>
+		</method>
+		<method native="RayCast" script="RayCast" static="false">
+			<doc>Casts a ray into the scene and returns the closest found hit, if any.</doc>
+			<param name="origin" type="Vector3">
+				<doc>Origin of the ray to cast into the scene.</doc>
+			</param>
+			<param name="unitDir" type="Vector3">
+				<doc>Unit direction of the ray to cast into the scene.</doc>
+			</param>
+			<param name="hit" type="PhysicsQueryHit">
+				<doc>Information recorded about a hit. Only valid if method returns true.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="bool">
+				<doc>True if something was hit, false otherwise.</doc>
+			</returns>
+		</method>
+		<method native="BoxCast" script="BoxCast" static="false">
+			<doc>Performs a sweep into the scene using a box and returns the closest found hit, if any.</doc>
+			<param name="box" type="AABox">
+				<doc>Box to sweep through the scene.</doc>
+			</param>
+			<param name="rotation" type="Quaternion">
+				<doc>Orientation of the box.</doc>
+			</param>
+			<param name="unitDir" type="Vector3">
+				<doc>Unit direction towards which to perform the sweep.</doc>
+			</param>
+			<param name="hit" type="PhysicsQueryHit">
+				<doc>Information recorded about a hit. Only valid if method returns true.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="bool">
+				<doc>True if something was hit, false otherwise.</doc>
+			</returns>
+		</method>
+		<method native="SphereCast" script="SphereCast" static="false">
+			<doc>Performs a sweep into the scene using a sphere and returns the closest found hit, if any.</doc>
+			<param name="sphere" type="Sphere">
+				<doc>Sphere to sweep through the scene.</doc>
+			</param>
+			<param name="unitDir" type="Vector3">
+				<doc>Unit direction towards which to perform the sweep.</doc>
+			</param>
+			<param name="hit" type="PhysicsQueryHit">
+				<doc>Information recorded about a hit. Only valid if method returns true.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="bool">
+				<doc>True if something was hit, false otherwise.</doc>
+			</returns>
+		</method>
+		<method native="CapsuleCast" script="CapsuleCast" static="false">
+			<doc>Performs a sweep into the scene using a capsule and returns the closest found hit, if any.</doc>
+			<param name="capsule" type="Capsule">
+				<doc>Capsule to sweep through the scene.</doc>
+			</param>
+			<param name="rotation" type="Quaternion">
+				<doc>Orientation of the capsule.</doc>
+			</param>
+			<param name="unitDir" type="Vector3">
+				<doc>Unit direction towards which to perform the sweep.</doc>
+			</param>
+			<param name="hit" type="PhysicsQueryHit">
+				<doc>Information recorded about a hit. Only valid if method returns true.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="bool">
+				<doc>True if something was hit, false otherwise.</doc>
+			</returns>
+		</method>
+		<method native="ConvexCast" script="ConvexCast" static="false">
+			<doc>Performs a sweep into the scene using a convex mesh and returns the closest found hit, if any.</doc>
+			<param name="mesh" type="RRef&lt;PhysicsMesh&gt;">
+				<doc>Mesh to sweep through the scene. Must be convex.</doc>
+			</param>
+			<param name="position" type="Vector3">
+				<doc>Starting position of the mesh.</doc>
+			</param>
+			<param name="rotation" type="Quaternion">
+				<doc>Orientation of the mesh.</doc>
+			</param>
+			<param name="unitDir" type="Vector3">
+				<doc>Unit direction towards which to perform the sweep.</doc>
+			</param>
+			<param name="hit" type="PhysicsQueryHit">
+				<doc>Information recorded about a hit. Only valid if method returns true.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="bool">
+				<doc>True if something was hit, false otherwise.</doc>
+			</returns>
+		</method>
+		<method native="RayCastAll" script="RayCastAll" static="false">
+			<doc>Casts a ray into the scene and returns all found hits.</doc>
+			<param name="ray" type="Ray">
+				<doc>Ray to cast into the scene.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="PhysicsQueryHit">
+				<doc>List of all detected hits.</doc>
+			</returns>
+		</method>
+		<method native="RayCastAll" script="RayCastAll" static="false">
+			<doc>Casts a ray into the scene and returns all found hits.</doc>
+			<param name="origin" type="Vector3">
+				<doc>Origin of the ray to cast into the scene.</doc>
+			</param>
+			<param name="unitDir" type="Vector3">
+				<doc>Unit direction of the ray to cast into the scene.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="PhysicsQueryHit">
+				<doc>List of all detected hits.</doc>
+			</returns>
+		</method>
+		<method native="BoxCastAll" script="BoxCastAll" static="false">
+			<doc>Performs a sweep into the scene using a box and returns all found hits.</doc>
+			<param name="box" type="AABox">
+				<doc>Box to sweep through the scene.</doc>
+			</param>
+			<param name="rotation" type="Quaternion">
+				<doc>Orientation of the box.</doc>
+			</param>
+			<param name="unitDir" type="Vector3">
+				<doc>Unit direction towards which to perform the sweep.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="PhysicsQueryHit">
+				<doc>List of all detected hits.</doc>
+			</returns>
+		</method>
+		<method native="SphereCastAll" script="SphereCastAll" static="false">
+			<doc>Performs a sweep into the scene using a sphere and returns all found hits.</doc>
+			<param name="sphere" type="Sphere">
+				<doc>Sphere to sweep through the scene.</doc>
+			</param>
+			<param name="unitDir" type="Vector3">
+				<doc>Unit direction towards which to perform the sweep.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="PhysicsQueryHit">
+				<doc>List of all detected hits.</doc>
+			</returns>
+		</method>
+		<method native="CapsuleCastAll" script="CapsuleCastAll" static="false">
+			<doc>Performs a sweep into the scene using a capsule and returns all found hits.</doc>
+			<param name="capsule" type="Capsule">
+				<doc>Capsule to sweep through the scene.</doc>
+			</param>
+			<param name="rotation" type="Quaternion">
+				<doc>Orientation of the capsule.</doc>
+			</param>
+			<param name="unitDir" type="Vector3">
+				<doc>Unit direction towards which to perform the sweep.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="PhysicsQueryHit">
+				<doc>List of all detected hits.</doc>
+			</returns>
+		</method>
+		<method native="ConvexCastAll" script="ConvexCastAll" static="false">
+			<doc>Performs a sweep into the scene using a convex mesh and returns all found hits.</doc>
+			<param name="mesh" type="RRef&lt;PhysicsMesh&gt;">
+				<doc>Mesh to sweep through the scene. Must be convex.</doc>
+			</param>
+			<param name="position" type="Vector3">
+				<doc>Starting position of the mesh.</doc>
+			</param>
+			<param name="rotation" type="Quaternion">
+				<doc>Orientation of the mesh.</doc>
+			</param>
+			<param name="unitDir" type="Vector3">
+				<doc>Unit direction towards which to perform the sweep.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="PhysicsQueryHit">
+				<doc>List of all detected hits.</doc>
+			</returns>
+		</method>
+		<method native="RayCastAny" script="RayCastAny" static="false">
+			<doc>Casts a ray into the scene and checks if it has hit anything. This can be significantly more efficient than other types of cast* calls.</doc>
+			<param name="ray" type="Ray">
+				<doc>Ray to cast into the scene.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="bool">
+				<doc>True if something was hit, false otherwise.</doc>
+			</returns>
+		</method>
+		<method native="RayCastAny" script="RayCastAny" static="false">
+			<doc>Casts a ray into the scene and checks if it has hit anything. This can be significantly more efficient than other types of cast* calls.</doc>
+			<param name="origin" type="Vector3">
+				<doc>Origin of the ray to cast into the scene.</doc>
+			</param>
+			<param name="unitDir" type="Vector3">
+				<doc>Unit direction of the ray to cast into the scene.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="bool">
+				<doc>True if something was hit, false otherwise.</doc>
+			</returns>
+		</method>
+		<method native="BoxCastAny" script="BoxCastAny" static="false">
+			<doc>Performs a sweep into the scene using a box and checks if it has hit anything. This can be significantly more efficient than other types of cast* calls.</doc>
+			<param name="box" type="AABox">
+				<doc>Box to sweep through the scene.</doc>
+			</param>
+			<param name="rotation" type="Quaternion">
+				<doc>Orientation of the box.</doc>
+			</param>
+			<param name="unitDir" type="Vector3">
+				<doc>Unit direction towards which to perform the sweep.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="bool">
+				<doc>True if something was hit, false otherwise.</doc>
+			</returns>
+		</method>
+		<method native="SphereCastAny" script="SphereCastAny" static="false">
+			<doc>Performs a sweep into the scene using a sphere and checks if it has hit anything. This can be significantly more efficient than other types of cast* calls.</doc>
+			<param name="sphere" type="Sphere">
+				<doc>Sphere to sweep through the scene.</doc>
+			</param>
+			<param name="unitDir" type="Vector3">
+				<doc>Unit direction towards which to perform the sweep.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="bool">
+				<doc>True if something was hit, false otherwise.</doc>
+			</returns>
+		</method>
+		<method native="CapsuleCastAny" script="CapsuleCastAny" static="false">
+			<doc>Performs a sweep into the scene using a capsule and checks if it has hit anything. This can be significantly more efficient than other types of cast* calls.</doc>
+			<param name="capsule" type="Capsule">
+				<doc>Capsule to sweep through the scene.</doc>
+			</param>
+			<param name="rotation" type="Quaternion">
+				<doc>Orientation of the capsule.</doc>
+			</param>
+			<param name="unitDir" type="Vector3">
+				<doc>Unit direction towards which to perform the sweep.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="bool">
+				<doc>True if something was hit, false otherwise.</doc>
+			</returns>
+		</method>
+		<method native="ConvexCastAny" script="ConvexCastAny" static="false">
+			<doc>Performs a sweep into the scene using a convex mesh and checks if it has hit anything. This can be significantly more efficient than other types of cast* calls.</doc>
+			<param name="mesh" type="RRef&lt;PhysicsMesh&gt;">
+				<doc>Mesh to sweep through the scene. Must be convex.</doc>
+			</param>
+			<param name="position" type="Vector3">
+				<doc>Starting position of the mesh.</doc>
+			</param>
+			<param name="rotation" type="Quaternion">
+				<doc>Orientation of the mesh.</doc>
+			</param>
+			<param name="unitDir" type="Vector3">
+				<doc>Unit direction towards which to perform the sweep.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<param name="max" type="float">
+				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
+			</param>
+			<returns type="bool">
+				<doc>True if something was hit, false otherwise.</doc>
+			</returns>
+		</method>
+		<method native="BoxOverlap" script="BoxOverlap" static="false">
+			<doc>Returns a list of all colliders in the scene that overlap the provided box.</doc>
+			<param name="box" type="AABox">
+				<doc>Box to check for overlap.</doc>
+			</param>
+			<param name="rotation" type="Quaternion">
+				<doc>Orientation of the box.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<returns type="Collider">
+				<doc>List of all colliders that overlap the box.</doc>
+			</returns>
+		</method>
+		<method native="SphereOverlap" script="SphereOverlap" static="false">
+			<doc>Returns a list of all colliders in the scene that overlap the provided sphere.</doc>
+			<param name="sphere" type="Sphere">
+				<doc>Sphere to check for overlap.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<returns type="Collider">
+				<doc>List of all colliders that overlap the sphere.</doc>
+			</returns>
+		</method>
+		<method native="CapsuleOverlap" script="CapsuleOverlap" static="false">
+			<doc>Returns a list of all colliders in the scene that overlap the provided capsule.</doc>
+			<param name="capsule" type="Capsule">
+				<doc>Capsule to check for overlap.</doc>
+			</param>
+			<param name="rotation" type="Quaternion">
+				<doc>Orientation of the capsule.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<returns type="Collider">
+				<doc>List of all colliders that overlap the capsule.</doc>
+			</returns>
+		</method>
+		<method native="ConvexOverlap" script="ConvexOverlap" static="false">
+			<doc>Returns a list of all colliders in the scene that overlap the provided convex mesh.</doc>
+			<param name="mesh" type="RRef&lt;PhysicsMesh&gt;">
+				<doc>Mesh to check for overlap. Must be convex.</doc>
+			</param>
+			<param name="position" type="Vector3">
+				<doc>Position of the mesh.</doc>
+			</param>
+			<param name="rotation" type="Quaternion">
+				<doc>Orientation of the mesh.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<returns type="Collider">
+				<doc>List of all colliders that overlap the mesh.</doc>
+			</returns>
+		</method>
+		<method native="BoxOverlapAny" script="BoxOverlapAny" static="false">
+			<doc>Checks if the provided box overlaps any other collider in the scene.</doc>
+			<param name="box" type="AABox">
+				<doc>Box to check for overlap.</doc>
+			</param>
+			<param name="rotation" type="Quaternion">
+				<doc>Orientation of the box.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<returns type="bool">
+				<doc>True if there is overlap with another object, false otherwise.</doc>
+			</returns>
+		</method>
+		<method native="SphereOverlapAny" script="SphereOverlapAny" static="false">
+			<doc>Checks if the provided sphere overlaps any other collider in the scene.</doc>
+			<param name="sphere" type="Sphere">
+				<doc>Sphere to check for overlap.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<returns type="bool">
+				<doc>True if there is overlap with another object, false otherwise.</doc>
+			</returns>
+		</method>
+		<method native="CapsuleOverlapAny" script="CapsuleOverlapAny" static="false">
+			<doc>Checks if the provided capsule overlaps any other collider in the scene.</doc>
+			<param name="capsule" type="Capsule">
+				<doc>Capsule to check for overlap.</doc>
+			</param>
+			<param name="rotation" type="Quaternion">
+				<doc>Orientation of the capsule.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<returns type="bool">
+				<doc>True if there is overlap with another object, false otherwise.</doc>
+			</returns>
+		</method>
+		<method native="ConvexOverlapAny" script="ConvexOverlapAny" static="false">
+			<doc>Checks if the provided convex mesh overlaps any other collider in the scene.</doc>
+			<param name="mesh" type="RRef&lt;PhysicsMesh&gt;">
+				<doc>Mesh to check for overlap. Must be convex.</doc>
+			</param>
+			<param name="position" type="Vector3">
+				<doc>Position of the mesh.</doc>
+			</param>
+			<param name="rotation" type="Quaternion">
+				<doc>Orientation of the mesh.</doc>
+			</param>
+			<param name="layer" type="ulong">
+				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
+			</param>
+			<returns type="bool">
+				<doc>True if there is overlap with another object, false otherwise.</doc>
+			</returns>
+		</method>
+		<method native="AddBroadPhaseRegion" script="AddPhysicsRegion" static="false">
+			<doc>Adds a new physics region. Certain physics options require you to set up regions in which physics objects are allowed to be in, and objects outside of these regions will not be handled by physics. You do not need to set up these regions by default.</doc>
+			<param name="region" type="AABox">
+			</param>
+			<returns type="int">
+			</returns>
+		</method>
+		<method native="RemoveBroadPhaseRegion" script="RemovePhysicsRegion" static="false">
+			<doc>Removes a physics region.</doc>
+			<param name="handle" type="int">
+			</param>
+		</method>
+		<method native="ClearBroadPhaseRegions" script="ClearPhysicsRegions" static="false">
+			<doc>Removes all physics regions.</doc>
+		</method>
+		<property name="Gravity" type="Vector3" getter="GetGravity" setter="SetGravity" static="false">
+			<doc>Determines the global gravity value for all objects in the scene.</doc>
+		</property>
+	</class>
 	<struct native="SpriteSheetGridAnimation" script="SpriteSheetGridAnimation">
 		<doc>Descriptor that describes a simple sprite sheet animation. The parent area is split into a grid of <see cref="RowCount"/> x <see cref="ColumnCount"/>, each representing one frame of the animation. Every frame is of equal size. Frames are sequentially evaluated starting from the top-most row, iterating over all columns in a row and then moving to next row, up to <see cref="FrameCount"/> frames. <see cref="FramesPerSecond"/> frames are evaluated every second, allowing you to control animation speed.</doc>
 		<ctor>
@@ -9873,56 +10517,6 @@ If this is disabled, then color grading and white balancing will not be enabled 
 			<doc>Options describing the evolver.</doc>
 		</property>
 	</class>
-	<enum native="PackageResourceFlag" script="PackageResourceFlag">
-		<doc>Flags that can be set per-resource package meta-data.</doc>
-		<enumentry native="None" script="None">
-		</enumentry>
-		<enumentry native="Folder" script="Folder">
-			<doc>Resource entry represents a folder and has no associated resource data.</doc>
-		</enumentry>
-	</enum>
-	<class native="MeshImportOptions" script="MeshImportOptions">
-		<doc>Contains import options you may use to control how is a mesh imported from some external format into engine format.</doc>
-		<ctor>
-			<doc>Creates a new import options object that allows you to customize how are meshes imported.</doc>
-		</ctor>
-		<property name="CpuCached" type="bool" getter="GetCpuCached" setter="SetCpuCached" static="false">
-			<doc>Determines whether the texture data is also stored in CPU memory.</doc>
-		</property>
-		<property name="ImportNormals" type="bool" getter="GetImportNormals" setter="SetImportNormals" static="false">
-			<doc>Determines should mesh normals be imported if available.</doc>
-		</property>
-		<property name="ImportTangents" type="bool" getter="GetImportTangents" setter="SetImportTangents" static="false">
-			<doc>Determines should mesh tangents and bitangents be imported if available.</doc>
-		</property>
-		<property name="ImportBlendShapes" type="bool" getter="GetImportBlendShapes" setter="SetImportBlendShapes" static="false">
-			<doc>Determines should mesh blend shapes be imported if available.</doc>
-		</property>
-		<property name="ImportSkin" type="bool" getter="GetImportSkin" setter="SetImportSkin" static="false">
-			<doc>Determines should mesh skin data like bone weights, indices and bind poses be imported if available.</doc>
-		</property>
-		<property name="ImportAnimation" type="bool" getter="GetImportAnimation" setter="SetImportAnimation" static="false">
-			<doc>Determines should animation clips be imported if available.</doc>
-		</property>
-		<property name="ReduceKeyFrames" type="bool" getter="GetReduceKeyFrames" setter="SetReduceKeyFrames" static="false">
-			<doc>Enables or disables keyframe reduction. Keyframe reduction will reduce the number of key-frames in an animation clip by removing identical keyframes, and therefore reducing the size of the clip.</doc>
-		</property>
-		<property name="ImportRootMotion" type="bool" getter="GetImportRootMotion" setter="SetImportRootMotion" static="false">
-			<doc>Enables or disables import of root motion curves. When enabled, any animation curves in imported animations affecting the root bone will be available through a set of separate curves in AnimationClip, and they won&apos;t be evaluated through normal animation process. Instead it is expected that the user evaluates the curves manually and applies them as required.</doc>
-		</property>
-		<property name="ImportScale" type="float" getter="GetImportScale" setter="SetImportScale" static="false">
-			<doc>Uniformly scales the imported mesh by the specified value.</doc>
-		</property>
-		<property name="CollisionMeshType" type="CollisionMeshType" getter="GetCollisionMeshType" setter="SetCollisionMeshType" static="false">
-			<doc>Determines what type (if any) of collision mesh should be imported. If enabled the collision mesh will be available as a sub-resource returned by the importer (along with the normal mesh).</doc>
-		</property>
-		<property name="AnimationSplits" type="AnimationSplitInfo" getter="GetAnimationSplits" setter="SetAnimationSplits" static="false">
-			<doc>Animation split infos that determine how will the source animation clip be split. If no splits are present the data will be imported as one clip, but if splits are present the data will be split according to the split infos. Split infos only affect the primary animation clip, other clips will not be split.</doc>
-		</property>
-		<property name="AnimationEvents" type="ImportedAnimationEvents" getter="GetAnimationEvents" setter="SetAnimationEvents" static="false">
-			<doc>Set of events that will be added to the animation clip, if animation import is enabled.</doc>
-		</property>
-	</class>
 	<class native="TextureImportOptions" script="TextureImportOptions">
 		<doc>Contains import options you may use to control how is a texture imported.</doc>
 		<ctor>
@@ -9950,6 +10544,22 @@ If this is disabled, then color grading and white balancing will not be enabled 
 			<doc>Determines how should the source texture be interpreted when generating a cubemap. Only relevant when <see cref="Cubemap"/> is set to true.</doc>
 		</property>
 	</class>
+	<struct native="FontFamilyFace" script="FontFamilyFace">
+		<doc>A single face belonging to a font family.</doc>
+		<ctor>
+		</ctor>
+		<ctor>
+			<param name="font" type="RRef&lt;Font&gt;">
+			</param>
+			<param name="style" type="FontFaceStyle">
+			</param>
+		</ctor>
+		<field name="Font" type="RRef&lt;Font&gt;">
+			<doc>Font providing the face. May not have been loaded yet, as faces are only loaded once they are used.</doc>
+		</field>
+		<field name="Style" type="FontFaceStyle">
+		</field>
+	</struct>
 	<enum native="Language" script="Language">
 		<doc>A set of all languages that localized strings can be translated to. Loosely based on ISO 639-1 two letter language codes.</doc>
 		<enumentry native="Afrikaans" script="Afrikaans">
@@ -10785,516 +11395,6 @@ If this is disabled, then color grading and white balancing will not be enabled 
 			</returns>
 		</method>
 	</class>
-	<class native="PhysicsScene" script="PhysicsScene">
-		<doc>Physical representation of a scene, allowing creation of new physical objects in the scene and queries against those objects. Objects created in different scenes cannot physically interact with eachother.</doc>
-		<method native="RayCast" script="RayCast" static="false">
-			<doc>Casts a ray into the scene and returns the closest found hit, if any.</doc>
-			<param name="ray" type="Ray">
-				<doc>Ray to cast into the scene.</doc>
-			</param>
-			<param name="hit" type="PhysicsQueryHit">
-				<doc>Information recorded about a hit. Only valid if method returns true.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="bool">
-				<doc>True if something was hit, false otherwise.</doc>
-			</returns>
-		</method>
-		<method native="RayCast" script="RayCast" static="false">
-			<doc>Casts a ray into the scene and returns the closest found hit, if any.</doc>
-			<param name="origin" type="Vector3">
-				<doc>Origin of the ray to cast into the scene.</doc>
-			</param>
-			<param name="unitDir" type="Vector3">
-				<doc>Unit direction of the ray to cast into the scene.</doc>
-			</param>
-			<param name="hit" type="PhysicsQueryHit">
-				<doc>Information recorded about a hit. Only valid if method returns true.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="bool">
-				<doc>True if something was hit, false otherwise.</doc>
-			</returns>
-		</method>
-		<method native="BoxCast" script="BoxCast" static="false">
-			<doc>Performs a sweep into the scene using a box and returns the closest found hit, if any.</doc>
-			<param name="box" type="AABox">
-				<doc>Box to sweep through the scene.</doc>
-			</param>
-			<param name="rotation" type="Quaternion">
-				<doc>Orientation of the box.</doc>
-			</param>
-			<param name="unitDir" type="Vector3">
-				<doc>Unit direction towards which to perform the sweep.</doc>
-			</param>
-			<param name="hit" type="PhysicsQueryHit">
-				<doc>Information recorded about a hit. Only valid if method returns true.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="bool">
-				<doc>True if something was hit, false otherwise.</doc>
-			</returns>
-		</method>
-		<method native="SphereCast" script="SphereCast" static="false">
-			<doc>Performs a sweep into the scene using a sphere and returns the closest found hit, if any.</doc>
-			<param name="sphere" type="Sphere">
-				<doc>Sphere to sweep through the scene.</doc>
-			</param>
-			<param name="unitDir" type="Vector3">
-				<doc>Unit direction towards which to perform the sweep.</doc>
-			</param>
-			<param name="hit" type="PhysicsQueryHit">
-				<doc>Information recorded about a hit. Only valid if method returns true.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="bool">
-				<doc>True if something was hit, false otherwise.</doc>
-			</returns>
-		</method>
-		<method native="CapsuleCast" script="CapsuleCast" static="false">
-			<doc>Performs a sweep into the scene using a capsule and returns the closest found hit, if any.</doc>
-			<param name="capsule" type="Capsule">
-				<doc>Capsule to sweep through the scene.</doc>
-			</param>
-			<param name="rotation" type="Quaternion">
-				<doc>Orientation of the capsule.</doc>
-			</param>
-			<param name="unitDir" type="Vector3">
-				<doc>Unit direction towards which to perform the sweep.</doc>
-			</param>
-			<param name="hit" type="PhysicsQueryHit">
-				<doc>Information recorded about a hit. Only valid if method returns true.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="bool">
-				<doc>True if something was hit, false otherwise.</doc>
-			</returns>
-		</method>
-		<method native="ConvexCast" script="ConvexCast" static="false">
-			<doc>Performs a sweep into the scene using a convex mesh and returns the closest found hit, if any.</doc>
-			<param name="mesh" type="RRef&lt;PhysicsMesh&gt;">
-				<doc>Mesh to sweep through the scene. Must be convex.</doc>
-			</param>
-			<param name="position" type="Vector3">
-				<doc>Starting position of the mesh.</doc>
-			</param>
-			<param name="rotation" type="Quaternion">
-				<doc>Orientation of the mesh.</doc>
-			</param>
-			<param name="unitDir" type="Vector3">
-				<doc>Unit direction towards which to perform the sweep.</doc>
-			</param>
-			<param name="hit" type="PhysicsQueryHit">
-				<doc>Information recorded about a hit. Only valid if method returns true.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="bool">
-				<doc>True if something was hit, false otherwise.</doc>
-			</returns>
-		</method>
-		<method native="RayCastAll" script="RayCastAll" static="false">
-			<doc>Casts a ray into the scene and returns all found hits.</doc>
-			<param name="ray" type="Ray">
-				<doc>Ray to cast into the scene.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="PhysicsQueryHit">
-				<doc>List of all detected hits.</doc>
-			</returns>
-		</method>
-		<method native="RayCastAll" script="RayCastAll" static="false">
-			<doc>Casts a ray into the scene and returns all found hits.</doc>
-			<param name="origin" type="Vector3">
-				<doc>Origin of the ray to cast into the scene.</doc>
-			</param>
-			<param name="unitDir" type="Vector3">
-				<doc>Unit direction of the ray to cast into the scene.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="PhysicsQueryHit">
-				<doc>List of all detected hits.</doc>
-			</returns>
-		</method>
-		<method native="BoxCastAll" script="BoxCastAll" static="false">
-			<doc>Performs a sweep into the scene using a box and returns all found hits.</doc>
-			<param name="box" type="AABox">
-				<doc>Box to sweep through the scene.</doc>
-			</param>
-			<param name="rotation" type="Quaternion">
-				<doc>Orientation of the box.</doc>
-			</param>
-			<param name="unitDir" type="Vector3">
-				<doc>Unit direction towards which to perform the sweep.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="PhysicsQueryHit">
-				<doc>List of all detected hits.</doc>
-			</returns>
-		</method>
-		<method native="SphereCastAll" script="SphereCastAll" static="false">
-			<doc>Performs a sweep into the scene using a sphere and returns all found hits.</doc>
-			<param name="sphere" type="Sphere">
-				<doc>Sphere to sweep through the scene.</doc>
-			</param>
-			<param name="unitDir" type="Vector3">
-				<doc>Unit direction towards which to perform the sweep.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="PhysicsQueryHit">
-				<doc>List of all detected hits.</doc>
-			</returns>
-		</method>
-		<method native="CapsuleCastAll" script="CapsuleCastAll" static="false">
-			<doc>Performs a sweep into the scene using a capsule and returns all found hits.</doc>
-			<param name="capsule" type="Capsule">
-				<doc>Capsule to sweep through the scene.</doc>
-			</param>
-			<param name="rotation" type="Quaternion">
-				<doc>Orientation of the capsule.</doc>
-			</param>
-			<param name="unitDir" type="Vector3">
-				<doc>Unit direction towards which to perform the sweep.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="PhysicsQueryHit">
-				<doc>List of all detected hits.</doc>
-			</returns>
-		</method>
-		<method native="ConvexCastAll" script="ConvexCastAll" static="false">
-			<doc>Performs a sweep into the scene using a convex mesh and returns all found hits.</doc>
-			<param name="mesh" type="RRef&lt;PhysicsMesh&gt;">
-				<doc>Mesh to sweep through the scene. Must be convex.</doc>
-			</param>
-			<param name="position" type="Vector3">
-				<doc>Starting position of the mesh.</doc>
-			</param>
-			<param name="rotation" type="Quaternion">
-				<doc>Orientation of the mesh.</doc>
-			</param>
-			<param name="unitDir" type="Vector3">
-				<doc>Unit direction towards which to perform the sweep.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="PhysicsQueryHit">
-				<doc>List of all detected hits.</doc>
-			</returns>
-		</method>
-		<method native="RayCastAny" script="RayCastAny" static="false">
-			<doc>Casts a ray into the scene and checks if it has hit anything. This can be significantly more efficient than other types of cast* calls.</doc>
-			<param name="ray" type="Ray">
-				<doc>Ray to cast into the scene.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="bool">
-				<doc>True if something was hit, false otherwise.</doc>
-			</returns>
-		</method>
-		<method native="RayCastAny" script="RayCastAny" static="false">
-			<doc>Casts a ray into the scene and checks if it has hit anything. This can be significantly more efficient than other types of cast* calls.</doc>
-			<param name="origin" type="Vector3">
-				<doc>Origin of the ray to cast into the scene.</doc>
-			</param>
-			<param name="unitDir" type="Vector3">
-				<doc>Unit direction of the ray to cast into the scene.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="bool">
-				<doc>True if something was hit, false otherwise.</doc>
-			</returns>
-		</method>
-		<method native="BoxCastAny" script="BoxCastAny" static="false">
-			<doc>Performs a sweep into the scene using a box and checks if it has hit anything. This can be significantly more efficient than other types of cast* calls.</doc>
-			<param name="box" type="AABox">
-				<doc>Box to sweep through the scene.</doc>
-			</param>
-			<param name="rotation" type="Quaternion">
-				<doc>Orientation of the box.</doc>
-			</param>
-			<param name="unitDir" type="Vector3">
-				<doc>Unit direction towards which to perform the sweep.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="bool">
-				<doc>True if something was hit, false otherwise.</doc>
-			</returns>
-		</method>
-		<method native="SphereCastAny" script="SphereCastAny" static="false">
-			<doc>Performs a sweep into the scene using a sphere and checks if it has hit anything. This can be significantly more efficient than other types of cast* calls.</doc>
-			<param name="sphere" type="Sphere">
-				<doc>Sphere to sweep through the scene.</doc>
-			</param>
-			<param name="unitDir" type="Vector3">
-				<doc>Unit direction towards which to perform the sweep.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="bool">
-				<doc>True if something was hit, false otherwise.</doc>
-			</returns>
-		</method>
-		<method native="CapsuleCastAny" script="CapsuleCastAny" static="false">
-			<doc>Performs a sweep into the scene using a capsule and checks if it has hit anything. This can be significantly more efficient than other types of cast* calls.</doc>
-			<param name="capsule" type="Capsule">
-				<doc>Capsule to sweep through the scene.</doc>
-			</param>
-			<param name="rotation" type="Quaternion">
-				<doc>Orientation of the capsule.</doc>
-			</param>
-			<param name="unitDir" type="Vector3">
-				<doc>Unit direction towards which to perform the sweep.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="bool">
-				<doc>True if something was hit, false otherwise.</doc>
-			</returns>
-		</method>
-		<method native="ConvexCastAny" script="ConvexCastAny" static="false">
-			<doc>Performs a sweep into the scene using a convex mesh and checks if it has hit anything. This can be significantly more efficient than other types of cast* calls.</doc>
-			<param name="mesh" type="RRef&lt;PhysicsMesh&gt;">
-				<doc>Mesh to sweep through the scene. Must be convex.</doc>
-			</param>
-			<param name="position" type="Vector3">
-				<doc>Starting position of the mesh.</doc>
-			</param>
-			<param name="rotation" type="Quaternion">
-				<doc>Orientation of the mesh.</doc>
-			</param>
-			<param name="unitDir" type="Vector3">
-				<doc>Unit direction towards which to perform the sweep.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<param name="max" type="float">
-				<doc>Maximum distance at which to perform the query. Hits past this distance will not be detected.</doc>
-			</param>
-			<returns type="bool">
-				<doc>True if something was hit, false otherwise.</doc>
-			</returns>
-		</method>
-		<method native="BoxOverlap" script="BoxOverlap" static="false">
-			<doc>Returns a list of all colliders in the scene that overlap the provided box.</doc>
-			<param name="box" type="AABox">
-				<doc>Box to check for overlap.</doc>
-			</param>
-			<param name="rotation" type="Quaternion">
-				<doc>Orientation of the box.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<returns type="Collider">
-				<doc>List of all colliders that overlap the box.</doc>
-			</returns>
-		</method>
-		<method native="SphereOverlap" script="SphereOverlap" static="false">
-			<doc>Returns a list of all colliders in the scene that overlap the provided sphere.</doc>
-			<param name="sphere" type="Sphere">
-				<doc>Sphere to check for overlap.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<returns type="Collider">
-				<doc>List of all colliders that overlap the sphere.</doc>
-			</returns>
-		</method>
-		<method native="CapsuleOverlap" script="CapsuleOverlap" static="false">
-			<doc>Returns a list of all colliders in the scene that overlap the provided capsule.</doc>
-			<param name="capsule" type="Capsule">
-				<doc>Capsule to check for overlap.</doc>
-			</param>
-			<param name="rotation" type="Quaternion">
-				<doc>Orientation of the capsule.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<returns type="Collider">
-				<doc>List of all colliders that overlap the capsule.</doc>
-			</returns>
-		</method>
-		<method native="ConvexOverlap" script="ConvexOverlap" static="false">
-			<doc>Returns a list of all colliders in the scene that overlap the provided convex mesh.</doc>
-			<param name="mesh" type="RRef&lt;PhysicsMesh&gt;">
-				<doc>Mesh to check for overlap. Must be convex.</doc>
-			</param>
-			<param name="position" type="Vector3">
-				<doc>Position of the mesh.</doc>
-			</param>
-			<param name="rotation" type="Quaternion">
-				<doc>Orientation of the mesh.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<returns type="Collider">
-				<doc>List of all colliders that overlap the mesh.</doc>
-			</returns>
-		</method>
-		<method native="BoxOverlapAny" script="BoxOverlapAny" static="false">
-			<doc>Checks if the provided box overlaps any other collider in the scene.</doc>
-			<param name="box" type="AABox">
-				<doc>Box to check for overlap.</doc>
-			</param>
-			<param name="rotation" type="Quaternion">
-				<doc>Orientation of the box.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<returns type="bool">
-				<doc>True if there is overlap with another object, false otherwise.</doc>
-			</returns>
-		</method>
-		<method native="SphereOverlapAny" script="SphereOverlapAny" static="false">
-			<doc>Checks if the provided sphere overlaps any other collider in the scene.</doc>
-			<param name="sphere" type="Sphere">
-				<doc>Sphere to check for overlap.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<returns type="bool">
-				<doc>True if there is overlap with another object, false otherwise.</doc>
-			</returns>
-		</method>
-		<method native="CapsuleOverlapAny" script="CapsuleOverlapAny" static="false">
-			<doc>Checks if the provided capsule overlaps any other collider in the scene.</doc>
-			<param name="capsule" type="Capsule">
-				<doc>Capsule to check for overlap.</doc>
-			</param>
-			<param name="rotation" type="Quaternion">
-				<doc>Orientation of the capsule.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<returns type="bool">
-				<doc>True if there is overlap with another object, false otherwise.</doc>
-			</returns>
-		</method>
-		<method native="ConvexOverlapAny" script="ConvexOverlapAny" static="false">
-			<doc>Checks if the provided convex mesh overlaps any other collider in the scene.</doc>
-			<param name="mesh" type="RRef&lt;PhysicsMesh&gt;">
-				<doc>Mesh to check for overlap. Must be convex.</doc>
-			</param>
-			<param name="position" type="Vector3">
-				<doc>Position of the mesh.</doc>
-			</param>
-			<param name="rotation" type="Quaternion">
-				<doc>Orientation of the mesh.</doc>
-			</param>
-			<param name="layer" type="ulong">
-				<doc>Layers to consider for the query. This allows you to ignore certain groups of objects.</doc>
-			</param>
-			<returns type="bool">
-				<doc>True if there is overlap with another object, false otherwise.</doc>
-			</returns>
-		</method>
-		<method native="AddBroadPhaseRegion" script="AddPhysicsRegion" static="false">
-			<doc>Adds a new physics region. Certain physics options require you to set up regions in which physics objects are allowed to be in, and objects outside of these regions will not be handled by physics. You do not need to set up these regions by default.</doc>
-			<param name="region" type="AABox">
-			</param>
-			<returns type="int">
-			</returns>
-		</method>
-		<method native="RemoveBroadPhaseRegion" script="RemovePhysicsRegion" static="false">
-			<doc>Removes a physics region.</doc>
-			<param name="handle" type="int">
-			</param>
-		</method>
-		<method native="ClearBroadPhaseRegions" script="ClearPhysicsRegions" static="false">
-			<doc>Removes all physics regions.</doc>
-		</method>
-		<property name="Gravity" type="Vector3" getter="GetGravity" setter="SetGravity" static="false">
-			<doc>Determines the global gravity value for all objects in the scene.</doc>
-		</property>
-	</class>
 	<class native="PhysicsMaterial" script="PhysicsMaterial">
 		<doc>Material that controls how two physical objects interact with each other. Materials of both objects are used during their interaction and their combined values are used.</doc>
 		<ctor>
@@ -11677,42 +11777,6 @@ In range [-1.0f, 1.0f].</doc>
 			<doc>Determines the number of samples used for percentage closer shadow map filtering. Higher values yield higher quality shadows, at the cost of performance. Valid range is [1, 4].</doc>
 		</property>
 	</class>
-	<class native="PackageResourceMetaData" script="PackageResourceMetaData">
-		<doc>Contains meta-data for a resource stored in a Package.</doc>
-		<property name="ResourceName" type="string" getter="GetResourceName" setter="" static="false">
-			<doc>Returns the name of the resource.</doc>
-		</property>
-		<property name="Path" type="string" getter="GetPath" setter="SetPath" static="false">
-			<doc>Path to the resource within the package.</doc>
-		</property>
-		<property name="Id" type="UUID" getter="GetId" setter="SetId" static="false">
-			<doc>Unique ID of the resource.</doc>
-		</property>
-		<property name="TypeId" type="int" getter="GetTypeId" setter="SetTypeId" static="false">
-			<doc>RTTI type ID of the resource contained.</doc>
-		</property>
-		<property name="Dependencies" type="UUID" getter="GetDependencies" setter="SetDependencies" static="false">
-			<doc>IDs of other resource that this resource depends on.</doc>
-		</property>
-		<property name="CompressionType" type="CompressionType" getter="GetCompressionType" setter="SetCompressionType" static="false">
-			<doc>Type of compression used on the serialized resource data.</doc>
-		</property>
-		<property name="Flags" type="PackageResourceFlag" getter="GetFlags" setter="SetFlags" static="false">
-			<doc>Flags to provide additional information about the resource.</doc>
-		</property>
-		<property name="AdditionalMetaData" type="PackageResourceUserMetaData" getter="GetAdditionalMetaData" setter="SetAdditionalMetaData" static="false">
-			<doc>Optional additional meta-data set explicitly by the user. This can be anything, but should be kept small.</doc>
-		</property>
-		<property name="ResourceMetaData" type="ResourceMetaData" getter="GetResourceMetaData" setter="SetResourceMetaData" static="false">
-			<doc>Meta-data that is inherited from the Resource object.</doc>
-		</property>
-		<property name="ResourceType" type="Type" getter="GetResourceType" setter="" static="false">
-			<doc>Returns managed type of the resource described by the meta-data.</doc>
-		</property>
-	</class>
-	<class native="PackageMetaData" script="PackageMetaData">
-		<doc>Contains meta-data for the entirety of a Package (not individual resources).</doc>
-	</class>
 	<struct native="ResourceLoadOptions" script="ResourceLoadOptions">
 		<doc>Options that may be used to customize resource load operation.</doc>
 		<ctor>
@@ -11874,10 +11938,10 @@ Alternatively you can also skip manually calling ReleaseInternalReference() and 
 			<doc>Texture coordinates of the character in the page texture.</doc>
 		</field>
 		<field name="UvWidth" type="float">
-			<doc>Width/height of the character in texture coordinates.</doc>
+			<doc>Width/height of the character in texture coordinates. When the character is rendered at multiple subpixel positions (see FontBitmapInformation::SubpixelPositionCount), the bitmap for each position follows the previous one to the right, <see cref="UvWidth"/> apart.</doc>
 		</field>
 		<field name="UvHeight" type="float">
-			<doc>Width/height of the character in texture coordinates.</doc>
+			<doc>Width/height of the character in texture coordinates. When the character is rendered at multiple subpixel positions (see FontBitmapInformation::SubpixelPositionCount), the bitmap for each position follows the previous one to the right, <see cref="UvWidth"/> apart.</doc>
 		</field>
 		<field name="Width" type="float">
 			<doc>Width/height of the character in pixels.</doc>
@@ -11916,6 +11980,28 @@ Alternatively you can also skip manually calling ReleaseInternalReference() and 
 			<doc>Glyphs in this page can be read, but no new glyphs can be added to the page.</doc>
 		</enumentry>
 	</enum>
+	<class native="ManagedTypeInfoObject" script="ManagedTypeInfoObject">
+		<doc>Contains information about a type of a generic managed object (for example struct or class).</doc>
+		<property name="TypeNamespace" type="string" getter="GetTypeNamespace" setter="SetTypeNamespace" static="false">
+		</property>
+		<property name="TypeName" type="string" getter="GetTypeName" setter="SetTypeName" static="false">
+		</property>
+		<property name="IsValueType" type="bool" getter="GetIsValueType" setter="SetIsValueType" static="false">
+		</property>
+		<property name="TypeRTTIId" type="int" getter="GetTypeRTTIId" setter="SetTypeRTTIId" static="false">
+		</property>
+		<property name="MetaDataFlags" type="ManagedObjectMetaDataFlag" getter="GetMetaDataFlags" setter="SetMetaDataFlags" static="false">
+		</property>
+	</class>
+	<class native="FontMetaData" script="FontMetaData">
+		<doc>Font specific resource meta-data recording which face of which family the font contains. Meta-data is stored alongside the resource in its package and remains available without loading the font itself, allowing font families to be indexed without paying for the font data of every face.</doc>
+		<property name="FamilyName" type="string" getter="GetFamilyName" setter="SetFamilyName" static="false">
+			<doc>Name of the family the face belongs to, as reported by the font file. Empty if the font file provides no name.</doc>
+		</property>
+		<property name="Style" type="FontFaceStyle" getter="GetStyle" setter="SetStyle" static="false">
+			<doc>Weight and slant of this particular face, as reported by the font file.</doc>
+		</property>
+	</class>
 	<class native="Font" script="Font">
 		<doc>Font resource containing data about textual characters and how to render text. Contains one or multiple font bitmaps, each for a specific size.</doc>
 		<method native="GetBitmap" script="GetBitmap" static="false">
@@ -11934,6 +12020,53 @@ Alternatively you can also skip manually calling ReleaseInternalReference() and 
 			</param>
 			<returns type="float">
 				<doc>Nearest available bitmap size.</doc>
+			</returns>
+		</method>
+	</class>
+	<struct native="FontFamilyCreateInformation" script="FontFamilyCreateInformation">
+		<doc>Descriptor structure used for initialization of a FontFamily.</doc>
+		<field name="Name" type="string">
+			<doc>Name the family is identified by. Family lookups match this name, ignoring case.</doc>
+		</field>
+		<field name="Faces" type="FontFamilyFace">
+			<doc>Faces the family provides. Faces with a style already provided by an earlier face are discarded.</doc>
+		</field>
+	</struct>
+	<class native="FontFamily" script="FontFamily">
+		<doc>A named group of Font faces that differ only in weight and slant. Provides the lookup from a requested style to the face that best provides it, so callers can ask for bold or italic text without knowing which faces the family ships.</doc>
+		<method native="GetFamilyName" script="GetFamilyName" static="false">
+			<doc>Returns the name the family is identified by, fixed when the family is created. Family lookups match this name ignoring case.</doc>
+			<returns type="string">
+			</returns>
+		</method>
+		<method native="GetFace" script="GetFace" static="false">
+			<doc>Returns the face that best matches the requested style, loading it if it has not been loaded yet. When no face provides the requested style exactly the closest available face is substituted, so this only returns null for a family that provides no face that can be loaded. Use HasFace() when an exact match is required.</doc>
+			<param name="style" type="FontFaceStyle">
+			</param>
+			<returns type="Font">
+			</returns>
+		</method>
+		<method native="HasFace" script="HasFace" static="false">
+			<doc>Returns true if the family provides a face with exactly the requested style.</doc>
+			<param name="style" type="FontFaceStyle">
+			</param>
+			<returns type="bool">
+			</returns>
+		</method>
+		<method native="AddFace" script="AddFace" static="false">
+			<doc>Adds a face to the family. The font need not have been loaded, as faces are only loaded once they are used. Returns false without modifying the family if <paramref name="font"/> is null, or if the family already provides a face with the same style.</doc>
+			<param name="font" type="RRef&lt;Font&gt;">
+			</param>
+			<param name="style" type="FontFaceStyle">
+			</param>
+			<returns type="bool">
+			</returns>
+		</method>
+		<method native="RemoveFace" script="RemoveFace" static="false">
+			<doc>Removes the face with exactly the provided style. Returns false if the family provides no such face.</doc>
+			<param name="style" type="FontFaceStyle">
+			</param>
+			<returns type="bool">
 			</returns>
 		</method>
 	</class>
@@ -16186,19 +16319,6 @@ Alternatively you can also skip manually calling ReleaseInternalReference() and 
 	<class native="ManagedTypeInfoResourceReference" script="ManagedTypeInfoResourceReference">
 		<doc>Contains information about a type of a reference to a resource.</doc>
 		<property name="ResourceType" type="ManagedTypeInfo" getter="GetResourceType" setter="SetResourceType" static="false">
-		</property>
-	</class>
-	<class native="ManagedTypeInfoObject" script="ManagedTypeInfoObject">
-		<doc>Contains information about a type of a generic managed object (for example struct or class).</doc>
-		<property name="TypeNamespace" type="string" getter="GetTypeNamespace" setter="SetTypeNamespace" static="false">
-		</property>
-		<property name="TypeName" type="string" getter="GetTypeName" setter="SetTypeName" static="false">
-		</property>
-		<property name="IsValueType" type="bool" getter="GetIsValueType" setter="SetIsValueType" static="false">
-		</property>
-		<property name="TypeRTTIId" type="int" getter="GetTypeRTTIId" setter="SetTypeRTTIId" static="false">
-		</property>
-		<property name="MetaDataFlags" type="ManagedObjectMetaDataFlag" getter="GetMetaDataFlags" setter="SetMetaDataFlags" static="false">
 		</property>
 	</class>
 	<class native="ManagedTypeInfoArray" script="ManagedTypeInfoArray">

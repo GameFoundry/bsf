@@ -90,8 +90,6 @@ namespace b3d
 			/** Returns a manager that owns the lifetime of manager-allocated D3D12 GPU resources. */
 			D3D12ResourceManager& GetResourceManager() const { return *mResourceManager; }
 
-			/** Returns true if the submit thread is currently running. */
-			bool HasSubmitThread() const { return mSubmitThread != nullptr; }
 
 			/**
 			 * Returns true if placed buffers use tight alignment. Buffers are then placed resources of their own in persistent

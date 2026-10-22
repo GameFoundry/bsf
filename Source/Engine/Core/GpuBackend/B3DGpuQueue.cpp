@@ -1,6 +1,7 @@
 //************************************* B3D Framework - Copyright 2026 Marko Pintera *************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "B3DGpuQueue.h"
+#include "B3DGpuDevice.h"
 #include "B3DRenderWindow.h"
 #include "Profiling/B3DRenderStats.h"
 
@@ -31,4 +32,16 @@ void GpuQueue::PresentRenderWindow(const TShared<render::RenderWindow>& renderWi
 	surface->SwapBuffers(*this, syncMask);
 
 	B3D_INCREMENT_RENDER_STATISTIC(NumPresents);
+}
+
+void GpuQueue::WaitUntilFence(const TShared<GpuTimelineFence>& fence, u64 value)
+{
+	// Without the submit thread nothing tracks command buffer completion, and the fence wait is all there is to do
+	if (!mGpuDevice.HasSubmitThread())
+	{
+		fence->Wait(value);
+		return;
+	}
+
+	mGpuDevice.GetSubmitThread().WaitUntilFence(*this, fence, value);
 }

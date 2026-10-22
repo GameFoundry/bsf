@@ -1,0 +1,225 @@
+// Endpoint fitting, quantization and index selection shared by the BC7 finalize kernels. Every function works on one
+// subset at a time and takes the mode's bit layout as arguments (constants at every call site), so the kernels keep
+// their per-subset state in plain variables instead of arrays indexed by subset.
+//
+// Texels are 0..255 per channel. RGB modes pass a channel mask of (1, 1, 1, 0) and texels with zero alpha, so alpha
+// never contributes to the fit or the error.
+#include "$ENGINE$\TextureCompression\TextureCompressBitUtil.bslinc"
+#include "$ENGINE$\TextureCompression\TextureCompressLineFit.bslinc"
+#include "$ENGINE$\TextureCompression\TextureCompressBC7Moments.bslinc"
+
+mixin TextureCompressBC7SubsetFit
+{
+	mixin TextureCompressBitUtil;
+	mixin TextureCompressBC7Moments;
+
+	code
+	{
+		// How a BC7 mode stores the P-bit (the extra low bit shared by all channels of an endpoint)
+		#define BC7_PBIT_NONE 0
+		#define BC7_PBIT_PER_ENDPOINT 1
+		#define BC7_PBIT_PER_SUBSET 2
+
+		// Quantized endpoint pair of one subset
+		struct BC7QuantizedSubset
+		{
+			float4 Reconstruction0; // Decoded 8-bit endpoint values, masked to the mode's channels
+			float4 Reconstruction1;
+			uint Codes0; // Endpoint codes, packed endpointBits bits per channel with R in the lowest bits
+			uint Codes1;
+			uint Pbit0;
+			uint Pbit1;
+		};
+
+		// Least-squares terms of one subset for texel = A * endpoint0 + B * endpoint1, with A = 1 - weight and B = weight
+		struct BC7LeastSquares
+		{
+			float3 Terms; // sum A^2, sum A*B, sum B^2
+			float4 SumA; // sum A * texel
+			float4 SumB; // sum B * texel
+		};
+
+		// Interpolation weight (out of 64) of @p index for @p indexBits-bit indices: the BC7 weight tables
+		// {0, 21, 43, 64}, {0, 9, 18, 27, 37, 46, 55, 64} and {0, 4, 9, 13, ..., 60, 64}.
+		uint GetBC7IndexWeight(uint index, uint indexBits)
+		{
+			const uint lastIndex = (1u << indexBits) - 1u;
+			return (index * 64u + lastIndex / 2u) / lastIndex;
+		}
+
+		// Expands @p bits-bit endpoint values (P-bit included) to the 8-bit values the decoder produces by replicating
+		// the top bits.
+		float4 ExpandBC7Endpoint(float4 value, uint bits)
+		{
+			if (bits >= 8u)
+				return value;
+
+			return value * (float)(1u << (8u - bits)) + floor(value * (1.0f / (float)(1u << (2u * bits - 8u))));
+		}
+
+		uint PackBC7Codes(float4 code, uint endpointBits)
+		{
+			return (uint)code.x | ((uint)code.y << endpointBits) | ((uint)code.z << (2u * endpointBits)) | ((uint)code.w << (3u * endpointBits));
+		}
+
+		// Quantizes one endpoint to @p endpointBits bits per channel without a P-bit. Returns the decoded endpoint.
+		float4 QuantizeBC7Endpoint(float4 endpoint, uint endpointBits, float4 channelMask, out uint outCodes)
+		{
+			const float maximumCode = (float)((1u << endpointBits) - 1u);
+			const float4 code = clamp(round(round(endpoint) * (maximumCode / 255.0f)), 0.0f, maximumCode);
+			outCodes = PackBC7Codes(code * channelMask, endpointBits);
+			return ExpandBC7Endpoint(code, endpointBits) * channelMask;
+		}
+
+		// Quantizes one endpoint to @p endpointBits bits per channel plus a P-bit, choosing the P-bit whose decoded
+		// endpoint is closer. Returns the decoded endpoint.
+		float4 QuantizeBC7EndpointWithPbit(float4 endpoint, uint endpointBits, float4 channelMask, out uint outCodes, out uint outPbit)
+		{
+			const float4 value = round(endpoint) * channelMask;
+			const float maximumCode = (float)((1u << endpointBits) - 1u);
+			const float4 scaledValue = round(value * ((maximumCode * 2.0f + 1.0f) / 255.0f));
+
+			float bestError = 1e30f;
+			float4 bestReconstruction = float4(0, 0, 0, 0);
+			outCodes = 0u;
+			outPbit = 0u;
+			for (uint pbit = 0u; pbit < 2u; ++pbit)
+			{
+				const float4 code = clamp(floor((scaledValue - (float)pbit + 1.0f) * 0.5f), 0.0f, maximumCode);
+				const float4 reconstruction = ExpandBC7Endpoint(code * 2.0f + (float)pbit, endpointBits + 1u) * channelMask;
+				const float4 difference = reconstruction - value;
+				const float error = dot(difference, difference);
+				if (error < bestError)
+				{
+					bestError = error;
+					bestReconstruction = reconstruction;
+					outCodes = PackBC7Codes(code * channelMask, endpointBits);
+					outPbit = pbit;
+				}
+			}
+
+			return bestReconstruction;
+		}
+
+		// Quantizes both endpoints of a subset, as the mode stores them.
+		BC7QuantizedSubset QuantizeBC7Subset(float4 endpoint0, float4 endpoint1, uint endpointBits, uint pbitMode, float4 channelMask)
+		{
+			BC7QuantizedSubset subset;
+			subset.Pbit0 = 0u;
+			subset.Pbit1 = 0u;
+			if (pbitMode == BC7_PBIT_NONE)
+			{
+				subset.Reconstruction0 = QuantizeBC7Endpoint(endpoint0, endpointBits, channelMask, subset.Codes0);
+				subset.Reconstruction1 = QuantizeBC7Endpoint(endpoint1, endpointBits, channelMask, subset.Codes1);
+			}
+			else if (pbitMode == BC7_PBIT_PER_ENDPOINT)
+			{
+				subset.Reconstruction0 = QuantizeBC7EndpointWithPbit(endpoint0, endpointBits, channelMask, subset.Codes0, subset.Pbit0);
+				subset.Reconstruction1 = QuantizeBC7EndpointWithPbit(endpoint1, endpointBits, channelMask, subset.Codes1, subset.Pbit1);
+			}
+			else
+			{
+				// One P-bit for both endpoints: the one with the lower combined error
+				const float4 value0 = round(endpoint0) * channelMask;
+				const float4 value1 = round(endpoint1) * channelMask;
+				const float maximumCode = (float)((1u << endpointBits) - 1u);
+				const float scale = (maximumCode * 2.0f + 1.0f) / 255.0f;
+				const float4 scaledValue0 = round(value0 * scale);
+				const float4 scaledValue1 = round(value1 * scale);
+
+				float bestError = 1e30f;
+				subset.Reconstruction0 = float4(0, 0, 0, 0);
+				subset.Reconstruction1 = float4(0, 0, 0, 0);
+				subset.Codes0 = 0u;
+				subset.Codes1 = 0u;
+				for (uint pbit = 0u; pbit < 2u; ++pbit)
+				{
+					const float4 code0 = clamp(floor((scaledValue0 - (float)pbit + 1.0f) * 0.5f), 0.0f, maximumCode);
+					const float4 code1 = clamp(floor((scaledValue1 - (float)pbit + 1.0f) * 0.5f), 0.0f, maximumCode);
+					const float4 reconstruction0 = ExpandBC7Endpoint(code0 * 2.0f + (float)pbit, endpointBits + 1u) * channelMask;
+					const float4 reconstruction1 = ExpandBC7Endpoint(code1 * 2.0f + (float)pbit, endpointBits + 1u) * channelMask;
+					const float4 difference0 = reconstruction0 - value0;
+					const float4 difference1 = reconstruction1 - value1;
+					const float error = dot(difference0, difference0) + dot(difference1, difference1);
+					if (error < bestError)
+					{
+						bestError = error;
+						subset.Reconstruction0 = reconstruction0;
+						subset.Reconstruction1 = reconstruction1;
+						subset.Codes0 = PackBC7Codes(code0 * channelMask, endpointBits);
+						subset.Codes1 = PackBC7Codes(code1 * channelMask, endpointBits);
+						subset.Pbit0 = pbit;
+						subset.Pbit1 = pbit;
+					}
+				}
+			}
+
+			return subset;
+		}
+
+		// Finds the @p indexBits-bit index whose palette entry is closest to @p texel and returns the squared distance to
+		// it. Ties keep the lower index. The palette is the decoder's ((64 - weight) * endpoint0 + weight * endpoint1 + 32)
+		// >> 6, evaluated as floor((paletteBase + weight * paletteDelta) / 64) with paletteBase = endpoint0 * 64 + 32 and
+		// paletteDelta = endpoint1 - endpoint0.
+		float FindBC7Index(float4 texel, float4 paletteBase, float4 paletteDelta, uint indexBits, out uint outIndex)
+		{
+			float bestDistance = 1e30f;
+			outIndex = 0u;
+			for (uint index = 0u; index < (1u << indexBits); ++index)
+			{
+				const float4 difference = texel - floor((paletteBase + (float)GetBC7IndexWeight(index, indexBits) * paletteDelta) * (1.0f / 64.0f));
+				const float distance = dot(difference, difference);
+				if (distance < bestDistance)
+				{
+					bestDistance = distance;
+					outIndex = index;
+				}
+			}
+
+			return bestDistance;
+		}
+
+		float4 GetBC7PaletteBase(BC7QuantizedSubset subset)
+		{
+			return subset.Reconstruction0 * 64.0f + 32.0f;
+		}
+
+		float4 GetBC7PaletteDelta(BC7QuantizedSubset subset)
+		{
+			return subset.Reconstruction1 - subset.Reconstruction0;
+		}
+
+		BC7LeastSquares CreateBC7LeastSquares()
+		{
+			BC7LeastSquares leastSquares;
+			leastSquares.Terms = float3(0, 0, 0);
+			leastSquares.SumA = float4(0, 0, 0, 0);
+			leastSquares.SumB = float4(0, 0, 0, 0);
+			return leastSquares;
+		}
+
+		// Adds a texel with interpolation weight @p weightB (0..1), scaled by @p membership (1 if the texel belongs to the
+		// subset, 0 otherwise).
+		void AccumulateBC7LeastSquares(inout BC7LeastSquares leastSquares, float4 texel, float weightB, float membership)
+		{
+			const float weightA = 1.0f - weightB;
+			leastSquares.Terms += membership * float3(weightA * weightA, weightA * weightB, weightB * weightB);
+			leastSquares.SumA += (membership * weightA) * texel;
+			leastSquares.SumB += (membership * weightB) * texel;
+		}
+
+		// Solves for the endpoints that minimize the squared error for the accumulated weights. Keeps the current endpoints
+		// if the system is singular (all texels share one weight).
+		void SolveBC7LeastSquares(BC7LeastSquares leastSquares, inout float4 endpoint0, inout float4 endpoint1)
+		{
+			const float3 terms = leastSquares.Terms;
+			const float determinant = terms.x * terms.z - terms.y * terms.y;
+			if (abs(determinant) > 1e-9f)
+			{
+				const float inverseDeterminant = 1.0f / determinant;
+				endpoint0 = clamp((terms.z * leastSquares.SumA - terms.y * leastSquares.SumB) * inverseDeterminant, 0.0f, 255.0f);
+				endpoint1 = clamp((terms.x * leastSquares.SumB - terms.y * leastSquares.SumA) * inverseDeterminant, 0.0f, 255.0f);
+			}
+		}
+	};
+};

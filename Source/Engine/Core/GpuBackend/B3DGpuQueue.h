@@ -234,6 +234,14 @@ namespace b3d
 		/** Blocks the calling thread until all operations on the queue finish executing on the GPU. */
 		virtual void WaitUntilIdle() = 0;
 
+		/**
+		 * Blocks the calling thread until @p fence reaches @p value, signalled by a command buffer submitted on this queue
+		 * (see GpuSubmissionInformation::SignalFences). Unlike GpuTimelineFence::Wait(), this also completes the command
+		 * buffers of every submission on the queue up to the one that signals the value, running their completion
+		 * callbacks and making them reusable. Later submissions keep executing and are not waited on.
+		 */
+		void WaitUntilFence(const TShared<GpuTimelineFence>& fence, u64 value);
+
 	protected:
 		GpuQueue(GpuDevice& gpuDevice, GpuQueueType type, u32 index);
 

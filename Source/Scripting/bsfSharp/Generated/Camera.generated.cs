@@ -210,7 +210,10 @@ namespace b3d
 			set { Internal_SetRenderSettings(mCachedPtr, value); }
 		}
 
-		/// <summary>Requests an asynchronous capture of the next rendered frame from this camera.</summary>
+		/// <summary>
+		/// Requests an asynchronous capture of the next rendered frame from this camera. When the camera renders to a window, 
+		/// the capture holds the image presented to the window, including other cameras drawn to it that frame.
+		/// </summary>
 		/// <returns>Async operation with captured pixel data, or nullptr if camera is inactive.</returns>
 		public AsyncOp<PixelData> RequestCapture()
 		{

@@ -95,13 +95,6 @@ namespace b3d
 			MetalClearPipeline& GetClearPipeline() const { B3D_ASSERT(mClearPipeline != nullptr); return *mClearPipeline; }
 
 			/**
-			 * Returns true while the device's GpuSubmitThread is alive (from the end of Initialize()
-			 * to the start of destruction). Used by MetalGpuQueue::WaitUntilIdle to fall back to the
-			 * native wait during construction / teardown windows.
-			 */
-			bool HasSubmitThread() const { return mSubmitThread != nullptr; }
-
-			/**
 			 * @name Per-encoder timestamp-sampling support flags
 			 *
 			 * @c sampleCountersInBuffer:atSampleIndex:withBarrier: on a render / compute / blit encoder

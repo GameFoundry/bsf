@@ -1,0 +1,125 @@
+// Second moments of the texels of a BC7 subset, and the best-fit line through them. The estimate kernels score partitions
+// by the squared distance of each subset's texels to its best-fit line plus the error of an index ramp along that line,
+// and the finalize kernels start the endpoint fit from that line.
+//
+// RGB modes use the same moments with the alpha row and column zeroed (MaskBC7MomentsToRGB), so one accumulation serves
+// both the RGB and the RGBA modes of a partition.
+mixin TextureCompressBC7Moments
+{
+	code
+	{
+		// Symmetric 4x4 matrix (raw second moments or a covariance) stored as its 10 unique entries.
+		struct BC7Moments
+		{
+			float4 Diagonal; // xx, yy, zz, ww
+			float4 Upper; // xy, xz, xw, yz
+			float2 UpperRest; // yw, zw
+		};
+
+		BC7Moments CreateBC7Moments()
+		{
+			BC7Moments moments;
+			moments.Diagonal = float4(0, 0, 0, 0);
+			moments.Upper = float4(0, 0, 0, 0);
+			moments.UpperRest = float2(0, 0);
+			return moments;
+		}
+
+		// Adds the second moments of @p texel, scaled by @p weight.
+		void AccumulateBC7Moments(inout BC7Moments moments, float4 texel, float weight)
+		{
+			const float4 weightedTexel = texel * weight;
+			moments.Diagonal += weightedTexel * texel;
+			moments.Upper += weightedTexel.xxxy * texel.yzwz;
+			moments.UpperRest += weightedTexel.yz * texel.ww;
+		}
+
+		BC7Moments SubtractBC7Moments(BC7Moments moments, BC7Moments subtrahend)
+		{
+			BC7Moments difference;
+			difference.Diagonal = moments.Diagonal - subtrahend.Diagonal;
+			difference.Upper = moments.Upper - subtrahend.Upper;
+			difference.UpperRest = moments.UpperRest - subtrahend.UpperRest;
+			return difference;
+		}
+
+		// Zeroes every entry involving alpha, leaving the moments of the RGB part of the texels.
+		BC7Moments MaskBC7MomentsToRGB(BC7Moments moments)
+		{
+			BC7Moments masked;
+			masked.Diagonal = float4(moments.Diagonal.xyz, 0.0f);
+			masked.Upper = float4(moments.Upper.xy, 0.0f, moments.Upper.w);
+			masked.UpperRest = float2(0, 0);
+			return masked;
+		}
+
+		// Converts the raw second moments of @p count texels whose sum is @p sum into their covariance, scaled by the count.
+		BC7Moments CenterBC7Moments(BC7Moments moments, float4 sum, float count)
+		{
+			const float4 mean = sum / max(count, 1.0f);
+
+			BC7Moments covariance;
+			covariance.Diagonal = moments.Diagonal - mean * sum;
+			covariance.Upper = moments.Upper - mean.xxxy * sum.yzwz;
+			covariance.UpperRest = moments.UpperRest - mean.yz * sum.ww;
+			return covariance;
+		}
+
+		float4 MultiplyBC7Moments(BC7Moments moments, float4 direction)
+		{
+			const float4 diagonal = moments.Diagonal;
+			const float4 upper = moments.Upper;
+			const float2 upperRest = moments.UpperRest;
+
+			return float4(
+				diagonal.x * direction.x + upper.x * direction.y + upper.y * direction.z + upper.z * direction.w,
+				upper.x * direction.x + diagonal.y * direction.y + upper.w * direction.z + upperRest.x * direction.w,
+				upper.y * direction.x + upper.w * direction.y + diagonal.z * direction.z + upperRest.y * direction.w,
+				upper.z * direction.x + upperRest.x * direction.y + upperRest.y * direction.z + diagonal.w * direction.w);
+		}
+
+		// Returns the unit-length dominant eigenvector of @p covariance, found by power iteration.
+		float4 FindBC7PrincipalAxis(BC7Moments covariance)
+		{
+			// Seed with the covariance column of the largest variance. Unlike a fixed or bounding-box seed it is never
+			// orthogonal to the dominant axis, unless the covariance is zero.
+			const float4 diagonal = covariance.Diagonal;
+			const float4 upper = covariance.Upper;
+			const float2 upperRest = covariance.UpperRest;
+
+			float4 axis = float4(diagonal.x, upper.x, upper.y, upper.z);
+			float largestVariance = diagonal.x;
+			if (diagonal.y > largestVariance) { axis = float4(upper.x, diagonal.y, upper.w, upperRest.x); largestVariance = diagonal.y; }
+			if (diagonal.z > largestVariance) { axis = float4(upper.y, upper.w, diagonal.z, upperRest.y); largestVariance = diagonal.z; }
+			if (diagonal.w > largestVariance) axis = float4(upper.z, upperRest.x, upperRest.y, diagonal.w);
+
+			for (uint iteration = 0u; iteration < 8u; ++iteration)
+			{
+				const float4 product = MultiplyBC7Moments(covariance, axis);
+				const float largestComponent = max(max(abs(product.x), abs(product.y)), max(abs(product.z), abs(product.w)));
+				axis = (largestComponent > 1e-9f) ? (product / largestComponent) : axis;
+			}
+
+			const float axisLengthSquared = dot(axis, axis);
+			return (axisLengthSquared > 1e-12f) ? axis * rsqrt(axisLengthSquared) : float4(0.5f, 0.5f, 0.5f, 0.5f);
+		}
+
+		// Returns the squared distance of a texel to a line along unit vector @p axis, given the texel's @p offset from a
+		// point on the line, and the texel's projection onto the line.
+		float GetBC7LineDistance(float4 offset, float4 axis, out float outProjection)
+		{
+			outProjection = dot(offset, axis);
+			return max(dot(offset, offset) - outProjection * outProjection, 0.0f);
+		}
+
+		// Returns the squared distance of @p projection to the closest of @p levels evenly spaced points spanning @p range
+		// (minimum, maximum): the error an index ramp spanning the range adds to a texel on the line, without endpoint
+		// quantization.
+		float GetBC7RampDistance(float projection, float2 range, float levels)
+		{
+			const float step = max(range.y - range.x, 1e-6f) / (levels - 1.0f);
+			const float difference = projection - (range.x + round((projection - range.x) / step) * step);
+			return difference * difference;
+		}
+	};
+};

@@ -324,6 +324,17 @@ namespace b3d
 			connection->ActiveHandleCount++;
 		}
 
+		THEvent(const THEvent& other)
+			: mConnection(other.mConnection), mEventControlBlock(other.mEventControlBlock)
+		{
+			if(mConnection != nullptr)
+				mEventControlBlock->AddHandle(mConnection);
+		}
+
+		THEvent(THEvent&& other) noexcept
+			: mConnection(std::exchange(other.mConnection, nullptr)), mEventControlBlock(std::move(other.mEventControlBlock))
+		{ }
+
 		~THEvent()
 		{
 			if(mConnection != nullptr)

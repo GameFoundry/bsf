@@ -8,6 +8,8 @@
 #include "B3DD3D12ResourceManager.h"
 #include "Managers/B3DD3D12VertexInputManager.h"
 #include "GpuBackend/B3DVertexDescription.h"
+#include "GpuBackend/B3DGpuBackend.h"
+#include "Utility/B3DTimer.h"
 
 using namespace b3d;
 using namespace b3d::render;
@@ -238,7 +240,15 @@ void D3D12GpuComputePipelineState::CreatePipelineState()
 		psoDesc.CS = static_cast<D3D12GpuProgram*>(mData.Program.get())->GetShaderBytecode();
 
 	ComPtr<ID3D12PipelineState> pipelineState;
+#if B3D_BUILD_TYPE_DEVELOPMENT
+	const Timer compileTimer;
+#endif
 	const HRESULT hr = d3d12Device->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState));
+
+#if B3D_BUILD_TYPE_DEVELOPMENT
+	if (gGpuDumpPipelineTimings.Get() && SUCCEEDED(hr))
+		B3D_LOG(Info, LogRenderBackend, "[PIPELINE] compute {0} ms {1}", compileTimer.GetMicroseconds() / 1000.0, mData.Program != nullptr ? mData.Program->GetName() : String());
+#endif
 
 	if (FAILED(hr))
 	{

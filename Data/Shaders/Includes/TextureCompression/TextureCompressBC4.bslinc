@@ -1,198 +1,209 @@
 // BC4 encoder: a 4x4 single-channel block -> a 64-bit block in the 8-value interpolated mode (r0 > r1). Endpoints start
 // at the value extent, are least-squares (Lloyd) refined over the assigned indices, then a joint endpoint-window search
 // escapes the local minimum. Reused by BC3 (alpha) and BC5 (R and G). BCN_REFINE_PASSES comes from
-// TextureCompressLineFit.bslinc (this encoder uses none of that file's mixin code).
+// TextureCompressLineFit.bslinc.
 #include "$ENGINE$\TextureCompression\TextureCompressLineFit.bslinc"
 
 mixin TextureCompressBC4
 {
 	code
 	{
-		// Encodes a 4x4 single-channel block into a 64-bit BC4 block using the
-		// 8-value interpolated mode (r0 > r1). Endpoints start at the value extent and are
-		// least-squares-refined over the assigned indices.
-		uint2 CompressBC4(float texels[16])
+		// The endpoint window search tries every pair of 8-bit codes within this distance of the refined endpoints
+		#define BC4_WINDOW_RADIUS 8
+		#define BC4_WINDOW_WIDTH (2 * BC4_WINDOW_RADIUS + 1)
+		#define BC4_WINDOW_CANDIDATE_COUNT (BC4_WINDOW_WIDTH * BC4_WINDOW_WIDTH)
+
+		// Returns the 8-bit endpoint codes of the block, starting at the value extent and least-squares refined over
+		// the assigned indices
+		void RefineBC4Endpoints(float texels[16], out uint outCode0, out uint outCode1)
 		{
-			float minV = texels[0];
-			float maxV = texels[0];
+			float minimum = texels[0];
+			float maximum = texels[0];
 			[unroll]
-			for (uint i = 1; i < 16; ++i)
+			for (uint texelIndex = 1u; texelIndex < 16u; ++texelIndex)
 			{
-				minV = min(minV, texels[i]);
-				maxV = max(maxV, texels[i]);
+				minimum = min(minimum, texels[texelIndex]);
+				maximum = max(maximum, texels[texelIndex]);
 			}
 
-			// Maps each 3-bit index to its r1 (minV) blend factor.
-			float idxW[8];
-			idxW[0] = 0.0f; idxW[1] = 1.0f;
-			idxW[2] = 1.0f / 7.0f; idxW[3] = 2.0f / 7.0f; idxW[4] = 3.0f / 7.0f;
-			idxW[5] = 4.0f / 7.0f; idxW[6] = 5.0f / 7.0f; idxW[7] = 6.0f / 7.0f;
+			// Maps each 3-bit index to its blend factor toward the second endpoint
+			float indexWeights[8];
+			indexWeights[0] = 0.0f; indexWeights[1] = 1.0f;
+			indexWeights[2] = 1.0f / 7.0f; indexWeights[3] = 2.0f / 7.0f; indexWeights[4] = 3.0f / 7.0f;
+			indexWeights[5] = 4.0f / 7.0f; indexWeights[6] = 5.0f / 7.0f; indexWeights[7] = 6.0f / 7.0f;
 
-			uint r0 = 0, r1 = 0;
-			uint idxLo = 0;
-			uint idxHi = 0;
-
-			// Pass 0: assign indices then least-squares-refine the endpoints.
-			// Pass 1: re-assign indices against the refined endpoints and emit.
-			// Runtime loop (not [unroll]), because we're seeing hangs when compiling this shader on AMD
-			for (uint refinePass = 0; refinePass < BCN_REFINE_PASSES; ++refinePass)
+			// Each pass assigns indices against the quantized endpoints, then solves the endpoints that minimize the error
+			// for those indices. Runtime loop (not [unroll]), because we're seeing hangs when compiling this shader on AMD.
+			for (uint refinePass = 0u; refinePass + 1u < BCN_REFINE_PASSES; ++refinePass)
 			{
-				r0 = (uint)round(saturate(maxV) * 255.0f);
-				r1 = (uint)round(saturate(minV) * 255.0f);
-				float fr0 = r0 / 255.0f;
-				float fr1 = r1 / 255.0f;
+				const float value0 = (uint)round(saturate(maximum) * 255.0f) / 255.0f;
+				const float value1 = (uint)round(saturate(minimum) * 255.0f) / 255.0f;
 
 				float palette[8];
-				palette[0] = fr0;
-				palette[1] = fr1;
+				palette[0] = value0;
+				palette[1] = value1;
 				[unroll]
-				for (uint p = 1; p < 7; ++p)
-					palette[p + 1] = ((7 - p) * fr0 + p * fr1) / 7.0f;
+				for (uint level = 1u; level < 7u; ++level)
+					palette[level + 1u] = ((7 - level) * value0 + level * value1) / 7.0f;
 
-				uint idx[16];
-				idxLo = 0;
-				idxHi = 0;
+				// Normal equations of the endpoints, given the nearest palette entry of each texel
+				float a = 0, b = 0, c = 0, sumA = 0, sumB = 0;
 				[unroll]
-				for (uint j = 0; j < 16; ++j)
+				for (uint texelIndex = 0u; texelIndex < 16u; ++texelIndex)
 				{
-					float v = texels[j];
-					uint best = 0;
-					float bestDist = 1e20f;
+					const float value = texels[texelIndex];
+					uint bestIndex = 0u;
+					float bestDistance = 1e20f;
 					[unroll]
-					for (uint k = 0; k < 8; ++k)
+					for (uint index = 0u; index < 8u; ++index)
 					{
-						float d = v - palette[k];
-						float dist = d * d;
-						if (dist < bestDist)
+						const float difference = value - palette[index];
+						const float distance = difference * difference;
+						if (distance < bestDistance)
 						{
-							bestDist = dist;
-							best = k;
+							bestDistance = distance;
+							bestIndex = index;
 						}
 					}
-					idx[j] = best;
 
-					uint pos = j * 3;
-					if (pos < 32)
-					{
-						idxLo |= best << pos;
-						if (pos + 3 > 32)
-							idxHi |= best >> (32 - pos);
-					}
-					else
-						idxHi |= best << (pos - 32);
+					const float weight = indexWeights[bestIndex];
+					const float weightA = 1.0f - weight;
+					a += weightA * weightA; b += weightA * weight; c += weight * weight;
+					sumA += weightA * value;
+					sumB += weight * value;
 				}
 
-				if (refinePass + 1 < BCN_REFINE_PASSES)
+				const float determinant = a * c - b * b;
+				if (abs(determinant) > 1e-7f)
 				{
-					// Solve the 2x2 normal equations for the endpoints that minimise error
-					// given the fixed indices.
-					float A = 0, B = 0, C = 0, sumA = 0, sumB = 0;
-					[unroll]
-					for (uint j = 0; j < 16; ++j)
-					{
-						float w = idxW[idx[j]];
-						float a = 1.0f - w;
-						A += a * a; B += a * w; C += w * w;
-						sumA += a * texels[j];
-						sumB += w * texels[j];
-					}
-					float det = A * C - B * B;
-					if (abs(det) > 1e-7f)
-					{
-						float invDet = 1.0f / det;
-						float e0 = ( C * sumA - B * sumB) * invDet;
-						float e1 = (-B * sumA + A * sumB) * invDet;
-						// Keep r0 >= r1 so pass 1 stays in 8-value mode; indices are
-						// reassigned fresh against the ordered palette, so no remap needed.
-						maxV = saturate(max(e0, e1));
-						minV = saturate(min(e0, e1));
-					}
+					const float inverseDeterminant = 1.0f / determinant;
+					const float endpoint0 = (c * sumA - b * sumB) * inverseDeterminant;
+					const float endpoint1 = (-b * sumA + a * sumB) * inverseDeterminant;
+
+					// Keeps the first endpoint the larger one, so the block stays in the 8-value mode. The next pass assigns
+					// fresh indices against the ordered palette, so no remap is needed.
+					maximum = saturate(max(endpoint0, endpoint1));
+					minimum = saturate(min(endpoint0, endpoint1));
 				}
 			}
 
-			// Joint endpoint window search (replaces the index-fixed +/-1 polish). For every (r0,r1) candidate in a
-			// window around the Lloyd-refined endpoints, do a *fresh* nearest-level assignment and evaluate the true
-			// squared error. Because each candidate re-derives its own index map, this explores different assignments
-			// globally and escapes the local minimum Lloyd converges to - which is the bulk of the quality gap to CPU
-			// encoders. For evenly-spaced levels the nearest index is closed form (project onto the ramp + round), so
-			// no inner 8-way palette match is needed. The o0/o1 loops are runtime (not [unroll]) to keep the IR small.
+			outCode0 = (uint)round(saturate(maximum) * 255.0f);
+			outCode1 = (uint)round(saturate(minimum) * 255.0f);
+		}
+
+		// Returns endpoint codes number @p candidate of the window around @p baseCode0 and @p baseCode1. Candidates are
+		// numbered in order of the first code's offset, then the second's.
+		uint2 GetBC4WindowCodes(uint baseCode0, uint baseCode1, uint candidate)
+		{
+			const int offset0 = (int)(candidate / BC4_WINDOW_WIDTH) - BC4_WINDOW_RADIUS;
+			const int offset1 = (int)(candidate % BC4_WINDOW_WIDTH) - BC4_WINDOW_RADIUS;
+			return uint2(clamp((int)baseCode0 + offset0, 0, 255), clamp((int)baseCode1 + offset1, 0, 255));
+		}
+
+		// Returns the squared error of the block for endpoint codes @p code0 and @p code1, with each texel assigned its
+		// nearest level. The levels are evenly spaced, so the nearest one is the rounded projection onto the ramp.
+		float GetBC4Error(float texels[16], uint code0, uint code1)
+		{
+			const float value0 = code0 / 255.0f;
+			const float value1 = code1 / 255.0f;
+			const float difference = value1 - value0;
+			const float inverseStep = (abs(difference) > 1e-6f) ? (7.0f / difference) : 0.0f;
+
+			float error = 0;
+			[unroll]
+			for (uint texelIndex = 0u; texelIndex < 16u; ++texelIndex)
 			{
-				const int kW = 8; // +/- search radius in 8-bit endpoint codes
-				int baseR0 = (int)r0, baseR1 = (int)r1;
-				int bestR0 = baseR0, bestR1 = baseR1;
-				float bestErr = 1e30f;
-				[loop]
-				for (int o0 = -kW; o0 <= kW; ++o0)
-				{
-					int nc0 = clamp(baseR0 + o0, 0, 255);
-					float q0 = nc0 / 255.0f;
-					[loop]
-					for (int o1 = -kW; o1 <= kW; ++o1)
-					{
-						int nc1 = clamp(baseR1 + o1, 0, 255);
-						float q1 = nc1 / 255.0f;
-						float diff = q1 - q0;
-						float invd = (abs(diff) > 1e-6f) ? (7.0f / diff) : 0.0f;
-						float se = 0;
-						[unroll]
-						for (uint t = 0; t < 16; ++t)
-						{
-							float v = texels[t];
-							float kf = clamp(round((v - q0) * invd), 0.0f, 7.0f);
-							float recon = q0 + kf * diff / 7.0f;
-							float e = v - recon;
-							se += e * e;
-						}
-						if (se < bestErr) { bestErr = se; bestR0 = nc0; bestR1 = nc1; }
-					}
-				}
-				r0 = (uint)bestR0; r1 = (uint)bestR1;
+				const float value = texels[texelIndex];
+				const float level = clamp(round((value - value0) * inverseStep), 0.0f, 7.0f);
+				const float reconstruction = value0 + level * difference / 7.0f;
+				const float texelError = value - reconstruction;
+				error += texelError * texelError;
 			}
 
-			// 8-value mode requires r0 >= r1; the palette set is identical under a swap, so reorder and let the final
-			// re-assignment below pick fresh indices (no remap needed).
-			if (r0 < r1) { uint tmp = r0; r0 = r1; r1 = tmp; }
+			return error;
+		}
 
-			// Final index assignment + pack against the polished, ordered endpoints.
+		// Assigns each texel its nearest palette entry for endpoint codes @p code0 and @p code1, and packs the block
+		uint2 PackBC4(float texels[16], uint code0, uint code1)
+		{
+			// 8-value mode requires r0 >= r1. The palette set is identical under a swap, so reorder and assign fresh
+			// indices (no remap needed).
+			if (code0 < code1)
 			{
-				float fr0 = r0 / 255.0f;
-				float fr1 = r1 / 255.0f;
-				float pal[8];
-				pal[0] = fr0; pal[1] = fr1;
-				[unroll]
-				for (uint p = 1; p < 7; ++p)
-					pal[p + 1] = ((7 - p) * fr0 + p * fr1) / 7.0f;
+				const uint swappedCode = code0;
+				code0 = code1;
+				code1 = swappedCode;
+			}
 
-				idxLo = 0;
-				idxHi = 0;
+			const float value0 = code0 / 255.0f;
+			const float value1 = code1 / 255.0f;
+			float palette[8];
+			palette[0] = value0;
+			palette[1] = value1;
+			[unroll]
+			for (uint level = 1u; level < 7u; ++level)
+				palette[level + 1u] = ((7 - level) * value0 + level * value1) / 7.0f;
+
+			uint indicesLow = 0u;
+			uint indicesHigh = 0u;
+			[unroll]
+			for (uint texelIndex = 0u; texelIndex < 16u; ++texelIndex)
+			{
+				uint bestIndex = 0u;
+				float bestDistance = 1e20f;
 				[unroll]
-				for (uint j = 0; j < 16; ++j)
+				for (uint index = 0u; index < 8u; ++index)
 				{
-					uint best = 0;
-					float bestDist = 1e20f;
-					[unroll]
-					for (uint k = 0; k < 8; ++k)
+					const float difference = texels[texelIndex] - palette[index];
+					const float distance = difference * difference;
+					if (distance < bestDistance)
 					{
-						float d = texels[j] - pal[k];
-						float dist = d * d;
-						if (dist < bestDist) { bestDist = dist; best = k; }
+						bestDistance = distance;
+						bestIndex = index;
 					}
-					uint pos = j * 3;
-					if (pos < 32)
-					{
-						idxLo |= best << pos;
-						if (pos + 3 > 32)
-							idxHi |= best >> (32 - pos);
-					}
-					else
-						idxHi |= best << (pos - 32);
+				}
+
+				const uint bitOffset = texelIndex * 3u;
+				if (bitOffset < 32u)
+				{
+					indicesLow |= bestIndex << bitOffset;
+					if (bitOffset + 3u > 32u)
+						indicesHigh |= bestIndex >> (32u - bitOffset);
+				}
+				else
+					indicesHigh |= bestIndex << (bitOffset - 32u);
+			}
+
+			// Block layout (little-endian): byte0 = r0, byte1 = r1, then 48 index bits
+			const uint low = code0 | (code1 << 8) | (indicesLow << 16);
+			const uint high = (indicesLow >> 16) | (indicesHigh << 16);
+			return uint2(low, high);
+		}
+
+		// Encodes a 4x4 single-channel block into a 64-bit BC4 block. The joint endpoint window search assigns each
+		// candidate pair fresh indices, so it explores different assignments globally and escapes the local minimum the
+		// least-squares refinement converges to, which is the bulk of the quality gap to CPU encoders.
+		uint2 CompressBC4(float texels[16])
+		{
+			uint baseCode0;
+			uint baseCode1;
+			RefineBC4Endpoints(texels, baseCode0, baseCode1);
+
+			uint2 bestCodes = uint2(baseCode0, baseCode1);
+			float bestError = 1e30f;
+			[loop]
+			for (uint candidate = 0u; candidate < BC4_WINDOW_CANDIDATE_COUNT; ++candidate)
+			{
+				const uint2 codes = GetBC4WindowCodes(baseCode0, baseCode1, candidate);
+				const float error = GetBC4Error(texels, codes.x, codes.y);
+				if (error < bestError)
+				{
+					bestError = error;
+					bestCodes = codes;
 				}
 			}
 
-			// Block layout (little-endian): byte0 = r0, byte1 = r1, then 48 index bits.
-			uint lo = r0 | (r1 << 8) | (idxLo << 16);
-			uint hi = (idxLo >> 16) | (idxHi << 16);
-			return uint2(lo, hi);
+			return PackBC4(texels, bestCodes.x, bestCodes.y);
 		}
 	};
 };

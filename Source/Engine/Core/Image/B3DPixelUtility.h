@@ -68,7 +68,7 @@ namespace b3d
 		bool IsNormalMap = false; /*< Determines does the input data represent a normal map. */
 		bool IsSrgb = false; /*< Determines has the input data been gamma corrected. */
 		CompressionQuality Quality = CompressionQuality::Normal; /*< Compressed image quality. Better compression might take longer to execute but will generate better results. */
-		u32 MaxTileSize = 1024; /*< For GPU compression, bounds (in pixels) the width/height of each independently-dispatched tile. Large textures are compressed tile-by-tile so no single GPU dispatch runs long enough to trip the OS GPU watchdog (TDR). The default keeps each dispatch well under the limit even on slow integrated GPUs; smaller values tile more finely. Ignored by CPU compression. */
+		u32 MaxChunkSize = 1024; /*< For GPU compression, bounds (in pixels) the width and height of each chunk, the part of the texture one GPU submission compresses. Below this bound chunks are sized from the measured GPU time of earlier chunks, so no single submission runs long enough to trip the OS GPU watchdog (TDR). The bound also sizes the scratch memory BC6H and BC7 allocate per chunk, which grows with its square and with Quality. Larger values let fast GPUs compress in fewer submissions, at the cost of more scratch memory. Ignored by CPU compression. */
 	};
 
 	/**	Options used to control texture mip map generation. */

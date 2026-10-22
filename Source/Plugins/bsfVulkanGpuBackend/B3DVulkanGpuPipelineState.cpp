@@ -28,18 +28,6 @@ static TConfigVariable gDumpPipelineStats("gpu.DumpPipelineStats",
 	ConfigVariableFlag::ReadOnly);
 
 /**
- * When enabled, logs the driver's pipeline-compile time (the duration of vkCreate*Pipelines) at pipeline creation.
- * On a cold driver cache this is the per-shader compile cost - the asset-import pain point, especially on amdvlk/LLPC;
- * a warm cache returns in well under 1 ms. Independent of gDumpPipelineStats so timing is not perturbed by the
- * statistics-capture flag. Development builds only.
- */
-static TConfigVariable gDumpPipelineTimings("gpu.DumpPipelineTimings",
-	"Log the driver pipeline-compile time (ms) at pipeline creation. Clear the driver shader caches first for cold "
-	"(true compile) numbers; a warm cache returns in <1 ms.",
-	false,
-	ConfigVariableFlag::ReadOnly);
-
-/**
  * Print every per-shader executable statistic the driver exposes for a freshly created pipeline
  * (NVIDIA reports register count / occupancy hints; AMD reports VGPRs/SGPRs/LDS/wavefront occupancy).
  */
@@ -598,7 +586,7 @@ void VulkanGpuComputePipelineState::Initialize()
 
 	VkPipeline pipeline;
 #if B3D_BUILD_TYPE_DEVELOPMENT
-	const bool timeCompile = gDumpPipelineTimings.Get();
+	const bool timeCompile = gGpuDumpPipelineTimings.Get();
 	const Timer compileTimer; // starts timing on construction; only read below when timeCompile is set
 #endif
 	VkResult result = vkCreateComputePipelines(gpuDevice.GetLogical(), VK_NULL_HANDLE, 1, &pipelineCI, gVulkanAllocator, &pipeline);

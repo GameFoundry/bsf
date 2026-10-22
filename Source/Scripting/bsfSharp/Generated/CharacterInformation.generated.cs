@@ -22,9 +22,17 @@ namespace b3d
 		public float UvX;
 		/// <summary>Texture coordinates of the character in the page texture.</summary>
 		public float UvY;
-		/// <summary>Width/height of the character in texture coordinates.</summary>
+		/// <summary>
+		/// Width/height of the character in texture coordinates. When the character is rendered at multiple subpixel positions 
+		/// (see FontBitmapInformation::SubpixelPositionCount), the bitmap for each position follows the previous one to the 
+		/// right, <see cref="UvWidth"/> apart.
+		/// </summary>
 		public float UvWidth;
-		/// <summary>Width/height of the character in texture coordinates.</summary>
+		/// <summary>
+		/// Width/height of the character in texture coordinates. When the character is rendered at multiple subpixel positions 
+		/// (see FontBitmapInformation::SubpixelPositionCount), the bitmap for each position follows the previous one to the 
+		/// right, <see cref="UvWidth"/> apart.
+		/// </summary>
 		public float UvHeight;
 		/// <summary>Width/height of the character in pixels.</summary>
 		public float Width;
