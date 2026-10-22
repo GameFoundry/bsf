@@ -1,108 +1,52 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Project Overview
 
-bsf (Banshee 3D Framework) is a high-performance, multi-threaded game engine framework written in C++17. The framework uses a plugin-based architecture with support for multiple rendering backends (Vulkan, DirectX 12), physics (PhysX), audio (OpenAudio, FMOD), and includes a C# scripting system.
+bsf (Banshee 3D Framework) is a multi-threaded game engine framework written in C++17. It uses a plugin-based architecture with rendering backends (Vulkan, DirectX 12, Metal), physics (PhysX), audio (OpenAudio, FMOD), and a C# scripting system.
 
 ## Build System
 
-The project uses CMake 4.2 or newer as its build system. Windows builds require Visual Studio 2026 with the v145 toolset. All builds are configured from the repository root.
-
-### Building
+CMake 4.2 or newer. Windows builds require Visual Studio 2026 with the v145 toolset. Configure from the repository root into `Build/`:
 
 ```bash
-# Generate Visual Studio 2026 build files
 cmake -S . -B Build -G "Visual Studio 18 2026" -A x64
-
-# Build the project using generated files
 cmake --build Build --config RelWithDebInfo
-
-# Build output goes to Build/bin/x64/RelWithDebInfo
 ```
 
-### Build Targets
-
-- **bsf** - Framework dynamic library
-- **UnitTestRunner** - Running unit tests
-
-### Testing
-
-```bash
-# Build test runner
-cmake --build . --target UnitTestRunner --config RelWithDebInfo
-
-# Run test runner
-./UnitTestRunner.exe
-```
-
-### Debugging
-
-When runtime debugging is required (breakpoints, call stacks, variable inspection, crash/assert investigation), use the `clion-debug` skill — it covers connecting to CLion's MCP servers, launching CLion if needed, building, and driving the debugger.
+Binaries go to `Build/bin/x64/<Config>`. Main targets are **bsf** (framework library) and **UnitTestRunner** (unit tests; prefer the `run-tests` skill to run it).
 
 When running any engine executable unattended (examples, UnitTestRunner, BansheeCookTool), always pass `--debug.DisableErrorDialogs=true`. Without it, Debug-build asserts and aborts pop up interactive dialogs that block the run until a human dismisses them; with it, errors go to stderr and the process fails fast with a proper exit code.
 
-## Architecture
+## Memory Allocation
 
-### Repository Structure
-
-```
-Framework/
-├── Source/			  	# Framework source code
-│   └── Tests/        		# Framework unit tests
-├── Documentation/    		# User manuals and API documentation
-├── Data/              		# Built-in assets and resources
-│   └── Raw/           		# Non-imported data files
-│   └── Shaders/   			# BSL shader files
-├── Tools/		   		# Standalone applications
-│   └── BansheeCodeGenerator/  	# Clang-based C++ code generator
-│   └── BansheeDocGenerator/  	# API documentation generator
-│   └── BansheeForge/  		# CI system
-└── Build/                 		# Generated build files (not in repo)
-```
-
-### Key Design Patterns
-
-- **Component-Based Architecture**: GameObject-like `SceneObject` with attachable `Component` classes
-- **Module System**: Core systems are modules (singletons accessed via `GetModuleName()` if provided or `ModuleName::Instance()` otherwise)
-- **Handle System**: Type-safe handles (`HSceneObject`, `HRigidbody`, etc.) wrap shared pointers
-- **Resource System**: Resources (`Mesh`, `Texture`, `Material`) are loaded/managed centrally
-- **Multi-Threading**: Task-based parallelism throughout the engine, internally using fibers rather than threads (See Scheduler)
-- **Event System**: Components expose events (e.g., `OnCollisionBegin.Connect(callback)`)
-- **Memory allocation**: `B3DNew`/`B3DDelete` instead of `new/delete`, `B3DAllocate/B3DFree` instead of `malloc/free`
- - Avoid dynamic memory allocations whenever possible
- - Use FrameAllocator for temporary heap allocations
- - Function-local temporary containers use the frame allocator variants (FrameVector, FrameUnorderedMap, FrameSet, etc.) instead of Vector/UnorderedMap/Set, inside a FrameAllocatorScope so their memory is released when the function ends
- - Re-use temporary containers (e.g. Vector, TArray). Allocate them as class members instead of locally in functions, so their memory can be re-used.
- - Use TInlineArray when allocating past a certain count is unlikely
-- Do not introduce private or internal helper methods with only one caller; inline the code at the call site with a short implementation comment instead.
+- `B3DNew`/`B3DDelete` instead of `new/delete`, `B3DAllocate/B3DFree` instead of `malloc/free`
+- Avoid dynamic memory allocations whenever possible
+- Use FrameAllocator for temporary heap allocations
+- Function-local temporary containers use the frame allocator variants (FrameVector, FrameUnorderedMap, FrameSet, etc.) instead of Vector/UnorderedMap/Set, inside a FrameAllocatorScope so their memory is released when the function ends
+- Re-use temporary containers (e.g. Vector, TArray). Allocate them as class members instead of locally in functions, so their memory can be re-used.
+- Use TInlineArray when allocating past a certain count is unlikely
 
 ## Code Style and Conventions
 
-### Line wrapping
+Match the surrounding code. The rules below are the ones most often gotten wrong.
 
-- Prefer keeping statements, function calls, declarations, and conditions on a single line, even when long.
-- Do not enforce a fixed maximum line length.
+### Naming
 
-### Naming Conventions
+- **No abbreviations** in any name. Spell the type noun out: `Parameters` not `Params`, `Information` not `Info`, `Description` not `Desc`. Name loop indices (`elementIndex`, not `i`) and counts (`cutRangeCount`, not `numCutRanges`).
+- **Locals** are camelCase and named for the thing they hold or build, including that noun: `TextureCreateInformation inputTextureCreateInformation;`, `inputTexture` (not `inputInfo`, not bare `input`), `rigidbodySceneObject` (not `rbSO`).
+- **Output parameters**: prefix with `out` for any parameter the function writes through — non-const reference, pointer, or array out-param (e.g., `outVariation`, `outRGBA`, `outSource`).
+- **Lambdas**: prefix with `fn`, explicit captures only (e.g., `auto fnProcess = [this, &data](int x) { ... }`).
+- **Smart pointers**: `TShared<T>` / `TUnique<T>`, created with `B3DMakeShared` / `B3DMakeSharedFromExisting` / `B3DMakeUnique`. Return `TShared` by const reference whenever possible.
 
-- **Classes/Structs**: Capital case, no abbreviations (e.g., `SceneObject`, `Rigidbody`, 'cutRangeCount' vs 'numCutRanges', named index variable in loops, e.g. `elementIndex` vs `i`)
-- **Methods**: Capital case, no abbreviations (e.g., `SetPosition()`, `GetVelocity()`)
-- **Member variables**: Capital case for public fields (e.g., `Spring.Stiffness`), `m` prefix for non-public fields (e.g. `Spring.mInternalData`)
-- **Local variables**: camelCase with full names, no abbreviations (e.g., `rigidbodySceneObject`, not `rbSO`)
-- **Output parameters**: prefix with `out` for any parameter the function writes through — non-const reference, pointer, or array out-param (e.g., `outVariation`, `outRGBA`, `outSource`). This is an engine-wide convention.
-- **Spell the type noun out**: `Parameters` not `Params`, `Information` not `Info`, `Description` not `Desc`; and name a local for the thing it holds or builds, including that noun — `TextureCreateInformation inputTextureCreateInformation;`, `inputTexture` (not `inputInfo`, not bare `input`); `gTextureCompressParameters` (not `gTextureCompressParams`)
-- **Lambdas**: Prefix with `fn`, explicit captures only (e.g., `auto fnProcess = [this, &data](int x) { ... }`)
-- **Handles**: Prefix with `H` (e.g., `HSceneObject`, `HRigidbody`)
-- **Smart pointers**: `TShared<T>` for shared pointers, `TUnique<T>` for unique pointers. `B3DMakeShared` or `B3DMakeSharedFromExisting` to create shared pointer, `B3DMakeUnique` to create unique pointer.
-- **Constants**: `k` prefix (e.g., `Vector3::kZero`, `Quaternion::kIdentity`)
-- **Code documentation**: The codebase consistently uses Doxygen-style documentation
+### Code
 
-### API Patterns
-
-- **Logging**: `B3D_LOG(Level, LogCategory, "message {0}", param)` - never use `GetDebug().LogDebug()`
-- **Construction**: All types must provide constructors; do not use aggregate brace initialization anywhere.
+- All types must provide constructors; do not use aggregate brace initialization anywhere.
+- Never use `dynamic_cast` (the engine is built without C++ RTTI on some platforms).
+- Don't surround single-line blocks with `{}`.
+- Do not introduce private or internal helper methods with only one caller; inline the code at the call site with a short implementation comment instead.
+- Prefer keeping statements, function calls, declarations, and conditions on a single line, even when long. Do not enforce a fixed maximum line length.
+- Separate logical sub-steps with a blank line — e.g. fill a descriptor / `…CreateInformation`, then a blank line before the `Create…` call that consumes it; keep a block of local declarations apart from the statement that uses them.
+- When creating new files add the copyright notice used in the other files, with the current year.
 
 ### Control flow
 
@@ -110,42 +54,33 @@ Framework/
 
 ### Comments
 
-- When writing new implementation comments do not narrate the rationale for an edit or reference what used to be there - that belongs in the commit message, not the source. 
+- When writing new implementation comments do not narrate the rationale for an edit or reference what used to be there - that belongs in the commit message, not the source.
 - Keep existing implementation comments. If copying or refactoring code, keep the comment if still relevant. This also applies to TODO comments.
 - Write Doxygen API documentation on classes/methods/fields. Write smart and concise documentation that does not include implementation details, and also doesn't repeat what is obvious from method/class name or signature, but instead tells you how to use the API.
 - Do not mention the caller/user of a method/class when writing documentation. Each method/class should be treated as a black box that may be potentially used for other purpose than the originally intended one.
 - Keep implementation comments to a minimum:
   - You can split up larger code blocks into meaningful sections using an implementation comment
   - You can comment on non-obvious constraints, workarounds for bugs or other things that might be missed without the comment
-  - Otherwise use meaningful variable names so the code is self-documenting, avoid abbreviations
+  - Otherwise use meaningful variable names so the code is self-documenting
   - A short trailing `//` may state a literal's or field's units/meaning (e.g. `outPixelFormat = PF_RG32U; // 64-bit block`, `B3D_UNIFORM_BUFFER_MEMBER(Vector2I, gSize)  // decoded output size in pixels`)
 
 ## Architectural Changes
 
-When adding features or refactoring, don't localize a change just to keep it small — if reshaping a higher-level system yields a cleaner API, expand the scope to do it right.
+Don't localize a change just to keep it small. If reshaping a higher-level system yields a cleaner API, expand the scope and redesign it rather than bolting the feature on. Clean means clear method names, no duplicated logic, and symmetric paired operations (`Begin`/`End`, `Acquire`/`Release`, `Create`/`Destroy`).
 
-- Don't be afraid to make API or higher-level architectural changes when they make the API cleaner; avoid contorting a new feature to fit an existing API that ends up with code smell.
-- Prefer redesigning the API to fit the feature cleanly over bolting the feature onto the side of a system that wasn't shaped for it.
-- Clean means easy to use and easy to understand: clear, non-convoluted method names that say what they do.
-- Clean means no code duplication: factor shared logic into one place rather than copy-pasting across call sites.
-- Clean means symmetry: paired operations match (e.g. `begin`/`end`, `acquire`/`release`, `create`/`destroy`).
+## Answering Questions and Planning
 
-## Answering Questions and Presenting Plans
+- Be succinct: give the answer directly, note important gotchas, optionally a short example. No restating context, no exhaustive option surveys.
+- When producing an implementation plan, if a big/pivotal decision arises — one the rest of the plan hinges on (e.g. a core data-flow choice, an interface boundary, a correctness assumption that determines whether the whole approach works) — stop and ask before finishing the plan. Do not bake the decision in as an assumption and present a completed plan around it.
 
-- When answering a question or presenting a plan, be as succinct as possible: give the answer directly, note important gotchas if any, and optionally include a short example. Nothing else.
-- Use as few words as possible — no walls of text, no restating context, no exhaustive option surveys.
+## Agent Workflow
 
-## Planning
-
-- When producing an implementation plan, if a big/pivotal decision arises — one the rest of the plan hinges on (e.g. a core data-flow choice, an interface boundary, a correctness assumption that determines whether the whole approach works) — stop and ask before finishing the plan. Do not bake the decision in as an assumption and present a completed plan around it. Surface it early so it can be settled first.
+- Memory holds only knowledge that outlives a single task: user preferences, recurring traps, environment facts, and design rationale not visible in the code. Keep task progress, decisions and next steps in a task-specific .md file, not in memory. When a task finishes, reduce its notes to the lasting lessons or delete them.
+- Do not create temporary files in the repository folder unless the location is already .gitignored. Put temporaries (scratch scripts, logs, task .md files) in `../Temp/<session name>/`, relative to the main repository checkout.
+- Put non-temporary outputs that should not be committed (reports, mockups, comparison results) in `../Artifacts/<session name>/`.
+- Create git worktrees under `../Worktrees/`, relative to the main repository checkout (e.g. `../Worktrees/Framework/<name>` for Framework branches).
 
 ## Other notes
 
-- **Exclusions**: Never modify or include in refactors, code in Dependencies or ThirdParty folders.
-- Don't surround single line blocks with {}
-- Separate logical sub-steps with a blank line — e.g. fill a descriptor / `…CreateInformation`, then a blank line before the `Create…` call that consumes it; keep a block of local declarations apart from the statement that uses them
-- Never use dynamic_cast
-- Always use tabs, not spaces. This includes all comments.
-- When creating new files make sure to add a copyright notice as in the other files, with the current year updated
-- Shared pointers (TShared) should be returned by const & whenever possible
-- When performing refactors (either simple renames, or more architectural changes) always look up the modified types in the .md manuals in Documentation/docs, and update appropriate manuals.
+- Never modify or include in refactors code in `Dependencies` or `ThirdParty` folders.
+- When performing refactors (simple renames or architectural changes) look up the modified types in the manuals under `Documentation/Manuals/docs` and update them.
