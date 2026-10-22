@@ -3979,6 +3979,9 @@ void GpuBackendTestSuite::TestExplicitBarrierValidation()
 	// The host stage maps to no D3D12 synchronization, so the D3D12 debug layer reports commands after barriers that declare only host access
 	logs.IgnoreError("cannot be accessed after a previous barrier specifies D3D12_BARRIER_SYNC_NONE as SyncAfter");
 
+	// Vulkan synchronization validation reports the clear of the render pass whose attachment is declared for another stage
+	logs.IgnoreError("vkCmdBeginRenderPass(): WRITE_AFTER_WRITE hazard detected");
+
 	const TShared<GpuDevice> device = backend.GetDevice(0);
 	const TShared<GpuComputePipelineState> pipeline = CreateTestDispatchPipeline(*device);
 	if(pipeline != nullptr)
@@ -4035,11 +4038,19 @@ void GpuBackendTestSuite::TestExplicitBarrierValidation()
 		const ImageSubresourcePitch pitch = sourceTexture->GetStagingBufferPitchForSubresource(0, 0);
 		const u32 stagingSize = pitch.RowPitch * pitch.SliceHeight * 4;
 		const TShared<render::GpuBuffer> upload = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingWrite(stagingSize));
-		const TShared<render::GpuBuffer> readback = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(stagingSize));
 		commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(source, GpuAccessState(), transferRead));
 		commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(upload, GpuAccessState(), transferRead));
 		commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(sourceTexture, GpuAccessState(), transferRead));
 		const auto fnCopy = [&commandBuffer, &source](const TShared<render::GpuBuffer>& destination) { commandBuffer->CopyBufferToBuffer(source, destination, 0, 0, sizeof(u32)); };
+
+		// Each case reads back into its own buffer, as copies into one buffer would need barriers between them. The validator identifies
+		// resources by address, so every buffer must outlive the recording.
+		Vector<TShared<render::GpuBuffer>> readbacks;
+		const auto fnCreateReadback = [&device, &readbacks, stagingSize]()
+		{
+			readbacks.push_back(device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(stagingSize)));
+			return readbacks.back();
+		};
 
 		// The source layout must be the declared layout
 		if(recordsMisdeclaredLayouts)
@@ -4068,7 +4079,7 @@ void GpuBackendTestSuite::TestExplicitBarrierValidation()
 		const TShared<GpuSplitBarrier> accessedSplit = device->CreateSplitBarrier();
 		const GpuExplicitBufferBarrier accessedBarrier(accessBetweenHalves, transferWrite, transferRead);
 		commandBuffer->ReleaseBarriers(accessedBarrier, accessedSplit);
-		commandBuffer->CopyBufferToBuffer(accessBetweenHalves, readback, 0, 0, sizeof(u32));
+		commandBuffer->CopyBufferToBuffer(accessBetweenHalves, fnCreateReadback(), 0, 0, sizeof(u32));
 		commandBuffer->AcquireBarriers(accessedBarrier, accessedSplit);
 
 		const TShared<render::GpuBuffer> barrierBetweenHalves = fnCreateBuffer("BarrierBetweenHalves");
@@ -4096,7 +4107,7 @@ void GpuBackendTestSuite::TestExplicitBarrierValidation()
 		// Each command validates its accesses
 		const TShared<render::GpuBuffer> copyBufferToBuffer = fnCreateBuffer("CopyBufferToBuffer");
 		commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(copyBufferToBuffer, GpuAccessState(), host));
-		commandBuffer->CopyBufferToBuffer(copyBufferToBuffer, readback, 0, 0, sizeof(u32));
+		commandBuffer->CopyBufferToBuffer(copyBufferToBuffer, fnCreateReadback(), 0, 0, sizeof(u32));
 
 		const TShared<render::Texture> copyBufferToTexture = fnCreateTexture("CopyBufferToTexture");
 		commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(copyBufferToTexture, GpuAccessState(), host));
@@ -4104,7 +4115,7 @@ void GpuBackendTestSuite::TestExplicitBarrierValidation()
 
 		const TShared<render::Texture> copyTextureToBuffer = fnCreateTexture("CopyTextureToBuffer");
 		commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(copyTextureToBuffer, GpuAccessState(), host));
-		commandBuffer->CopyTextureToBuffer(copyTextureToBuffer, readback, 0, 0);
+		commandBuffer->CopyTextureToBuffer(copyTextureToBuffer, fnCreateReadback(), 0, 0);
 
 		const TShared<render::Texture> copyTexture = fnCreateTexture("CopyTexture");
 		commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(copyTexture, GpuAccessState(), host));
@@ -4160,7 +4171,7 @@ void GpuBackendTestSuite::TestExplicitBarrierValidation()
 		commandBuffer->BeginRenderPass(RenderPassCreateInformation(fnCreateTarget(declared)));
 		commandBuffer->EndRenderPass();
 		commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(declared, colorAttachment, transferRead));
-		commandBuffer->CopyTextureToBuffer(declared, readback, 0, 0);
+		commandBuffer->CopyTextureToBuffer(declared, fnCreateReadback(), 0, 0);
 
 		// The command buffer is never submitted
 		commandBuffer->End();
@@ -5614,6 +5625,9 @@ void GpuBackendTestSuite::TestExplicitBarrierResourceValidation()
 		{
 			logs.ExpectError("The resource was used after an alias acquire of another resource took over its memory. Buffer: 'Superseded'.");
 			logs.ExpectError("The source of an alias acquire is missing stages or writes of the source of its GpuAliasAcquire. Buffer: 'AliasAcquireSource'.");
+
+			// Vulkan synchronization validation reports the copy into the superseded buffer
+			logs.IgnoreError("[Superseded], which was previously written by another vkCmdCopyBuffer command");
 		}
 
 		logs.ExpectError("A barrier of an earlier resource on the memory is issued together with the alias acquire that supersedes it. Resource: 'TogetherSuccessor'.");
