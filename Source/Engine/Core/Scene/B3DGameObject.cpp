@@ -49,9 +49,10 @@ void GameObject::DestroyImmediate()
 	if(ownerCollection != nullptr) // Allowed to be null during GameObjectCollection destructor call
 		ownerCollection->UnregisterObject(mThisHandle, HasGameObjectFlag(GameObjectTransientFlag::Initialized));
 
-	mInstanceData->Object = nullptr;
-
 	SetGameObjectFlag(GameObjectTransientFlag::Destroyed);
+
+	// Usually releases the last reference to this object, so it must be the last access to it
+	mInstanceData->Object = nullptr;
 }
 
 void GameObject::QueueForDestroy()
