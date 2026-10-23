@@ -356,12 +356,22 @@ namespace b3d::render
 
 	void GpuExplicitBarrierValidator::ValidateImageBarrier(const ImageSubresources& image, const GpuExplicitBarrier& barrier, GpuBarrierPhase phase, const GpuSplitBarrier* split)
 	{
+		// A texture outside a frame graph is at rest. So its first barrier starts from the resting state. An alias acquire starts the lifetime of its memory instead.
+		const bool isAtRest = gGpuValidateRestingStates && image.Texture != nullptr && image.Texture->GetFrameGraphResourceIndex() == ~0u &&
+			!barrier.Flags.IsSet(GpuBarrierFlag::AliasAcquire) && phase != GpuBarrierPhase::Acquire;
+		const bool declaresNoAccess = barrier.Source.Stages == GpuStageFlag::None && barrier.Source.Access == GpuAccessFlag::None;
+
 		const char* error = image.Texture != nullptr ? GetLifetimeError(image.Texture->IsUnplaced(), image.Texture->GetGpuResource(), &barrier, phase) : nullptr;
 		if(error == nullptr)
 		{
 			error = ForEachSubresourceState(image, [&](ResourceState& state)
 			{
-				return ApplyBarrier(state, barrier, phase, split, true);
+				const bool isFirstBarrier = !state.IsDeclared && state.UsedAccess == GpuAccessFlag::None;
+				const char* const barrierError = ApplyBarrier(state, barrier, phase, split, true);
+				if(barrierError == nullptr && isAtRest && isFirstBarrier && declaresNoAccess)
+					return "The first explicit barrier of a texture at rest declares no source. Start it from the resting state (see GpuBackendUtility::GetRestingState()), with GpuImageLayout::Undefined to discard the contents.";
+
+				return barrierError;
 			});
 		}
 

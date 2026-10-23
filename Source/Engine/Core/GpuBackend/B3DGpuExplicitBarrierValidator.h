@@ -22,7 +22,8 @@ namespace b3d::render
 	 * A command buffer validates only with a validator set by GpuCommandBuffer::SetValidator(). Command buffers that share one carry the
 	 * resource states over from one to the next. The owner of the validator registers alias acquires with DeclareAliasAcquire().
 	 * Accesses of a resource before its first barrier are checked against the resource's resting state if gGpuValidateRestingStates is
-	 * enabled, and not checked otherwise, but the source of that first barrier is checked against them.
+	 * enabled, and not checked otherwise, but the source of that first barrier is checked against them. With it enabled, the first
+	 * barrier of a texture outside a frame graph must also declare a source: the texture is at rest, so it starts from its resting state.
 	 *
 	 * GpuCommandBuffer feeds it from its public methods, so it checks the contract the caller sees and gives the same result on every
 	 * backend.

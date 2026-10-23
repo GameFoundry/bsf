@@ -3537,10 +3537,17 @@ void GpuBackendTestSuite::TestExplicitBarriers()
 			GpuExplicitTextureBarrier Textures[2];
 		};
 
-		// Writes the buffer and the textures with copies, from undefined contents
+		// Writes the buffer and the textures with copies, discarding their contents. The new textures start at rest.
 		auto fnWrite = [&upload, &transferWrite](render::GpuCommandBuffer& commands, const CaseResources& resources)
 		{
-			commands.IssueExplicitBarriers(CaseBarriers(resources, GpuAccessState(), transferWrite).Get());
+			CaseBarriers barriers(resources, GpuAccessState(), transferWrite);
+			for(GpuExplicitTextureBarrier& barrier : barriers.Textures)
+			{
+				barrier.Source = GpuBackendUtility::GetRestingState(*barrier.Object, commands.GetQueueType());
+				barrier.Source.Layout = GpuImageLayout::Undefined;
+			}
+
+			commands.IssueExplicitBarriers(barriers.Get());
 			commands.CopyBufferToBuffer(upload, resources.Buffer, 0, 0, bufferBytes);
 			for(const TShared<render::Texture>& texture : resources.Textures)
 				commands.CopyBufferToTexture(upload, texture, 0, 0, 0);
@@ -3715,23 +3722,27 @@ void GpuBackendTestSuite::TestExplicitBarriers()
 			parameters->SetStorageTexture("OutputTexture", texture, TextureSurface());
 
 			const TShared<GpuCommandBuffer> commands = fnCreateCommands(graphicsPool, "Explicit barriers around a dispatch");
-			const auto fnIssueBarriers = [&](const GpuAccessState& source, const GpuAccessState& destination, const GpuAccessState& readbackSource, const GpuAccessState& readbackDestination)
+			const auto fnIssueBarriers = [&](const GpuAccessState& source, const GpuAccessState& textureSource, const GpuAccessState& destination, const GpuAccessState& readbackSource, const GpuAccessState& readbackDestination)
 			{
 				const GpuExplicitBufferBarrier bufferBarriers[] = { GpuExplicitBufferBarrier(buffer, source, destination),
 					GpuExplicitBufferBarrier(bufferReadback, readbackSource, readbackDestination), GpuExplicitBufferBarrier(textureReadback, readbackSource, readbackDestination) };
-				const GpuExplicitTextureBarrier textureBarrier(texture, source, destination);
+				const GpuExplicitTextureBarrier textureBarrier(texture, textureSource, destination);
 				commands->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(bufferBarriers, 3), TArrayView<const GpuExplicitTextureBarrier>(&textureBarrier, 1)));
 			};
 
+			// The new texture starts at rest, and the dispatch overwrites it
+			GpuAccessState discardedRest = GpuBackendUtility::GetRestingState(*texture, GQT_GRAPHICS);
+			discardedRest.Layout = GpuImageLayout::Undefined;
+
 			const GpuAccessState computeReadWrite(GpuStageFlag::ComputeShaderNonUniform, GpuAccessFlag::Read | GpuAccessFlag::Write, GpuImageLayout::General);
-			fnIssueBarriers(GpuAccessState(), computeReadWrite, GpuAccessState(), transferWrite);
+			fnIssueBarriers(GpuAccessState(), discardedRest, computeReadWrite, GpuAccessState(), transferWrite);
 			commands->SetGpuComputePipelineState(pipeline);
 			commands->SetGpuParameterSet(parameters);
 			commands->DispatchCompute(1, 1, 1);
-			fnIssueBarriers(computeReadWrite, transferRead, transferWrite, transferWrite);
+			fnIssueBarriers(computeReadWrite, computeReadWrite, transferRead, transferWrite, transferWrite);
 			commands->CopyBufferToBuffer(buffer, bufferReadback, 0, 0, bufferBytes);
 			commands->CopyTextureToBuffer(texture, textureReadback, 0, 0, 0);
-			fnIssueBarriers(transferRead, transferRead, transferWrite, hostRead);
+			fnIssueBarriers(transferRead, transferRead, transferRead, transferWrite, hostRead);
 			context->SubmitCommandBuffer(commands, GpuQueueMask::kNone);
 			device->WaitUntilIdle();
 
@@ -3907,7 +3918,11 @@ void GpuBackendTestSuite::TestBarrierAcrossPasses()
 				RenderPassCreateInformation pass(render::RenderTexture::Create(renderTextureInformation));
 				pass.ClearMask = RT_COLOR0;
 
-				writeCommands->IssueExplicitBarriers(GpuExplicitTextureBarrier(renderTextureInformation.ColorSurfaces[0].Texture, GpuAccessState(), colorAttachment));
+				// The new texture starts at rest, and the clear discards its contents
+				GpuAccessState discardedRest = GpuBackendUtility::GetRestingState(*renderTextureInformation.ColorSurfaces[0].Texture, GQT_GRAPHICS);
+				discardedRest.Layout = GpuImageLayout::Undefined;
+
+				writeCommands->IssueExplicitBarriers(GpuExplicitTextureBarrier(renderTextureInformation.ColorSurfaces[0].Texture, discardedRest, colorAttachment));
 				writeCommands->BeginRenderPass(pass);
 				writeCommands->EndRenderPass();
 			}
@@ -5707,25 +5722,29 @@ void GpuBackendTestSuite::TestExplicitBarrierResourceValidation()
 		{
 			const TShared<render::GpuBuffer> hazardBuffer = fnCreateBuffer("InPassHazard");
 			const TShared<render::Texture> hazardTexture = fnCreateTexture("InPassHazardTexture");
-			const auto fnIssueBarriers = [&commandBuffer, &hazardBuffer, &hazardTexture](const GpuAccessState& source, const GpuAccessState& destination)
+			const auto fnIssueBarriers = [&commandBuffer, &hazardBuffer, &hazardTexture](const GpuAccessState& source, const GpuAccessState& textureSource, const GpuAccessState& destination)
 			{
 				const GpuExplicitBufferBarrier bufferBarrier(hazardBuffer, source, destination);
-				const GpuExplicitTextureBarrier textureBarrier(hazardTexture, source, destination);
+				const GpuExplicitTextureBarrier textureBarrier(hazardTexture, textureSource, destination);
 				commandBuffer->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(&bufferBarrier, 1), TArrayView<const GpuExplicitTextureBarrier>(&textureBarrier, 1)));
 			};
+
+			// The new texture starts at rest, and the dispatches overwrite it
+			GpuAccessState discardedRest = GpuBackendUtility::GetRestingState(*hazardTexture, GQT_GRAPHICS);
+			discardedRest.Layout = GpuImageLayout::Undefined;
 
 			const TShared<render::GpuParameterSet> parameters = context->GetParameterSetPool().Create(pipeline->GetParameterLayout()->GetSet(0), 0);
 			parameters->SetStorageBuffer("OutputBuffer", hazardBuffer);
 			parameters->SetStorageTexture("OutputTexture", hazardTexture, TextureSurface());
 
-			fnIssueBarriers(GpuAccessState(), computeReadWrite);
+			fnIssueBarriers(GpuAccessState(), discardedRest, computeReadWrite);
 			commandBuffer->SetGpuComputePipelineState(pipeline);
 			commandBuffer->SetGpuParameterSet(parameters);
 			commandBuffer->DispatchCompute(1, 1, 1);
 			commandBuffer->DispatchCompute(1, 1, 1);
 
 			// A barrier orders the next dispatch after the earlier writes
-			fnIssueBarriers(computeReadWrite, computeReadWrite);
+			fnIssueBarriers(computeReadWrite, computeReadWrite, computeReadWrite);
 			commandBuffer->DispatchCompute(1, 1, 1);
 		}
 
