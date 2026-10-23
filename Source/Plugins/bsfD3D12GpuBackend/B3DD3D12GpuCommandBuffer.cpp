@@ -1316,11 +1316,13 @@ namespace
 			else
 				mSubmitInformation.RequiredWaitMask |= transition.ParallelAccessWaitMask;
 
-			// Record any remaining transition in the destination submission prologue.
+			// Record any remaining transition in the destination submission prologue. The prologue executes in an ExecuteCommandLists() call
+			// of its own, whose boundaries order it against the work around it, so its barriers synchronize with nothing.
+			// TODO - Temporary until the automatic mode is removed, see D3D12GpuQueue::ExecuteSubmitOnSubmitThread(). Then the barriers
+			// synchronize with transition.SubmissionBarrierAccessScope again.
 			if(transitionSourceLayout != initialLayout)
 			{
-				const GpuBarrierScope barrier(GpuStageFlag::None, GpuAccessFlag::None, transition.SubmissionBarrierAccessScope.GetStages(), transition.SubmissionBarrierAccessScope.GetAccess());
-				mDestinationBarriers.AddTextureBarrier(D3D12BarrierUtility::GetTextureBarrier(image->GetD3D12Resource(), transition.ImageRange, barrier, GpuImageLayout::Undefined, transition.InitialLayout, transitionSourceLayout, initialLayout, nativeBarrierFlags));
+				mDestinationBarriers.AddTextureBarrier(D3D12BarrierUtility::GetTextureBarrier(image->GetD3D12Resource(), transition.ImageRange, GpuBarrierScope(), GpuImageLayout::Undefined, transition.InitialLayout, transitionSourceLayout, initialLayout, nativeBarrierFlags));
 
 				layoutTransitionQueueId = mDestinationQueueId;
 				layoutTransitionQueueChanged = true;

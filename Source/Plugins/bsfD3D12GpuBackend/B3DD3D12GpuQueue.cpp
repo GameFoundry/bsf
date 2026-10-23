@@ -162,18 +162,24 @@ void D3D12GpuQueue::ExecuteSubmitOnSubmitThread(const D3D12GpuCommandBufferSubmi
 		});
 	}
 
-	TInlineArray<ID3D12CommandList*, 2> commandLists;
+	// The transitions execute on their own, as barriers that start from undefined contents (SYNC_NONE) are invalid on resources that
+	// an earlier command list of the same ExecuteCommandLists() call accessed. The boundary between the calls orders the two.
+	// TODO - Temporary until the automatic mode is removed. The conflicting transitions come from the automatic resting path, which
+	// takes images used only through explicit barriers for resting reads. Once it is gone, execute both command lists in one call again,
+	// and scope the prologue barriers by the submission's access scope again (D3D12SubmissionTransitionVisitor::VisitImage()).
 	if (submitInformation.TransitionCommandBuffer != nullptr)
 	{
 		submitInformation.TransitionCommandBuffer->SetIsSubmitted();
-		commandLists.Add(submitInformation.TransitionCommandBuffer->GetD3D12Handle());
+
+		ID3D12CommandList* const transitionCommandList = submitInformation.TransitionCommandBuffer->GetD3D12Handle();
+		ExecuteCommandLists(&transitionCommandList, 1);
 	}
 
 	if (!commandBuffer->IsSubmitted())
 		commandBuffer->SetIsSubmitted();
 
-	commandLists.Add(commandBuffer->GetD3D12Handle());
-	ExecuteCommandLists(commandLists.Data(), (u32)commandLists.Size());
+	ID3D12CommandList* const commandList = commandBuffer->GetD3D12Handle();
+	ExecuteCommandLists(&commandList, 1);
 
 	// Mark every tracked resource as in-flight on this queue (matched by NotifyDone when the completion callback runs the command buffer's Reset).
 	commandBuffer->NotifyWasSubmittedToQueue(GetId());

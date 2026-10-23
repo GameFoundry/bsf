@@ -3648,6 +3648,7 @@ void GpuBackendTestSuite::TestExplicitBarriers()
 			const TShared<GpuCommandBuffer> commands = fnCreateCommands(graphicsPool, "Explicit split barriers");
 			fnWrite(*commands, resources);
 			commands->ReleaseBarriers(barriers.Get(), split);
+			commands->IssueExplicitBarriers(GpuExplicitBufferBarrier(unrelated, GpuAccessState(), transferWrite));
 			commands->CopyBufferToBuffer(upload, unrelated, 0, 0, bufferBytes);
 			commands->AcquireBarriers(barriers.Get(), split);
 			fnRead(*commands, resources);
@@ -3995,6 +3996,10 @@ void GpuBackendTestSuite::TestExplicitBarrierValidation()
 		const GpuAccessState transferRead(GpuStageFlag::Transfer, GpuAccessFlag::Read, GpuImageLayout::TransferSource);
 		const GpuAccessState colorAttachment(GpuStageFlag::ColorAttachment, readWrite, GpuImageLayout::ColorAttachment);
 
+		// The misdeclared cases also access resources outside their resting states, which would report errors of their own
+		const bool validateRestingStates = gGpuValidateRestingStates;
+		gGpuValidateRestingStates.Set(false);
+
 		// Declares accesses in other stages than the ones the commands access in
 		const GpuAccessState host(GpuStageFlag::Host, readWrite);
 
@@ -4176,6 +4181,7 @@ void GpuBackendTestSuite::TestExplicitBarrierValidation()
 		// The command buffer is never submitted
 		commandBuffer->End();
 		pool->Reset();
+		gGpuValidateRestingStates.Set(validateRestingStates);
 
 		// Backends may only report their validation messages when the device next goes idle, which must happen within the logging scope
 		device->WaitUntilIdle();

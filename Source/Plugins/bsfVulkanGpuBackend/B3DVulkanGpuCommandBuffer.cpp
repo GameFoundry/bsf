@@ -2293,6 +2293,13 @@ bool VulkanGpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& b
 			VulkanUtility::GetPipelineStageAndAccessMask(barrier.Destination.Stages, barrier.Destination.Access, outStages, outAccess);
 	};
 
+	// Read->read barrier needs to be issued due to stage chaining that Vulkan does. It makes prior writes visible to the new read stages, e.g.:
+	// Some stage writes -> Stage A reads -> Stage B reads. The read->read barrier from stage A to stage B makes the write visible to stage B.
+	const auto fnIsReadToRead = [](const GpuExplicitBarrier& barrier)
+	{
+		return barrier.Source.Access == GpuAccessFlag::Read && barrier.Destination.Access == GpuAccessFlag::Read;
+	};
+
 	VulkanBarrierBatch batch;
 	for(const GpuExplicitBufferBarrier& barrier : barriers.BufferBarriers)
 	{
@@ -2304,7 +2311,9 @@ bool VulkanGpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& b
 		mResourceTracker.TrackBufferUsage(buffer, barrier.Destination.Stages, barrier.Destination.Access | GpuAccessFlag::Read);
 
 		const GpuBarrierScope scope(barrier.Source.Stages, barrier.Source.Access, barrier.Destination.Stages, barrier.Destination.Access);
-		if(!transfersQueue)
+		if(!transfersQueue && fnIsReadToRead(barrier))
+			batch.AddMemoryBarrier(scope);
+		else if(!transfersQueue)
 			batch.AddBufferBarrier(buffer->GetVulkanHandle(), scope);
 		else if(buffer->IsExclusive() && releaseQueueFamily != acquireQueueFamily)
 		{
@@ -2355,6 +2364,10 @@ bool VulkanGpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& b
 			// resources that used the memory before it
 			const GpuBarrierScope scope(barrier.Source.Stages, barrier.Source.Access, barrier.Destination.Stages, barrier.Destination.Access);
 			if(isAliasAcquire && barrier.Source.Access.IsSet(GpuAccessFlag::Write))
+				batch.AddMemoryBarrier(scope);
+
+			// A layout transition would carry the visibility itself
+			if(sourceLayout == destinationLayout && fnIsReadToRead(barrier))
 				batch.AddMemoryBarrier(scope);
 
 			batch.AddImageBarrier(image.GetVulkanHandle(), vkRange, scope, sourceLayout, destinationLayout);
