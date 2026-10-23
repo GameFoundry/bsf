@@ -200,9 +200,15 @@ VkRenderPass VulkanRenderPass::CreateVariant(RenderSurfaceMask loadMask, RenderS
 			vkAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 
 		if(readMask.IsSet((RenderSurfaceMaskBits)(1 << attachmentIndex)))
+		{
 			vkAttachmentReference.layout = VK_IMAGE_LAYOUT_GENERAL;
+			vkAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_NONE;
+		}
 		else
+		{
 			vkAttachmentReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			vkAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+		}
 
 		vkAttachmentDescription.initialLayout = vkAttachmentReference.layout;
 		vkAttachmentDescription.finalLayout = vkAttachmentReference.layout;
