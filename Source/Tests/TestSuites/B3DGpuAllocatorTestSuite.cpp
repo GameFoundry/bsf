@@ -16,6 +16,7 @@
 #include "GpuBackend/B3DGpuSubmissionTimeline.h"
 #include "GpuBackend/Allocators/B3DGpuResource.h"
 #include "Renderer/B3DRenderer.h"
+#include "Utility/B3DGpuBarrierTestUtility.h"
 
 #include <atomic>
 #include <chrono>
@@ -664,8 +665,7 @@ void GpuAllocatorTestSuite::TestUserCreatedFence_ExplicitSignal()
 
 	// Allocate a fresh command buffer outside the transfer machinery so that resubmitting it during a
 	// later EndFrame doesn't break.
-	GpuCommandBufferPoolCreateInformation poolCreateInfo = GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS);
-	TShared<GpuCommandBufferPool> pool = device->CreateGpuCommandBufferPool(poolCreateInfo);
+	TShared<GpuCommandBufferPool> pool = GpuBarrierTestUtility::CreateCommandBufferPool(*device);
 	TShared<GpuCommandBuffer> commandBuffer = pool->Create(GpuCommandBufferCreateInformation::Create("UserFenceTestCB"));
 	// Pool::Create returns a CB already in the Recording state; SubmitCommandBuffer auto-ends.
 
@@ -706,7 +706,7 @@ void GpuAllocatorTestSuite::TestFenceTracker_PerQueueFences()
 	TInlineArray<GpuTimelineFenceAndValue, GQT_COUNT + 1> submits;
 	const auto fnSubmitEmpty = [&device, &tracker, &gpuContext, &pools, &submits](GpuQueueType queueType)
 	{
-		const TShared<GpuCommandBufferPool> pool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(queueType));
+		const TShared<GpuCommandBufferPool> pool = GpuBarrierTestUtility::CreateCommandBufferPool(*device, queueType);
 		pools.Add(pool);
 
 		GpuSubmissionInformation information;

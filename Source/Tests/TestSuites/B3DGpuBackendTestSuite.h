@@ -19,66 +19,17 @@ namespace b3d
 
 #endif
 
-		/** Verifies the flat write-generation hazard state and command-buffer summary. */
-		void TestResourceHazardState();
-		void TestExplicitBarrierWriteOrdering();
-
 		/** Verifies cross-command-buffer dependencies and propagation of unresolved hazards. */
 		void TestResourceTransition();
 
 		/** Verifies writer epochs allow parallel reads and only wait for active conflicting queues. */
 		void TestSubmissionTransitionPlanning();
 
-		/** Verifies image partitions and persistent submission state are independent per aspect. */
-		void TestImageAspectTracking();
-
-		/** Verifies incompatible shader layouts are coalesced only within one access epoch. */
-		void TestImageAccessEpochTracking();
-
-		/** Verifies full-range accesses register on the full-range subresource and count towards every subresource. */
-		void TestWholeImageRegistration();
-
-		/** Verifies a full-range command buffer on a uniform image resolves one transition for the whole image. */
-		void TestWholeImageSubmission();
-
-		/** Verifies a partial command buffer splits a uniform image, and untouched subresources inherit the uniform state. */
-		void TestImageSplit();
-
-		/** Verifies split images merge after submission only when their subresources can share one state. */
-		void TestImageMerge();
-
-		/** Verifies a merged image still waits for readers of every subresource, including partial reads from before the merge. */
-		void TestMergedStateWaits();
-
-		/** Verifies conservative merging of submission states. */
-		void TestSubmissionStateMerge();
-
 		/** Verifies submission states from earlier frames are cleared, and that this lets split images merge. */
 		void TestFrameIndexClear();
 
 		/** Verifies a write orders only after the reader stages of its own queue type. */
 		void TestRestingReaderStages();
-
-		/** Verifies resting reads keep only lifetime tracking and register their bounding range, and which accesses are tracked instead. */
-		void TestRestingReadRecording();
-
-		/** Verifies the first tracked access of a resource turns its resting reads into ordinary tracked reads. */
-		void TestRestingReadMaterialization();
-
-		/** Verifies reads at rest are recorded without a transition, and that later writes order after them. */
-		void TestRestingSubmission();
-
-		/** Verifies layout transitions, at submission and inside the command buffer, are synchronized like writes. */
-		void TestLayoutTransitionWrites();
-
-		/** Verifies an alias acquire records its barrier at the first access, and that submission starts a new lifetime. */
-		void TestAliasAcquire();
-
-		/**
-		 * Places resources on shared memory and hands the memory between them with alias acquires, within a command buffer, across command
-		 * buffers and across queues. Verifies the contents each resource reads back.
-		 */
-		void TestAliasAcquireExecution();
 
 		/**
 		 * Verifies the transient resource cache across scopes and frames, cache eviction by idle frames and by cache size, the release of
@@ -102,16 +53,12 @@ namespace b3d
 		/** Verifies framebuffer attachment normalization and render-pass usage construction. */
 		void TestFramebufferAttachmentUsage();
 
-		/** Verifies render-pass attachment and shader usage is combined through core subresource partitions. */
-		void TestRenderPassResourceTracking();
-
 		/** Verifies a tracker without hazard tracking keeps resources alive without resolving hazards, barriers or submission transitions. */
 		void TestTrackingWithoutHazards();
 
 		/**
 		 * Verifies that explicit barriers order GPU writes before later reads: full barriers, split barriers within a command buffer,
-		 * across command buffers in both recording orders, and across queues. Also checks that command buffers deriving barriers from
-		 * tracked state continue from the layouts explicit barriers left. Runs only on devices that support explicit barriers.
+		 * across command buffers in both recording orders, and across queues. Runs only on devices that support explicit barriers.
 		 */
 		void TestExplicitBarriers();
 

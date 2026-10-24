@@ -19,6 +19,8 @@
 #include "GpuBackend/B3DGpuParameterSetPool.h"
 #include "GpuBackend/B3DGpuParameterSet.h"
 #include "GpuBackend/B3DGpuSubmitThread.h"
+#include "GpuBackend/B3DGpuBackendUtility.h"
+#include "Utility/B3DGpuBarrierTestUtility.h"
 #include "Image/B3DTexture.h"
 
 using namespace b3d;
@@ -33,59 +35,6 @@ namespace
 			return nullptr;
 
 		return backend.GetVulkanDevice(0).get();
-	}
-
-	void RunBufferHandoff(TestSuite& testSuite, GpuQueueType sourceQueueType, GpuQueueType destinationQueueType,
-		bool waitForSourceCompletion = false)
-	{
-		VulkanGpuDevice* const device = GetActiveVulkanDevice();
-		if(device == nullptr || device->GetQueueCount(sourceQueueType) == 0 || device->GetQueueCount(destinationQueueType) == 0)
-			return;
-
-		constexpr u32 kBufferSize = 256;
-		std::array<u8, kBufferSize> expected;
-		for(u32 byteIndex = 0; byteIndex < kBufferSize; ++byteIndex)
-			expected[byteIndex] = (u8)(byteIndex ^ 0xA5);
-
-		const TShared<render::GpuBuffer> uploadBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingWrite(kBufferSize));
-		const TShared<render::GpuBuffer> gpuBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateVertex(1, kBufferSize));
-		const TShared<render::GpuBuffer> readbackBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(kBufferSize));
-		B3D_TEST_ASSERT_EXTERNAL(testSuite, uploadBuffer != nullptr)
-		B3D_TEST_ASSERT_EXTERNAL(testSuite, gpuBuffer != nullptr)
-		B3D_TEST_ASSERT_EXTERNAL(testSuite, readbackBuffer != nullptr)
-		if(uploadBuffer == nullptr || gpuBuffer == nullptr || readbackBuffer == nullptr)
-			return;
-
-		render::GpuBufferMappedScope uploadMapping = uploadBuffer->Map(GpuMapOption::Write);
-		B3D_TEST_ASSERT_EXTERNAL(testSuite, uploadMapping.IsValid())
-		if(!uploadMapping.IsValid())
-			return;
-		memcpy(uploadMapping.GetMappedMemory(), expected.data(), expected.size());
-		uploadMapping.Unmap();
-
-		const GpuCommandBufferPoolCreateInformation sourcePoolInformation = GpuCommandBufferPoolCreateInformation::CreateForThisThread(sourceQueueType);
-		const GpuCommandBufferPoolCreateInformation destinationPoolInformation = GpuCommandBufferPoolCreateInformation::CreateForThisThread(destinationQueueType);
-		const TShared<render::GpuCommandBufferPool> sourcePool = device->CreateGpuCommandBufferPool(sourcePoolInformation);
-		const TShared<render::GpuCommandBufferPool> destinationPool = device->CreateGpuCommandBufferPool(destinationPoolInformation);
-
-		const TShared<render::GpuCommandBuffer> sourceCommandBuffer = sourcePool->Create(GpuCommandBufferCreateInformation::Create("Vulkan barrier test source"));
-		sourceCommandBuffer->CopyBufferToBuffer(uploadBuffer, gpuBuffer, 0, 0, kBufferSize);
-
-		const TShared<render::GpuCommandBuffer> destinationCommandBuffer = destinationPool->Create(GpuCommandBufferCreateInformation::Create("Vulkan barrier test destination"));
-		destinationCommandBuffer->CopyBufferToBuffer(gpuBuffer, readbackBuffer, 0, 0, kBufferSize);
-
-		const TShared<GpuWorkContext> context = GpuWorkContext::Create(*device);
-		context->SubmitCommandBuffer(sourceCommandBuffer, GpuQueueMask::kNone);
-		if(waitForSourceCompletion)
-			device->WaitUntilIdle();
-
-		context->SubmitCommandBuffer(destinationCommandBuffer, GpuQueueMask::kNone);
-		device->WaitUntilIdle();
-
-		render::GpuBufferMappedScope readbackMapping = readbackBuffer->Map(GpuMapOption::Read);
-		B3D_TEST_ASSERT_EXTERNAL(testSuite, readbackMapping.IsValid())
-		if(readbackMapping.IsValid())
-			B3D_TEST_ASSERT_EXTERNAL(testSuite, memcmp(readbackMapping.GetMappedMemory(), expected.data(), expected.size()) == 0)
 	}
 
 	void CreateResolveTextures(VulkanGpuDevice& device, TShared<render::Texture>& outSource,
@@ -110,68 +59,12 @@ namespace
 VulkanBarrierTestSuite::VulkanBarrierTestSuite()
 	: TestSuite("VulkanBarrierTestSuite")
 {
-	B3D_ADD_TEST(VulkanBarrierTestSuite::TestGraphicsToComputeBufferHandoff)
-	B3D_ADD_TEST(VulkanBarrierTestSuite::TestComputeToGraphicsBufferHandoff)
-	B3D_ADD_TEST(VulkanBarrierTestSuite::TestCompletedGraphicsToComputeBufferHandoff)
-	B3D_ADD_TEST(VulkanBarrierTestSuite::TestCompletedQueueProgressFanOut)
-	B3D_ADD_TEST(VulkanBarrierTestSuite::TestSameQueueBufferBoundary)
 	B3D_ADD_TEST(VulkanBarrierTestSuite::TestQueueSharing)
 	B3D_ADD_TEST(VulkanBarrierTestSuite::TestRenderPassAttachmentTransitions)
 	B3D_ADD_TEST(VulkanBarrierTestSuite::TestSwapChainTransitions)
 	B3D_ADD_TEST(VulkanBarrierTestSuite::TestMultisampleResolve)
 	B3D_ADD_TEST(VulkanBarrierTestSuite::TestRepeatedStorageImageDispatch)
 	B3D_ADD_TEST(VulkanBarrierTestSuite::TestFrameFence)
-}
-
-void VulkanBarrierTestSuite::TestGraphicsToComputeBufferHandoff()
-{
-	RunBufferHandoff(*this, GQT_GRAPHICS, GQT_COMPUTE);
-}
-
-void VulkanBarrierTestSuite::TestComputeToGraphicsBufferHandoff()
-{
-	RunBufferHandoff(*this, GQT_COMPUTE, GQT_GRAPHICS);
-}
-
-void VulkanBarrierTestSuite::TestCompletedGraphicsToComputeBufferHandoff()
-{
-	RunBufferHandoff(*this, GQT_GRAPHICS, GQT_COMPUTE, true);
-}
-
-void VulkanBarrierTestSuite::TestCompletedQueueProgressFanOut()
-{
-	VulkanGpuDevice* const device = GetActiveVulkanDevice();
-	if(device == nullptr || device->GetQueueCount(GQT_GRAPHICS) == 0 || device->GetQueueCount(GQT_COMPUTE) == 0 ||
-		device->GetQueueCount(GQT_TRANSFER) == 0)
-		return;
-
-	const TShared<render::GpuCommandBufferPool> graphicsPool = device->CreateGpuCommandBufferPool(
-		GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS));
-	const TShared<render::GpuCommandBufferPool> computePool = device->CreateGpuCommandBufferPool(
-		GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_COMPUTE));
-	const TShared<render::GpuCommandBufferPool> transferPool = device->CreateGpuCommandBufferPool(
-		GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_TRANSFER));
-
-	const TShared<render::GpuCommandBuffer> sourceCommandBuffer =
-		graphicsPool->Create(GpuCommandBufferCreateInformation::Create("Vulkan queue progress fan-out source"));
-	const TShared<render::GpuCommandBuffer> computeCommandBuffer =
-		computePool->Create(GpuCommandBufferCreateInformation::Create("Vulkan queue progress fan-out compute"));
-	const TShared<render::GpuCommandBuffer> transferCommandBuffer =
-		transferPool->Create(GpuCommandBufferCreateInformation::Create("Vulkan queue progress fan-out transfer"));
-
-	const TShared<GpuWorkContext> context = GpuWorkContext::Create(*device);
-	context->SubmitCommandBuffer(sourceCommandBuffer, GpuQueueMask::kNone);
-	device->WaitUntilIdle();
-
-	const GpuQueueMask graphicsProgress(GpuQueueId(GQT_GRAPHICS, 0));
-	context->SubmitCommandBuffer(computeCommandBuffer, graphicsProgress);
-	context->SubmitCommandBuffer(transferCommandBuffer, graphicsProgress);
-	device->WaitUntilIdle();
-}
-
-void VulkanBarrierTestSuite::TestSameQueueBufferBoundary()
-{
-	RunBufferHandoff(*this, GQT_GRAPHICS, GQT_GRAPHICS);
 }
 
 void VulkanBarrierTestSuite::TestQueueSharing()
@@ -262,10 +155,20 @@ void VulkanBarrierTestSuite::TestMultisampleResolve()
 		if(!texturesCreated)
 			return;
 
-		const TShared<render::GpuCommandBufferPool> commandBufferPool = device->CreateGpuCommandBufferPool(
-			GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS));
+		const TShared<render::GpuCommandBufferPool> commandBufferPool = GpuBarrierTestUtility::CreateCommandBufferPool(*device, GQT_GRAPHICS);
 		const TShared<render::GpuCommandBuffer> commandBuffer = commandBufferPool->Create(
 			GpuCommandBufferCreateInformation::Create("Vulkan MSAA resolve test"));
+
+		// The new textures start at rest. The resolve overwrites the destination, and reads the undefined contents of the source.
+		const GpuAccessState sourceRest = GpuBarrierTestUtility::GetDiscardedRestingState(*source);
+		const GpuAccessState destinationRest = GpuBarrierTestUtility::GetDiscardedRestingState(*destination);
+
+		const GpuExplicitTextureBarrier resolveBarriers[] =
+		{
+			GpuExplicitTextureBarrier(source, sourceRest, GpuAccessState(GpuStageFlag::Resolve, GpuAccessFlag::Read, GpuImageLayout::ResolveSource)),
+			GpuExplicitTextureBarrier(destination, destinationRest, GpuAccessState(GpuStageFlag::Resolve, GpuAccessFlag::Write, GpuImageLayout::ResolveDestination))
+		};
+		commandBuffer->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(), TArrayView<const GpuExplicitTextureBarrier>(resolveBarriers, 2)));
 		resolveRecorded = commandBuffer->CopyTexture(source, destination);
 		if(!resolveRecorded)
 			return;
@@ -324,17 +227,31 @@ void main()
 		const TShared<render::GpuBuffer> readback = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(64 * 64 * sizeof(u32)));
 		// Devices without a separate compute queue family dispatch on the graphics queue
 		const GpuQueueType queueType = device->GetQueueCount(GQT_COMPUTE) > 0 ? GQT_COMPUTE : GQT_GRAPHICS;
-		const TShared<render::GpuCommandBufferPool> commandPool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(queueType));
+		const TShared<render::GpuCommandBufferPool> commandPool = GpuBarrierTestUtility::CreateCommandBufferPool(*device, queueType);
 		const TShared<render::GpuCommandBuffer> commands = commandPool->Create(GpuCommandBufferCreateInformation::Create("Repeated storage-image dispatch"));
+
+		// The new texture starts at rest, and the first dispatch overwrites it. The second dispatch reads what the first one wrote.
+		const GpuAccessState discardedRest = GpuBarrierTestUtility::GetDiscardedRestingState(*texture, queueType);
+		const GpuAccessState computeReadWrite(GpuStageFlag::ComputeShaderNonUniform, GpuAccessFlag::Read | GpuAccessFlag::Write, GpuImageLayout::General);
+		const GpuAccessState transferRead(GpuStageFlag::Transfer, GpuAccessFlag::Read, GpuImageLayout::TransferSource);
+		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
+
+		commands->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, discardedRest, computeReadWrite));
 		commands->SetGpuComputePipelineState(pipeline);
 		commands->SetGpuParameterSet(parameters);
 		u32 increment = 0;
 		commands->SetPushConstants(0, sizeof(increment), &increment);
 		commands->DispatchCompute(8, 8, 1);
+		commands->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, computeReadWrite, computeReadWrite));
 		increment = 1;
 		commands->SetPushConstants(0, sizeof(increment), &increment);
 		commands->DispatchCompute(8, 8, 1);
+
+		const GpuExplicitBufferBarrier readbackBarrier(readback, GpuAccessState(), transferWrite);
+		const GpuExplicitTextureBarrier copyBarrier(texture, computeReadWrite, transferRead);
+		commands->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(&readbackBarrier, 1), TArrayView<const GpuExplicitTextureBarrier>(&copyBarrier, 1)));
 		commands->CopyTextureToBuffer(texture, readback, 0, 0);
+		commands->IssueExplicitBarriers(GpuBarrierTestUtility::CreateReadbackBarrier(readback));
 		const TShared<GpuWorkContext> context = GpuWorkContext::Create(*device);
 		context->SubmitCommandBuffer(commands, GpuQueueMask::kNone);
 		device->WaitUntilIdle();
@@ -358,8 +275,11 @@ void VulkanBarrierTestSuite::TestRenderPassAttachmentTransitions()
 		if(device == nullptr)
 			return;
 
-		const TShared<render::GpuCommandBufferPool> commandPool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS));
+		const TShared<render::GpuCommandBufferPool> commandPool = GpuBarrierTestUtility::CreateCommandBufferPool(*device, GQT_GRAPHICS);
 		const TShared<GpuWorkContext> context = GpuWorkContext::Create(*device);
+		const GpuAccessState transferRead(GpuStageFlag::Transfer, GpuAccessFlag::Read, GpuImageLayout::TransferSource);
+		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
+		const GpuAccessState hostRead(GpuStageFlag::Host, GpuAccessFlag::Read);
 		for(PixelFormat format : { PF_RGBA8, PF_D32, PF_D32_S8X24 })
 		{
 			const bool depth = format != PF_RGBA8;
@@ -383,6 +303,28 @@ void VulkanBarrierTestSuite::TestRenderPassAttachmentTransitions()
 			const RenderSurfaceMask surfaces = depth ? RT_DEPTH | RT_STENCIL : RT_COLOR0;
 			const ImageSubresourcePitch pitch = texture->GetStagingBufferPitchForSubresource(0, 0);
 			const TShared<render::GpuBuffer> readback = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(pitch.RowPitch * pitch.SliceHeight * sizeof(u32)));
+
+			// Returns the state of the attachment in a render pass with @p readOnlyMask, in the layouts Vulkan render passes use (see
+			// VulkanFramebuffer::GetLayoutPolicy())
+			const GpuStageFlags attachmentStages = depth ? GpuStageFlag::EarlyFragmentTests | GpuStageFlag::LateFragmentTests : GpuStageFlags(GpuStageFlag::ColorAttachment);
+			const auto fnGetAttachmentState = [depth, surfaces, attachmentStages](RenderSurfaceMask readOnlyMask)
+			{
+				GpuImageLayout layout = readOnlyMask.IsSet(RT_COLOR0) ? GpuImageLayout::General : GpuImageLayout::ColorAttachment;
+				if(depth)
+				{
+					if(readOnlyMask.IsSet(RT_DEPTH))
+						layout = readOnlyMask.IsSet(RT_STENCIL) ? GpuImageLayout::DepthStencilReadOnly : GpuImageLayout::DepthReadOnlyStencilAttachment;
+					else
+						layout = readOnlyMask.IsSet(RT_STENCIL) ? GpuImageLayout::DepthAttachmentStencilReadOnly : GpuImageLayout::DepthStencilAttachment;
+				}
+
+				const bool isReadOnly = (readOnlyMask & surfaces) == surfaces;
+				return GpuAccessState(attachmentStages, isReadOnly ? GpuAccessFlags(GpuAccessFlag::Read) : GpuAccessFlag::Read | GpuAccessFlag::Write, layout);
+			};
+
+			// The new texture starts at rest. Every case starts by discarding the contents.
+			GpuAccessState textureState = GpuBackendUtility::GetRestingState(*texture, GQT_GRAPHICS);
+			GpuAccessState readbackState;
 			for(RenderSurfaceMask readOnlyMask : { RenderSurfaceMask(RT_NONE), surfaces, RenderSurfaceMask(RT_DEPTH), RenderSurfaceMask(RT_STENCIL) })
 			{
 				if(!depth && (readOnlyMask == RT_DEPTH || readOnlyMask == RT_STENCIL))
@@ -392,29 +334,35 @@ void VulkanBarrierTestSuite::TestRenderPassAttachmentTransitions()
 				RenderPassCreateInformation pass(target);
 
 				// Discard followed by clear also exercises reuse of an attachment without preserving its contents.
+				const GpuAccessState writeState = fnGetAttachmentState(RT_NONE);
+				GpuAccessState discardedState = textureState;
+				discardedState.Layout = GpuImageLayout::Undefined;
+				commands->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, discardedState, writeState));
 				commands->BeginRenderPass(pass);
 				commands->EndRenderPass();
 				pass.ClearMask = surfaces;
 				commands->BeginRenderPass(pass);
 				commands->EndRenderPass();
-				// Return to the attachment layout within one batch; no intermediate transition may survive.
-				const GpuTextureBarrier mergedBarriers[] =
-				{
-					GpuTextureBarrier(texture, GpuResourceUseFlag::Transfer, GpuAccessFlag::Read, GpuImageLayout::TransferSource),
-					GpuTextureBarrier(texture, depth ? GpuResourceUseFlag::DepthStencilAttachment : GpuResourceUseFlag::ColorAttachment, GpuAccessFlag::Read | GpuAccessFlag::Write, depth ? GpuImageLayout::DepthStencilAttachment : GpuImageLayout::ColorAttachment)
-				};
-				commands->IssueBarriers(GpuBarriers(TArrayView<const GpuTextureBarrier>(mergedBarriers, 2)));
 
+				const GpuAccessState readOnlyState = fnGetAttachmentState(readOnlyMask);
+				commands->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, writeState, readOnlyState));
 				pass.ClearMask = RT_NONE;
 				pass.LoadMask = surfaces;
 				pass.ReadOnlyMask = readOnlyMask;
 				commands->BeginRenderPass(pass);
 				commands->EndRenderPass();
 
-				// Consecutive read-only passes must not hide a write in a final layout transition.
+				// Consecutive read-only passes keep the contents
 				commands->BeginRenderPass(pass);
 				commands->EndRenderPass();
+
+				const GpuExplicitBufferBarrier readbackBarrier(readback, readbackState, transferWrite);
+				const GpuExplicitTextureBarrier copyBarrier(texture, readOnlyState, transferRead);
+				commands->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(&readbackBarrier, 1), TArrayView<const GpuExplicitTextureBarrier>(&copyBarrier, 1)));
 				commands->CopyTextureToBuffer(texture, readback, 0, 0);
+				commands->IssueExplicitBarriers(GpuExplicitBufferBarrier(readback, transferWrite, hostRead));
+				textureState = transferRead;
+				readbackState = hostRead;
 				context->SubmitCommandBuffer(commands, GpuQueueMask::kNone);
 				device->WaitUntilIdle();
 
@@ -454,8 +402,11 @@ void VulkanBarrierTestSuite::TestSwapChainTransitions()
 		IVulkanRenderWindowSurface& surface = static_cast<IVulkanRenderWindowSurface&>(*window->GetRenderWindowSurface());
 		const TShared<GpuQueue> queue = device->GetQueue(GQT_GRAPHICS, 0);
 		const TShared<GpuWorkContext> context = GpuWorkContext::Create(*device);
-		const TShared<render::GpuCommandBufferPool> graphicsPool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS));
-		const TShared<render::GpuCommandBufferPool> computePool = device->GetQueueCount(GQT_COMPUTE) > 0 ? device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_COMPUTE)) : graphicsPool;
+		const TShared<render::GpuCommandBufferPool> graphicsPool = GpuBarrierTestUtility::CreateCommandBufferPool(*device, GQT_GRAPHICS);
+		const TShared<render::GpuCommandBufferPool> computePool = device->GetQueueCount(GQT_COMPUTE) > 0 ? GpuBarrierTestUtility::CreateCommandBufferPool(*device, GQT_COMPUTE) : graphicsPool;
+		const TShared<render::RenderTarget> target = window;
+		const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*window, RT_COLOR0, GQT_GRAPHICS);
+		const GpuAccessState colorAttachment(GpuStageFlag::ColorAttachment, GpuAccessFlag::Read | GpuAccessFlag::Write, GpuImageLayout::ColorAttachment);
 		for(u32 generation = 0; generation < 2; generation++)
 		{
 			// A newly acquired image must wait for acquisition even when nothing is drawn before presenting it.
@@ -464,6 +415,10 @@ void VulkanBarrierTestSuite::TestSwapChainTransitions()
 			for(u32 readbackMode = 0; readbackMode < 3; readbackMode++)
 			{
 				const TShared<render::GpuCommandBuffer> commands = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("Swapchain clear and load"));
+				GpuAccessState discardedRest = restingState;
+				discardedRest.Layout = GpuImageLayout::Undefined;
+				commands->IssueExplicitBarriers(GpuExplicitRenderTargetBarrier(target, RT_COLOR0, discardedRest, colorAttachment));
+
 				RenderPassCreateInformation pass(window);
 				pass.ClearMask = RT_COLOR0;
 				commands->BeginRenderPass(pass);
@@ -472,12 +427,14 @@ void VulkanBarrierTestSuite::TestSwapChainTransitions()
 				pass.LoadMask = RT_COLOR0;
 				commands->BeginRenderPass(pass);
 				commands->EndRenderPass();
+				commands->IssueExplicitBarriers(GpuExplicitRenderTargetBarrier(target, RT_COLOR0, colorAttachment, restingState));
 				context->SubmitCommandBuffer(commands, GpuQueueMask::kNone);
 
 				const TOptional<RenderWindowImageLayout> imageLayout = surface.GetImageLayout();
 				B3D_TEST_ASSERT(imageLayout.has_value())
 
 				TShared<render::GpuBuffer> readbackBuffer;
+				GpuQueueMask presentWaitMask = GpuQueueMask::kNone;
 				if(readbackMode != 0 && imageLayout.has_value())
 				{
 					GpuBufferCreateInformation readbackBufferCreateInformation;
@@ -487,12 +444,15 @@ void VulkanBarrierTestSuite::TestSwapChainTransitions()
 
 					const TShared<render::GpuCommandBufferPool>& readbackPool = readbackMode == 1 ? graphicsPool : computePool;
 					const TShared<render::GpuCommandBuffer> readCommands = readbackPool->Create(GpuCommandBufferCreateInformation::Create("Swapchain readback before present"));
-					// Read the surface directly so presentation must transition from TransferSource, including a queue handoff.
-					readCommands->CopyWindowToBuffer(window, readbackBuffer);
-					context->SubmitCommandBuffer(readCommands, GpuQueueMask::kNone);
+					// A read on another queue waits for the graphics queue's writes, and presentation waits for the read
+					const bool readsOnOtherQueue = readCommands->GetQueueType() != GQT_GRAPHICS;
+					GpuBackendUtility::CopyToStagingBuffer(*readCommands, window, readbackBuffer);
+					context->SubmitCommandBuffer(readCommands, readsOnOtherQueue ? GpuQueueMask(GpuQueueId(GQT_GRAPHICS, 0)) : GpuQueueMask::kNone);
+					if(readsOnOtherQueue)
+						presentWaitMask = GpuQueueMask(GpuQueueId(readCommands->GetQueueType(), 0));
 				}
 
-				surface.SwapBuffers(*queue, GpuQueueMask::kNone);
+				surface.SwapBuffers(*queue, presentWaitMask);
 				device->WaitUntilIdle();
 				if(readbackBuffer != nullptr)
 				{
@@ -525,7 +485,7 @@ void VulkanBarrierTestSuite::TestFrameFence()
 		const TShared<GpuWorkContext> context = GpuWorkContext::Create(*device);
 		const auto fnSubmit = [device, &context](GpuQueueType queueType)
 		{
-			const TShared<render::GpuCommandBufferPool> pool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(queueType));
+			const TShared<render::GpuCommandBufferPool> pool = GpuBarrierTestUtility::CreateCommandBufferPool(*device, queueType);
 			context->SubmitCommandBuffer(pool->Create(GpuCommandBufferCreateInformation::Create("Vulkan frame boundary test")), GpuQueueMask::kNone);
 			device->WaitUntilIdle();
 		};

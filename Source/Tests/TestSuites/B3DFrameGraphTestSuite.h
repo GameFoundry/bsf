@@ -6,10 +6,7 @@
 
 namespace b3d
 {
-	/**
-	 * Tests render::FrameGraph: culling, transient placement, barrier planning and the development checks. Every test runs in explicit
-	 * mode and in automatic mode (see gGpuExplicitBarriers), except TestValidation, which runs in explicit mode only.
-	 */
+	/** Tests render::FrameGraph: culling, transient placement, barrier planning and the development checks. */
 	class FrameGraphTestSuite : public TestSuite
 	{
 	public:

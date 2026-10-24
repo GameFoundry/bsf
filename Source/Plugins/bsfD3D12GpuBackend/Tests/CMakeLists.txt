@@ -19,7 +19,8 @@ if(B3D_GPU_BACKEND MATCHES "DirectX12" OR B3D_BUILD_ALL_PLUGINS)
 	target_include_directories(bsfD3D12GpuBackendTests PRIVATE
 		"${CMAKE_CURRENT_SOURCE_DIR}"
 		"${CMAKE_CURRENT_SOURCE_DIR}/.."
-		"${CMAKE_CURRENT_SOURCE_DIR}/../../ShaderBackends/bsfShaderBackendHLSL")
+		"${CMAKE_CURRENT_SOURCE_DIR}/../../ShaderBackends/bsfShaderBackendHLSL"
+		"${B3D_FRAMEWORK_SOURCE_FOLDER}/Tests")
 
 	# Match the backend's Direct3D headers.
 	B3DUseD3D12AgilitySDKHeaders(bsfD3D12GpuBackendTests)

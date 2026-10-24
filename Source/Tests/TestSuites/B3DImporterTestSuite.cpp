@@ -15,6 +15,8 @@
 #include "Resources/B3DBuiltinResources.h"
 #include "GpuBackend/B3DGpuDevice.h"
 #include "GpuBackend/B3DGpuDeviceCapabilities.h"
+#include "GpuBackend/B3DGpuBackendUtility.h"
+#include "Utility/B3DGpuBarrierTestUtility.h"
 
 // Dependencies of the GPU hardware-decode oracle (DecodeToFloatOnGpu) below.
 #include "Renderer/B3DRenderer.h"
@@ -837,7 +839,7 @@ namespace
 			return;
 		}
 
-		const TShared<render::GpuCommandBufferPool> pool = gpuDevice->CreateGpuCommandBufferPool(render::GpuCommandBufferPoolCreateInformation::CreateForThisThread());
+		const TShared<render::GpuCommandBufferPool> pool = render::GpuBarrierTestUtility::CreateCommandBufferPool(*gpuDevice);
 
 		// Compressed source as a sampled texture: sampling it runs the GPU's hardware decode. Uploaded once below.
 		TextureCreateInformation inputTextureCreateInformation;
@@ -884,14 +886,21 @@ namespace
 		render::gTextureDecompressParameters.gSize.Set(parameters, size);
 		parameters.Unmap();
 
-		// Dispatch command buffer: upload the blocks, then decode (the dispatch barrier orders the upload before the first sample).
+		// Dispatch command buffer: upload the blocks, then decode. The upload returns the input to rest, where the dispatch samples it. The
+		// dispatch overwrites the output and returns it to rest, where the read-back takes it from.
 		render::GpuCommandBufferCreateInformation commandBufferInfo;
 		commandBufferInfo.Name = "TextureDecompress";
 
 		const TShared<render::GpuCommandBuffer> commandBuffer = pool->Create(commandBufferInfo);
 
+		const render::GpuAccessState outputRest = GpuBackendUtility::GetRestingState(*outputTexture, commandBuffer->GetQueueType());
+		const render::GpuAccessState discardedOutputRest = render::GpuBarrierTestUtility::GetDiscardedRestingState(*outputTexture, commandBuffer->GetQueueType());
+		const render::GpuAccessState computeWrite(render::GpuStageFlag::ComputeShaderNonUniform, GpuAccessFlag::Write, render::GpuImageLayout::General);
+
 		render::TextureUtility::Write(gpuContext, inputTexture, *compressed, 0, 0, render::TextureWriteFlag::Normal, commandBuffer);
+		commandBuffer->IssueExplicitBarriers(render::GpuExplicitTextureBarrier(outputTexture, discardedOutputRest, computeWrite));
 		material->Execute(*commandBuffer, inputTexture, outputTexture, parameters, size);
+		commandBuffer->IssueExplicitBarriers(render::GpuExplicitTextureBarrier(outputTexture, computeWrite, outputRest));
 
 		gpuContext.SubmitCommandBuffer(commandBuffer);
 		gpuDevice->WaitUntilIdle();

@@ -44,17 +44,11 @@ namespace b3d
 		 */
 		void TestQueueSharing();
 
-		/** Copies texture data between graphics, copy and compute queues under D3D12 validation. */
-		void TestCrossQueueTextureHandoffs();
-
-		/** Copies buffer data between graphics, compute and copy queues using fence-only ordering. */
-		void TestCrossQueueBufferHandoffs();
-
-		/** Exercises submission prologue barriers followed by barriers in the primary command list. */
-		void TestSubmissionBarrierChaining();
-
-		/** Executes RAW, WAR and WAW buffer hazards across consecutive same-queue submissions. */
-		void TestSameQueueSubmissionHazards();
+		/**
+		 * Writes and reads back a new render target under D3D12 validation. The submission prologue brings the texture to rest in the
+		 * same ExecuteCommandLists() call as the command list whose first barrier starts from the resting state.
+		 */
+		void TestRestingTransitionSubmission();
 
 		/** Resolves a multisampled texture on a graphics command buffer under D3D12 validation. */
 		void TestMultisampleResolve();

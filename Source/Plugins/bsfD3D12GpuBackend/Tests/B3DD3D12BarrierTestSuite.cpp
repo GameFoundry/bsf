@@ -7,6 +7,8 @@
 #include "B3DD3D12Utility.h"
 #include "Utility/B3DD3D12BarrierBatch.h"
 #include "GpuBackend/B3DGpuBackend.h"
+#include "GpuBackend/B3DGpuBackendUtility.h"
+#include "Utility/B3DGpuBarrierTestUtility.h"
 #include "GpuBackend/B3DGpuBuffer.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DGpuDevice.h"
@@ -67,10 +69,7 @@ D3D12BarrierTestSuite::D3D12BarrierTestSuite() : TestSuite("D3D12BarrierTestSuit
 	B3D_ADD_TEST(D3D12BarrierTestSuite::TestTextureLayoutMappings)
 	B3D_ADD_TEST(D3D12BarrierTestSuite::TestCopyQueueLayoutMappings)
 	B3D_ADD_TEST(D3D12BarrierTestSuite::TestQueueSharing)
-	B3D_ADD_TEST(D3D12BarrierTestSuite::TestCrossQueueTextureHandoffs)
-	B3D_ADD_TEST(D3D12BarrierTestSuite::TestCrossQueueBufferHandoffs)
-	B3D_ADD_TEST(D3D12BarrierTestSuite::TestSubmissionBarrierChaining)
-	B3D_ADD_TEST(D3D12BarrierTestSuite::TestSameQueueSubmissionHazards)
+	B3D_ADD_TEST(D3D12BarrierTestSuite::TestRestingTransitionSubmission)
 	B3D_ADD_TEST(D3D12BarrierTestSuite::TestMultisampleResolve)
 	B3D_ADD_TEST(D3D12BarrierTestSuite::TestResolveValidation)
 	B3D_ADD_TEST(D3D12BarrierTestSuite::TestFrameFence)
@@ -344,17 +343,13 @@ void D3D12BarrierTestSuite::TestTextureBarrierBatch()
 	B3D_TEST_ASSERT(depthStencilBatch.mTextureBarriers[0].Subresources.NumPlanes == 1)
 	B3D_TEST_ASSERT(depthStencilBatch.mTextureBarriers[1].Subresources.NumPlanes == 1)
 
-	const GpuResourceUseFlags colorAttachmentUsage = GpuResourceUseFlag::ColorAttachment;
-	const GpuResourceUseFlags fragmentShaderUsage = GpuResourceUseFlag::ShaderAccess | GpuResourceUseFlag::StageFragmentShader;
-	const GpuTextureBarrier sequentialBarriers[] =
-	{
-		GpuTextureBarrier(texture, colorAttachmentUsage, GpuAccessFlag::Write, GpuImageLayout::ColorAttachment, topMip),
-		GpuTextureBarrier(texture, fragmentShaderUsage, GpuAccessFlag::Read, GpuImageLayout::ShaderReadOnly, topMip)
-	};
+	const GpuAccessState colorAttachmentWrite(GpuStageFlag::ColorAttachment, GpuAccessFlag::Write, GpuImageLayout::ColorAttachment);
+	const GpuAccessState fragmentShaderRead(GpuStageFlag::FragmentShaderNonUniform, GpuAccessFlag::Read, GpuImageLayout::ShaderReadOnly);
 
-	const TShared<GpuCommandBufferPool> graphicsPool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS));
+	const TShared<GpuCommandBufferPool> graphicsPool = GpuBarrierTestUtility::CreateCommandBufferPool(*device, GQT_GRAPHICS);
 	const TShared<GpuCommandBuffer> commandBuffer = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 sequential texture barrier validation"));
-	commandBuffer->IssueBarriers(GpuBarriers(TArrayView<const GpuTextureBarrier>(sequentialBarriers, 2)));
+	commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, GpuBarrierTestUtility::GetDiscardedRestingState(*texture), colorAttachmentWrite, topMip));
+	commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, colorAttachmentWrite, fragmentShaderRead, topMip));
 	commandBuffer->End();
 }
 
@@ -667,364 +662,81 @@ void D3D12BarrierTestSuite::TestQueueSharing()
 	}
 }
 
-void D3D12BarrierTestSuite::TestCrossQueueTextureHandoffs()
-{
-	GpuDevice* const device = GetActiveD3D12Device();
-	if(device == nullptr || device->GetQueueCount(GQT_GRAPHICS) == 0 || device->GetQueueCount(GQT_COMPUTE) == 0 || device->GetQueueCount(GQT_TRANSFER) == 0)
-		return;
-
-	constexpr u32 kWidth = 8;
-	constexpr u32 kHeight = 8;
-	constexpr u32 kBytesPerPixel = 4;
-	TextureCreateInformation textureCreateInformation;
-	textureCreateInformation.Name = "D3D12 cross queue handoff texture";
-	textureCreateInformation.Format = PF_RGBA8;
-	textureCreateInformation.Width = kWidth;
-	textureCreateInformation.Height = kHeight;
-
-	constexpr u32 kTextureCount = 7;
-	TInlineArray<TShared<render::Texture>, kTextureCount> textures;
-	for(u32 textureIndex = 0; textureIndex < kTextureCount; ++textureIndex)
-		textures.Add(device->CreateTexture(textureCreateInformation));
-
-	for(const TShared<render::Texture>& texture : textures)
-		B3D_TEST_ASSERT(texture != nullptr)
-	if(textures.Size() != kTextureCount || std::any_of(textures.begin(), textures.end(), [](const TShared<render::Texture>& texture) { return texture == nullptr; }))
-		return;
-
-	const ImageSubresourcePitch stagingPitch = textures[0]->GetStagingBufferPitchForSubresource(0, 0);
-	const u32 rowDataSize = kWidth * kBytesPerPixel;
-	const u32 rowPitchSize = stagingPitch.RowPitch * kBytesPerPixel;
-	const u32 stagingBufferSize = rowPitchSize * stagingPitch.SliceHeight;
-	const TShared<render::GpuBuffer> uploadBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingWrite(stagingBufferSize));
-	const TShared<render::GpuBuffer> readbackBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(stagingBufferSize));
-	B3D_TEST_ASSERT(uploadBuffer != nullptr)
-	B3D_TEST_ASSERT(readbackBuffer != nullptr)
-	if(uploadBuffer == nullptr || readbackBuffer == nullptr)
-		return;
-
-	{
-		render::GpuBufferMappedScope uploadMapping = uploadBuffer->Map(GpuMapOption::Write);
-		B3D_TEST_ASSERT(uploadMapping.IsValid())
-		if(!uploadMapping.IsValid())
-			return;
-
-		u8* const mappedMemory = static_cast<u8*>(uploadMapping.GetMappedMemory());
-		memset(mappedMemory, 0, stagingBufferSize);
-		for(u32 row = 0; row < kHeight; ++row)
-		{
-			for(u32 byteIndex = 0; byteIndex < rowDataSize; ++byteIndex)
-				mappedMemory[row * rowPitchSize + byteIndex] = (u8)((row * rowDataSize + byteIndex) ^ 0xA5);
-		}
-	}
-
-	const TShared<GpuCommandBufferPool> graphicsPool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS));
-	const TShared<GpuCommandBufferPool> computePool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_COMPUTE));
-	const TShared<GpuCommandBufferPool> transferPool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_TRANSFER));
-
-	const TShared<GpuCommandBuffer> uploadCommandBuffer = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 cross queue handoff upload"));
-	uploadCommandBuffer->CopyBufferToTexture(uploadBuffer, textures[0], 0, 0, 0);
-	uploadCommandBuffer->End();
-
-	const TShared<GpuCommandBuffer> graphicsToComputeCommandBuffer = computePool->Create(GpuCommandBufferCreateInformation::Create("D3D12 graphics to compute texture handoff"));
-	B3D_TEST_ASSERT(graphicsToComputeCommandBuffer->CopyTexture(textures[0], textures[1]))
-	graphicsToComputeCommandBuffer->End();
-
-	const TShared<GpuCommandBuffer> computeToGraphicsCommandBuffer = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 compute to graphics texture handoff"));
-	B3D_TEST_ASSERT(computeToGraphicsCommandBuffer->CopyTexture(textures[1], textures[2]))
-	computeToGraphicsCommandBuffer->End();
-
-	const TShared<GpuCommandBuffer> graphicsToTransferCommandBuffer = transferPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 graphics to copy texture handoff"));
-	B3D_TEST_ASSERT(graphicsToTransferCommandBuffer->CopyTexture(textures[2], textures[3]))
-	B3D_TEST_ASSERT(graphicsToTransferCommandBuffer->CopyTexture(textures[3], textures[4]))
-	graphicsToTransferCommandBuffer->End();
-
-	const TShared<GpuCommandBuffer> transferToComputeCommandBuffer = computePool->Create(GpuCommandBufferCreateInformation::Create("D3D12 copy to compute texture handoff"));
-	B3D_TEST_ASSERT(transferToComputeCommandBuffer->CopyTexture(textures[4], textures[5]))
-	transferToComputeCommandBuffer->End();
-
-	const TShared<GpuCommandBuffer> computeToTransferCommandBuffer = transferPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 compute to copy texture handoff"));
-	B3D_TEST_ASSERT(computeToTransferCommandBuffer->CopyTexture(textures[5], textures[6]))
-	computeToTransferCommandBuffer->End();
-
-	const TShared<GpuCommandBuffer> readbackCommandBuffer = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 cross queue handoff readback"));
-	readbackCommandBuffer->CopyTextureToBuffer(textures[6], readbackBuffer, 0, 0, 0);
-	readbackCommandBuffer->End();
-
-	const TShared<GpuWorkContext> workContext = GpuWorkContext::Create(*device);
-	workContext->SubmitCommandBuffer(uploadCommandBuffer, GpuQueueMask::kNone);
-	workContext->SubmitCommandBuffer(graphicsToComputeCommandBuffer, GpuQueueMask::kNone);
-	workContext->SubmitCommandBuffer(computeToGraphicsCommandBuffer, GpuQueueMask::kNone);
-	workContext->SubmitCommandBuffer(graphicsToTransferCommandBuffer, GpuQueueMask::kNone);
-	workContext->SubmitCommandBuffer(transferToComputeCommandBuffer, GpuQueueMask::kNone);
-	workContext->SubmitCommandBuffer(computeToTransferCommandBuffer, GpuQueueMask::kNone);
-	workContext->SubmitCommandBuffer(readbackCommandBuffer, GpuQueueMask::kNone);
-	device->WaitUntilIdle();
-
-	render::GpuBufferMappedScope readbackMapping = readbackBuffer->Map(GpuMapOption::Read);
-	B3D_TEST_ASSERT(readbackMapping.IsValid())
-	if(!readbackMapping.IsValid())
-		return;
-
-	const u8* const mappedMemory = static_cast<const u8*>(readbackMapping.GetMappedMemory());
-	for(u32 row = 0; row < kHeight; ++row)
-	{
-		for(u32 byteIndex = 0; byteIndex < rowDataSize; ++byteIndex)
-			B3D_TEST_ASSERT(mappedMemory[row * rowPitchSize + byteIndex] == (u8)((row * rowDataSize + byteIndex) ^ 0xA5))
-	}
-}
-
-void D3D12BarrierTestSuite::TestCrossQueueBufferHandoffs()
-{
-	GpuDevice* const device = GetActiveD3D12Device();
-	if(device == nullptr || device->GetQueueCount(GQT_GRAPHICS) == 0 || device->GetQueueCount(GQT_COMPUTE) == 0 || device->GetQueueCount(GQT_TRANSFER) == 0)
-		return;
-
-	constexpr u32 kBufferSize = 256;
-	constexpr u32 kUploadBufferCount = 3;
-	TInlineArray<TShared<render::GpuBuffer>, kUploadBufferCount> uploadBuffers;
-	for(u32 uploadBufferIndex = 0; uploadBufferIndex < kUploadBufferCount; ++uploadBufferIndex)
-		uploadBuffers.Add(device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingWrite(kBufferSize)));
-
-	const GpuBufferFlags storageFlags = GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU;
-	const TShared<render::GpuBuffer> storageBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStructuredStorage(4, kBufferSize / 4, storageFlags));
-	const TShared<render::GpuBuffer> readbackBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(kBufferSize));
-
-	for(const TShared<render::GpuBuffer>& uploadBuffer : uploadBuffers)
-		B3D_TEST_ASSERT(uploadBuffer != nullptr)
-	B3D_TEST_ASSERT(storageBuffer != nullptr)
-	B3D_TEST_ASSERT(readbackBuffer != nullptr)
-	if(uploadBuffers.Size() != kUploadBufferCount || std::any_of(uploadBuffers.begin(), uploadBuffers.end(), [](const TShared<render::GpuBuffer>& uploadBuffer) { return uploadBuffer == nullptr; }) || storageBuffer == nullptr || readbackBuffer == nullptr)
-		return;
-
-	for(u32 uploadBufferIndex = 0; uploadBufferIndex < kUploadBufferCount; ++uploadBufferIndex)
-	{
-		render::GpuBufferMappedScope uploadMapping = uploadBuffers[uploadBufferIndex]->Map(GpuMapOption::Write);
-		B3D_TEST_ASSERT(uploadMapping.IsValid())
-		if(!uploadMapping.IsValid())
-			return;
-
-		const u8 pattern = (u8)(0x11 + uploadBufferIndex * 0x33);
-		u8* const mappedMemory = static_cast<u8*>(uploadMapping.GetMappedMemory());
-		for(u32 byteIndex = 0; byteIndex < kBufferSize; ++byteIndex)
-			mappedMemory[byteIndex] = (u8)(byteIndex ^ pattern);
-	}
-
-	const TShared<GpuCommandBufferPool> graphicsPool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS));
-	const TShared<GpuCommandBufferPool> computePool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_COMPUTE));
-	const TShared<GpuCommandBufferPool> transferPool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_TRANSFER));
-
-	const TShared<GpuCommandBuffer> graphicsWriteCommandBuffer = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 graphics buffer handoff write"));
-	graphicsWriteCommandBuffer->CopyBufferToBuffer(uploadBuffers[0], storageBuffer, 0, 0, kBufferSize);
-	graphicsWriteCommandBuffer->End();
-
-	const TShared<GpuCommandBuffer> computeWriteCommandBuffer = computePool->Create(GpuCommandBufferCreateInformation::Create("D3D12 compute buffer handoff write"));
-	computeWriteCommandBuffer->CopyBufferToBuffer(uploadBuffers[1], storageBuffer, 0, 0, kBufferSize);
-	computeWriteCommandBuffer->End();
-
-	const TShared<GpuCommandBuffer> transferWriteCommandBuffer = transferPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 copy buffer handoff write"));
-	transferWriteCommandBuffer->CopyBufferToBuffer(uploadBuffers[2], storageBuffer, 0, 0, kBufferSize);
-	transferWriteCommandBuffer->End();
-
-	const TShared<GpuCommandBuffer> readbackCommandBuffer = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 buffer handoff readback"));
-	readbackCommandBuffer->CopyBufferToBuffer(storageBuffer, readbackBuffer, 0, 0, kBufferSize);
-	readbackCommandBuffer->End();
-
-	const TShared<GpuWorkContext> workContext = GpuWorkContext::Create(*device);
-	workContext->SubmitCommandBuffer(graphicsWriteCommandBuffer, GpuQueueMask::kNone);
-	workContext->SubmitCommandBuffer(computeWriteCommandBuffer, GpuQueueMask::kNone);
-	workContext->SubmitCommandBuffer(transferWriteCommandBuffer, GpuQueueMask::kNone);
-	workContext->SubmitCommandBuffer(readbackCommandBuffer, GpuQueueMask::kNone);
-	device->WaitUntilIdle();
-
-	render::GpuBufferMappedScope readbackMapping = readbackBuffer->Map(GpuMapOption::Read);
-	B3D_TEST_ASSERT(readbackMapping.IsValid())
-	if(!readbackMapping.IsValid())
-		return;
-
-	constexpr u8 kFinalPattern = 0x77;
-	const u8* const mappedMemory = static_cast<const u8*>(readbackMapping.GetMappedMemory());
-	for(u32 byteIndex = 0; byteIndex < kBufferSize; ++byteIndex)
-		B3D_TEST_ASSERT(mappedMemory[byteIndex] == (u8)(byteIndex ^ kFinalPattern))
-}
-
-void D3D12BarrierTestSuite::TestSubmissionBarrierChaining()
+void D3D12BarrierTestSuite::TestRestingTransitionSubmission()
 {
 	GpuDevice* const device = GetActiveD3D12Device();
 	if(device == nullptr || device->GetQueueCount(GQT_GRAPHICS) == 0)
 		return;
 
-	constexpr u32 kBufferSize = 256;
-	const TShared<render::GpuBuffer> uploadBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingWrite(kBufferSize));
-	const GpuBufferFlags storageFlags = GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU;
-	const TShared<render::GpuBuffer> storageBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStructuredStorage(4, kBufferSize / 4, storageFlags));
-	const TShared<render::GpuBuffer> readbackBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(kBufferSize));
-	B3D_TEST_ASSERT(uploadBuffer != nullptr)
-	B3D_TEST_ASSERT(storageBuffer != nullptr)
-	B3D_TEST_ASSERT(readbackBuffer != nullptr)
-	if(uploadBuffer == nullptr || storageBuffer == nullptr || readbackBuffer == nullptr)
+	static constexpr u32 kSize = 16;
+	static constexpr u32 kPattern = 0x5A000000;
+
+	TextureCreateInformation createInformation;
+	createInformation.Name = "D3D12 resting transition test";
+	createInformation.Format = PF_RGBA8;
+	createInformation.Width = kSize;
+	createInformation.Height = kSize;
+	createInformation.Usage = TextureUsageFlag::RenderTarget;
+	const TShared<render::Texture> texture = device->CreateTexture(createInformation);
+	B3D_TEST_ASSERT(texture != nullptr)
+	if(texture == nullptr)
 		return;
 
+	const ImageSubresourcePitch pitch = texture->GetStagingBufferPitchForSubresource(0, 0);
+	const u32 stagingSize = pitch.RowPitch * pitch.SliceHeight * sizeof(u32);
+	const TShared<render::GpuBuffer> upload = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingWrite(stagingSize));
+	const TShared<render::GpuBuffer> readback = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(stagingSize));
 	{
-		render::GpuBufferMappedScope uploadMapping = uploadBuffer->Map(GpuMapOption::Write);
-		B3D_TEST_ASSERT(uploadMapping.IsValid())
-		if(!uploadMapping.IsValid())
+		const render::GpuBufferMappedScope mapping = upload->Map(GpuMapOption::Write);
+		B3D_TEST_ASSERT(mapping.IsValid())
+		if(!mapping.IsValid())
 			return;
 
-		u8* const mappedMemory = static_cast<u8*>(uploadMapping.GetMappedMemory());
-		for(u32 byteIndex = 0; byteIndex < kBufferSize; ++byteIndex)
-			mappedMemory[byteIndex] = (u8)(byteIndex ^ 0x5A);
+		u32* elements = static_cast<u32*>(mapping.GetMappedMemory());
+		for(u32 elementIndex = 0; elementIndex < pitch.RowPitch * pitch.SliceHeight; elementIndex++)
+			elements[elementIndex] = kPattern | elementIndex;
 	}
 
-	const TShared<GpuCommandBufferPool> graphicsPool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS));
-	const TShared<GpuCommandBuffer> bufferWriteCommandBuffer = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 chaining buffer write"));
-	bufferWriteCommandBuffer->CopyBufferToBuffer(uploadBuffer, storageBuffer, 0, 0, kBufferSize);
-	bufferWriteCommandBuffer->End();
+	// The new render target requests a transition to rest, which the submission prologue records. The first barrier starts from the
+	// resting state and discards the contents.
+	const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write, GpuImageLayout::TransferDestination);
+	const GpuAccessState transferRead(GpuStageFlag::Transfer, GpuAccessFlag::Read, GpuImageLayout::TransferSource);
+	const TShared<GpuCommandBufferPool> commandBufferPool = GpuBarrierTestUtility::CreateCommandBufferPool(*device, GQT_GRAPHICS);
+	const TShared<GpuCommandBuffer> commandBuffer = commandBufferPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 resting transition test"));
+	commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, GpuBarrierTestUtility::GetDiscardedRestingState(*texture), transferWrite));
+	commandBuffer->CopyBufferToTexture(upload, texture, 0, 0, 0);
 
-	const TShared<GpuCommandBuffer> leadingBarrierCommandBuffer = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 chaining leading barrier"));
-	const GpuResourceUseFlags fragmentShaderUse = GpuResourceUseFlag::ShaderAccess | GpuResourceUseFlag::StageFragmentShader;
-	leadingBarrierCommandBuffer->IssueBarriers(GpuBarriers(GpuBufferBarrier(storageBuffer, fragmentShaderUse, GpuAccessFlag::Read)));
-	leadingBarrierCommandBuffer->CopyBufferToBuffer(storageBuffer, readbackBuffer, 0, 0, kBufferSize);
-	leadingBarrierCommandBuffer->End();
+	const GpuExplicitBufferBarrier readbackBarrier(readback, GpuAccessState(), transferWrite);
+	const GpuExplicitTextureBarrier copyBarrier(texture, transferWrite, transferRead);
+	commandBuffer->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(&readbackBarrier, 1), TArrayView<const GpuExplicitTextureBarrier>(&copyBarrier, 1)));
+	commandBuffer->CopyTextureToBuffer(texture, readback, 0, 0, 0);
 
-	constexpr u32 kTextureSize = 8;
-	TextureCreateInformation textureCreateInformation;
-	textureCreateInformation.Name = "D3D12 chaining texture";
-	textureCreateInformation.Format = PF_RGBA8;
-	textureCreateInformation.Width = kTextureSize;
-	textureCreateInformation.Height = kTextureSize;
-	const TShared<render::Texture> firstTexture = device->CreateTexture(textureCreateInformation);
-	const TShared<render::Texture> secondTexture = device->CreateTexture(textureCreateInformation);
-	const TShared<render::Texture> destinationTexture = device->CreateTexture(textureCreateInformation);
-	B3D_TEST_ASSERT(firstTexture != nullptr)
-	B3D_TEST_ASSERT(secondTexture != nullptr)
-	B3D_TEST_ASSERT(destinationTexture != nullptr)
-	if(firstTexture == nullptr || secondTexture == nullptr || destinationTexture == nullptr)
-		return;
-
-	const ImageSubresourcePitch texturePitch = firstTexture->GetStagingBufferPitchForSubresource(0, 0);
-	const u32 textureUploadSize = texturePitch.RowPitch * texturePitch.SliceHeight * 4;
-	const TShared<render::GpuBuffer> textureUploadBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingWrite(textureUploadSize));
-	B3D_TEST_ASSERT(textureUploadBuffer != nullptr)
-	if(textureUploadBuffer == nullptr)
-		return;
-
-	const TShared<GpuCommandBuffer> textureWriteCommandBuffer = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 chaining texture writes"));
-	textureWriteCommandBuffer->CopyBufferToTexture(textureUploadBuffer, firstTexture, 0, 0, 0);
-	textureWriteCommandBuffer->CopyBufferToTexture(textureUploadBuffer, secondTexture, 0, 0, 0);
-	textureWriteCommandBuffer->End();
-
-	const TShared<GpuCommandBuffer> textureChainCommandBuffer = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 chaining texture reads and writes"));
-	textureChainCommandBuffer->IssueBarriers(GpuBarriers(GpuTextureBarrier(firstTexture, GpuResourceUseFlag::Transfer,
-		GpuAccessFlag::Read, GpuImageLayout::TransferSource)));
-	B3D_TEST_ASSERT(textureChainCommandBuffer->CopyTexture(firstTexture, destinationTexture))
-	B3D_TEST_ASSERT(textureChainCommandBuffer->CopyTexture(secondTexture, firstTexture))
-	textureChainCommandBuffer->End();
+	// The texture returns to rest, and the copy becomes visible to the host
+	const GpuExplicitBufferBarrier hostReadBarrier(readback, transferWrite, GpuAccessState(GpuStageFlag::Host, GpuAccessFlag::Read));
+	const GpuExplicitTextureBarrier restBarrier(texture, transferRead, GpuBackendUtility::GetRestingState(*texture, GQT_GRAPHICS));
+	commandBuffer->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(&hostReadBarrier, 1), TArrayView<const GpuExplicitTextureBarrier>(&restBarrier, 1)));
 
 	const TShared<GpuWorkContext> workContext = GpuWorkContext::Create(*device);
-	workContext->SubmitCommandBuffer(bufferWriteCommandBuffer, GpuQueueMask::kNone);
-	workContext->SubmitCommandBuffer(leadingBarrierCommandBuffer, GpuQueueMask::kNone);
-	workContext->SubmitCommandBuffer(textureWriteCommandBuffer, GpuQueueMask::kNone);
-	workContext->SubmitCommandBuffer(textureChainCommandBuffer, GpuQueueMask::kNone);
+	workContext->SubmitCommandBuffer(commandBuffer, GpuQueueMask::kNone);
 	device->WaitUntilIdle();
 
-	render::GpuBufferMappedScope readbackMapping = readbackBuffer->Map(GpuMapOption::Read);
-	B3D_TEST_ASSERT(readbackMapping.IsValid())
-	if(!readbackMapping.IsValid())
+	const render::GpuBufferMappedScope mapping = readback->Map(GpuMapOption::Read);
+	B3D_TEST_ASSERT(mapping.IsValid())
+	if(!mapping.IsValid())
 		return;
 
-	const u8* const mappedMemory = static_cast<const u8*>(readbackMapping.GetMappedMemory());
-	for(u32 byteIndex = 0; byteIndex < kBufferSize; ++byteIndex)
-		B3D_TEST_ASSERT(mappedMemory[byteIndex] == (u8)(byteIndex ^ 0x5A))
-}
-
-void D3D12BarrierTestSuite::TestSameQueueSubmissionHazards()
-{
-	GpuDevice* const device = GetActiveD3D12Device();
-	if(device == nullptr || device->GetQueueCount(GQT_GRAPHICS) == 0)
-		return;
-
-	constexpr u32 kBufferSize = 256;
-	constexpr u8 kFirstPattern = 0x19;
-	constexpr u8 kIntermediatePattern = 0x63;
-	constexpr u8 kFinalPattern = 0xA7;
-	const TShared<render::GpuBuffer> firstUploadBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingWrite(kBufferSize));
-	const TShared<render::GpuBuffer> intermediateUploadBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingWrite(kBufferSize));
-	const TShared<render::GpuBuffer> finalUploadBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingWrite(kBufferSize));
-	const GpuBufferFlags storageFlags = GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU;
-	const TShared<render::GpuBuffer> storageBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStructuredStorage(4, kBufferSize / 4, storageFlags));
-	const TShared<render::GpuBuffer> firstReadbackBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(kBufferSize));
-	const TShared<render::GpuBuffer> finalReadbackBuffer = device->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(kBufferSize));
-	B3D_TEST_ASSERT(firstUploadBuffer != nullptr)
-	B3D_TEST_ASSERT(intermediateUploadBuffer != nullptr)
-	B3D_TEST_ASSERT(finalUploadBuffer != nullptr)
-	B3D_TEST_ASSERT(storageBuffer != nullptr)
-	B3D_TEST_ASSERT(firstReadbackBuffer != nullptr)
-	B3D_TEST_ASSERT(finalReadbackBuffer != nullptr)
-	if(firstUploadBuffer == nullptr || intermediateUploadBuffer == nullptr || finalUploadBuffer == nullptr || storageBuffer == nullptr || firstReadbackBuffer == nullptr || finalReadbackBuffer == nullptr)
-		return;
-
-	auto fnFillUploadBuffer = [kBufferSize](const TShared<render::GpuBuffer>& buffer, u8 pattern)
+	const u32* elements = static_cast<const u32*>(mapping.GetMappedMemory());
+	bool matches = true;
+	for(u32 row = 0; row < kSize; row++)
 	{
-		render::GpuBufferMappedScope mapping = buffer->Map(GpuMapOption::Write);
-		if(!mapping.IsValid())
-			return false;
-
-		u8* const mappedMemory = static_cast<u8*>(mapping.GetMappedMemory());
-		for(u32 byteIndex = 0; byteIndex < kBufferSize; ++byteIndex)
-			mappedMemory[byteIndex] = (u8)(byteIndex ^ pattern);
-
-		return true;
-	};
-	const bool firstUploadFilled = fnFillUploadBuffer(firstUploadBuffer, kFirstPattern);
-	const bool intermediateUploadFilled = fnFillUploadBuffer(intermediateUploadBuffer, kIntermediatePattern);
-	const bool finalUploadFilled = fnFillUploadBuffer(finalUploadBuffer, kFinalPattern);
-	B3D_TEST_ASSERT(firstUploadFilled)
-	B3D_TEST_ASSERT(intermediateUploadFilled)
-	B3D_TEST_ASSERT(finalUploadFilled)
-	if(!firstUploadFilled || !intermediateUploadFilled || !finalUploadFilled)
-		return;
-
-	const TShared<GpuCommandBufferPool> graphicsPool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS));
-	auto fnCreateCopyCommandBuffer = [&graphicsPool, kBufferSize](const StringView& name, const TShared<render::GpuBuffer>& source, const TShared<render::GpuBuffer>& destination)
-	{
-		const TShared<GpuCommandBuffer> commandBuffer = graphicsPool->Create(GpuCommandBufferCreateInformation::Create(name));
-		commandBuffer->CopyBufferToBuffer(source, destination, 0, 0, kBufferSize);
-		commandBuffer->End();
-		return commandBuffer;
-	};
-
-	const TShared<GpuCommandBuffer> firstWrite = fnCreateCopyCommandBuffer("D3D12 same-queue first write", firstUploadBuffer, storageBuffer);
-	const TShared<GpuCommandBuffer> firstRead = fnCreateCopyCommandBuffer("D3D12 same-queue first read", storageBuffer, firstReadbackBuffer);
-	const TShared<GpuCommandBuffer> secondWrite = fnCreateCopyCommandBuffer("D3D12 same-queue second write", intermediateUploadBuffer, storageBuffer);
-	const TShared<GpuCommandBuffer> thirdWrite = fnCreateCopyCommandBuffer("D3D12 same-queue third write", finalUploadBuffer, storageBuffer);
-	const TShared<GpuCommandBuffer> finalRead = fnCreateCopyCommandBuffer("D3D12 same-queue final read", storageBuffer, finalReadbackBuffer);
-
-	const TShared<GpuWorkContext> workContext = GpuWorkContext::Create(*device);
-	workContext->SubmitCommandBuffer(firstWrite, GpuQueueMask::kNone);
-	workContext->SubmitCommandBuffer(firstRead, GpuQueueMask::kNone);
-	workContext->SubmitCommandBuffer(secondWrite, GpuQueueMask::kNone);
-	workContext->SubmitCommandBuffer(thirdWrite, GpuQueueMask::kNone);
-	workContext->SubmitCommandBuffer(finalRead, GpuQueueMask::kNone);
-	device->WaitUntilIdle();
-
-	auto fnVerifyReadbackBuffer = [kBufferSize](const TShared<render::GpuBuffer>& buffer, u8 pattern)
-	{
-		render::GpuBufferMappedScope mapping = buffer->Map(GpuMapOption::Read);
-		if(!mapping.IsValid())
-			return false;
-
-		const u8* const mappedMemory = static_cast<const u8*>(mapping.GetMappedMemory());
-		for(u32 byteIndex = 0; byteIndex < kBufferSize; ++byteIndex)
+		for(u32 column = 0; column < kSize; column++)
 		{
-			if(mappedMemory[byteIndex] != (u8)(byteIndex ^ pattern))
-				return false;
+			const u32 elementIndex = row * pitch.RowPitch + column;
+			matches &= elements[elementIndex] == (kPattern | elementIndex);
 		}
+	}
 
-		return true;
-	};
-	B3D_TEST_ASSERT(fnVerifyReadbackBuffer(firstReadbackBuffer, kFirstPattern))
-	B3D_TEST_ASSERT(fnVerifyReadbackBuffer(finalReadbackBuffer, kFinalPattern))
+	B3D_TEST_ASSERT_MSG(matches, "The readback does not hold the written values.")
 }
 
 void D3D12BarrierTestSuite::TestMultisampleResolve()
@@ -1041,8 +753,16 @@ void D3D12BarrierTestSuite::TestMultisampleResolve()
 	if(source == nullptr || destination == nullptr)
 		return;
 
-	const TShared<GpuCommandBufferPool> commandBufferPool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS));
+	const TShared<GpuCommandBufferPool> commandBufferPool = GpuBarrierTestUtility::CreateCommandBufferPool(*device, GQT_GRAPHICS);
 	const TShared<GpuCommandBuffer> commandBuffer = commandBufferPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 MSAA resolve test"));
+
+	// The new textures start at rest. The resolve overwrites the destination, and reads the undefined contents of the source.
+	const GpuExplicitTextureBarrier resolveBarriers[] =
+	{
+		GpuExplicitTextureBarrier(source, GpuBarrierTestUtility::GetDiscardedRestingState(*source), GpuAccessState(GpuStageFlag::Resolve, GpuAccessFlag::Read, GpuImageLayout::ResolveSource)),
+		GpuExplicitTextureBarrier(destination, GpuBarrierTestUtility::GetDiscardedRestingState(*destination), GpuAccessState(GpuStageFlag::Resolve, GpuAccessFlag::Write, GpuImageLayout::ResolveDestination))
+	};
+	commandBuffer->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(), TArrayView<const GpuExplicitTextureBarrier>(resolveBarriers, 2)));
 	B3D_TEST_ASSERT(commandBuffer->CopyTexture(source, destination))
 
 	const TShared<GpuWorkContext> workContext = GpuWorkContext::Create(*device);
@@ -1064,7 +784,7 @@ void D3D12BarrierTestSuite::TestResolveValidation()
 	if(source == nullptr || destination == nullptr)
 		return;
 
-	const TShared<GpuCommandBufferPool> graphicsPool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS));
+	const TShared<GpuCommandBufferPool> graphicsPool = GpuBarrierTestUtility::CreateCommandBufferPool(*device, GQT_GRAPHICS);
 	const TShared<GpuCommandBuffer> partialResolveCommandBuffer = graphicsPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 partial resolve validation test"));
 	TextureCopyInformation partialCopyInformation;
 	partialCopyInformation.SourceVolume = PixelVolume(0, 0, 0, 8, 16, 1);
@@ -1076,7 +796,7 @@ void D3D12BarrierTestSuite::TestResolveValidation()
 
 	if(device->GetQueueCount(GQT_TRANSFER) > 0)
 	{
-		const TShared<GpuCommandBufferPool> transferPool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_TRANSFER));
+		const TShared<GpuCommandBufferPool> transferPool = GpuBarrierTestUtility::CreateCommandBufferPool(*device, GQT_TRANSFER);
 		const TShared<GpuCommandBuffer> transferResolveCommandBuffer = transferPool->Create(GpuCommandBufferCreateInformation::Create("D3D12 transfer queue resolve validation test"));
 		LoggingScope loggingScope(*this);
 		loggingScope.ExpectError("D3D12 texture resolves require a graphics command buffer.");
@@ -1099,7 +819,7 @@ void D3D12BarrierTestSuite::TestFrameFence()
 		const TShared<GpuWorkContext> context = GpuWorkContext::Create(*device);
 		const auto fnSubmit = [device, &context](GpuQueueType queueType)
 		{
-			const TShared<GpuCommandBufferPool> pool = device->CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(queueType));
+			const TShared<GpuCommandBufferPool> pool = GpuBarrierTestUtility::CreateCommandBufferPool(*device, queueType);
 			context->SubmitCommandBuffer(pool->Create(GpuCommandBufferCreateInformation::Create("D3D12 frame boundary test")), GpuQueueMask::kNone);
 			device->WaitUntilIdle();
 		};

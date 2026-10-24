@@ -2,6 +2,7 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "B3DFrameGraphTestSuite.h"
 #include "Utility/B3DUnitTestGpuPipelines.h"
+#include "Utility/B3DGpuBarrierTestUtility.h"
 #include "CoreObject/B3DRenderThread.h"
 #include "FrameGraph/B3DFrameGraph.h"
 #include "GpuBackend/B3DGpuBackend.h"
@@ -63,11 +64,9 @@ namespace
 	struct FrameGraphTestContext
 	{
 		FrameGraphTestContext(GpuDevice& device, const TShared<GpuComputePipelineState>& pipeline, const TShared<GpuComputePipelineState>& samplePipeline = nullptr)
-			: Device(device), Pipeline(pipeline), SamplePipeline(samplePipeline), Context(GpuWorkContext::Create(device)), IsExplicit(gGpuExplicitBarriers)
+			: Device(device), Pipeline(pipeline), SamplePipeline(samplePipeline), Context(GpuWorkContext::Create(device))
 		{
-			GpuCommandBufferPoolCreateInformation poolInformation = GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS);
-			poolInformation.ExplicitBarriers = IsExplicit;
-			Pool = device.CreateGpuCommandBufferPool(poolInformation);
+			Pool = GpuBarrierTestUtility::CreateCommandBufferPool(device);
 
 			TextureInformation.Width = kSize;
 			TextureInformation.Height = kSize;
@@ -216,7 +215,6 @@ namespace
 		TShared<GpuComputePipelineState> Pipeline;
 		TShared<GpuComputePipelineState> SamplePipeline; /**< Pipeline of AddSample(). */
 		TShared<GpuWorkContext> Context;
-		bool IsExplicit; /**< True in explicit mode, false in automatic mode. Graphs and Pool record in this mode. */
 		TShared<GpuCommandBufferPool> Pool;
 		TextureCreateInformation TextureInformation;
 		u32 TextureRowPitch = 0;
@@ -233,20 +231,10 @@ namespace
 		return backend.GetDevice(0);
 	}
 
-	/**
-	 * Runs @p test on the render thread once for each entry of @p explicitModes: in explicit mode for true, and in automatic mode for
-	 * false. See gGpuExplicitBarriers.
-	 */
-	void RunInModes(const char* name, std::initializer_list<bool> explicitModes, const std::function<void()>& test)
+	/** Runs @p test on the render thread and waits for it to finish. */
+	void RunOnRenderThread(const char* name, const std::function<void()>& test)
 	{
-		const bool explicitBarriers = gGpuExplicitBarriers;
-		for(const bool isExplicit : explicitModes)
-		{
-			gGpuExplicitBarriers.Set(isExplicit);
-			GetRenderThread().PostCommand([&test]() { test(); }, name, true, isExplicit ? "Explicit mode" : "Automatic mode");
-		}
-
-		gGpuExplicitBarriers.Set(explicitBarriers);
+		GetRenderThread().PostCommand([&test]() { test(); }, name, true);
 	}
 } // namespace
 
@@ -260,7 +248,7 @@ void FrameGraphTestSuite::TestSplitBarriers()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	RunInModes("FrameGraphTestSuite::TestSplitBarriers", { true, false }, [this, &device, &pipeline]()
+	RunOnRenderThread("FrameGraphTestSuite::TestSplitBarriers", [this, &device, &pipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline);
 		const TShared<render::GpuBuffer> producedBuffer = test.CreateBuffer("Produced buffer");
@@ -290,11 +278,8 @@ void FrameGraphTestSuite::TestSplitBarriers()
 			// The producer's writes reach the consumer through one batch of split barriers
 			const FrameGraphStatistics& statistics = graph.GetStatistics();
 			B3D_TEST_ASSERT(statistics.CulledPassCount == 0)
-			if(test.IsExplicit)
-			{
-				B3D_TEST_ASSERT(statistics.SplitBarrierCount >= 2)
-				B3D_TEST_ASSERT(statistics.BarrierBatchCount >= 1)
-			}
+			B3D_TEST_ASSERT(statistics.SplitBarrierCount >= 2)
+			B3D_TEST_ASSERT(statistics.BarrierBatchCount >= 1)
 
 			graph.Execute();
 		}
@@ -318,7 +303,7 @@ void FrameGraphTestSuite::TestCulling()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	RunInModes("FrameGraphTestSuite::TestCulling", { true, false }, [this, &device, &pipeline]()
+	RunOnRenderThread("FrameGraphTestSuite::TestCulling", [this, &device, &pipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline);
 
@@ -367,7 +352,7 @@ void FrameGraphTestSuite::TestCulling()
 			B3D_TEST_ASSERT(!graph.IsPassCulled(2))
 			B3D_TEST_ASSERT(graph.IsPassCulled(3))
 			B3D_TEST_ASSERT(graph.GetStatistics().CulledPassCount == 2)
-			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == (test.IsExplicit ? 1u : 0u))
+			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == 1u)
 
 			graph.Execute();
 		}
@@ -403,7 +388,7 @@ void FrameGraphTestSuite::TestSplitAliasAcquire()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	RunInModes("FrameGraphTestSuite::TestSplitAliasAcquire", { true, false }, [this, &device, &pipeline]()
+	RunOnRenderThread("FrameGraphTestSuite::TestSplitAliasAcquire", [this, &device, &pipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline);
 		const GpuBufferCreateInformation bufferInformation = GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize,
@@ -435,12 +420,12 @@ void FrameGraphTestSuite::TestSplitAliasAcquire()
 			test.AddReadback(graph, "Second read", secondBuffer, secondTexture, readbacks[2], readbacks[3]);
 
 			graph.Compile();
-			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == (test.IsExplicit ? 4u : 0u))
+			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == 4u)
 			graph.Execute();
 
 			// The second pair's alias acquires are released after the first read where it shares memory with the first pair, and at the
 			// start of the graph otherwise
-			B3D_TEST_ASSERT(graph.GetStatistics().SplitAliasAcquireCount == (test.IsExplicit ? 2u : 0u))
+			B3D_TEST_ASSERT(graph.GetStatistics().SplitAliasAcquireCount == 2u)
 		}
 
 		device->WaitUntilIdle();
@@ -463,7 +448,7 @@ void FrameGraphTestSuite::TestCrossGraphOrdering()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	RunInModes("FrameGraphTestSuite::TestCrossGraphOrdering", { true, false }, [this, &device, &pipeline]()
+	RunOnRenderThread("FrameGraphTestSuite::TestCrossGraphOrdering", [this, &device, &pipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline);
 		const GpuBufferCreateInformation bufferInformation = GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize,
@@ -486,7 +471,7 @@ void FrameGraphTestSuite::TestCrossGraphOrdering()
 			test.AddReadback(graph, "First read", buffer, texture, readbacks[0], readbacks[1]);
 
 			graph.Compile();
-			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == (test.IsExplicit ? 2u : 0u))
+			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == 2u)
 			B3D_TEST_ASSERT(graph.GetStatistics().SplitAliasAcquireCount == 0)
 			graph.Execute();
 		}
@@ -505,8 +490,8 @@ void FrameGraphTestSuite::TestCrossGraphOrdering()
 			test.AddReadback(graph, "Second read", buffer, texture, readbacks[2], readbacks[3]);
 
 			graph.Compile();
-			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == (test.IsExplicit ? 2u : 0u))
-			B3D_TEST_ASSERT(graph.GetStatistics().SplitAliasAcquireCount == (test.IsExplicit ? 2u : 0u))
+			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == 2u)
+			B3D_TEST_ASSERT(graph.GetStatistics().SplitAliasAcquireCount == 2u)
 			graph.Execute();
 		}
 
@@ -530,7 +515,7 @@ void FrameGraphTestSuite::TestExtract()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	RunInModes("FrameGraphTestSuite::TestExtract", { true, false }, [this, &device, &pipeline]()
+	RunOnRenderThread("FrameGraphTestSuite::TestExtract", [this, &device, &pipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline);
 		const GpuBufferCreateInformation bufferInformation = GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize,
@@ -594,7 +579,7 @@ void FrameGraphTestSuite::TestExport()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	RunInModes("FrameGraphTestSuite::TestExport", { true, false }, [this, &device, &pipeline]()
+	RunOnRenderThread("FrameGraphTestSuite::TestExport", [this, &device, &pipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline);
 		const TShared<render::GpuBuffer> buffer = test.CreateBuffer("Buffer at graph end");
@@ -668,7 +653,7 @@ void FrameGraphTestSuite::TestRestingReads()
 	const bool validateRestingStates = gGpuValidateRestingStates;
 	gGpuValidateRestingStates.Set(true);
 
-	RunInModes("FrameGraphTestSuite::TestRestingReads", { true, false }, [this, &device, &pipeline, &samplePipeline]()
+	RunOnRenderThread("FrameGraphTestSuite::TestRestingReads", [this, &device, &pipeline, &samplePipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline, samplePipeline);
 
@@ -739,7 +724,7 @@ void FrameGraphTestSuite::TestLateMemory()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	RunInModes("FrameGraphTestSuite::TestLateMemory", { true, false }, [this, &device, &pipeline]()
+	RunOnRenderThread("FrameGraphTestSuite::TestLateMemory", [this, &device, &pipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline);
 		const GpuBufferCreateInformation bufferInformation = GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize,
@@ -771,7 +756,7 @@ void FrameGraphTestSuite::TestLateMemory()
 				graph.Execute();
 			}
 
-			if(test.IsExplicit && isMoved)
+			if(isMoved)
 				B3D_TEST_ASSERT(test.Context->GetTransientResourceAllocator().GetStatistics().Relocations >= 1)
 
 			device->WaitUntilIdle();
@@ -793,7 +778,7 @@ void FrameGraphTestSuite::TestReadback()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	RunInModes("FrameGraphTestSuite::TestReadback", { true, false }, [this, &device, &pipeline]()
+	RunOnRenderThread("FrameGraphTestSuite::TestReadback", [this, &device, &pipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline);
 		const GpuBufferCreateInformation bufferInformation = GpuBufferCreateInformation::CreateStructuredStorage(sizeof(u32), kSize * kSize,
@@ -846,7 +831,7 @@ void FrameGraphTestSuite::TestProfiling()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	RunInModes("FrameGraphTestSuite::TestProfiling", { true, false }, [this, &device, &pipeline]()
+	RunOnRenderThread("FrameGraphTestSuite::TestProfiling", [this, &device, &pipeline]()
 	{
 		constexpr const char* kProfiledGraphName = "Profiled frame graph";
 
@@ -929,9 +914,8 @@ void FrameGraphTestSuite::TestRasterPass()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	RunInModes("FrameGraphTestSuite::TestRasterPass", { true, false }, [this, &device]()
+	RunOnRenderThread("FrameGraphTestSuite::TestRasterPass", [this, &device]()
 	{
-		// A work context records its graphs in one barrier mode, so each mode gets its own, with its own instance of the material
 		const TShared<GpuWorkContext> context = GpuWorkContext::Create(*device);
 		const ShaderVariationParameters variation(TInlineArray<ShaderVariationParameter, 4>({
 			ShaderVariationParameter("MSAA_COUNT", 1),
@@ -967,9 +951,7 @@ void FrameGraphTestSuite::TestRasterPass()
 		// The upload takes the source from rest and returns it there
 		const TShared<render::Texture> source = device->CreateTexture(information);
 
-		GpuCommandBufferPoolCreateInformation poolInformation = GpuCommandBufferPoolCreateInformation::CreateForThisThread(GQT_GRAPHICS);
-		poolInformation.ExplicitBarriers = gGpuExplicitBarriers;
-		const TShared<GpuCommandBufferPool> pool = device->CreateGpuCommandBufferPool(poolInformation);
+		const TShared<GpuCommandBufferPool> pool = GpuBarrierTestUtility::CreateCommandBufferPool(*device);
 
 		const TShared<render::GpuCommandBuffer> uploadCommands = pool->Create(GpuCommandBufferCreateInformation::Create("Upload"));
 		TextureUtility::Write(*context, source, *pixels, 0, 0, TextureWriteFlag::Normal, uploadCommands);
@@ -1058,9 +1040,8 @@ void FrameGraphTestSuite::TestDepthReadOnly()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	RunInModes("FrameGraphTestSuite::TestDepthReadOnly", { true, false }, [this, &device]()
+	RunOnRenderThread("FrameGraphTestSuite::TestDepthReadOnly", [this, &device]()
 	{
-		// A work context records its graphs in one barrier mode, so each mode gets its own, with its own instance of the material
 		const TShared<GpuWorkContext> context = GpuWorkContext::Create(*device);
 		const ShaderVariationParameters variation(TInlineArray<ShaderVariationParameter, 4>({
 			ShaderVariationParameter("MSAA_COUNT", 1),
@@ -1142,10 +1123,9 @@ void FrameGraphTestSuite::TestTwoAspectAliasAcquire()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	RunInModes("FrameGraphTestSuite::TestTwoAspectAliasAcquire", { true, false }, [this, &device]()
+	RunOnRenderThread("FrameGraphTestSuite::TestTwoAspectAliasAcquire", [this, &device]()
 	{
 		const TShared<GpuWorkContext> context = GpuWorkContext::Create(*device);
-		const bool isExplicit = gGpuExplicitBarriers;
 
 		TextureCreateInformation colorInformation;
 		colorInformation.Width = kSize;
@@ -1179,8 +1159,8 @@ void FrameGraphTestSuite::TestTwoAspectAliasAcquire()
 
 			graph.Compile();
 			B3D_TEST_ASSERT(graph.GetStatistics().CulledPassCount == 0)
-			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == (isExplicit ? 3u : 0u))
-			B3D_TEST_ASSERT(graph.GetStatistics().SplitAliasAcquireCount == (isExplicit ? 1u : 0u))
+			B3D_TEST_ASSERT(graph.GetStatistics().AliasAcquireCount == 3u)
+			B3D_TEST_ASSERT(graph.GetStatistics().SplitAliasAcquireCount == 1u)
 			graph.Execute();
 		}
 
@@ -1218,7 +1198,7 @@ void FrameGraphTestSuite::TestParameterHandles()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	RunInModes("FrameGraphTestSuite::TestParameterHandles", { true, false }, [this, &device, &pipeline]()
+	RunOnRenderThread("FrameGraphTestSuite::TestParameterHandles", [this, &device, &pipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline);
 		const TShared<GpuPipelineParameterSetLayout> layout = pipeline->GetParameterLayout()->GetSet(0);
@@ -1279,7 +1259,7 @@ void FrameGraphTestSuite::TestExecuteCallbacks()
 	LoggingScope logs(*this);
 	logs.IgnoreWarning(kBarrierOnlyWarning);
 
-	RunInModes("FrameGraphTestSuite::TestExecuteCallbacks", { true, false }, [this, &device, &pipeline]()
+	RunOnRenderThread("FrameGraphTestSuite::TestExecuteCallbacks", [this, &device, &pipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline);
 		const TShared<render::GpuBuffer> buffer = test.CreateBuffer("Buffer");
@@ -1357,7 +1337,7 @@ void FrameGraphTestSuite::TestValidation()
 	logs.ExpectError("The image was accessed in a different layout than its last explicit barrier declares. Image: 'Unexported texture'.");
 	logs.ExpectError("The resource was used while it is unplaced, without memory from its transient resource allocator. Place it first. Image: 'Held texture'.");
 
-	RunInModes("FrameGraphTestSuite::TestValidation", { true }, [&device, &pipeline, &samplePipeline]()
+	RunOnRenderThread("FrameGraphTestSuite::TestValidation", [&device, &pipeline, &samplePipeline]()
 	{
 		const FrameGraphTestContext test(*device, pipeline, samplePipeline);
 

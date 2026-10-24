@@ -14,7 +14,8 @@ if(B3D_GPU_BACKEND MATCHES "Vulkan" OR B3D_BUILD_ALL_PLUGINS)
 	target_include_directories(bsfVulkanGpuBackendTests PRIVATE
 		"${CMAKE_CURRENT_SOURCE_DIR}"
 		"${CMAKE_CURRENT_SOURCE_DIR}/.."
-		"${CMAKE_CURRENT_SOURCE_DIR}/../../Shared/")
+		"${CMAKE_CURRENT_SOURCE_DIR}/../../Shared/"
+		"${B3D_FRAMEWORK_SOURCE_FOLDER}/Tests")
 
 	# Vulkan headers
 	if(APPLE)
