@@ -196,7 +196,6 @@ namespace b3d
 			void EndLabel() override;
 			void InsertLabel(const StringView& name) override;
 			void End() override;
-			void IssueBarriers(const GpuBarriers& barriers) override;
 
 			/** Returns an unique identifier of this command buffer. */
 			u32 GetId() const { return mId; }

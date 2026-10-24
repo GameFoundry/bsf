@@ -20,13 +20,10 @@ using namespace b3d;
 namespace b3d
 {
 	TConfigVariable<bool> gGpuValidateRestingStates("gpu.ValidateRestingStates",
-		"If enabled, development builds check the accesses of resources that a command buffer with explicit barriers neither declared nor barriered against the resources' resting state.", false);
+		"If enabled, development builds check the accesses of resources that a command buffer neither declared nor barriered against the resources' resting state.", false);
 
 	TConfigVariable<bool> gGpuPoisonUnloadedAttachments("gpu.PoisonUnloadedAttachments",
 		"If enabled, development builds clear every render target surface that a render pass neither loads nor clears, to a value that stands out, so passes that rely on contents they did not load show them.", B3D_DEBUG != 0);
-
-	TConfigVariable<bool> gGpuExplicitBarriers("gpu.ExplicitBarriers",
-		"If enabled, the engine uses explicit barriers: frame graphs issue them, uploads and reads leave resources at rest, and new textures start at rest. If disabled, the resource tracker derives every barrier. Set before start-up.", true);
 } // namespace b3d
 
 namespace b3d { namespace render
@@ -93,8 +90,6 @@ GpuCommandBufferPool::GpuCommandBufferPool(GpuDevice& gpuDevice, const GpuComman
 	{
 		mMessageQueue.ScheduleRunUntilShutdown(*scheduler, true);
 	}
-
-	B3D_ENSURE_LOG(!mInformation.ExplicitBarriers || mGpuDevice.GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS), "The GPU backend does not support explicit barriers.");
 }
 
 void GpuCommandBufferPool::Destroy()
@@ -105,9 +100,8 @@ void GpuCommandBufferPool::Destroy()
 	mIsDestroyed = true;
 }
 
-GpuCommandBuffer::GpuCommandBuffer(GpuDevice& gpuDevice, ThreadId ownerThread, GpuQueueType queueType, [[maybe_unused]] bool explicitBarriers, const GpuCommandBufferCreateInformation& createInformation)
+GpuCommandBuffer::GpuCommandBuffer(GpuDevice& gpuDevice, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation)
 	:mGpuDevice(gpuDevice), mQueueType(queueType), mOwnerThread(ownerThread), mInformation(createInformation)
-	, mUsesExplicitBarriers(explicitBarriers)
 { }
 
 
@@ -327,9 +321,6 @@ void GpuCommandBuffer::IssueExplicitBarriers(const GpuExplicitBarriers& barriers
 {
 	EnsureValidThread();
 
-	if(!B3D_ENSURE_LOG(mUsesExplicitBarriers, "Explicit barriers require a command buffer pool created with explicit barriers."))
-		return;
-
 	if(!B3D_ENSURE_LOG(!IsInRenderPass(), "Explicit barriers can only be recorded outside of a render pass."))
 		return;
 
@@ -345,9 +336,6 @@ void GpuCommandBuffer::IssueExplicitBarriers(const GpuExplicitBarriers& barriers
 void GpuCommandBuffer::ReleaseBarriers(const GpuExplicitBarriers& barriers, const TShared<GpuSplitBarrier>& split)
 {
 	EnsureValidThread();
-
-	if(!B3D_ENSURE_LOG(mUsesExplicitBarriers, "Explicit barriers require a command buffer pool created with explicit barriers."))
-		return;
 
 	if(!B3D_ENSURE_LOG(split != nullptr, "A split barrier must be created by GpuDevice::CreateSplitBarrier()."))
 		return;
@@ -391,9 +379,6 @@ void GpuCommandBuffer::AcquireBarriers(const GpuExplicitBarriers& barriers, cons
 {
 	EnsureValidThread();
 
-	if(!B3D_ENSURE_LOG(mUsesExplicitBarriers, "Explicit barriers require a command buffer pool created with explicit barriers."))
-		return;
-
 	if(!B3D_ENSURE_LOG(split != nullptr, "A split barrier must be created by GpuDevice::CreateSplitBarrier()."))
 		return;
 
@@ -428,9 +413,6 @@ void GpuCommandBuffer::AcquireBarriers(const GpuExplicitBarriers& barriers, cons
 void GpuCommandBuffer::SetValidator(GpuExplicitBarrierValidator* validator)
 {
 	EnsureValidThread();
-
-	if(!B3D_ENSURE_LOG(mUsesExplicitBarriers, "Explicit barriers require a command buffer pool created with explicit barriers."))
-		return;
 
 	mExplicitBarrierValidator = validator;
 	if(mExplicitBarrierValidator != nullptr)

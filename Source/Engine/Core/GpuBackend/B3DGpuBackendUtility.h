@@ -121,29 +121,27 @@ namespace b3d
 		static const char* GetImageLayoutName(render::GpuImageLayout layout);
 
 		/**
-		 * Records a copy of a subresource of @p texture into @p stagingBuffer, which the host can read once @p commandBuffer completes. On a
-		 * command buffer with explicit barriers the subresource and @p stagingBuffer leave their resting states for the copy and return to
-		 * them.
+		 * Records a copy of a subresource of @p texture into @p stagingBuffer, which the host can read once @p commandBuffer completes. The
+		 * subresource and @p stagingBuffer leave their resting states for the copy and return to them.
 		 */
 		static void CopyToStagingBuffer(render::GpuCommandBuffer& commandBuffer, const TShared<render::Texture>& texture, u32 mipLevel, u32 arrayLayer, const TShared<render::GpuBuffer>& stagingBuffer);
 
 		/**
 		 * Records a copy of @p length bytes of @p buffer, starting at @p offset, to the start of @p stagingBuffer, which the host can read
-		 * once @p commandBuffer completes. On a command buffer with explicit barriers @p buffer and @p stagingBuffer leave their resting
-		 * states for the copy and return to them.
+		 * once @p commandBuffer completes. @p buffer and @p stagingBuffer leave their resting states for the copy and return to them.
 		 */
 		static void CopyToStagingBuffer(render::GpuCommandBuffer& commandBuffer, const TShared<render::GpuBuffer>& buffer, u32 offset, u32 length, const TShared<render::GpuBuffer>& stagingBuffer);
 
 		/**
 		 * Records a copy of the back-buffer image a window's surface holds into @p stagingBuffer (see GpuCommandBuffer::CopyWindowToBuffer()),
-		 * which the host can read once @p commandBuffer completes. On a command buffer with explicit barriers the image and @p stagingBuffer
-		 * leave their resting states for the copy and return to them.
+		 * which the host can read once @p commandBuffer completes. The image and @p stagingBuffer leave their resting states for the copy
+		 * and return to them.
 		 */
 		static void CopyToStagingBuffer(render::GpuCommandBuffer& commandBuffer, const TShared<render::RenderWindow>& window, const TShared<render::GpuBuffer>& stagingBuffer);
 
 		/**
-		 * Returns the resting state of a buffer on queues of @p queueType. With explicit barriers, a resource outside of the work that
-		 * declares its state is at rest: it may be read in the resting state without a barrier, and whoever writes it brings it back to
+		 * Returns the resting state of a buffer on queues of @p queueType. A resource outside of the work that declares its state is at
+		 * rest: it may be read in the resting state without a barrier, and whoever writes it brings it back to
 		 * rest. Buffers rest readable as vertex, index and indirect arguments, and from every shader stage. Readback buffers
 		 * (GpuBufferType::StagingRead) rest readable by the host, so a barrier that returns one to rest makes the GPU's writes visible
 		 * to the host. Upload buffers (GpuBufferType::StagingWrite) rest readable by copies, the only GPU work that reads them.

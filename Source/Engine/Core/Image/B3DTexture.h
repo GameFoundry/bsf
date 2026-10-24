@@ -696,7 +696,7 @@ namespace b3d
 			bool mIsAliased = false;
 
 			/**
-			 * Returns true if the native images created for the texture start at rest (see gGpuExplicitBarriers). Backends then
+			 * Returns true if the native images created for the texture start at rest (see GpuBackendUtility::GetRestingState()). Backends then
 			 * request a resting transition of every image they create for the texture (see IGpuImageResource::RequestRestingTransition()),
 			 * unless its native layout is already the resting one. Images on memory other resources share get their state from whoever
 			 * places them, and images created while the texture is a frame graph resource (see SetFrameGraphResourceIndex()) from the

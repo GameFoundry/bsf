@@ -17,10 +17,7 @@ namespace b3d::render
 		/** Creates a command buffer pool for @p queueType on the calling thread. */
 		static TShared<GpuCommandBufferPool> CreateCommandBufferPool(GpuDevice& device, GpuQueueType queueType = GQT_GRAPHICS)
 		{
-			GpuCommandBufferPoolCreateInformation information = GpuCommandBufferPoolCreateInformation::CreateForThisThread(queueType);
-			information.ExplicitBarriers = true;
-
-			return device.CreateGpuCommandBufferPool(information);
+			return device.CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(queueType));
 		}
 
 		/**

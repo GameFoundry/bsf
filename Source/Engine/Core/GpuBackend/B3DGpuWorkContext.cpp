@@ -161,9 +161,6 @@ const TShared<render::GpuCommandBuffer>& GpuWorkContext::GetTransferCommandBuffe
 		poolCreateInformation.Type = kTransferQueueType;
 		poolCreateInformation.UsePoolReset = true;
 
-		// In explicit mode the upload utilities bracket their writes with explicit barriers
-		poolCreateInformation.ExplicitBarriers = gGpuExplicitBarriers && mDevice.GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
-
 		mTransferPoolRing = B3DMakeUnique<render::GpuCommandBufferPoolRing>(mDevice, poolCreateInformation);
 	}
 

@@ -389,7 +389,7 @@ void Texture::SetAllocation(const GpuAllocation& allocation, GpuObjectCreateFlag
 
 bool Texture::StartsAtRest() const
 {
-	return gGpuExplicitBarriers && !mIsAliased && mFrameGraphResourceIndex == ~0u && GetDevice().GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
+	return !mIsAliased && mFrameGraphResourceIndex == ~0u;
 }
 
 void Texture::Initialize()
@@ -673,23 +673,18 @@ void TextureUtility::Write(GpuWorkContext& gpuContext, const TShared<Texture>& t
 	if(commandBuffer == nullptr)
 		commandBuffer = gpuContext.GetTransferCommandBuffer();
 
-	// Command buffers with explicit barriers take the subresource from its resting state and return it there. The copy overwrites the
-	// whole subresource, so its old contents are discarded.
-	if(commandBuffer->UsesExplicitBarriers())
-	{
-		const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*texture, commandBuffer->GetQueueType());
-		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write, GpuImageLayout::TransferDestination);
-		const GpuTextureSubresourceRange range(mipLevel, 1, arrayLayer, 1, GpuBackendUtility::GetFormatAspects(textureProperties.Format));
+	// Take the subresource from its resting state and return it there. The copy overwrites the whole subresource, so its old contents
+	// are discarded.
+	const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*texture, commandBuffer->GetQueueType());
+	const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write, GpuImageLayout::TransferDestination);
+	const GpuTextureSubresourceRange range(mipLevel, 1, arrayLayer, 1, GpuBackendUtility::GetFormatAspects(textureProperties.Format));
 
-		GpuAccessState source = restingState;
-		source.Layout = GpuImageLayout::Undefined;
+	GpuAccessState discardedRestingState = restingState;
+	discardedRestingState.Layout = GpuImageLayout::Undefined;
 
-		commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, source, transferWrite, range));
-		commandBuffer->CopyBufferToTexture(stagingBuffer, texture, 0, mipLevel, arrayLayer);
-		commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, transferWrite, restingState, range));
-	}
-	else
-		commandBuffer->CopyBufferToTexture(stagingBuffer, texture, 0, mipLevel, arrayLayer);
+	commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, discardedRestingState, transferWrite, range));
+	commandBuffer->CopyBufferToTexture(stagingBuffer, texture, 0, mipLevel, arrayLayer);
+	commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, transferWrite, restingState, range));
 
 	commandBuffer->AddQueueSyncMask(syncMask);
 }
@@ -738,22 +733,13 @@ void TextureUtility::Read(GpuWorkContext& gpuContext, const TShared<Texture>& te
 			// Make any writes visible before mapping
 			if(supportsGPUWrites)
 			{
-				// Command buffers with explicit barriers make the writes visible to the host from the subresource's resting state, and keep
-				// its layout. The subresource needs no barrier back to rest, because the host reads it after the command buffer completes,
-				// and any later GPU access is submitted after that.
-				if(commandBuffer->UsesExplicitBarriers())
-				{
-					const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*texture, commandBuffer->GetQueueType());
-					const GpuTextureSubresourceRange range(mipLevel, 1, arrayLayer, 1, GpuBackendUtility::GetFormatAspects(textureProperties.Format));
+				// The barrier keeps the subresource's resting layout. The subresource needs no barrier back to rest, because the host reads it
+				// after the command buffer completes, and any later GPU access is submitted after that.
+				const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*texture, commandBuffer->GetQueueType());
+				const GpuTextureSubresourceRange range(mipLevel, 1, arrayLayer, 1, GpuBackendUtility::GetFormatAspects(textureProperties.Format));
 
-					const GpuAccessState hostRead(GpuStageFlag::Host, GpuAccessFlag::Read, restingState.Layout);
-					commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, restingState, hostRead, range));
-				}
-				else
-				{
-					// Issue a barrier so the device makes the written memory available for read (read-after-write hazard)
-					commandBuffer->IssueBarriers({{ GpuTextureBarrier(texture, GpuResourceUseFlag::Host, GpuAccessFlag::Read)}});
-				}
+				const GpuAccessState hostRead(GpuStageFlag::Host, GpuAccessFlag::Read, restingState.Layout);
+				commandBuffer->IssueExplicitBarriers(GpuExplicitTextureBarrier(texture, restingState, hostRead, range));
 			}
 
 			// Submit the command buffer and wait until it finishes

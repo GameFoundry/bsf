@@ -256,9 +256,9 @@ namespace b3d
 		}
 
 		MetalGpuCommandBuffer::MetalGpuCommandBuffer(MetalGpuDevice& device, MetalGpuCommandBufferPool& pool, u32 id, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation)
-			: GpuCommandBuffer(device, ownerThread, queueType, pool.UsesExplicitBarriers(), createInformation), mGpuDevice(device), mPool(pool), mId(id), mBarrierHelper(&mResourceTracker)
+			: GpuCommandBuffer(device, ownerThread, queueType, createInformation), mGpuDevice(device), mPool(pool), mId(id), mBarrierHelper(&mResourceTracker)
 		{
-			mResourceTracker.SetHazardTracking(!UsesExplicitBarriers());
+			mResourceTracker.SetHazardTracking(false);
 
 			// The id parameter hides the Objective-C id type
 			const auto metalDevice = device.GetMetalDevice();
@@ -1835,11 +1835,6 @@ namespace b3d
 			if (destinationResource != nullptr)
 				mResourceTracker.TrackBufferAccess(destinationResource, GpuStageFlag::Transfer, GpuAccessFlag::Write, mBarrierHelper, 0);
 
-			// The resource tracker does not see the back buffer, which was last rendered to, possibly by an earlier command buffer.
-			// With explicit barriers, the window's barrier orders it.
-			if (!UsesExplicitBarriers())
-				EmitBarrier(MetalStageBarrier(GpuBarrierScope(GpuStageFlag::ColorAttachment, GpuAccessFlag::Write, GpuStageFlag::Transfer, GpuAccessFlag::Read)));
-
 			if (!ExecutePendingBarriers())
 				return;
 
@@ -2291,73 +2286,6 @@ namespace b3d
 
 			// Done is only set once the GPU finishes executing the buffer, see ExecuteSubmitOnSubmitThread()
 			mState = GpuCommandBufferState::RecordingDone;
-		}
-
-		void MetalGpuCommandBuffer::IssueBarriers(const GpuBarriers& barriers)
-		{
-			EnsureValidThread();
-			if (mRecordingFailed)
-				return;
-
-			for (const GpuBufferBarrier& bufferBarrier : barriers.BufferBarriers)
-			{
-				auto* metalGpuBuffer = static_cast<MetalGpuBuffer*>(bufferBarrier.Object.get());
-				if (metalGpuBuffer == nullptr)
-					continue;
-
-				MetalBuffer* resource = metalGpuBuffer->GetMetalResource();
-				if (resource == nullptr)
-					continue;
-
-				mResourceTracker.TrackBufferBarrier(resource, GpuBackendUtility::GetStageFlags(bufferBarrier.DestinationUsage), bufferBarrier.DestinationAccess, mBarrierHelper, bufferBarrier.AliasAcquire);
-			}
-
-			for (const GpuTextureBarrier& textureBarrier : barriers.TextureBarriers)
-			{
-				auto* metalTexture = static_cast<MetalTexture*>(textureBarrier.Object.get());
-				if (metalTexture == nullptr)
-					continue;
-
-				MetalImage* resource = metalTexture->GetMetalResource();
-				if (resource == nullptr)
-					continue;
-
-				mResourceTracker.TrackImageBarrier(resource, textureBarrier.SubresourceRange, GpuBackendUtility::GetStageFlags(textureBarrier.DestinationUsage), textureBarrier.DestinationAccess, textureBarrier.DestinationLayout, mBarrierHelper, textureBarrier.AliasAcquire);
-			}
-
-			bool hasRenderTargetBarriers = false;
-			for (const GpuRenderTargetBarrier& renderTargetBarrier : barriers.RenderTargetBarriers)
-			{
-				if (renderTargetBarrier.Object == nullptr || !B3D_ENSURE_LOG(renderTargetBarrier.AliasAcquire == nullptr, "Render target barriers cannot alias acquire. Use a texture barrier instead."))
-					continue;
-
-				// Window back buffers are not tracked resources, so they wait for all earlier attachment accesses
-				if (renderTargetBarrier.Object->GetProperties().IsWindow)
-				{
-					EmitBarrier(MetalStageBarrier(GpuBarrierScope(GpuStageFlag::ColorAttachment | GpuStageFlag::LateFragmentTests, GpuAccessFlag::Write,
-						GpuBackendUtility::GetStageFlags(renderTargetBarrier.DestinationUsage), renderTargetBarrier.DestinationAccess)));
-					hasRenderTargetBarriers = true;
-					continue;
-				}
-
-				MetalFramebuffer* const framebuffer = static_cast<MetalRenderTexture*>(renderTargetBarrier.Object.get())->GetFramebuffer();
-				const GpuFramebufferAttachment* const attachment = framebuffer != nullptr ? framebuffer->FindAttachment(renderTargetBarrier.SurfaceMask) : nullptr;
-				if (attachment == nullptr)
-					continue;
-
-				mResourceTracker.TrackImageBarrier(static_cast<MetalImage*>(attachment->Image), renderTargetBarrier.SubresourceRange, GpuBackendUtility::GetStageFlags(renderTargetBarrier.DestinationUsage),
-					renderTargetBarrier.DestinationAccess, renderTargetBarrier.DestinationLayout, mBarrierHelper, nullptr);
-				hasRenderTargetBarriers = true;
-			}
-
-			// Attachment accesses of the open render encoder can only be waited on from a new encoder
-			if (hasRenderTargetBarriers && mRenderEncoder != nil && mEncoderHasWork)
-			{
-				if (!RestartRenderPass())
-					return;
-			}
-
-			ExecutePendingBarriers();
 		}
 
 		bool MetalGpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& barriers, GpuBarrierPhase phase, GpuSplitBarrier* split)

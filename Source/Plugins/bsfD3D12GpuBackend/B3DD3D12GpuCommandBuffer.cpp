@@ -201,7 +201,7 @@ void D3D12GpuCommandBufferPool::Reset()
 	}
 }
 
-D3D12GpuCommandBuffer::D3D12GpuCommandBuffer(D3D12GpuDevice& device, D3D12GpuCommandBufferPool& pool, u32 id, ID3D12GraphicsCommandList7* commandList, ID3D12CommandAllocator* commandAllocator, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation) : GpuCommandBuffer(device, ownerThread, queueType, pool.UsesExplicitBarriers(), createInformation), mId(id), mCommandList(commandList), mCommandAllocator(commandAllocator), mPool(pool), mBarrierHelper(&mResourceTracker, queueType), mGraphicsPipelineRequiresBind(true), mGraphicsRootSignatureRequiresBind(true), mComputePipelineRequiresBind(true), mPrimitiveTopologyRequiresBind(true), mViewportRequiresBind(true), mStencilReferenceValueRequiresBind(true), mScissorRequiresBind(true), mGraphicsParametersRequireBind(false), mComputeParametersRequireBind(false), mGraphicsPushConstantsRequireBind(false), mComputePushConstantsRequireBind(false), mVertexInputsDirty(false)
+D3D12GpuCommandBuffer::D3D12GpuCommandBuffer(D3D12GpuDevice& device, D3D12GpuCommandBufferPool& pool, u32 id, ID3D12GraphicsCommandList7* commandList, ID3D12CommandAllocator* commandAllocator, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation) : GpuCommandBuffer(device, ownerThread, queueType, createInformation), mId(id), mCommandList(commandList), mCommandAllocator(commandAllocator), mPool(pool), mBarrierHelper(&mResourceTracker, queueType), mGraphicsPipelineRequiresBind(true), mGraphicsRootSignatureRequiresBind(true), mComputePipelineRequiresBind(true), mPrimitiveTopologyRequiresBind(true), mViewportRequiresBind(true), mStencilReferenceValueRequiresBind(true), mScissorRequiresBind(true), mGraphicsParametersRequireBind(false), mComputeParametersRequireBind(false), mGraphicsPushConstantsRequireBind(false), mComputePushConstantsRequireBind(false), mVertexInputsDirty(false)
 {
 	HRESULT hr = GetD3D12GpuDevice().GetD3D12Device()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
 	B3D_ASSERT(SUCCEEDED(hr) && "Failed to create fence");
@@ -209,7 +209,7 @@ D3D12GpuCommandBuffer::D3D12GpuCommandBuffer(D3D12GpuDevice& device, D3D12GpuCom
 	// Incremented by the queue just before each submit's fence signal, so it always identifies the latest submission
 	mFenceValue = 0;
 
-	mResourceTracker.SetHazardTracking(!UsesExplicitBarriers());
+	mResourceTracker.SetHazardTracking(false);
 
 	SetName(createInformation.Name);
 }
@@ -1524,76 +1524,6 @@ Area2I D3D12GpuCommandBuffer::GetRenderPassArea() const
 		return Area2I(0, 0, 0, 0);
 
 	return Area2I(0, 0, (i32)mRenderTarget->GetProperties().Width, (i32)mRenderTarget->GetProperties().Height);
-}
-
-void D3D12GpuCommandBuffer::IssueBarriers(const GpuBarriers& barriers)
-{
-	EnsureValidThread();
-
-	if(!B3D_ENSURE(!IsInRenderPass()))
-		return;
-
-	for(const auto& barrier : barriers.BufferBarriers)
-	{
-		D3D12GpuBuffer* const gpuBuffer = static_cast<D3D12GpuBuffer*>(barrier.Object.get());
-		if(gpuBuffer == nullptr || gpuBuffer->GetD3D12Buffer() == nullptr)
-			continue;
-
-		D3D12Buffer* const buffer = gpuBuffer->GetD3D12Buffer();
-
-		mResourceTracker.TrackBufferBarrier(buffer, GpuBackendUtility::GetStageFlags(barrier.DestinationUsage), barrier.DestinationAccess, mBarrierHelper, barrier.AliasAcquire);
-	}
-
-	for(const auto& barrier : barriers.TextureBarriers)
-	{
-		D3D12Texture* const d3d12Texture = static_cast<D3D12Texture*>(barrier.Object.get());
-		if(d3d12Texture == nullptr || d3d12Texture->GetD3D12Image() == nullptr)
-			continue;
-
-		D3D12Image* const image = d3d12Texture->GetD3D12Image();
-
-		GpuTextureSubresourceRange maskedRange = barrier.SubresourceRange;
-		maskedRange.AspectMask &= image->GetRange().AspectMask;
-
-		mResourceTracker.TrackImageBarrier(image, maskedRange, GpuBackendUtility::GetStageFlags(barrier.DestinationUsage), barrier.DestinationAccess, barrier.DestinationLayout, mBarrierHelper, barrier.AliasAcquire);
-	}
-
-	for(const auto& barrier : barriers.RenderTargetBarriers)
-	{
-		if(barrier.Object == nullptr || !B3D_ENSURE_LOG(barrier.AliasAcquire == nullptr, "Render target barriers cannot alias acquire. Use a texture barrier instead."))
-			continue;
-
-		// Resolve the render target's framebuffer, which carries the per-attachment image references. This is the
-		// only way to reach swap-chain back buffers, which have no standalone D3D12Texture wrapper.
-		D3D12Framebuffer* framebuffer = nullptr;
-		if(barrier.Object->GetProperties().IsWindow)
-		{
-			RenderWindow* const renderWindow = static_cast<RenderWindow*>(barrier.Object.get());
-			const TShared<IRenderWindowSurface>& surface = renderWindow->GetRenderWindowSurface();
-			if(surface != nullptr)
-			{
-				ID3D12RenderWindowSurface* d3d12Surface = static_cast<ID3D12RenderWindowSurface*>(surface.get());
-				if(!d3d12Surface->IsSwapChainValid())
-					renderWindow->RebuildSwapChain();
-
-				framebuffer = d3d12Surface->GetActiveFramebuffer();
-			}
-		}
-		else
-		{
-			D3D12RenderTexture* const renderTexture = static_cast<D3D12RenderTexture*>(barrier.Object.get());
-			framebuffer = renderTexture->GetFramebuffer();
-		}
-
-		if(framebuffer == nullptr)
-			continue;
-
-		const GpuFramebufferAttachment* const attachment = framebuffer->FindAttachment(barrier.SurfaceMask);
-		if(attachment != nullptr)
-			mResourceTracker.TrackImageBarrier(attachment->Image, attachment->Range, GpuBackendUtility::GetStageFlags(barrier.DestinationUsage), barrier.DestinationAccess, barrier.DestinationLayout, mBarrierHelper);
-	}
-
-	mBarrierHelper.Execute(*this);
 }
 
 /************************************************************************/

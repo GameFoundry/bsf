@@ -49,9 +49,6 @@ void VulkanHeadlessRenderWindowSurface::CreateSwapChainImages()
 	vkImageCreateInfo.pQueueFamilyIndices = nullptr;
 	vkImageCreateInfo.queueFamilyIndexCount = 0;
 
-	// With explicit barriers, window surfaces start at rest like textures (see GpuBackendUtility::GetRestingState())
-	const bool startsAtRest = gGpuExplicitBarriers && presentDevice->GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
-
 	// Create color images for each buffer
 	for(u32 imageIndex = 0; imageIndex < kImageCount; imageIndex++)
 	{
@@ -71,8 +68,8 @@ void VulkanHeadlessRenderWindowSurface::CreateSwapChainImages()
 		{
 			mColorImages[imageIndex]->SetName("HeadlessSwapChainColor" + ToString(imageIndex));
 
-			if(startsAtRest)
-				mColorImages[imageIndex]->RequestRestingTransition(GpuImageLayout::ColorAttachment);
+			// Window surfaces start at rest like textures (see GpuBackendUtility::GetRestingState())
+			mColorImages[imageIndex]->RequestRestingTransition(GpuImageLayout::ColorAttachment);
 		}
 	}
 
@@ -95,8 +92,7 @@ void VulkanHeadlessRenderWindowSurface::CreateSwapChainImages()
 		{
 			mDepthImage->SetName("HeadlessSwapChainDepth");
 
-			if(startsAtRest)
-				mDepthImage->RequestRestingTransition(GpuImageLayout::DepthStencilAttachment);
+			mDepthImage->RequestRestingTransition(GpuImageLayout::DepthStencilAttachment);
 		}
 	}
 

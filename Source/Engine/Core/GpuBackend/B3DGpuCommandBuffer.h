@@ -25,9 +25,9 @@ namespace b3d
 	}
 
 	/**
-	 * If enabled, development builds check the accesses of resources that a command buffer with explicit barriers neither declared nor
-	 * barriered against the resources' resting state (see GpuBackendUtility::GetRestingState()). Enable when every resource outside of
-	 * explicit barrier work is kept at rest.
+	 * If enabled, development builds check the accesses of resources that a command buffer neither declared nor barriered against the
+	 * resources' resting state (see GpuBackendUtility::GetRestingState()). Enable when every resource outside of the recorded work is
+	 * kept at rest.
 	 */
 	extern B3D_EXPORT TConfigVariable<bool> gGpuValidateRestingStates;
 
@@ -37,21 +37,6 @@ namespace b3d
 	 * of working only on GPUs that happen to keep them. Enabled by default in debug builds.
 	 */
 	extern B3D_EXPORT TConfigVariable<bool> gGpuPoisonUnloadedAttachments;
-
-	/**
-	 * Selects explicit barriers for the whole engine. If enabled:
-	 *  - The transfer command buffers of work contexts use explicit barriers: the upload and read utilities take resources from their
-	 *    resting state and return them to it (see GpuBackendUtility::GetRestingState()).
-	 *  - New textures and window surfaces start at rest, brought there by the first submission that uses them (see
-	 *    IGpuImageResource::RequestRestingTransition()). Presentation takes window color surfaces out of rest, and the next submission
-	 *    that uses them brings them back. Textures that frame graphs create do not start at rest, the graph's first barrier of
-	 *    each brings it out of its creation layout.
-	 *  - Frame graphs issue every other barrier.
-	 *
-	 * If disabled, the resource tracker derives every barrier, and frame graphs run in automatic mode (see render::FrameGraph). Explicit
-	 * and automatic barriers cannot be mixed. Set before start-up, for the whole run. Has no effect without RSC_EXPLICIT_BARRIERS.
-	 */
-	extern B3D_EXPORT TConfigVariable<bool> gGpuExplicitBarriers;
 }
 
 namespace b3d
@@ -177,14 +162,6 @@ namespace b3d
 			GpuQueueType Type = GQT_GRAPHICS; /**< Determines which commands may be executed on the command buffer. Queue on which the command buffer is submitted must match this usage. */
 			ThreadId Thread; /**< Thread on which the command buffer pool is allowed to be used on. Any created command buffers are also bound to this thread. */
 			bool UsePoolReset = false; /**< When true, command buffers are reset as a group via pool-level reset instead of individually. */
-
-			/**
-			 * When true, command buffers of the pool issue no automatic barriers. The caller issues every barrier with
-			 * GpuCommandBuffer::IssueExplicitBarriers(), and the command buffers only keep their resources alive. A resource used
-			 * by such a command buffer must not be used by a command buffer with automatic barriers. Requires
-			 * RSC_EXPLICIT_BARRIERS.
-			 */
-			bool ExplicitBarriers = false;
 		};
 
 		/** Descriptor structure used for initialization of a GpuCommandBufferPool. */
@@ -247,12 +224,6 @@ namespace b3d
 			/** Returns true if the pool uses pool-level reset instead of individual command buffer reset. */
 			bool GetUsePoolReset() const { return mInformation.UsePoolReset; }
 
-			/** Returns true if command buffers of the pool issue only explicit barriers. See GpuCommandBufferPoolInformation::ExplicitBarriers. */
-			bool UsesExplicitBarriers() const
-			{
-				return mInformation.ExplicitBarriers;
-			}
-
 			/** Creates a new command buffer. */
 			virtual TShared<GpuCommandBuffer> Create(const GpuCommandBufferCreateInformation& createInformation) = 0;
 
@@ -277,133 +248,6 @@ namespace b3d
 			const GpuCommandBufferPoolInformation mInformation;
 			SingleConsumerQueue mMessageQueue;
 			bool mIsDestroyed = false;
-		};
-
-		/**
-		 * Describes common fields for both buffer and texture barriers. The source scope is derived from tracked resource
-		 * state. See GpuCommandBuffer::IssueBarrier.
-		 */
-		struct GpuBarrier
-		{
-			GpuBarrier(GpuResourceUseFlags destinationUsage, GpuAccessFlags destinationAccess)
-				: DestinationUsage(destinationUsage), DestinationAccess(destinationAccess)
-			{ }
-
-			GpuResourceUseFlags DestinationUsage; /**< Determines how the resource will be used after the barrier. Images will transition to a layout compatible with this usage. */
-			GpuAccessFlags DestinationAccess; /**< Determines if the resource will be read or written after the barrier. */
-
-			/**
-			 * If set, the barrier starts a new lifetime of the resource on memory that earlier resources used, such as a transient resource placed
-			 * by an aliasing allocator. The barrier discards the contents and orders the destination after AliasAcquire->Source.
-			 *
-			 * The barrier must precede every other use of the resource on the command buffer, and covers the whole resource. The destination
-			 * should describe the first access, which must write without reading the previous contents: a render target or depth attachment must
-			 * be cleared, or loaded with no load operation. A first access outside the destination still works, but will trigger another barrier.
-			 * Texture barriers must provide a destination layout. Not supported on render target barriers.
-			 *
-			 * Must remain valid until IssueBarriers() returns.
-			 */
-			const GpuAliasAcquire* AliasAcquire = nullptr;
-		};
-
-		/** Describes a barrier for a GpuBuffer. */
-		struct GpuBufferBarrier : GpuBarrier
-		{
-			GpuBufferBarrier(const TShared<GpuBuffer>& object, GpuResourceUseFlags destinationUsage, GpuAccessFlags destinationAccess)
-				: GpuBarrier(destinationUsage, destinationAccess), Object(object)
-			{ }
-
-			TShared<GpuBuffer> Object;
-		};
-
-		/** Describes a common set of barrier information used both by Texture and RenderTarget barrier. */
-		struct GpuSurfaceBarrier : GpuBarrier
-		{
-			GpuSurfaceBarrier(GpuResourceUseFlags destinationUsage, GpuAccessFlags destinationAccess, const GpuTextureSubresourceRange& subResourceRange = GpuTextureSubresourceRange::AllSubresources())
-				: GpuBarrier(destinationUsage, destinationAccess), SubresourceRange(subResourceRange)
-			{ }
-
-			GpuSurfaceBarrier(GpuResourceUseFlags destinationUsage, GpuAccessFlags destinationAccess,
-				GpuImageLayout destinationLayout, const GpuTextureSubresourceRange& subResourceRange = GpuTextureSubresourceRange::AllSubresources())
-				: GpuBarrier(destinationUsage, destinationAccess), SubresourceRange(subResourceRange), DestinationLayout(destinationLayout)
-			{ }
-
-			GpuTextureSubresourceRange SubresourceRange; /**< Subresources (mips, array levels) of the textures to apply the barrier to. */
-			GpuImageLayout DestinationLayout = GpuImageLayout::Undefined; /**< Destination image layout. If set to Undefined, no layout transition will be performed. */
-		};
-
-		/** Describes a barrier for a Texture. */
-		struct GpuTextureBarrier : GpuSurfaceBarrier
-		{
-			GpuTextureBarrier(const TShared<Texture>& object, GpuResourceUseFlags destinationUsage, GpuAccessFlags destinationAccess, const GpuTextureSubresourceRange& subResourceRange = GpuTextureSubresourceRange::AllSubresources())
-				: GpuSurfaceBarrier(destinationUsage, destinationAccess, subResourceRange), Object(object)
-			{ }
-
-			GpuTextureBarrier(const TShared<Texture>& object, GpuResourceUseFlags destinationUsage, GpuAccessFlags destinationAccess,
-				GpuImageLayout destinationLayout, const GpuTextureSubresourceRange& subResourceRange = GpuTextureSubresourceRange::AllSubresources())
-				: GpuSurfaceBarrier(destinationUsage, destinationAccess, destinationLayout, subResourceRange), Object(object)
-			{ }
-
-			TShared<Texture> Object;
-		};
-		/**
-		 * Describes a barrier for a RenderTarget.
-		 *
-		 * This is functionally equivalent to specifying GpuTextureBarrier on the color or depth/stencil textures of the
-		 * render target. However, it is necessary for issuing barriers on swap chain images, which cannot be accessed
-		 * as standalone textures.
-		 *
-		 * @note SurfaceMask must specify only a single surface bit (e.g., RT_COLOR0, RT_DEPTH). Combinations of multiple bits are invalid.
-		 */
-		struct GpuRenderTargetBarrier : GpuSurfaceBarrier
-		{
-			GpuRenderTargetBarrier(const TShared<RenderTarget>& object, RenderSurfaceMaskBits surfaceMask, 
-				GpuResourceUseFlags destinationUsage, GpuAccessFlags destinationAccess, const GpuTextureSubresourceRange& subresourceRange = GpuTextureSubresourceRange::AllSubresources())
-				: GpuSurfaceBarrier(destinationUsage, destinationAccess, subresourceRange), Object(object), SurfaceMask(surfaceMask)
-			{ }
-
-			GpuRenderTargetBarrier(const TShared<RenderTarget>& object, RenderSurfaceMaskBits surfaceMask,
-				GpuResourceUseFlags destinationUsage, GpuAccessFlags destinationAccess, GpuImageLayout destinationLayout, const GpuTextureSubresourceRange& subresourceRange = GpuTextureSubresourceRange::AllSubresources())
-				: GpuSurfaceBarrier(destinationUsage, destinationAccess, destinationLayout, subresourceRange), Object(object), SurfaceMask(surfaceMask)
-			{ }
-
-			TShared<RenderTarget> Object;
-			RenderSurfaceMaskBits SurfaceMask; /**< Specifies which surface of the render target the barrier applies to. Must be a single bit. */
-		};
-
-		/**
-		 * A list of buffer, texture, and render target barriers. Refers to the barriers without copying them, so they must remain valid until
-		 * GpuCommandBuffer::IssueBarriers() returns. 
-		 */
-		struct GpuBarriers
-		{
-			GpuBarriers(TArrayView<const GpuBufferBarrier> bufferBarriers = TArrayView<const GpuBufferBarrier>(), TArrayView<const GpuTextureBarrier> textureBarriers = TArrayView<const GpuTextureBarrier>(), TArrayView<const GpuRenderTargetBarrier> renderTargetBarriers = TArrayView<const GpuRenderTargetBarrier>())
-				: BufferBarriers(bufferBarriers), TextureBarriers(textureBarriers), RenderTargetBarriers(renderTargetBarriers)
-			{ }
-
-			GpuBarriers(TArrayView<const GpuTextureBarrier> textureBarriers)
-				: TextureBarriers(textureBarriers)
-			{ }
-
-			GpuBarriers(TArrayView<const GpuRenderTargetBarrier> renderTargetBarriers)
-				: RenderTargetBarriers(renderTargetBarriers)
-			{ }
-
-			GpuBarriers(const GpuTextureBarrier& textureBarrier)
-				: TextureBarriers(&textureBarrier, 1)
-			{ }
-
-			GpuBarriers(const GpuBufferBarrier& bufferBarrier)
-				: BufferBarriers(&bufferBarrier, 1)
-			{ }
-
-			GpuBarriers(const GpuRenderTargetBarrier& renderTargetBarrier)
-				: RenderTargetBarriers(&renderTargetBarrier, 1)
-			{ }
-
-			TArrayView<const GpuBufferBarrier> BufferBarriers;
-			TArrayView<const GpuTextureBarrier> TextureBarriers;
-			TArrayView<const GpuRenderTargetBarrier> RenderTargetBarriers;
 		};
 
 		/**
@@ -449,8 +293,8 @@ namespace b3d
 		};
 
 		/**
-		 * Describes common fields of explicit buffer and texture barriers. Unlike GpuBarrier, the caller provides the source as well as the
-		 * destination, and the command buffer derives nothing from earlier use of the resource. See GpuCommandBuffer::IssueExplicitBarriers().
+		 * Describes common fields of explicit buffer and texture barriers. The caller provides the source as well as the destination, and
+		 * the command buffer derives nothing from earlier use of the resource. See GpuCommandBuffer::IssueExplicitBarriers().
 		 */
 		struct GpuExplicitBarrier
 		{
@@ -709,9 +553,6 @@ namespace b3d
 			/** Returns the current state of the command buffer. */
 			GpuCommandBufferState GetState() const { return mState; }
 
-			/** Returns true if the command buffer issues only explicit barriers. See GpuCommandBufferPoolInformation::ExplicitBarriers. */
-			bool UsesExplicitBarriers() const { return mUsesExplicitBarriers; }
-
 			/** Assigns an name to the command buffer, primarily used for easier debugging. */
 			virtual void SetName(const StringView& name) { mName = name; }
 
@@ -830,26 +671,15 @@ namespace b3d
 			virtual bool IsInRenderPass() const = 0;
 
 			/**
-			 * Issues a memory and/or execution barrier that guarantees that the contents of GPU buffers will be correctly visible for the provided destination stages.
-			 * Additionally, transitions the images to the correct layout to be used in the destination.
-			 *
-			 * Note that system automatically issues barriers when needed, you do not need to call this method manually in almost all cases. Currently the only cases
-			 * you need to call this manually are when you read from a non-staging buffer that was written by the GPU, and you want to read the data on the CPU right
-			 * after GPU execution completes, and when a resource starts a new lifetime on aliased memory (see GpuBarrier::AliasAcquire).
-			 */
-			virtual void IssueBarriers(const GpuBarriers& barriers) = 0;
-
-			/**
-			 * Issues barriers whose source and destination the caller provides. Only valid outside of a render pass, on command buffers
-			 * of a pool created with GpuCommandBufferPoolInformation::ExplicitBarriers.
+			 * Issues barriers whose source and destination the caller provides. Command buffers issue no barriers of their own, so the
+			 * caller issues every barrier the recorded work needs. Only valid outside of a render pass.
 			 */
 			void IssueExplicitBarriers(const GpuExplicitBarriers& barriers);
 
 			/**
 			 * Records the first half of a split barrier, after the source accesses. The release starts making the source writes available
 			 * while unrelated work runs, and AcquireBarriers() completes it before the destination accesses. Work between the halves must
-			 * not access the resources of @p barriers. Only valid outside of a render pass, on command buffers of a pool created with
-			 * GpuCommandBufferPoolInformation::ExplicitBarriers.
+			 * not access the resources of @p barriers. Only valid outside of a render pass.
 			 *
 			 * The halves may be recorded on different command buffers, in any order and on any threads, on command buffers of the queue
 			 * types the split barrier was created for (see GpuDevice::CreateSplitBarrier()). The command buffer of the release must be
@@ -864,8 +694,8 @@ namespace b3d
 			void ReleaseBarriers(const GpuExplicitBarriers& barriers, const TShared<GpuSplitBarrier>& split);
 
 			/**
-			 * Records the second half of a split barrier, before the destination accesses. Only valid outside of a render pass, on
-			 * command buffers of a pool created with GpuCommandBufferPoolInformation::ExplicitBarriers. See ReleaseBarriers().
+			 * Records the second half of a split barrier, before the destination accesses. Only valid outside of a render pass. See
+			 * ReleaseBarriers().
 			 *
 			 * @param	barriers	Barriers to acquire. Must be the same as the barriers of the release.
 			 * @param	split		Split barrier the release received. Each split barrier is acquired once. The command buffer keeps
@@ -1077,8 +907,7 @@ namespace b3d
 			 * Sets the validator that checks the explicit barriers and accesses the command buffer records. A command buffer without one
 			 * validates nothing. Resource states carry over between the command buffers that share a validator, so they must be recorded one
 			 * at a time, in the order the GPU executes them. The caller keeps the validator alive until the command buffer is reset, which
-			 * clears it. Must be called before the command buffer records anything. Only valid on command buffers of a pool created with
-			 * GpuCommandBufferPoolInformation::ExplicitBarriers. Development builds only.
+			 * clears it. Must be called before the command buffer records anything. Development builds only.
 			 */
 			void SetValidator(GpuExplicitBarrierValidator* validator);
 #endif
@@ -1106,11 +935,11 @@ namespace b3d
 			friend class GpuCommandBufferPool;
 			friend class GpuSubmitThread;
 
-			GpuCommandBuffer(GpuDevice& gpuDevice, ThreadId ownerThread, GpuQueueType queueType, bool explicitBarriers, const GpuCommandBufferCreateInformation& createInformation);
+			GpuCommandBuffer(GpuDevice& gpuDevice, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation);
 
 			/**
 			 * Records explicit barriers, or one half of split barriers. The base implementation reports that the backend does not
-			 * support explicit barriers. Only called outside of a render pass, on command buffers that use explicit barriers.
+			 * support explicit barriers. Only called outside of a render pass.
 			 *
 			 * @param	barriers	Barriers to record.
 			 * @param	phase		Part of the barriers to record.
@@ -1207,7 +1036,6 @@ namespace b3d
 			GpuQueueMask mQueueSyncMask;
 			bool mIsDestroyed = false;
 
-			const bool mUsesExplicitBarriers;
 			TInlineArray<RecordedSplitBarrier, 4> mSplitBarriers;
 			TInlineArray<ExplicitImageLayout, 4> mExplicitImageLayouts;
 

@@ -491,18 +491,13 @@ namespace b3d::render
 		if(commandBuffer == nullptr)
 			commandBuffer = gpuContext.GetTransferCommandBuffer();
 
-		// Command buffers with explicit barriers take the buffer from its resting state and return it there
-		if(commandBuffer->UsesExplicitBarriers())
-		{
-			const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*buffer, commandBuffer->GetQueueType());
-			const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
+		// Take the buffer from its resting state and return it there
+		const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*buffer, commandBuffer->GetQueueType());
+		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
 
-			commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, restingState, transferWrite));
-			commandBuffer->CopyBufferToBuffer(stagingBuffer, buffer, 0, offset, length);
-			commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, transferWrite, restingState));
-		}
-		else
-			commandBuffer->CopyBufferToBuffer(stagingBuffer, buffer, 0, offset, length);
+		commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, restingState, transferWrite));
+		commandBuffer->CopyBufferToBuffer(stagingBuffer, buffer, 0, offset, length);
+		commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, transferWrite, restingState));
 
 		commandBuffer->AddQueueSyncMask(syncMask);
 
@@ -543,21 +538,12 @@ namespace b3d::render
 				// Make any writes visible before mapping
 				if(supportsGPUWrites)
 				{
-					// Command buffers with explicit barriers make the writes visible to the host from the buffer's resting state. The buffer
-					// needs no barrier back to rest, because the host reads it after the command buffer completes, and any later GPU access is
-					// submitted after that.
-					if(commandBuffer->UsesExplicitBarriers())
-					{
-						const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*buffer, commandBuffer->GetQueueType());
-						const GpuAccessState hostRead(GpuStageFlag::Host, GpuAccessFlag::Read);
+					// The buffer needs no barrier back to rest, because the host reads it after the command buffer completes, and any later
+					// GPU access is submitted after that
+					const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*buffer, commandBuffer->GetQueueType());
+					const GpuAccessState hostRead(GpuStageFlag::Host, GpuAccessFlag::Read);
 
-						commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, restingState, hostRead));
-					}
-					else
-					{
-						// Issue a barrier so the device makes the written memory available for read (read-after-write hazard)
-						commandBuffer->IssueBarriers({{ GpuBufferBarrier(buffer, GpuResourceUseFlag::Host, GpuAccessFlag::Read)}});
-					}
+					commandBuffer->IssueExplicitBarriers(GpuExplicitBufferBarrier(buffer, restingState, hostRead));
 				}
 
 				// Submit the command buffer and wait until it finishes

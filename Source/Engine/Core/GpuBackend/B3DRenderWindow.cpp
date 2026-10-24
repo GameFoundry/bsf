@@ -330,12 +330,7 @@ void RenderWindow::ResolveCaptures(GpuQueue& queue, GpuQueueMask syncMask)
 
 	GpuDevice& device = queue.GetGpuDevice();
 	if(mCaptureCommandBufferPool == nullptr)
-	{
-		GpuCommandBufferPoolCreateInformation poolCreateInformation = GpuCommandBufferPoolCreateInformation::CreateForThisThread(queue.GetType());
-		poolCreateInformation.ExplicitBarriers = gGpuExplicitBarriers && device.GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
-
-		mCaptureCommandBufferPool = device.CreateGpuCommandBufferPool(poolCreateInformation);
-	}
+		mCaptureCommandBufferPool = device.CreateGpuCommandBufferPool(GpuCommandBufferPoolCreateInformation::CreateForThisThread(queue.GetType()));
 
 	const TShared<GpuCommandBuffer> commandBuffer = mCaptureCommandBufferPool->FindOrCreate(GpuCommandBufferCreateInformation::Create("Window capture"));
 	const TShared<RenderWindow> window = std::static_pointer_cast<RenderWindow>(GetShared());
@@ -358,13 +353,6 @@ void RenderWindow::ResolveCaptures(GpuQueue& queue, GpuQueueMask syncMask)
 	}
 
 	GpuBackendUtility::CopyToStagingBuffer(*commandBuffer, window, stagingBuffer);
-
-	// Automatic command buffers leave the image where the copy put it, but the present expects it in the present layout
-	if(!commandBuffer->UsesExplicitBarriers() && !mCreateInformation.Headless)
-	{
-		const GpuRenderTargetBarrier presentBarrier(window, RT_COLOR0, GpuResourceUseFlag::Undefined, GpuAccessFlag::None, GpuImageLayout::Present);
-		commandBuffer->IssueBarriers(GpuBarriers(presentBarrier));
-	}
 
 	TInlineArray<TAsyncOp<TShared<PixelData>>, 1> captureOps = std::move(mCaptureRequests);
 	mCaptureRequests.Clear();

@@ -245,11 +245,6 @@ namespace b3d
 		 * A pass reads whatever the pass declared before it wrote. Passes whose writes nothing observes are culled, along with their
 		 * transients. Barriers are split whenever other passes run between the accesses they order.
 		 *
-		 * Without explicit mode (gGpuExplicitBarriers), the graph records on an automatic command buffer and plans no barriers:
-		 * the resource tracker derives them, and exports do nothing. Every transient that a surviving pass uses gets memory of its own,
-		 * because the tracker does not know of memory aliasing. This lets systems move to graphs before explicit mode is turned on.
-		 * TODO - Remove automatic mode once every recorder uses explicit barriers.
-		 *
 		 * @note	Not thread safe. Only the thread that owns the work context may use the graph. Graphs of different work contexts share
 		 *			the device's transient heaps, so their GPU work must follow the scope contract of GpuTransientResourceAllocator. Executes
 		 *			on the graphics queue, as one submission.
@@ -311,10 +306,7 @@ namespace b3d
 			/** Adds a pass that copies between the resources of @p pass. @p execute records the pass's commands after Compile(). */
 			void AddCopyPass(const StringView& name, FrameGraphCopyPass&& pass, Function<void(FrameGraphPassContext&)> execute);
 
-			/**
-			 * Culls passes, places transients and plans every barrier. No passes can be added afterwards. Plans no barriers in automatic
-			 * mode.
-			 */
+			/** Culls passes, places transients and plans every barrier. No passes can be added afterwards. */
 			void Compile();
 
 			/**
@@ -500,7 +492,6 @@ namespace b3d
 			GpuDevice& mDevice;
 			GpuTransientResourceAllocator& mAllocator;
 			const String mName;
-			const bool mExplicitBarriers; /**< True in explicit mode, false in automatic mode. See the class description. */
 #if B3D_BUILD_TYPE_DEVELOPMENT
 			const u32 mId; /**< Identifies the graph's resources apart from those of other live graphs. */
 #endif

@@ -334,28 +334,25 @@ void UniformBufferPools::Flush(const TShared<GpuCommandBuffer>& commandBuffer)
 	FrameAllocatorScope frameScope;
 
 	const TShared<GpuCommandBuffer>& actualCommandBuffer = commandBuffer ? commandBuffer : GetRenderer()->GetGpuContext().GetTransferCommandBuffer();
-	const bool usesExplicitBarriers = actualCommandBuffer->UsesExplicitBarriers();
 
+	// Take the destination buffers from their resting state for the copies
+	const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
+
+	FrameVector<GpuExplicitBufferBarrier> transferWriteBarriers;
 	FrameVector<GpuExplicitBufferBarrier> restBarriers;
-	if (usesExplicitBarriers)
+	FrameUnorderedSet<GpuBuffer*> destinationBuffers;
+	for (const PendingCopy& copy : mPendingCopies)
 	{
-		const GpuAccessState transferWrite(GpuStageFlag::Transfer, GpuAccessFlag::Write);
+		const TShared<GpuBuffer>& buffer = copy.Destination.GetBuffer();
+		if (!destinationBuffers.insert(buffer.get()).second)
+			continue;
 
-		FrameVector<GpuExplicitBufferBarrier> transferWriteBarriers;
-		FrameUnorderedSet<GpuBuffer*> destinationBuffers;
-		for (const PendingCopy& copy : mPendingCopies)
-		{
-			const TShared<GpuBuffer>& buffer = copy.Destination.GetBuffer();
-			if (!destinationBuffers.insert(buffer.get()).second)
-				continue;
-
-			const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*buffer, actualCommandBuffer->GetQueueType());
-			transferWriteBarriers.push_back(GpuExplicitBufferBarrier(buffer, restingState, transferWrite));
-			restBarriers.push_back(GpuExplicitBufferBarrier(buffer, transferWrite, restingState));
-		}
-
-		actualCommandBuffer->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(transferWriteBarriers.data(), (u32)transferWriteBarriers.size())));
+		const GpuAccessState restingState = GpuBackendUtility::GetRestingState(*buffer, actualCommandBuffer->GetQueueType());
+		transferWriteBarriers.push_back(GpuExplicitBufferBarrier(buffer, restingState, transferWrite));
+		restBarriers.push_back(GpuExplicitBufferBarrier(buffer, transferWrite, restingState));
 	}
+
+	actualCommandBuffer->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(transferWriteBarriers.data(), (u32)transferWriteBarriers.size())));
 
 	for (const PendingCopy& copy : mPendingCopies)
 	{
@@ -364,8 +361,7 @@ void UniformBufferPools::Flush(const TShared<GpuCommandBuffer>& commandBuffer)
 	}
 
 	// And return them to rest after the copies
-	if (usesExplicitBarriers)
-		actualCommandBuffer->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(restBarriers.data(), (u32)restBarriers.size())));
+	actualCommandBuffer->IssueExplicitBarriers(GpuExplicitBarriers(TArrayView<const GpuExplicitBufferBarrier>(restBarriers.data(), (u32)restBarriers.size())));
 
 	mPendingCopies.clear();
 	mPendingCopyIndices.clear();

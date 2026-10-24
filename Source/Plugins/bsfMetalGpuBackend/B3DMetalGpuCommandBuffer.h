@@ -143,7 +143,6 @@ namespace b3d
 			void EndLabel() override;
 			void InsertLabel(const StringView& name) override;
 			void End() override;
-			void IssueBarriers(const GpuBarriers& barriers) override;
 			void ClearRecordingState() override;
 			void Destroy() override;
 

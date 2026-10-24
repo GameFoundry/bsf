@@ -49,7 +49,6 @@ namespace b3d
 			void EndLabel() override {}
 			void InsertLabel(const StringView& name) override {}
 			void End() override;
-			void IssueBarriers(const GpuBarriers& barriers) override {}
 
 			/** Writes a black image, the contents of every null window. */
 			void CopyWindowToBuffer(const TShared<RenderWindow>& source, const TShared<GpuBuffer>& destination) override;

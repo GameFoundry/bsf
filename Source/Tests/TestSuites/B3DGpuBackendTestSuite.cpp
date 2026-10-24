@@ -1597,7 +1597,7 @@ void GpuBackendTestSuite::TestTrackingWithoutHazards()
 void GpuBackendTestSuite::TestExplicitBarriers()
 {
 	GpuBackend& backend = GpuBackend::Instance();
-	if(backend.GetDeviceCount() == 0 || !backend.GetDevice(0)->GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS))
+	if(backend.GetDeviceCount() == 0)
 		return;
 
 	// Shaders are resources, which are created outside of the render thread
@@ -1890,7 +1890,7 @@ void GpuBackendTestSuite::TestExplicitBarriers()
 void GpuBackendTestSuite::TestSplitBarrierExecution()
 {
 	GpuBackend& backend = GpuBackend::Instance();
-	if(backend.GetDeviceCount() == 0 || !backend.GetDevice(0)->GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS))
+	if(backend.GetDeviceCount() == 0)
 		return;
 
 	// Shaders are resources, which are created outside of the render thread
@@ -1975,7 +1975,7 @@ void GpuBackendTestSuite::TestSplitBarrierExecution()
 void GpuBackendTestSuite::TestBarrierAcrossPasses()
 {
 	GpuBackend& backend = GpuBackend::Instance();
-	if(backend.GetDeviceCount() == 0 || !backend.GetDevice(0)->GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS))
+	if(backend.GetDeviceCount() == 0)
 		return;
 
 	// Shaders are resources, which are created outside of the render thread
@@ -2072,7 +2072,7 @@ void GpuBackendTestSuite::TestBarrierAcrossPasses()
 void GpuBackendTestSuite::TestExplicitBarrierValidation()
 {
 	GpuBackend& backend = GpuBackend::Instance();
-	if(backend.GetDeviceCount() == 0 || !backend.GetDevice(0)->GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS))
+	if(backend.GetDeviceCount() == 0)
 		return;
 
 	// Each case uses its own resource, named after the case, so the errors do not cascade and each one identifies its case
@@ -3346,7 +3346,7 @@ void GpuBackendTestSuite::TestTransientResourcePlacement()
 void GpuBackendTestSuite::TestExplicitBarrierResourceValidation()
 {
 	GpuBackend& backend = GpuBackend::Instance();
-	if(backend.GetDeviceCount() == 0 || !backend.GetDevice(0)->GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS))
+	if(backend.GetDeviceCount() == 0)
 		return;
 
 	// Shaders are resources, which are created outside of the render thread
@@ -3601,7 +3601,7 @@ void GpuBackendTestSuite::TestExplicitBarrierResourceValidation()
 void GpuBackendTestSuite::TestTransientExplicitAliasing()
 {
 	GpuBackend& backend = GpuBackend::Instance();
-	if(backend.GetDeviceCount() == 0 || !backend.GetDevice(0)->GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS))
+	if(backend.GetDeviceCount() == 0)
 		return;
 
 	// Shaders are resources, which are created outside of the render thread

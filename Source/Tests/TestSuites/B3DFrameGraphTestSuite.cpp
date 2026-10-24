@@ -87,7 +87,7 @@ namespace
 			return buffer;
 		}
 
-		/** Creates a texture with @p usage, which the test dispatch can write by default. In explicit mode it starts at rest. */
+		/** Creates a texture with @p usage, which the test dispatch can write by default. It starts at rest. */
 		TShared<render::Texture> CreateTexture(const char* name, TextureUsageFlags usage = TextureUsageFlag::AllowUnorderedAccessOnTheGPU) const
 		{
 			TextureCreateInformation information = TextureInformation;
@@ -221,11 +221,11 @@ namespace
 		u32 TextureReadbackSize = 0;
 	};
 
-	/** Returns the device the tests run on, or null if it does not support explicit barriers. */
+	/** Returns the device the tests run on, or null if there is none. */
 	TShared<GpuDevice> GetTestDevice()
 	{
 		GpuBackend& backend = GpuBackend::Instance();
-		if(backend.GetDeviceCount() == 0 || !backend.GetDevice(0)->GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS))
+		if(backend.GetDeviceCount() == 0)
 			return nullptr;
 
 		return backend.GetDevice(0);

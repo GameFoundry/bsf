@@ -50,9 +50,6 @@ void D3D12HeadlessRenderWindowSurface::CreateSurfaceResources()
 	D3D12_CLEAR_VALUE colorClearValue = {};
 	colorClearValue.Format = mColorFormat;
 
-	// With explicit barriers, window surfaces start at rest like textures (see GpuBackendUtility::GetRestingState())
-	const bool startsAtRest = gGpuExplicitBarriers && mDevice.GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
-
 	for (u32 imageIndex = 0; imageIndex < mBackBufferCount; imageIndex++)
 	{
 		GpuAllocation allocation;
@@ -79,8 +76,8 @@ void D3D12HeadlessRenderWindowSurface::CreateSurfaceResources()
 
 		mColorImages[imageIndex] = mDevice.GetResourceManager().Create<D3D12Image>(imageCreateInformation);
 
-		if(startsAtRest)
-			mColorImages[imageIndex]->RequestRestingTransition(GpuImageLayout::ColorAttachment);
+		// Window surfaces start at rest like textures (see GpuBackendUtility::GetRestingState())
+		mColorImages[imageIndex]->RequestRestingTransition(GpuImageLayout::ColorAttachment);
 	}
 
 	if (mCreateDepthBuffer)
@@ -123,8 +120,7 @@ void D3D12HeadlessRenderWindowSurface::CreateSurfaceResources()
 
 		mDepthStencilImage = mDevice.GetResourceManager().Create<D3D12Image>(imageCreateInformation);
 
-		if(startsAtRest)
-			mDepthStencilImage->RequestRestingTransition(GpuImageLayout::DepthStencilAttachment);
+		mDepthStencilImage->RequestRestingTransition(GpuImageLayout::DepthStencilAttachment);
 	}
 
 	mCurrentImageIndex = 0;

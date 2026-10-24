@@ -143,7 +143,7 @@ namespace b3d
 
 		/**
 		 * Describes how the first access of a resource placed on memory that earlier resources used must be synchronized. The resource starts a
-		 * new lifetime on that memory, and its contents are undefined. See GpuBarrier::AliasAcquire.
+		 * new lifetime on that memory, and its contents are undefined. See GpuBarrierFlag::AliasAcquire.
 		 */
 		struct GpuAliasAcquire
 		{

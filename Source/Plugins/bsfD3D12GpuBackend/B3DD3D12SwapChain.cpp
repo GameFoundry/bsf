@@ -123,9 +123,6 @@ void D3D12SwapChain::Initialize()
 
 	factory->MakeWindowAssociation(mCreateInformation.WindowHandle, DXGI_MWA_NO_ALT_ENTER);
 
-	// With explicit barriers, window surfaces start at rest like textures (see GpuBackendUtility::GetRestingState())
-	const bool startsAtRest = gGpuExplicitBarriers && mDevice.GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS);
-
 	// Create the back-buffer image wrappers.
 	for (u32 backBufferIndex = 0; backBufferIndex < mBackBufferCount; backBufferIndex++)
 	{
@@ -153,7 +150,8 @@ void D3D12SwapChain::Initialize()
 
 		mBackBufferImages[backBufferIndex] = mDevice.GetResourceManager().Create<D3D12Image>(imageCreateInformation);
 
-		if(startsAtRest && mBackBufferImages[backBufferIndex] != nullptr)
+		// Window surfaces start at rest like textures (see GpuBackendUtility::GetRestingState())
+		if(mBackBufferImages[backBufferIndex] != nullptr)
 			mBackBufferImages[backBufferIndex]->RequestRestingTransition(GpuImageLayout::ColorAttachment);
 	}
 
@@ -197,8 +195,7 @@ void D3D12SwapChain::Initialize()
 
 			mDepthStencilImage = mDevice.GetResourceManager().Create<D3D12Image>(imageCreateInformation);
 
-			if(startsAtRest)
-				mDepthStencilImage->RequestRestingTransition(GpuImageLayout::DepthStencilAttachment);
+			mDepthStencilImage->RequestRestingTransition(GpuImageLayout::DepthStencilAttachment);
 		}
 	}
 
@@ -312,7 +309,7 @@ void D3D12SwapChain::Present(u32 imageIndex, GpuQueue& queue, GpuQueueMask syncM
 
 	// Swap chain images rest in ColorAttachment layout, take it into Present and request transition back into rest on first use
 	D3D12Image* const image = mBackBufferImages[imageIndex];
-	if(gGpuExplicitBarriers && mDevice.GetCapabilities().HasCapability(RSC_EXPLICIT_BARRIERS) && image != nullptr)
+	if(image != nullptr)
 	{
 		const GpuTextureSubresourceRange range(0, 1, 0, 1, GpuTextureAspectFlag::Color);
 		const D3D12TextureLayout committedLayout((D3D12_BARRIER_LAYOUT)image->GetSubmissionStateResource(0, 0, GpuTextureAspectFlag::Color).NativeState.Layout);

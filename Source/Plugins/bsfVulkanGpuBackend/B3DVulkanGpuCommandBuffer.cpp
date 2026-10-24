@@ -176,7 +176,7 @@ const Color kDebugLabelColor = Color::kBansheeOrange;
 constexpr u32 kMaximumBoundDescriptorSets = 64;
 
 VulkanGpuCommandBuffer::VulkanGpuCommandBuffer(VulkanGpuDevice& device, VulkanGpuCommandBufferPool& pool, u32 id, VkCommandBuffer commandBufferHandle, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation)
-	: GpuCommandBuffer(device, ownerThread, queueType, pool.UsesExplicitBarriers(), createInformation), mId(id), mCommandBufferHandle(commandBufferHandle), mPool(pool), mOwnerThread(ownerThread), mGfxPipelineRequiresBind(true), mCmpPipelineRequiresBind(true), mGraphicsPushConstantsRequireBind(false), mComputePushConstantsRequireBind(false), mViewportRequiresBind(true), mStencilRefRequiresBind(true), mScissorRequiresBind(true), mBoundParamsDirty(false), mVertexInputsDirty(false), mBarrierHelper(&mResourceTracker)
+	: GpuCommandBuffer(device, ownerThread, queueType, createInformation), mId(id), mCommandBufferHandle(commandBufferHandle), mPool(pool), mOwnerThread(ownerThread), mGfxPipelineRequiresBind(true), mCmpPipelineRequiresBind(true), mGraphicsPushConstantsRequireBind(false), mComputePushConstantsRequireBind(false), mViewportRequiresBind(true), mStencilRefRequiresBind(true), mScissorRequiresBind(true), mBoundParamsDirty(false), mVertexInputsDirty(false), mBarrierHelper(&mResourceTracker)
 {
 	const u32 maximumBoundDescriptorSets = Math::Min(kMaximumBoundDescriptorSets, device.GetDeviceProperties().limits.maxBoundDescriptorSets);
 	mDescriptorSetsTemp = (VkDescriptorSet*)B3DAllocate(sizeof(VkDescriptorSet) * maximumBoundDescriptorSets);
@@ -189,7 +189,7 @@ VulkanGpuCommandBuffer::VulkanGpuCommandBuffer(VulkanGpuDevice& device, VulkanGp
 	const VkResult result = vkCreateFence(GetVulkanGpuDevice().GetLogical(), &fenceCI, gVulkanAllocator, &mFence);
 	B3D_ASSERT(result == VK_SUCCESS);
 
-	mResourceTracker.SetHazardTracking(!UsesExplicitBarriers());
+	mResourceTracker.SetHazardTracking(false);
 
 	SetName(createInformation.Name);
 }
@@ -2143,84 +2143,6 @@ void VulkanGpuCommandBuffer::MemoryBarrier(VkBuffer buffer, VkAccessFlags source
 	barrier.size = VK_WHOLE_SIZE;
 
 	vkCmdPipelineBarrier(GetVulkanHandle(), sourceStage, destinationStage, 0, 0, nullptr, 1, &barrier, 0, nullptr);
-}
-
-void VulkanGpuCommandBuffer::IssueBarriers(const GpuBarriers& barriers)
-{
-	if(!B3D_ENSURE(!IsInRenderPass()))
-		return;
-
-	// Helper lambda to process a single image with the barrier
-	auto fnAddImageBarrier = [this](VulkanImage* vulkanImage, const GpuTextureSubresourceRange& subresourceRange, const GpuSurfaceBarrier& barrier)
-	{
-		if(vulkanImage == nullptr)
-			return;
-
-		// Filter out invalid aspect mask to avoid validation warnings
-		GpuTextureSubresourceRange maskedRange = subresourceRange;
-		maskedRange.AspectMask &= vulkanImage->GetRange().AspectMask;
-
-		mResourceTracker.TrackImageBarrier(vulkanImage, maskedRange, GpuBackendUtility::GetStageFlags(barrier.DestinationUsage), barrier.DestinationAccess, barrier.DestinationLayout, mBarrierHelper, barrier.AliasAcquire);
-	};
-
-	for(const auto& barrier : barriers.BufferBarriers)
-	{
-		VulkanGpuBuffer* const vulkanGpuBuffer = static_cast<VulkanGpuBuffer*>(barrier.Object.get());
-		if(vulkanGpuBuffer == nullptr)
-			continue;
-
-		VulkanBuffer* const vulkanBuffer = vulkanGpuBuffer->GetVulkanResource();
-
-		mResourceTracker.TrackBufferBarrier(vulkanBuffer, GpuBackendUtility::GetStageFlags(barrier.DestinationUsage), barrier.DestinationAccess, mBarrierHelper, barrier.AliasAcquire);
-	}
-
-	for(const auto& barrier : barriers.TextureBarriers)
-	{
-		VulkanTexture* const vulkanTexture = static_cast<VulkanTexture*>(barrier.Object.get());
-		if(vulkanTexture == nullptr)
-			continue;
-
-		VulkanImage* const vulkanImage = vulkanTexture->GetVulkanResource();
-		fnAddImageBarrier(vulkanImage, barrier.SubresourceRange, barrier);
-	}
-
-	for(const auto& barrier : barriers.RenderTargetBarriers)
-	{
-		if(barrier.Object == nullptr || !B3D_ENSURE_LOG(barrier.AliasAcquire == nullptr, "Render target barriers cannot alias acquire. Use a texture barrier instead."))
-			continue;
-
-		// Get framebuffer based on render target type
-		VulkanFramebuffer* framebuffer = nullptr;
-		if(barrier.Object->GetProperties().IsWindow)
-		{
-			// Handle RenderWindow - get the active framebuffer from the surface if it was acquired
-			RenderWindow* const renderWindow = static_cast<RenderWindow*>(barrier.Object.get());
-			IVulkanRenderWindowSurface* surface = static_cast<IVulkanRenderWindowSurface*>(renderWindow->GetRenderWindowSurface().get());
-
-			if(surface != nullptr)
-			{
-				// Only get framebuffer if this surface was acquired (tracked in mAcquiredSurfaces)
-				const auto found = std::find(mAcquiredSurfaces.begin(), mAcquiredSurfaces.end(), surface);
-				if(found != mAcquiredSurfaces.end())
-					framebuffer = surface->GetActiveFramebuffer(false);
-			}
-		}
-		else
-		{
-			// Handle RenderTexture
-			VulkanRenderTexture* const renderTexture = static_cast<VulkanRenderTexture*>(barrier.Object.get());
-			framebuffer = renderTexture->GetFramebuffer();
-		}
-
-		if(framebuffer == nullptr)
-			continue;
-
-		const GpuFramebufferAttachment* const attachment = framebuffer->FindAttachment(barrier.SurfaceMask);
-		if(attachment != nullptr)
-			fnAddImageBarrier(static_cast<VulkanImage*>(attachment->Image), barrier.SubresourceRange, barrier);
-	}
-
-	mBarrierHelper.Execute(*this);
 }
 
 VulkanFramebuffer* VulkanGpuCommandBuffer::AcquireWindowFramebuffer(RenderWindow& renderWindow)

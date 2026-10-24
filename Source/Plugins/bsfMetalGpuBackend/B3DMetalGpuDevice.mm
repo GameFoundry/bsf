@@ -224,7 +224,6 @@ namespace b3d
 			mCapabilities.SetCapability(RSC_TEXTURE_VIEWS);
 			mCapabilities.SetCapability(RSC_RENDER_TARGET_LAYERS);
 			mCapabilities.SetCapability(RSC_MULTI_THREADED_CB);
-			mCapabilities.SetCapability(RSC_EXPLICIT_BARRIERS);
 
 			// Metal 4 writes timestamps at any point of a command buffer, inside or outside of encoders
 			mTimestampFrequency = [mMetalDevice queryTimestampFrequency];

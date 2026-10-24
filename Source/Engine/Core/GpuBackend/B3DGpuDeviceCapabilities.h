@@ -63,8 +63,6 @@ namespace b3d
 		RSC_TIMER_QUERIES = BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 12),
 		/** Supports wave-level GPU program operations. */
 		RSC_WAVE_OPERATIONS = BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 13),
-		/** Supports explicit barriers (see GpuCommandBuffer::IssueExplicitBarriers()). */
-		RSC_EXPLICIT_BARRIERS = BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 14),
 	};
 
 	/** Conventions used for a specific render backend. */
