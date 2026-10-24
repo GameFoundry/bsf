@@ -34,14 +34,7 @@ namespace b3d
 
 		MetalImage::MetalImage(MetalResourceManager* owner, const MetalImageCreateInformation& createInformation, id<MTLTexture> texture, const GpuAllocation& allocation)
 			: TMetalResource<IGpuImageResource>(owner, createInformation.DebugName, createInformation.FaceCount, createInformation.MipLevelCount, GetFullAspectFlags(createInformation.Usage, createInformation.Format)), mTexture(texture), mAllocation(allocation)
-		{
-			// Metal has no image layouts, so the native state only holds the tracked layout. New image contents are undefined.
-			GpuImageNativeState initialNativeState;
-			initialNativeState.Layout = (u32)GpuImageLayout::Undefined;
-			InitializeNativeState(mFullRange.AspectMask, initialNativeState);
-
-			mCanRest = GpuBackendUtility::IsSampleableOnly(createInformation.Usage);
-		}
+		{ }
 
 		MetalImage::~MetalImage()
 		{

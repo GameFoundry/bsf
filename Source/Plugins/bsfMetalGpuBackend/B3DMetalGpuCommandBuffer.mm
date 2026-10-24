@@ -200,49 +200,6 @@ namespace b3d
 
 				return true;
 			}
-
-			/**
-			 * Collects the synchronization a submission needs: waits for other queues, and a barrier ordering the submission
-			 * after the work submitted earlier on its own queue.
-			 */
-			class MetalSubmissionTransitionVisitor : public GpuSubmissionTransitionVisitor
-			{
-			public:
-				void VisitBuffer(const GpuSubmissionBufferTransition& transition) override
-				{
-					AddTransition(transition, transition.SubmissionBarrierFlags);
-				}
-
-				void VisitImage(const GpuSubmissionImageTransition& transition) override
-				{
-					AddTransition(transition, transition.SubmissionBarrierFlags);
-					transition.NativeState->Layout = (u32)transition.FinalLayout;
-				}
-
-				GpuQueueMask GetRequiredWaitMask() const { return mRequiredWaitMask; }
-
-				/** Returns the barrier that orders the submission after the earlier submissions on its queue. */
-				const MetalStageBarrier& GetBarrier() const { return mBarrier; }
-
-			private:
-				void AddTransition(const GpuSubmissionTransition& transition, GpuBarrierFlags barrierFlags)
-				{
-					mRequiredWaitMask |= transition.ParallelAccessWaitMask;
-
-					if (transition.MemoryBarrier.IsValid())
-						mBarrier.Merge(MetalStageBarrier(transition.MemoryBarrier, barrierFlags));
-
-					if (transition.ExecutionBarrier.IsValid())
-					{
-						MetalStageBarrier executionBarrier(transition.ExecutionBarrier, barrierFlags);
-						executionBarrier.Visibility &= ~MTL4VisibilityOptionDevice;
-						mBarrier.Merge(executionBarrier);
-					}
-				}
-
-				GpuQueueMask mRequiredWaitMask = GpuQueueMask::kNone;
-				MetalStageBarrier mBarrier;
-			};
 		} // namespace
 
 		void MetalGpuCommandBuffer::ArgumentTable::SetAddress(MTLGPUAddress address, u32 index)
@@ -256,10 +213,8 @@ namespace b3d
 		}
 
 		MetalGpuCommandBuffer::MetalGpuCommandBuffer(MetalGpuDevice& device, MetalGpuCommandBufferPool& pool, u32 id, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation)
-			: GpuCommandBuffer(device, ownerThread, queueType, createInformation), mGpuDevice(device), mPool(pool), mId(id), mBarrierHelper(&mResourceTracker)
+			: GpuCommandBuffer(device, ownerThread, queueType, createInformation), mGpuDevice(device), mPool(pool), mId(id)
 		{
-			mResourceTracker.SetHazardTracking(false);
-
 			// The id parameter hides the Objective-C id type
 			const auto metalDevice = device.GetMetalDevice();
 			mCommandBuffer = [metalDevice newCommandBuffer];
@@ -493,21 +448,6 @@ namespace b3d
 				return false;
 
 			mActiveOcclusionQueryPool = queryPool;
-			return true;
-		}
-
-		bool MetalGpuCommandBuffer::ExecutePendingBarriers()
-		{
-			if (mRecordingFailed)
-				return false;
-
-			if (mRenderEncoder != nil && mEncoderHasWork && mBarrierHelper.WaitsForEncoderFragmentWork(mRenderEncoderHasFragmentWrites))
-			{
-				if (!RestartRenderPass())
-					return false;
-			}
-
-			EmitBarrier(mBarrierHelper.Execute());
 			return true;
 		}
 
@@ -914,7 +854,7 @@ namespace b3d
 					continue;
 
 				if (MetalBuffer* resource = metalBuffer->GetMetalResource())
-					mResourceTracker.TrackBufferAccess(resource, GpuStageFlag::VertexInputAttributes, GpuAccessFlag::Read, mBarrierHelper);
+					mResourceTracker.TrackBufferUsage(resource, GpuAccessFlag::Read);
 
 				// Vertex streams sit above the argument buffer slots, matching the pipeline's vertex descriptor
 				mVertexArgumentTable.SetAddress(buffer.gpuAddress, kMetalVertexBufferSlotBase + streamIndex);
@@ -996,7 +936,7 @@ namespace b3d
 				if(pipelineLayout != nullptr && (setLayout == nullptr || setLayout->GetResourceCount() == 0))
 					continue;
 
-				if(!static_cast<MetalGpuParameters&>(*parameters).TrackResources(mResourceTracker, mBarrierHelper, mDynamicOffsetOverridesPerSet[setIndex], compute))
+				if(!static_cast<MetalGpuParameters&>(*parameters).TrackResources(mResourceTracker, mDynamicOffsetOverridesPerSet[setIndex], compute))
 					return false;
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
@@ -1043,12 +983,12 @@ namespace b3d
 			BindVertexBuffers();
 
 			if (indexBuffer != nullptr)
-				mResourceTracker.TrackBufferAccess(indexBuffer, GpuStageFlag::VertexInputIndices, GpuAccessFlag::Read, mBarrierHelper);
+				mResourceTracker.TrackBufferUsage(indexBuffer, GpuAccessFlag::Read);
 
 			if(!TrackShaderResources(false))
 				return false;
 
-			if (!ExecutePendingBarriers())
+			if (mRecordingFailed)
 				return false;
 
 			BindParameterSets(true);
@@ -1199,7 +1139,7 @@ namespace b3d
 			if(!TrackShaderResources(true))
 				return;
 
-			if (!ExecutePendingBarriers())
+			if (mRecordingFailed)
 				return;
 
 			if (metalPipeline != mCurrentComputePipeline)
@@ -1324,7 +1264,7 @@ namespace b3d
 #endif
 			mGraphicsResourcesRequireTracking = true;
 			mResourceTracker.PrepareRenderPass(renderPassAttachmentUsages);
-			const TArrayView<const GpuResolvedRenderPassAttachmentUsage> resolvedAttachments = mResourceTracker.BeginRenderPass(mBarrierHelper);
+			const TArrayView<const GpuResolvedRenderPassAttachmentUsage> resolvedAttachments = mResourceTracker.BeginRenderPass();
 			mRenderPassTrackingActive = true;
 
 			// Pipelines bound in this pass mask off writes to whatever resolved as read-only.
@@ -1337,8 +1277,7 @@ namespace b3d
 
 			mRenderPassPipelineKey.ReadOnlyMask = (u32)resolvedReadOnlyMask;
 
-			// No encoder is open, so the barriers are encoded at the start of the pass's encoder
-			if (!ExecutePendingBarriers())
+			if (mRecordingFailed)
 				return;
 
 			// Encoders that continue this pass (barriers, occlusion pool changes) load what the previous encoder stored
@@ -1669,12 +1608,12 @@ namespace b3d
 			MetalBuffer* sourceResource = metalSource->GetMetalResource();
 			MetalBuffer* destinationResource = metalDestination->GetMetalResource();
 			if (sourceResource != nullptr)
-				mResourceTracker.TrackBufferAccess(sourceResource, GpuStageFlag::Transfer, GpuAccessFlag::Read, mBarrierHelper, sourceOffset);
+				mResourceTracker.TrackBufferUsage(sourceResource, GpuAccessFlag::Read, sourceOffset);
 
 			if (destinationResource != nullptr)
-				mResourceTracker.TrackBufferAccess(destinationResource, GpuStageFlag::Transfer, GpuAccessFlag::Write, mBarrierHelper, destinationOffset);
+				mResourceTracker.TrackBufferUsage(destinationResource, GpuAccessFlag::Write, destinationOffset);
 
-			if (!ExecutePendingBarriers())
+			if (mRecordingFailed)
 				return;
 
 			[encoder copyFromBuffer:sourceBuffer
@@ -1722,12 +1661,12 @@ namespace b3d
 			if (destination->GetProperties().Format == PF_D32_S8X24)
 				destinationRange.AspectMask = GpuTextureAspectFlag::Depth;
 			if (sourceResource != nullptr)
-				mResourceTracker.TrackBufferAccess(sourceResource, GpuStageFlag::Transfer, GpuAccessFlag::Read, mBarrierHelper, bufferOffset);
+				mResourceTracker.TrackBufferUsage(sourceResource, GpuAccessFlag::Read, bufferOffset);
 
 			if (destinationResource != nullptr)
-				mResourceTracker.TrackImageAccess(destinationResource, destinationRange, GpuImageLayout::TransferDestination, GpuStageFlag::Transfer, GpuAccessFlag::Write, mBarrierHelper);
+				mResourceTracker.TrackImageUsage(destinationResource, destinationRange, GpuAccessFlag::Write);
 
-			if (!ExecutePendingBarriers())
+			if (mRecordingFailed)
 				return;
 
 			[encoder copyFromBuffer:sourceBuffer
@@ -1780,12 +1719,12 @@ namespace b3d
 				sourceRange.AspectMask = GpuTextureAspectFlag::Depth;
 
 			if (sourceResource != nullptr)
-				mResourceTracker.TrackImageAccess(sourceResource, sourceRange, GpuImageLayout::TransferSource, GpuStageFlag::Transfer, GpuAccessFlag::Read, mBarrierHelper);
+				mResourceTracker.TrackImageUsage(sourceResource, sourceRange, GpuAccessFlag::Read);
 
 			if (destinationResource != nullptr)
-				mResourceTracker.TrackBufferAccess(destinationResource, GpuStageFlag::Transfer, GpuAccessFlag::Write, mBarrierHelper, bufferOffset);
+				mResourceTracker.TrackBufferUsage(destinationResource, GpuAccessFlag::Write, bufferOffset);
 
-			if (!ExecutePendingBarriers())
+			if (mRecordingFailed)
 				return;
 
 			[encoder copyFromTexture:sourceTexture
@@ -1833,9 +1772,9 @@ namespace b3d
 
 			MetalBuffer* destinationResource = metalDestination->GetMetalResource();
 			if (destinationResource != nullptr)
-				mResourceTracker.TrackBufferAccess(destinationResource, GpuStageFlag::Transfer, GpuAccessFlag::Write, mBarrierHelper, 0);
+				mResourceTracker.TrackBufferUsage(destinationResource, GpuAccessFlag::Write, 0);
 
-			if (!ExecutePendingBarriers())
+			if (mRecordingFailed)
 				return;
 
 			const u32 rowPitchBytes = layout->Pitch.RowPitch * PixelUtility::GetBlockSize(layout->Format);
@@ -1943,9 +1882,6 @@ namespace b3d
 				}
 			}
 
-			const GpuImageLayout sourceLayout = resolveMultisample ? GpuImageLayout::ResolveSource : GpuImageLayout::TransferSource;
-			const GpuImageLayout destinationLayout = resolveMultisample ? GpuImageLayout::ResolveDestination : GpuImageLayout::TransferDestination;
-
 			// Metal resolves through a render pass store action, not a blit, so the barriers wait for the resolve encoders
 			id<MTL4ComputeCommandEncoder> encoder = nil;
 			if (resolveMultisample)
@@ -1957,10 +1893,10 @@ namespace b3d
 					return false;
 			}
 
-			mResourceTracker.TrackImageAccess(sourceResource, sourceRange, sourceLayout, (resolveMultisample ? GpuStageFlag::Resolve : GpuStageFlag::Transfer), GpuAccessFlag::Read, mBarrierHelper);
-			mResourceTracker.TrackImageAccess(destinationResource, destinationRange, destinationLayout, (resolveMultisample ? GpuStageFlag::Resolve : GpuStageFlag::Transfer), GpuAccessFlag::Write, mBarrierHelper);
+			mResourceTracker.TrackImageUsage(sourceResource, sourceRange, GpuAccessFlag::Read);
+			mResourceTracker.TrackImageUsage(destinationResource, destinationRange, GpuAccessFlag::Write);
 
-			if (!ExecutePendingBarriers())
+			if (mRecordingFailed)
 				return false;
 
 			if (resolveMultisample)
@@ -2292,15 +2228,13 @@ namespace b3d
 		{
 			// What the barriers of each case record:
 			//
-			// Case            | Stage barrier                              | Layout write-back
-			// --------------- | ------------------------------------------ | -----------------
-			// Full            | source -> destination, at the barrier      | yes
-			// SplitRelease    | -                                          | no
-			// SplitAcquire    | source -> destination, at the acquire      | yes
-			// TransferRelease | -                                          | no
-			// TransferAcquire | -                                          | yes
-			//
-			// Metal has no image layouts, the layouts are only written back for later command buffers with automatic barriers.
+			// Case            | Stage barrier
+			// --------------- | -------------------------------------
+			// Full            | source -> destination, at the barrier
+			// SplitRelease    | -
+			// SplitAcquire    | source -> destination, at the acquire
+			// TransferRelease | -
+			// TransferAcquire | -
 			//
 			// Metal 4 barriers wait on stages rather than on points in the command stream: a consumer barrier waits for the
 			// stages of all work encoded before its encoder on the queue, including earlier submissions. The acquire of a
@@ -2323,7 +2257,6 @@ namespace b3d
 				barrierCase = transfersQueue ? BarrierCase::TransferAcquire : BarrierCase::SplitAcquire;
 
 			const bool recordsBarrier = barrierCase == BarrierCase::Full || barrierCase == BarrierCase::SplitAcquire;
-			const bool writesBackLayouts = barrierCase == BarrierCase::Full || barrierCase == BarrierCase::SplitAcquire || barrierCase == BarrierCase::TransferAcquire;
 
 			MetalStageBarrier stageBarrier;
 			GpuStageFlags sourceStages = GpuStageFlag::None;
@@ -2346,16 +2279,13 @@ namespace b3d
 				if (buffer == nullptr)
 					continue;
 
-				mResourceTracker.TrackBufferUsage(buffer, barrier.Destination.Stages, barrier.Destination.Access | GpuAccessFlag::Read);
+				mResourceTracker.TrackBufferUsage(buffer, barrier.Destination.Access | GpuAccessFlag::Read);
 				fnAddBarrier(barrier);
 			}
 
 			const auto fnAddImageBarrier = [&](MetalImage& image, const GpuTextureSubresourceRange& range, const GpuExplicitBarrier& barrier)
 			{
-				mResourceTracker.TrackImageUsage(&image, range, barrier.Destination.Stages, barrier.Destination.Access | GpuAccessFlag::Read);
-				if (writesBackLayouts)
-					AddExplicitImageLayout(image, range, (u32)barrier.Destination.Layout);
-
+				mResourceTracker.TrackImageUsage(&image, range, barrier.Destination.Access | GpuAccessFlag::Read);
 				fnAddBarrier(barrier);
 			};
 
@@ -2407,7 +2337,12 @@ namespace b3d
 			if (mRenderEncoder != nil && mEncoderHasWork)
 			{
 				const bool waitsForAttachments = hasRenderTargetBarriers && (stageBarrier.SourceStages & MTLStageFragment) != 0;
-				if (waitsForAttachments || MetalBarrierHelper::WaitsForFragmentShaderWork(sourceStages, destinationAccess, mRenderEncoderHasFragmentWrites))
+
+				// Attachments of other render passes were accessed by earlier encoders, as a render pass cannot access its own attachments from
+				// shaders. Fragment shader reads within the encoder only matter if something writes after them.
+				const bool waitsForFragmentShaders = sourceStages.IsSetAny(GpuStageFlag::FragmentShaderNonUniform | GpuStageFlag::FragmentShaderUniform) &&
+					(mRenderEncoderHasFragmentWrites || destinationAccess.IsSet(GpuAccessFlag::Write));
+				if (waitsForAttachments || waitsForFragmentShaders)
 				{
 					if (!RestartRenderPass())
 						return false;
@@ -2456,17 +2391,12 @@ namespace b3d
 			}
 
 			GpuSubmitThread& submitThread = mGpuDevice.GetSubmitThread();
-			MetalSubmissionTransitionVisitor transitionVisitor;
-			mResourceTracker.ResolveSubmissionTransitions(mSubmittedQueueId, submitThread.GetFrameIndex(), transitionVisitor);
-			syncMask |= transitionVisitor.GetRequiredWaitMask();
-			PublishExplicitImageLayouts(mSubmittedQueueId);
 
 			mResourceTracker.NotifyUsed(mSubmittedQueueId);
 			mResourcesSubmitted = true;
 
-			// Queue waits apply to all work committed after them, so they precede the commit. The resolved transitions rely
-			// on the frame fence ordering this submission after all earlier frames. Frame fence values are committed event
-			// values, so waiting on them cannot deadlock, and queues in the sync mask are already waited on at a later value.
+			// Queue waits apply to all work committed after them, so they precede the commit. Frame fence values are committed
+			// event values, so waiting on them cannot deadlock, and queues in the sync mask are already waited on at a later value.
 			submitQueue.WaitForQueues(syncMask);
 
 			const TArrayView<const u64> frameFenceValues = submitThread.ConsumeFrameFence(submitQueue);
@@ -2487,34 +2417,8 @@ namespace b3d
 			for (id<CAMetalDrawable> drawable : mDrawables)
 				submitQueue.WaitForDrawable(drawable);
 
-			id<MTL4CommandBuffer> commandBuffers[2];
+			id<MTL4CommandBuffer> commandBuffers[1];
 			u32 commandBufferCount = 0;
-
-			// Work submitted earlier to the queue is ordered before the recorded work by a producer barrier in a command
-			// buffer committed ahead of it
-			const MetalStageBarrier& submissionBarrier = transitionVisitor.GetBarrier();
-			if (!submissionBarrier.IsEmpty())
-			{
-				id<MTLDevice> metalDevice = mGpuDevice.GetMetalDevice();
-				if (mPreludeCommandBuffer == nil)
-				{
-					mPreludeCommandBuffer = [metalDevice newCommandBuffer];
-					mPreludeAllocator = [metalDevice newCommandAllocator];
-				}
-
-				[mPreludeCommandBuffer beginCommandBufferWithAllocator:mPreludeAllocator];
-				id<MTL4ComputeCommandEncoder> encoder = [mPreludeCommandBuffer computeCommandEncoder];
-#if B3D_BUILD_TYPE_DEVELOPMENT
-				encoder.label = @"Submission barrier";
-#endif
-				[encoder barrierAfterStages:submissionBarrier.SourceStages beforeQueueStages:submissionBarrier.DestinationStages visibilityOptions:submissionBarrier.Visibility];
-				[encoder endEncoding];
-				[mPreludeCommandBuffer endCommandBuffer];
-
-				mHasPreludeCommands = true;
-				commandBuffers[commandBufferCount++] = mPreludeCommandBuffer;
-			}
-
 			if (mHasNativeCommands)
 				commandBuffers[commandBufferCount++] = mCommandBuffer;
 
@@ -2609,7 +2513,6 @@ namespace b3d
 
 			mResourceTracker.Clear();
 			mResourcesSubmitted = false;
-			mBarrierHelper.Clear();
 
 			mQueueSyncMask = GpuQueueMask();
 
@@ -2630,12 +2533,6 @@ namespace b3d
 			{
 				[mCommandAllocator reset];
 				mHasNativeCommands = false;
-			}
-
-			if (mHasPreludeCommands)
-			{
-				[mPreludeAllocator reset];
-				mHasPreludeCommands = false;
 			}
 
 			for (UploadChunk& chunk : mUploadChunks)

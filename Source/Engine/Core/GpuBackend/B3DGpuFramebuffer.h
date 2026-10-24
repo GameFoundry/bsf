@@ -24,7 +24,6 @@ namespace b3d
 			IGpuImageResource* Image = nullptr; /**< Image bound by the attachment. */
 			GpuTextureSubresourceRange Range; /**< Subresources covered by this attachment aspect. */
 			RenderSurfaceMaskBits Surface = RT_NONE; /**< Logical render-target surface represented by this entry. */
-			GpuResourceUseFlags UseFlags; /**< Describes attachment usage (color or depth attachment). */
 			GpuAccessFlags Access; /**< Access performed through the attachment. */
 			GpuBarrierFlags BarrierFlags; /**< Behavior requested from the barrier preceding attachment access. */
 			GpuImageLayout Layout = GpuImageLayout::Undefined; /**< Layout used when the attachment isn't sampled. */
@@ -40,7 +39,6 @@ namespace b3d
 			IGpuImageResource* Image = nullptr; /**< Image bound by the attachment. */
 			GpuTextureSubresourceRange Range; /**< Subresources covered by this attachment aspect. */
 			RenderSurfaceMaskBits Surface = RT_NONE; /**< Logical render-target surface represented by this entry. */
-			GpuResourceUseFlags UseFlags; /**< Describes combined shader and attachment usage. */
 			GpuAccessFlags Access; /**< Combined access performed during the render pass. */
 			GpuBarrierFlags BarrierFlags; /**< Behavior requested from the barrier preceding attachment access. */
 			GpuImageLayout Layout = GpuImageLayout::Undefined; /**< Layout selected for the render pass. */
@@ -61,9 +59,6 @@ namespace b3d
 
 			/** Returns the color slot index, or zero for depth and stencil surfaces. */
 			u32 GetIndex() const;
-
-			/** Returns color attachment or depth attachment usage depending on attachment type. */
-			GpuResourceUseFlags GetUseFlags() const;
 
 			IGpuImageResource* Image; /**< Image bound by the attachment. */
 			GpuTextureSubresourceRange Range; /**< Exact aspect-specific subresource range. */

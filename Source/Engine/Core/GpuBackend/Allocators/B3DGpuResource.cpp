@@ -166,10 +166,10 @@ namespace b3d
 		B3D_ASSERT(mFullRange.AspectMask);
 
 		mSubresources = B3DNewMultiple<GpuImageSubresource>(GetSubresourceCount() + 1);
-		mHasUniformSubmissionState = mFullRange.HasSingleAspect();
+		mHasUniformNativeLayout = mFullRange.HasSingleAspect();
 	}
 
-	void IGpuImageResource::InitializeNativeState(GpuTextureAspectFlags aspects, const render::GpuImageNativeState& state)
+	void IGpuImageResource::InitializeNativeLayout(GpuTextureAspectFlags aspects, u32 nativeLayout)
 	{
 		for(GpuTextureAspectFlag aspect : kGpuTextureAspects)
 		{
@@ -179,12 +179,12 @@ namespace b3d
 			for(u32 mipLevel = 0; mipLevel < mMipLevelCount; mipLevel++)
 			{
 				for(u32 face = 0; face < mFaceCount; face++)
-					GetSubresource(face, mipLevel, aspect)->NativeState = state;
+					GetSubresource(face, mipLevel, aspect)->NativeLayout = nativeLayout;
 			}
 		}
 
 		// Only read while the image is uniform, which requires a single aspect
-		GetFullRangeSubresource()->NativeState = state;
+		GetFullRangeSubresource()->NativeLayout = nativeLayout;
 	}
 
 	bool IGpuImageResource::IsFullRange(const GpuTextureSubresourceRange& range) const
@@ -194,40 +194,31 @@ namespace b3d
 			(range.AspectMask & mFullRange.AspectMask) == mFullRange.AspectMask;
 	}
 
-	GpuImageSubresource& IGpuImageResource::GetSubmissionStateResource(u32 face, u32 mipLevel, GpuTextureAspectFlag aspect) const
+	u32 IGpuImageResource::GetNativeLayout(u32 face, u32 mipLevel, GpuTextureAspectFlag aspect) const
 	{
-		if(mHasUniformSubmissionState)
-			return *GetFullRangeSubresource();
+		if(mHasUniformNativeLayout)
+			return GetFullRangeSubresource()->NativeLayout;
 
-		return *GetSubresource(face, mipLevel, aspect);
+		return GetSubresource(face, mipLevel, aspect)->NativeLayout;
 	}
 
-	void IGpuImageResource::SplitSubmissionState()
+	void IGpuImageResource::SetNativeLayout(const GpuTextureSubresourceRange& range, u32 nativeLayout)
 	{
-		B3D_ASSERT(mHasUniformSubmissionState);
-
-		const GpuImageSubresource& fullRangeSubresource = *GetFullRangeSubresource();
-		const u32 subresourceCount = GetSubresourceCount();
-		for(u32 subresourceIndex = 0; subresourceIndex < subresourceCount; subresourceIndex++)
-		{
-			mSubresources[subresourceIndex].SubmissionState = fullRangeSubresource.SubmissionState;
-			mSubresources[subresourceIndex].NativeState = fullRangeSubresource.NativeState;
-		}
-
-		mHasUniformSubmissionState = false;
-	}
-
-	void IGpuImageResource::SetNativeState(const GpuTextureSubresourceRange& range, const render::GpuImageNativeState& nativeState)
-	{
-		if(mHasUniformSubmissionState)
+		if(mHasUniformNativeLayout)
 		{
 			if(IsFullRange(range))
 			{
-				GetFullRangeSubresource()->NativeState = nativeState;
+				GetFullRangeSubresource()->NativeLayout = nativeLayout;
 				return;
 			}
 
-			SplitSubmissionState();
+			// Copy the full-range layout into every subresource, and switch to per-subresource layouts
+			const u32 fullRangeNativeLayout = GetFullRangeSubresource()->NativeLayout;
+			const u32 subresourceCount = GetSubresourceCount();
+			for(u32 subresourceIndex = 0; subresourceIndex < subresourceCount; subresourceIndex++)
+				mSubresources[subresourceIndex].NativeLayout = fullRangeNativeLayout;
+
+			mHasUniformNativeLayout = false;
 		}
 
 		for(GpuTextureAspectFlag aspect : { GpuTextureAspectFlag::Color, GpuTextureAspectFlag::Depth, GpuTextureAspectFlag::Stencil })
@@ -238,52 +229,9 @@ namespace b3d
 			for(u32 face = range.BaseArrayLayer; face < range.BaseArrayLayer + range.ArrayLayerCount; face++)
 			{
 				for(u32 mipLevel = range.BaseMipLevel; mipLevel < range.BaseMipLevel + range.MipLevelCount; mipLevel++)
-					GetSubresource(face, mipLevel, aspect)->NativeState = nativeState;
+					GetSubresource(face, mipLevel, aspect)->NativeLayout = nativeLayout;
 			}
 		}
-	}
-
-	bool IGpuImageResource::TryMergeSubmissionState(u32 frameIndex)
-	{
-		B3D_ASSERT(!mHasUniformSubmissionState);
-
-		// For convenience we never keep multi-aspect images uniform (e.g. depth and stencil layouts), and they rarely need it
-		if(!mFullRange.HasSingleAspect())
-			return false;
-
-		// Clear hazards from an earlier frame, which are no longer relevant
-		const u32 subresourceCount = GetSubresourceCount();
-		for(u32 subresourceIndex = 0; subresourceIndex < subresourceCount; subresourceIndex++)
-		{
-			render::GpuResourceSubmissionState& submissionState = mSubresources[subresourceIndex].SubmissionState;
-			if(submissionState.FrameIndex != frameIndex)
-			{
-				submissionState.Clear();
-				submissionState.FrameIndex = frameIndex;
-			}
-		}
-
-		// Native state has no conservative union, so every subresource must already share it
-		const render::GpuImageNativeState& nativeState = mSubresources[0].NativeState;
-		for(u32 subresourceIndex = 1; subresourceIndex < subresourceCount; subresourceIndex++)
-		{
-			if(mSubresources[subresourceIndex].NativeState != nativeState)
-				return false;
-		}
-
-		render::GpuResourceSubmissionState mergedState = mSubresources[0].SubmissionState;
-		for(u32 subresourceIndex = 1; subresourceIndex < subresourceCount; subresourceIndex++)
-		{
-			if(!mergedState.TryMerge(mSubresources[subresourceIndex].SubmissionState))
-				return false;
-		}
-
-		GpuImageSubresource& fullRangeSubresource = *GetFullRangeSubresource();
-		fullRangeSubresource.SubmissionState = std::move(mergedState);
-		fullRangeSubresource.NativeState = nativeState;
-		mHasUniformSubmissionState = true;
-
-		return true;
 	}
 
 	GpuTextureSubresourceRange IGpuImageResource::GetRange(const TextureSurface& surface) const

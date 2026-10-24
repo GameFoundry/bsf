@@ -79,26 +79,24 @@ void VulkanBarrierTestSuite::TestQueueSharing()
 		PixelFormat Format;
 		TextureUsageFlags Usage;
 		bool IsShared;
-		bool CanRest;
 	};
 
 	const TextureCase textureCases[] =
 	{
-		{ "Vulkan sampleable texture", PF_RGBA8, TextureUsageFlag::StoreOnGPU, true, true },
-		{ "Vulkan concurrent-read render target", PF_RGBA8, TextureUsageFlag::RenderTarget | TextureUsageFlag::AllowConcurrentQueueReads, true, false },
-		{ "Vulkan render target", PF_RGBA8, TextureUsageFlag::RenderTarget, false, false },
-		{ "Vulkan depth-stencil target", PF_D32, TextureUsageFlag::DepthStencil, false, false },
-		{ "Vulkan UAV texture", PF_RGBA8, TextureUsageFlag::AllowUnorderedAccessOnTheGPU, false, false },
-		{ "Vulkan CPU-writable texture", PF_RGBA8, TextureUsageFlag::StoreOnCPUWithGPUAccess, false, false },
+		{ "Vulkan sampleable texture", PF_RGBA8, TextureUsageFlag::StoreOnGPU, true },
+		{ "Vulkan concurrent-read render target", PF_RGBA8, TextureUsageFlag::RenderTarget | TextureUsageFlag::AllowConcurrentQueueReads, true },
+		{ "Vulkan render target", PF_RGBA8, TextureUsageFlag::RenderTarget, false },
+		{ "Vulkan depth-stencil target", PF_D32, TextureUsageFlag::DepthStencil, false },
+		{ "Vulkan UAV texture", PF_RGBA8, TextureUsageFlag::AllowUnorderedAccessOnTheGPU, false },
+		{ "Vulkan CPU-writable texture", PF_RGBA8, TextureUsageFlag::StoreOnCPUWithGPUAccess, false },
 	};
 
 	static constexpr u32 kTextureCaseCount = sizeof(textureCases) / sizeof(textureCases[0]);
 	bool texturesCreated[kTextureCaseCount] = {};
 	bool texturesExclusive[kTextureCaseCount] = {};
-	bool texturesCanRest[kTextureCaseCount] = {};
 	bool bufferCreated = false;
 	bool bufferExclusive = false;
-	GetRenderThread().PostCommand([device, &textureCases, &texturesCreated, &texturesExclusive, &texturesCanRest, &bufferCreated, &bufferExclusive]()
+	GetRenderThread().PostCommand([device, &textureCases, &texturesCreated, &texturesExclusive, &bufferCreated, &bufferExclusive]()
 	{
 		for(u32 caseIndex = 0; caseIndex < kTextureCaseCount; ++caseIndex)
 		{
@@ -115,7 +113,6 @@ void VulkanBarrierTestSuite::TestQueueSharing()
 			{
 				const VulkanImage* const image = std::static_pointer_cast<VulkanTexture>(texture)->GetVulkanResource();
 				texturesExclusive[caseIndex] = image->IsExclusive();
-				texturesCanRest[caseIndex] = image->CanRest();
 			}
 		}
 
@@ -131,7 +128,6 @@ void VulkanBarrierTestSuite::TestQueueSharing()
 	{
 		B3D_TEST_ASSERT(texturesCreated[caseIndex])
 		B3D_TEST_ASSERT(texturesExclusive[caseIndex] == !(textureCases[caseIndex].IsShared && hasMultipleFamilies))
-		B3D_TEST_ASSERT(texturesCanRest[caseIndex] == textureCases[caseIndex].CanRest)
 	}
 
 	B3D_TEST_ASSERT(bufferCreated)

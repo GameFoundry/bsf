@@ -9,6 +9,7 @@ namespace b3d
 {
 	namespace render
 	{
+		class GpuResourceTracker;
 		class D3D12DescriptorTable;
 		struct D3D12DescriptorSetLayout;
 		struct D3D12DescriptorTableLayout;
@@ -39,19 +40,18 @@ namespace b3d
 			 *								GpuPipelineParameterSetLayout::GetDynamicOffsetIndex). An override
 			 *								replaces the bound buffer's suballocation offset for that binding.
 			 */
-			void BindDescriptors(D3D12GpuDevice& device, D3D12ResourceTracker& resourceTracker, ID3D12GraphicsCommandList* commandList, bool isGraphics,
+			void BindDescriptors(D3D12GpuDevice& device, GpuResourceTracker& resourceTracker, ID3D12GraphicsCommandList* commandList, bool isGraphics,
 				const D3D12DescriptorSetLayout& descriptorSetLayout, const UnorderedMap<u32, u32>* dynamicOffsets = nullptr);
 
 			/**
-			 * Tracks the resources consumed by the active pipeline. Execute queued barriers before their use.
+			 * Tracks the resources consumed by the active pipeline.
 			 *
 			 * @param	pipelineSetLayout	Active pipeline's layout for this set. Resources are matched against this
 			 *								layout by slot and tracked only in the shader stages that consume each binding.
 			 * @param	resourceTracker		Tracker retaining resources and recording their accesses.
-			 * @param	barrierHelper		Receives synchronization required before use.
 			 * @return						False if shader accesses overlap a writable attachment.
 			 */
-			bool TrackResources(const GpuPipelineParameterSetLayout& pipelineSetLayout, D3D12ResourceTracker& resourceTracker, D3D12BarrierHelper& barrierHelper);
+			bool TrackResources(const GpuPipelineParameterSetLayout& pipelineSetLayout, GpuResourceTracker& resourceTracker);
 
 			/**
 			 * @name GpuParameterSet Interface

@@ -672,22 +672,6 @@ VkPipelineStageFlags VulkanUtility::ShaderToPipelineStage(VkShaderStageFlags sha
 	return output;
 }
 
-GpuResourceUseFlags VulkanUtility::ShaderToResourceUseFlags(VkShaderStageFlags shaderStageFlags)
-{
-	GpuResourceUseFlags output = GpuResourceUseFlag::Undefined;
-
-	if((shaderStageFlags & VK_SHADER_STAGE_VERTEX_BIT) != 0)
-		output |= GpuResourceUseFlag::StageVertexShader;
-
-	if((shaderStageFlags & VK_SHADER_STAGE_FRAGMENT_BIT) != 0)
-		output |= GpuResourceUseFlag::StageFragmentShader;
-
-	if((shaderStageFlags & VK_SHADER_STAGE_COMPUTE_BIT) != 0)
-		output |= GpuResourceUseFlag::StageComputeShader;
-
-	return output;
-}
-
 VkQueryType VulkanUtility::GetQueryType(GpuQueryType queryType)
 {
 	switch(queryType)

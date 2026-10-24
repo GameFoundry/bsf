@@ -312,7 +312,7 @@ void D3D12SwapChain::Present(u32 imageIndex, GpuQueue& queue, GpuQueueMask syncM
 	if(image != nullptr)
 	{
 		const GpuTextureSubresourceRange range(0, 1, 0, 1, GpuTextureAspectFlag::Color);
-		const D3D12TextureLayout committedLayout((D3D12_BARRIER_LAYOUT)image->GetSubmissionStateResource(0, 0, GpuTextureAspectFlag::Color).NativeState.Layout);
+		const D3D12TextureLayout committedLayout((D3D12_BARRIER_LAYOUT)image->GetNativeLayout(0, 0, GpuTextureAspectFlag::Color));
 
 		// A back buffer that nothing used since the last present is still in the present layout
 		if(committedLayout != D3D12TextureLayout::Present())
@@ -329,10 +329,7 @@ void D3D12SwapChain::Present(u32 imageIndex, GpuQueue& queue, GpuQueueMask syncM
 
 			d3d12Queue.ExecuteSubmitOnSubmitThread(submitInformation, syncMask, {});
 
-			GpuImageNativeState nativeState;
-			nativeState.Layout = (u32)D3D12_BARRIER_LAYOUT_PRESENT;
-			nativeState.StateQueue = queue.GetId();
-			image->SetNativeState(range, nativeState);
+			image->SetNativeLayout(range, (u32)D3D12_BARRIER_LAYOUT_PRESENT);
 		}
 
 		image->RequestRestingTransition(GpuImageLayout::ColorAttachment);

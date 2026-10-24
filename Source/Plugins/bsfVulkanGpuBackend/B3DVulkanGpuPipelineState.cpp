@@ -370,7 +370,7 @@ VulkanPipeline* VulkanGpuGraphicsPipelineState::FindOrCreateVulkanResource(Vulka
 	return newPipeline;
 }
 
-void VulkanGpuGraphicsPipelineState::RegisterShaderModuleResources(VulkanResourceTracker& resourceTracker)
+void VulkanGpuGraphicsPipelineState::RegisterShaderModuleResources(GpuResourceTracker& resourceTracker)
 {
 	std::array<VulkanGpuProgram*, 5> programs = {
 		static_cast<VulkanGpuProgram*>(mData.VertexProgram.get()),
@@ -610,7 +610,7 @@ void VulkanGpuComputePipelineState::Initialize()
 	B3D_INCREMENT_RENDER_STATISTIC_CATEGORY(ResCreated, RenderStatObject_PipelineState);
 }
 
-void VulkanGpuComputePipelineState::RegisterShaderModuleResources(VulkanResourceTracker& resourceTracker)
+void VulkanGpuComputePipelineState::RegisterShaderModuleResources(GpuResourceTracker& resourceTracker)
 {
 	VulkanGpuProgram* program = static_cast<VulkanGpuProgram*>(mData.Program.get());
 	if(program != nullptr)

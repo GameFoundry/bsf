@@ -1,7 +1,6 @@
 //************************************* B3D Framework - Copyright 2026 Marko Pintera *************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "GpuBackend/B3DGpuBackendUtility.h"
-#include "Utility/B3DVulkanBarrierHelper.h"
 #include "B3DVulkanGpuParameterSet.h"
 #include "B3DVulkanGpuParameterSetPool.h"
 #include "B3DVulkanUtility.h"
@@ -11,7 +10,7 @@
 #include "B3DVulkanDescriptorSet.h"
 #include "B3DVulkanDescriptorLayout.h"
 #include "B3DVulkanGpuPipelineParameterLayout.h"
-#include "B3DVulkanResourceTracker.h"
+#include "GpuBackend/B3DGpuResourceTracker.h"
 #include "B3DVulkanSamplerState.h"
 #include "Managers/B3DVulkanTextureManager.h"
 #include "GpuBackend/B3DGpuProgramParameterDescription.h"
@@ -615,7 +614,7 @@ bool VulkanGpuParameterSet::SetSamplerState(u32 slot, const TShared<SamplerState
 }
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
-void VulkanGpuParameterSet::TrackDynamicUniformBufferOffsets(VulkanResourceTracker& resourceTracker, TArrayView<const u32> offsets) const
+void VulkanGpuParameterSet::TrackDynamicUniformBufferOffsets(GpuResourceTracker& resourceTracker, TArrayView<const u32> offsets) const
 {
 	const GpuPipelineParameterSetLayout& layout = *mParameterSetLayout;
 	for(u32 bindingIndex = 0; bindingIndex < layout.GetBindingCount(GpuParameterType::UniformBuffer); bindingIndex++)
@@ -631,7 +630,7 @@ void VulkanGpuParameterSet::TrackDynamicUniformBufferOffsets(VulkanResourceTrack
 }
 #endif
 
-bool VulkanGpuParameterSet::PrepareForBind(VulkanResourceTracker& resourceTracker, VulkanBarrierHelper& barrierHelper, TInlineArray<u32, 4>& outDynamicOffsets, VkDescriptorSet& outSet)
+bool VulkanGpuParameterSet::PrepareForBind(GpuResourceTracker& resourceTracker, TInlineArray<u32, 4>& outDynamicOffsets, VkDescriptorSet& outSet)
 {
 	VulkanGpuPipelineParameterSetLayout& pipelineParameterInformationSet = static_cast<VulkanGpuPipelineParameterSetLayout&>(*mParameterSetLayout);
 
@@ -684,11 +683,8 @@ bool VulkanGpuParameterSet::PrepareForBind(VulkanResourceTracker& resourceTracke
 					continue;
 			}
 
-			TArrayView<const VkDescriptorSetLayoutBinding> perSetBindings = pipelineParameterInformationSet.GetBindings();
-			GpuResourceUseFlags useFlags = VulkanUtility::ShaderToResourceUseFlags(perSetBindings[usedBindingSequentialIndex].stageFlags) | GpuResourceUseFlag::UniformBuffer;
-
 			// Register with command buffer
-			resourceTracker.TrackBufferAccess(resource, GpuBackendUtility::GetStageFlags(useFlags), GpuAccessFlag::Read, barrierHelper, bufferOffset);
+			resourceTracker.TrackBufferUsage(resource, GpuAccessFlag::Read, bufferOffset);
 
 			// Check if internal resource changed from what was previously bound in the descriptor set
 			B3D_ASSERT(mUniformBuffers[sequentialResourceIndex] != VK_NULL_HANDLE);
@@ -773,10 +769,7 @@ bool VulkanGpuParameterSet::PrepareForBind(VulkanResourceTracker& resourceTracke
 				accessFlags |= GpuAccessFlag::Write;
 
 			// Register with command buffer
-			TArrayView<const VkDescriptorSetLayoutBinding> perSetBindings = pipelineParameterInformationSet.GetBindings();
-			GpuResourceUseFlags useFlags = VulkanUtility::ShaderToResourceUseFlags(perSetBindings[usedBindingSequentialIndex].stageFlags) | GpuResourceUseFlag::ShaderAccess;
-
-			resourceTracker.TrackBufferAccess(resource, GpuBackendUtility::GetStageFlags(useFlags), accessFlags, barrierHelper, bufferOffset);
+			resourceTracker.TrackBufferUsage(resource, accessFlags, bufferOffset);
 
 			// Check if internal resource changed from what was previously bound in the descriptor set
 			B3D_ASSERT(mBuffers[sequentialResourceIndex] != VK_NULL_HANDLE);
@@ -903,12 +896,8 @@ bool VulkanGpuParameterSet::PrepareForBind(VulkanResourceTracker& resourceTracke
 			}
 
 			// Register with command buffer
-			const TArrayView<const VkDescriptorSetLayoutBinding> perSetBindings = pipelineParameterInformationSet.GetBindings();
-
-			const GpuResourceUseFlags useFlags = VulkanUtility::ShaderToResourceUseFlags(perSetBindings[usedBindingSequentialIndex].stageFlags) | GpuResourceUseFlag::ShaderAccess;
 			const GpuTextureSubresourceRange range = vulkanImage->GetRange(surface);
-
-			if(!resourceTracker.TrackShaderImageAccess(vulkanImage, range, GpuImageLayout::General, useFlags, GpuAccessFlag::Read | GpuAccessFlag::Write, barrierHelper))
+			if(!resourceTracker.TrackShaderImageUsage(vulkanImage, range, GpuAccessFlag::Read | GpuAccessFlag::Write))
 				return false;
 
 			// Check if internal resource changed from what was previously bound in the descriptor set
@@ -983,11 +972,8 @@ bool VulkanGpuParameterSet::PrepareForBind(VulkanResourceTracker& resourceTracke
 			if(range.AspectMask.IsSet(GpuTextureAspectFlag::Depth))
 				range.AspectMask = GpuTextureAspectFlag::Depth;
 
-			const TArrayView<const VkDescriptorSetLayoutBinding> perSetBindings = pipelineParameterInformationSet.GetBindings();
-
-			const GpuResourceUseFlags useFlags = VulkanUtility::ShaderToResourceUseFlags(perSetBindings[usedBindingSequentialIndex].stageFlags) | GpuResourceUseFlag::ShaderAccess;
 			const GpuImageLayout resolvedLayout = resourceTracker.ResolveShaderImageLayout(vulkanImage, range, gpuLayout);
-			if(!resourceTracker.TrackShaderImageAccess(vulkanImage, range, resolvedLayout, useFlags, GpuAccessFlag::Read, barrierHelper))
+			if(!resourceTracker.TrackShaderImageUsage(vulkanImage, range, GpuAccessFlag::Read))
 				return false;
 
 			// Check if internal resource changed from what was previously bound in the descriptor set

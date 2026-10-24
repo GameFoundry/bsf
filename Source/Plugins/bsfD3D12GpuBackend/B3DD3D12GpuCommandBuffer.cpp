@@ -201,15 +201,13 @@ void D3D12GpuCommandBufferPool::Reset()
 	}
 }
 
-D3D12GpuCommandBuffer::D3D12GpuCommandBuffer(D3D12GpuDevice& device, D3D12GpuCommandBufferPool& pool, u32 id, ID3D12GraphicsCommandList7* commandList, ID3D12CommandAllocator* commandAllocator, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation) : GpuCommandBuffer(device, ownerThread, queueType, createInformation), mId(id), mCommandList(commandList), mCommandAllocator(commandAllocator), mPool(pool), mBarrierHelper(&mResourceTracker, queueType), mGraphicsPipelineRequiresBind(true), mGraphicsRootSignatureRequiresBind(true), mComputePipelineRequiresBind(true), mPrimitiveTopologyRequiresBind(true), mViewportRequiresBind(true), mStencilReferenceValueRequiresBind(true), mScissorRequiresBind(true), mGraphicsParametersRequireBind(false), mComputeParametersRequireBind(false), mGraphicsPushConstantsRequireBind(false), mComputePushConstantsRequireBind(false), mVertexInputsDirty(false)
+D3D12GpuCommandBuffer::D3D12GpuCommandBuffer(D3D12GpuDevice& device, D3D12GpuCommandBufferPool& pool, u32 id, ID3D12GraphicsCommandList7* commandList, ID3D12CommandAllocator* commandAllocator, ThreadId ownerThread, GpuQueueType queueType, const GpuCommandBufferCreateInformation& createInformation) : GpuCommandBuffer(device, ownerThread, queueType, createInformation), mId(id), mCommandList(commandList), mCommandAllocator(commandAllocator), mPool(pool), mGraphicsPipelineRequiresBind(true), mGraphicsRootSignatureRequiresBind(true), mComputePipelineRequiresBind(true), mPrimitiveTopologyRequiresBind(true), mViewportRequiresBind(true), mStencilReferenceValueRequiresBind(true), mScissorRequiresBind(true), mGraphicsParametersRequireBind(false), mComputeParametersRequireBind(false), mGraphicsPushConstantsRequireBind(false), mComputePushConstantsRequireBind(false), mVertexInputsDirty(false)
 {
 	HRESULT hr = GetD3D12GpuDevice().GetD3D12Device()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
 	B3D_ASSERT(SUCCEEDED(hr) && "Failed to create fence");
 
 	// Incremented by the queue just before each submit's fence signal, so it always identifies the latest submission
 	mFenceValue = 0;
-
-	mResourceTracker.SetHazardTracking(false);
 
 	SetName(createInformation.Name);
 }
@@ -514,8 +512,6 @@ void D3D12GpuCommandBuffer::Draw(u32 vertexOffset, u32 vertexCount, u32 instance
 		return;
 #endif
 
-	// Barriers accumulated by the bind-time tracking above. Parameter sets are normally pre-registered at BeginRenderPass so this is usually empty.
-	mBarrierHelper.Execute(*this);
 	BindPushConstants(true);
 
 	if (instanceCount == 0)
@@ -552,8 +548,6 @@ void D3D12GpuCommandBuffer::DrawIndexed(u32 startIndex, u32 indexCount, u32 vert
 		return;
 #endif
 
-	// See Draw()
-	mBarrierHelper.Execute(*this);
 	BindPushConstants(true);
 
 	if (instanceCount == 0)
@@ -598,7 +592,6 @@ void D3D12GpuCommandBuffer::DispatchCompute(u32 groupCountX, u32 groupCountY, u3
 	if(!BindGpuParameterSets(false))
 		return;
 
-	mBarrierHelper.Execute(*this);
 	BindPushConstants(false);
 
 	mCommandList->Dispatch(groupCountX, groupCountY, groupCountZ);
@@ -660,12 +653,11 @@ void D3D12GpuCommandBuffer::BeginRenderPass(const RenderPassCreateInformation& c
 
 		const TShared<GpuPipelineParameterSetLayout>& setLayout = parameterSet->GetLayout();
 		if (setLayout != nullptr)
-			if(!static_cast<D3D12GpuParameters*>(parameterSet.get())->TrackResources(*setLayout, mResourceTracker, mBarrierHelper))
+			if(!static_cast<D3D12GpuParameters*>(parameterSet.get())->TrackResources(*setLayout, mResourceTracker))
 				return;
 	}
 
-	mResourceTracker.BeginRenderPass(mBarrierHelper);
-	mBarrierHelper.Execute(*this);
+	mResourceTracker.BeginRenderPass();
 
 	// Set render targets if framebuffer exists
 	if (mFramebuffer)
@@ -937,24 +929,7 @@ void D3D12GpuCommandBuffer::EndRenderPass()
 	if (mState != GpuCommandBufferState::RecordingRenderPass)
 		return;
 
-	// Ends the tracked attachment usage in the attachment layouts, before the transitions below move them on
 	mResourceTracker.EndRenderPass();
-
-	if (mFramebuffer != nullptr)
-	{
-		// Swap-chain back buffers must be in PRESENT (COMMON) state by the time the queue presents; there is no
-		// other point in the frame where a transition can be recorded, so it happens as the pass ends (Vulkan
-		// analog: finalLayout = PRESENT_SRC on window render passes).
-		for(const GpuFramebufferAttachment& attachment : mFramebuffer->GetColorAttachments())
-		{
-			if(attachment.FinalLayout != GpuImageLayout::Present)
-				continue;
-
-			mResourceTracker.TrackImageAccess(static_cast<D3D12Image*>(attachment.Image), attachment.Range, GpuImageLayout::Present, GpuStageFlag::ColorAttachment, GpuAccessFlag::Read, mBarrierHelper);
-		}
-
-		mBarrierHelper.Execute(*this);
-	}
 
 	mState = GpuCommandBufferState::Recording;
 }
@@ -1097,7 +1072,7 @@ void D3D12GpuCommandBuffer::BindVertexInputs()
 				continue;
 
 			const TShared<D3D12GpuBuffer>& buffer = mVertexBuffers[slot];
-			mResourceTracker.TrackBufferAccess(buffer->GetD3D12Buffer(), GpuStageFlag::VertexInputAttributes, GpuAccessFlag::Read, mBarrierHelper);
+			mResourceTracker.TrackBufferUsage(buffer->GetD3D12Buffer(), GpuAccessFlag::Read);
 			vertexBufferViews[slot] = buffer->GetVertexBufferView();
 		}
 
@@ -1107,7 +1082,7 @@ void D3D12GpuCommandBuffer::BindVertexInputs()
 
 	if (mIndexBuffer)
 	{
-		mResourceTracker.TrackBufferAccess(mIndexBuffer->GetD3D12Buffer(), GpuStageFlag::VertexInputIndices, GpuAccessFlag::Read, mBarrierHelper);
+		mResourceTracker.TrackBufferUsage(mIndexBuffer->GetD3D12Buffer(), GpuAccessFlag::Read);
 		mCommandList->IASetIndexBuffer(&mIndexBuffer->GetIndexBufferView());
 	}
 	else
@@ -1161,7 +1136,7 @@ bool D3D12GpuCommandBuffer::BindGpuParameterSets(bool isGraphics)
 			mDrawAccessValidator.AddParameterSet(*parameters, *pipelineSetLayout);
 #endif
 
-		if(!isGraphics && !parameters->TrackResources(*pipelineSetLayout, mResourceTracker, mBarrierHelper))
+		if(!isGraphics && !parameters->TrackResources(*pipelineSetLayout, mResourceTracker))
 			return false;
 
 		if(requiresBind)
@@ -1209,227 +1184,78 @@ void D3D12GpuCommandBuffer::BindPushConstants(bool isGraphics)
 		mComputePushConstantsRequireBind = false;
 }
 
-namespace
-{
-	/** Determines transitions required in-between ExecuteCommandList calls, as well as waits required between queues. */
-	class D3D12SubmissionTransitionVisitor : public GpuSubmissionTransitionVisitor
-	{
-	public:
-		D3D12SubmissionTransitionVisitor(D3D12GpuDevice& device, GpuQueueId destinationQueueId, D3D12GpuCommandBufferSubmitInformation& submitInformation) : mDevice(device), mDestinationQueueId(destinationQueueId), mSubmitInformation(submitInformation)
-		{ }
-
-		void VisitBuffer(const GpuSubmissionBufferTransition& transition) override
-		{
-			AddParallelAccessWait(transition);
-		}
-
-		void VisitImage(const GpuSubmissionImageTransition& transition) override
-		{
-			// Resolve the native layouts at the command buffer boundaries.
-			D3D12Image* const image = static_cast<D3D12Image*>(transition.Image);
-			GpuImageNativeState& nativeState = *transition.NativeState;
-
-			const GpuQueueType destinationQueueType = mDestinationQueueId.GetType();
-			const D3D12TextureLayout committedLayout((D3D12_BARRIER_LAYOUT)nativeState.Layout);
-			const bool discardContents = transition.SubmissionBarrierFlags.IsSet(GpuBarrierFlag::DiscardContents) || committedLayout.IsUndefined(transition.ImageRange.AspectMask);
-			const D3D12_TEXTURE_BARRIER_FLAGS nativeBarrierFlags = discardContents ? D3D12_TEXTURE_BARRIER_FLAG_DISCARD : D3D12_TEXTURE_BARRIER_FLAG_NONE;
-
-			auto fnResolveLayout = [image, destinationQueueType, aspects = transition.ImageRange.AspectMask](GpuImageLayout logicalLayout, const D3D12TextureLayout& fallback)
-			{
-				if(logicalLayout == GpuImageLayout::Undefined)
-					return fallback;
-
-				const D3D12TextureLayout translatedLayout = image->GetTextureLayout(logicalLayout, destinationQueueType);
-				return D3D12TextureLayout(translatedLayout.GetLayout(aspects));
-			};
-
-			// If alias acquire this is the first use of this resource on the command buffer, so we can ignore prior submission state. The layout transition is handled via an inline barrier on the command buffer.
-			// (Layout transition for aliased resource cannot be done during submission as multiple resources sharing the same memory could be acquired on the same command buffer, so it needs to happen at recording time, for correct ordering)
-			if(transition.SubmissionBarrierFlags.IsSet(GpuBarrierFlag::AliasAcquire))
-			{
-				nativeState.Layout = (u32)fnResolveLayout(transition.FinalLayout, D3D12TextureLayout::Undefined()).GetLayout(transition.ImageRange.AspectMask);
-				nativeState.StateQueue = mDestinationQueueId;
-				return;
-			}
-
-			const D3D12TextureLayout initialLayout = fnResolveLayout(transition.InitialLayout, committedLayout);
-			const D3D12TextureLayout finalLayout = fnResolveLayout(transition.FinalLayout, initialLayout);
-
-			if(!B3D_ENSURE_LOG(D3D12BarrierUtility::IsTextureLayoutSupportedOnQueue(initialLayout, transition.ImageRange.AspectMask, destinationQueueType), "D3D12 image layout is not supported on destination queue type {0}.", (u32)destinationQueueType))
-			{
-				mSubmitInformation.RequiredWaitMask |= transition.ParallelAccessWaitMask;
-				return;
-			}
-
-			// Select a queue capable of establishing the initial layout.
-			D3D12TextureLayout transitionSourceLayout = discardContents ? D3D12TextureLayout::Undefined() : committedLayout;
-			const bool hasLayoutTransitionQueue = nativeState.StateQueue.has_value();
-			GpuQueueId layoutTransitionQueueId = hasLayoutTransitionQueue ? *nativeState.StateQueue : GpuQueueId();
-			bool layoutTransitionQueueChanged = false;
-
-			const bool needsLayoutTransition = transitionSourceLayout != initialLayout;
-			const bool destinationCanTransitionLayout =
-				D3D12BarrierUtility::CanTransitionTextureLayoutOnQueue(transitionSourceLayout, transition.ImageRange.AspectMask, destinationQueueType) &&
-				D3D12BarrierUtility::CanTransitionTextureLayoutOnQueue(initialLayout, transition.ImageRange.AspectMask, destinationQueueType);
-
-			// Transition layout on the source queue if the destination queue cannot perform the transform itself
-			const bool needsSourceRelease = !discardContents && hasLayoutTransitionQueue && layoutTransitionQueueId.Id != mDestinationQueueId.Id && needsLayoutTransition && !destinationCanTransitionLayout;
-			if(needsSourceRelease)
-			{
-				const GpuQueueType sourceQueueType = layoutTransitionQueueId.GetType();
-				const D3D12TextureLayout releaseLayout = D3D12BarrierUtility::CanTransitionTextureLayoutOnQueue(initialLayout, transition.ImageRange.AspectMask, sourceQueueType) ? initialLayout : D3D12TextureLayout::Common();
-
-				SourceTransitionBuildInformation& sourceTransition = GetSourceTransition(layoutTransitionQueueId, transition.ExclusiveAccessWaitMask);
-				sourceTransition.Barriers.AddTextureBarrier(D3D12BarrierUtility::GetTextureBarrier(image->GetD3D12Resource(), transition.ImageRange, GpuBarrierScope(), GpuImageLayout::Undefined, GpuImageLayout::Undefined, committedLayout, releaseLayout, D3D12_TEXTURE_BARRIER_FLAG_NONE));
-
-				mSubmitInformation.RequiredWaitMask |= layoutTransitionQueueId;
-				transitionSourceLayout = releaseLayout;
-			}
-			// Destination queue cannot perform the layout transition, and no layout transition queue is associated with the resource, use the graphics queue for layout transition
-			else if(!hasLayoutTransitionQueue && needsLayoutTransition && !destinationCanTransitionLayout)
-			{
-				if(!B3D_ENSURE_LOG(mDevice.GetQueueCount(GQT_GRAPHICS) > 0, "D3D12 texture activation requires a graphics queue."))
-					return;
-
-				const GpuQueueId activationQueueId(GQT_GRAPHICS, 0);
-				if(!B3D_ENSURE_LOG(
-					D3D12BarrierUtility::CanTransitionTextureLayoutOnQueue(transitionSourceLayout, transition.ImageRange.AspectMask, GQT_GRAPHICS) &&
-					D3D12BarrierUtility::CanTransitionTextureLayoutOnQueue(initialLayout, transition.ImageRange.AspectMask, GQT_GRAPHICS),
-					"D3D12 texture layouts cannot be activated on a graphics queue."))
-				{
-					return;
-				}
-
-				const GpuQueueMask activationWaitMask = discardContents ? transition.ExclusiveAccessWaitMask : GpuQueueMask::kNone;
-				SourceTransitionBuildInformation& sourceTransition = GetSourceTransition(activationQueueId, activationWaitMask);
-				sourceTransition.Barriers.AddTextureBarrier(D3D12BarrierUtility::GetTextureBarrier(image->GetD3D12Resource(), transition.ImageRange, GpuBarrierScope(), GpuImageLayout::Undefined, GpuImageLayout::Undefined, transitionSourceLayout, initialLayout, nativeBarrierFlags));
-
-				mSubmitInformation.RequiredWaitMask |= activationQueueId;
-				transitionSourceLayout = initialLayout;
-
-				// Set new transition queue
-				layoutTransitionQueueId = activationQueueId;
-				layoutTransitionQueueChanged = true;
-			}
-			else if(needsLayoutTransition)
-				mSubmitInformation.RequiredWaitMask |= transition.ExclusiveAccessWaitMask;
-			else
-				mSubmitInformation.RequiredWaitMask |= transition.ParallelAccessWaitMask;
-
-			// Record any remaining transition in the destination submission prologue.
-			if(transitionSourceLayout != initialLayout)
-			{
-				const GpuBarrierScope barrier(GpuStageFlag::None, GpuAccessFlag::None, transition.SubmissionBarrierAccessScope.GetStages(), transition.SubmissionBarrierAccessScope.GetAccess());
-				mDestinationBarriers.AddTextureBarrier(D3D12BarrierUtility::GetTextureBarrier(image->GetD3D12Resource(), transition.ImageRange, barrier, GpuImageLayout::Undefined, transition.InitialLayout, transitionSourceLayout, initialLayout, nativeBarrierFlags));
-
-				layoutTransitionQueueId = mDestinationQueueId;
-				layoutTransitionQueueChanged = true;
-			}
-
-			if(initialLayout != finalLayout)
-			{
-				layoutTransitionQueueId = mDestinationQueueId;
-				layoutTransitionQueueChanged = true;
-			}
-
-			// Publish the native state used by later submissions.
-			nativeState.Layout = (u32)finalLayout.GetLayout(transition.ImageRange.AspectMask);
-
-			if(layoutTransitionQueueChanged)
-				nativeState.StateQueue = layoutTransitionQueueId;
-		}
-
-		/**
-		 * Records all barriers accumulated by the visits into freshly created command buffers and stores them on the
-		 * submit information. Must be called once every transition has been visited.
-		 */
-		void Finalize()
-		{
-			auto fnRecordBarriers = [this](GpuQueueId queueId, const D3D12BarrierBatch& barriers, const StringView& name)
-			{
-				GpuCommandBufferPool& commandBufferPool = mDevice.GetSubmitThread().GetCommandBufferPool(queueId.GetType());
-				const TShared<D3D12GpuCommandBuffer> commandBuffer = std::static_pointer_cast<D3D12GpuCommandBuffer>(commandBufferPool.FindOrCreate(GpuCommandBufferCreateInformation::Create(name)));
-
-				barriers.Record(*commandBuffer->GetD3D12Handle());
-				commandBuffer->End();
-
-				return commandBuffer;
-			};
-
-			for(SourceTransitionBuildInformation& transition : mSourceTransitions)
-			{
-				if(transition.Barriers.IsEmpty())
-					continue;
-
-				D3D12SourceQueueTransition sourceTransition;
-				sourceTransition.QueueId = transition.QueueId;
-				sourceTransition.WaitMask = transition.WaitMask;
-				sourceTransition.CommandBuffer = fnRecordBarriers(transition.QueueId, transition.Barriers, "Source queue resource transitions");
-
-				mSubmitInformation.SourceQueueTransitions.Add(std::move(sourceTransition));
-			}
-
-			if(!mDestinationBarriers.IsEmpty())
-				mSubmitInformation.TransitionCommandBuffer = fnRecordBarriers(mDestinationQueueId, mDestinationBarriers, "Submission resource transitions");
-		}
-
-	private:
-		/** Adds waits for earlier submissions on other queues. Same-queue ECL boundaries require no access barrier. */
-		void AddParallelAccessWait(const GpuSubmissionTransition& transition)
-		{
-			mSubmitInformation.RequiredWaitMask |= transition.ParallelAccessWaitMask;
-		}
-
-		struct SourceTransitionBuildInformation
-		{
-			GpuQueueId QueueId;                            /**< Queue recording the release barriers. */
-			GpuQueueMask WaitMask = GpuQueueMask::kNone;   /**< Queues the release must wait for. */
-			D3D12BarrierBatch Barriers;                    /**< Native release barriers to record. */
-		};
-
-		/**
-		 * Returns the entry accumulating the barriers to record on the provided queue, creating it if this is the
-		 * first transition released from that queue. @p waitMask is merged into the entry's own wait mask.
-		 */
-		SourceTransitionBuildInformation& GetSourceTransition(GpuQueueId queueId, GpuQueueMask waitMask)
-		{
-			auto sourceTransitionIterator = std::find_if(mSourceTransitions.begin(), mSourceTransitions.end(), [queueId](const SourceTransitionBuildInformation& entry) { return entry.QueueId.Id == queueId.Id; });
-			if(sourceTransitionIterator == mSourceTransitions.end())
-			{
-				SourceTransitionBuildInformation transition;
-				transition.QueueId = queueId;
-				transition.WaitMask = waitMask & ~GpuQueueMask(queueId);
-
-				mSourceTransitions.Add(std::move(transition));
-				return mSourceTransitions.back();
-			}
-
-			sourceTransitionIterator->WaitMask |= waitMask & ~GpuQueueMask(queueId);
-			return *sourceTransitionIterator;
-		}
-
-		D3D12GpuDevice& mDevice;
-		GpuQueueId mDestinationQueueId;
-		D3D12GpuCommandBufferSubmitInformation& mSubmitInformation;
-		D3D12BarrierBatch mDestinationBarriers;
-		TInlineArray<SourceTransitionBuildInformation, 4> mSourceTransitions;
-	};
-}
-
-D3D12GpuCommandBufferSubmitInformation D3D12GpuCommandBuffer::PrepareForSubmitOnSubmitThread(GpuQueueType queueType, u32 queueIndex)
+D3D12GpuCommandBufferSubmitInformation D3D12GpuCommandBuffer::PrepareForSubmitOnSubmitThread(GpuQueueType queueType)
 {
 	AssertIfNotSubmitThread();
 	B3D_ASSERT(IsSubmitted());
 
 	D3D12GpuCommandBufferSubmitInformation submitInformation;
-	D3D12GpuDevice& device = GetD3D12GpuDevice();
-	const GpuQueueId destinationQueueId(queueType, queueIndex);
 
-	D3D12SubmissionTransitionVisitor visitor(device, destinationQueueId, submitInformation);
-	mResourceTracker.ResolveSubmissionTransitions(destinationQueueId, device.GetSubmitThread().GetFrameIndex(), visitor);
-	visitor.Finalize();
+	// Transition the images that requested it to rest (see IGpuImageResource::RequestRestingTransition()). The command buffer's first barrier
+	// from the resting state can be in any stage of the queue, so the transitions make the images available to all of them. Layouts the queue
+	// cannot transition, such as most layouts on copy queues, are transitioned on the graphics queue instead.
+	const GpuBarrierScope restingBarrier(GpuStageFlag::None, GpuAccessFlag::None, GpuStageFlags(GpuStageFlag::All) & GpuBackendUtility::GetQueueStageFlags(queueType),
+		GpuAccessFlag::Read | GpuAccessFlag::Write);
 
-	PublishExplicitImageLayouts(destinationQueueId);
+	D3D12BarrierBatch restingTransitions;
+	D3D12BarrierBatch graphicsRestingTransitions;
+	for(const auto& entry : mResourceTracker.GetImages())
+	{
+		D3D12Image& image = static_cast<D3D12Image&>(*entry.first);
+		const GpuImageLayout restingLayout = image.ConsumeRestingTransition();
+		if(restingLayout == GpuImageLayout::Undefined)
+			continue;
+
+		const D3D12TextureLayout restingTextureLayout = image.GetTextureLayout(restingLayout, queueType);
+		for(GpuTextureAspectFlag aspect : kGpuTextureAspects)
+		{
+			if(!image.GetRange().AspectMask.IsSet(aspect))
+				continue;
+
+			GpuTextureSubresourceRange range = image.GetRange();
+			range.AspectMask = aspect;
+
+			const D3D12TextureLayout committedLayout((D3D12_BARRIER_LAYOUT)image.GetNativeLayout(0, 0, aspect));
+			const D3D12TextureLayout newLayout(restingTextureLayout.GetLayout(aspect));
+			if(committedLayout.GetLayout(aspect) == newLayout.GetLayout(aspect))
+				continue;
+
+			// New images have no contents yet
+			const D3D12_TEXTURE_BARRIER_FLAGS flags = committedLayout.IsUndefined(aspect) ? D3D12_TEXTURE_BARRIER_FLAG_DISCARD : D3D12_TEXTURE_BARRIER_FLAG_NONE;
+
+			if(D3D12BarrierUtility::CanTransitionTextureLayoutOnQueue(committedLayout, newLayout, aspect, queueType))
+			{
+				restingTransitions.AddTextureBarrier(D3D12BarrierUtility::GetTextureBarrier(image.GetD3D12Resource(), range, restingBarrier, GpuImageLayout::Undefined, restingLayout,
+					committedLayout, newLayout, flags));
+			}
+			else
+			{
+				graphicsRestingTransitions.AddTextureBarrier(D3D12BarrierUtility::GetTextureBarrier(image.GetD3D12Resource(), range, GpuBarrierScope(), GpuImageLayout::Undefined,
+					GpuImageLayout::Undefined, committedLayout, newLayout, flags));
+			}
+
+			image.SetNativeLayout(range, (u32)newLayout.GetLayout(aspect));
+		}
+	}
+
+	auto fnRecordBarriers = [this](GpuQueueType barrierQueueType, const D3D12BarrierBatch& barriers)
+	{
+		GpuCommandBufferPool& commandBufferPool = GetD3D12GpuDevice().GetSubmitThread().GetCommandBufferPool(barrierQueueType);
+		const TShared<D3D12GpuCommandBuffer> commandBuffer = std::static_pointer_cast<D3D12GpuCommandBuffer>(commandBufferPool.FindOrCreate(GpuCommandBufferCreateInformation::Create("Resting transitions")));
+
+		barriers.Record(*commandBuffer->GetD3D12Handle());
+		commandBuffer->End();
+
+		return commandBuffer;
+	};
+
+	if(!restingTransitions.IsEmpty())
+		submitInformation.TransitionCommandBuffer = fnRecordBarriers(queueType, restingTransitions);
+
+	if(!graphicsRestingTransitions.IsEmpty())
+		submitInformation.GraphicsTransitionCommandBuffer = fnRecordBarriers(GQT_GRAPHICS, graphicsRestingTransitions);
+
+	PublishExplicitImageLayouts();
 
 	submitInformation.PrimaryCommandBuffer = std::static_pointer_cast<D3D12GpuCommandBuffer>(GetShared());
 	return submitInformation;
@@ -1482,7 +1308,6 @@ void D3D12GpuCommandBuffer::Reset()
 	else
 		mResourceTracker.NotifyUnbound();
 
-	mBarrierHelper.Clear();
 	mResourceTracker.Clear();
 	mQueueSyncMask = GpuQueueMask();
 
@@ -1545,10 +1370,8 @@ void D3D12GpuCommandBuffer::CopyBufferToBuffer(const TShared<GpuBuffer>& source,
 	// UPLOAD-heap memory is CPU-write-only in D3D12; it cannot be a GPU copy destination. Engine paths must write such buffers through their persistent mapping instead (see GpuBufferUtility::Write).
 	B3D_ENSURE_ONCE_LOG(d3d12Destination->GetD3D12Buffer() == nullptr || d3d12Destination->GetD3D12Buffer()->GetHeapType() != D3D12_HEAP_TYPE_UPLOAD, "D3D12: CopyBufferToBuffer destination '{0}' lives on the UPLOAD heap; the copy is invalid.", destination->GetName());
 
-	mResourceTracker.TrackBufferAccess(d3d12Source->GetD3D12Buffer(), GpuStageFlag::Transfer, GpuAccessFlag::Read, mBarrierHelper, sourceOffset);
-	mResourceTracker.TrackBufferAccess(d3d12Destination->GetD3D12Buffer(), GpuStageFlag::Transfer, GpuAccessFlag::Write, mBarrierHelper, destinationOffset);
-
-	mBarrierHelper.Execute(*this);
+	mResourceTracker.TrackBufferUsage(d3d12Source->GetD3D12Buffer(), GpuAccessFlag::Read, sourceOffset);
+	mResourceTracker.TrackBufferUsage(d3d12Destination->GetD3D12Buffer(), GpuAccessFlag::Write, destinationOffset);
 
 	ID3D12Resource* sourceResource = d3d12Source->GetD3D12Resource();
 	ID3D12Resource* destinationResource = d3d12Destination->GetD3D12Resource();
@@ -1571,11 +1394,10 @@ void D3D12GpuCommandBuffer::CopyBufferToTexture(const TShared<GpuBuffer>& source
 	D3D12Texture* d3d12Destination = static_cast<D3D12Texture*>(destination.get());
 	D3D12Image* destinationImage = d3d12Destination->GetD3D12Image();
 
-	// Track the transfer and execute the copy-state transitions it requires.
+	// Track the transfer
 	const GpuTextureSubresourceRange subresourceRange(mipLevel, 1, arrayLayer, 1, destinationImage->GetRange().AspectMask);
-	mResourceTracker.TrackBufferAccess(d3d12Source->GetD3D12Buffer(), GpuStageFlag::Transfer, GpuAccessFlag::Read, mBarrierHelper);
-	mResourceTracker.TrackImageAccess(destinationImage, subresourceRange, GpuImageLayout::TransferDestination, GpuStageFlag::Transfer, GpuAccessFlag::Write, mBarrierHelper);
-	mBarrierHelper.Execute(*this);
+	mResourceTracker.TrackBufferUsage(d3d12Source->GetD3D12Buffer(), GpuAccessFlag::Read);
+	mResourceTracker.TrackImageUsage(destinationImage, subresourceRange, GpuAccessFlag::Write);
 
 	ID3D12Resource* textureResource = destinationImage->GetD3D12Resource();
 	const D3D12_RESOURCE_DESC textureDesc = textureResource->GetDesc();
@@ -1669,14 +1491,11 @@ bool D3D12GpuCommandBuffer::CopyTexture(const TShared<Texture>& source, const TS
 
 	const GpuImageLayout sourceLayout = needsResolve ? GpuImageLayout::ResolveSource : GpuImageLayout::TransferSource;
 	const GpuImageLayout destinationLayout = needsResolve ? GpuImageLayout::ResolveDestination : GpuImageLayout::TransferDestination;
-	const GpuResourceUseFlags resourceUse = needsResolve ? GpuResourceUseFlag::Resolve : GpuResourceUseFlag::Transfer;
 	const GpuTextureSubresourceRange sourceRange(copyInformation.SourceMip, 1, copyInformation.SourceFace, copyInformation.FaceCount, sourceImage->GetRange().AspectMask);
 	const GpuTextureSubresourceRange destinationRange(copyInformation.DestinationMip, 1, copyInformation.DestinationFace, copyInformation.FaceCount, destinationImage->GetRange().AspectMask);
 
-	mResourceTracker.TrackImageAccess(sourceImage, sourceRange, sourceLayout, GpuBackendUtility::GetStageFlags(resourceUse), GpuAccessFlag::Read, mBarrierHelper);
-	mResourceTracker.TrackImageAccess(destinationImage, destinationRange, destinationLayout, GpuBackendUtility::GetStageFlags(resourceUse), GpuAccessFlag::Write, mBarrierHelper);
-
-	mBarrierHelper.Execute(*this);
+	mResourceTracker.TrackImageUsage(sourceImage, sourceRange, GpuAccessFlag::Read);
+	mResourceTracker.TrackImageUsage(destinationImage, destinationRange, GpuAccessFlag::Write);
 
 	ID3D12Resource* sourceResource = sourceImage->GetD3D12Resource();
 	ID3D12Resource* destinationResource = destinationImage->GetD3D12Resource();
@@ -1771,14 +1590,12 @@ bool D3D12GpuCommandBuffer::BlitTexture(const TShared<Texture>& source, const TS
 		return false;
 	}
 
-	// Track the transfer and execute the copy-state transitions it requires.
+	// Track the transfer
 	const GpuTextureSubresourceRange sourceRange(blitInformation.SourceMip, 1, blitInformation.SourceFace, blitInformation.FaceCount, sourceImage->GetRange().AspectMask);
 	const GpuTextureSubresourceRange destinationRange(blitInformation.DestinationMip, 1, blitInformation.DestinationFace, blitInformation.FaceCount, destinationImage->GetRange().AspectMask);
 
-	mResourceTracker.TrackImageAccess(sourceImage, sourceRange, GpuImageLayout::TransferSource, GpuStageFlag::Transfer, GpuAccessFlag::Read, mBarrierHelper);
-	mResourceTracker.TrackImageAccess(destinationImage, destinationRange, GpuImageLayout::TransferDestination, GpuStageFlag::Transfer, GpuAccessFlag::Write, mBarrierHelper);
-
-	mBarrierHelper.Execute(*this);
+	mResourceTracker.TrackImageUsage(sourceImage, sourceRange, GpuAccessFlag::Read);
+	mResourceTracker.TrackImageUsage(destinationImage, destinationRange, GpuAccessFlag::Write);
 
 	ID3D12Resource* sourceResource = sourceImage->GetD3D12Resource();
 	ID3D12Resource* destinationResource = destinationImage->GetD3D12Resource();
@@ -1826,10 +1643,8 @@ void D3D12GpuCommandBuffer::CopyTextureToBuffer(const TShared<Texture>& source, 
 
 	const GpuTextureSubresourceRange subresourceRange(mipLevel, 1, arrayLayer, 1, sourceImage->GetRange().AspectMask);
 
-	mResourceTracker.TrackImageAccess(sourceImage, subresourceRange, GpuImageLayout::TransferSource, GpuStageFlag::Transfer, GpuAccessFlag::Read, mBarrierHelper);
-	mResourceTracker.TrackBufferAccess(d3d12Destination->GetD3D12Buffer(), GpuStageFlag::Transfer, GpuAccessFlag::Write, mBarrierHelper);
-
-	mBarrierHelper.Execute(*this);
+	mResourceTracker.TrackImageUsage(sourceImage, subresourceRange, GpuAccessFlag::Read);
+	mResourceTracker.TrackBufferUsage(d3d12Destination->GetD3D12Buffer(), GpuAccessFlag::Write);
 
 	ID3D12Resource* textureResource = sourceImage->GetD3D12Resource();
 	const D3D12_RESOURCE_DESC textureDesc = textureResource->GetDesc();
@@ -1875,13 +1690,11 @@ void D3D12GpuCommandBuffer::CopyImageToBuffer(D3D12Image* source, D3D12Buffer* d
 	if (!B3D_ENSURE(source != nullptr && destination != nullptr))
 		return;
 
-	// Track the transfer and execute the copy-state transitions it requires.
+	// Track the transfer
 	const GpuTextureSubresourceRange subresourceRange(0, 1, 0, 1, source->GetRange().AspectMask);
 
-	mResourceTracker.TrackImageAccess(source, subresourceRange, GpuImageLayout::TransferSource, GpuStageFlag::Transfer, GpuAccessFlag::Read, mBarrierHelper);
-	mResourceTracker.TrackBufferAccess(destination, GpuStageFlag::Transfer, GpuAccessFlag::Write, mBarrierHelper);
-
-	mBarrierHelper.Execute(*this);
+	mResourceTracker.TrackImageUsage(source, subresourceRange, GpuAccessFlag::Read);
+	mResourceTracker.TrackBufferUsage(destination, GpuAccessFlag::Write);
 
 	D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint = {};
 	footprint.Offset = destination->GetOffset();
@@ -1942,7 +1755,8 @@ bool D3D12GpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& ba
 	//
 	// Buffers on pages are slices of a shared resource, so a barrier on that resource would also order the unrelated buffers on the page, and a
 	// split pair would forbid accessing them between its halves. Those buffers share one global barrier instead, and so do readback buffers,
-	// whose resource barriers the debug layer rejects (see D3D12BarrierHelper::RecordNativeBufferBarrier()). Placed buffers own their resource,
+	// whose resource barriers the debug layer rejects (Agility SDK 1.619 reports BARRIER_INTEROP_INVALID_STATE, although the enhanced barrier
+	// specification permits them). Placed buffers own their resource,
 	// so they get barriers of their own. Global barriers cannot be split, so split barriers record them in one half: the alias global barrier
 	// in the release, where the discards start, and the buffer global barrier in the acquire.
 	//
@@ -1984,7 +1798,7 @@ bool D3D12GpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& ba
 	TInlineArray<D3D12_BUFFER_BARRIER, 8> bufferBarriers;
 	const auto fnAddBufferBarrier = [&](D3D12Buffer& buffer, const GpuExplicitBarrier& barrier)
 	{
-		mResourceTracker.TrackBufferUsage(&buffer, barrier.Destination.Stages, barrier.Destination.Access | GpuAccessFlag::Read);
+		mResourceTracker.TrackBufferUsage(&buffer, barrier.Destination.Access | GpuAccessFlag::Read);
 
 		if(barrier.Flags.IsSet(GpuBarrierFlag::AliasAcquire))
 		{
@@ -2001,14 +1815,14 @@ bool D3D12GpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& ba
 			if(recordsBufferGlobalBarrier)
 			{
 				const D3D12_RESOURCE_FLAGS flags = page != nullptr ? page->GetFlags() : D3D12_RESOURCE_FLAG_NONE;
-				D3D12BarrierUtility::MergeGlobalBarrier(bufferGlobalBarrier, D3D12BarrierUtility::GetGlobalBufferBarrier(flags, scope, GpuStageFlag::None));
+				D3D12BarrierUtility::MergeGlobalBarrier(bufferGlobalBarrier, D3D12BarrierUtility::GetGlobalBufferBarrier(flags, scope));
 			}
 
 			return;
 		}
 
 		// A buffer barrier without work on either side orders nothing. Both halves of a split barrier make the same choice.
-		D3D12_BUFFER_BARRIER nativeBarrier = D3D12BarrierUtility::GetBufferBarrier(buffer.GetD3D12Resource(), scope, GpuStageFlag::None);
+		D3D12_BUFFER_BARRIER nativeBarrier = D3D12BarrierUtility::GetBufferBarrier(buffer.GetD3D12Resource(), scope);
 		if(nativeBarrier.SyncBefore == D3D12_BARRIER_SYNC_NONE || nativeBarrier.SyncAfter == D3D12_BARRIER_SYNC_NONE)
 			return;
 
@@ -2051,7 +1865,7 @@ bool D3D12GpuCommandBuffer::RecordExplicitBarriers(const GpuExplicitBarriers& ba
 		if(sourceLayout != destinationLayout)
 			trackedAccess |= GpuAccessFlag::Write;
 
-		mResourceTracker.TrackImageUsage(&image, range, barrier.Destination.Stages, trackedAccess);
+		mResourceTracker.TrackImageUsage(&image, range, trackedAccess);
 
 		// The transition this case records, and the queue type that performs it
 		GpuBarrierScope scope(barrier.Source.Stages, barrier.Source.Access, barrier.Destination.Stages, barrier.Destination.Access);

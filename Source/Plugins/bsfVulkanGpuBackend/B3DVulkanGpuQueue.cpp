@@ -192,29 +192,8 @@ void VulkanGpuQueue::ExecuteSubmitOnSubmitThread(const VulkanGpuCommandBufferSub
 	if (!B3D_ENSURE(submitInformation.PrimaryCommandBuffer))
 		return;
 
-	VulkanGpuDevice& device = GetDevice();
-
-	syncMask |= submitInformation.RequiredWaitMask;
-
-	// Same-queue resource dependencies are recorded in the destination transition command buffer
+	// Submissions on one queue execute in order
 	syncMask &= ~GpuQueueMask(GetId());
-
-	for(const VulkanSourceQueueTransition& sourceQueueTransition : submitInformation.SourceQueueTransitions)
-	{
-		if(sourceQueueTransition.CommandBuffer == nullptr)
-			continue;
-
-		TShared<VulkanGpuQueue> sourceQueue = std::static_pointer_cast<VulkanGpuQueue>(device.GetQueue(sourceQueueTransition.QueueId.GetType(), sourceQueueTransition.QueueId.GetIndex()));
-		if(!B3D_ENSURE(sourceQueue != nullptr))
-			continue;
-
-		syncMask |= sourceQueueTransition.QueueId;
-
-		VulkanGpuCommandBufferSubmitInformation sourceQueueTransitionSubmitInformation;
-		sourceQueueTransitionSubmitInformation.PrimaryCommandBuffer = sourceQueueTransition.CommandBuffer;
-
-		sourceQueue->ExecuteSubmitOnSubmitThread(sourceQueueTransitionSubmitInformation, sourceQueueTransition.WaitMask, {});
-	}
 
 	SubmissionRecord record;
 	RetainSemaphores(record, submitInformation.WaitSemaphores);
@@ -225,7 +204,7 @@ void VulkanGpuQueue::ExecuteSubmitOnSubmitThread(const VulkanGpuCommandBufferSub
 	primaryWorkBuffer.Clear();
 
 	// All waits attach to the first submitted command buffer, all signals to the last one
-	const bool hasTransition = submitInformation.DestinationQueueTransitionCommandBuffer != nullptr;
+	const bool hasTransition = submitInformation.RestingTransitionCommandBuffer != nullptr;
 	SubmitWorkBuffer& waitWorkBuffer = hasTransition ? transitionWorkBuffer : primaryWorkBuffer;
 
 	for(VulkanSemaphore* semaphore : submitInformation.WaitSemaphores)
@@ -257,7 +236,7 @@ void VulkanGpuQueue::ExecuteSubmitOnSubmitThread(const VulkanGpuCommandBufferSub
 
 	if(hasTransition)
 	{
-		const TShared<VulkanGpuCommandBuffer>& transitionCommandBuffer = submitInformation.DestinationQueueTransitionCommandBuffer;
+		const TShared<VulkanGpuCommandBuffer>& transitionCommandBuffer = submitInformation.RestingTransitionCommandBuffer;
 		transitionCommandBuffer->SetIsSubmitted();
 		transitionWorkBuffer.CommandBuffers.Add(transitionCommandBuffer->GetVulkanHandle());
 		record.CommandBuffers.Add(transitionCommandBuffer);
@@ -297,35 +276,31 @@ VkResult VulkanGpuQueue::Present(VulkanSwapChain* swapChain, u32 swapChainImageI
 	AssertIfNotSubmitThread();
 
 	// vkQueuePresentKHR can only wait on binary semaphores, so all present dependencies (acquire semaphores and
-	// inter-queue timeline waits) and the explicit Present transition are routed through the bridge submission.
+	// inter-queue timeline waits) and the Present transition are routed through the bridge submission.
 	VulkanSemaphore* const presentSemaphore = swapChain->GetPresentBridgeSemaphore(swapChainImageIndex);
 
 	GpuCommandBufferPool& commandBufferPool = GetDevice().GetSubmitThread().GetCommandBufferPool(GetType());
 	const TShared<VulkanGpuCommandBuffer> bridgeCommandBuffer = std::static_pointer_cast<VulkanGpuCommandBuffer>(commandBufferPool.FindOrCreate(GpuCommandBufferCreateInformation::Create("Present synchronization")));
 	VulkanGpuCommandBufferSubmitInformation bridgeSubmitInformation;
 
+	// The command buffers that rendered to the image left it at rest. The present transition takes it out of rest, and the next
+	// submission that uses the image brings it back. Swapchain destruction/recreation waits for device idle, including this bridge submission.
 	VulkanImage& image = static_cast<VulkanImage&>(*swapChain->GetFramebufferForImage(swapChainImageIndex)->GetColorAttachments()[0].Image);
-	GpuImageSubresource& stateResource = image.GetSubmissionStateResource(0, 0, GpuTextureAspectFlag::Color);
-
-	// Present has no pipeline consumer; reuse submission ordering and ownership handling for its layout-only barrier.
-	// Swapchain destruction/recreation waits for device idle, including this bridge submission.
-	GpuResourceHazardState presentHazards;
-	presentHazards.HasLeadingBarrier = true;
-
-	// The image has a single subresource, so the image's own counters are exactly its in-flight reads
-	GpuSubmissionImageTransition transition(image, GpuTextureSubresourceRange(0, 1, 0, 1, GpuTextureAspectFlag::Color), stateResource.NativeState, GpuImageLayout::Present, GpuImageLayout::Present, GpuBarrierFlag::None, GpuSubmissionTransition::Build(stateResource.SubmissionState, GetDevice().GetSubmitThread().GetFrameIndex(), image.GetUseInfo(GpuAccessFlag::Read), GetId(), presentHazards));
-
-	// The submission state does not hold the accesses of the image, which leave it at rest. The present transition takes it out of
-	// rest, and the next submission that uses the image brings it back.
 	const GpuAccessState restingState = GpuBackendUtility::GetWindowColorRestingState(GetType());
-	transition.SourceAccessScope.Add(restingState.Stages, restingState.Access);
 
-	VulkanSubmissionTransitionVisitor transitionVisitor(GetDevice(), GetId(), bridgeSubmitInformation);
-	transitionVisitor.VisitImage(transition);
-	transitionVisitor.Finalize(bridgeCommandBuffer->GetVulkanHandle());
+	VkPipelineStageFlags sourceStages;
+	VkAccessFlags sourceAccess;
+	VulkanUtility::GetPipelineStageAndAccessMask(restingState.Stages, restingState.Access, sourceStages, sourceAccess);
 
-	stateResource.SubmissionState = std::move(transition.PostTransitionSubmissionState);
+	const GpuTextureSubresourceRange range(0, 1, 0, 1, GpuTextureAspectFlag::Color);
+	const VkImageLayout restingLayout = (VkImageLayout)image.GetNativeLayout(0, 0, GpuTextureAspectFlag::Color);
+
+	VulkanBarrierBatch presentBarrier;
+	presentBarrier.AddImageBarrier(image.GetVulkanHandle(), VulkanUtility::ToVkImageSubresourceRange(range), sourceStages, sourceAccess, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, restingLayout, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+	presentBarrier.Execute(bridgeCommandBuffer->GetVulkanHandle());
 	bridgeCommandBuffer->End();
+
+	image.SetNativeLayout(range, (u32)VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
 	image.RequestRestingTransition(GpuImageLayout::ColorAttachment);
 

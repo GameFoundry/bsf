@@ -39,22 +39,6 @@ u32 D3D12BarrierBatch::AddTextureBarrier(const D3D12_TEXTURE_BARRIER& barrier)
 	return barrierIndex;
 }
 
-void D3D12BarrierBatch::ReplaceTextureBarrier(u32 barrierIndex, const D3D12_TEXTURE_BARRIER& barrier)
-{
-	B3D_ASSERT(barrierIndex < mTextureBarriers.Size());
-	B3D_ASSERT(barrier.pResource != nullptr);
-	B3D_ASSERT(barrier.Subresources.NumPlanes == 1);
-
-	mTextureBarriers[barrierIndex] = barrier;
-}
-
-void D3D12BarrierBatch::ReplaceGlobalBarrier(u32 barrierIndex, const D3D12_GLOBAL_BARRIER& barrier)
-{
-	B3D_ASSERT(barrierIndex < mGlobalBarriers.Size());
-
-	mGlobalBarriers[barrierIndex] = barrier;
-}
-
 void D3D12BarrierBatch::AddToGroup(D3D12_BARRIER_TYPE type, u32 barrierIndex)
 {
 	const bool extendsGroup = !mBarrierGroups.Empty() && mBarrierGroups.Back().Type == type && !mIsGroupEnded;

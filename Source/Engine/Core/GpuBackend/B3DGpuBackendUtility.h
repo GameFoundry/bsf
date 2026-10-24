@@ -71,7 +71,7 @@ namespace b3d
 
 		/**
 		 * Returns true if textures created with @p usage are sampleable only: not render targets, depth-stencil targets, UAVs or
-		 * CPU-writable. Backends share such textures between queues and let them rest (see IGpuImageResource::CanRest()).
+		 * CPU-writable. Backends share such textures between queues.
 		 */
 		static bool IsSampleableOnly(TextureUsageFlags usage);
 

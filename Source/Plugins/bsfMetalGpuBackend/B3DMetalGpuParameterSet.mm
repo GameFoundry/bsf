@@ -7,8 +7,7 @@
 #include "B3DMetalGpuBuffer.h"
 #include "B3DMetalHeapAllocator.h"
 #include "B3DMetalResourceManager.h"
-#include "B3DMetalResourceTracker.h"
-#include "B3DMetalBarrierHelper.h"
+#include "GpuBackend/B3DGpuResourceTracker.h"
 #include "B3DMetalTexture.h"
 #include "B3DMetalSamplerState.h"
 #include "GpuBackend/B3DGpuBackendUtility.h"
@@ -88,38 +87,6 @@ namespace b3d
 				}
 
 				return GpuProgramStageBit::None;
-			}
-
-			GpuResourceUseFlags GetBindingUseFlags(const MetalGpuPipelineParameterSetLayout& layout, GpuParameterType type, u32 slot, bool compute)
-			{
-				const GpuProgramStageBits stages = GetBindingStages(layout, type, slot);
-				if (stages == GpuProgramStageBit::None)
-					return GpuResourceUseFlag::Undefined;
-
-				GpuResourceUseFlags useFlags = type == GpuParameterType::UniformBuffer
-					? GpuResourceUseFlag::UniformBuffer
-					: GpuResourceUseFlag::ShaderAccess;
-
-				if (compute)
-				{
-					if (!stages.IsSet(GpuProgramStageBit::Compute))
-						return GpuResourceUseFlag::Undefined;
-
-					useFlags |= GpuResourceUseFlag::StageComputeShader;
-				}
-				else
-				{
-					if (stages.IsSetAny(GpuProgramStageBit::Vertex | GpuProgramStageBit::Hull | GpuProgramStageBit::Domain))
-						useFlags |= GpuResourceUseFlag::StageVertexShader;
-
-					if (stages.IsSet(GpuProgramStageBit::Fragment))
-						useFlags |= GpuResourceUseFlag::StageFragmentShader;
-
-					if (!useFlags.IsSetAny(GpuResourceUseFlag::StageVertexShader | GpuResourceUseFlag::StageFragmentShader))
-						return GpuResourceUseFlag::Undefined;
-				}
-
-				return useFlags;
 			}
 
 			GpuAccessFlags GetStorageBufferAccessFlags(const MetalGpuPipelineParameterSetLayout& layout, u32 slot)
@@ -486,7 +453,7 @@ namespace b3d
 			return mGeneration;
 		}
 
-		bool MetalGpuParameters::TrackResources(MetalResourceTracker& resourceTracker, MetalBarrierHelper& barrierHelper, const TInlineArray<u32, 4>& dynamicOffsetOverrides, bool compute) const
+		bool MetalGpuParameters::TrackResources(GpuResourceTracker& resourceTracker, const TInlineArray<u32, 4>& dynamicOffsetOverrides, bool compute) const
 		{
 			if (mMetalLayout == nullptr)
 				return true;
@@ -494,19 +461,22 @@ namespace b3d
 			const MetalGpuPipelineParameterSetLayout& layout = *mMetalLayout;
 
 			// Walks every binding of @p type in the engine layout (including dynamic-offset uniform buffers, which have
-			// no argument-buffer entry), calling @p fnVisit with the binding's slot, array size and use flags. Bindings
-			// the tracked stages never read are skipped.
+			// no argument-buffer entry), calling @p fnVisit with the binding's slot and array size. Bindings the stages
+			// of the pipeline never read are skipped.
 			const auto fnForEachBinding = [this, &layout, compute](GpuParameterType type, const auto& fnVisit)
 			{
 				const u32 bindingCount = mParameterSetLayout->GetBindingCount(type);
 				for (u32 bindingIndex = 0; bindingIndex < bindingCount; bindingIndex++)
 				{
 					const u32 slot = mParameterSetLayout->GetSlot(type, bindingIndex);
-					const GpuResourceUseFlags useFlags = GetBindingUseFlags(layout, type, slot, compute);
-					if (useFlags == GpuResourceUseFlag::Undefined)
+					const GpuProgramStageBits stages = GetBindingStages(layout, type, slot);
+					const bool isUsed = compute
+						? stages.IsSet(GpuProgramStageBit::Compute)
+						: stages.IsSetAny(GpuProgramStageBit::Vertex | GpuProgramStageBit::Hull | GpuProgramStageBit::Domain | GpuProgramStageBit::Fragment);
+					if (!isUsed)
 						continue;
 
-					if (!fnVisit(slot, mParameterSetLayout->GetArraySize(type, bindingIndex), useFlags))
+					if (!fnVisit(slot, mParameterSetLayout->GetArraySize(type, bindingIndex)))
 						return false;
 				}
 
@@ -514,7 +484,7 @@ namespace b3d
 			};
 
 			const bool trackedUniformBuffers = fnForEachBinding(GpuParameterType::UniformBuffer,
-				[&](u32 slot, u32 arraySize, GpuResourceUseFlags useFlags)
+				[&](u32 slot, u32 arraySize)
 				{
 					for (u32 arrayIndex = 0; arrayIndex < arraySize; arrayIndex++)
 					{
@@ -529,14 +499,14 @@ namespace b3d
 						if (dynamicOffsetIndex < (u32)dynamicOffsetOverrides.Size() && dynamicOffsetOverrides[dynamicOffsetIndex] != ~0u)
 							offset = dynamicOffsetOverrides[dynamicOffsetIndex];
 
-						resourceTracker.TrackBufferAccess(resource, GpuBackendUtility::GetStageFlags(useFlags), GpuAccessFlag::Read, barrierHelper, offset);
+						resourceTracker.TrackBufferUsage(resource, GpuAccessFlag::Read, offset);
 					}
 
 					return true;
 				});
 
 			const bool trackedStorageBuffers = fnForEachBinding(GpuParameterType::StorageBuffer,
-				[&](u32 slot, u32 arraySize, GpuResourceUseFlags useFlags)
+				[&](u32 slot, u32 arraySize)
 				{
 					const GpuAccessFlags accessFlags = GetStorageBufferAccessFlags(layout, slot);
 					for (u32 arrayIndex = 0; arrayIndex < arraySize; arrayIndex++)
@@ -545,7 +515,7 @@ namespace b3d
 						auto* buffer = static_cast<MetalGpuBuffer*>(data.Buffer.get());
 						MetalBuffer* resource = buffer != nullptr ? buffer->GetMetalResource() : nullptr;
 						if (resource != nullptr)
-							resourceTracker.TrackBufferAccess(resource, GpuBackendUtility::GetStageFlags(useFlags), accessFlags, barrierHelper, data.View.Offset);
+							resourceTracker.TrackBufferUsage(resource, accessFlags, data.View.Offset);
 					}
 
 					return true;
@@ -554,7 +524,7 @@ namespace b3d
 			const auto fnTrackTextures = [&](GpuParameterType type, const TextureData* textureData, GpuAccessFlags access)
 			{
 				return fnForEachBinding(type,
-					[&](u32 slot, u32 arraySize, GpuResourceUseFlags useFlags)
+					[&](u32 slot, u32 arraySize)
 					{
 						for (u32 arrayIndex = 0; arrayIndex < arraySize; arrayIndex++)
 						{
@@ -571,8 +541,7 @@ namespace b3d
 							if (type == GpuParameterType::SampledTexture && range.AspectMask.IsSet(GpuTextureAspectFlag::Depth))
 								range.AspectMask = GpuTextureAspectFlag::Depth;
 
-							const GpuImageLayout imageLayout = type == GpuParameterType::StorageTexture ? GpuImageLayout::General : GpuImageLayout::ShaderReadOnly;
-							if (!resourceTracker.TrackShaderImageAccess(resource, range, imageLayout, useFlags, access, barrierHelper))
+							if (!resourceTracker.TrackShaderImageUsage(resource, range, access))
 								return false;
 						}
 

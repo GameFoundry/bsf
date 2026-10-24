@@ -505,7 +505,7 @@ void D3D12GpuDevice::WaitUntilIdle()
 void D3D12GpuDevice::ExecuteSubmit(GpuQueue& queue, const TShared<GpuCommandBuffer>& commandBuffer, GpuQueueMask syncMask, TArrayView<const GpuTimelineFenceAndValue> signalFences)
 {
 	const TShared<D3D12GpuCommandBuffer> d3d12CommandBuffer = std::static_pointer_cast<D3D12GpuCommandBuffer>(commandBuffer);
-	const D3D12GpuCommandBufferSubmitInformation submitInformation = d3d12CommandBuffer->PrepareForSubmitOnSubmitThread(queue.GetType(), queue.GetIndex());
+	const D3D12GpuCommandBufferSubmitInformation submitInformation = d3d12CommandBuffer->PrepareForSubmitOnSubmitThread(queue.GetType());
 	static_cast<D3D12GpuQueue&>(queue).ExecuteSubmitOnSubmitThread(submitInformation, syncMask, signalFences);
 }
 

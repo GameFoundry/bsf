@@ -5,8 +5,8 @@
 #include "B3DD3D12Prerequisites.h"
 #include "B3DD3D12GpuDevice.h"
 #include "B3DD3D12Resource.h"
-#include "B3DD3D12ResourceTracker.h"
-#include "Utility/B3DD3D12BarrierHelper.h"
+#include "Utility/B3DD3D12BarrierBatch.h"
+#include "GpuBackend/B3DGpuResourceTracker.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DGpuPushConstants.h"
 #include "Math/B3DArea2.h"
@@ -20,24 +20,22 @@ namespace b3d
 		 *  @{
 		 */
 
-		/**
-		 * Layout compatibility release recorded in a separate ECL on the queue that previously owned an image. Access
-		 * visibility is provided by the queue-fence signal and wait around this submission.
-		 */
-		struct D3D12SourceQueueTransition
-		{
-			GpuQueueId QueueId; /**< Queue that executes the release command buffer. */
-			GpuQueueMask WaitMask = GpuQueueMask::kNone; /**< Queues whose work must precede the release. */
-			TShared<D3D12GpuCommandBuffer> CommandBuffer; /**< Command buffer containing the release barriers. */
-		};
-
-		/** Command lists and resource-derived waits required for one D3D12 command-buffer submission. */
+		/** Command lists required for one D3D12 command-buffer submission. */
 		struct D3D12GpuCommandBufferSubmitInformation
 		{
-			TInlineArray<D3D12SourceQueueTransition, 4> SourceQueueTransitions; /**< Releases executed on prior owner queues. */
-			TShared<D3D12GpuCommandBuffer> TransitionCommandBuffer; /**< Prologue executed on the destination queue. */
+			/**
+			 * Brings images the primary command buffer uses to rest (see IGpuImageResource::RequestRestingTransition()), in a prologue executed on
+			 * the destination queue.
+			 */
+			TShared<D3D12GpuCommandBuffer> TransitionCommandBuffer;
+
+			/**
+			 * Brings images to rest whose resting layout the destination queue cannot transition into. Executed on the graphics queue, and the
+			 * submission waits for it.
+			 */
+			TShared<D3D12GpuCommandBuffer> GraphicsTransitionCommandBuffer;
+
 			TShared<D3D12GpuCommandBuffer> PrimaryCommandBuffer; /**< User-recorded command buffer. */
-			GpuQueueMask RequiredWaitMask = GpuQueueMask::kNone; /**< Additional queues the destination waits for. */
 		};
 
 		/** DirectX 12 implementation of GpuCommandBufferPool. */
@@ -151,7 +149,7 @@ namespace b3d
 			 * 
 			 * @note Submit thread only.
 			 */
-			D3D12GpuCommandBufferSubmitInformation PrepareForSubmitOnSubmitThread(GpuQueueType queueType, u32 queueIndex);
+			D3D12GpuCommandBufferSubmitInformation PrepareForSubmitOnSubmitThread(GpuQueueType queueType);
 
 			/**
 			 * Called on the owning thread just before the command buffer is queued for submission on the submit
@@ -277,11 +275,8 @@ namespace b3d
 			ComPtr<ID3D12Fence> mFence;
 			u64 mFenceValue = 0;
 
-			/** Tracks every resource used on the command buffer: lifetime (bound/use counts), hazards and states. */
-			D3D12ResourceTracker mResourceTracker;
-
-			/** Accumulates and emits the native barriers the tracker decides are required. */
-			D3D12BarrierHelper mBarrierHelper;
+			/** Tracks every resource used on the command buffer: lifetime (bound/use counts) and render pass attachments. */
+			GpuResourceTracker mResourceTracker;
 
 			/** Queue the command buffer was submitted on; identifies the queue for NotifyDone. */
 			GpuQueueId mSubmittedQueueId;

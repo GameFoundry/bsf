@@ -9,15 +9,6 @@ using namespace b3d;
 using namespace b3d::render;
 
 template<class TBase>
-void TVulkanResource<TBase>::OnNotifyUsed(GpuQueueId queueId, GpuAccessFlags useFlags)
-{
-	// IGpuResource has already incremented mUsedCount, so a value > 1 means there were prior in-flight uses.
-	if(mState == State::Normal && mOwnerQueueValid)
-		B3D_ASSERT(mOwnerQueueId.GetType() == queueId.GetType() && "Submitted ownership state must match the queue using an exclusive Vulkan resource.");
-	(void)useFlags;
-}
-
-template<class TBase>
 VulkanGpuDevice& TVulkanResource<TBase>::GetDevice() const
 {
 	return mOwner->GetDevice();

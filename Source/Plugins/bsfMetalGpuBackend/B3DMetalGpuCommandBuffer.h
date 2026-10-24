@@ -5,8 +5,8 @@
 #include "B3DMetalPrerequisites.h"
 #include "GpuBackend/Allocators/B3DGpuResource.h"
 #include "B3DMetalGpuPipelineState.h"
-#include "B3DMetalResourceTracker.h"
-#include "B3DMetalBarrierHelper.h"
+#include "B3DMetalStageBarrier.h"
+#include "GpuBackend/B3DGpuResourceTracker.h"
 #include "B3DMetalShaderABI.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DGpuPushConstants.h"
@@ -231,9 +231,6 @@ namespace b3d
 			/** Converts the stored normalized viewport to this pass's pixel units and applies it to the open render encoder. */
 			void ApplyViewportToRenderEncoder();
 
-			/** Executes pending tracker barriers against the open encoder, restarting the render pass if needed. */
-			bool ExecutePendingBarriers();
-
 			/** Ends the open render encoder and continues the render pass in a new one, which loads what the previous one stored. */
 			bool RestartRenderPass();
 
@@ -307,14 +304,6 @@ namespace b3d
 			/** True once the native command buffer holds recorded commands that were never reset. */
 			bool mHasNativeCommands = false;
 
-			/**
-			 * Command buffer committed ahead of the recorded one, holding the barriers that order it after earlier
-			 * submissions on the same queue. Encoded on the submit thread, so it has its own allocator.
-			 */
-			id<MTL4CommandBuffer> mPreludeCommandBuffer = nil;
-			id<MTL4CommandAllocator> mPreludeAllocator = nil;
-			bool mHasPreludeCommands = false;
-
 			id<MTL4RenderCommandEncoder> mRenderEncoder = nil;
 			id<MTL4ComputeCommandEncoder> mComputeEncoder = nil;
 
@@ -366,9 +355,8 @@ namespace b3d
 			/** Labels pushed and not popped yet, re-pushed on the native command buffer if recording restarts. */
 			u32 mDebugGroupDepth = 0;
 
-			/** Tracks every resource used by the recorded commands, deducing barriers and resource usage notifications. */
-			MetalResourceTracker mResourceTracker;
-			MetalBarrierHelper mBarrierHelper;
+			/** Tracks every resource used by the recorded commands: lifetime (bound/use counts) and render pass attachments. */
+			GpuResourceTracker mResourceTracker;
 
 			TShared<MetalGpuGraphicsPipelineState> mBoundGraphicsPipeline;
 			TShared<GpuComputePipelineState> mBoundComputePipeline;

@@ -4,7 +4,7 @@
 
 #include "B3DPrerequisites.h"
 #include "B3DGpuDevice.h"
-#include "B3DGpuHazards.h"
+#include "B3DGpuBarriers.h"
 #include "B3DGpuQueries.h"
 #include "Image/B3DColor.h"
 #include "Image/B3DTexture.h"
@@ -963,19 +963,19 @@ namespace b3d
 			void AddExplicitImageLayout(IGpuImageResource& image, const GpuTextureSubresourceRange& range, u32 nativeLayout);
 
 			/**
-			 * Stores the layouts explicit barriers leave images in as their native state, so later command buffers that derive their
-			 * barriers from it, and presentation, start from the actual layouts. Backends call it when preparing the submission. 
+			 * Stores the layouts explicit barriers leave images in as their native layouts, so later resting transitions and presentation
+			 * start from the actual layouts. Backends call it when preparing the submission.
 			 *
 			 * Submit thread only.
 			 */
-			void PublishExplicitImageLayouts(GpuQueueId queueId);
+			void PublishExplicitImageLayouts();
 
 			/** Layout that explicit barriers leave image subresources in once the command buffer executes. */
 			struct ExplicitImageLayout
 			{
 				IGpuImageResource* Image = nullptr;
 				GpuTextureSubresourceRange Range;
-				u32 Layout = 0; /**< Native layout, see GpuImageNativeState::Layout. */
+				u32 Layout = 0; /**< Native layout, see GpuImageSubresource::NativeLayout. */
 			};
 
 			/** Split barrier half recorded by the command buffer. Keeps the split barrier alive until the command buffer is reset. */

@@ -83,12 +83,7 @@ VulkanImage::VulkanImage(VulkanResourceManager* owner, const VulkanImageCreateIn
 		mMainView = CreateView(completeSurface, createInformation.Format, VK_IMAGE_ASPECT_COLOR_BIT, false);
 	}
 
-	GpuImageNativeState initialNativeState;
-	initialNativeState.Layout = (u32)createInformation.Layout;
-	InitializeNativeState(mFullRange.AspectMask, initialNativeState);
-
-	// Sampleable textures are shared between queues (see VulkanTexture::BuildDescription()), and VulkanGpuParameterSet samples them in GpuImageLayout::ShaderReadOnly
-	mCanRest = GpuBackendUtility::IsSampleableOnly(mUsage);
+	InitializeNativeLayout(mFullRange.AspectMask, (u32)createInformation.Layout);
 }
 
 VulkanImage::~VulkanImage()

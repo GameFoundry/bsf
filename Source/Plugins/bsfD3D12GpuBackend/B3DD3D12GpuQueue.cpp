@@ -125,22 +125,17 @@ void D3D12GpuQueue::ExecuteSubmitOnSubmitThread(const D3D12GpuCommandBufferSubmi
 
 	D3D12GpuDevice& device = GetDevice();
 
-	syncMask |= submitInformation.RequiredWaitMask;
-
-	for (const D3D12SourceQueueTransition& sourceTransition : submitInformation.SourceQueueTransitions)
+	if (submitInformation.GraphicsTransitionCommandBuffer != nullptr)
 	{
-		if (sourceTransition.CommandBuffer == nullptr)
-			continue;
+		TShared<D3D12GpuQueue> graphicsQueue = std::static_pointer_cast<D3D12GpuQueue>(device.GetQueue(GQT_GRAPHICS, 0));
+		if (B3D_ENSURE(graphicsQueue != nullptr))
+		{
+			D3D12GpuCommandBufferSubmitInformation transitionSubmitInformation;
+			transitionSubmitInformation.PrimaryCommandBuffer = submitInformation.GraphicsTransitionCommandBuffer;
+			graphicsQueue->ExecuteSubmitOnSubmitThread(transitionSubmitInformation, GpuQueueMask::kNone, {});
 
-		TShared<D3D12GpuQueue> transitionQueue = std::static_pointer_cast<D3D12GpuQueue>(device.GetQueue(sourceTransition.QueueId.GetType(), sourceTransition.QueueId.GetIndex()));
-		if (!B3D_ENSURE(transitionQueue != nullptr))
-			continue;
-
-		D3D12GpuCommandBufferSubmitInformation transitionSubmitInformation;
-		transitionSubmitInformation.PrimaryCommandBuffer = sourceTransition.CommandBuffer;
-		transitionQueue->ExecuteSubmitOnSubmitThread(transitionSubmitInformation, sourceTransition.WaitMask, {});
-
-		syncMask |= sourceTransition.QueueId;
+			syncMask |= graphicsQueue->GetId();
+		}
 	}
 
 	WaitForQueuesInMask(*this, syncMask);

@@ -8,8 +8,7 @@
 
 namespace b3d::render
 {
-	class VulkanBarrierHelper;
-	class VulkanResourceTracker;
+	class GpuResourceTracker;
 	class VulkanGpuParameterSetPool;
 }
 
@@ -44,16 +43,15 @@ namespace b3d
 			 * The same applies to any resources held by this object.
 			 *
 			 * @param		resourceTracker		Tracker of the command buffer the set is bound on, used to resolve image layouts and retain resources.
-			 * @param		barrierHelper		Receives synchronization required before accessing the resources.
 			 * @param		outDynamicOffsets	Receives this set's dynamic buffer offsets in descriptor binding order, appended to any existing offsets.
 			 * @param		outSet				Receives the descriptor set handle to bind.
 			 * @return							False if shader accesses overlap a writable attachment.
 			 */
-			bool PrepareForBind(VulkanResourceTracker& resourceTracker, VulkanBarrierHelper& barrierHelper, TInlineArray<u32, 4>& outDynamicOffsets, VkDescriptorSet& outSet);
+			bool PrepareForBind(GpuResourceTracker& resourceTracker, TInlineArray<u32, 4>& outDynamicOffsets, VkDescriptorSet& outSet);
 
 #if B3D_BUILD_TYPE_DEVELOPMENT
-			/** Tracks the selected suballocations after resource access has been prepared, without queuing barriers or changing descriptors. */
-			void TrackDynamicUniformBufferOffsets(VulkanResourceTracker& resourceTracker, TArrayView<const u32> offsets) const;
+			/** Tracks the selected suballocations after resource use has been tracked, without changing descriptors. */
+			void TrackDynamicUniformBufferOffsets(GpuResourceTracker& resourceTracker, TArrayView<const u32> offsets) const;
 #endif
 
 		protected:

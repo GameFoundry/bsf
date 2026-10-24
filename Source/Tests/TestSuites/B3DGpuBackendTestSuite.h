@@ -19,17 +19,8 @@ namespace b3d
 
 #endif
 
-		/** Verifies cross-command-buffer dependencies and propagation of unresolved hazards. */
-		void TestResourceTransition();
-
-		/** Verifies writer epochs allow parallel reads and only wait for active conflicting queues. */
-		void TestSubmissionTransitionPlanning();
-
-		/** Verifies submission states from earlier frames are cleared, and that this lets split images merge. */
-		void TestFrameIndexClear();
-
-		/** Verifies a write orders only after the reader stages of its own queue type. */
-		void TestRestingReaderStages();
+		/** Verifies the pipeline stages each queue type can execute. */
+		void TestQueueStageFlags();
 
 		/**
 		 * Verifies the transient resource cache across scopes and frames, cache eviction by idle frames and by cache size, the release of
@@ -53,8 +44,11 @@ namespace b3d
 		/** Verifies framebuffer attachment normalization and render-pass usage construction. */
 		void TestFramebufferAttachmentUsage();
 
-		/** Verifies a tracker without hazard tracking keeps resources alive without resolving hazards, barriers or submission transitions. */
-		void TestTrackingWithoutHazards();
+		/**
+		 * Verifies the tracker binds every used resource and subresource once and accumulates their access, folds shader reads of attachments
+		 * into the render pass, and unbinds everything when cleared.
+		 */
+		void TestResourceUseTracking();
 
 		/**
 		 * Verifies that explicit barriers order GPU writes before later reads: full barriers, split barriers within a command buffer,

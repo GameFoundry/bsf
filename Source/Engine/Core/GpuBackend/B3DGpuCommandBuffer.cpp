@@ -453,18 +453,12 @@ void GpuCommandBuffer::AddExplicitImageLayout(IGpuImageResource& image, const Gp
 	mExplicitImageLayouts.Add(explicitLayout);
 }
 
-void GpuCommandBuffer::PublishExplicitImageLayouts(GpuQueueId queueId)
+void GpuCommandBuffer::PublishExplicitImageLayouts()
 {
 	AssertIfNotSubmitThread();
 
 	for(const ExplicitImageLayout& explicitLayout : mExplicitImageLayouts)
-	{
-		GpuImageNativeState nativeState;
-		nativeState.Layout = explicitLayout.Layout;
-		nativeState.StateQueue = queueId;
-
-		explicitLayout.Image->SetNativeState(explicitLayout.Range, nativeState);
-	}
+		explicitLayout.Image->SetNativeLayout(explicitLayout.Range, explicitLayout.Layout);
 
 	mExplicitImageLayouts.Clear();
 }

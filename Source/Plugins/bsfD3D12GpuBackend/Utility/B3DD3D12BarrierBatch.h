@@ -10,7 +10,6 @@ namespace b3d
 
 namespace b3d::render
 {
-	class D3D12BarrierHelper;
 
 	/** @addtogroup D3D12GpuBackend
 	 *  @{
@@ -43,13 +42,6 @@ namespace b3d::render
 
 	private:
 		friend class ::b3d::D3D12BarrierTestSuite;
-		friend class D3D12BarrierHelper;
-
-		/** Replaces an already-added native texture barrier without changing its position. */
-		void ReplaceTextureBarrier(u32 barrierIndex, const D3D12_TEXTURE_BARRIER& barrier);
-
-		/** Replaces an already-added native global barrier without changing its position. */
-		void ReplaceGlobalBarrier(u32 barrierIndex, const D3D12_GLOBAL_BARRIER& barrier);
 
 		/** Consecutive barriers of one native type. */
 		struct BarrierGroup

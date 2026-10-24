@@ -4,7 +4,7 @@
 
 #include "B3DPrerequisites.h"
 #include "GpuBackend/B3DGpuDevice.h"
-#include "GpuBackend/B3DGpuHazards.h"
+#include "GpuBackend/B3DGpuBarriers.h"
 #include "GpuBackend/B3DGpuTextureSubresource.h"
 
 namespace b3d
@@ -477,15 +477,6 @@ namespace b3d
 		u32 GetSuballocationIndexForOffset(u32 offset) const;
 #endif
 
-		/** Returns submission hazards shared by all command buffers using this buffer. Submit thread only. */
-		const render::GpuResourceSubmissionState& GetSubmissionState() const { return mSubmissionState; }
-
-		/** Returns the submission state for an in-place update. Submit thread only. */
-		render::GpuResourceSubmissionState& GetSubmissionState() { return mSubmissionState; }
-
-		/** Commits submission hazards after native boundary synchronization has been constructed. Submit thread only. */
-		void SetSubmissionState(render::GpuResourceSubmissionState&& state) { mSubmissionState = std::move(state); }
-
 	protected:
 		IGpuBufferResource() = default;
 
@@ -493,35 +484,30 @@ namespace b3d
 		TInlineArray<SuballocationTrackingState, 2> mSuballocationStates;
 		u32 mSuballocationSize = 0;  // Size of each suballocation (for range-to-index conversion)
 #endif
-
-	private:
-		/** Used for issuing transitions between command buffers. Stores information about last submitted state. Submit thread only. */
-		render::GpuResourceSubmissionState mSubmissionState;
 	};
 
 	/**
-	 * Use counters, submission state and native state of one face × mip × aspect of an image, or of the image's full range. Owned
-	 * by the image, which creates and destroys it; not owned by a GpuResourceManager.
+	 * Use counters and native layout of one face × mip × aspect of an image, or of the image's full range. Owned by the image, which
+	 * creates and destroys it; not owned by a GpuResourceManager.
 	 */
 	class B3D_EXPORT GpuImageSubresource final : public IGpuResource
 	{
 	public:
 		GpuImageSubresource() = default;
 
-		/** Submission hazards left by the last submitted command buffers using this subresource. Submit thread only. */
-		render::GpuResourceSubmissionState SubmissionState;
-
-		/** Backend-native state committed by the last submitted command buffer using this subresource. Submit thread only. */
-		render::GpuImageNativeState NativeState;
+		/**
+		 * Backend-native layout (VkImageLayout, D3D12_BARRIER_LAYOUT) published by the last submitted command buffer that changed it (explicit
+		 * barriers, resting transitions, presentation). Submit thread only.
+		 */
+		u32 NativeLayout = 0;
 	};
 
 	/**
 	 * Base for GPU image resources. Stores the full-image subresource range and owns one GpuImageSubresource per
 	 * face × mip × aspect, plus one full-range subresource.
 	 *
-	 * Submission state is either uniform or split. While uniform, the full-range subresource holds the submission and native state
-	 * of every subresource. While split, each subresource holds its own. Only single-aspect images can be uniform.
-	 * Only uniform images rest.
+	 * Native layouts are either uniform or split. While uniform, the full-range subresource holds the native layout of every subresource.
+	 * While split, each subresource holds its own. Only single-aspect images can be uniform, and an image stays split once split.
 	 */
 	class B3D_EXPORT IGpuImageResource : public IGpuResource
 	{
@@ -550,33 +536,14 @@ namespace b3d
 		/** Retrieves the subresource holding use counters of accesses that cover the image's full range. */
 		GpuImageSubresource* GetFullRangeSubresource() const { return &mSubresources[GetSubresourceCount()]; }
 
-		/**
-		 * Returns true if the full-range subresource holds the submission state of every subresource. Always false for images
-		 * with more than one aspect. Submit thread only.
-		 */
-		bool HasUniformSubmissionState() const { return mHasUniformSubmissionState; }
+		/** Returns the native layout of one face, mip level and aspect. Submit thread only. */
+		u32 GetNativeLayout(u32 face, u32 mipLevel, GpuTextureAspectFlag aspect) const;
 
 		/**
-		 * Returns the subresource holding the submission and native state of one face, mip level and aspect: the full-range
-		 * subresource if the image is uniform, the subresource itself otherwise. Submit thread only.
-		 */
-		GpuImageSubresource& GetSubmissionStateResource(u32 face, u32 mipLevel, GpuTextureAspectFlag aspect) const;
-
-		/** Copies the full-range state into every subresource and switches the image to per-subresource state. Submit thread only. */
-		void SplitSubmissionState();
-
-		/**
-		 * Sets the native state of every subresource in @p range. Switches the image to per-subresource state if @p range does not cover
+		 * Sets the native layout of every subresource in @p range. Switches the image to per-subresource layouts if @p range does not cover
 		 * the whole image. Submit thread only.
 		 */
-		void SetNativeState(const GpuTextureSubresourceRange& range, const render::GpuImageNativeState& nativeState);
-
-		/**
-		 * Merges the state of every subresource into the full-range subresource and switches the image to uniform state. Fails and
-		 * changes nothing if the image has more than one aspect, if the native states differ, or if the submission states cannot
-		 * be represented by one state (see GpuResourceSubmissionState::TryMerge()). Submit thread only.
-		 */
-		bool TryMergeSubmissionState(u32 frameIndex);
+		void SetNativeLayout(const GpuTextureSubresourceRange& range, u32 nativeLayout);
 
 		/** Returns queues using any aspect of the specified face and mip level. */
 		GpuQueueMask GetSubresourceUseInfo(u32 face, u32 mipLevel, GpuAccessFlags useFlags) const;
@@ -586,12 +553,6 @@ namespace b3d
 
 		/** Returns the total in-flight use count across every aspect of the specified face and mip level. */
 		u32 GetSubresourceUseCount(u32 face, u32 mipLevel) const;
-
-		/**
-		 * Returns true if the image can ever be transitioned into a 'rest' state. Resting state implies read-only access and does not require hazard tracking.
-		 * It is used primarily as an optimization so we don't need to perform hazard tracking on every single image (large majority of images are read-only sampleable images).
-		 */
-		bool CanRest() const { return mCanRest; }
 
 		/**
 		 * Makes the next submission that uses the image bring every subresource of it from its native layout to @p layout, the backend's
@@ -609,8 +570,8 @@ namespace b3d
 		/** Constructs an unmanaged image resource (no owner). Reserved for test mocks, see IGpuResource(). */
 		IGpuImageResource(u32 faceCount, u32 mipLevelCount, GpuTextureAspectFlags aspectMask);
 
-		/** Sets the native state of every subresource of @p aspects, and of the full-range subresource. Backends call this during construction. */
-		void InitializeNativeState(GpuTextureAspectFlags aspects, const render::GpuImageNativeState& state);
+		/** Sets the native layout of every subresource of @p aspects, and of the full-range subresource. Backends call this during construction. */
+		void InitializeNativeLayout(GpuTextureAspectFlags aspects, u32 nativeLayout);
 
 		/** Returns the storage index of one face, mip level and aspect. */
 		u32 GetSubresourceIndex(u32 face, u32 mipLevel, GpuTextureAspectFlag aspect) const;
@@ -622,16 +583,15 @@ namespace b3d
 		u32 mMipLevelCount = 0;
 		GpuTextureSubresourceRange mFullRange;
 
-		bool mCanRest = false;
 		render::GpuImageLayout mRestingTransitionLayout{}; /**< See RequestRestingTransition(). GpuImageLayout::Undefined if none is requested. */
 
 	private:
-		/** Creates the subresources and selects the initial submission state mode. */
+		/** Creates the subresources and selects the initial native layout mode. */
 		void CreateSubresources();
 
 		/** Face × mip × aspect subresources, followed by the full-range subresource. */
 		GpuImageSubresource* mSubresources = nullptr;
-		bool mHasUniformSubmissionState = false;
+		bool mHasUniformNativeLayout = false;
 	};
 
 	/** Base GPU swap chain resources. */

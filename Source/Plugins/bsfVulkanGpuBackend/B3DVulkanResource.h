@@ -45,27 +45,6 @@ namespace b3d
 				: TBase(owner, std::forward<TBaseArgs>(baseArgs)...), mOwner(owner), mState(concurrency ? State::Shared : State::Normal)
 			{}
 
-			/** Returns the queue that currently owns the resource. Submit thread only. */
-			bool GetOwnerQueueId(GpuQueueId& queueId) const
-			{
-				AssertIfNotSubmitThread();
-
-				if(!mOwnerQueueValid)
-					return false;
-
-				queueId = mOwnerQueueId;
-				return true;
-			}
-
-			/** Updates the queue that owns the resource. Submit thread only. */
-			void SetOwnerQueueId(GpuQueueId queueId)
-			{
-				AssertIfNotSubmitThread();
-
-				mOwnerQueueId = queueId;
-				mOwnerQueueValid = true;
-			}
-
 			/** Returns true if the resource is only allowed to be used by a single queue family at once. */
 			bool IsExclusive() const
 			{
@@ -77,17 +56,12 @@ namespace b3d
 			VulkanGpuDevice& GetDevice() const;
 
 		protected:
-			void OnNotifyUsed(GpuQueueId queueId, GpuAccessFlags useFlags) override;
-
 			/**
 			 * Typed manager pointer. Shadows IGpuResource::mOwner so that subclasses calling mOwner->GetDevice()
 			 * (and similar typed accessors on the manager) see the VulkanResourceManager surface. The base's untyped
 			 * pointer drives the deferred-destroy free path inside IGpuResource itself.
 			 */
 			VulkanResourceManager* mOwner;
-
-			GpuQueueId mOwnerQueueId;
-			bool mOwnerQueueValid = false;
 			State mState;
 
 		};

@@ -8,14 +8,14 @@
 #include "B3DVulkanResource.h"
 #include "B3DVulkanGpuPipelineState.h"
 #include "B3DVulkanGpuDevice.h"
-#include "B3DVulkanResourceTracker.h"
+#include "GpuBackend/B3DGpuResourceTracker.h"
 #include "B3DVulkanUtility.h"
 #include "B3DIVulkanRenderWindowSurface.h"
 #include "Allocators/B3DPoolAlloc.h"
 #include "Math/B3DArea2.h"
 #include "GpuBackend/B3DGpuDeviceCapabilities.h"
 #include "Utility/B3DDenseMap.h"
-#include "Utility/B3DVulkanBarrierHelper.h"
+#include "Utility/B3DVulkanBarrierBatch.h"
 
 namespace b3d
 {
@@ -24,7 +24,6 @@ namespace b3d
 		class VulkanOcclusionQuery;
 		class VulkanTimerQuery;
 		class VulkanImage;
-		class VulkanBarrierHelper;
 
 		/** @addtogroup Vulkan
 		 *  @{
@@ -79,58 +78,13 @@ namespace b3d
 		typedef Flags<DescriptorSetBindFlag> DescriptorSetBindFlags;
 		B3D_FLAGS_OPERATORS(DescriptorSetBindFlag)
 
-		/** Submit-thread command buffer that performs the source half of a resource handoff. */
-		struct VulkanSourceQueueTransition
-		{
-			GpuQueueId QueueId; /**< Exact queue on which the source transition must execute. */
-			GpuQueueMask WaitMask; /**< Other queues the source transition must wait for before releasing ownership. */
-			TShared<VulkanGpuCommandBuffer> CommandBuffer; /**< Command buffer to issue source queue barriers and layout transitions on. */
-		};
-
 		/** All the information required for submitting a VulkanGpuCommandBuffer */
 		struct VulkanGpuCommandBufferSubmitInformation
 		{
-			TInlineArray<VulkanSourceQueueTransition, 4> SourceQueueTransitions; /**< Resource handoffs that must execute on their exact source queues. */
-			TShared<VulkanGpuCommandBuffer> DestinationQueueTransitionCommandBuffer; /**< Contains image layout transitions and transitions from source to the destination queue, if there are any. Should be submitted after the query reset command buffer. This submit should contain the provided semaphores if not empty. */
-			TShared<VulkanGpuCommandBuffer> PrimaryCommandBuffer; /**< Primary command buffer we're submitting. This should be submitted after the destination queue transition command buffer. This submit should contain the semaphores if destination queue transition command buffer is not present. */
-			GpuQueueMask RequiredWaitMask = GpuQueueMask::kNone; /**< Resource-derived queue dependencies to combine with the caller-provided synchronization mask. */
+			TShared<VulkanGpuCommandBuffer> RestingTransitionCommandBuffer; /**< Brings the images the primary command buffer uses to rest (see IGpuImageResource::RequestRestingTransition()), if any need it. Submitted before the primary command buffer, and waits on the semaphores. */
+			TShared<VulkanGpuCommandBuffer> PrimaryCommandBuffer; /**< Primary command buffer we're submitting. Waits on the semaphores if there is no resting transition command buffer. */
 			TInlineArray<VulkanSemaphore*, 8> WaitSemaphores; /**< Semaphores that need to be waited on before executing the command buffers. */
 			TInlineArray<VulkanSemaphore*, 2> SignalSemaphores; /**< Binary semaphores signaled after the complete logical submission. */
-		};
-
-		/** Resolves layout, ownership and access barriers for command-buffer submission and presentation. */
-		class VulkanSubmissionTransitionVisitor : public GpuSubmissionTransitionVisitor
-		{
-		public:
-			/** Collects submission barriers and queue waits for the destination queue. */
-			VulkanSubmissionTransitionVisitor(VulkanGpuDevice& device, GpuQueueId destinationQueueId, VulkanGpuCommandBufferSubmitInformation& outSubmitInformation);
-
-			void VisitBuffer(const GpuSubmissionBufferTransition& transition) override;
-			void VisitImage(const GpuSubmissionImageTransition& transition) override;
-
-			/** Records destination barriers into the supplied command buffer, or creates a submission prelude when omitted. */
-			void Finalize(VkCommandBuffer destinationCommandBuffer = VK_NULL_HANDLE);
-
-		private:
-			struct SourceQueueTransitionInformation
-			{
-				GpuQueueId QueueId;
-				GpuQueueMask WaitMask;
-				VulkanBarrierBatch Barriers;
-			};
-
-			/** Excludes source accesses from other queue families; semaphore waits make those accesses available. */
-			GpuAccessScope GetQueueSourceScope(const GpuAccessScope& sourceScope, u32 queueFamily) const;
-
-			/** Finds or creates the release-barrier batch for a source queue and accumulates its prerequisite waits. */
-			SourceQueueTransitionInformation& GetSourceQueueTransitionInformation(GpuQueueId sourceQueueId, GpuQueueMask waitMask);
-
-			VulkanGpuDevice& mDevice;
-			GpuQueueId mDestinationQueueId;
-			u32 mDestinationQueueFamily;
-			VulkanGpuCommandBufferSubmitInformation& mSubmitInformation;
-			VulkanBarrierBatch mDestinationQueueBarriers;
-			TInlineArray<SourceQueueTransitionInformation, 4> mSourceQueueTransitions;
 		};
 
 		/**
@@ -207,12 +161,11 @@ namespace b3d
 			 * Prepares the command buffer to be submitted on a GpuQueue.
 			 *
 			 * @param queueType			Usage of the queue the command buffer will be submitted on.
-			 * @param queueIndex			Index of the queue the command buffer will be submitted on.
 			 * @return						Information required for submitting the command buffer on the queue.
 			 * 
 			 * @note Submit thread only.
 			 */
-			VulkanGpuCommandBufferSubmitInformation PrepareForSubmitOnSubmitThread(GpuQueueType queueType, u32 queueIndex);
+			VulkanGpuCommandBufferSubmitInformation PrepareForSubmitOnSubmitThread(GpuQueueType queueType);
 
 			/** Notifies the command buffer that it has been submitted successfully. Submit thread only. */
 			void NotifyWasSubmitted(GpuQueueId queueId);
@@ -269,12 +222,6 @@ namespace b3d
 			 * render pass, if any.
 			 */
 			void SetEvent(VulkanEvent* event);
-
-			/**
-			 * Issues a pipeline barrier on the provided buffer. See vkCmdPipelineBarrier in Vulkan spec. for usage
-			 * information.
-			 */
-			void MemoryBarrier(VkBuffer buffer, VkAccessFlags sourceAccessFlags, VkAccessFlags destinationAccessFlags, VkPipelineStageFlags sourceStage, VkPipelineStageFlags destinationStage);
 
 			/**
 			 * Copies the provided memory into the buffer.
@@ -379,7 +326,6 @@ namespace b3d
 			friend class VulkanGpuQueue;
 			friend class VulkanGpuBuffer;
 			friend class VulkanTexture;
-			friend class VulkanBarrierHelper;
 
 			bool RecordExplicitBarriers(const GpuExplicitBarriers& barriers, GpuBarrierPhase phase, GpuSplitBarrier* split) override;
 
@@ -450,7 +396,7 @@ namespace b3d
 			void BindVertexInputs();
 
 			/** Binds the currently stored GPU parameter sets, if dirty. */
-			bool BindGpuParameters(const TShared<GpuPipelineParameterLayout>& pipelineParameterLayout, VulkanBarrierHelper& barrierHelper);
+			bool BindGpuParameters(const TShared<GpuPipelineParameterLayout>& pipelineParameterLayout);
 
 			/** Uploads the cached push-constant block for the selected pipeline bind point. */
 			void BindPushConstants(bool isGraphics);
@@ -508,8 +454,7 @@ namespace b3d
 			VulkanFramebuffer* mFramebuffer = nullptr;
 			RenderSurfaceMask mRenderTargetReadOnlyMask = RT_NONE;
 
-			VulkanResourceTracker mResourceTracker;
-			VulkanBarrierHelper mBarrierHelper;
+			GpuResourceTracker mResourceTracker;
 			GpuQueueId mSubmittedQueueId;
 
 			TShared<VulkanGpuGraphicsPipelineState> mGraphicsPipeline;

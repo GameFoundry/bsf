@@ -15,8 +15,7 @@ namespace b3d
 		class MetalGpuCommandBuffer;
 		class MetalGpuPipelineParameterSetLayout;
 		class MetalGpuParameterSetPool;
-		class MetalResourceTracker;
-		class MetalBarrierHelper;
+		class GpuResourceTracker;
 		class MetalSamplerState;
 
 		/** @addtogroup MetalGpuBackend
@@ -105,14 +104,13 @@ namespace b3d
 			 * Registers every resource bound in this set with a command buffer's resource tracker.
 			 *
 			 * @param	resourceTracker			Tracker of the command buffer the set is bound on.
-			 * @param	barrierHelper			Receives synchronization required before accessing the resources.
 			 * @param	dynamicOffsetOverrides	Command buffer's per-draw offset overrides for the set, indexed by
 			 *									dynamic-offset index (@c ~0u for none), so uniform-buffer suballocations
 			 *									are tracked at the offset the draw actually reads.
 			 * @param	compute					True when tracking for a dispatch, false for a draw.
 			 * @return							False if shader accesses overlap a writable attachment.
 			 */
-			bool TrackResources(MetalResourceTracker& resourceTracker, MetalBarrierHelper& barrierHelper, const TInlineArray<u32, 4>& dynamicOffsetOverrides, bool compute) const;
+			bool TrackResources(GpuResourceTracker& resourceTracker, const TInlineArray<u32, 4>& dynamicOffsetOverrides, bool compute) const;
 
 			/**
 			 * Returns the tracked resource owning the argument buffer, or null when the buffer is a slice of a transient

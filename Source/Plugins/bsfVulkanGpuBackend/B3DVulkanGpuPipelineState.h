@@ -8,7 +8,7 @@
 
 namespace b3d::render
 {
-	class VulkanResourceTracker;
+	class GpuResourceTracker;
 }
 
 namespace b3d
@@ -82,7 +82,7 @@ namespace b3d
 			 * Registers any resources used by the pipeline with the provided command buffer resource tracker. This should be called whenever
 			 * a pipeline is bound to a command buffer.
 			 */
-			void RegisterShaderModuleResources(VulkanResourceTracker& resourceTracker);
+			void RegisterShaderModuleResources(GpuResourceTracker& resourceTracker);
 
 		protected:
 			/**
@@ -162,7 +162,7 @@ namespace b3d
 			 * Registers any resources used by the pipeline with the provided command buffer resource tracker. This should be called whenever
 			 * a pipeline is bound to a command buffer.
 			 */
-			void RegisterShaderModuleResources(VulkanResourceTracker& resourceTracker);
+			void RegisterShaderModuleResources(GpuResourceTracker& resourceTracker);
 
 		protected:
 			VulkanPipeline* mPipeline = nullptr;

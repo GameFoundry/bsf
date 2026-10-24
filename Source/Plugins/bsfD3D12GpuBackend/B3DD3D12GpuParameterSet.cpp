@@ -4,11 +4,10 @@
 #include "B3DD3D12GpuDevice.h"
 #include "B3DD3D12GpuPipelineParameterLayout.h"
 #include "B3DD3D12GpuBuffer.h"
-#include "B3DD3D12ResourceTracker.h"
+#include "GpuBackend/B3DGpuResourceTracker.h"
 #include "B3DD3D12Texture.h"
 #include "B3DD3D12SamplerState.h"
 #include "Managers/B3DD3D12DescriptorManager.h"
-#include "Utility/B3DD3D12BarrierHelper.h"
 #include "GpuBackend/B3DGpuBackendUtility.h"
 #include "Allocators/B3DFrameAllocator.h"
 #include "GpuBackend/B3DGpuProgramParameterDescription.h"
@@ -200,7 +199,7 @@ bool D3D12GpuParameters::SetSamplerState(u32 slot, const TShared<SamplerState>& 
 	return true;
 }
 
-bool D3D12GpuParameters::TrackResources(const GpuPipelineParameterSetLayout& pipelineSetLayout, D3D12ResourceTracker& resourceTracker, D3D12BarrierHelper& barrierHelper)
+bool D3D12GpuParameters::TrackResources(const GpuPipelineParameterSetLayout& pipelineSetLayout, GpuResourceTracker& resourceTracker)
 {
 	const TShared<GpuPipelineParameterSetLayout>& setLayout = GetLayout();
 	if (setLayout == nullptr)
@@ -223,7 +222,6 @@ bool D3D12GpuParameters::TrackResources(const GpuPipelineParameterSetLayout& pip
 			if (uniformInformation == nullptr || uniformInformation->Type != type)
 				continue;
 
-			GpuResourceUseFlags stageUseFlags = GpuBackendUtility::GetShaderResourceUseFlags(pipelineUniformInformation->Usage);
 			const u32 arraySize = std::min(uniformInformation->ArraySize, pipelineUniformInformation->ArraySize);
 
 			for (u32 arrayIndex = 0; arrayIndex < arraySize; arrayIndex++)
@@ -237,7 +235,7 @@ bool D3D12GpuParameters::TrackResources(const GpuPipelineParameterSetLayout& pip
 				case GpuParameterType::UniformBuffer:
 				{
 					if (GpuBuffer* const buffer = mUniformBufferData[dataIndex].Buffer.get())
-						resourceTracker.TrackBufferAccess(static_cast<D3D12GpuBuffer*>(buffer)->GetD3D12Buffer(), GpuBackendUtility::GetStageFlags(stageUseFlags | GpuResourceUseFlag::UniformBuffer), GpuAccessFlag::Read, barrierHelper, mUniformBufferData[dataIndex].Offset);
+						resourceTracker.TrackBufferUsage(static_cast<D3D12GpuBuffer*>(buffer)->GetD3D12Buffer(), GpuAccessFlag::Read, mUniformBufferData[dataIndex].Offset);
 
 					break;
 				}
@@ -253,7 +251,7 @@ bool D3D12GpuParameters::TrackResources(const GpuPipelineParameterSetLayout& pip
 							if(subresourceRange.AspectMask.IsSet(GpuTextureAspectFlag::Depth))
 								subresourceRange.AspectMask = GpuTextureAspectFlag::Depth;
 
-							if(!resourceTracker.TrackShaderImageAccess(image, subresourceRange, GpuImageLayout::ShaderReadOnly, stageUseFlags | GpuResourceUseFlag::ShaderAccess, GpuAccessFlag::Read, barrierHelper))
+							if(!resourceTracker.TrackShaderImageUsage(image, subresourceRange, GpuAccessFlag::Read))
 								return false;
 						}
 					}
@@ -269,7 +267,7 @@ bool D3D12GpuParameters::TrackResources(const GpuPipelineParameterSetLayout& pip
 							// Conservative read-write: UAV image bindings do not declare their access.
 							const GpuTextureSubresourceRange subresourceRange = image->GetRange(mStorageTextureData[dataIndex].Surface);
 
-							if(!resourceTracker.TrackShaderImageAccess(image, subresourceRange, GpuImageLayout::General, stageUseFlags | GpuResourceUseFlag::ShaderAccess, GpuAccessFlag::Read | GpuAccessFlag::Write, barrierHelper))
+							if(!resourceTracker.TrackShaderImageUsage(image, subresourceRange, GpuAccessFlag::Read | GpuAccessFlag::Write))
 								return false;
 						}
 					}
@@ -283,7 +281,7 @@ bool D3D12GpuParameters::TrackResources(const GpuPipelineParameterSetLayout& pip
 						if (GpuObjectParameterTypeInformation::IsReadWriteBuffer(uniformInformation->ObjectType))
 							accessFlags |= GpuAccessFlag::Write;
 
-						resourceTracker.TrackBufferAccess(static_cast<D3D12GpuBuffer*>(buffer)->GetD3D12Buffer(), GpuBackendUtility::GetStageFlags(stageUseFlags | GpuResourceUseFlag::ShaderAccess), accessFlags, barrierHelper);
+						resourceTracker.TrackBufferUsage(static_cast<D3D12GpuBuffer*>(buffer)->GetD3D12Buffer(), accessFlags);
 					}
 					break;
 				}
@@ -533,7 +531,7 @@ void D3D12GpuParameters::UpdateGPUDescriptors(D3D12GpuDevice& device, const D3D1
 	fnUpdateTable(mSamplerTable, descriptorSetLayout.SamplerTable, mSamplerBindings, D3D12DescriptorHeapType::Sampler, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 }
 
-void D3D12GpuParameters::BindDescriptors(D3D12GpuDevice& device, D3D12ResourceTracker& resourceTracker, ID3D12GraphicsCommandList* commandList, bool isGraphics,
+void D3D12GpuParameters::BindDescriptors(D3D12GpuDevice& device, GpuResourceTracker& resourceTracker, ID3D12GraphicsCommandList* commandList, bool isGraphics,
 	const D3D12DescriptorSetLayout& descriptorSetLayout, const UnorderedMap<u32, u32>* dynamicOffsets)
 {
 	RefreshDescriptors();

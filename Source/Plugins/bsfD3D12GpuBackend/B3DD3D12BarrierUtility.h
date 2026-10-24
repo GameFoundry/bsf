@@ -44,7 +44,7 @@ namespace b3d
 			static D3D12BarrierScope GetTextureScope(GpuStageFlags stages, GpuAccessFlags access, GpuImageLayout layout, GpuTextureAspectFlags aspects);
 
 			/** Builds a native global barrier using buffer access semantics. */
-			static D3D12_GLOBAL_BARRIER GetGlobalBufferBarrier(D3D12_RESOURCE_FLAGS resourceFlags, const GpuBarrierScope& scope, GpuStageFlags precedingBarrierDestinationStages);
+			static D3D12_GLOBAL_BARRIER GetGlobalBufferBarrier(D3D12_RESOURCE_FLAGS resourceFlags, const GpuBarrierScope& scope);
 
 			/**
 			 * Builds a native global barrier for an alias acquire. Its source scope belongs to earlier resources on the memory, whose type and layout
@@ -63,10 +63,10 @@ namespace b3d
 			static void MergeGlobalBarrier(D3D12_GLOBAL_BARRIER& target, const D3D12_GLOBAL_BARRIER& source);
 
 			/** Builds a whole-resource native buffer barrier. */
-			static D3D12_BUFFER_BARRIER GetBufferBarrier(ID3D12Resource* resource, const GpuBarrierScope& scope, GpuStageFlags precedingBarrierDestinationStages);
+			static D3D12_BUFFER_BARRIER GetBufferBarrier(ID3D12Resource* resource, const GpuBarrierScope& scope);
 
 			/** Builds a native texture barrier for one resolved, single-aspect subresource range. */
-			static D3D12_TEXTURE_BARRIER GetTextureBarrier(ID3D12Resource* resource, const GpuTextureSubresourceRange& range, const GpuBarrierScope& scope, GpuImageLayout logicalBeforeLayout, GpuImageLayout logicalAfterLayout, const D3D12TextureLayout& nativeBeforeLayout, const D3D12TextureLayout& nativeAfterLayout, D3D12_TEXTURE_BARRIER_FLAGS flags, GpuStageFlags precedingBarrierDestinationStages = GpuStageFlag::None);
+			static D3D12_TEXTURE_BARRIER GetTextureBarrier(ID3D12Resource* resource, const GpuTextureSubresourceRange& range, const GpuBarrierScope& scope, GpuImageLayout logicalBeforeLayout, GpuImageLayout logicalAfterLayout, const D3D12TextureLayout& nativeBeforeLayout, const D3D12TextureLayout& nativeAfterLayout, D3D12_TEXTURE_BARRIER_FLAGS flags);
 
 			/** Returns a conservative native access scope compatible with @p layout. */
 			static D3D12BarrierScope GetTextureLayoutScope(GpuImageLayout layout, const D3D12TextureLayout& nativeLayout, GpuTextureAspectFlags aspects, GpuStageFlags preferredStages = GpuStageFlag::None);
@@ -91,11 +91,8 @@ namespace b3d
 			static D3D12TextureLayout GetTransferHandoffLayout(const D3D12TextureLayout& source, const D3D12TextureLayout& destination, GpuQueueType releaseQueueType);
 
 		private:
-			/** 
-			 * Extends the required 'before' sync scope of barrier represented by @p beforeScope, by chaining the 'after' stages from @p precedingBarrierDestinationStages. 
-			 * Potentially expands the sync scope in order to make sure they are valid for the provided access scope.
-			 */
-			static D3D12_BARRIER_SYNC GetChainedSyncBefore(const D3D12BarrierScope& beforeScope, GpuStageFlags precedingBarrierDestinationStages);
+			/** Returns the sync of @p scope, expanded to a sync that is valid with the scope's access if it is not. */
+			static D3D12_BARRIER_SYNC GetCompatibleSync(const D3D12BarrierScope& scope);
 
 			/** Converts a logical buffer use into native access flags allowed by @p resourceFlags. */
 			static D3D12_BARRIER_ACCESS GetBufferAccess(GpuStageFlags stages, GpuAccessFlags access, D3D12_RESOURCE_FLAGS resourceFlags);

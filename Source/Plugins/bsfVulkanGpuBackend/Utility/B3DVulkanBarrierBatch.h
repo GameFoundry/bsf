@@ -4,22 +4,16 @@
 
 #include "B3DVulkanPrerequisites.h"
 #include "B3DVulkanResource.h"
-#include "Allocators/B3DFrameAllocator.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DGpuDevice.h"
-#include "GpuBackend/B3DGpuBarrierHelper.h"
 
 namespace b3d::render
 {
-	class VulkanResourceTracker;
-	class VulkanBuffer;
-	class VulkanImage;
-
 	/** @addtogroup Vulkan
 	 *  @{
 	 */
 
-	/** Accumulates native Vulkan barriers that can be emitted without resource-tracker bookkeeping. */
+	/** Accumulates native Vulkan barriers and emits them as one dependency. */
 	class VulkanBarrierBatch
 	{
 	public:
@@ -80,58 +74,6 @@ namespace b3d::render
 		bool mHasMemoryBarrier = false;
 		bool mHasExecutionBarrier = false;
 	};
-
-	/**
-	 * Helper class for building and issuing Vulkan memory barriers.
-	 *
-	 * Translates core barriers to Vulkan, accumulates them for one pipeline-barrier command, and reports
-	 * their effects back to the tracker after emission.
-	 */
-	class VulkanBarrierHelper : public TGpuBarrierHelper<VulkanBarrierHelper, VulkanResourceTracker>
-	{
-	public:
-		/**
-		 * Constructs a barrier helper associated with the provided command buffer.
-		 *
-		 * @param resourceTracker	Object responsible for tracking all resource usages on a command buffer. Used for determining current object state,
-		 *							and notified with new state when barriers and layout transitions are executed.
-		 */
-		VulkanBarrierHelper(VulkanResourceTracker* resourceTracker);
-
-		/**
-		 * Executes all accumulated barriers by issuing a pipeline barrier command.
-		 * After execution, all accumulated barriers are cleared.
-		 *
-		 * If no barriers have been accumulated, this is a no-op.
-		 *
-		 * @param commandBuffer		Command buffer on which barriers will be issued.
-		 */
-		void Execute(VulkanGpuCommandBuffer& commandBuffer);
-
-		/**
-		 * Clears all accumulated barriers without executing them.
-		 * Useful if you need to reset the helper state without issuing barriers.
-		 */
-		void Clear();
-
-		/**
-		 * Returns true if there are any barriers accumulated and ready to execute.
-		 */
-		bool HasBarriers() const;
-
-	private:
-		friend class TGpuBarrierHelper<VulkanBarrierHelper, VulkanResourceTracker>;
-
-		/** Accumulates a resolved native Vulkan buffer barrier. */
-		void RecordNativeBufferBarrier(IGpuBufferResource* buffer, const GpuBarrierScope& barrier, GpuBarrierFlags barrierFlags);
-
-		/** Accumulates a resolved native image barrier and reconciles @p oldLayout after barrier merging. */
-		void RecordNativeImageBarrier(IGpuImageResource* image, const GpuTextureSubresourceRange& subresourceRange, const GpuBarrierScope& barrier, GpuImageLayout oldLayout, GpuImageLayout newLayout, GpuBarrierFlags barrierFlags);
-
-		VulkanBarrierBatch mBarrierBatch;
-	};
-
-	extern template class TGpuBarrierHelper<VulkanBarrierHelper, VulkanResourceTracker>;
 
 	/** @} */
 }

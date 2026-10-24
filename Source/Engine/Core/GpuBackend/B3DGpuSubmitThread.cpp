@@ -174,7 +174,6 @@ void GpuSubmitThread::QueueEndFrameAndWaitForPreviousFrame()
 		// Order the next frame's first submission on every queue after all of this frame's work
 		mFrameFencePendingQueues = GpuQueueMask::kAll;
 		mFrameFenceMarkerIndex = markerIndex;
-		mFrameIndex++;
 
 		// Wait for all command buffers from the previous frame, up to the fence value captured at that frame's boundary.
 		// Checking the full range ensures every command buffer pool and its resources are safe to reuse.

@@ -139,35 +139,33 @@ D3D12BarrierScope D3D12BarrierUtility::GetBufferScope(GpuStageFlags stages, GpuA
 	return scope;
 }
 
-D3D12_BARRIER_SYNC D3D12BarrierUtility::GetChainedSyncBefore(const D3D12BarrierScope& beforeScope, GpuStageFlags precedingBarrierDestinationStages)
+D3D12_BARRIER_SYNC D3D12BarrierUtility::GetCompatibleSync(const D3D12BarrierScope& scope)
 {
-	const D3D12_BARRIER_SYNC precedingSyncAfter = GetStageSync(precedingBarrierDestinationStages);
-	const D3D12_BARRIER_SYNC combinedSync = (D3D12_BARRIER_SYNC)(beforeScope.Sync | precedingSyncAfter);
-	if(ContainsOnly(combinedSync, GetAccessCompatibleSyncs(beforeScope.Access)))
-		return combinedSync;
+	if(ContainsOnly(scope.Sync, GetAccessCompatibleSyncs(scope.Access)))
+		return scope.Sync;
 
 	// If the access scopes don't match the sync, we need to expand the sync mask. e.g. PIXEL_SHADING | DEPTH_STENCIL sync is not allowed with DEPTH_STENCIL_READ flag, but DRAW sync scope is.
 	constexpr D3D12_BARRIER_SYNC kDrawSyncs = (D3D12_BARRIER_SYNC)(D3D12_BARRIER_SYNC_INDEX_INPUT | D3D12_BARRIER_SYNC_VERTEX_SHADING | D3D12_BARRIER_SYNC_PIXEL_SHADING | D3D12_BARRIER_SYNC_DEPTH_STENCIL | D3D12_BARRIER_SYNC_RENDER_TARGET);
 	constexpr D3D12_BARRIER_ACCESS kDrawAccesses = (D3D12_BARRIER_ACCESS)(D3D12_BARRIER_ACCESS_VERTEX_BUFFER | D3D12_BARRIER_ACCESS_CONSTANT_BUFFER | D3D12_BARRIER_ACCESS_INDEX_BUFFER | D3D12_BARRIER_ACCESS_RENDER_TARGET |
 		D3D12_BARRIER_ACCESS_UNORDERED_ACCESS | D3D12_BARRIER_ACCESS_DEPTH_STENCIL_WRITE | D3D12_BARRIER_ACCESS_DEPTH_STENCIL_READ | D3D12_BARRIER_ACCESS_SHADER_RESOURCE);
-	if(ContainsOnly(combinedSync, kDrawSyncs) && ContainsOnly(beforeScope.Access, kDrawAccesses))
+	if(ContainsOnly(scope.Sync, kDrawSyncs) && ContainsOnly(scope.Access, kDrawAccesses))
 		return D3D12_BARRIER_SYNC_DRAW;
 
 	constexpr D3D12_BARRIER_SYNC kShaderSyncs = (D3D12_BARRIER_SYNC)(D3D12_BARRIER_SYNC_VERTEX_SHADING | D3D12_BARRIER_SYNC_PIXEL_SHADING | D3D12_BARRIER_SYNC_COMPUTE_SHADING);
 	constexpr D3D12_BARRIER_ACCESS kShaderAccesses = (D3D12_BARRIER_ACCESS)(D3D12_BARRIER_ACCESS_VERTEX_BUFFER | D3D12_BARRIER_ACCESS_CONSTANT_BUFFER | D3D12_BARRIER_ACCESS_UNORDERED_ACCESS | D3D12_BARRIER_ACCESS_SHADER_RESOURCE);
-	if(ContainsOnly(combinedSync, kShaderSyncs) && ContainsOnly(beforeScope.Access, kShaderAccesses))
+	if(ContainsOnly(scope.Sync, kShaderSyncs) && ContainsOnly(scope.Access, kShaderAccesses))
 		return D3D12_BARRIER_SYNC_ALL_SHADING;
 
 	return D3D12_BARRIER_SYNC_ALL;
 }
 
-D3D12_GLOBAL_BARRIER D3D12BarrierUtility::GetGlobalBufferBarrier(D3D12_RESOURCE_FLAGS resourceFlags, const GpuBarrierScope& scope, GpuStageFlags precedingBarrierDestinationStages)
+D3D12_GLOBAL_BARRIER D3D12BarrierUtility::GetGlobalBufferBarrier(D3D12_RESOURCE_FLAGS resourceFlags, const GpuBarrierScope& scope)
 {
 	const D3D12BarrierScope beforeScope = GetBufferScope(scope.SourceStages, scope.SourceAccess, resourceFlags);
 	const D3D12BarrierScope afterScope = GetBufferScope(scope.DestinationStages, scope.DestinationAccess, resourceFlags);
 
 	D3D12_GLOBAL_BARRIER barrier{};
-	barrier.SyncBefore = GetChainedSyncBefore(beforeScope, precedingBarrierDestinationStages);
+	barrier.SyncBefore = GetCompatibleSync(beforeScope);
 	barrier.SyncAfter = afterScope.Sync;
 	barrier.AccessBefore = beforeScope.Access;
 	barrier.AccessAfter = afterScope.Access;
@@ -241,8 +239,8 @@ D3D12_GLOBAL_BARRIER D3D12BarrierUtility::GetAliasGlobalBarrier(const GpuBarrier
 		afterScope.Access = D3D12_BARRIER_ACCESS_COMMON;
 
 	D3D12_GLOBAL_BARRIER barrier{};
-	barrier.SyncBefore = GetChainedSyncBefore(beforeScope, GpuStageFlag::None);
-	barrier.SyncAfter = GetChainedSyncBefore(afterScope, GpuStageFlag::None);
+	barrier.SyncBefore = GetCompatibleSync(beforeScope);
+	barrier.SyncAfter = GetCompatibleSync(afterScope);
 	barrier.AccessBefore = beforeScope.Access;
 	barrier.AccessAfter = afterScope.Access;
 
@@ -279,7 +277,7 @@ void D3D12BarrierUtility::MergeGlobalBarrier(D3D12_GLOBAL_BARRIER& target, const
 	}
 }
 
-D3D12_BUFFER_BARRIER D3D12BarrierUtility::GetBufferBarrier(ID3D12Resource* resource, const GpuBarrierScope& scope, GpuStageFlags precedingBarrierDestinationStages)
+D3D12_BUFFER_BARRIER D3D12BarrierUtility::GetBufferBarrier(ID3D12Resource* resource, const GpuBarrierScope& scope)
 {
 	B3D_ASSERT(resource != nullptr);
 
@@ -288,7 +286,7 @@ D3D12_BUFFER_BARRIER D3D12BarrierUtility::GetBufferBarrier(ID3D12Resource* resou
 	const D3D12BarrierScope afterScope = GetBufferScope(scope.DestinationStages, scope.DestinationAccess, resourceFlags);
 
 	D3D12_BUFFER_BARRIER barrier{};
-	barrier.SyncBefore = GetChainedSyncBefore(beforeScope, precedingBarrierDestinationStages);
+	barrier.SyncBefore = GetCompatibleSync(beforeScope);
 	barrier.SyncAfter = afterScope.Sync;
 	barrier.AccessBefore = beforeScope.Access;
 	barrier.AccessAfter = afterScope.Access;
@@ -299,18 +297,18 @@ D3D12_BUFFER_BARRIER D3D12BarrierUtility::GetBufferBarrier(ID3D12Resource* resou
 	return barrier;
 }
 
-D3D12_TEXTURE_BARRIER D3D12BarrierUtility::GetTextureBarrier(ID3D12Resource* resource, const GpuTextureSubresourceRange& range, const GpuBarrierScope& scope, GpuImageLayout logicalBeforeLayout, GpuImageLayout logicalAfterLayout, const D3D12TextureLayout& nativeBeforeLayout, const D3D12TextureLayout& nativeAfterLayout, D3D12_TEXTURE_BARRIER_FLAGS flags, GpuStageFlags precedingBarrierDestinationStages)
+D3D12_TEXTURE_BARRIER D3D12BarrierUtility::GetTextureBarrier(ID3D12Resource* resource, const GpuTextureSubresourceRange& range, const GpuBarrierScope& scope, GpuImageLayout logicalBeforeLayout, GpuImageLayout logicalAfterLayout, const D3D12TextureLayout& nativeBeforeLayout, const D3D12TextureLayout& nativeAfterLayout, D3D12_TEXTURE_BARRIER_FLAGS flags)
 {
 	B3D_ASSERT(resource != nullptr);
 	B3D_ASSERT(range.HasSingleAspect());
 
 	D3D12BarrierScope beforeScope;
 	beforeScope.Access = GetTextureAccess(scope.SourceStages, scope.SourceAccess, logicalBeforeLayout, range.AspectMask);
-	beforeScope.Sync = GetTextureSync(scope.SourceStages | precedingBarrierDestinationStages, beforeScope.Access);
+	beforeScope.Sync = GetTextureSync(scope.SourceStages, beforeScope.Access);
 	const D3D12BarrierScope afterScope = GetTextureScope(scope.DestinationStages, scope.DestinationAccess, logicalAfterLayout, range.AspectMask);
 
 	D3D12_TEXTURE_BARRIER barrier{};
-	barrier.SyncBefore = GetChainedSyncBefore(beforeScope, precedingBarrierDestinationStages);
+	barrier.SyncBefore = GetCompatibleSync(beforeScope);
 	barrier.SyncAfter = afterScope.Sync;
 	barrier.AccessBefore = beforeScope.Access;
 	barrier.AccessAfter = afterScope.Access;

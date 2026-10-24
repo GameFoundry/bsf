@@ -92,9 +92,6 @@ namespace b3d
 			/** Converts a set of shader stage flags into a pipeline stage flags set containing the relevant shader stages. */
 			static VkPipelineStageFlags ShaderToPipelineStage(VkShaderStageFlags shaderStageFlags);
 
-			/** Converts a set of shader stage flags into a resource use flags containing the relevant shader stages. */
-			static GpuResourceUseFlags ShaderToResourceUseFlags(VkShaderStageFlags shaderStageFlags);
-
 			/** Converts engine flags representing GPU query type into Vulkan enum. */
 			static VkQueryType GetQueryType(GpuQueryType queryType);
 

@@ -51,10 +51,10 @@ namespace
 	void AddTextureBarrier(D3D12BarrierBatch& batch, ID3D12Resource* resource, const GpuTextureSubresourceRange& range,
 		const GpuBarrierScope& scope, GpuImageLayout logicalBeforeLayout, GpuImageLayout logicalAfterLayout,
 		const D3D12TextureLayout& nativeBeforeLayout, const D3D12TextureLayout& nativeAfterLayout,
-		GpuStageFlags precedingBarrierDestinationStages = GpuStageFlag::None, D3D12_TEXTURE_BARRIER_FLAGS flags = D3D12_TEXTURE_BARRIER_FLAG_NONE)
+		D3D12_TEXTURE_BARRIER_FLAGS flags = D3D12_TEXTURE_BARRIER_FLAG_NONE)
 	{
 		batch.AddTextureBarrier(D3D12BarrierUtility::GetTextureBarrier(resource, range, scope, logicalBeforeLayout,
-			logicalAfterLayout, nativeBeforeLayout, nativeAfterLayout, flags, precedingBarrierDestinationStages));
+			logicalAfterLayout, nativeBeforeLayout, nativeAfterLayout, flags));
 	}
 }
 
@@ -254,47 +254,6 @@ void D3D12BarrierTestSuite::TestTextureBarrierBatch()
 	B3D_TEST_ASSERT(typeOrderBatch.mBarrierGroups[1].Type == D3D12_BARRIER_TYPE_GLOBAL)
 	B3D_TEST_ASSERT(typeOrderBatch.mBarrierGroups[2].Type == D3D12_BARRIER_TYPE_TEXTURE)
 
-	D3D12BarrierBatch chainedBatch;
-	AddTextureBarrier(chainedBatch, resource, fullRange, unorderedAccessBarrier, GpuImageLayout::ShaderReadOnly,
-		GpuImageLayout::General, shaderLayout, unorderedAccessLayout, shaderReadBarrier.DestinationStages);
-	B3D_TEST_ASSERT(chainedBatch.mTextureBarriers.Size() == 1)
-	B3D_TEST_ASSERT(chainedBatch.mTextureBarriers[0].SyncBefore ==
-		(D3D12_BARRIER_SYNC_VERTEX_SHADING | D3D12_BARRIER_SYNC_PIXEL_SHADING))
-	B3D_TEST_ASSERT(chainedBatch.mTextureBarriers[0].AccessBefore == D3D12_BARRIER_ACCESS_SHADER_RESOURCE)
-
-	const GpuBarrierScope depthReadBarrier(GpuStageFlag::EarlyFragmentTests | GpuStageFlag::LateFragmentTests,
-		GpuAccessFlag::Read, GpuStageFlag::EarlyFragmentTests | GpuStageFlag::LateFragmentTests, GpuAccessFlag::Write);
-	D3D12BarrierBatch chainedDepthBatch;
-	AddTextureBarrier(chainedDepthBatch, resource, fullRange, depthReadBarrier, GpuImageLayout::DepthStencilReadOnly,
-		GpuImageLayout::DepthStencilAttachment, D3D12TextureLayout(D3D12_BARRIER_LAYOUT_DIRECT_QUEUE_GENERIC_READ),
-		D3D12TextureLayout(D3D12_BARRIER_LAYOUT_DEPTH_STENCIL_WRITE), shaderReadBarrier.DestinationStages);
-	B3D_TEST_ASSERT(chainedDepthBatch.mTextureBarriers.Size() == 1)
-	B3D_TEST_ASSERT(chainedDepthBatch.mTextureBarriers[0].SyncBefore == D3D12_BARRIER_SYNC_DRAW)
-	B3D_TEST_ASSERT(chainedDepthBatch.mTextureBarriers[0].AccessBefore == D3D12_BARRIER_ACCESS_DEPTH_STENCIL_READ)
-
-	const GpuBarrierScope depthWriteToComputeRead(GpuStageFlag::EarlyFragmentTests | GpuStageFlag::LateFragmentTests,
-		GpuAccessFlag::Write, GpuStageFlag::ComputeShaderNonUniform, GpuAccessFlag::Read);
-	D3D12BarrierBatch chainedShaderReadBatch;
-	AddTextureBarrier(chainedShaderReadBatch, resource, fullRange, depthWriteToComputeRead, GpuImageLayout::ShaderReadOnly,
-		GpuImageLayout::ShaderReadOnly, shaderLayout, shaderLayout, GpuStageFlag::FragmentShaderNonUniform);
-	B3D_TEST_ASSERT(chainedShaderReadBatch.mTextureBarriers[0].SyncBefore == D3D12_BARRIER_SYNC_PIXEL_SHADING)
-	B3D_TEST_ASSERT(chainedShaderReadBatch.mTextureBarriers[0].AccessBefore == D3D12_BARRIER_ACCESS_SHADER_RESOURCE)
-	B3D_TEST_ASSERT(chainedShaderReadBatch.mTextureBarriers[0].SyncAfter == D3D12_BARRIER_SYNC_COMPUTE_SHADING)
-
-	D3D12BarrierBatch copiedDepthBatch;
-	AddTextureBarrier(copiedDepthBatch, resource, fullRange, depthReadBarrier, GpuImageLayout::DepthStencilReadOnly,
-		GpuImageLayout::DepthStencilAttachment, D3D12TextureLayout(D3D12_BARRIER_LAYOUT_DIRECT_QUEUE_GENERIC_READ),
-		D3D12TextureLayout(D3D12_BARRIER_LAYOUT_DEPTH_STENCIL_WRITE), GpuStageFlag::Transfer);
-	B3D_TEST_ASSERT(copiedDepthBatch.mTextureBarriers[0].SyncBefore == D3D12_BARRIER_SYNC_ALL)
-
-	const GpuBarrierScope vertexBufferBarrier(GpuStageFlag::VertexInputAttributes, GpuAccessFlag::Read,
-		GpuStageFlag::VertexInputAttributes, GpuAccessFlag::Read);
-	D3D12BarrierBatch chainedVertexBufferBatch;
-	chainedVertexBufferBatch.AddBufferBarrier(D3D12BarrierUtility::GetBufferBarrier(resource, vertexBufferBarrier,
-		GpuStageFlag::ComputeShaderNonUniform));
-	B3D_TEST_ASSERT(chainedVertexBufferBatch.mBufferBarriers[0].SyncBefore == D3D12_BARRIER_SYNC_ALL_SHADING)
-	B3D_TEST_ASSERT(chainedVertexBufferBatch.mBufferBarriers[0].AccessBefore == D3D12_BARRIER_ACCESS_VERTEX_BUFFER)
-
 	D3D12BarrierBatch overlapBatch;
 	const GpuTextureSubresourceRange firstRange(0, 2, 0, 2, colorAspect);
 	const GpuTextureSubresourceRange overlappingRange(1, 2, 1, 2, colorAspect);
@@ -317,7 +276,7 @@ void D3D12BarrierTestSuite::TestTextureBarrierBatch()
 	B3D_TEST_ASSERT(unflaggedUndefinedBarrier.Flags == D3D12_TEXTURE_BARRIER_FLAG_NONE)
 
 	AddTextureBarrier(discardBatch, resource, topMip, discardBarrier, GpuImageLayout::Undefined, GpuImageLayout::ColorAttachment,
-		D3D12TextureLayout::Undefined(), D3D12TextureLayout(D3D12_BARRIER_LAYOUT_RENDER_TARGET), GpuStageFlag::None, D3D12_TEXTURE_BARRIER_FLAG_DISCARD);
+		D3D12TextureLayout::Undefined(), D3D12TextureLayout(D3D12_BARRIER_LAYOUT_RENDER_TARGET), D3D12_TEXTURE_BARRIER_FLAG_DISCARD);
 	AddTextureBarrier(discardBatch, resource, topMip, renderTargetReadBarrier, GpuImageLayout::ColorAttachment, GpuImageLayout::ShaderReadOnly, D3D12TextureLayout(D3D12_BARRIER_LAYOUT_RENDER_TARGET), shaderLayout);
 	B3D_TEST_ASSERT(discardBatch.mTextureBarriers.Size() == 2)
 	B3D_TEST_ASSERT(discardBatch.mTextureBarriers[0].Flags == D3D12_TEXTURE_BARRIER_FLAG_DISCARD)
@@ -611,17 +570,16 @@ void D3D12BarrierTestSuite::TestQueueSharing()
 		PixelFormat Format;
 		TextureUsageFlags Usage;
 		bool IsShared;
-		bool CanRest;
 	};
 
 	const TextureCase textureCases[] =
 	{
-		{ "D3D12 sampleable texture", PF_RGBA8, TextureUsageFlag::StoreOnGPU, true, true },
-		{ "D3D12 concurrent-read render target", PF_RGBA8, TextureUsageFlag::RenderTarget | TextureUsageFlag::AllowConcurrentQueueReads, true, false },
-		{ "D3D12 render target", PF_RGBA8, TextureUsageFlag::RenderTarget, false, false },
-		{ "D3D12 depth-stencil target", PF_D32, TextureUsageFlag::DepthStencil, false, false },
-		{ "D3D12 UAV texture", PF_RGBA8, TextureUsageFlag::AllowUnorderedAccessOnTheGPU, false, false },
-		{ "D3D12 CPU-writable texture", PF_RGBA8, TextureUsageFlag::StoreOnCPUWithGPUAccess, false, false },
+		{ "D3D12 sampleable texture", PF_RGBA8, TextureUsageFlag::StoreOnGPU, true },
+		{ "D3D12 concurrent-read render target", PF_RGBA8, TextureUsageFlag::RenderTarget | TextureUsageFlag::AllowConcurrentQueueReads, true },
+		{ "D3D12 render target", PF_RGBA8, TextureUsageFlag::RenderTarget, false },
+		{ "D3D12 depth-stencil target", PF_D32, TextureUsageFlag::DepthStencil, false },
+		{ "D3D12 UAV texture", PF_RGBA8, TextureUsageFlag::AllowUnorderedAccessOnTheGPU, false },
+		{ "D3D12 CPU-writable texture", PF_RGBA8, TextureUsageFlag::StoreOnCPUWithGPUAccess, false },
 	};
 
 	const GpuTextureAspectFlags colorAspect = GpuTextureAspectFlag::Color;
@@ -647,7 +605,6 @@ void D3D12BarrierTestSuite::TestQueueSharing()
 		// Shared textures use queue-independent layouts, not simultaneous access
 		B3D_TEST_ASSERT((image->GetD3D12Resource()->GetDesc().Flags & D3D12_RESOURCE_FLAG_ALLOW_SIMULTANEOUS_ACCESS) == 0)
 		B3D_TEST_ASSERT(image->AllowsConcurrentQueueReads() == textureCase.IsShared)
-		B3D_TEST_ASSERT(image->CanRest() == textureCase.CanRest)
 		if(!textureCase.IsShared)
 			continue;
 

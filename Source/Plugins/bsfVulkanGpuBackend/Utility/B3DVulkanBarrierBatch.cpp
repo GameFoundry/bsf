@@ -1,24 +1,10 @@
 //************************************* B3D Framework - Copyright 2026 Marko Pintera *************************************//
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
-#include "B3DVulkanBarrierHelper.h"
-#include "B3DVulkanResourceTracker.h"
-#include "B3DVulkanGpuBuffer.h"
-#include "B3DVulkanGpuCommandBuffer.h"
-#include "B3DVulkanTexture.h"
+#include "B3DVulkanBarrierBatch.h"
 #include "B3DVulkanUtility.h"
-#include "B3DVulkanGpuBackend.h"
-#include "GpuBackend/B3DGpuBackendUtility.h"
 
 using namespace b3d;
 using namespace b3d::render;
-
-// Generic barrier-helper method definitions, followed by the explicit instantiation for the Vulkan barrier helper.
-// Included here (after the complete VulkanBarrierHelper and VulkanResourceTracker are available) so the single
-// instantiation lives in this translation unit. The header carries a matching `extern template` to suppress implicit
-// instantiation elsewhere.
-#include "GpuBackend/B3DGpuBarrierHelper.inl"
-
-template class b3d::render::TGpuBarrierHelper<b3d::render::VulkanBarrierHelper, b3d::render::VulkanResourceTracker>;
 
 VulkanBarrierBatch::VulkanBarrierBatch()
 {
@@ -302,58 +288,4 @@ void VulkanBarrierBatch::Clear()
 bool VulkanBarrierBatch::HasBarriers() const
 {
 	return mHasMemoryBarrier || mHasExecutionBarrier || !mOwnershipBufferBarriers.Empty() || !mImageBarriers.Empty();
-}
-
-VulkanBarrierHelper::VulkanBarrierHelper(VulkanResourceTracker* resourceTracker)
-	: TGpuBarrierHelper<VulkanBarrierHelper, VulkanResourceTracker>(resourceTracker)
-{ }
-
-void VulkanBarrierHelper::RecordNativeBufferBarrier(IGpuBufferResource* buffer, const GpuBarrierScope& barrier, GpuBarrierFlags barrierFlags)
-{
-	// Buffer barriers without an ownership transfer are recorded as global barriers already, which also covers an alias acquire's source
-	(void)barrierFlags;
-
-	const VkBuffer bufferHandle = static_cast<VulkanBuffer*>(buffer)->GetVulkanHandle();
-	mBarrierBatch.AddBufferBarrier(bufferHandle, barrier);
-}
-
-void VulkanBarrierHelper::RecordNativeImageBarrier(IGpuImageResource* image, const GpuTextureSubresourceRange& subresourceRange, const GpuBarrierScope& barrier, GpuImageLayout oldLayout, GpuImageLayout newLayout, GpuBarrierFlags barrierFlags)
-{
-	const VkImage imageHandle = static_cast<VulkanImage*>(image)->GetVulkanHandle();
-	const VkImageLayout vkOldLayout = barrierFlags.IsSet(GpuBarrierFlag::DiscardContents) ? VK_IMAGE_LAYOUT_UNDEFINED : VulkanUtility::ToVkImageLayout(oldLayout);
-	const VkImageLayout vkNewLayout = VulkanUtility::ToVkImageLayout(newLayout);
-	const VkImageSubresourceRange vkSubresourceRange = VulkanUtility::ToVkImageSubresourceRange(subresourceRange);
-
-	// The image barrier's memory dependency covers only this image, so an alias acquire adds a global memory barrier for them. The image barrier
-	// still performs the transition from VK_IMAGE_LAYOUT_UNDEFINED.
-	if(barrierFlags.IsSet(GpuBarrierFlag::AliasAcquire) && barrier.SourceAccess.IsSet(GpuAccessFlag::Write))
-		mBarrierBatch.AddMemoryBarrier(barrier);
-
-	mBarrierBatch.AddImageBarrier(imageHandle, vkSubresourceRange, barrier, vkOldLayout, vkNewLayout);
-}
-
-void VulkanBarrierHelper::Execute(VulkanGpuCommandBuffer& commandBuffer)
-{
-	if(HasBarriers())
-	{
-		mBarrierBatch.Execute(commandBuffer.GetVulkanHandle());
-		ApplyPostBarrierTracking();
-	}
-
-	// Apply read/write hazard registrations deferred while tracking resource accesses
-	mResourceTracker->CommitPendingAccesses();
-
-	Clear();
-}
-
-void VulkanBarrierHelper::Clear()
-{
-	mBarrierBatch.Clear();
-
-	TGpuBarrierHelper<VulkanBarrierHelper, VulkanResourceTracker>::Clear();
-}
-
-bool VulkanBarrierHelper::HasBarriers() const
-{
-	return mBarrierBatch.HasBarriers();
 }

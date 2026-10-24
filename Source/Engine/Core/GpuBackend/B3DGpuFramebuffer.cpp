@@ -19,11 +19,6 @@ namespace b3d::render
 		return IsColor() ? Bitwise::LeastSignificantBit((u32)Surface) : 0;
 	}
 
-	GpuResourceUseFlags GpuFramebufferAttachment::GetUseFlags() const
-	{
-		return IsColor() ? GpuResourceUseFlags(GpuResourceUseFlag::ColorAttachment) : GpuResourceUseFlags(GpuResourceUseFlag::DepthStencilAttachment);
-	}
-
 	GpuRenderPassAttachmentLayout::GpuRenderPassAttachmentLayout(GpuImageLayout attachmentOnly, TOptional<GpuImageLayout> attachmentAndShaderRead)
 		: AttachmentOnly(attachmentOnly), AttachmentAndShaderRead(attachmentAndShaderRead)
 	{ }
@@ -79,7 +74,6 @@ namespace b3d::render
 			usage.Image = attachment.Image;
 			usage.Range = attachment.Range;
 			usage.Surface = attachment.Surface;
-			usage.UseFlags = attachment.GetUseFlags();
 			usage.Access = readOnly ? GpuAccessFlags(GpuAccessFlag::Read) : GpuAccessFlag::Read | GpuAccessFlag::Write; // Writable attachments can also read through loads, blending and depth/stencil tests.
 			if(!readOnly && !loadMask.IsSet(attachment.Surface))
 				usage.BarrierFlags.Set(GpuBarrierFlag::DiscardContents);

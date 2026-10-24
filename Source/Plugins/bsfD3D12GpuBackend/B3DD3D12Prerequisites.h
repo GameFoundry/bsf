@@ -38,8 +38,6 @@ namespace b3d
 		class D3D12BufferPage;
 		class D3D12BufferPool;
 		class D3D12ResourceManager;
-		class D3D12ResourceTracker;
-		class D3D12BarrierHelper;
 		class D3D12GpuTimelineFence;
 		class D3D12DescriptorHeap;
 		class D3D12DescriptorManager;

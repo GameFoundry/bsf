@@ -6,7 +6,7 @@
 #include "Image/B3DPixelData.h"
 #include "Utility/B3DCommonTypes.h"
 #include "GpuBackend/B3DVertexDescription.h"
-#include "GpuBackend/B3DGpuHazards.h"
+#include "GpuBackend/B3DGpuBarriers.h"
 
 namespace b3d
 {

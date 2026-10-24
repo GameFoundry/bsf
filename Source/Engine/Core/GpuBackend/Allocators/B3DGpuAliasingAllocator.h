@@ -5,7 +5,7 @@
 #include "B3DPrerequisites.h"
 #include "GpuBackend/Allocators/B3DGpuTransientHeapPool.h"
 #include "GpuBackend/B3DGpuSubmissionTimeline.h"
-#include "GpuBackend/B3DGpuHazards.h"
+#include "GpuBackend/B3DGpuBarriers.h"
 #include "Utility/B3DConfigVariable.h"
 
 namespace b3d
